@@ -92,6 +92,12 @@ final class SearchQueryBuilder {
 	private $allowRewrite = false;
 
 	/**
+	 * @var string[] parameters for the SearchProfileService
+	 * @see \CirrusSearch\Profile\ContextualProfileOverride
+	 */
+	private $profileContextParameters = [];
+
+	/**
 	 * Construct a new FT (FullText) SearchQueryBuilder using the config
 	 * and query string provided.
 	 *
@@ -165,6 +171,7 @@ final class SearchQueryBuilder {
 		$builder->sort = $original->getSort();
 		$builder->debugOptions = $original->getDebugOptions();
 		$builder->searchConfig = $config;
+		$builder->profileContextParameters = $original->getProfileContextParameters();
 
 		$forcedProfiles = [];
 
@@ -251,7 +258,8 @@ final class SearchQueryBuilder {
 			$this->debugOptions ?? CirrusDebugOptions::defaultOptions(),
 			$this->searchConfig,
 			$this->withDYMSuggestion,
-			$this->allowRewrite
+			$this->allowRewrite,
+			$this->profileContextParameters
 		);
 	}
 
@@ -384,6 +392,17 @@ final class SearchQueryBuilder {
 	public function setAllowRewrite( $allowRewrite ): SearchQueryBuilder {
 		$this->allowRewrite = $allowRewrite;
 
+		return $this;
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $value
+	 * @return SearchQueryBuilder
+	 * @see \CirrusSearch\Profile\ContextualProfileOverride
+	 */
+	public function addProfileContextParameter( $key, $value ): SearchQueryBuilder {
+		$this->profileContextParameters[$key] = $value;
 		return $this;
 	}
 }

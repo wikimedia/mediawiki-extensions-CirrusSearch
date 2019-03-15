@@ -55,7 +55,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $profileContext = SearchProfileService::CONTEXT_DEFAULT;
 
 	/**
-	 * @var array
+	 * @var string[]
 	 */
 	private $profileContextParams = [];
 
@@ -289,7 +289,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getProfileContextParams(): array {
 		return $this->profileContextParams;
@@ -814,13 +814,14 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @param FallbackRunner|null $fallbackRunner
 	 * @return SearchContext
 	 */
-	public static function fromSearchQuery( SearchQuery $query, FallbackRunner $fallbackRunner = null ) {
+	public static function fromSearchQuery( SearchQuery $query, FallbackRunner $fallbackRunner = null ): SearchContext {
 		$searchContext = new SearchContext( $query->getSearchConfig(), $query->getNamespaces(),
 			$query->getDebugOptions(), $fallbackRunner );
 		$searchContext->limitSearchToLocalWiki = !$query->getCrossSearchStrategy()->isExtraIndicesSearchSupported();
 
 		$searchContext->rescoreProfile = $query->getForcedProfile( SearchProfileService::RESCORE );
 		$searchContext->fulltextQueryBuilderProfile = $query->getForcedProfile( SearchProfileService::FT_QUERY_BUILDER );
+		$searchContext->profileContextParams = $query->getProfileContextParameters();
 
 		foreach ( $query->getContextualFilters() as $filter ) {
 			$filter->populate( $searchContext );

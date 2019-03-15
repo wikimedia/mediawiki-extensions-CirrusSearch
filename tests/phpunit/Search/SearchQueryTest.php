@@ -234,6 +234,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEmpty( $defaults->getContextualFilters() );
 		$this->assertTrue( $defaults->isWithDYMSuggestion() );
 		$this->assertFalse( $defaults->isAllowRewrite() );
+		$this->assertEmpty( $defaults->getProfileContextParameters() );
 	}
 
 	public function testBuilder() {
@@ -252,7 +253,8 @@ class SearchQueryTest extends CirrusTestCase {
 			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
 			->setSort( 'size' )
 			->setWithDYMSuggestion( false )
-			->setAllowRewrite( true );
+			->setAllowRewrite( true )
+			->addProfileContextParameter( "foo", "bar" );
 		$custom = $builder->build();
 		$expectedParsedQuery = QueryParserFactory::newFullTextQueryParser( $config )->parse( 'test' );
 		$this->assertEquals( $expectedParsedQuery, $custom->getParsedQuery() );
@@ -271,7 +273,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEmpty( $custom->getContextualFilters() );
 		$this->assertFalse( $custom->isWithDYMSuggestion() );
 		$this->assertTrue( $custom->isAllowRewrite() );
-
+		$this->assertEquals( [ 'foo' => 'bar' ], $custom->getProfileContextParameters() );
 		// test that contextual filters force a hostwiki only crosswiki search
 		$builder->setExtraIndicesSearch( true )
 			->setCrossLanguageSearch( true )
@@ -300,6 +302,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( $config->getProfileService()->getProfileName( SearchProfileService::FT_QUERY_BUILDER ),
 			$context->getFulltextQueryBuilderProfile() );
 		$this->assertEquals( 'test', $context->getOriginalSearchTerm() );
+		$this->assertEmpty( $context->getProfileContextParams() );
 		$this->assertSame( FallbackRunner::noopRunner(), $context->getFallbackRunner() );
 	}
 
@@ -315,6 +318,7 @@ class SearchQueryTest extends CirrusTestCase {
 			->addContextualFilter( 'prefix', PrefixFeature::asContextualFilter( 'category:test' ) )
 			->addForcedProfile( SearchProfileService::RESCORE, 'foo' )
 			->addForcedProfile( SearchProfileService::FT_QUERY_BUILDER, 'bar' )
+			->addProfileContextParameter( 'foo', 'bar' )
 			->build();
 		$myFallbackRunner = new FallbackRunner( [] );
 		$context = SearchContext::fromSearchQuery(
@@ -331,6 +335,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( 'foo', $context->getRescoreProfile() );
 		$this->assertEquals( 'bar', $context->getFulltextQueryBuilderProfile() );
 		$this->assertEquals( '~help:test prefix:help_talk:test', $context->getOriginalSearchTerm() );
+		$this->assertEquals( [ 'foo' => 'bar' ], $context->getProfileContextParams() );
 		$this->assertSame( $myFallbackRunner, $context->getFallbackRunner() );
 	}
 
@@ -353,7 +358,9 @@ class SearchQueryTest extends CirrusTestCase {
 
 		// Keep the $builder around so that we can reuse it for multiple queries & assertions.
 		$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $hostWikiConfig, 'myquery' )
-			->addForcedProfile( SearchProfileService::RESCORE, 'foo' );
+			->addForcedProfile( SearchProfileService::RESCORE, 'foo' )
+			->addProfileContextParameter( 'foo', 'bar' );
+
 		$hostWikiQuery = $builder->build();
 		$crossSearchQuery = SearchQueryBuilder::forCrossProjectSearch( $targetWikiConfig,
 			$hostWikiQuery )->build();
@@ -401,7 +408,8 @@ class SearchQueryTest extends CirrusTestCase {
 
 		// Keep the $builder around so that we can reuse it for multiple queries & assertions.
 		$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $hostWikiConfig, 'myquery' )
-			->addForcedProfile( SearchProfileService::RESCORE, 'foo' );
+			->addForcedProfile( SearchProfileService::RESCORE, 'foo' )
+			->addProfileContextParameter( 'foo', 'bar' );
 		$hostWikiQuery = $builder->build();
 		$crossSearchQuery = SearchQueryBuilder::forCrossLanguageSearch( $targetWikiConfig,
 			$hostWikiQuery )->build();
@@ -458,6 +466,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertFalse( $crossSearchQuery->isAllowRewrite() );
 		$this->assertEquals( $offset, $crossSearchQuery->getOffset() );
 		$this->assertEquals( $limit, $crossSearchQuery->getLimit() );
+		$this->assertEquals( [ 'foo' => 'bar' ], $crossSearchQuery->getProfileContextParameters() );
 		if ( $forcedRescoreProfile !== null ) {
 			$this->assertEquals( $forcedRescoreProfile, $crossSearchQuery->getForcedProfile( SearchProfileService::RESCORE ) );
 		} else {
@@ -478,7 +487,8 @@ class SearchQueryTest extends CirrusTestCase {
 			->setSort( 'size' )
 			->setAllowRewrite( true )
 			->setInitialNamespaces( [ NS_HELP, NS_FILE ] )
-			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
+			->addProfileContextParameter( 'foo', 'bar' );
 		$query = $builder->build();
 
 		$rewritten = SearchQueryBuilder::forRewrittenQuery( $query, 'foobar?' )->build();
@@ -490,6 +500,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertFalse( $rewritten->isAllowRewrite() );
 
 		$this->assertEquals( $query->getDebugOptions(), $rewritten->getDebugOptions() );
+		$this->assertEquals( [ 'foo' => 'bar' ], $query->getProfileContextParameters() );
 		// FIXME: config is a bit differrent to disable quotation mark stripping
 		// $this->assertEquals( $query->getSearchConfig(), $rewritten->getSearchConfig() );
 		$this->assertEquals( $query->getInitialNamespaces(), $rewritten->getInitialNamespaces() );

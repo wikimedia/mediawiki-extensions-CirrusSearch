@@ -105,6 +105,12 @@ class SearchQuery {
 	private $allowRewrite;
 
 	/**
+	 * @var string[] parameters for SearchProfileService
+	 * @see \CirrusSearch\Profile\ContextualProfileOverride
+	 */
+	private $profileContextParameters;
+
+	/**
 	 * @param ParsedQuery $parsedQuery
 	 * @param int[] $initialNamespaces
 	 * @param CrossSearchStrategy $initialCrosswikiStrategy
@@ -118,6 +124,7 @@ class SearchQuery {
 	 * @param SearchConfig $searchConfig
 	 * @param bool $withDYMSuggestion
 	 * @param bool $allowRewrite
+	 * @param string[] $profileContextParameters
 	 * @see SearchQueryBuilder
 	 */
 	public function __construct(
@@ -133,7 +140,8 @@ class SearchQuery {
 		CirrusDebugOptions $debugOptions,
 		SearchConfig $searchConfig,
 		$withDYMSuggestion,
-		$allowRewrite
+		$allowRewrite,
+		array $profileContextParameters
 	) {
 		$this->parsedQuery = $parsedQuery;
 		$this->initialNamespaces = $initialNamespaces;
@@ -148,6 +156,7 @@ class SearchQuery {
 		$this->searchConfig = $searchConfig;
 		$this->withDYMSuggestion = $withDYMSuggestion;
 		$this->allowRewrite = $allowRewrite;
+		$this->profileContextParameters = $profileContextParameters;
 	}
 
 	/**
@@ -302,5 +311,13 @@ class SearchQuery {
 	 */
 	public function isAllowRewrite() {
 		return $this->allowRewrite;
+	}
+
+	/**
+	 * @return string[]
+	 * @see \CirrusSearch\Profile\ContextualProfileOverride
+	 */
+	public function getProfileContextParameters() {
+		return $this->profileContextParameters;
 	}
 }

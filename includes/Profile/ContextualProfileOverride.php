@@ -5,8 +5,17 @@ namespace CirrusSearch\Profile;
 /**
  * Overrider that generates a name from a template and
  * contextual information from the profile request.
+ * Known "context values" are:
+ * - "language": defaults to language code from \IContextSource::getLanguage()
+ * @see \IContextSource::getLanguage()
  */
 class ContextualProfileOverride implements SearchProfileOverride {
+	/**
+	 * Language code context, defaults to current context language
+	 * @see \IContextSource::getLanguage()
+	 */
+	const LANGUAGE = 'language';
+
 	/** @var string */
 	private $template;
 

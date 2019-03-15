@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use ApiUsageException;
+use CirrusSearch\Profile\ContextualProfileOverride;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
@@ -95,6 +96,11 @@ class CirrusSearch extends SearchEngine {
 	private $request;
 
 	/**
+	 * @var RequestContext $requestContext
+	 */
+	private $requestContext;
+
+	/**
 	 * @var CirrusSearchIndexFieldFactory
 	 */
 	private $searchIndexFieldFactory;
@@ -117,7 +123,8 @@ class CirrusSearch extends SearchEngine {
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
 		$this->connection = new Connection( $this->config );
-		$this->request = RequestContext::getMain()->getRequest();
+		$this->requestContext = RequestContext::getMain();
+		$this->request = $this->requestContext->getRequest();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
 
 		// enable interwiki by default
@@ -176,7 +183,8 @@ class CirrusSearch extends SearchEngine {
 			->setExtraIndicesSearch( true )
 			->setCrossProjectSearch( $this->isFeatureEnabled( 'interwiki' ) )
 			->setWithDYMSuggestion( $this->showSuggestion )
-			->setAllowRewrite( $this->isFeatureEnabled( 'rewrite' ) );
+			->setAllowRewrite( $this->isFeatureEnabled( 'rewrite' ) )
+			->addProfileContextParameter( ContextualProfileOverride::LANGUAGE, $this->requestContext->getLanguage()->getCode() );
 
 		if ( $this->prefix !== '' ) {
 			$builder->addContextualFilter( 'prefix',

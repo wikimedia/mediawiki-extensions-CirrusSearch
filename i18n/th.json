@@ -4,5 +4,14 @@
 			"Aefgh39622"
 		]
 	},
+	"cirrussearch-pref-completion-profile-help": "ตั้งค่าลักษณะการทำงานสำหรับคำแนะนำการกรอกข้อมูลอัตโนมัติ (ค้นหาตามที่คุณพิมพ์)\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester ตัวแนะนำการกรอกข้อมูล]เป็นอัลกอรึทึมสำหรับคำแนะนำในการค้นหาโดยแก้ไขคำที่พิมพ์ผิดและแสดงผลลัพธ์ที่เกี่ยวข้องได้ดีขึ้น การค้นหาคำนำหน้าเป็นอัลกอรึทึมคำแนะนำค้นหาตามที่คุณพิมพ์แบบดั้งเดิม",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "ค่าเริ่มต้น (แนะนำ)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "สามารถแก้ไขคำที่พิมพ์ผิดได้มากที่สุดถึง 2 คำ และเอาหน้าเปลี่ยนทางที่คล้ายกับชื่อเรื่องหลักมากออกได้",
+	"cirrussearch-completion-profile-strict-pref-name": "โหมดเข้มงวด (ขั้นสูง)",
+	"cirrussearch-completion-profile-strict-pref-desc": "ไม่มีการแก้ไขคำที่พิมพ์ผิด รวมทั้งไม่มีการเพิกเฉยต่อเครื่องหมายกำกับการออกเสียง และผลลัพธ์ที่ได้จะคล้ายกับคำที่ค้นหามาก",
+	"cirrussearch-completion-profile-normal-pref-name": "โหมดหน้าเปลี่ยนทาง (ขั้นสูง)",
+	"cirrussearch-completion-profile-normal-pref-desc": "ไม่มีการแก้ไขคำที่พิมพ์ผิด และแปลงที่อยู่เป็นหน้าเปลี่ยนทางที่ใกล้เคียง",
+	"cirrussearch-completion-profile-classic-pref-name": "การค้นหาคำนำหน้าแบบดั้งเดิม",
+	"cirrussearch-completion-profile-classic-pref-desc": "ไม่มีการแก้ไขคำที่พิมพ์ผิด ผลลัพธ์ที่ได้จะตรงกับคำที่ขึ้นต้นชื่อเรื่อง",
 	"cirrussearch-article-words": "จำนวนคำในหน้าเนื้อหาทั้งหมด"
 }

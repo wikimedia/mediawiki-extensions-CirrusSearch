@@ -15,6 +15,15 @@ class ConfigSearchProfileOverrideTest extends CirrusTestCase {
 		$override = new ConfigSearchProfileOverride( $config, 'paramOverride' );
 		$this->assertEquals( SearchProfileOverride::CONFIG_PRIO, $override->priority() );
 		$this->assertEquals( 'overridden', $override->getOverriddenName( [] ) );
+		$this->assertEquals(
+			[
+				'type' => 'config',
+				'priority' => SearchProfileOverride::CONFIG_PRIO,
+				'configEntry' => 'paramOverride',
+				'value' => 'overridden'
+			],
+			$override->explain()
+		);
 	}
 
 	public function testWithoutConfigParam() {

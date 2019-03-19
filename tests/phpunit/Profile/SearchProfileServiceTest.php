@@ -20,6 +20,8 @@ class SearchProfileServiceTest extends CirrusTestCase {
 		];
 		$service = new SearchProfileService();
 		$service->registerArrayRepository( 'type', 'name', $profiles );
+		$this->assertCount( 1, $service->listProfileRepositories( 'type' ) );
+		$this->assertEquals( 'name', $service->listProfileRepositories( 'type' )['name']->repositoryName() );
 		$this->simpleAssertions( $service );
 	}
 
@@ -41,6 +43,11 @@ class SearchProfileServiceTest extends CirrusTestCase {
 	private function simpleAssertions( SearchProfileService $service ) {
 		$service->registerDefaultProfile( 'type', 'context1', 'prof1' );
 		$service->registerDefaultProfile( 'type', 'context2', 'prof2' );
+		$this->assertContains( 'type', $service->listProfileTypes() );
+		$this->assertArrayHasKey( 'context1', $service->listProfileContexts( 'type' ) );
+		$this->assertArrayHasKey( 'context2', $service->listProfileContexts( 'type' ) );
+		$this->assertEquals( $service->listProfileContexts( 'type' )['context1'], 'prof1' );
+
 		try {
 			$service->registerDefaultProfile( 'type', 'context2', 'prof2' );
 			$this->fail( "Expected exception: " . SearchProfileException::class );
@@ -103,6 +110,9 @@ class SearchProfileServiceTest extends CirrusTestCase {
 		$service->registerUserPrefOverride( 'type', [ 'user_pref_override', 'all_override' ], 'profile-pref' );
 		$service->registerContextualOverride( 'type', [ 'contextual_override', 'all_override' ], 'prof{n}', [ '{n}' => 'n' ] );
 
+		$this->assertCount( 1, $service->listProfileOverrides( 'type', 'user_pref_override' ) );
+		$this->assertInstanceOf( UserPrefSearchProfileOverride::class,
+			$service->listProfileOverrides( 'type', 'user_pref_override' )[0] );
 		$service->freeze();
 		$this->assertEquals( 'prof1', $service->getProfileName( 'type', 'no_override' ) );
 		$this->assertEquals( 'prof2', $service->getProfileName( 'type', 'config_override' ) );

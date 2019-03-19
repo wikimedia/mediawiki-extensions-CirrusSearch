@@ -15,6 +15,14 @@ class UserPrefSearchProfileOverrideTest extends CirrusTestCase {
 		$override = new UserPrefSearchProfileOverride( $this->getMyTestUser(), 'test-profile-user-pref' );
 		$this->assertEquals( SearchProfileOverride::USER_PREF_PRIO, $override->priority() );
 		$this->assertEquals( 'overridden', $override->getOverriddenName( [] ) );
+		$this->assertEquals(
+			[
+				'type' => 'userPreference',
+				'priority' => SearchProfileOverride::USER_PREF_PRIO,
+				'userPreference' => 'test-profile-user-pref'
+			],
+			$override->explain()
+		);
 	}
 
 	public function testWithoutPref() {

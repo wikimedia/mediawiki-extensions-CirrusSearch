@@ -54,4 +54,16 @@ class ConfigSearchProfileOverride implements SearchProfileOverride {
 	public function priority() {
 		return $this->priority;
 	}
+
+	/**
+	 * @return array
+	 */
+	public function explain(): array {
+		return [
+			'type' => 'config',
+			'priority' => $this->priority(),
+			'configEntry' => $this->configEntry,
+			'value' => $this->getOverriddenName( [] )
+		];
+	}
 }

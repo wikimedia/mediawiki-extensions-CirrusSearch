@@ -51,4 +51,15 @@ class UriParamSearchProfileOverride implements SearchProfileOverride {
 	public function priority() {
 		return $this->priority;
 	}
+
+	/**
+	 * @return array
+	 */
+	public function explain(): array {
+		return [
+			'type' => 'uriParam',
+			'priority' => $this->priority(),
+			'uriParam' => $this->uriParam
+		];
+	}
 }

@@ -9,6 +9,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Api\\ConfigDump' => __DIR__ . '/includes/Api/ConfigDump.php',
 	'CirrusSearch\\Api\\FreezeWritesToCluster' => __DIR__ . '/includes/Api/FreezeWritesToCluster.php',
 	'CirrusSearch\\Api\\MappingDump' => __DIR__ . '/includes/Api/MappingDump.php',
+	'CirrusSearch\\Api\\ProfilesDump' => __DIR__ . '/includes/Api/ProfilesDump.php',
 	'CirrusSearch\\Api\\QueryBuildDocument' => __DIR__ . '/includes/Api/QueryBuildDocument.php',
 	'CirrusSearch\\Api\\QueryCirrusDoc' => __DIR__ . '/includes/Api/QueryCirrusDoc.php',
 	'CirrusSearch\\Api\\SettingsDump' => __DIR__ . '/includes/Api/SettingsDump.php',

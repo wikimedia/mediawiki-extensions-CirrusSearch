@@ -21,6 +21,14 @@ class ContextualProfileOverrideTest extends CirrusTestCase {
 			'language' => 'es',
 			'zork' => 'slay kobold',
 		] ) );
+		$this->assertEquals(
+			[
+				'type' => 'contextual',
+				'priority' => StaticProfileOverride::CONTEXTUAL_PRIO,
+				'template' => 'my-profile-{lang}'
+			],
+			$override->explain()
+		);
 	}
 
 	public function testCustomPrio() {

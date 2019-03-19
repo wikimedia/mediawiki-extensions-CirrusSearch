@@ -31,7 +31,7 @@ class FancyTitleResultsType extends TitleResultsType {
 	 * @param array $extraHighlightFields
 	 * @return array|null
 	 */
-	public function getHighlightingConfiguration( array $extraHighlightFields ) {
+	public function getHighlightingConfiguration( array $extraHighlightFields = [] ) {
 		global $wgCirrusSearchUseExperimentalHighlighter;
 
 		if ( $wgCirrusSearchUseExperimentalHighlighter ) {

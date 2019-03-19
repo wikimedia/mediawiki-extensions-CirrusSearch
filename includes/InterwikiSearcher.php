@@ -66,19 +66,19 @@ class InterwikiSearcher extends Searcher {
 		}
 
 		$iwQueries = [];
-		$resultsType = new FullTextResultsType( $query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ) );
 		foreach ( $sources as $interwiki => $config ) {
 			$iwQueries[$interwiki] = SearchQueryBuilder::forCrossProjectSearch( $config, $query )
 				->build();
 		}
 
-		$this->setResultsType( $resultsType );
 		$blockScorer = CrossProjectBlockScorerFactory::load( $this->config );
 		$msearches = new MSearchRequests();
 		foreach ( $iwQueries as $interwiki => $iwQuery ) {
 			$context = SearchContext::fromSearchQuery( $iwQuery,
 				FallbackRunner::create( $iwQuery ) );
 			$this->searchContext = $context;
+			$this->setResultsType( new FullTextResultsType( $this->searchContext->getFetchPhaseBuilder(),
+				$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ) ) );
 			$this->config = $context->getConfig();
 			$this->limit = $iwQuery->getLimit();
 			$this->offset = $iwQuery->getOffset();

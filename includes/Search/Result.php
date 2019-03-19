@@ -136,6 +136,14 @@ class Result extends SearchResult {
 		// This can get skipped if there the page was sent to Elasticsearch without text.
 		// This could be a bug or it could be that the page simply doesn't have any text.
 		$mainSnippet = '';
+		// Prefer source_text.plain it's likely a regex
+		// TODO: use the priority system from the FetchPhaseConfigBuilder
+		if ( isset( $highlights[ 'source_text.plain' ] ) ) {
+			$sourceSnippet = $highlights[ 'source_text.plain' ][ 0 ];
+			if ( $this->containsMatches( $sourceSnippet ) ) {
+				return $sourceSnippet;
+			}
+		}
 		if ( isset( $highlights[ 'text' ] ) ) {
 			$mainSnippet = $highlights[ 'text' ][ 0 ];
 			if ( $this->containsMatches( $mainSnippet ) ) {
@@ -153,12 +161,6 @@ class Result extends SearchResult {
 			if ( $this->containsMatches( $fileSnippet ) ) {
 				$this->isFileMatch = true;
 				return $fileSnippet;
-			}
-		}
-		if ( isset( $highlights[ 'source_text.plain' ] ) ) {
-			$sourceSnippet = $highlights[ 'source_text.plain' ][ 0 ];
-			if ( $this->containsMatches( $sourceSnippet ) ) {
-				return $sourceSnippet;
 			}
 		}
 		return $mainSnippet;

@@ -127,12 +127,14 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 			$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
 			$highlightQuery = [
 				'pattern' => $filterValue,
-				'locale' => 'en',
 				'insensitive' => $insensitive
 			];
 
-			$this->assertHighlighting( $feature, $query, [ 'title', 'redirect.title' ],
-				[ $highlightQuery, $highlightQuery ] );
+			if ( !$negated ) {
+				$this->assertHighlighting( $feature, $query,
+					[ 'title.plain', 'redirect.title.plain' ],
+					[ $highlightQuery, $highlightQuery ] );
+			}
 		}
 
 		// TODO: remove, should be a parser test

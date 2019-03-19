@@ -6,6 +6,8 @@ use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Extra\Query\SourceRegex;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
+use CirrusSearch\Search\Fetch\FetchedFieldBuilder;
+use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
@@ -156,7 +158,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			$insensitive = $suffix === 'i';
 			$filter = $this->buildRegexQuery( $pattern, $insensitive );
 			if ( !$negated ) {
-				$this->configureHighlighting( $pattern, $insensitive, $context );
+				$this->configureHighlighting( $pattern, $insensitive, $context->getFetchPhaseBuilder() );
 			}
 			return [ $filter, false ];
 		} else {
@@ -198,13 +200,10 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			: $this->buildRegexWithGroovy( $pattern, $insensitive );
 	}
 
-	private function configureHighlighting( $pattern, $insensitive, SearchContext $context ) {
-		foreach ( $this->fields as $field ) {
-			$context->addHighlightField( $field, [
-				'pattern' => $pattern,
-				'locale' => $this->languageCode,
-				'insensitive' => $insensitive,
-			] );
+	private function configureHighlighting( $pattern, $insensitive, FetchPhaseConfigBuilder $fetchPhaseConfigBuilder ) {
+		foreach ( $this->fields as $field => $hlTarget ) {
+			$fetchPhaseConfigBuilder->addNewRegexHLField( "$field.plain", $hlTarget,
+				$pattern, $insensitive, FetchedFieldBuilder::COSTLY_EXPERT_SYNTAX_PRIORITY );
 		}
 	}
 	/**
@@ -219,7 +218,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 		// TODO: Update plugin to accept multiple values for the field property
 		// so that at index time we can create a single trigram index with
 		// copy_to instead of creating multiple queries.
-		foreach ( $this->fields as $field ) {
+		foreach ( $this->fields as $field => $hlTarget ) {
 			$filter = new SourceRegex( $pattern, $field, $field . '.trigram' );
 			// set some defaults
 			$filter->setMaxDeterminizedStates( $this->maxDeterminizedStates );

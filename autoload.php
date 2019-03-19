@@ -45,6 +45,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\ElasticaErrorHandler' => __DIR__ . '/includes/ElasticaErrorHandler.php',
 	'CirrusSearch\\Elastica\\LtrQuery' => __DIR__ . '/includes/Elastica/LtrQuery.php',
 	'CirrusSearch\\Elastica\\PooledHttp' => __DIR__ . '/includes/Elastica/PooledHttp.php',
+	'CirrusSearch\\Elastica\\PooledHttpConnectionException' => __DIR__ . '/includes/Elastica/PooledHttpConnectionException.php',
 	'CirrusSearch\\Elastica\\PooledHttps' => __DIR__ . '/includes/Elastica/PooledHttps.php',
 	'CirrusSearch\\Elastica\\ReindexRequest' => __DIR__ . '/includes/Elastica/ReindexRequest.php',
 	'CirrusSearch\\Elastica\\ReindexResponse' => __DIR__ . '/includes/Elastica/ReindexResponse.php',

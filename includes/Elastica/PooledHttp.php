@@ -2,7 +2,8 @@
 
 namespace CirrusSearch\Elastica;
 
-use Elastica\Exception\Connection\HttpException;
+use Elastica\Exception\ConnectionException;
+use Elastica\Request;
 use Elastica\Transport\Http;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -39,6 +40,20 @@ use MediaWiki\MediaWikiServices;
  * your entire cluster using a single ip or domain name.
  */
 class PooledHttp extends Http {
+
+	/**
+	 * @param Request $request
+	 * @param array $params
+	 * @return \Elastica\Response
+	 */
+	public function exec( Request $request, array $params ) {
+		try {
+			return parent::exec( $request, $params );
+		} catch ( PooledHttpConnectionException $e ) {
+			throw new ConnectionException( $e->getMessage(), $request );
+		}
+	}
+
 	/**
 	 * @param bool $persistent
 	 * @return resource Curl handle
@@ -72,7 +87,7 @@ class PooledHttp extends Http {
 				// other error cases. Problems with the connection pool filling
 				// up are potentially related to either network partitions or cluster
 				// overload and should bubble up the chain.
-				throw new HttpException( $e->getMessage() );
+				throw new PooledHttpConnectionException( $e->getMessage() );
 			}
 			$this->reportTiming( microtime( true ) - $start );
 

@@ -11,5 +11,8 @@
 	"apihelp-cirrus-mapping-dump-example": "Ottieni un dump della mappatura CirrusSearch per questo wiki.",
 	"apihelp-cirrus-settings-dump-description": "Copia delle impostazioni di CirrusSearch per questo wiki.",
 	"apihelp-cirrus-settings-dump-example": "Ottieni un dump delle impostazioni di CirrusSearch per questo wiki.",
+	"apihelp-cirrus-profiles-dump-description": "Copia dei profili di CirrusSearch per questo wiki.",
+	"apihelp-cirrus-profiles-dump-summary": "Copia dei profili di CirrusSearch per questo wiki.",
+	"apihelp-cirrus-profiles-dump-example": "Ottieni un dump dei profili di CirrusSearch per questo wiki.",
 	"apierror-cirrus-requesttoolong": "Il prefisso della ricerca ha una lunghezza maggiore rispetto a quella permessa. ($1 &gt; $2)"
 }

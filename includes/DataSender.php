@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\Search\CirrusIndexField;
+use Elastica\Bulk\Action\AbstractDocument;
 use Elastica\Exception\Bulk\ResponseException;
 use MediaWiki\Logger\LoggerFactory;
 use Status;
@@ -49,15 +50,24 @@ class DataSender extends ElasticsearchIntermediary {
 	private $searchConfig;
 
 	/**
+	 * @var callable
+	 */
+	private $availableForWriteCallback;
+
+	/**
 	 * @param Connection $conn
 	 * @param SearchConfig $config
+	 * @param callable|null $availableForWriteCallback callback that must return a bool (true: available, false: frozen)
 	 */
-	public function __construct( Connection $conn, SearchConfig $config ) {
+	public function __construct( Connection $conn, SearchConfig $config, callable $availableForWriteCallback = null ) {
 		parent::__construct( $conn, null, 0 );
 		$this->log = LoggerFactory::getInstance( 'CirrusSearch' );
 		$this->failedLog = LoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
 		$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->searchConfig = $config;
+		$this->availableForWriteCallback = $availableForWriteCallback ?: function () {
+			return $this->metastoreAvailableForWrite();
+		};
 	}
 
 	/**
@@ -102,6 +112,13 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @return bool
 	 */
 	public function isAvailableForWrites() {
+		return ( $this->availableForWriteCallback )();
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function metastoreAvailableForWrite() {
 		$response = MetaStoreIndex::getElasticaType( $this->connection )
 			->request( self::ALL_INDEXES_FROZEN_NAME, 'GET', [], [
 				'_source' => 'false',
@@ -161,6 +178,7 @@ class DataSender extends ElasticsearchIntermediary {
 			$pageType = $this->connection->getIndexType(
 				$this->indexBaseName, $indexType, $elasticType
 			);
+
 			$this->start( new BulkUpdateRequestLog(
 				$this->connection->getClient(),
 				'sending {numBulk} documents to the {index} index(s)',
@@ -169,7 +187,25 @@ class DataSender extends ElasticsearchIntermediary {
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
 			$bulk->setShardTimeout( $this->searchConfig->get( 'CirrusSearchUpdateShardTimeout' ) );
 			$bulk->setType( $pageType );
-			$bulk->addData( $documents, 'update' );
+			if ( $this->searchConfig->getElement( 'CirrusSearchElasticQuirks', 'retry_on_conflict' ) ) {
+				$actions = [];
+				foreach ( $documents as $doc ) {
+					$action = AbstractDocument::create( $doc, 'update' );
+					$metadata = $action->getMetadata();
+					// Rename deprecated _retry_on_conflict
+					// TODO: fix upstream in Elastica.
+					if ( isset( $metadata['_retry_on_conflict'] ) ) {
+						$metadata['retry_on_conflict'] = $metadata['_retry_on_conflict'];
+						unset( $metadata['_retry_on_conflict'] );
+						$action->setMetadata( $metadata );
+					}
+					$actions[] = $action;
+				}
+
+				$bulk->addActions( $actions );
+			} else {
+				$bulk->addData( $documents, 'update' );
+			}
 			$responseSet = $bulk->send();
 		} catch ( ResponseException $e ) {
 			$justDocumentMissing = $this->bulkResponseExceptionIsJustDocumentMissing( $e,
@@ -311,16 +347,17 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @param string $indexName The name of the index to perform updates to
 	 * @param array $otherActions A list of arrays each containing the id within elasticsearch
 	 *   ('docId') and the article namespace ('ns') and DB key ('dbKey') at the within $localSite
+	 * @param int $batchSize number of docs to update in a single bulk
 	 * @return Status
 	 */
-	public function sendOtherIndexUpdates( $localSite, $indexName, array $otherActions ) {
+	public function sendOtherIndexUpdates( $localSite, $indexName, array $otherActions, $batchSize = 30 ) {
 		if ( !$this->isAvailableForWrites() ) {
 			return Status::newFatal( 'cirrussearch-indexes-frozen' );
 		}
 
 		$client = $this->connection->getClient();
 		$status = Status::newGood();
-		foreach ( array_chunk( $otherActions, 30 ) as $updates ) {
+		foreach ( array_chunk( $otherActions, $batchSize ) as $updates ) {
 			$bulk = new \Elastica\Bulk( $client );
 			$titles = [];
 			foreach ( $updates as $update ) {

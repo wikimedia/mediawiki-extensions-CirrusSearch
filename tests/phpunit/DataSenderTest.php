@@ -2,7 +2,12 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Job\ElasticaDocumentsJsonSerde;
 use CirrusSearch\Search\CirrusIndexField;
+use Elastica\Bulk\ResponseSet;
+use Elastica\Client;
+use Elastica\Document;
+use Elastica\Response;
 
 /**
  * Test Updater methods
@@ -126,5 +131,253 @@ class DataSenderTest extends CirrusTestCase {
 			CirrusIndexField::addNoopHandler( $doc, $f, $h );
 		}
 		return $doc;
+	}
+
+	public function provideTestSendDataRequest() {
+		$tests = [];
+		foreach ( CirrusTestCase::findFixtures( 'dataSender/sendData-*.config' ) as $testFile ) {
+			$testName = substr( basename( $testFile ), 0, - strlen( '.config' ) );
+			$fixture = CirrusTestCase::loadFixture( $testFile );
+			$expectedFile = dirname( $testFile ) . "/$testName.expected";
+			$tests[$testName] = [
+				$fixture['config'],
+				$fixture['indexType'],
+				$fixture['documents'],
+				$expectedFile,
+			];
+		}
+		return $tests;
+	}
+
+	/**
+	 * @dataProvider provideTestSendDataRequest
+	 */
+	public function testSendDataRequest( array $config, $indexType, array $documents, $expectedFile ) {
+		$minimalSetup = [
+			'CirrusSearchClusters' => [
+				'default' => [ 'localhost' ]
+			],
+			'CirrusSearchReplicaGroup' => 'default',
+		];
+		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
+		$serde = new ElasticaDocumentsJsonSerde();
+		$documents = $serde->deserialize( $documents );
+		$mockClient = $this->getMockBuilder( Client::class )
+			->disableOriginalConstructor()
+			->setProxyTarget( new Client( [ 'connections' => [] ] ) )
+			->setMethods( [ 'request' ] )
+			->getMock();
+
+		$mockClient->expects( $this->once() )
+			->method( 'request' )
+			->will( $this->returnCallback(
+				function ( $path, $method, $data, $params, $contentType ) use ( $documents, $expectedFile ) {
+					$actual = [
+						'path' => $path,
+						'method' => $method,
+						'data' => $this->unBulkify( $data ),
+						'params' => $params,
+						'contentType' => $contentType,
+					];
+					$this->assertFileContains(
+						CirrusTestCase::fixturePath( $expectedFile ),
+						CirrusTestCase::encodeFixture( $actual ),
+						getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes'
+					);
+					$responses = array_map(
+						function ( Document $d ) {
+							return new Response( [ 'result' => 'updated', 200 ] );
+						},
+						$documents
+					);
+					return new ResponseSet( new Response( [], 200 ), $responses );
+				}
+			) );
+
+		$mockCon = $this->getMockBuilder( Connection::class )
+			->disableOriginalConstructor()
+			->setProxyTarget( new Connection( $searchConfig, 'default' ) )
+			->setMethods( [ 'getClient' ] )
+			->getMock();
+		$mockCon->expects( $this->atLeastOnce() )
+			->method( 'getClient' )
+			->willReturn( $mockClient );
+		$sender = new DataSender( $mockCon, $searchConfig, function () {
+			return true;
+		} );
+		$sender->sendData( $indexType, $documents );
+	}
+
+	public function provideTestSendDeletesRequest() {
+		$tests = [];
+		foreach ( CirrusTestCase::findFixtures( 'dataSender/sendDeletes-request-*.config' ) as $testFile ) {
+			$testName = substr( basename( $testFile ), 0, - strlen( '.config' ) );
+			$fixture = CirrusTestCase::loadFixture( $testFile );
+			$expectedFile = dirname( $testFile ) . "/$testName.expected";
+			$tests[$testName] = [
+				$fixture['config'],
+				$fixture['indexType'],
+				$fixture['ids'],
+				$expectedFile,
+			];
+		}
+		return $tests;
+	}
+
+	/**
+	 * @dataProvider provideTestSendDeletesRequest
+	 */
+	public function testSendDeletesRequest( array $config, $indexType, array $ids, $expectedFile ) {
+		$minimalSetup = [
+			'CirrusSearchClusters' => [
+				'default' => [ 'localhost' ]
+			],
+			'CirrusSearchReplicaGroup' => 'default',
+		];
+		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
+		$serde = new ElasticaDocumentsJsonSerde();
+		$mockClient = $this->getMockBuilder( Client::class )
+			->disableOriginalConstructor()
+			->setProxyTarget( new Client( [ 'connections' => [] ] ) )
+			->setMethods( [ 'request' ] )
+			->getMock();
+
+		$mockClient->expects( $this->once() )
+			->method( 'request' )
+			->will( $this->returnCallback(
+				function ( $path, $method, $data, $params, $contentType ) use ( $ids, $expectedFile ) {
+					$actual = [
+						'path' => $path,
+						'method' => $method,
+						'data' => $this->unBulkify( $data ),
+						'params' => $params,
+						'contentType' => $contentType,
+					];
+					$this->assertFileContains(
+						CirrusTestCase::fixturePath( $expectedFile ),
+						CirrusTestCase::encodeFixture( $actual ),
+						getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes'
+					);
+					$responses = array_map(
+						function ( $d ) {
+							return new Response( [ 'result' => 'updated', 200 ] );
+						},
+						$ids
+					);
+					return new ResponseSet( new Response( [], 200 ), $responses );
+				}
+			) );
+
+		$mockCon = $this->getMockBuilder( Connection::class )
+			->disableOriginalConstructor()
+			->setProxyTarget( new Connection( $searchConfig, 'default' ) )
+			->setMethods( [ 'getClient' ] )
+			->getMock();
+		$mockCon->expects( $this->atLeastOnce() )
+			->method( 'getClient' )
+			->willReturn( $mockClient );
+		$sender = new DataSender( $mockCon, $searchConfig, function () {
+			return true;
+		} );
+		$sender->sendDeletes( $ids, $indexType );
+	}
+
+	public function provideTestSendOtherIndexUpdatesRequest() {
+		$tests = [];
+		foreach ( CirrusTestCase::findFixtures( 'dataSender/sendOtherIndexUpdates-request-*.config' ) as $testFile ) {
+			$testName = substr( basename( $testFile ), 0, - strlen( '.config' ) );
+			$fixture = CirrusTestCase::loadFixture( $testFile );
+			$expectedFile = dirname( $testFile ) . "/$testName.expected";
+			$tests[$testName] = [
+				$fixture['config'],
+				$fixture['localSite'],
+				$fixture['indexName'],
+				$fixture['batchSize'],
+				$fixture['actions'],
+				$expectedFile,
+			];
+		}
+		return $tests;
+	}
+
+	/**
+	 * @dataProvider provideTestSendOtherIndexUpdatesRequest
+	 */
+	public function testSendOtherIndexUpdatesRequest( array $config, $localSite, $indexName, $batchSize, array $actions, $expectedFile ) {
+		$minimalSetup = [
+			'CirrusSearchClusters' => [
+				'default' => [ 'localhost' ]
+			],
+			'CirrusSearchReplicaGroup' => 'default',
+		];
+		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
+		$mockClient = $this->getMockBuilder( Client::class )
+			->disableOriginalConstructor()
+			->setProxyTarget( new Client( [ 'connections' => [] ] ) )
+			->setMethods( [ 'request' ] )
+			->getMock();
+
+		$actualCalls = [];
+		$mockClient->expects( $this->exactly( count( array_chunk( $actions, $batchSize ) ) ) )
+			->method( 'request' )
+			->will( $this->returnCallback(
+				function ( $path, $method, $data, $params, $contentType ) use ( &$actualCalls ) {
+					$lines = $this->unBulkify( $data );
+					$actualCalls[] = [
+						'path' => $path,
+						'method' => $method,
+						'data' => $lines,
+						'params' => $params,
+						'contentType' => $contentType,
+					];
+					$responses = array_map(
+						function ( $d ) {
+							return new Response( [ 'result' => 'updated', 200 ] );
+						},
+						range( 0, count( $lines ) / 2 )
+					);
+					return new ResponseSet( new Response( [], 200 ), $responses );
+				}
+			) );
+
+		$mockCon = $this->getMockBuilder( Connection::class )
+			->disableOriginalConstructor()
+			->setProxyTarget( new Connection( $searchConfig, 'default' ) )
+			->setMethods( [ 'getClient' ] )
+			->getMock();
+		$mockCon->expects( $this->atLeastOnce() )
+			->method( 'getClient' )
+			->willReturn( $mockClient );
+		$sender = new DataSender( $mockCon, $searchConfig, function () {
+			return true;
+		} );
+		$sender->sendOtherIndexUpdates( $localSite, $indexName, $actions, $batchSize );
+
+		$merged = [];
+		foreach ( $actualCalls as $nb => $actualCall ) {
+			if ( isset( $merged['path'] ) ) {
+				foreach ( [ 'path', 'method', 'params', 'contentType' ] as $k ) {
+					$this->assertEquals( $merged[$k], $actualCall[$k], "Bulk message $nb has same value for $k the the first bulk" );
+				}
+				$merged['data'][] = $actualCall['data'];
+			} else {
+				$merged = $actualCall;
+				$merged['data'] = [ $actualCall['data'] ];
+			}
+		}
+		$this->assertFileContains(
+			CirrusTestCase::fixturePath( $expectedFile ),
+			CirrusTestCase::encodeFixture( $merged ),
+			getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes'
+		);
+	}
+
+	private function unBulkify( $data ) {
+		return array_map(
+			function ( $d ) {
+				return json_decode( $d, true );
+			},
+			array_slice( explode( "\n", $data ), 0, -1 )
+		);
 	}
 }

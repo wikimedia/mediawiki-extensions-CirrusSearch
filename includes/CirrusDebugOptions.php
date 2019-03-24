@@ -49,8 +49,8 @@ class CirrusDebugOptions {
 	public static function fromRequest( \WebRequest $request ) {
 		$options = new self();
 		$options->cirrusCompletionVariant = $request->getArray( 'cirrusCompletionVariant' );
-		$options->cirrusDumpQuery = self::debugFlag( $request, 'cirrusDumpQuery' );
-		$options->cirrusDumpResult = self::debugFlag( $request, 'cirrusDumpResult' );
+		$options->cirrusDumpQuery = $request->getCheck( 'cirrusDumpQuery' );
+		$options->cirrusDumpResult = $request->getCheck( 'cirrusDumpResult' );
 		$options->cirrusExplain = self::debugOption( $request, 'cirrusExplain', [ 'verbose', 'pretty', 'hot', 'raw' ] );
 		$options->cirrusMLRModel = $request->getVal( 'cirrusMLRModel' );
 		$options->dumpAndDie = $options->cirrusDumpQuery || $options->cirrusDumpResult;
@@ -85,17 +85,6 @@ class CirrusDebugOptions {
 		$options = new self();
 		$options->cirrusExplain = $withExplain;
 		return $options;
-	}
-
-	/**
-	 * Inspect the param named $param and return true if set
-	 * false otherwise
-	 * @param \WebRequest $request
-	 * @param string $param
-	 * @return bool true if the param is set, null in all other cases
-	 */
-	private static function debugFlag( \WebRequest $request, $param ) {
-		return $request->getVal( $param ) !== null;
 	}
 
 	/**

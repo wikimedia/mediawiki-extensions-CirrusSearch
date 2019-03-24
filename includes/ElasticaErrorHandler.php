@@ -223,8 +223,7 @@ class ElasticaErrorHandler {
 			// Or if the exception is thrown locally by the node receiving the query:
 			// expected ']' at position 2
 			if ( preg_match( '/(?:[a-z_]+: )?(.+) at position (\d+)/', $syntaxError, $matches ) ) {
-				$errorMessage = $matches[ 1 ];
-				$position = $matches[ 2 ];
+				list( , $errorMessage, $position ) = $matches;
 			} elseif ( $syntaxError === 'unexpected end-of-string' ) {
 				$errorMessage = 'regex too short to be correct';
 			}

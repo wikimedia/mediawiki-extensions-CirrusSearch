@@ -99,7 +99,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
 					if ( !isset( $matches[ 'slop' ] ) ) {
-						$main = $main . '~' . $slop[ 'precise' ];
+						$main .= '~' . $slop[ 'precise' ];
 					}
 					// Got to collect phrases that don't use the all field so we can highlight them.
 					// The highlighter locks phrases to the fields that specify them.  It doesn't do

@@ -159,7 +159,7 @@ abstract class Maintenance extends \Maintenance implements Printer {
 			self::$indent = '';
 		} else {
 			// Others get one tab beyond the last
-			self::$indent = self::$indent . "\t";
+			self::$indent .= "\t";
 		}
 	}
 

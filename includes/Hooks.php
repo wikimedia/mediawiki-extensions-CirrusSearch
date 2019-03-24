@@ -454,6 +454,7 @@ class Hooks {
 		$directoryIterator = new RecursiveDirectoryIterator( $dir );
 		$fileIterator = new RecursiveIteratorIterator( $directoryIterator );
 
+		/** @var \SplFileInfo $fileInfo */
 		foreach ( $fileIterator as $fileInfo ) {
 			if ( substr( $fileInfo->getFilename(), -8 ) === 'Test.php' ) {
 				$files[] = $fileInfo->getPathname();

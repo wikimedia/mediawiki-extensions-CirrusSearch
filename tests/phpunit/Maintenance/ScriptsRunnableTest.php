@@ -14,6 +14,7 @@ class ScriptsRunnableTest extends \PHPUnit\Framework\TestCase {
 	public function scriptPathProvider() {
 		$it = new \DirectoryIterator( __DIR__ . '/../../../maintenance/' );
 		$tests = [];
+		/** @var \SplFileInfo $fileInfo */
 		foreach ( $it as $fileInfo ) {
 			if ( $fileInfo->getExtension() === 'php' ) {
 				$tests[] = [ $fileInfo->getPathname() ];

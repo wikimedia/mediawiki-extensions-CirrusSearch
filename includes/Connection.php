@@ -27,45 +27,39 @@ use Wikimedia\Assert\Assert;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Connection extends ElasticaConnection {
+
 	/**
 	 * Name of the index that holds content articles.
-	 * @var string
 	 */
 	const CONTENT_INDEX_TYPE = 'content';
 
 	/**
 	 * Name of the index that holds non-content articles.
-	 * @var string
 	 */
 	const GENERAL_INDEX_TYPE = 'general';
 
 	/**
 	 * Name of the index that hosts content title suggestions
-	 * @var string
 	 */
 	const TITLE_SUGGEST_TYPE = 'titlesuggest';
 
 	/**
 	 * Name of the index that hosts archive data
-	 * @var string
 	 */
 	const ARCHIVE_INDEX_TYPE = 'archive';
 
 	/**
 	 * Name of the page type.
-	 * @var string
 	 */
 	const PAGE_TYPE_NAME = 'page';
 
 	/**
 	 * Name of the title suggest type
-	 * @var string
 	 */
 	const TITLE_SUGGEST_TYPE_NAME = 'titlesuggest';
 
 	/**
 	 * Name of the archive type
-	 * @var string
 	 */
 	const ARCHIVE_TYPE_NAME = 'archive';
 

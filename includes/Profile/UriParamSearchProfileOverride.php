@@ -1,11 +1,7 @@
 <?php
 
-
 namespace CirrusSearch\Profile;
 
-/**
- *
- */
 class UriParamSearchProfileOverride implements SearchProfileOverride {
 
 	/**

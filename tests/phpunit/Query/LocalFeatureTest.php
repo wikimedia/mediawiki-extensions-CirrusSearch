@@ -1,6 +1,5 @@
 <?php
 
-
 namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;

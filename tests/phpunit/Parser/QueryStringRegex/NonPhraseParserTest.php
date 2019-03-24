@@ -1,6 +1,5 @@
 <?php
 
-
 namespace CirrusSearch\Parser\QueryStringRegex;
 
 use CirrusSearch\CirrusTestCase;

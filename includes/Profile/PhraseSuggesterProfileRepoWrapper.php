@@ -98,7 +98,7 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 		$stupidBackoffDiscount = null;
 		foreach ( $lines as $line ) {
 			$linePieces = explode( ':', $line, 2 );
-			if ( count( $linePieces ) ) {
+			if ( count( $linePieces ) !== 2 ) {
 				// Skip improperly formatted lines without a key:value
 				continue;
 			}

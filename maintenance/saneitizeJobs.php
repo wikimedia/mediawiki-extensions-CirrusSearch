@@ -310,7 +310,7 @@ EOD
 				->getProfileService()
 				->listExposedProfiles( SearchProfileService::SANEITIZER );
 		uasort( $profiles, function ( $a, $b ) {
-			return $a['max_wiki_size'] < $b['max_wiki_size'] ? - 1 : 1;
+			return $a['max_wiki_size'] <=> $b['max_wiki_size'];
 		} );
 		$wikiSize = $this->maxId - $this->minId;
 		foreach ( $profiles as $name => $settings ) {

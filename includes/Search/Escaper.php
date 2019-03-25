@@ -181,7 +181,7 @@ class Escaper {
 	 */
 	public function balanceQuotes( $text ) {
 		if ( $this->unbalancedQuotes( $text ) ) {
-			$text = $text . '"';
+			$text .= '"';
 		}
 		return $text;
 	}

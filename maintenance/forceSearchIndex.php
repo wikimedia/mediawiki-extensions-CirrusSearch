@@ -66,12 +66,13 @@ class ForceSearchIndex extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
-		$this->mDescription = "Force indexing some pages.  Setting --from or --to will switch "
+		$this->addDescription( "Force indexing some pages.  Setting --from or --to will switch "
 			. "from page id based indexing to "
 			. "date based indexing which uses less efficient queries and follows redirects.\n\n"
 			. "Note: All froms are _exclusive_ and all tos are _inclusive_.\n"
 			. "Note 2: Setting fromId and toId use the efficient query so those are ok.\n"
-			. "Note 3: Operates on all clusters unless --cluster is provided.\n";
+			. "Note 3: Operates on all clusters unless --cluster is provided.\n"
+		);
 		$this->setBatchSize( 10 );
 		$this->addOption( 'from', 'Start date of reindex in YYYY-mm-ddTHH:mm:ssZ (exc.  Defaults ' .
 			'to 0 epoch.', false, true );

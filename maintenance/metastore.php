@@ -41,8 +41,8 @@ class Metastore extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
-		$this->mDescription = "Update and check the CirrusSearch metastore index. " .
-			"Always operates on a single cluster.";
+		$this->addDescription( 'Update and check the CirrusSearch metastore index. ' .
+			'Always operates on a single cluster.' );
 		$this->addOption( 'upgrade', 'Create or upgrade the metastore index.' );
 		$this->addOption( 'show-all-index-versions',
 			'Show all versions for all indices managed by this cluster.' );

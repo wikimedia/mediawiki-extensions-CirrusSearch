@@ -34,8 +34,8 @@ require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 class FreezeWritesToCluster extends Maintenance {
 	public function __construct() {
 		parent::__construct();
-		$this->mDescription = "Freeze/thaw writes to the elasticsearch cluster. This effects "
-			. "all wikis in a multi-wiki environment. This always operates on a single cluster.";
+		$this->addDescription( "Freeze/thaw writes to the elasticsearch cluster. This effects "
+			. "all wikis in a multi-wiki environment. This always operates on a single cluster." );
 		$this->addOption( 'thaw', 'Re-allow writes to the elasticsearch cluster.' );
 	}
 

@@ -60,7 +60,7 @@ class Saneitize extends Maintenance {
 	public function __construct() {
 		parent::__construct();
 		$this->setBatchSize( 10 );
-		$this->mDescription = "Make the index sane. Always operates on a single cluster.";
+		$this->addDescription( 'Make the index sane. Always operates on a single cluster.' );
 		$this->addOption( 'fromId', 'Start sanitizing at a specific page_id.  Default to 0.', false, true );
 		$this->addOption( 'toId', 'Stop sanitizing at a specific page_id.  Default to the maximum id in the db + 100.', false, true );
 		$this->addOption( 'noop', 'Rather then queue remediation actions do nothing.' );

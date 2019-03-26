@@ -64,12 +64,13 @@ class SaneitizeJobs extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
-		$this->mDescription = 'Manage sanitize jobs (CheckerJob). This ' .
+		$this->addDescription( 'Manage sanitize jobs (CheckerJob). This ' .
 			'script operates on all writable clusters by default. ' .
 			'Add --cluster to work on a single cluster. Note that ' .
 			'once a job has been pushed to a particular cluster the ' .
 			'script will fail if you try to run the same job with ' .
-			'different cluster options.';
+			'different cluster options.'
+		);
 		$this->addOption( 'push', 'Push some jobs to the job queue.' );
 		$this->addOption( 'show', 'Display job info.' );
 		$this->addOption( 'delete-job', 'Delete the job.' );

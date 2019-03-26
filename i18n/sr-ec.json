@@ -31,5 +31,11 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Не исправља грешке у куцању. Решава блиска преусмерења.",
 	"cirrussearch-completion-profile-classic-pref-name": "Класична претрага по префиксу",
 	"cirrussearch-completion-profile-classic-pref-desc": "Не исправља грешке у куцању. Тражи почетке наслова.",
+	"cirrussearch-explore-similar-related": "Повезано",
+	"cirrussearch-explore-similar-categories": "Категорије",
+	"cirrussearch-explore-similar-languages": "Језици",
+	"cirrussearch-explore-similar-related-none": "Нема доступних повезаних страница",
+	"cirrussearch-explore-similar-categories-none": "Нема доступних категорија",
+	"cirrussearch-explore-similar-languages-none": "Није доступно на другим језицима",
 	"cirrussearch-article-words": "Речи на свим страницама са садржајем"
 }

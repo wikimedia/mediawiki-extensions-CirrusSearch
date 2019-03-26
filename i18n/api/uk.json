@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Piramidion",
-			"Ата"
+			"Ата",
+			"Vlad5250"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "Дамп конфігурації CirrusSearch.",
@@ -14,6 +15,10 @@
 	"apihelp-cirrus-settings-dump-description": "Дамп налаштувань CirrusSearch для цієї Вікі.",
 	"apihelp-cirrus-settings-dump-summary": "Дамп налаштувань CirrusSearch для цієї Вікі.",
 	"apihelp-cirrus-settings-dump-example": "Отримати дамп налаштувань CirrusSearch для цієї вікі.",
+	"apihelp-cirrus-profiles-dump-description": "Дамп профілів CirrusSearch для цієї Вікі.",
+	"apihelp-cirrus-profiles-dump-summary": "Дамп профілів CirrusSearch для цієї Вікі.",
+	"apihelp-cirrus-profiles-dump-example": "Отримати дамп профілів CirrusSearch для цієї вікі.",
+	"apihelp-cirrus-profiles-dump-param-verbose": "Скласти дамп вмісту профілів",
 	"apihelp-query+cirrusdoc-description": "Дамп документа статті CirrusSearch",
 	"apihelp-query+cirrusdoc-summary": "Дамп документа статті CirrusSearch із пошукових серверів",
 	"apihelp-query+cirrusdoc-example": "Отримати дамп окремої статті CirrusSearch, як вона індексується в пошуку на поточний момент.",

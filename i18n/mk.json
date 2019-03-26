@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Bjankuloski06"
+			"Bjankuloski06",
+			"Vlad5250"
 		]
 	},
-	"cirrussearch-desc": "Пребарување со Solr",
+	"cirrussearch-desc": "Пребарување за МедијаВики на основа на Elasticsearch",
 	"cirrussearch-backend-error": "Не можам наполно да го изведам пребарувањето поради привремен проблем. Обидете се подоцна.",
 	"cirrussearch-parse-error": "Не го разбрав барањето. Упростете го. Ова го заведувам за да го подобриме пребарувачкиот систем.",
 	"cirrussearch-too-busy-error": "Пребарувањето во моментов е презафатено. Обидете се подоцна.",
@@ -36,7 +37,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Ранг заснован првенствено на бројот на дојдовни врски",
 	"prefs-completion": "Довршување на пребарувањето",
 	"cirrussearch-pref-completion-section-desc": "Допишувачки предлагач",
-	"cirrussearch-pref-completion-profile-help": "Задај го поведениот на самодополнувачките предлози (пребарување при внесување).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Дополнувачкиот предлагач] е алгоритам за давање предлози при пребарување со подобрено исправање на грешки при пишувањето и подобро утврдување на релевантност. Пребарувањето со претставка е стариот алгоритам за пребарување при внесување.",
+	"cirrussearch-pref-completion-profile-help": "Задај го поведението на самодополнувачките предлози (пребарување при внесување).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Дополнувачкиот предлагач] е алгоритам за давање предлози при пребарување со подобрено исправање на грешки при пишувањето и подобро утврдување на релевантност. Пребарувањето со претставка е стариот алгоритам за пребарување при внесување.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "По основно (препорачано)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Исправува до две грешки при пишување. Отстранува пренасочувања кои се многу слични на главниот наслов.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Наоѓање подизрази (препорачано за подолги наслови на страници)",

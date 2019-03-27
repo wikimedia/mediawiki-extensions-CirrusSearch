@@ -16,7 +16,7 @@
 	"apihelp-cirrus-settings-dump-summary": "Дамп налаштувань CirrusSearch для цієї Вікі.",
 	"apihelp-cirrus-settings-dump-example": "Отримати дамп налаштувань CirrusSearch для цієї вікі.",
 	"apihelp-cirrus-profiles-dump-description": "Дамп профілів CirrusSearch для цієї Вікі.",
-	"apihelp-cirrus-profiles-dump-summary": "Дамп профілів CirrusSearch для цієї Вікі.",
+	"apihelp-cirrus-profiles-dump-summary": "Дамп профілів CirrusSearch для цієї вікі.",
 	"apihelp-cirrus-profiles-dump-example": "Отримати дамп профілів CirrusSearch для цієї вікі.",
 	"apihelp-cirrus-profiles-dump-param-verbose": "Скласти дамп вмісту профілів",
 	"apihelp-query+cirrusdoc-description": "Дамп документа статті CirrusSearch",

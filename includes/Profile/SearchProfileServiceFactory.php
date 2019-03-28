@@ -155,7 +155,7 @@ class SearchProfileServiceFactory {
 			self::CIRRUS_CONFIG, 'CirrusSearchSimilarityProfiles', $config ) );
 
 		$service->registerDefaultProfile( SearchProfileService::SIMILARITY,
-			SearchProfileService::CONTEXT_DEFAULT, 'default' );
+			SearchProfileService::CONTEXT_DEFAULT, 'bm25_with_defaults' );
 		$service->registerConfigOverride( SearchProfileService::SIMILARITY,
 			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchSimilarityProfile' );
 	}

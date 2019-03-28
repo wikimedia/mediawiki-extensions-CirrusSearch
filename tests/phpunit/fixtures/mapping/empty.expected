@@ -73,17 +73,17 @@
                 "analyzer": "text",
                 "search_analyzer": "text_search",
                 "position_increment_gap": 10,
-                "similarity": "classic",
+                "similarity": "bm25",
                 "fields": {
                     "plain": {
                         "type": "text",
                         "analyzer": "plain",
                         "search_analyzer": "plain_search",
                         "position_increment_gap": 10,
-                        "similarity": "classic"
+                        "similarity": "bm25"
                     },
                     "prefix": {
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "type": "text",
                         "analyzer": "prefix",
                         "search_analyzer": "near_match",
@@ -91,7 +91,7 @@
                         "norms": false
                     },
                     "prefix_asciifolding": {
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "type": "text",
                         "analyzer": "prefix_asciifolding",
                         "search_analyzer": "near_match_asciifolding",
@@ -99,28 +99,28 @@
                         "norms": false
                     },
                     "near_match": {
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "type": "text",
                         "analyzer": "near_match",
                         "index_options": "docs",
                         "norms": false
                     },
                     "near_match_asciifolding": {
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "type": "text",
                         "analyzer": "near_match_asciifolding",
                         "index_options": "docs",
                         "norms": false
                     },
                     "keyword": {
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "type": "text",
                         "analyzer": "keyword",
                         "index_options": "docs",
                         "norms": false
                     },
                     "trigram": {
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "type": "text",
                         "norms": false,
                         "analyzer": "trigram",
@@ -133,14 +133,14 @@
                 "analyzer": "text",
                 "search_analyzer": "text_search",
                 "position_increment_gap": 10,
-                "similarity": "classic",
+                "similarity": "bm25",
                 "fields": {
                     "plain": {
                         "type": "text",
                         "analyzer": "plain",
                         "search_analyzer": "plain_search",
                         "position_increment_gap": 10,
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "index_options": "offsets"
                     },
                     "word_count": {
@@ -168,7 +168,7 @@
                         "analyzer": "source_text_plain",
                         "search_analyzer": "source_text_plain_search",
                         "position_increment_gap": 10,
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "index_options": "offsets"
                     },
                     "trigram": {
@@ -223,18 +223,18 @@
                         "analyzer": "text",
                         "search_analyzer": "text_search",
                         "position_increment_gap": 10,
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "fields": {
                             "plain": {
                                 "type": "text",
                                 "analyzer": "plain",
                                 "search_analyzer": "plain_search",
                                 "position_increment_gap": 10,
-                                "similarity": "classic",
+                                "similarity": "bm25",
                                 "index_options": "offsets"
                             },
                             "prefix": {
-                                "similarity": "classic",
+                                "similarity": "bm25",
                                 "type": "text",
                                 "analyzer": "prefix",
                                 "search_analyzer": "near_match",
@@ -242,7 +242,7 @@
                                 "norms": false
                             },
                             "prefix_asciifolding": {
-                                "similarity": "classic",
+                                "similarity": "bm25",
                                 "type": "text",
                                 "analyzer": "prefix_asciifolding",
                                 "search_analyzer": "near_match_asciifolding",
@@ -250,28 +250,28 @@
                                 "norms": false
                             },
                             "near_match": {
-                                "similarity": "classic",
+                                "similarity": "bm25",
                                 "type": "text",
                                 "analyzer": "near_match",
                                 "index_options": "offsets",
                                 "norms": false
                             },
                             "near_match_asciifolding": {
-                                "similarity": "classic",
+                                "similarity": "bm25",
                                 "type": "text",
                                 "analyzer": "near_match_asciifolding",
                                 "index_options": "offsets",
                                 "norms": false
                             },
                             "keyword": {
-                                "similarity": "classic",
+                                "similarity": "bm25",
                                 "type": "text",
                                 "analyzer": "keyword",
                                 "index_options": "docs",
                                 "norms": false
                             },
                             "trigram": {
-                                "similarity": "classic",
+                                "similarity": "bm25",
                                 "type": "text",
                                 "norms": false,
                                 "analyzer": "trigram",
@@ -293,13 +293,13 @@
             },
             "suggest": {
                 "type": "text",
-                "similarity": "classic",
+                "similarity": "bm25",
                 "index_options": "freqs",
                 "analyzer": "suggest",
                 "fields": {
                     "reverse": {
                         "type": "text",
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "index_options": "freqs",
                         "analyzer": "suggest_reverse"
                     }
@@ -310,18 +310,18 @@
                 "analyzer": "text",
                 "search_analyzer": "text_search",
                 "position_increment_gap": 10,
-                "similarity": "classic",
+                "similarity": "bm25",
                 "fields": {
                     "plain": {
                         "type": "text",
                         "analyzer": "plain",
                         "search_analyzer": "plain_search",
                         "position_increment_gap": 10,
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "index_options": "offsets"
                     },
                     "lowercase_keyword": {
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "type": "text",
                         "analyzer": "lowercase_keyword",
                         "norms": false,
@@ -375,14 +375,14 @@
                 "analyzer": "text",
                 "search_analyzer": "text_search",
                 "position_increment_gap": 10,
-                "similarity": "classic",
+                "similarity": "bm25",
                 "fields": {
                     "plain": {
                         "type": "text",
                         "analyzer": "plain",
                         "search_analyzer": "plain_search",
                         "position_increment_gap": 10,
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "index_options": "offsets"
                     }
                 },
@@ -400,14 +400,14 @@
                 "analyzer": "text",
                 "search_analyzer": "text_search",
                 "position_increment_gap": 10,
-                "similarity": "classic",
+                "similarity": "bm25",
                 "fields": {
                     "plain": {
                         "type": "text",
                         "analyzer": "plain",
                         "search_analyzer": "plain_search",
                         "position_increment_gap": 10,
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "index_options": "offsets"
                     }
                 },
@@ -421,14 +421,14 @@
                 "analyzer": "text",
                 "search_analyzer": "text_search",
                 "position_increment_gap": 10,
-                "similarity": "classic",
+                "similarity": "bm25",
                 "fields": {
                     "plain": {
                         "type": "text",
                         "analyzer": "plain",
                         "search_analyzer": "plain_search",
                         "position_increment_gap": 10,
-                        "similarity": "classic"
+                        "similarity": "bm25"
                     }
                 },
                 "copy_to": [
@@ -469,14 +469,14 @@
                 "analyzer": "text",
                 "search_analyzer": "text_search",
                 "position_increment_gap": 10,
-                "similarity": "classic",
+                "similarity": "bm25",
                 "fields": {
                     "plain": {
                         "type": "text",
                         "analyzer": "plain",
                         "search_analyzer": "plain_search",
                         "position_increment_gap": 10,
-                        "similarity": "classic",
+                        "similarity": "bm25",
                         "index_options": "offsets"
                     }
                 },
@@ -490,14 +490,14 @@
                 "analyzer": "text",
                 "search_analyzer": "text_search",
                 "position_increment_gap": 10,
-                "similarity": "classic",
+                "similarity": "bm25",
                 "fields": {
                     "plain": {
                         "type": "text",
                         "analyzer": "plain",
                         "search_analyzer": "plain_search",
                         "position_increment_gap": 10,
-                        "similarity": "classic"
+                        "similarity": "bm25"
                     }
                 }
             },
@@ -506,14 +506,14 @@
                 "analyzer": "near_match",
                 "index_options": "freqs",
                 "norms": false,
-                "similarity": "classic",
+                "similarity": "bm25",
                 "fields": {
                     "asciifolding": {
                         "type": "text",
                         "analyzer": "near_match_asciifolding",
                         "index_options": "freqs",
                         "norms": false,
-                        "similarity": "classic"
+                        "similarity": "bm25"
                     }
                 }
             }

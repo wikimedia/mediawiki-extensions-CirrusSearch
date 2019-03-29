@@ -15,7 +15,6 @@
                     "_id": "1",
                     "_type": "",
                     "_index": "",
-                    "_cirrus_hints": null,
                     "_retry_on_conflict": 5,
                     "source": {
                         "version": 16,

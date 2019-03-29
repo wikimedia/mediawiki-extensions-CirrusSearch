@@ -500,7 +500,8 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	public function docToSuperDetectNoopScript( \Elastica\Document $doc ) {
 		$handlers = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
-		$params = $doc->getParams();
+		$params = array_diff_key( $doc->getParams(), [ CirrusIndexField::DOC_HINT_PARAM => 1 ] );
+
 		$params['source'] = $doc->getData();
 
 		if ( $handlers ) {

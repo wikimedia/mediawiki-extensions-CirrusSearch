@@ -16,6 +16,8 @@
 	"apihelp-cirrus-settings-dump-description": "Volcado de configuración de CirrusSearch para este wiki.",
 	"apihelp-cirrus-settings-dump-summary": "Volcado de la configuración de CirrusSearch para este wiki.",
 	"apihelp-cirrus-settings-dump-example": "Obtener un volcado de la configuración de CirrusSearch para este wiki.",
+	"apihelp-cirrus-profiles-dump-summary": "Volcado de perfiles de CirrusSearch para este wiki.",
+	"apihelp-cirrus-profiles-dump-param-verbose": "Volcar el contenido de los perfiles",
 	"apihelp-query+cirrusdoc-description": "Volcado del documento de un artículo de CirrusSearch",
 	"apihelp-query+cirrusdoc-summary": "Volcado del documento de un artículo de CirrusSearch de los servidores de búsqueda",
 	"apihelp-query+cirrusdoc-example": "Obtener el volcado de un solo artículo de CirrusSearch tal como se ha indizado actualmente en la búsqueda.",

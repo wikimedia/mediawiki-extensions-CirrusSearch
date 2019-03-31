@@ -10,7 +10,8 @@
 			"Freshman404",
 			"Ladsgroup",
 			"Arash",
-			"Mardetanha"
+			"Mardetanha",
+			"Physicsch"
 		]
 	},
 	"cirrussearch-desc": "جستجوی قدرت‌گرفته از Elasticsearch برای مدیاویکی",
@@ -56,7 +57,7 @@
 	"cirrussearch-completion-profile-classic-pref-name": "جستجوی پیشوند به روش مرسوم",
 	"cirrussearch-completion-profile-classic-pref-desc": "عدم اصلاح اشتباه تایپی. یافتن بخش ابتدایی عنوان‌ها.",
 	"cirrussearch-timed-out": "محدودیت جستجو برای تعدادی از نتیج موجود.",
-	"cirrussearch-regex-timed-out": "زمان جستجوی عبارات باقاعده به پایان رسید، تنها بخشی از نتایج موجود است. برای گرفتن نتایج کامل از عبارات باقاعدهٔ ساده‌ترین استفاده کنید",
+	"cirrussearch-regex-timed-out": "زمان جستجوی عبارات باقاعده به پایان رسید، تنها بخشی از نتایج موجود است. برای گرفتن نتایج کامل از عبارات باقاعدهٔ ساده‌تری استفاده کنید.",
 	"cirrussearch-file-numeric-feature-not-a-number": "عبارت جستجوی '$1' به صورت عددی مورد نیاز است ولی '$2' ارائه شده‌است.",
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "عبارت جستجوی '$1' امکان استفاده از چند الگوریتم را نمی‌دهد و با علامت '$2' مشخص شده‌است.",
 	"cirrussearch-feature-not-available": "عبارت کلیدی '$1' در این ویکی تعریف نشده‌است.",

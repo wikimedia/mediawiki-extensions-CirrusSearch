@@ -17,6 +17,7 @@
 	"apihelp-cirrus-profiles-dump-description": "היטל של פרופילי CirrusSearch עבור הוויקי הזה.",
 	"apihelp-cirrus-profiles-dump-summary": "היטל של פרופילי CirrusSearch עבור הוויקי הזה.",
 	"apihelp-cirrus-profiles-dump-example": "קבלת היטל של פרופילי CirrusSearch עבור הוויקי הזה.",
+	"apihelp-cirrus-profiles-dump-param-verbose": "יצירת היטל של תוכן הפרופילים",
 	"apihelp-query+cirrusdoc-description": "היטל של מסמך עבור ערך ב־CirrusSearch",
 	"apihelp-query+cirrusdoc-summary": "היטל של מסמך עבור ערך ב־CirrusSearch משרתי החיפוש",
 	"apihelp-query+cirrusdoc-example": "קבלת היטל של ערך אחד ב־CirrusSearch, כפי שנמצא כעת במפתוח לחיפוש.",

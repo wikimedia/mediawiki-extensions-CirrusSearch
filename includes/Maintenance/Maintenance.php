@@ -105,9 +105,6 @@ abstract class Maintenance extends \Maintenance implements Printer {
 				throw new \RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' .
 					get_class( $this->getSearchConfig() ) );
 			}
-			if ( !$this->getSearchConfig()->getElement( 'CirrusSearchClusters', $cluster ) ) {
-				$this->fatalError( 'Unknown cluster.' );
-			}
 			$connection = Connection::getPool( $this->getSearchConfig(), $cluster );
 		} else {
 			if ( $this->connection === null ) {
@@ -141,10 +138,6 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		}
 		if ( $this->getSearchConfig()->has( 'CirrusSearchServers' ) ) {
 			$this->fatalError( 'Not configured for cluster operations.' );
-		}
-		$hosts = $this->getSearchConfig()->getElement( 'CirrusSearchClusters', $cluster );
-		if ( $hosts === null ) {
-			$this->fatalError( 'Unknown cluster.' );
 		}
 		return $cluster;
 	}

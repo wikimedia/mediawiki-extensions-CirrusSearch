@@ -137,7 +137,6 @@
                 "highlight_query": {
                     "query_string": {
                         "allow_leading_wildcard": true,
-                        "auto_generate_phrase_queries": true,
                         "default_operator": "AND",
                         "fields": [
                             "auxiliary_text.plain^0.5",
@@ -208,7 +207,6 @@
                         {
                             "query_string": {
                                 "allow_leading_wildcard": true,
-                                "auto_generate_phrase_queries": true,
                                 "default_operator": "AND",
                                 "fields": [
                                     "all.plain^1",
@@ -427,7 +425,6 @@
                 "highlight_query": {
                     "query_string": {
                         "allow_leading_wildcard": true,
-                        "auto_generate_phrase_queries": true,
                         "default_operator": "AND",
                         "fields": [
                             "auxiliary_text.plain^0.5",
@@ -498,7 +495,6 @@
                         {
                             "query_string": {
                                 "allow_leading_wildcard": true,
-                                "auto_generate_phrase_queries": true,
                                 "default_operator": "AND",
                                 "fields": [
                                     "all.plain^1",
@@ -733,7 +729,6 @@
                 "highlight_query": {
                     "query_string": {
                         "allow_leading_wildcard": true,
-                        "auto_generate_phrase_queries": true,
                         "default_operator": "AND",
                         "fields": [
                             "auxiliary_text.plain^0.5",
@@ -804,7 +799,6 @@
                         {
                             "query_string": {
                                 "allow_leading_wildcard": true,
-                                "auto_generate_phrase_queries": true,
                                 "default_operator": "AND",
                                 "fields": [
                                     "all.plain^1",
@@ -1023,7 +1017,6 @@
                 "highlight_query": {
                     "query_string": {
                         "allow_leading_wildcard": true,
-                        "auto_generate_phrase_queries": true,
                         "default_operator": "AND",
                         "fields": [
                             "auxiliary_text.plain^0.5",
@@ -1094,7 +1087,6 @@
                         {
                             "query_string": {
                                 "allow_leading_wildcard": true,
-                                "auto_generate_phrase_queries": true,
                                 "default_operator": "AND",
                                 "fields": [
                                     "all.plain^1",

@@ -314,9 +314,6 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	private function buildQueryString( array $fields, $queryString, $phraseSlop ) {
 		$query = new \Elastica\Query\QueryString( $queryString );
 		$query->setFields( $fields );
-		// TODO: This doesn't do anything in elastic 6.x. Leaving here to generate
-		// deprecation notices until we have a replacement plan.
-		$query->setAutoGeneratePhraseQueries( true );
 		$query->setPhraseSlop( $phraseSlop );
 		$query->setDefaultOperator( 'AND' );
 		$query->setAllowLeadingWildcard( (bool)$this->config->get( 'CirrusSearchAllowLeadingWildcard' ) );

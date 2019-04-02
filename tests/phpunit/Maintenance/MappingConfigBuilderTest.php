@@ -39,7 +39,7 @@ class MappingConfigBuilderTest extends \MediaWikiTestCase {
 		] );
 
 		$defaultConfig = [
-			'CirrusSearchSimilarityProfile' => 'classic',
+			'CirrusSearchSimilarityProfile' => 'bm25_with_defaults',
 			'CirrusSearchWikimediaExtraPlugin' => [
 				'regex' => [ 'build' ],
 			],

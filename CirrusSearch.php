@@ -494,7 +494,7 @@ $wgCirrusSearchUnlinkedArticlesToUpdate = 25;
  * Configure the similarity module
  * see profile/SimilarityProfiles.config.php for more details
  */
-$wgCirrusSearchSimilarityProfile = 'classic';
+$wgCirrusSearchSimilarityProfile = 'bm25_with_defaults';
 
 /**
  * Extra similarity profiles

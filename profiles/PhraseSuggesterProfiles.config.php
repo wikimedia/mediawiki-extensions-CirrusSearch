@@ -22,6 +22,9 @@
 return [
 	// This is the default settings
 	'default' => [
+		// Don't suggest anything if the query has more than total_hits_threshold (set to -1 to disable)
+		'total_hits_threshold' => 15000,
+
 		// The suggest mode used by the phrase suggester
 		// can be :
 		// * missing: Only suggest terms in the suggest text that
@@ -94,6 +97,8 @@ return [
 	// The 'strict' settings will try to avoid displaying weird suggestions.
 	// (suited for small size wikis)
 	'strict' => [
+		// Don't suggest anything if the query has more than total_hits_threshold (set to -1 to disable)
+		'total_hits_threshold' => 15000,
 		'mode' => 'always',
 		'confidence' => 2.0,
 		'max_errors' => 2,
@@ -111,6 +116,7 @@ return [
 	],
 	// Alternative settings, confidence set to 1 but with laplace smoothing
 	'alternative' => [
+		'total_hits_threshold' => 15000,
 		'mode' => 'always',
 		'confidence' => 1.0,
 		'max_errors' => 2,

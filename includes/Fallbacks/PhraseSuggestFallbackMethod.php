@@ -32,6 +32,12 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	 * @var QueryFixer
 	 */
 	private $queryFixer;
+
+	/**
+	 * @var array|null settings (lazy loaded)
+	 */
+	private $profile;
+
 	/**
 	 * PhraseSuggestFallbackMethod constructor.
 	 * @param SearcherFactory $factory
@@ -57,10 +63,19 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	 * @return float
 	 */
 	public function successApproximation( ResultSet $firstPassResults ) {
-		if ( $this->haveSuggestion( $firstPassResults ) ) {
-			return 0.5;
+		if ( !$this->haveSuggestion( $firstPassResults ) ) {
+			return 0.0;
 		}
-		return 0.0;
+
+		if ( $this->resultContainsFullyHighlightedMatch( $firstPassResults->getElasticaResultSet() ) ) {
+			return 0.0;
+		}
+
+		if ( $this->totalHitsThresholdMet( $firstPassResults->getTotalHits() ) ) {
+			return 0.0;
+		}
+
+		return 0.5;
 	}
 
 	/**
@@ -94,9 +109,12 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		}
 	}
 
+	/**
+	 * @param ResultSet $resultSet
+	 * @return bool
+	 */
 	public function haveSuggestion( ResultSet $resultSet ) {
-		$suggestion = $this->findSuggestion( $resultSet );
-		return $suggestion && !$this->resultContainsFullyHighlightedMatch( $resultSet->getElasticaResultSet() );
+		return $this->findSuggestion( $resultSet ) !== null;
 	}
 
 	private function showDYMSuggestion( ResultSet $fromResultSet, ResultSet $toResultSet ) {
@@ -119,6 +137,15 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 			Searcher::HIGHLIGHT_PRE_MARKER => Searcher::SUGGESTION_HIGHLIGHT_PRE,
 			Searcher::HIGHLIGHT_POST_MARKER => Searcher::SUGGESTION_HIGHLIGHT_POST,
 		] );
+	}
+
+	/**
+	 * @param int $totalHits
+	 * @return bool
+	 */
+	private function totalHitsThresholdMet( $totalHits ) {
+		$threshold = $this->getProfile()['total_hits_threshold'] ?? -1;
+		return $threshold >= 0 && $totalHits > $threshold;
 	}
 
 	/**
@@ -175,8 +202,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	private function buildSuggestConfig() {
 		$field = 'suggest';
 		$config = $this->query->getSearchConfig();
-		$suggestSettings = $config->getProfileService()
-			->loadProfile( SearchProfileService::PHRASE_SUGGESTER );
+		$suggestSettings = $this->getProfile();
 		$settings = [
 			'phrase' => [
 				'field' => $field,
@@ -244,5 +270,16 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		}
 
 		return $settings;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getProfile() {
+		if ( $this->profile === null ) {
+			$this->profile = $this->query->getSearchConfig()->getProfileService()
+				->loadProfile( SearchProfileService::PHRASE_SUGGESTER );
+		}
+		return $this->profile;
 	}
 }

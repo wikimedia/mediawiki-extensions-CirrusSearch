@@ -1,7 +1,7 @@
 ( function () {
 	'use strict';
 
-	// eslint-disable-next-line jquery/no-global-selector
+	// eslint-disable-next-line no-jquery/no-global-selector
 	var $searchResultEls = $( '.mw-search-results > li' );
 
 	// Only run on specialSearch page with default profile
@@ -239,7 +239,7 @@
 
 						var prefLangs = mw.uls.getFrequentLanguageList(),
 							templateData = {
-								// eslint-disable-next-line jquery/no-map-util
+								// eslint-disable-next-line no-jquery/no-map-util
 								langLinks: $.map( reqResponse.query.pages, function ( page ) {
 									if ( page.langlinks ) {
 										return page.langlinks.filter( function ( langlink ) {

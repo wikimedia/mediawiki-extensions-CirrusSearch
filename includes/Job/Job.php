@@ -147,9 +147,11 @@ abstract class Job extends MWJob {
 	}
 
 	/**
-	 * Actually perform the labor of the job
-	 *
-	 * @return bool
+	 * Actually perform the labor of the job.
+	 * The Job will be retried if true is returned from allowRetries() when
+	 * this method fails (thrown exception or returning false from this
+	 * method).
+	 * @return bool true for success, false for failures
 	 */
 	abstract protected function doJob();
 

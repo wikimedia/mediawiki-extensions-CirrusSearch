@@ -449,15 +449,17 @@ class SearchContext implements WarningCollector, FilterBuilder {
 
 	/**
 	 * @param ResultsType $resultsType
+	 * @param AbstractQuery|null $mainQuery Will be combined with highlighting query
+	 *  to provide highlightable terms.
 	 * @return array|null Highlight portion of query to be sent to elasticsearch
 	 */
-	public function getHighlight( ResultsType $resultsType ) {
+	public function getHighlight( ResultsType $resultsType, AbstractQuery $mainQuery = null ) {
 		$highlight = $resultsType->getHighlightingConfiguration( $this->extraHighlightFields );
 		if ( !$highlight ) {
 			return null;
 		}
 
-		$query = $this->getHighlightQuery();
+		$query = $this->getHighlightQuery( $mainQuery );
 		if ( $query ) {
 			$highlight['highlight_query'] = $query->toArray();
 		}
@@ -469,14 +471,21 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @return AbstractQuery|null Query that should be used for highlighting if different
 	 *  from the query used for selecting.
 	 */
-	private function getHighlightQuery() {
+	private function getHighlightQuery( AbstractQuery $mainQuery = null ) {
 		if ( empty( $this->nonTextHighlightQueries ) ) {
+			// When highlightQuery is null elastic will use
+			// $mainQuery without having to specify it directly.
 			return $this->highlightQuery;
 		}
 
 		$bool = new \Elastica\Query\BoolQuery();
 		if ( $this->highlightQuery ) {
 			$bool->addShould( $this->highlightQuery );
+		} elseif ( $mainQuery ) {
+			// If no explicit highlight query is provided we
+			// need to include the main query along with
+			// the non-text queries to highlight those fields.
+			$bool->addShould( $mainQuery );
 		}
 		foreach ( $this->nonTextHighlightQueries as $nonTextHighlightQuery ) {
 			$bool->addShould( $nonTextHighlightQuery );

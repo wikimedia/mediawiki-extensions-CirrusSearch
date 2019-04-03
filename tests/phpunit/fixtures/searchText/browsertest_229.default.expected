@@ -137,6 +137,31 @@
                 "bool": {
                     "should": [
                         {
+                            "bool": {
+                                "filter": [
+                                    {
+                                        "terms": {
+                                            "namespace": [
+                                                0,
+                                                1,
+                                                2,
+                                                3
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "must": [
+                                    {
+                                        "match_phrase_prefix": {
+                                            "all.plain": {
+                                                "query": "pick"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
                             "query_string": {
                                 "fields": [
                                     "all.plain"

@@ -248,7 +248,19 @@ class UtilTest extends CirrusTestCase {
 
 	public function testgetDefaultBoostTemplatesLocal() {
 		global $wgContLang;
-		$this->setPrivateVar( \MessageCache::class, 'instance', $this->getMockCache() );
+		try {
+			$this->setPrivateVar( \MessageCache::class, 'instance', $this->getMockCache() );
+		} catch ( \ReflectionException $e ) {
+			// Service-ized already
+			$services = MediaWikiServices::getInstance();
+			$services->resetServiceForTesting( 'MessageCache' );
+			$services->redefineService(
+				'MessageCache',
+				function () {
+					return $this->getMockCache();
+				}
+			);
+		}
 		$this->setPrivateVar( Util::class, 'defaultBoostTemplates', null );
 
 		$cache = $this->makeLocalCache();
@@ -312,8 +324,11 @@ class UtilTest extends CirrusTestCase {
 	}
 
 	public function tearDown() {
-		// reset cache so that our mock won't pollute other tests
-		$this->setPrivateVar( \MessageCache::class, 'instance', null );
+		if ( method_exists( \MessageCache::class, 'destroyInstance' ) ) {
+			// reset cache so that our mock won't pollute other tests (in 1.33
+			// this is handled automatically by service reset)
+			\MessageCache::destroyInstance();
+		}
 		$this->setPrivateVar( Util::class, 'defaultBoostTemplates', null );
 		parent::tearDown();
 	}

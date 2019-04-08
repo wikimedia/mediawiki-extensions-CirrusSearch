@@ -90,6 +90,9 @@ class CheckerJob extends Job {
 		$profile = $this->searchConfig
 			->getProfileService()
 			->loadProfileByName( SearchProfileService::SANEITIZER, $this->params['profile'], false );
+
+		// First perform a set of sanity checks and return true to fake a success (to prevent retries)
+		// in case the job params are incorrect. These errors are generally unrecoverable.
 		if ( !$profile ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid profile {profile} provided, check CirrusSearchSanityCheck config.",
@@ -97,21 +100,21 @@ class CheckerJob extends Job {
 					'profile' => $this->params['profile']
 				]
 			);
-			return false;
+			return true;
 		}
 		$maxPressure = $profile['update_jobs_max_pressure'] ?? null;
 		if ( !$maxPressure || $maxPressure < 0 ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid update_jobs_max_pressure, check CirrusSearchSanityCheck config."
 			);
-			return false;
+			return true;
 		}
 		$batchSize = $profile['checker_batch_size'] ?? null;
 		if ( !$batchSize || $batchSize < 0 ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid checker_batch_size, check CirrusSearchSanityCheck config."
 			);
-			return false;
+			return true;
 		}
 
 		$chunkSize = $profile['jobs_chunk_size'] ?? null;
@@ -119,7 +122,7 @@ class CheckerJob extends Job {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid jobs_chunk_size, check CirrusSearchSanityCheck config."
 			);
-			return false;
+			return true;
 		}
 
 		$maxTime = $profile['checker_job_max_time'] ?? null;
@@ -127,7 +130,7 @@ class CheckerJob extends Job {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid checker_job_max_time, check CirrusSearchSanityCheck config."
 			);
-			return false;
+			return true;
 		}
 
 		$connections = $this->decideClusters();
@@ -146,7 +149,7 @@ class CheckerJob extends Job {
 					'to' => $to,
 				]
 			);
-			return false;
+			return true;
 		}
 
 		if ( ( $to - $from ) > $chunkSize ) {
@@ -158,7 +161,7 @@ class CheckerJob extends Job {
 					'chunkSize' => $chunkSize,
 				]
 			);
-			return false;
+			return true;
 		}
 
 		$clusterNames = implode( ', ', array_keys( $connections ) );
@@ -266,7 +269,7 @@ class CheckerJob extends Job {
 	 * @return bool
 	 */
 	public function allowRetries() {
-		return false;
+		return true;
 	}
 
 	/**

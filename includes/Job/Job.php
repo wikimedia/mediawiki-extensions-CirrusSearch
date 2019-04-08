@@ -55,7 +55,6 @@ abstract class Job extends MWJob {
 		$params += [ 'cluster' => null ];
 		// eg: DeletePages -> cirrusSearchDeletePages
 		$jobName = 'cirrusSearch' . str_replace( 'CirrusSearch\\Job\\', '', static::class );
-		/* @phan-suppress-next-line  PhanTypeMismatchArgument core should have proper BC code*/
 		parent::__construct( $jobName, $title, $params );
 
 		// All CirrusSearch jobs are reasonably expensive.  Most involve parsing and it

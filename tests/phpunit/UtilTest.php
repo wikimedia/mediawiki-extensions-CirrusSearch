@@ -278,8 +278,6 @@ class UtilTest extends CirrusTestCase {
 		$this->setPrivateVar( \MessageCache::class, 'instance', null );
 		$this->setPrivateVar( Util::class, 'defaultBoostTemplates', null );
 		parent::tearDown();
-		// Clean ns cache after we restore config vars
-		\MWNamespace::clearCaches();
 	}
 
 	/**
@@ -302,7 +300,6 @@ class UtilTest extends CirrusTestCase {
 			]
 		] );
 		$language = new Language();
-		\MWNamespace::clearCaches();
 		$this->assertEquals( $expected, Util::identifyNamespace( $namespace, $method, $language ) );
 	}
 

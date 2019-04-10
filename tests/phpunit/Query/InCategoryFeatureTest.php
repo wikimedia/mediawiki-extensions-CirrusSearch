@@ -170,6 +170,12 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$lb->expects( $this->any() )
 			->method( 'getConnection' )
 			->will( $this->returnValue( $db ) );
+		$lb->expects( $this->any() )
+			->method( 'getConnectionRef' )
+			->will( $this->returnValue( $db ) );
+		$lb->expects( $this->any() )
+			->method( 'getMaintenanceConnectionRef' )
+			->will( $this->returnValue( $db ) );
 		$this->setService( 'DBLoadBalancer', $lb );
 	}
 

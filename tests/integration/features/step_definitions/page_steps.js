@@ -8,7 +8,6 @@
  */
 
 const { defineSupportCode, defineParameterType } = require( 'cucumber' ),
-	SpecialVersion = require( '../support/pages/special_version' ),
 	SpecialUndelete = require( '../support/pages/special_undelete' ),
 	ArticlePage = require( '../support/pages/article_page' ),
 	TitlePage = require( '../support/pages/title_page' ),
@@ -81,10 +80,6 @@ defineSupportCode( function ( { Given, When, Then } ) {
 
 	When( /^I ask suggestion API at most (\d+) items? for (.+)$/, function ( limit, query ) {
 		return this.stepHelpers.suggestionSearch( query, limit );
-	} );
-
-	Then( /^there is a software version row for (.+)$/, function ( name ) {
-		expect( SpecialVersion.software_table_row( name ) ).not.to.equal( null );
 	} );
 
 	Then( /^the API should produce list containing (.+)/, function ( term ) {

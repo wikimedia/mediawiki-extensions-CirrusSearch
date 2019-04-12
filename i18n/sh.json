@@ -44,6 +44,7 @@
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Preusmjeravajući režim s traženjem podizraza (napredno)",
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Bez ispravljanja pogrešno unesenoga. Rješava bliska preusmjerenja. Traži podizraz u naslovima.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klasična početačna pretraga",
+	"cirrussearch-completion-profile-classic-pref-desc": "Bez ispravljanja pogrešno unesenoga. Nalazi početke naslova.",
 	"cirrussearch-timed-out": "Pretraživanje je isteklo. Dostupan je samo djelomičan ishod.",
 	"cirrussearch-regex-timed-out": "Pretraživanje regularnih izraza je isteklo; dostupan je samo djelomičan ishod. Uprostite je da biste dobili potpun ishod.",
 	"cirrussearch-file-numeric-feature-not-a-number": "Pretražani tekst '$1' zahtijeva numeričku vrijednost, ali je pruženo '$2'.",

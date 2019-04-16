@@ -399,13 +399,13 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 					$query->setFrom( 0 );
 					$query->setSize( $size );
 					$resultSet = $pageType->search( $query, [ 'search_type' => 'query_then_fetch' ] );
-					return $this->success( $resultSet->getResults() );
+					return $this->success( $resultSet->getResults(), $connection );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {
 					// NotFoundException just means the field didn't exist.
 					// It is up to the caller to decide if that is an error.
-					return $this->success( [] );
+					return $this->success( [], $connection );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					return $this->failure( $e );
+					return $this->failure( $e, $connection );
 				}
 			} );
 	}
@@ -431,9 +431,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 					$resultSet = $store->find( $name, [
 						'timeout' => $this->getTimeout( 'namespace' ),
 					] );
-					return $this->success( $resultSet->getResults() );
+					return $this->success( $resultSet->getResults(), $connection );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					return $this->failure( $e );
+					return $this->failure( $e, $connection );
 				}
 			} );
 	}
@@ -544,11 +544,11 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		}
 
 		// Perform the search
-		$work = function () use ( $search, $log ) {
+		$work = function () use ( $search, $log, $connection ) {
 			return Util::doPoolCounterWork(
 				$this->getPoolCounterType(),
 				$this->user,
-				function () use ( $search, $log ) {
+				function () use ( $search, $log, $connection ) {
 					try {
 						$this->start( $log );
 						// @todo only reports the first error, also turns
@@ -561,12 +561,12 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 							// by hasError()
 							!$multiResultSet->getResponse()->isOk()
 						) {
-							return $this->multiFailure( $multiResultSet );
+							return $this->multiFailure( $multiResultSet, $connection );
 						} else {
-							return $this->success( $multiResultSet );
+							return $this->success( $multiResultSet, $connection );
 						}
 					} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-						return $this->failure( $e );
+						return $this->failure( $e, $connection );
 					}
 				},
 				$this->searchContext->isSyntaxUsed( 'regex' ) ?

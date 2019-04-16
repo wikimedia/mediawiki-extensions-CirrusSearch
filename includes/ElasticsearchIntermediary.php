@@ -168,10 +168,13 @@ abstract class ElasticsearchIntermediary {
 	 *
 	 * @param mixed|null $result result of the request.  defaults to null in case
 	 *  the request doesn't have a result
+	 * @param Connection|null $connection The connection the succesful
+	 *  request was performed against. Will use $this->connection when not
+	 *  provided.
 	 * @return Status wrapping $result
 	 */
-	public function success( $result = null ) {
-		$this->finishRequest();
+	public function success( $result = null, Connection $connection = null ) {
+		$this->finishRequest( $connection ?? $this->connection );
 		return Status::newGood( $result );
 	}
 
@@ -188,26 +191,29 @@ abstract class ElasticsearchIntermediary {
 		self::$requestLogger->addRequest( $log );
 	}
 
-	public function multiFailure( \Elastica\Multi\ResultSet $multiResultSet ) {
+	public function multiFailure( \Elastica\Multi\ResultSet $multiResultSet, Connection $connection = null ) {
+		if ( $connection === null ) {
+			$connection = $this->connection;
+		}
 		$status = $multiResultSet->getResponse()->getStatus();
 		if ( $status < 200 || $status >= 300 ) {
 			// bad response from server. Should elastica be throwing an exception for this?
 			return $this->failure( new \Elastica\Exception\ResponseException(
-				$this->connection->getClient()->getLastRequest(),
+				$connection->getClient()->getLastRequest(),
 				$multiResultSet->getResponse()
-			) );
+			), $connection );
 		}
 		foreach ( $multiResultSet->getResultSets() as $resultSet ) {
 			if ( $resultSet->getResponse()->hasError() ) {
 				return $this->failure( new \Elastica\Exception\ResponseException(
-					$this->connection->getClient()->getLastRequest(),
+					$connection->getClient()->getLastRequest(),
 					$resultSet->getResponse()
-				) );
+				), $connection );
 			}
 		}
 
 		// Should never get here
-		return $this->success( $multiResultSet );
+		return $this->success( $multiResultSet, $connection );
 	}
 
 	/**
@@ -215,17 +221,23 @@ abstract class ElasticsearchIntermediary {
 	 * called from pool counter methods.
 	 *
 	 * @param \Elastica\Exception\ExceptionInterface|null $exception if the request failed
+	 * @param Connection|null $connection The connection that the failed
+	 *  request was performed against. Will use $this->connection when not
+	 *  provided.
 	 * @return Status representing a backend failure
 	 */
-	public function failure( \Elastica\Exception\ExceptionInterface $exception = null ) {
-		$log = $this->finishRequest();
+	public function failure( \Elastica\Exception\ExceptionInterface $exception = null, Connection $connection = null ) {
+		if ( $connection === null ) {
+			$connection = $this->connection;
+		}
+		$log = $this->finishRequest( $connection );
 		$context = $log->getLogVariables();
 		list( $status, $message ) = ElasticaErrorHandler::extractMessageAndStatus( $exception );
 		$context['error_message'] = $message;
 
 		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 		$type = ElasticaErrorHandler::classifyError( $exception );
-		$clusterName = $this->connection->getClusterName();
+		$clusterName = $connection->getClusterName();
 		$stats->increment( "CirrusSearch.$clusterName.backend_failure.$type" );
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->warning(
@@ -249,7 +261,7 @@ abstract class ElasticsearchIntermediary {
 	 * @return RequestLog|null The log for the finished request, or null if no
 	 * request was started.
 	 */
-	private function finishRequest() {
+	private function finishRequest( Connection $connection ) {
 		if ( !$this->currentRequestLog ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				'finishRequest called without staring a request'
@@ -261,7 +273,7 @@ abstract class ElasticsearchIntermediary {
 
 		$log->finish();
 		$tookMs = $log->getTookMs();
-		$clusterName = $this->connection->getClusterName();
+		$clusterName = $connection->getClusterName();
 		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 		$stats->timing( "CirrusSearch.$clusterName.requestTime", $tookMs );
 		$this->searchMetrics['wgCirrusTookMs'] = $tookMs;

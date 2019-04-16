@@ -137,7 +137,6 @@
                 "highlight_query": {
                     "query_string": {
                         "allow_leading_wildcard": true,
-                        "auto_generate_phrase_queries": true,
                         "default_operator": "OR",
                         "fields": [
                             "auxiliary_text.plain^0.5",
@@ -572,7 +571,6 @@
                 "highlight_query": {
                     "query_string": {
                         "allow_leading_wildcard": true,
-                        "auto_generate_phrase_queries": true,
                         "default_operator": "OR",
                         "fields": [
                             "auxiliary_text.plain^0.5",
@@ -1050,7 +1048,6 @@
                 "highlight_query": {
                     "query_string": {
                         "allow_leading_wildcard": true,
-                        "auto_generate_phrase_queries": true,
                         "default_operator": "OR",
                         "fields": [
                             "auxiliary_text.plain^0.5",
@@ -1485,7 +1482,6 @@
                 "highlight_query": {
                     "query_string": {
                         "allow_leading_wildcard": true,
-                        "auto_generate_phrase_queries": true,
                         "default_operator": "OR",
                         "fields": [
                             "auxiliary_text.plain^0.5",

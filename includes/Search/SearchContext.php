@@ -454,6 +454,9 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @return array|null Highlight portion of query to be sent to elasticsearch
 	 */
 	public function getHighlight( ResultsType $resultsType, AbstractQuery $mainQuery = null ) {
+		if ( $mainQuery === null ) {
+			wfDeprecated( __METHOD__ . ' without $mainQuery', '1.33' );
+		}
 		$highlight = $resultsType->getHighlightingConfiguration( $this->extraHighlightFields );
 		if ( !$highlight ) {
 			return null;

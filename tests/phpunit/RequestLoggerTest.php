@@ -14,6 +14,8 @@ use CirrusSearch\Searcher;
 use Elastica\Response;
 use Elastica\Transport\AbstractTransport;
 use Psr\Log\AbstractLogger;
+use Swaggest\JsonSchema\Schema;
+use Spyc;
 
 /**
  * Tests full text and completion search request logging. Could be expanded for
@@ -26,6 +28,26 @@ use Psr\Log\AbstractLogger;
  * @covers \CirrusSearch\Hooks::prefixSearchExtractNamespaceWithConnection()
  */
 class RequestLoggerTest extends CirrusTestCase {
+
+	protected function setUp() {
+		parent::setUp();
+
+		// Use this JSONSchema to validate that events returned by buildRequestSetEvent
+		// are valid events.
+		// NOTE: This file must be updated if you change the mediawiki/cirrussearch/request
+		// schema in mediawiki/event-schemas repository.
+		// NOTE: There is an unknown object vs. array issue
+		// with JSONSchemas.  encode->decode works around it.
+		$requestSetEventJsonSchema = json_decode( json_encode( Spyc::YAMLLoad(
+			self::FIXTURE_DIR . 'requestLogging/mediawiki_cirrussearch_request.schema.yaml'
+		) ) );
+		$this->requestSetEventSchema = Schema::import( (object)$requestSetEventJsonSchema );
+	}
+
+	protected function tearDown() {
+		parent::tearDown();
+		unset( $this->requestSetEventSchema );
+	}
 
 	public function testHasQueryLogs() {
 		// Prevent Deferred updates from running. This basically means RequestLogger is
@@ -107,6 +129,7 @@ class RequestLoggerTest extends CirrusTestCase {
 		\DeferredUpdates::doUpdates();
 
 		$logs = $this->collectLogs( $loggers );
+
 		if ( is_string( $expectedLogs ) ) {
 			// store a fixture about the generated logs
 			CirrusTestCase::saveFixture( $expectedLogs, $logs );
@@ -134,6 +157,7 @@ class RequestLoggerTest extends CirrusTestCase {
 			'wgCirrusSearchFullTextQueryBuilderProfile' => 'default',
 			'wgCirrusSearchInterwikiSources' => [],
 			'wgCirrusSearchNamespaceResolutionMethod' => 'elastic',
+			'wgCirrusSearchRequestEventSampling' => 1.0,
 		];
 		if ( isset( $query['interwiki'] ) ) {
 			$globals['wgCirrusSearchInterwikiSources'] = $query['interwiki'];
@@ -232,6 +256,7 @@ class RequestLoggerTest extends CirrusTestCase {
 		// Override the logging channel with our own so we can capture logs
 		$loggers = [
 			'CirrusSearchRequestSet'	=> new ArrayLogger(),
+			'cirrussearch-request' => new ArrayLogger(),
 			'CirrusSearchRequests' => new ArrayLogger(),
 			'CirrusSearch' => new ArrayLogger(),
 		];
@@ -306,6 +331,19 @@ class RequestLoggerTest extends CirrusTestCase {
 
 				if ( $channel === 'CirrusSearchRequestSet' ) {
 					$log = $this->filterCSRQ( $log );
+				} elseif ( $channel == 'cirrussearch-request' ) {
+					// Before we filter this log for testing against fixture data,
+					// we should make sure that the event in $log['context']
+					// validates against the expected mediawiki/search/requestset
+					// event JSONSchema. If the JSONSchema has changed,
+					// you'll need to make sure the schema file in the fixtures/
+					// directory is also updated.
+					// NOTE: There is an unknown object vs. array issue
+					// with JSONSchemas.  encode->decode works around it.
+					$this->requestSetEventSchema->in( json_decode( json_encode( $log['context'] ) ) );
+
+					// Now return the filtered requestset event for fixture testing.
+					$log = $this->filterCirrusSearchRequestEvent( $log );
 				} else {
 					$log = $this->filterGeneralLog( $log );
 				}
@@ -380,6 +418,35 @@ class RequestLoggerTest extends CirrusTestCase {
 		foreach ( array_keys( $log['context']['requests'] ) as $idx ) {
 			$this->assertArrayHasKey( 'tookMs', $log['context']['requests'][$idx], $debug );
 			unset( $log['context']['requests'][$idx]['tookMs'] );
+		}
+		return $log;
+	}
+
+	/**
+	 * Filter out vairable data from logs formatted for
+	 * cirrussearch-request event
+	 *
+	 * @param array $log
+	 * @return log
+	 */
+	private function filterCirrusSearchRequestEvent( array $log ) {
+		$debug = json_encode( $log, JSON_PRETTY_PRINT );
+		// we need to remove some quasi-random data. To be safe
+		// assert this exists before deleting it.
+		foreach (
+			[
+				'meta', 'database', 'mediawiki_host', 'identity',
+				'request_time_ms', 'search_token'
+			] as $key
+		) {
+			$this->assertArrayHasKey( $key, $log['context'], $debug );
+			unset( $log['context'][$key] );
+		}
+
+		// Do same for the requests in the log
+		foreach ( array_keys( $log['context']['elasticsearch_requests'] ) as $idx ) {
+			$this->assertArrayHasKey( 'request_time_ms', $log['context']['elasticsearch_requests'][$idx], $debug );
+			unset( $log['context']['elasticsearch_requests'][$idx]['request_time_ms'] );
 		}
 		return $log;
 	}

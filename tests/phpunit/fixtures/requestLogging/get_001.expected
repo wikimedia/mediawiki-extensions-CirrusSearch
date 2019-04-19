@@ -46,6 +46,44 @@
         "message": ""
     },
     {
+        "channel": "cirrussearch-request",
+        "context": {
+            "$schema": "/mediawiki/cirrussearch/request/0.0.1",
+            "all_elasticsearch_requests_cached": false,
+            "http": {
+                "client_ip": "127.0.0.1",
+                "has_cookies": false,
+                "method": "GET"
+            },
+            "elasticsearch_requests": [
+                {
+                    "cached": false,
+                    "hits": [
+                        {
+                            "index": "wiki_content_first",
+                            "page_id": 26,
+                            "page_title": "10.1093\/acprof:oso\/9780195314250.003.0001",
+                            "score": 1
+                        }
+                    ],
+                    "hits_offset": 0,
+                    "hits_returned": 1,
+                    "hits_total": 1,
+                    "indices": [
+                        "wiki"
+                    ],
+                    "max_score": 1,
+                    "query_type": "get",
+                    "search_time_ms": 2,
+                    "suggestion_requested": false
+                }
+            ],
+            "source": "cli"
+        },
+        "level": "debug",
+        "message": ""
+    },
+    {
         "channel": "CirrusSearchRequests",
         "context": {
             "docIds": [

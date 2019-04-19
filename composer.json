@@ -15,7 +15,9 @@
 		"jakub-onderka/php-console-highlighter": "0.3.2",
 		"mediawiki/mediawiki-codesniffer": "24.0.0",
 		"mediawiki/minus-x": "0.3.1",
-		"mediawiki/mediawiki-phan-config": "0.5.0"
+		"mediawiki/mediawiki-phan-config": "0.5.0",
+		"swaggest/json-schema": "^0.12",
+		"mustangostang/spyc": "0.6.2"
 	},
 	"scripts": {
 		"fix": [

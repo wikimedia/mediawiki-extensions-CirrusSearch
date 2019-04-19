@@ -273,6 +273,44 @@ class UtilTest extends CirrusTestCase {
 		$this->assertNotEmpty( $cached, 'Should cache the value' );
 	}
 
+	/**
+	 * @covers \CirrusSearch\Util::isEmpty
+	 */
+	public function testIsEmpty() {
+		$this->assertTrue( Util::isEmpty( "" ) );
+		$this->assertTrue( Util::isEmpty( [] ) );
+		$this->assertTrue( Util::isEmpty( (object)[] ) );
+		$this->assertTrue( Util::isEmpty( null ) );
+		$this->assertTrue( !Util::isEmpty( 0 ) );
+		$this->assertTrue( !Util::isEmpty( false ) );
+	}
+
+	/**
+	 * @covers \CirrusSearch\Util::setIfDefined
+	 */
+	public function testSetIfDefined() {
+		$arr1 = [ 'KEY1' => '123', 'KEY2' => 0, 'KEY4' => 'a,b,c' ];
+		$arr2 = [];
+
+		// Should set, rename key, and cast to int
+		Util::setIfDefined( $arr1, 'KEY1', $arr2, 'key1', 'intval' );
+		$this->assertArrayEquals( [ 'key1' => 123 ], $arr2 );
+
+		// Should set, not rename key, and cast to boolean
+		Util::setIfDefined( $arr1, 'KEY2', $arr2, 'KEY2', 'boolval' );
+		$this->assertArrayEquals( [ 'key1' => 123, 'KEY2' => false ], $arr2 );
+
+		// Should not set anything because key3 is not defined in $arr1
+		Util::setIfDefined( $arr1, 'KEY3', $arr2, 'key3', 'strval' );
+		$this->assertArrayEquals( [ 'key1' => 123, 'KEY2' => false ], $arr2 );
+
+		// Should set, rename key, and explode csv string into array via anon function
+		Util::setIfDefined( $arr1, 'KEY4', $arr2, 'key4', function ( $v ) {
+			return explode( ',', $v );
+		} );
+		$this->assertArrayEquals( [ 'key1' => 123, 'KEY2' => false, 'key4' => [ 'a', 'b', 'c' ] ], $arr2 );
+	}
+
 	public function tearDown() {
 		// reset cache so that our mock won't pollute other tests
 		$this->setPrivateVar( \MessageCache::class, 'instance', null );
@@ -321,4 +359,5 @@ class UtilTest extends CirrusTestCase {
 			'case folding can be gross even with utr30' => [ 'gross', 102, 'utr30' ]
 		];
 	}
+
 }

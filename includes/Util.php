@@ -495,4 +495,72 @@ class Util {
 
 		return false;
 	}
+
+	/**
+	 * Helper for PHP's annoying emptiness check.
+	 * empty(0) should not be true!
+	 * empty(false) should not be true!
+	 * Empty arrays, strings, and nulls/undefined count as empty.
+	 *
+	 * False otherwise.
+	 * @param mixed $v
+	 * @return bool
+	 */
+	public static function isEmpty( $v ) {
+		return ( is_array( $v ) && count( $v ) === 0 ) ||
+			( is_object( $v ) && count( (array)$v ) === 0 ) ||
+			( is_string( $v ) && strlen( $v ) === 0 ) ||
+			( $v === null );
+	}
+
+	/**
+	 * Helper function to conditionally set a key in a dest array only if it
+	 * is defined in a source array.  This is just to help DRY up what would
+	 * otherwise could be a long series of
+	 * if ( isset($sourceArray[$key] )) { $destArray[$key] = $sourceArray[$key] }
+	 * statements.  This also supports using a different key in the dest array,
+	 * as well as mapping the value when assigning to $sourceArray.
+	 *
+	 * Usage:
+	 * $arr1 = ['KEY1' => '123'];
+	 * $arr2 = [];
+	 *
+	 * setIfDefined($arr1, 'KEY1', $arr2, 'key1', 'intval');
+	 * // $arr2['key1'] is now set to 123 (integer value)
+	 *
+	 * setIfDefined($arr1, 'KEY2', $arr2);
+	 * // $arr2 stays the same, because $arr1 does not have 'KEY2' defined.
+	 *
+	 * @param array $sourceArray the array from which to look for $sourceKey
+	 * @param string $sourceKey the key to look for in $sourceArray
+	 * @param array &$destArray by reference destination array in which to set value if defined
+	 * @param string|null $destKey optional, key to use instead of $sourceKey in $destArray.
+	 * @param callable|null $mapFn optional, If set, this will be called on the value before setting it.
+	 * @param bool $checkEmpty If false, emptyiness of result after $mapFn is called will not be
+	 * 				checked before setting on $destArray.  If true, it will, using Util::isEmpty.
+	 * 				Default: true
+	 * @return array $destArray
+	 */
+	public static function setIfDefined(
+		array $sourceArray,
+		$sourceKey,
+		array &$destArray,
+		$destKey = null,
+		$mapFn = null,
+		$checkEmpty = true
+	) {
+		if ( array_key_exists( $sourceKey, $sourceArray ) ) {
+			$val = $sourceArray[$sourceKey];
+			if ( $mapFn !== null ) {
+				$val = $mapFn( $val );
+			}
+			// Only set in $destArray if we are not checking emptiness,
+			// or if we are and the $val is not empty.
+			if ( !$checkEmpty || !self::isEmpty( $val ) ) {
+				$key = $destKey ?: $sourceKey;
+				$destArray[$key] = $val;
+			}
+		}
+		return $destArray;
+	}
 }

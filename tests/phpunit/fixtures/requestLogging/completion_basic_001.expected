@@ -46,6 +46,46 @@
         "message": ""
     },
     {
+        "channel": "cirrussearch-request",
+        "context": {
+            "$schema": "/mediawiki/cirrussearch/request/0.0.1",
+            "http": {
+                "method": "GET",
+                "client_ip": "127.0.0.1",
+                "has_cookies": false
+            },
+            "source": "cli",
+            "all_elasticsearch_requests_cached": false,
+            "elasticsearch_requests": [
+                {
+                    "cached": false,
+                    "hits": [
+                        {
+                            "index": "wiki_titlesuggest",
+                            "page_id": 1,
+                            "page_title": "Main Page",
+                            "profile_name": "plain",
+                            "score": 5679327
+                        }
+                    ],
+                    "hits_offset": 0,
+                    "hits_returned": 1,
+                    "hits_total": 4,
+                    "indices": [
+                        "wiki_titlesuggest"
+                    ],
+                    "max_score": 5679327.0,
+                    "query": "main p",
+                    "query_type": "comp_suggest",
+                    "search_time_ms": 0,
+                    "suggestion_requested": false
+                }
+            ]
+        },
+        "level": "debug",
+        "message": ""
+    },
+    {
         "channel": "CirrusSearchRequests",
         "context": {
             "elasticTookMs": 0,

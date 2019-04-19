@@ -1261,6 +1261,12 @@ $wgCirrusSearchFiletypeAliases = [];
  */
 $wgCirrusSearchElasticQuirks = [];
 
+/**
+ * Control sampling of cirrussearch-request logging. Expects
+ * floating point number between 0 and 1.
+ */
+$wgCirrusSearchRequestEventSampling = 0.0;
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

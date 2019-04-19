@@ -71,6 +71,71 @@
         "message": ""
     },
     {
+        "channel": "cirrussearch-request",
+        "context": {
+            "$schema": "/mediawiki/cirrussearch/request/0.0.1",
+            "all_elasticsearch_requests_cached": false,
+            "hits": [
+                {
+                    "index": "commonswiki_file_first",
+                    "page_id": 26,
+                    "page_title": "File:OnCommons.svg",
+                    "score": 0.83292394999999997
+                },
+                {
+                    "index": "commonswiki_file_first",
+                    "page_id": 27,
+                    "page_title": "File:DuplicatedLocally.svg",
+                    "score": 0.80208820000000003
+                }
+            ],
+            "http": {
+                "client_ip": "127.0.0.1",
+                "has_cookies": false,
+                "method": "GET"
+            },
+            "elasticsearch_requests": [
+                {
+                    "cached": false,
+                    "hits": [
+                        {
+                            "index": "commonswiki_file_first",
+                            "page_id": 26,
+                            "page_title": "File:OnCommons.svg",
+                            "score": 0.83292394999999997
+                        },
+                        {
+                            "index": "commonswiki_file_first",
+                            "page_id": 27,
+                            "page_title": "File:DuplicatedLocally.svg",
+                            "score": 0.80208820000000003
+                        }
+                    ],
+                    "hits_offset": 0,
+                    "hits_returned": 2,
+                    "hits_total": 2,
+                    "indices": [
+                        "wiki_general",
+                        "commonswiki_file"
+                    ],
+                    "limit": 21,
+                    "max_score": 2.7669134,
+                    "query": "svg",
+                    "query_type": "full_text",
+                    "search_time_ms": 6,
+                    "suggestion_requested": true,
+                    "syntax": [
+                        "full_text",
+                        "full_text_querystring"
+                    ]
+                }
+            ],
+            "source": "cli"
+        },
+        "level": "debug",
+        "message": ""
+    },
+    {
         "channel": "CirrusSearchRequests",
         "context": {
             "elasticTookMs": 0,

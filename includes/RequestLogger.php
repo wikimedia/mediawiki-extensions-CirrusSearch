@@ -340,6 +340,10 @@ class RequestLogger {
 			'all_elasticsearch_requests_cached' => $allRequestsCached,
 		];
 
+		if ( !empty( $_GET ) ) {
+			$requestEvent['params'] = $_GET;
+		}
+
 		// Don't set these fields if there is no data.
 		if ( !empty( $resultHits ) ) {
 			$requestEvent['hits'] = $resultHits;

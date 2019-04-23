@@ -55,9 +55,10 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		if ( $expectedApproxScore > 0.0 ) {
 			$this->assertNotNull( $fallback->getSuggestQueries() );
 		}
-		$this->assertEquals( $expectedApproxScore, $fallback->successApproximation( $initialResults ) );
+		$context = new FallbackRunnerContextImpl( $initialResults );
+		$this->assertEquals( $expectedApproxScore, $fallback->successApproximation( $context ) );
 		if ( $expectedApproxScore > 0 ) {
-			$actualNewResults = $fallback->rewrite( $initialResults, $initialResults );
+			$actualNewResults = $fallback->rewrite( $context );
 			if ( $rewrittenResults === null ) {
 				$this->assertSame( $initialResults, $actualNewResults );
 				$this->assertNull( $actualNewResults->getQueryAfterRewrite() );

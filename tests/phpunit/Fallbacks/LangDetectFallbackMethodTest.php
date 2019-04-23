@@ -150,9 +150,10 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 			$this->getInterwikiMock( $targetWikiConfig, $returnedLang !== 'en' ? $returnedLang : null ) );
 
 		$initialResults = DummyResultSet::fakeTotalHits( $initialNumResults );
-		$this->assertEquals( $expectedScoreApprox, $fallback->successApproximation( $initialResults ) );
+		$context = new FallbackRunnerContextImpl( $initialResults );
+		$this->assertEquals( $expectedScoreApprox, $fallback->successApproximation( $context ) );
 		if ( $expectedScoreApprox > 0 ) {
-			$rewrittenResults = $fallback->rewrite( $initialResults, $initialResults );
+			$rewrittenResults = $fallback->rewrite( $context );
 			$this->assertSame( $initialResults, $rewrittenResults );
 			if ( $expectedRewrittenResults !== null ) {
 				$crossRes = $rewrittenResults->getInterwikiResults( ResultSet::INLINE_RESULTS );
@@ -198,7 +199,8 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 			$this->getInterwikiMock( $targetWikiConfig, $allowRewrite ? 'fr' : null ) );
 
 		$initialResults = DummyResultSet::fakeTotalHits( 0 );
-		$this->assertEquals( $expectedScore, $fallback->successApproximation( $initialResults ) );
+		$context = new FallbackRunnerContextImpl( $initialResults );
+		$this->assertEquals( $expectedScore, $fallback->successApproximation( $context ) );
 	}
 
 	public function getLanguageDetector( $expectedLang ) {

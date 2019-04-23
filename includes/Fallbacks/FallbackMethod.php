@@ -39,19 +39,18 @@ interface FallbackMethod {
 	 * The order of application (call to the rewrite method) is the order of these scores.
 	 * If the score of multiple methods is equals the initialization order is kept.
 	 *
-	 * @param ResultSet $firstPassResults
+	 * @param FallbackRunnerContext $context
 	 * @return float
 	 */
-	public function successApproximation( ResultSet $firstPassResults );
+	public function successApproximation( FallbackRunnerContext $context );
 
 	/**
 	 * Rewrite the results,
 	 * A costly call is allowed here, if nothing is to be done $previousSet
 	 * must be returned.
 	 *
-	 * @param ResultSet $firstPassResults results of the initial query
-	 * @param ResultSet $previousSet results returned by previous fallback method
+	 * @param FallbackRunnerContext $context
 	 * @return ResultSet
 	 */
-	public function rewrite( ResultSet $firstPassResults, ResultSet $previousSet );
+	public function rewrite( FallbackRunnerContext $context );
 }

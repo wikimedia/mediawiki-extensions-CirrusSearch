@@ -59,10 +59,11 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	}
 
 	/**
-	 * @param ResultSet $firstPassResults
+	 * @param FallbackRunnerContext $context
 	 * @return float
 	 */
-	public function successApproximation( ResultSet $firstPassResults ) {
+	public function successApproximation( FallbackRunnerContext $context ) {
+		$firstPassResults = $context->getInitialResultSet();
 		if ( !$this->haveSuggestion( $firstPassResults ) ) {
 			return 0.0;
 		}
@@ -79,11 +80,13 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	}
 
 	/**
-	 * @param ResultSet $firstPassResults
-	 * @param ResultSet $previousSet
+	 * @param FallbackRunnerContext $context
 	 * @return ResultSet
 	 */
-	public function rewrite( ResultSet $firstPassResults, ResultSet $previousSet ) {
+	public function rewrite( FallbackRunnerContext $context ) {
+		$firstPassResults = $context->getInitialResultSet();
+		$previousSet = $context->getPreviousResultSet();
+
 		$this->showDYMSuggestion( $firstPassResults, $previousSet );
 		if ( !$this->query->isAllowRewrite()
 			|| $this->resultsThreshold( $previousSet )

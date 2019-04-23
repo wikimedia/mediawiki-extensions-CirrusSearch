@@ -86,10 +86,11 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 	}
 
 	/**
-	 * @param ResultSet $firstPassResults
+	 * @param FallbackRunnerContext $context
 	 * @return float
 	 */
-	public function successApproximation( ResultSet $firstPassResults ) {
+	public function successApproximation( FallbackRunnerContext $context ) {
+		$firstPassResults = $context->getInitialResultSet();
 		if ( !$this->query->isAllowRewrite() ) {
 			return 0.0;
 		}
@@ -136,11 +137,11 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 	}
 
 	/**
-	 * @param ResultSet $firstPassResults
-	 * @param ResultSet $previousSet
+	 * @param FallbackRunnerContext $context
 	 * @return ResultSet
 	 */
-	public function rewrite( ResultSet $firstPassResults, ResultSet $previousSet ) {
+	public function rewrite( FallbackRunnerContext $context ) {
+		$previousSet = $context->getPreviousResultSet();
 		Assert::precondition( $this->detectedLangWikiConfig !== null,
 			'nothing has been detected, this should not even be tried.' );
 

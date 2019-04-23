@@ -54,11 +54,12 @@ class FallbackRunner implements SearchMetricsProvider {
 	public function run( ResultSet $initialResult ) {
 		$methods = [];
 		$position = 0;
+		$context = new FallbackRunnerContextImpl( $initialResult );
 		foreach ( $this->fallbackMethods as $fallback ) {
 			$position++;
-			$score = $fallback->successApproximation( $initialResult );
+			$score = $fallback->successApproximation( $context );
 			if ( $score >= 1.0 ) {
-				return $this->execute( $fallback, $initialResult, $initialResult );
+				return $this->execute( $fallback, $context );
 			}
 			if ( $score <= 0 ) {
 				continue;
@@ -73,12 +74,11 @@ class FallbackRunner implements SearchMetricsProvider {
 		usort( $methods, function ( $a, $b ) {
 			return $b['score'] <=> $a['score'] ?: $a['position'] <=> $b['position'];
 		} );
-		$previousResults = $initialResult;
 		foreach ( $methods as $fallbackArray ) {
 			$fallback = $fallbackArray['method'];
-			$previousResults = $this->execute( $fallback, $previousResults, $initialResult );
+			$context->setPreviousResultSet( $this->execute( $fallback, $context ) );
 		}
-		return $previousResults;
+		return $context->getPreviousResultSet();
 	}
 
 	/**
@@ -103,12 +103,10 @@ class FallbackRunner implements SearchMetricsProvider {
 
 	/**
 	 * @param FallbackMethod $fallbackMethod
-	 * @param ResultSet $previous
-	 * @param ResultSet $initial
 	 * @return ResultSet
 	 */
-	private function execute( FallbackMethod $fallbackMethod, ResultSet $previous, ResultSet $initial ) {
-		$newResults = $fallbackMethod->rewrite( $initial, $previous );
+	private function execute( FallbackMethod $fallbackMethod, FallbackRunnerContext $context ) {
+		$newResults = $fallbackMethod->rewrite( $context );
 		if ( $fallbackMethod instanceof SearchMetricsProvider ) {
 			$this->searchMetrics += $fallbackMethod->getMetrics() ?? [];
 		}

@@ -66,9 +66,9 @@ class FallbackRunnerTest extends CirrusTestCase {
 	}
 
 	public function trackingCb( $name ): callable {
-		return function ( $initial, $previous ) use ( $name ) {
+		return function ( FallbackRunnerContext $context ) use ( $name ) {
 			$this->execOrder[] = $name;
-			return $previous;
+			return $context->getPreviousResultSet();
 		};
 	}
 
@@ -112,7 +112,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 			 * @param ResultSet $firstPassResults
 			 * @return float
 			 */
-			public function successApproximation( ResultSet $firstPassResults ) {
+			public function successApproximation( FallbackRunnerContext $context ) {
 				return $this->prio;
 			}
 
@@ -121,9 +121,9 @@ class FallbackRunnerTest extends CirrusTestCase {
 			 * @param ResultSet $previousSet results returned by previous fallback method
 			 * @return ResultSet
 			 */
-			public function rewrite( ResultSet $firstPassResults, ResultSet $previousSet ) {
+			public function rewrite( FallbackRunnerContext $context ) {
 				Assert::assertNotNull( $this->rewritteCallback );
-				return ( $this->rewritteCallback )( $previousSet, $previousSet );
+				return ( $this->rewritteCallback )( $context );
 			}
 
 			public function getMetrics() {

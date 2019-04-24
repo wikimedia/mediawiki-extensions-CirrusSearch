@@ -107,6 +107,26 @@
             "char_filter": [
                 "word_break_helper"
             ]
+        },
+        "ko_plain": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer"
+            ],
+            "char_filter": [
+                "word_break_helper"
+            ]
+        },
+        "ko_plain_search": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer"
+            ],
+            "char_filter": [
+                "word_break_helper"
+            ]
         }
     },
     "filter": {

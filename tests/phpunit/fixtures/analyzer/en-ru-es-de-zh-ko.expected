@@ -215,6 +215,54 @@
                 "smartcn_stop",
                 "icu_normalizer"
             ]
+        },
+        "ko_plain": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer"
+            ],
+            "char_filter": [
+                "word_break_helper"
+            ]
+        },
+        "ko_plain_search": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer"
+            ],
+            "char_filter": [
+                "word_break_helper"
+            ]
+        },
+        "ko_text": {
+            "type": "custom",
+            "tokenizer": "nori_tok",
+            "char_filter": [
+                "nori_charfilter",
+                "nori_combo_filter"
+            ],
+            "filter": [
+                "nori_posfilter",
+                "nori_readingform",
+                "icu_normalizer",
+                "nori_length"
+            ]
+        },
+        "ko_text_search": {
+            "type": "custom",
+            "tokenizer": "nori_tok",
+            "char_filter": [
+                "nori_charfilter",
+                "nori_combo_filter"
+            ],
+            "filter": [
+                "nori_posfilter",
+                "nori_readingform",
+                "icu_normalizer",
+                "nori_length"
+            ]
         }
     },
     "filter": {
@@ -255,6 +303,36 @@
             "stopwords": [
                 ","
             ]
+        },
+        "nori_posfilter": {
+            "type": "nori_part_of_speech",
+            "stoptags": [
+                "E",
+                "IC",
+                "J",
+                "MAG",
+                "MAJ",
+                "MM",
+                "SP",
+                "SSC",
+                "SSO",
+                "SC",
+                "SE",
+                "XPN",
+                "XSA",
+                "XSN",
+                "XSV",
+                "UNA",
+                "NA",
+                "VSV",
+                "VCP",
+                "VCN",
+                "VX"
+            ]
+        },
+        "nori_length": {
+            "type": "length",
+            "min": 1
         }
     },
     "char_filter": {
@@ -381,6 +459,21 @@
             "delimiter": "#",
             "keep_both": false,
             "convert_type": "t2s"
+        },
+        "nori_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\\u0130=>I",
+                "\\u00B7=>\\u0020",
+                "\\u318D=>\\u0020",
+                "\\u00AD=>",
+                "\\u200C=>"
+            ]
+        },
+        "nori_combo_filter": {
+            "type": "pattern_replace",
+            "pattern": "[\\u0300-\\u0331]",
+            "replacement": ""
         }
     }
 }

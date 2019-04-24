@@ -507,7 +507,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$emptyConfig = [
 			'analyzer' => [],
 			'filter' => [],
-			'char_filter' => []
+			'char_filter' => [],
+			'tokenizer' => []
 		];
 		$allPlugins = [
 			'extra',

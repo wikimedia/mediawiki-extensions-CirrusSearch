@@ -1413,6 +1413,12 @@ STEMMER_RULES
 				}
 			}
 		}
+		if ( !empty( $analyzer[ 'tokenizer' ] ) ) {
+			$tokenizer = $analyzer[ 'tokenizer' ];
+			if ( isset( $langConfig[ 'tokenizer' ][ $tokenizer ] ) && !isset( $config[ 'tokenizer' ][ $tokenizer ] ) ) {
+				$config[ 'tokenizer' ][ $tokenizer ] = $langConfig[ 'tokenizer' ][ $tokenizer ];
+			}
+		}
 	}
 
 	/**
@@ -1431,8 +1437,7 @@ STEMMER_RULES
 		foreach ( $languages as $lang ) {
 			$langConfig = $this->buildConfig( $lang );
 			// Analyzer is: tokenizer + filter + char_filter
-			// Tokenizers don't seem to be subject to customization now
-			// Char filters are nicely namespaced
+			// Char filters & Tokenizers are nicely namespaced
 			// Filters are NOT - e.g. lowercase & icu_folding filters are different for different
 			// languages! So we need to do some disambiguation here.
 			$langConfig[ 'filter' ] = $this->resolveFilters( $langConfig, $config[ 'filter' ], $defaultFilters, $lang );

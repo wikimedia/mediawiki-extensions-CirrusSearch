@@ -475,5 +475,11 @@
             "pattern": "[\\u0300-\\u0331]",
             "replacement": ""
         }
+    },
+    "tokenizer": {
+        "nori_tok": {
+            "type": "nori_tokenizer",
+            "decompound_mode": "mixed"
+        }
     }
 }

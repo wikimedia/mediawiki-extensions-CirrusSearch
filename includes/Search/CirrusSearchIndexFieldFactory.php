@@ -42,7 +42,7 @@ class CirrusSearchIndexFieldFactory {
 	/**
 	 * Create a search field definition
 	 * @param string $name
-	 * @param int $type
+	 * @param string $type
 	 * @throws Exception
 	 * @return SearchIndexField
 	 */

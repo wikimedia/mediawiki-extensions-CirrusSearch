@@ -492,7 +492,7 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * Create a search field definition
 	 * @param string $name
-	 * @param int $type
+	 * @param string $type
 	 * @return SearchIndexField
 	 */
 	public function makeSearchFieldMapping( $name, $type ) {

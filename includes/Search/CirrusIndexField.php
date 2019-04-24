@@ -42,7 +42,7 @@ abstract class CirrusIndexField extends SearchIndexFieldDefinition {
 
 	/**
 	 * @param string $name
-	 * @param int $type
+	 * @param string $type
 	 * @param SearchConfig $config
 	 */
 	public function __construct( $name, $type, SearchConfig $config ) {

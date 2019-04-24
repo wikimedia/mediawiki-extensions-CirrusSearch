@@ -507,7 +507,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$emptyConfig = [
 			'analyzer' => [],
 			'filter' => [],
-			'char_filter' => []
+			'char_filter' => [],
+			'tokenizer' => []
 		];
 		$allPlugins = [
 			'extra',
@@ -518,15 +519,16 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			'analysis-smartcn',
 			'analysis-hebrew',
 			'analysis-ukrainian',
-			'analysis-stconvert'
+			'analysis-stconvert',
+			'analysis-nori',
 		];
 
 		return [
 			"some languages" => [
-				[ 'en', 'ru', 'es', 'de', 'zh' ],
+				[ 'en', 'ru', 'es', 'de', 'zh', 'ko' ],
 				$emptyConfig,
 				$allPlugins,
-				'en-ru-es-de-zh',
+				'en-ru-es-de-zh-ko',
 			],
 			// sv has custom icu_folding filter
 			"en-zh-sv" => [

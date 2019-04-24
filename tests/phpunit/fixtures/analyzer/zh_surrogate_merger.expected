@@ -83,5 +83,6 @@
             "keep_both": false,
             "convert_type": "t2s"
         }
-    }
+    },
+    "tokenizer": []
 }

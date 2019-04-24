@@ -477,11 +477,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * Powers full-text-like searches including prefix search.
 	 *
 	 * @param \Elastica\Search[] $searches
-	 * @param ResultsType[] $resultsTypes Specific ResultType instances to use with $searches. Any
-	 *  search without a matching key in this array uses context result type.
 	 * @return Status results from the query transformed by the resultsType
 	 */
-	protected function searchMulti( $searches, array $resultsTypes = [] ) {
+	protected function searchMulti( $searches ) {
 		$contextResultsType = $this->searchContext->getResultsType();
 		$cirrusDebugOptions = $this->searchContext->getDebugOptions();
 		if ( $this->limit <= 0 && !$cirrusDebugOptions->isCirrusDumpQuery() ) {
@@ -577,16 +575,15 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		// Wrap with caching if needed, but don't cache debugging queries
 		$skipCache = $cirrusDebugOptions->mustNeverBeCached();
 		if ( $this->searchContext->getCacheTtl() > 0 && !$skipCache ) {
-			$work = function () use ( $work, $searches, $log, $resultsTypes, $contextResultsType ) {
+			$work = function () use ( $work, $searches, $log, $contextResultsType ) {
 				$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 				$cache = ObjectCache::getMainWANInstance();
 				$keyParts = [];
 				foreach ( $searches as $key => $search ) {
-					$resultsType = $resultsTypes[$key] ?? $contextResultsType;
 					$keyParts[] = $search->getPath() .
 						serialize( $search->getOptions() ) .
 						serialize( $search->getQuery()->toArray() ) .
-						serialize( $resultsType );
+						serialize( $contextResultsType );
 				}
 				$key = $cache->makeKey( 'cirrussearch', 'search', 'v2', md5(
 					implode( '|', $keyParts )
@@ -655,7 +652,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				// @todo error handling
 				$retval[$key] = null;
 			} else {
-				$resultsType = $resultsTypes[$key] ?? $contextResultsType;
+				$resultsType = $contextResultsType;
 				$retval[$key] = $resultsType->transformElasticsearchResult(
 					$this->searchContext,
 					$resultSet

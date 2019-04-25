@@ -73,8 +73,7 @@ Feature: Searches that prompt, or not, for new page creation
   | T:8~=~¥9:77:7:57;7;76;6346- OR catapult | Catapult |
   | catapult OR T:8~=~¥9:77:7:57;7;76;6346- | Catapult |
   | --- AND catapult       | Catapult |
-  | *catapult*             | Catapult |
-  | ***catapult*           | Catapult |
+  | *catapult* catapult~   | Catapult |
   | ****** catapult*       | Catapult |
 
   @boolean_operators

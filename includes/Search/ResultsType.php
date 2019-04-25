@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\Searcher;
+use Elastica\ResultSet as ElasticaResultSet;
 use MediaWiki\Logger\LoggerFactory;
 
 /**
@@ -49,11 +50,10 @@ interface ResultsType {
 	public function getHighlightingConfiguration( array $extraHighlightFields );
 
 	/**
-	 * @param SearchContext $context
-	 * @param \Elastica\ResultSet $result
+	 * @param ElasticaResultSet $resultSet
 	 * @return mixed Set of search results, the types of which vary by implementation.
 	 */
-	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $result );
+	public function transformElasticsearchResult( ElasticaResultSet $resultSet );
 
 	/**
 	 * @return mixed Empty set of search results
@@ -91,11 +91,10 @@ class TitleResultsType extends BaseResultsType {
 	}
 
 	/**
-	 * @param SearchContext $context
-	 * @param \Elastica\ResultSet $resultSet
-	 * @return array
+	 * @param ElasticaResultSet $resultSet
+	 * @return mixed Set of search results, the types of which vary by implementation.
 	 */
-	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
+	public function transformElasticsearchResult( ElasticaResultSet $resultSet ) {
 		$results = [];
 		foreach ( $resultSet->getResults() as $r ) {
 			$results[] = TitleHelper::makeTitle( $r );
@@ -184,13 +183,12 @@ class FancyTitleResultsType extends TitleResultsType {
 	/**
 	 * Convert the results to titles.
 	 *
-	 * @param SearchContext $context
-	 * @param \Elastica\ResultSet $resultSet
+	 * @param ElasticaResultSet $resultSet
 	 * @return array[] Array of arrays, each with optional keys:
 	 *   titleMatch => a title if the title matched
 	 *   redirectMatches => an array of redirect matches, one per matched redirect
 	 */
-	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
+	public function transformElasticsearchResult( ElasticaResultSet $resultSet ) {
 		$results = [];
 		foreach ( $resultSet->getResults() as $r ) {
 			$results[] = $this->transformOneElasticResult( $r );
@@ -322,6 +320,17 @@ class FancyTitleResultsType extends TitleResultsType {
  * Result type for a full text search.
  */
 class FullTextResultsType extends BaseResultsType {
+	/**
+	 * @var bool
+	 */
+	private $searchContainedSyntax;
+
+	/**
+	 * @param bool $searchContainedSyntax
+	 */
+	public function __construct( $searchContainedSyntax = false ) {
+		$this->searchContainedSyntax = $searchContainedSyntax;
+	}
 
 	/**
 	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
@@ -472,13 +481,12 @@ class FullTextResultsType extends BaseResultsType {
 	}
 
 	/**
-	 * @param SearchContext $context
-	 * @param \Elastica\ResultSet $result
+	 * @param ElasticaResultSet $result
 	 * @return ResultSet
 	 */
-	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $result ) {
+	public function transformElasticsearchResult( ElasticaResultSet $result ) {
 		return new ResultSet(
-			$context->isSpecialKeywordUsed(),
+			$this->searchContainedSyntax,
 			$result
 		);
 	}
@@ -601,12 +609,11 @@ class SingleAggResultsType implements ResultsType {
 	}
 
 	/**
-	 * @param SearchContext $context
-	 * @param \Elastica\ResultSet $resultSet
+	 * @param ElasticaResultSet $resultSet
 	 * @return mixed|null Type depends on the aggregation performed. For
 	 *  a sum this will return an integer.
 	 */
-	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
+	public function transformElasticsearchResult( ElasticaResultSet $resultSet ) {
 		$aggs = $resultSet->getAggregations();
 		if ( isset( $aggs[$this->name] ) ) {
 			return $aggs[$this->name]['value'];

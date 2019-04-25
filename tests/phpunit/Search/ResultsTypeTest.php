@@ -4,6 +4,8 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Searcher;
+use Elastica\Query;
+use Elastica\Response;
 
 /**
  * Test escaping search strings.
@@ -340,5 +342,19 @@ class ResultsTypeTest extends CirrusTestCase {
 		$matches = $type->transformOneElasticResult( $result, $namespaces );
 		$title = FancyTitleResultsType::chooseBestTitleOrRedirect( $matches );
 		$this->assertEquals( $expected, $title->getPrefixedText() );
+	}
+
+	/**
+	 * @covers \CirrusSearch\Search\FullTextResultsType
+	 */
+	public function testFullTextSyntax() {
+		$res = new \Elastica\ResultSet( new Response( [] ), new Query( [] ), [] );
+		$fullTextRes = new FullTextResultsType( true );
+		$this->assertTrue( $fullTextRes->transformElasticsearchResult( $res )->searchContainedSyntax() );
+
+		$fullTextRes = new FullTextResultsType( false );
+		$this->assertFalse( $fullTextRes->transformElasticsearchResult( $res )->searchContainedSyntax() );
+		$fullTextRes = new FullTextResultsType( false );
+		$this->assertFalse( $fullTextRes->transformElasticsearchResult( $res )->searchContainedSyntax() );
 	}
 }

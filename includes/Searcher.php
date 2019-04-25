@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\Fallbacks\SearcherFactory;
 use CirrusSearch\MetaStore\MetaNamespaceStore;
+use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Parser\FullTextKeywordRegistry;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\CountContentWordsBuilder;
@@ -158,7 +159,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$this->sort = $query->getSort();
 
 		if ( $query->getSearchEngineEntryPoint() === SearchQuery::SEARCH_TEXT ) {
-			$this->searchContext->setResultsType( new FullTextResultsType() );
+			$this->searchContext->setResultsType(
+				new FullTextResultsType( $query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ) ) );
 			$status = $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );
 			if ( $status->isOK() && $status->getValue() instanceof ResultSet ) {
 				$newStatus = Status::newGood( $fallbackRunner->run( $status->getValue() ) );
@@ -654,7 +656,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			} else {
 				$resultsType = $contextResultsType;
 				$retval[$key] = $resultsType->transformElasticsearchResult(
-					$this->searchContext,
 					$resultSet
 				);
 				if ( $resultSet->hasTimedOut() ) {

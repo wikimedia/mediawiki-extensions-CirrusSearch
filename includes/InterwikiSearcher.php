@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Fallbacks\FallbackRunner;
+use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Search\CrossProjectBlockScorerFactory;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultSet;
@@ -63,7 +64,7 @@ class InterwikiSearcher extends Searcher {
 		}
 
 		$iwQueries = [];
-		$resultsType = new FullTextResultsType();
+		$resultsType = new FullTextResultsType( $query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ) );
 		foreach ( $sources as $interwiki => $config ) {
 			$iwQueries[$interwiki] = SearchQueryBuilder::forCrossProjectSearch( $config, $query )
 				->build();

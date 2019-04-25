@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use MediaWiki\Extension\SiteMatrix\SiteMatrix;
 use WANObjectCache;
 use BagOStuff;
 use ExtensionRegistry;
@@ -70,7 +71,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 		return function () {
 			global $wgConf;
 
-			$matrix = new \SiteMatrix;
+			$matrix = new SiteMatrix;
 			$iwLookup = MediaWikiServices::getInstance()->getInterwikiLookup();
 			$wikiDBname = $this->config->get( 'DBname' );
 			list( , $myLang ) = $wgConf->siteFromDB( $wikiDBname );

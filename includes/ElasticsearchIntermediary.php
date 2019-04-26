@@ -191,6 +191,14 @@ abstract class ElasticsearchIntermediary {
 		self::$requestLogger->addRequest( $log );
 	}
 
+	/**
+	 * Returns a failure if the top-level response has failed or if any of the responses present in
+	 * the resultsets has have failed (in which case the status is initialized with the error
+	 * message of first failed response)
+	 * @param \Elastica\Multi\ResultSet $multiResultSet
+	 * @param Connection|null $connection
+	 * @return Status
+	 */
 	public function multiFailure( \Elastica\Multi\ResultSet $multiResultSet, Connection $connection = null ) {
 		if ( $connection === null ) {
 			$connection = $this->connection;

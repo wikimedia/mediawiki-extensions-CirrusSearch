@@ -6,11 +6,12 @@ use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Search\CrossProjectBlockScorerFactory;
 use CirrusSearch\Search\FullTextResultsType;
-use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\MSearchRequests;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use MediaWiki\MediaWikiServices;
+use Status;
 use User;
 
 /**
@@ -53,7 +54,7 @@ class InterwikiSearcher extends Searcher {
 	/**
 	 * Fetch search results, from caches, if there's any
 	 * @param SearchQuery $query original search query
-	 * @return ResultSet[]|null
+	 * @return Status
 	 */
 	public function getInterwikiResults( SearchQuery $query ) {
 		$sources = MediaWikiServices::getInstance()
@@ -70,10 +71,9 @@ class InterwikiSearcher extends Searcher {
 				->build();
 		}
 
-		$retval = [];
-		$searches = [];
 		$this->setResultsType( $resultsType );
 		$blockScorer = CrossProjectBlockScorerFactory::load( $this->config );
+		$msearches = new MSearchRequests();
 		foreach ( $iwQueries as $interwiki => $iwQuery ) {
 			$context = SearchContext::fromSearchQuery( $iwQuery,
 				FallbackRunner::create( $this, $iwQuery ) );
@@ -85,24 +85,27 @@ class InterwikiSearcher extends Searcher {
 			$this->indexBaseName = $context->getConfig()->get( 'CirrusSearchIndexBaseName' );
 			$search = $this->buildSearch();
 			if ( $this->searchContext->areResultsPossible() ) {
-				$searches[$interwiki] = $search;
-			} else {
-				$retval[$interwiki] = [];
+				$msearches->addRequest( $interwiki, $search );
 			}
 		}
 
-		$results = $this->searchMulti( $searches );
-		if ( !$results->isOK() ) {
-			return null;
+		$searchDescription = "{$this->searchContext->getSearchType()} search for '{$this->searchContext->getOriginalSearchTerm()}'";
+		if ( $this->searchContext->getDebugOptions()->isCirrusDumpQuery() ) {
+			return $msearches->dumpQuery( $searchDescription );
 		}
-
-		$retval = array_merge( $retval, $results->getValue() );
+		$mresponses = $this->searchMulti( $msearches );
+		if ( $mresponses->hasFailure() ) {
+			return $mresponses->getFailure();
+		}
 
 		if ( $this->searchContext->getDebugOptions()->isReturnRaw() ) {
-			return $retval;
+			return $mresponses->dumpResults( $searchDescription );
 		}
 
-		return $blockScorer->reorder( $retval );
+		return $mresponses->transformAndGetMulti( $this->searchContext->getResultsType(), array_keys( $iwQueries ),
+			function ( array $v ) use ( $blockScorer ) {
+				return $blockScorer->reorder( $v );
+			} );
 	}
 
 	/**

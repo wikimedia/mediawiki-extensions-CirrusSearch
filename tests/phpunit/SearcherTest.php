@@ -125,6 +125,12 @@ class SearcherTest extends CirrusTestCase {
 		$engine->setLimitOffset( 20, 0 );
 		$encodedQuery = $engine->searchText( $queryString )->getValue();
 		$elasticQuery = json_decode( $encodedQuery, true );
+		// Drop the keys to keep fixture clean
+		if ( count( $elasticQuery ) === 1 ) {
+			$elasticQuery = $elasticQuery[Searcher::MAINSEARCH_MSEARCH_KEY];
+		} else {
+			$elasticQuery = array_values( $elasticQuery );
+		}
 		// For extra fun, prefer-recent queries include a 'now' timestamp. We need to normalize that so
 		// the output is actually the same.
 		$elasticQuery = $this->normalizeNow( $elasticQuery );
@@ -265,7 +271,7 @@ class SearcherTest extends CirrusTestCase {
 		$engine->setNamespaces( [ $ns ] );
 		$elasticQuery = $engine->searchArchiveTitle( $termMain )->getValue();
 		$decodedQuery = json_decode( $elasticQuery, true );
-
+		$decodedQuery = $decodedQuery[Searcher::MAINSEARCH_MSEARCH_KEY];
 		if ( is_string( $expected ) ) {
 			// Flag to generate a new fixture.
 			CirrusTestCase::saveFixture( $expected, $decodedQuery );
@@ -373,8 +379,8 @@ class SearcherTest extends CirrusTestCase {
 		$createIfMissing = getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes';
 		$res = json_decode( $status->getValue(), JSON_OBJECT_AS_ARRAY );
 		$q = null;
-		if ( isset( $res['query']['suggest'] ) ) {
-			$q = [ 'suggest' => $res['query']['suggest'] ];
+		if ( isset( $res[Searcher::MAINSEARCH_MSEARCH_KEY]['query']['suggest'] ) ) {
+			$q = [ 'suggest' => $res[Searcher::MAINSEARCH_MSEARCH_KEY]['query']['suggest'] ];
 		}
 		$this->assertFileContains(
 			CirrusTestCase::fixturePath( $expectedFile ),
@@ -445,9 +451,9 @@ class SearcherTest extends CirrusTestCase {
 		$query = json_decode( $engine->searchText( $query )->getValue(), JSON_OBJECT_AS_ARRAY );
 
 		if ( $approxScore > 0 ) {
-			$this->assertArrayHasKey( 'suggest', $query['query'] );
+			$this->assertArrayHasKey( 'suggest', $query[Searcher::MAINSEARCH_MSEARCH_KEY]['query'] );
 			$this->assertEquals( $response['suggest']['suggest'][0]['text'],
-				$query['query']['suggest']['text'] );
+				$query[Searcher::MAINSEARCH_MSEARCH_KEY]['query']['suggest']['text'] );
 
 			$suggestionSnippet = strtr( htmlspecialchars( $suggestionSnippet ), [
 				Searcher::HIGHLIGHT_PRE_MARKER => Searcher::SUGGESTION_HIGHLIGHT_PRE,
@@ -465,7 +471,7 @@ class SearcherTest extends CirrusTestCase {
 				$this->assertEquals( $suggestionSnippet, $resultSet->getSuggestionSnippet() );
 			}
 		} else {
-			$this->assertArrayNotHasKey( 'suggest', $query );
+			$this->assertArrayNotHasKey( 'suggest', $query[Searcher::MAINSEARCH_MSEARCH_KEY] );
 		}
 	}
 }

@@ -12,6 +12,8 @@ use CirrusSearch\Query\CountContentWordsBuilder;
 use CirrusSearch\Query\NearMatchQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
 use CirrusSearch\Search\FullTextResultsType;
+use CirrusSearch\Search\MSearchRequests;
+use CirrusSearch\Search\MSearchResponses;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchContext;
@@ -74,6 +76,16 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * deep. This should be <= index.max_result_window in elasticsearch.
 	 */
 	const MAX_OFFSET_LIMIT = 10000;
+
+	/**
+	 * Identifies the main search in MSearchRequests/MSearchResponses
+	 */
+	const MAINSEARCH_MSEARCH_KEY = '__main__';
+
+	/**
+	 * Identifies the "tested" search request in MSearchRequests/MSearchResponses
+	 */
+	const INTERLEAVED_MSEARCH_KEY = '__interleaved__';
 
 	/**
 	 * @var integer search offset
@@ -300,9 +312,10 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		// Searcher needs to be cloned before any actual query building is done.
 		$interleaveSearcher = $this->buildInterleaveSearcher();
 
-		$searches = [];
 		$qb = $this->buildFullTextSearch( $term );
-		$searches[] = $this->buildSearch();
+		$mainSearch = $this->buildSearch();
+		$searches = MSearchRequests::build( self::MAINSEARCH_MSEARCH_KEY, $mainSearch );
+		$description = "{$this->searchContext->getSearchType()} search for '{$this->searchContext->getOriginalSearchTerm()}'";
 
 		if ( !$this->searchContext->areResultsPossible() ) {
 			return $this->emptyResultSet();
@@ -311,15 +324,20 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		if ( $interleaveSearcher !== null ) {
 			$interleaveSearcher->buildFullTextSearch( $term );
 			$interleaveSearch = $interleaveSearcher->buildSearch();
-			if ( $this->areSearchesTheSame( $searches[0], $interleaveSearch ) ) {
+			if ( $this->areSearchesTheSame( $mainSearch, $interleaveSearch ) ) {
 				$interleaveSearcher = null;
 			} else {
-				$searches[] = $interleaveSearch;
+				$searches->addRequest( self::INTERLEAVED_MSEARCH_KEY, $interleaveSearch );
 			}
 		}
 
-		$status = $this->searchMulti( $searches );
-		if ( !$status->isOK() ) {
+		if ( $this->searchContext->getDebugOptions()->isCirrusDumpQuery() ) {
+			return $searches->dumpQuery( $description );
+		}
+
+		$responses = $this->searchMulti( $searches );
+		if ( $responses->hasFailure() ) {
+			$status = $responses->getFailure();
 			if ( ElasticaErrorHandler::isParseError( $status ) ) {
 				if ( $qb->buildDegraded( $this->searchContext ) ) {
 					// If that doesn't work we're out of luck but it should.
@@ -332,22 +350,21 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			return $status;
 		}
 
-		if ( $interleaveSearcher === null ) {
-			// Convert array of responses to single value
-			$value = $status->getValue();
-			$response = reset( $value );
-		} else {
-			// Evil hax to support cirrusDumpResult. This is probably
-			// very fragile.
-			$value = $status->getValue();
-			if ( $value[0] instanceof ResultSet ) {
-				$interleaver = new TeamDraftInterleaver( $this->searchContext->getOriginalSearchTerm() );
-				$response = $interleaver->interleave( $value[0], $value[1], $this->limit );
-			} else {
-				$response = $value;
-			}
+		if ( $this->searchContext->getDebugOptions()->isCirrusDumpResult() ) {
+			return $responses->dumpResults( $description );
 		}
-		$status->setResult( true, $response );
+
+		$rType = $this->getSearchContext()->getResultsType();
+		$mainSet = $responses->transformAsResultSet( $rType, self::MAINSEARCH_MSEARCH_KEY );
+		if ( $interleaveSearcher !== null ) {
+			$interleaver = new TeamDraftInterleaver( $this->searchContext->getOriginalSearchTerm() );
+			$testedSet = $responses->transformAsResultSet( $rType, self::INTERLEAVED_MSEARCH_KEY );
+			$response = $interleaver->interleave( $mainSet, $testedSet, $this->limit );
+		} else {
+			$response = $mainSet;
+		}
+
+		$status = Status::newGood( $response );
 
 		foreach ( $this->searchContext->getWarnings() as $warning ) {
 			$status->warning( ...$warning );
@@ -460,47 +477,49 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 */
 	protected function searchOne() {
 		$search = $this->buildSearch();
-
+		$description = "{$this->searchContext->getSearchType()} search for '{$this->searchContext->getOriginalSearchTerm()}'";
+		$msearch = MSearchRequests::build( self::MAINSEARCH_MSEARCH_KEY, $search );
+		if ( $this->searchContext->getDebugOptions()->isCirrusDumpQuery() ) {
+			return $msearch->dumpQuery( $description );
+		}
 		if ( !$this->searchContext->areResultsPossible() ) {
 			return $this->emptyResultSet();
 		}
 
-		$result = $this->searchMulti( [ $search ] );
-		if ( $result->isOK() ) {
-			// Convert array of responses to single value
-			$value = $result->getValue();
-			$result->setResult( true, reset( $value ) );
+		$mresults = $this->searchMulti( $msearch );
+
+		if ( $mresults->hasFailure() ) {
+			return $mresults->getFailure();
 		}
 
-		return $result;
+		if ( !$mresults->hasResponses() ) {
+			return $this->emptyResultSet();
+		}
+
+		if ( $this->searchContext->getDebugOptions()->isReturnRaw() ) {
+			return $mresults->dumpResults( $description );
+		}
+		return $mresults->transformAndGetSingle( $this->searchContext->getResultsType(), self::MAINSEARCH_MSEARCH_KEY );
 	}
 
 	/**
 	 * Powers full-text-like searches including prefix search.
 	 *
-	 * @param \Elastica\Search[] $searches
-	 * @return Status results from the query transformed by the resultsType
+	 * @param MSearchRequests $msearches
+	 * @return MSearchResponses search responses
 	 */
-	protected function searchMulti( $searches ) {
+	protected function searchMulti( MSearchRequests $msearches ) {
+		$searches = $msearches->getRequests();
 		$contextResultsType = $this->searchContext->getResultsType();
 		$cirrusDebugOptions = $this->searchContext->getDebugOptions();
-		if ( $this->limit <= 0 && !$cirrusDebugOptions->isCirrusDumpQuery() ) {
-			if ( $cirrusDebugOptions->isCirrusDumpResult() ) {
-				return Status::newGood( [
-						'description' => 'Canceled due to offset out of bounds',
-						'path' => '',
-						'result' => [],
-				] );
-			} else {
-				$this->searchContext->setResultsPossible( false );
-				$this->searchContext->addWarning( 'cirrussearch-offset-too-large',
-					self::MAX_OFFSET_LIMIT, $this->offset );
-				$retval = [];
-				foreach ( $searches as $key => $search ) {
-					$retval[$key] = $contextResultsType->createEmptyResult();
-				}
-				return Status::newGood( $retval );
-			}
+		Assert::precondition( !$cirrusDebugOptions->isCirrusDumpQuery(), 'Must not reach this method when dumping the query' );
+
+		// TODO: should this be moved upper in the stack?
+		if ( $this->limit <= 0 ) {
+			$this->searchContext->setResultsPossible( false );
+			$this->searchContext->addWarning( 'cirrussearch-offset-too-large',
+				self::MAX_OFFSET_LIMIT, $this->offset );
+			return $msearches->canceled();
 		}
 
 		$connection = $this->getOverriddenConnection();
@@ -515,21 +534,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				'syntax' => $this->searchContext->getSyntaxUsed(),
 			]
 		);
-
-		if ( $cirrusDebugOptions->isCirrusDumpQuery() ) {
-			$retval = [];
-			$description = $log->formatDescription();
-			foreach ( $searches as $key => $search ) {
-				$retval[$key] = [
-					'description' => $description,
-					'path' => $search->getPath(),
-					'params' => $search->getOptions(),
-					'query' => $search->getQuery()->toArray(),
-					'options' => $search->getOptions(),
-				];
-			}
-			return Status::newGood( $retval );
-		}
 
 		// Similar to indexing support only the bulk code path, rather than
 		// single and bulk. The extra overhead should be minimal, and the
@@ -631,40 +635,15 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 
 		// @todo Does this need anything special for multi-search changes?
 		if ( !$status->isOK() ) {
-			return $status;
+			return $msearches->failure( $status );
 		}
 
-		$retval = [];
-		if ( $cirrusDebugOptions->isCirrusDumpResult() ) {
-			$description = $log->formatDescription();
-			foreach ( $status->getValue()->getResultSets() as $key => $resultSet ) {
-				$retval[$key] = [
-					'description' => $description,
-					'path' => $searches[$key]->getPath(),
-					'result' => $resultSet->getResponse()->getData(),
-				];
-			}
-			return Status::newGood( $retval );
-		}
-
-		$timedOut = false;
-		foreach ( $status->getValue()->getResultSets() as $key => $resultSet ) {
-			$response = $resultSet->getResponse();
-			if ( $response->hasError() ) {
-				// @todo error handling
-				$retval[$key] = null;
-			} else {
-				$resultsType = $contextResultsType;
-				$retval[$key] = $resultsType->transformElasticsearchResult(
-					$resultSet
-				);
-				if ( $resultSet->hasTimedOut() ) {
-					$timedOut = true;
-				}
-			}
-		}
-
-		if ( $timedOut ) {
+		$response = $status->getValue();
+		/**
+		 * @var $response \Elastica\Multi\ResultSet
+		 */
+		$mreponses = $msearches->toMSearchResponses( $response->getResultSets() );
+		if ( $mreponses->hasTimeout() ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				$log->getDescription() . " timed out and only returned partial results!",
 				$log->getLogVariables()
@@ -674,10 +653,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				: 'cirrussearch-timed-out'
 			);
 		}
-
-		$status->setResult( true, $retval );
-
-		return $status;
+		return $mreponses;
 	}
 
 	/**
@@ -936,6 +912,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		return $other;
 	}
 
+	/**
+	 * @return Status
+	 */
 	private function emptyResultSet() {
 		$status = Status::newGood( ResultSet::emptyResultSet( $this->searchContext->isSpecialKeywordUsed() ) );
 		foreach ( $this->searchContext->getWarnings() as $warning ) {

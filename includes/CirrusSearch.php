@@ -231,14 +231,10 @@ class CirrusSearch extends SearchEngine {
 		) {
 			$iwSearch = new InterwikiSearcher( $this->connection, $query->getSearchConfig(), $this->namespaces, null, $this->debugOptions );
 			$interwikiResults = $iwSearch->getInterwikiResults( $query );
-			if ( $interwikiResults !== null ) {
-				// If we are dumping we need to convert into an array that can be appended to
-				if ( $this->debugOptions->isReturnRaw() ) {
-					$result = [ $result ];
-				}
-				foreach ( $interwikiResults as $interwiki => $interwikiResult ) {
+			if ( $interwikiResults->isOK() && $interwikiResults->getValue() !== [] ) {
+				foreach ( $interwikiResults->getValue() as $interwiki => $interwikiResult ) {
 					if ( $this->debugOptions->isReturnRaw() ) {
-						$result[] = $interwikiResult;
+						$result[$interwiki] = $interwikiResult;
 					} elseif ( $interwikiResult && $interwikiResult->numRows() > 0 ) {
 						$result->addInterwikiResults(
 							$interwikiResult, SearchResultSet::SECONDARY_RESULTS, $interwiki

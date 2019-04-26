@@ -567,9 +567,11 @@ defineSupportCode( function ( { Given, When, Then } ) {
 	Then( /^A valid query dump for (.+) is produced$/, function ( query ) {
 		return withApi( this, () => {
 			expect( this.apiResponse ).to.be.an( 'object' );
-			expect( this.apiResponse ).to.include.keys(
+			expect( this.apiResponse ).to.include.keys( '__main__' );
+			expect( this.apiResponse.__main__ ).to.be.an( 'object' );
+			expect( this.apiResponse.__main__ ).to.include.keys(
 				'description', 'path', 'params', 'query', 'options' );
-			expect( this.apiResponse.description ).to.equal(
+			expect( this.apiResponse.__main__.description ).to.equal(
 				`full_text search for '${query}'` );
 		} );
 	} );

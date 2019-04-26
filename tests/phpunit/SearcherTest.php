@@ -126,11 +126,6 @@ class SearcherTest extends CirrusTestCase {
 		$encodedQuery = $engine->searchText( $queryString )->getValue();
 		$elasticQuery = json_decode( $encodedQuery, true );
 		// Drop the keys to keep fixture clean
-		if ( count( $elasticQuery ) === 1 ) {
-			$elasticQuery = $elasticQuery[Searcher::MAINSEARCH_MSEARCH_KEY];
-		} else {
-			$elasticQuery = array_values( $elasticQuery );
-		}
 		// For extra fun, prefer-recent queries include a 'now' timestamp. We need to normalize that so
 		// the output is actually the same.
 		$elasticQuery = $this->normalizeNow( $elasticQuery );
@@ -203,11 +198,14 @@ class SearcherTest extends CirrusTestCase {
 		return $query;
 	}
 
-	private function normalizeOrdering( array $query ) {
+	private function normalizeOrdering( array $query, $topLevel = true ) {
 		foreach ( $query as $key => $value ) {
 			if ( is_array( $value ) ) {
-				$query[$key] = $this->normalizeOrdering( $value );
+				$query[$key] = $this->normalizeOrdering( $value, false );
 			}
+		}
+		if ( $topLevel ) {
+			return $query;
 		}
 		if ( isset( $query[0] ) ) {
 			// list like. Expensive, but sorta-works?
@@ -271,7 +269,6 @@ class SearcherTest extends CirrusTestCase {
 		$engine->setNamespaces( [ $ns ] );
 		$elasticQuery = $engine->searchArchiveTitle( $termMain )->getValue();
 		$decodedQuery = json_decode( $elasticQuery, true );
-		$decodedQuery = $decodedQuery[Searcher::MAINSEARCH_MSEARCH_KEY];
 		if ( is_string( $expected ) ) {
 			// Flag to generate a new fixture.
 			CirrusTestCase::saveFixture( $expected, $decodedQuery );

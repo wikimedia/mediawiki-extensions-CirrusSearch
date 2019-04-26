@@ -1,5 +1,5 @@
-[
-    {
+{
+    "__main__": {
         "description": "full_text search for 'change rescore profile'",
         "options": {
             "search_type": "dfs_query_then_fetch",
@@ -326,7 +326,7 @@
             }
         }
     },
-    {
+    "__interleaved__": {
         "description": "full_text search for 'change rescore profile'",
         "options": {
             "search_type": "dfs_query_then_fetch",
@@ -646,4 +646,4 @@
             }
         }
     }
-]
+}

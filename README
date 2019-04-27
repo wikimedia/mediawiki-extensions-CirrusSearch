@@ -28,7 +28,7 @@ Make sure you have the curl php library installed (sudo apt-get install php5-cur
 You also need to install the Elastica MediaWiki extension.
 Add this to LocalSettings.php:
  wfLoadExtension( 'Elastica' );
- require_once( "$IP/extensions/CirrusSearch/CirrusSearch.php" );
+ wfLoadExtension( 'CirrusSearch' );
  $wgDisableSearchUpdate = true;
 
 Configure your search servers in LocalSettings.php if you aren't running Elasticsearch on localhost:

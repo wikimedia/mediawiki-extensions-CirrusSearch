@@ -1,22 +1,27 @@
 <?php
 
-use CirrusSearch\CirrusDebugOptions;
-use CirrusSearch\Connection;
-use CirrusSearch\ElasticsearchIntermediary;
-use CirrusSearch\InterwikiSearcher;
+namespace CirrusSearch;
+
+use ApiUsageException;
 use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
+use CirrusSearch\Search\FancyTitleResultsType;
+use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
-use CirrusSearch\Searcher;
-use CirrusSearch\CompletionSuggester;
-use CirrusSearch\Search\ResultSet;
-use CirrusSearch\SearchConfig;
-use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
-use CirrusSearch\Search\FancyTitleResultsType;
 use CirrusSearch\Search\TitleResultsType;
-use CirrusSearch\UserTesting;
+use ConfigException;
 use MediaWiki\MediaWikiServices;
+use RequestContext;
+use SearchEngine;
+use SearchIndexField;
+use SearchResultSet;
+use SearchSuggestionSet;
+use Status;
+use Title;
+use User;
+use WebRequest;
 
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
@@ -535,3 +540,5 @@ class CirrusSearch extends SearchEngine {
 				null, null, $this->debugOptions );
 	}
 }
+
+class_alias( CirrusSearch::class, 'CirrusSearch' );

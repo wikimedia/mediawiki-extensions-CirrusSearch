@@ -20,5 +20,6 @@ $cfg['exclude_analysis_directory_list'] = array_merge(
 		'../../extensions/SiteMatrix',
 	]
 );
+$cfg['enable_class_alias_support'] = true;
 
 return $cfg;

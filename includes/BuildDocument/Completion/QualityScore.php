@@ -5,93 +5,6 @@ namespace CirrusSearch\BuildDocument\Completion;
 use CirrusSearch\Util;
 
 /**
- * Scoring methods used by the completion suggester
- *
- * Set $wgSearchType to 'CirrusSearch'
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * http://www.gnu.org/copyleft/gpl.html
- */
-
-class SuggestScoringMethodFactory {
-	/**
-	 * @param string $scoringMethod the name of the scoring method
-	 * @return SuggestScoringMethod
-	 */
-	public static function getScoringMethod( $scoringMethod ) {
-		switch ( $scoringMethod ) {
-		case 'incomingLinks':
-			return new IncomingLinksScoringMethod();
-		case 'quality':
-			return new QualityScore();
-		case 'popqual':
-			return new PQScore();
-		}
-		throw new \Exception( 'Unknown scoring method ' . $scoringMethod );
-	}
-}
-
-interface SuggestScoringMethod {
-	/**
-	 * @param array $doc A document from the PAGE type
-	 * @return int the weight of the document
-	 */
-	public function score( array $doc );
-
-	/**
-	 * The list of fields needed to compute the score.
-	 *
-	 * @return string[] the list of required fields
-	 */
-	public function getRequiredFields();
-
-	/**
-	 * This method will be called by the indexer script.
-	 * some scoring method may want to normalize values based index size
-	 *
-	 * @param int $maxDocs the total number of docs in the index
-	 */
-	public function setMaxDocs( $maxDocs );
-}
-
-/**
- * Very simple scoring method based on incoming links
- */
-class IncomingLinksScoringMethod implements SuggestScoringMethod {
-	/**
-	 * @inheritDoc
-	 */
-	public function score( array $doc ) {
-		return $doc['incoming_links'] ?? 0;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getRequiredFields() {
-		return [ 'incoming_links' ];
-	}
-
-	/**
-	 * @param int $maxDocs
-	 */
-	public function setMaxDocs( $maxDocs ) {
-	}
-}
-
-/**
  * Score that tries to reflect the quality of a page.
  * NOTE: Experimental
  *
@@ -143,8 +56,8 @@ class QualityScore implements SuggestScoringMethod {
 	private $incomingLinksNorm;
 
 	/**
-	 * @param float[]|null $boostTemplates Array of key values, key is the template name, value the boost factor.
-	 *        Defaults to Util::getDefaultBoostTemplates()
+	 * @param float[]|null $boostTemplates Array of key values, key is the template name, value the
+	 *     boost factor. Defaults to Util::getDefaultBoostTemplates()
 	 */
 	public function __construct( $boostTemplates = null ) {
 		$this->boostTemplates = $boostTemplates ?: Util::getDefaultBoostTemplates();
@@ -177,8 +90,8 @@ class QualityScore implements SuggestScoringMethod {
 		$score += $redirects * self::REDIRECT_WEIGHT;
 
 		// We have a standardized composite score between 0 and 1
-		$score /= self::INCOMING_LINKS_WEIGHT + self::EXTERNAL_LINKS_WEIGHT + self::PAGE_SIZE_WEIGHT
-			+ self::HEADING_WEIGHT + self::REDIRECT_WEIGHT;
+		$score /= self::INCOMING_LINKS_WEIGHT + self::EXTERNAL_LINKS_WEIGHT +
+				self::PAGE_SIZE_WEIGHT + self::HEADING_WEIGHT + self::REDIRECT_WEIGHT;
 
 		return $this->boostTemplates( $doc, $score );
 	}
@@ -266,7 +179,14 @@ class QualityScore implements SuggestScoringMethod {
 	 * @inheritDoc
 	 */
 	public function getRequiredFields() {
-		return [ 'incoming_links', 'external_link', 'text_bytes', 'heading', 'redirect', 'template' ];
+		return [
+			'incoming_links',
+			'external_link',
+			'text_bytes',
+			'heading',
+			'redirect',
+			'template',
+		];
 	}
 
 	/**
@@ -280,48 +200,5 @@ class QualityScore implements SuggestScoringMethod {
 			// it's a very small wiki let's force the norm to 1
 			$this->incomingLinksNorm = 1;
 		}
-	}
-}
-
-/**
- * Score that combines QualityScore and the pageviews statistics (popularity)
- */
-class PQScore extends QualityScore {
-	const QSCORE_WEIGHT = 1;
-	const POPULARITY_WEIGHT = 0.4;
-	// 0.04% of the total page views is the max we accept
-	// @todo: tested on enwiki values only
-	const POPULARITY_MAX = 0.0004;
-
-	/**
-	 * @return string[]
-	 */
-	public function getRequiredFields() {
-		return array_merge( parent::getRequiredFields(), [ 'popularity_score' ] );
-	}
-
-	/**
-	 * @param array $doc
-	 * @return int
-	 */
-	public function score( array $doc ) {
-		$score = $this->intermediateScore( $doc ) * self::QSCORE_WEIGHT;
-		$pop = $doc['popularity_score'] ?? 0;
-		if ( $pop > self::POPULARITY_MAX ) {
-			$pop = 1;
-		} else {
-			$logBase = 1 + self::POPULARITY_MAX * $this->maxDocs;
-			// log₁(x) is undefined
-			if ( $logBase > 1 ) {
-				// @fixme: rough log scale by using maxDocs...
-				$pop = log( 1 + ( $pop * $this->maxDocs ), $logBase );
-			} else {
-				$pop = 0;
-			}
-		}
-
-		$score += $pop * self::POPULARITY_WEIGHT;
-		$score /= self::QSCORE_WEIGHT + self::POPULARITY_WEIGHT;
-		return intval( $score * self::SCORE_RANGE );
 	}
 }

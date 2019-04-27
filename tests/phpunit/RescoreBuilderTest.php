@@ -514,7 +514,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 	public function testTermBoosts( $weight, array $settings, array $functions ) {
 		$config = new HashSearchConfig( [] );
 		$context = new SearchContext( $config, null );
-		$builder = new TermBoostScoreBuilder( $context, $weight, $settings );
+		$builder = new Rescore\TermBoostScoreBuilder( $context, $weight, $settings );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$array = $fScore->toArray();

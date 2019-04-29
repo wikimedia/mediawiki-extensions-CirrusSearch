@@ -164,8 +164,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @return Status
 	 */
 	public function search( SearchQuery $query ) {
-		$fallbackRunner = FallbackRunner::create( $this, $query );
-		$this->searchContext = SearchContext::fromSearchQuery( $query, $fallbackRunner );
+		$this->searchContext = SearchContext::fromSearchQuery( $query, FallbackRunner::create( $this, $query ) );
 		$this->setOffsetLimit( $query->getOffset(), $query->getLimit() );
 		$this->config = $query->getSearchConfig();
 		$this->sort = $query->getSort();
@@ -173,14 +172,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		if ( $query->getSearchEngineEntryPoint() === SearchQuery::SEARCH_TEXT ) {
 			$this->searchContext->setResultsType(
 				new FullTextResultsType( $query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ) ) );
-			$status = $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );
-			if ( $status->isOK() && $status->getValue() instanceof ResultSet ) {
-				$newStatus = Status::newGood( $fallbackRunner->run( $status->getValue() ) );
-				$newStatus->merge( $status );
-				$status = $newStatus;
-				$this->appendMetrics( $fallbackRunner );
-			}
-			return $status;
+			return $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );
 		} else {
 			throw new \RuntimeException( 'Only ' . SearchQuery::SEARCH_TEXT . ' is supported for now' );
 		}
@@ -331,6 +323,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			}
 		}
 
+		$fallbackRunner = $this->searchContext->getFallbackRunner();
+		$fallbackRunner->attachSearchRequests( $searches, $this->connection->getClient() );
+
 		if ( $this->searchContext->getDebugOptions()->isCirrusDumpQuery() ) {
 			return $searches->dumpQuery( $description );
 		}
@@ -364,12 +359,12 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			$response = $mainSet;
 		}
 
-		$status = Status::newGood( $response );
+		$status = Status::newGood( $fallbackRunner->run( $response, $responses ) );
+		$this->appendMetrics( $fallbackRunner );
 
 		foreach ( $this->searchContext->getWarnings() as $warning ) {
 			$status->warning( ...$warning );
 		}
-
 		return $status;
 	}
 

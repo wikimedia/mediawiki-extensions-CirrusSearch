@@ -3,6 +3,8 @@
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\Search\ResultSet;
+use Elastica\ResultSet as ElasticaResultSet;
+use Wikimedia\Assert\Assert;
 
 /**
  * Basic implementation of a FallbackRunnerContext.
@@ -23,6 +25,11 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	private $previousResultSet;
 
 	/**
+	 * @var ElasticaResultSet|null
+	 */
+	private $suggestResponse;
+
+	/**
 	 * FallbackRunnerContextImpl constructor.
 	 * @param ResultSet $initialResultSet
 	 */
@@ -40,6 +47,17 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 		$this->previousResultSet = $previousResultSet;
 	}
 
+	public function resetSuggestResponse() {
+		$this->suggestResponse = null;
+	}
+
+	/**
+	 * @param ElasticaResultSet $suggestResponse
+	 */
+	public function setSuggestResponse( ElasticaResultSet $suggestResponse ) {
+		$this->suggestResponse = $suggestResponse;
+	}
+
 	/**
 	 * @return ResultSet
 	 */
@@ -52,5 +70,13 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	 */
 	public function getPreviousResultSet() {
 		return $this->previousResultSet;
+	}
+
+	/**
+	 * @return ElasticaResultSet
+	 */
+	public function getMethodResponse(): ElasticaResultSet {
+		Assert::precondition( $this->suggestResponse !== null, 'Must have a resultset set' );
+		return $this->suggestResponse;
 	}
 }

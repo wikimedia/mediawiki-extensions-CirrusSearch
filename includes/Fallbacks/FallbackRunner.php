@@ -2,9 +2,12 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\Search\MSearchRequests;
+use CirrusSearch\Search\MSearchResponses;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
+use Elastica\Client;
 use Wikimedia\Assert\Assert;
 
 class FallbackRunner implements SearchMetricsProvider {
@@ -49,14 +52,22 @@ class FallbackRunner implements SearchMetricsProvider {
 
 	/**
 	 * @param ResultSet $initialResult
+	 * @param MSearchResponses $responses
 	 * @return ResultSet
 	 */
-	public function run( ResultSet $initialResult ) {
+	public function run( ResultSet $initialResult, MSearchResponses $responses ) {
 		$methods = [];
 		$position = 0;
 		$context = new FallbackRunnerContextImpl( $initialResult );
 		foreach ( $this->fallbackMethods as $fallback ) {
 			$position++;
+			$context->resetSuggestResponse();
+			if ( $fallback instanceof ElasticSearchRequestFallbackMethod ) {
+				$k = $this->msearchKey( $position );
+				if ( $responses->hasResultsFor( $k ) ) {
+					$context->setSuggestResponse( $responses->getResultSet( $this->msearchKey( $position ) ) );
+				}
+			}
 			$score = $fallback->successApproximation( $context );
 			if ( $score >= 1.0 ) {
 				return $this->execute( $fallback, $context );
@@ -76,6 +87,10 @@ class FallbackRunner implements SearchMetricsProvider {
 		} );
 		foreach ( $methods as $fallbackArray ) {
 			$fallback = $fallbackArray['method'];
+			$context->resetSuggestResponse();
+			if ( $fallback instanceof ElasticSearchRequestFallbackMethod ) {
+				$context->setSuggestResponse( $responses->getResultSet( $this->msearchKey( $fallbackArray['position'] ) ) );
+			}
 			$context->setPreviousResultSet( $this->execute( $fallback, $context ) );
 		}
 		return $context->getPreviousResultSet();
@@ -99,6 +114,30 @@ class FallbackRunner implements SearchMetricsProvider {
 			}
 		}
 		return $suggesters;
+	}
+
+	public function attachSearchRequests( MSearchRequests $requests, Client $client ) {
+		$position = 0;
+		foreach ( $this->fallbackMethods as $method ) {
+			$position++;
+			if ( $method instanceof ElasticSearchRequestFallbackMethod ) {
+				$search = $method->getSearchRequest( $client );
+				if ( $search !== null ) {
+					$requests->addRequest(
+						$this->msearchKey( $position ),
+						$search
+					);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param int $position
+	 * @return string
+	 */
+	private function msearchKey( $position ) {
+		return "fallback-$position";
 	}
 
 	/**

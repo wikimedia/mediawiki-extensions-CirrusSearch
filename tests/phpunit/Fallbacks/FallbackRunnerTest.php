@@ -6,16 +6,21 @@ use CirrusSearch\CirrusConfigInterwikiResolver;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolver;
+use CirrusSearch\Search\MSearchRequests;
+use CirrusSearch\Search\MSearchResponses;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
+use CirrusSearch\Test\DummyConnection;
 use CirrusSearch\Test\DummyResultSet;
 use CirrusSearch\Test\MockLanguageDetector;
+use Elastica\Client;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet\DefaultBuilder;
+use Elastica\Search;
 use MediaWiki\MediaWikiServices;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
@@ -39,7 +44,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 		$methods[] = $this->getFallbackMethod( 0.5, $this->trackingCb( 'C' ), [ 'C' => 'C' ] );
 		$methods[] = $this->getFallbackMethod( 0.6, $this->trackingCb( 'A' ), [ 'A' => 'A' ] );
 		$runner = new FallbackRunner( $methods );
-		$runner->run( $results );
+		$runner->run( $results, new MSearchResponses( [], [] ) );
 		$this->assertEquals( [ 'A', 'B', 'C', 'D', 'E' ], $this->execOrder );
 		$this->assertEquals( [
 			'A' => 'A',
@@ -61,7 +66,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 		$methods[] = self::getFallbackMethod( -0.5 );
 		$methods[] = self::getFallbackMethod( -0.6 );
 		$runner = new FallbackRunner( $methods );
-		$runner->run( $results );
+		$runner->run( $results, new MSearchResponses( [], [] ) );
 		$this->assertEquals( [ 'A' ], $this->execOrder );
 	}
 
@@ -197,7 +202,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 		$initialResults = new ResultSet( false,
 			( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() ) );
 		$this->assertNotEmpty( $runner->getElasticSuggesters() );
-		$newResults = $runner->run( $initialResults );
+		$newResults = $runner->run( $initialResults, new MSearchResponses( [], [] ) );
 		$this->assertEquals( 2, $newResults->getTotalHits() );
 		$iwResults = $newResults->getInterwikiResults( \SearchResultSet::INLINE_RESULTS );
 		$this->assertNotEmpty( $iwResults );
@@ -224,5 +229,80 @@ class FallbackRunnerTest extends CirrusTestCase {
 		$noop = FallbackRunner::noopRunner();
 		$this->assertSame( $noop, FallbackRunner::noopRunner() );
 		$this->assertEquals( $noop, new FallbackRunner( [] ) );
+	}
+
+	public function testElasticSearchRequestFallbackMethod() {
+		$client = ( new DummyConnection() )->getClient();
+
+		$initialResp = new \Elastica\ResultSet( new Response( [] ), new Query( new Query\Match( 'text', 'first' ) ), [] );
+		$inital = new ResultSet( false, $initialResp );
+		$query = new Query( new Query\Match( 'foo', 'bar' ) );
+		$resp = new \Elastica\ResultSet( new Response( [] ), $query, [] );
+		$rewritten = new ResultSet( false, $resp );
+		$runner = new FallbackRunner( [ $this->mockElasticSearchRequestFallbackMethod( $query, 0.5, $resp, $rewritten ) ] );
+		$requests = new MSearchRequests();
+		$runner->attachSearchRequests( $requests, $client );
+		$this->assertNotEmpty( $requests->getRequests() );
+		$mresponses = $requests->toMSearchResponses( [ $resp ] );
+		$this->assertSame( $rewritten, $runner->run( $inital, $mresponses ) );
+
+		$runner = new FallbackRunner( [ $this->mockElasticSearchRequestFallbackMethod( $query, 0.0, $resp, null ) ] );
+		$requests = new MSearchRequests();
+		$runner->attachSearchRequests( $requests, $client );
+		$this->assertEmpty( $requests->getRequests() );
+		$mresponses = $requests->canceled();
+		$this->assertSame( $inital, $runner->run( $inital, $mresponses ) );
+
+		$runner = new FallbackRunner( [
+			$this->mockElasticSearchRequestFallbackMethod( $query, 0.0, $resp, null ),
+			$this->mockElasticSearchRequestFallbackMethod( $query, 0.5, $resp, $rewritten ),
+		] );
+		$requests = new MSearchRequests();
+		$runner->attachSearchRequests( $requests, $client );
+		$mresponses = $requests->toMSearchResponses( [ $resp ] );
+		$this->assertFalse( $mresponses->hasResultsFor( 'fallback-1' ) );
+		$this->assertTrue( $mresponses->hasResultsFor( 'fallback-2' ) );
+		$this->assertSame( $rewritten, $runner->run( $inital, $mresponses ) );
+	}
+
+	public function mockElasticSearchRequestFallbackMethod( $query, $approx, $expectedResponse, $rewritten ) {
+		return new class( $query, $approx, $expectedResponse, $rewritten ) implements FallbackMethod, ElasticSearchRequestFallbackMethod {
+			private $query;
+			private $approx;
+			private $expectedResponse;
+			private $rewritten;
+
+			public function __construct( $query, $approx, $expectedResponse, $rewritten ) {
+				$this->query = $query;
+				$this->approx = $approx;
+				$this->expectedResponse = $expectedResponse;
+				$this->rewritten = $rewritten;
+			}
+
+			public function getSearchRequest( Client $client ) {
+				if ( $this->approx <= 0 ) {
+					return null;
+				}
+				$search = new Search( $client );
+				$search->setQuery( $this->query );
+				return $search;
+			}
+
+			public static function build( SearcherFactory $searcherFactory, SearchQuery $query ) {
+				throw new \AssertionError();
+			}
+
+			public function successApproximation( FallbackRunnerContext $context ) {
+				if ( $this->approx > 0 ) {
+					Assert::assertSame( $this->expectedResponse, $context->getMethodResponse( $this ) );
+				}
+				return $this->approx;
+			}
+
+			public function rewrite( FallbackRunnerContext $context ) {
+				Assert::assertSame( $this->expectedResponse, $context->getMethodResponse( $this ) );
+				return $this->rewritten;
+			}
+		};
 	}
 }

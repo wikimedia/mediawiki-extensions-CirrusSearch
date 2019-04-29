@@ -3,6 +3,7 @@
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\Search\ResultSet;
+use Elastica\ResultSet as ElasicaResultSet;
 
 /**
  * Context storing the states of the FallbackRunner.
@@ -26,4 +27,14 @@ interface FallbackRunnerContext {
 	 * @see FallbackMethod::rewrite()
 	 */
 	public function getPreviousResultSet();
+
+	/**
+	 * Retrieve the response of the query attached to the main
+	 * search request using ElasticSearchRequestFallbackMethod::getSearchRequest().
+	 * NOTE: This method must not be called if no requests was attached.
+	 *
+	 * @return ElasicaResultSet
+	 * @see ElasticSearchRequestFallbackMethod::getSearchRequest()
+	 */
+	public function getMethodResponse(): ElasicaResultSet;
 }

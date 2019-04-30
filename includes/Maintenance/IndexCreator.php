@@ -40,7 +40,7 @@ class IndexCreator {
 
 	/**
 	 * @param bool $rebuild
-	 * @param int|string $maxShardsPerNode 'unlimited'
+	 * @param int $maxShardsPerNode
 	 * @param int $shardCount
 	 * @param string $replicaCount
 	 * @param int $refreshInterval
@@ -86,7 +86,7 @@ class IndexCreator {
 	}
 
 	/**
-	 * @param int|string $maxShardsPerNode 'unlimited'
+	 * @param int $maxShardsPerNode
 	 * @param int $shardCount
 	 * @param string $replicaCount
 	 * @param int $refreshInterval
@@ -105,7 +105,6 @@ class IndexCreator {
 		$searchAllFields,
 		array $extraSettings
 	) {
-		$maxShardsPerNode = $maxShardsPerNode === 'unlimited' ? -1 : $maxShardsPerNode;
 		$args = [
 			'settings' => [
 				'number_of_shards' => $shardCount,

@@ -136,6 +136,12 @@ $wgCirrusSearchReplicas = '0-2';
  * prevent two shards from the same high traffic index from being allocated
  * onto the same node.
  *
+ * You can also set this setting for each cluster:
+ * $wgCirrusSearchMaxShardsPerNode = [
+ *     'cluster1' => [ 'content' => 1 ],
+ *     'cluster2' => [ 'content' => 'unlimited' ],
+ * ];
+ *
  * @example $wgCirrusSearchMaxShardsPerNode['content'] = 1;
  */
 $wgCirrusSearchMaxShardsPerNode = [];

@@ -64,6 +64,17 @@ class ClusterSettings {
 	}
 
 	/**
+	 * @param string $indexType
+	 * @return int Number of shards per node, or 'unlimited'.
+	 */
+	public function getMaxShardsPerNode( $indexType ) {
+		$settings = $this->config->get( 'CirrusSearchMaxShardsPerNode' );
+		$max = $settings[$this->cluster][$indexType] ?? $settings[$indexType] ?? -1;
+		// Allow convenience setting of 'unlimited' which translates to elasticsearch -1 (unbounded).
+		return $max === 'unlimited' ? -1 : $max;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getDropDelayedJobsAfter() {

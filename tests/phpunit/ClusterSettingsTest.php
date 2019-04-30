@@ -83,6 +83,89 @@ class ClusterSettingsTest extends CirrusTestCase {
 		$this->assertEquals( $expect, $settings->getReplicaCount( $indexType ) );
 	}
 
+	public static function provideMaxShardsPerNode() {
+		return [
+			'empty configuration' => [
+				'maxShardsPerNode' => [],
+				'cluster' => 'default',
+				'indexType' => 'content',
+				'expect' => -1,
+			],
+			'explicitly unbounded' => [
+				'maxShardsPerNode' => [ 'content' => 1, 'general' => 'unlimited' ],
+				'cluster' => 'default',
+				'indexType' => 'general',
+				'expect' => -1,
+			],
+			'defined for index type' => [
+				'maxShardsPerNode' => [ 'content' => 1 ],
+				'cluster' => 'default',
+				'indexType' => 'content',
+				'expect' => 1,
+			],
+			'defined for other index type' => [
+				'maxShardsPerNode' => [ 'general' => 1 ],
+				'cluster' => 'default',
+				'indexType' => 'content',
+				'expect' => -1,
+			],
+			'defined per cluster (1/2)' => [
+				'maxShardsPerNode' => [
+					'cluster1' => [ 'content' => 3 ],
+					'cluster2' => [ 'content' => 1 ],
+				],
+				'cluster' => 'cluster1',
+				'indexType' => 'content',
+				'expect' => 3,
+			],
+
+			'defined per cluster (2/2)' => [
+				'maxShardsPerNode' => [
+					'cluster1' => [ 'content' => 3 ],
+					'cluster2' => [ 'content' => 1 ],
+				],
+				'cluster' => 'cluster2',
+				'indexType' => 'content',
+				'expect' => 1,
+			],
+			'mixed per-cluster and global defaults (1/2)' => [
+				'maxShardsPerNode' => [
+					'cluster1' => [ 'content' => 3 ],
+					'content' => 1,
+				],
+				'cluster' => 'cluster1',
+				'indexType' => 'content',
+				'expect' => 3,
+			],
+			'mixed per-cluster and global defaults (2/2)' => [
+				'maxShardsPerNode' => [
+					// Fully defined, with cluster + indexName, must take precedence
+					'cluster1' => [ 'content' => 3 ],
+					'content' => 1,
+				],
+				'cluster' => 'cluster1',
+				'indexType' => 'content',
+				'expect' => 3,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideMaxShardsPerNode
+	 */
+	public function testGetMaxShardsPerNode( $maxShardsPerNode, $cluster, $indexType, $expect ) {
+		$config = $this->getMockBuilder( SearchConfig::class )
+			->disableOriginalConstructor()
+			->getMock();
+		$config->expects( $this->any() )
+			->method( 'get' )
+			->with( 'CirrusSearchMaxShardsPerNode' )
+			->will( $this->returnValue( $maxShardsPerNode ) );
+
+		$settings = new ClusterSettings( $config, $cluster );
+		$this->assertEquals( $expect, $settings->getMaxShardsPerNode( $indexType ) );
+	}
+
 	public static function provideDropDelayedJobsAfter() {
 		return [
 			'Simple integer timeout is returned directly' => [

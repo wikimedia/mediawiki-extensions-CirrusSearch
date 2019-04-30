@@ -106,11 +106,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	private $optimizeIndex;
 
 	/**
-	 * @var string|int
-	 */
-	protected $maxShardsPerNode;
-
-	/**
 	 * @var array(String) list of available plugins
 	 */
 	private $availablePlugins;
@@ -184,7 +179,6 @@ class UpdateSuggesterIndex extends Maintenance {
 		global $wgLanguageCode,
 			$wgCirrusSearchBannedPlugins,
 			$wgCirrusSearchMasterTimeout,
-			$wgCirrusSearchMaxShardsPerNode,
 			$wgCirrusSearchCompletionDefaultScore;
 
 		$this->disablePoolCountersAndLogging();
@@ -195,6 +189,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		try {
 			$this->getShardCount();
 			$this->getReplicaCount();
+			$this->getMaxShardsPerNode();
 		} catch ( \Exception $e ) {
 			$this->fatalError(
 				"Failed to get shard count and replica count information: {$e->getMessage()}"
@@ -219,8 +214,6 @@ class UpdateSuggesterIndex extends Maintenance {
 			->buildConfig();
 
 		$this->utils->checkElasticsearchVersion();
-
-		$this->maxShardsPerNode = $wgCirrusSearchMaxShardsPerNode[$this->indexTypeName] ?? 'unlimited';
 
 		$this->scoreMethodName = $this->getOption(
 			'scoringMethod', $wgCirrusSearchCompletionDefaultScore
@@ -699,7 +692,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function createIndex() {
-		$maxShardsPerNode = $this->maxShardsPerNode === 'unlimited' ? -1 : $this->maxShardsPerNode;
 		// This is "create only" for now.
 		if ( $this->getIndex()->exists() ) {
 			throw new \Exception( "Index already exists." );
@@ -717,7 +709,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			'auto_expand_replicas' => "0-0",
 			'refresh_interval' => -1,
 			'analysis' => $this->analysisConfig,
-			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
+			'routing.allocation.total_shards_per_node' => $this->getMaxShardsPerNode(),
 		];
 
 		if ( $this->hasOption( 'allocationIncludeTag' ) ) {
@@ -794,6 +786,14 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	private function getShardCount() {
 		return $this->getConnection()->getSettings()->getShardCount( $this->indexTypeName );
+	}
+
+	/**
+	 * @return int Maximum number of shards that can be allocated on a single elasticsearch
+	 *  node. -1 for unlimited.
+	 */
+	private function getMaxShardsPerNode() {
+		return $this->getConnection()->getSettings()->getMaxShardsPerNode( $this->indexTypeName );
 	}
 
 	private function updateVersions() {

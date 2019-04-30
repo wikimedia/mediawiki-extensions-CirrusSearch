@@ -491,19 +491,29 @@ If true CirrusSearch asks Elasticsearch to perform searches using a mode that sh
 produce more accurate results at the cost of performance. See this for more info:
 http://www.elasticsearch.org/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch/
 
+; $wgCirrusSearchFallbackProfile
+
+Default:
+    $wgCirrusSearchFallbackProfile = 'phrase_suggest_and_language_detection';
+
+Configure fallback methods.
+Responsible from displaying the "Did you mean" suggestion and/or
+rewriting the query to increase the chances to display some results.
+
+; $wgCirrusSearchFallbackProfiles
+
+Default:
+    $wgCirrusSearchFallbackProfiles = []
+
+Additional fallback profiles
+(see profiles/FallbackProfiles.config.php)
+
 ; $wgCirrusSearchEnablePhraseSuggest
 
 Default:
     $wgCirrusSearchEnablePhraseSuggest = true;
 
 Should the phrase suggester (did you mean) be enabled?
-
-; $wgCirrusSearchPhraseSuggestSettings
-
-Default:
-    $wgCirrusSearchPhraseSuggestSettings = 'default';
-
-Set the Phrase suggester settings using the default profile.
 
 ; $wgCirrusSearchPhraseSuggestProfiles
 

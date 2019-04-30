@@ -36,7 +36,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			'similarity prefix' => [ SearchProfileService::SIMILARITY, SearchProfileService::CONTEXT_DEFAULT ],
 			'crossproject block order' => [ SearchProfileService::CROSS_PROJECT_BLOCK_SCORER, SearchProfileService::CONTEXT_DEFAULT ],
 			'completion' => [ SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT ],
-			'phrase suggester' => [ SearchProfileService::PHRASE_SUGGESTER, SearchProfileService::CONTEXT_DEFAULT ],
+			'fallback' => [ SearchProfileService::FALLBACKS, SearchProfileService::CONTEXT_DEFAULT ],
 			'fulltext query builder' => [ SearchProfileService::FT_QUERY_BUILDER, SearchProfileService::CONTEXT_DEFAULT ],
 		];
 	}
@@ -123,9 +123,13 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 				SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT,
 				'config', 'CirrusSearchCompletionSettings', [ 'unittest' => [] ],
 			],
-			'phrase suggest by config' => [
-				SearchProfileService::PHRASE_SUGGESTER, SearchProfileService::CONTEXT_DEFAULT,
-				'config', 'CirrusSearchPhraseSuggestSettings', [ 'unittest' => [] ],
+			'fallbacks by config' => [
+				SearchProfileService::FALLBACKS, SearchProfileService::CONTEXT_DEFAULT,
+				'config', 'CirrusSearchFallbackProfile', [ 'unittest' => [] ],
+			],
+			'fallbacks by uri' => [
+				SearchProfileService::FALLBACKS, SearchProfileService::CONTEXT_DEFAULT,
+				'uri', 'cirrusFallbackProfile', [ 'unittest' => [] ],
 			],
 			'fulltext query builder by uri' => [
 				SearchProfileService::FT_QUERY_BUILDER, SearchProfileService::CONTEXT_DEFAULT,

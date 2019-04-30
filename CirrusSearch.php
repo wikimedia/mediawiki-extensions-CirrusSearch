@@ -443,6 +443,19 @@ $wgCirrusSearchFunctionRescoreWindowSize = 8192;
 $wgCirrusSearchMoreAccurateScoringMode = true;
 
 /**
+ * Configure fallback methods.
+ * Responsible from displaying the "Did you mean" suggestion and/or
+ * rewriting the query to increase the chances to display some results
+ */
+$wgCirrusSearchFallbackProfile = 'phrase_suggest_and_language_detection';
+
+/**
+ * Additional fallback profiles
+ * (see profiles/FallbackProfiles.config.php)
+ */
+$wgCirrusSearchFallbackProfiles = [];
+
+/**
  * Should the phrase suggester (did you mean) be enabled?
  */
 $wgCirrusSearchEnablePhraseSuggest = true;
@@ -452,11 +465,6 @@ $wgCirrusSearchEnablePhraseSuggest = true;
  * see profiles/PhraseSuggesterProfiles.config.php
  */
 $wgCirrusSearchPhraseSuggestProfiles = [];
-
-/**
- * Set the Phrase suggester settings using the default profile.
- */
-$wgCirrusSearchPhraseSuggestSettings = 'default';
 
 /**
  * Use a reverse field to build the did you mean suggestions.

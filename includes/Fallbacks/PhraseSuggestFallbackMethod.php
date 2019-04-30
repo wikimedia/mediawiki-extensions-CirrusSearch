@@ -5,6 +5,7 @@ namespace CirrusSearch\Fallbacks;
 use CirrusSearch\OtherIndexes;
 use CirrusSearch\Parser\AST\Visitor\QueryFixer;
 use CirrusSearch\Parser\BasicQueryClassifier;
+use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchQuery;
@@ -34,6 +35,11 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	private $queryFixer;
 
 	/**
+	 * @var string
+	 */
+	private $profileName;
+
+	/**
 	 * @var array|null settings (lazy loaded)
 	 */
 	private $profile;
@@ -42,20 +48,39 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	 * PhraseSuggestFallbackMethod constructor.
 	 * @param SearcherFactory $factory
 	 * @param SearchQuery $query
+	 * @param string $profileName name of the profile to use (null to use the defaults provided by the ProfileService)
 	 */
-	public function __construct( SearcherFactory $factory, SearchQuery $query ) {
+	private function __construct( SearcherFactory $factory, SearchQuery $query, $profileName ) {
+		Assert::precondition( $query->isWithDYMSuggestion() &&
+							  $query->getSearchConfig()->get( 'CirrusSearchEnablePhraseSuggest' ) &&
+							  $query->getOffset() == 0, "Unsupported query" );
 		$this->searcherFactory = $factory;
 		$this->query = $query;
 		$this->queryFixer = new QueryFixer( $query->getParsedQuery() );
+		$this->profileName = $profileName;
 	}
 
 	/**
 	 * @param SearcherFactory $factory
 	 * @param SearchQuery $query
-	 * @return FallbackMethod
+	 * @param array $params
+	 * @return FallbackMethod|null
 	 */
-	public static function build( SearcherFactory $factory, SearchQuery $query ) {
-		return new self( $factory, $query );
+	public static function build( SearcherFactory $factory, SearchQuery $query, array $params ) {
+		if ( !$query->isWithDYMSuggestion() ) {
+			return null;
+		}
+		if ( !$query->getSearchConfig()->get( 'CirrusSearchEnablePhraseSuggest' ) ) {
+			return null;
+		}
+		// TODO: Should this be tested at an upper level?
+		if ( $query->getOffset() !== 0 ) {
+			return null;
+		}
+		if ( !isset( $params['profile'] ) ) {
+			throw new SearchProfileException( "Missing mandatory parameter 'profile'" );
+		}
+		return new self( $factory, $query, $params['profile'] );
 	}
 
 	/**
@@ -180,19 +205,14 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	 * @return array|null
 	 */
 	public function getSuggestQueries() {
-		if ( $this->query->isWithDYMSuggestion()
-				&& $this->query->getSearchConfig()->get( 'CirrusSearchEnablePhraseSuggest' )
-				&& $this->query->getOffset() === 0
-		) {
-			$term = $this->queryFixer->getFixablePart();
-			if ( $term !== null ) {
-				return [
-					'suggest' => [
-						'text' => $term,
-						'suggest' => $this->buildSuggestConfig(),
-					]
-				];
-			}
+		$term = $this->queryFixer->getFixablePart();
+		if ( $term !== null ) {
+			return [
+				'suggest' => [
+					'text' => $term,
+					'suggest' => $this->buildSuggestConfig(),
+				]
+			];
 		}
 		return null;
 	}
@@ -281,7 +301,8 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	private function getProfile() {
 		if ( $this->profile === null ) {
 			$this->profile = $this->query->getSearchConfig()->getProfileService()
-				->loadProfile( SearchProfileService::PHRASE_SUGGESTER );
+				->loadProfileByName( SearchProfileService::PHRASE_SUGGESTER,
+					$this->profileName );
 		}
 		return $this->profile;
 	}

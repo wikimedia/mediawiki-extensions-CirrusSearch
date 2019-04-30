@@ -22,9 +22,10 @@ interface FallbackMethod {
 	/**
 	 * @param SearcherFactory $searcherFactory
 	 * @param SearchQuery $query
-	 * @return FallbackMethod
+	 * @param array $params
+	 * @return FallbackMethod|null the method instance or null if unavailable
 	 */
-	public static function build( SearcherFactory $searcherFactory, SearchQuery $query );
+	public static function build( SearcherFactory $searcherFactory, SearchQuery $query, array $params );
 
 	/**
 	 * Approximation of the success of this fallback method

@@ -17,7 +17,8 @@
 			"EagerLin",
 			"A2093064",
 			"Deathkon",
-			"夢蝶葬花"
+			"夢蝶葬花",
+			"佛壁灯"
 		]
 	},
 	"cirrussearch-desc": "以Elasticsearch为基础的MediaWiki搜索工具",
@@ -52,9 +53,9 @@
 	"cirrussearch-qi-profile-popular-inclinks": "主要基于链入链接数排名",
 	"prefs-completion": "搜索完成",
 	"cirrussearch-pref-completion-section-desc": "完整搜索建议器",
-	"cirrussearch-pref-completion-profile-help": "设置自动完成（随打即搜）建议的行为。",
+	"cirrussearch-pref-completion-profile-help": "设置自动完成（即时搜索）建议的行为。\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester 自动补全建议]是用于搜索建议中的算法，其错字校正和搜索相关性均较佳。前缀搜索是旧版即时搜索的算法。",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "默认（推荐）",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "纠正最多两个错别字。修复相近重定向。",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "纠正最多两个语病。移除与主条目是否相似的重定向。",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "子句匹配（建议用于长页面标题）",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "纠正最多两个错别字。修复相近重定向。匹配标题中的子句。",
 	"cirrussearch-completion-profile-strict-pref-name": "严格模式（高级）",

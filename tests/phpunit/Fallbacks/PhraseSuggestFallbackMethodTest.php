@@ -140,4 +140,26 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 			->build();
 		$this->assertNull( PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] ) );
 	}
+
+	public function testDisabledIfHasASuggestionOrWasRewritten() {
+		$factory = $this->getSearcherFactoryMock();
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ), "foo bar" )
+			->setWithDYMSuggestion( true )
+			->build();
+		/**
+		 * @var $method PhraseSuggestFallbackMethod
+		 */
+		$method = PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] );
+		$this->assertNotNull( $method->getSuggestQueries() );
+
+		$rset = DummyResultSet::fakeTotalHits( 10 );
+		$rset->setSuggestionQuery( "test", "test" );
+		$context = new FallbackRunnerContextImpl( $rset );
+		$this->assertSame( $rset, $method->rewrite( $context ) );
+
+		$rset = DummyResultSet::fakeTotalHits( 10 );
+		$rset->setRewrittenQuery( "test", "test" );
+		$context = new FallbackRunnerContextImpl( $rset );
+		$this->assertSame( $rset, $method->rewrite( $context ) );
+	}
 }

@@ -118,4 +118,15 @@ class QueryFixerTest extends CirrusTestCase {
 		$this->assertNotNull( $fixer->getFixablePart() );
 		$this->assertEquals( 'intitle:&lt; hello <em>world</em> intitle:&gt;', $fixer->fix( 'hello <em>world</em>', true ) );
 	}
+
+	public function testBuild() {
+		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [ 'CirrusSearchStripQuestionMarks' => 'all' ] ) );
+		$parsed = $parser->parse( 'foo bar' );
+		$fixer = QueryFixer::build( $parsed );
+		$this->assertSame( $fixer, QueryFixer::build( $parsed ) );
+
+		$parsed = $parser->parse( 'foo bar' );
+		$this->assertEquals( $fixer, QueryFixer::build( $parsed ) );
+		$this->assertNotSame( $fixer, QueryFixer::build( $parsed ) );
+	}
 }

@@ -61,10 +61,18 @@ $wgCirrusSearchDefaultCluster = 'default';
  * 'replica' takes the value of the array key and 'group' is set
  * to 'default'. For more information see docs/multi_cluster.txt.
  *
- * $wgCirrusSearchClusters = array(
- * 	'dc-foo' => array( 'es01.foo.local', 'es02.foo.local' ),
- * 	'dc-bar' => array( 'es01.bar.local', 'es02.bar.local' ),
- * );
+ * $wgCirrusSearchClusters = [
+ * 	'dc-foo' => [ 'es01.foo.local', 'es02.foo.local' ],
+ * 	'dc-bar' => [ 'es01.bar.local', 'es02.bar.local' ],
+ * ];
+ *
+ * A non-standard elasticsearch port can be defined like this:
+ *
+ * $wgCirrusSearchClusters = [
+ *     'default' => [
+ *          [ 'host' => '127.0.0.1', 'port' => 1234 ],
+ *     ]
+ * ];
  */
 $wgCirrusSearchClusters = [
 	'default' => [ 'localhost' ],

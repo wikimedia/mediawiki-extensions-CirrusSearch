@@ -51,10 +51,19 @@ This list of addresses can additionally contain 'replica' and
 to 'default'. For more information see docs/multi_cluster.txt.
 
 Example:
-    $wgCirrusSearchClusters = array(
-        'dc-foo' => array( 'es01.foo.local', 'es02.foo.local' )
-        'dc-bar' => array( 'es01.bar.local', 'es02.bar.local' )
-    );
+    $wgCirrusSearchClusters = [
+        'dc-foo' => [ 'es01.foo.local', 'es02.foo.local' ]
+        'dc-bar' => [ 'es01.bar.local', 'es02.bar.local' ]
+    ];
+
+A non-standard elasticsearch port can also be defined.
+
+Example:
+    $wgCirrusSearchClusters = [
+        'default' => [
+            [ 'host' => '127.0.0.1', 'port' => 1234 ],
+        ]
+    ];
 
 ; $wgCirrusSearchWriteClusters
 

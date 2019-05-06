@@ -13,6 +13,7 @@ use Elastica\ResultSet\DefaultBuilder;
 
 /**
  * @covers \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod
+ * @covers \CirrusSearch\Fallbacks\FallbackMethodTrait
  */
 class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 

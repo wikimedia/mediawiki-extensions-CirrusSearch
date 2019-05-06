@@ -2,7 +2,10 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\SearchQuery;
+use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
 
 trait FallbackMethodTrait {
@@ -48,5 +51,56 @@ trait FallbackMethodTrait {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * If all conditions are met execute a search query using the $suggestedQuery and returns its results.
+	 * Conditions are:
+	 *  - SearchQuery::isAllowRewrite() must be true on the original query
+	 *  - The original query must be a simple bag of words
+	 *  - FallbackRunnerContext::costlyCallAllowed() must be true
+	 *  - number of displayable results must not exceed $resultsThreshold
+	 *
+	 * @param FallbackRunnerContext $context
+	 * @param SearchQuery $originalQuery
+	 * @param string $suggestedQuery
+	 * @param string|null $suggestedQuerySnippet
+	 * @param int $resultsThreshold
+	 * @return ResultSet the new resultSet or the previous set found in the FallbackRunnerContext
+	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
+	 * @see SearchQuery::isAllowRewrite()
+	 * @see FallbackRunnerContext::costlyCallAllowed()
+	 * @see FallbackMethodTrait::resultsThreshold()
+	 */
+	public function maybeSearchAndRewrite(
+		FallbackRunnerContext $context,
+		$originalQuery,
+		$suggestedQuery,
+		$suggestedQuerySnippet = null,
+		$resultsThreshold = 1
+	) {
+		$previousSet = $context->getPreviousResultSet();
+		if ( !$originalQuery->isAllowRewrite()
+			 || !$context->costlyCallAllowed()
+			 || $this->resultsThreshold( $previousSet, $resultsThreshold )
+			 || !$originalQuery->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::SIMPLE_BAG_OF_WORDS )
+		) {
+			return $previousSet;
+		}
+
+		$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $originalQuery,
+			$suggestedQuery )->build();
+		$searcher = $context->makeSearcher( $rewrittenQuery );
+		$status = $searcher->search( $rewrittenQuery );
+		if ( $status->isOK() && $status->getValue() instanceof ResultSet ) {
+			/**
+			 * @var ResultSet $newresults
+			 */
+			$newresults = $status->getValue();
+			$newresults->setRewrittenQuery( $suggestedQuery, $suggestedQuerySnippet );
+			return $newresults;
+		} else {
+			return $previousSet;
+		}
 	}
 }

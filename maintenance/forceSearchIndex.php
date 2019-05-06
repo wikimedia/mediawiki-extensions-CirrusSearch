@@ -398,6 +398,9 @@ class ForceSearchIndex extends Maintenance {
 			'log_type' => 'delete',
 			'log_action' => 'delete',
 			'EXISTS(select * from archive where ar_title = log_title and ar_namespace = log_namespace)',
+			// Prior to 2010 the logging table contains nulls. As the docs in elasticsearch use the page id
+			// as the document id we cannot handle these old rows.
+			'log_page IS NOT NULL',
 		] );
 
 		$it->setFetchColumns( [ 'log_timestamp', 'log_namespace', 'log_title', 'log_page' ] );

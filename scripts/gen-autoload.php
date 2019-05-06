@@ -5,6 +5,7 @@ if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once "$IP/includes/utils/AutoloadGenerator.php";
+require_once "$IP/includes/utils/ClassCollector.php";
 
 function main() {
 	$base = dirname( __DIR__ );

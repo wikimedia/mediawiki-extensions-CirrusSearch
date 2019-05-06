@@ -18,14 +18,14 @@ class MaxShardsPerNodeValidator extends Validator {
 	private $indexType;
 
 	/**
-	 * @var int|string
+	 * @var int
 	 */
 	private $maxShardsPerNode;
 
 	/**
 	 * @param Index $index
 	 * @param string $indexType
-	 * @param int|string $maxShardsPerNode
+	 * @param int $maxShardsPerNode
 	 * @param Printer|null $out
 	 */
 	public function __construct( Index $index, $indexType, $maxShardsPerNode, Printer $out = null ) {
@@ -42,16 +42,14 @@ class MaxShardsPerNodeValidator extends Validator {
 	public function validate() {
 		$this->outputIndented( "\tValidating max shards per node..." );
 		$settings = $this->index->getSettings()->get();
-		// Elasticsearch uses negative numbers or an unset value to represent unlimited.  We use the word 'unlimited'
-		// because that is easier to read.
-		$actualMaxShardsPerNode = $settings['routing']['allocation']['total_shards_per_node'] ?? 'unlimited';
-		$actualMaxShardsPerNode = $actualMaxShardsPerNode < 0 ? 'unlimited' : $actualMaxShardsPerNode;
+		// Elasticsearch uses negative numbers or an unset value to represent unlimited. We accept 'unlimited'
+		// but it is resolved when reading configuration and not here.
+		$actualMaxShardsPerNode = $settings['routing']['allocation']['total_shards_per_node'] ?? -1;
 		$expectedMaxShardsPerNode = $this->maxShardsPerNode;
 		if ( $actualMaxShardsPerNode == $expectedMaxShardsPerNode ) {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "is $actualMaxShardsPerNode but should be $expectedMaxShardsPerNode..." );
-			$expectedMaxShardsPerNode = $expectedMaxShardsPerNode === 'unlimited' ? -1 : $expectedMaxShardsPerNode;
 			$this->index->getSettings()->set( [
 				'routing.allocation.total_shards_per_node' => $expectedMaxShardsPerNode
 			] );

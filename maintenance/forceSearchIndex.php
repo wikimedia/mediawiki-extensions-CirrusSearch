@@ -221,7 +221,7 @@ class ForceSearchIndex extends Maintenance {
 			} else {
 				$size = count( $batch['titlesToDelete'] );
 				$updater = $this->createUpdater();
-				$updater->archivePages( $batch['archive'], $this->archive );
+				$updater->archivePages( $batch['archive'] );
 				if ( !$this->archive ) {
 					$updater->deletePages( $batch['titlesToDelete'], $batch['docIdsToDelete'] );
 				}

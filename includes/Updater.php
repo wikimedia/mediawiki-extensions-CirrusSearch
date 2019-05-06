@@ -262,11 +262,10 @@ class Updater extends ElasticsearchIntermediary {
 	/**
 	 * Add documents to archive index.
 	 * @param array $archived
-	 * @param bool $forceIndex If true, index to archive regardless of config.
 	 * @return bool
 	 */
-	public function archivePages( $archived, $forceIndex = false ) {
-		if ( !$this->searchConfig->getElement( 'CirrusSearchIndexDeletes' ) && !$forceIndex ) {
+	public function archivePages( $archived ) {
+		if ( !$this->searchConfig->getElement( 'CirrusSearchIndexDeletes' ) ) {
 			// Disabled by config - don't do anything
 			return true;
 		}

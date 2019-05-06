@@ -124,7 +124,7 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 		} else {
 			$searcherFactory = $this->getSearcherFactoryMock( null, null );
 		}
-		$fallback = new LangDetectFallbackMethod( $query, $searcherFactory,
+		$fallback = new LangDetectFallbackMethod( $query,
 			[
 				'never_works_detector' => $this->getLanguageDetector( null ),
 				'always_works_but_useless' => $this->getLanguageDetector( 'en' ),
@@ -133,7 +133,7 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 			$this->getInterwikiMock( $targetWikiConfig, $returnedLang !== 'en' ? $returnedLang : null ) );
 
 		$initialResults = DummyResultSet::fakeTotalHits( $initialNumResults );
-		$context = new FallbackRunnerContextImpl( $initialResults );
+		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory );
 		$this->assertEquals( $expectedScoreApprox, $fallback->successApproximation( $context ) );
 		if ( $expectedScoreApprox > 0 ) {
 			$rewrittenResults = $fallback->rewrite( $context );
@@ -177,12 +177,12 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 				->build();
 
 		$searcherFactory = $this->getSearcherFactoryMock( null, null );
-		$fallback = new LangDetectFallbackMethod( $query, $searcherFactory,
+		$fallback = new LangDetectFallbackMethod( $query,
 			[ 'tested_detector' => $this->getLanguageDetector( 'fr' ) ],
 			$this->getInterwikiMock( $targetWikiConfig, $allowRewrite ? 'fr' : null ) );
 
 		$initialResults = DummyResultSet::fakeTotalHits( 0 );
-		$context = new FallbackRunnerContextImpl( $initialResults );
+		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory );
 		$this->assertEquals( $expectedScore, $fallback->successApproximation( $context ) );
 	}
 
@@ -203,21 +203,19 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 	}
 
 	public function testBuild() {
-		$factory = $this->getMock( SearcherFactory::class );
-
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar' )
 			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
 			->build();
-		$this->assertNull( LangDetectFallbackMethod::build( $factory, $query, [] ) );
+		$this->assertNull( LangDetectFallbackMethod::build( $query, [] ) );
 
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnableAltLanguage' => false ] ), 'foo bar' )
 			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
 			->build();
-		$this->assertNull( LangDetectFallbackMethod::build( $factory, $query, [] ) );
+		$this->assertNull( LangDetectFallbackMethod::build( $query, [] ) );
 
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnableAltLanguage' => false ] ), 'foo bar' )
 			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
 			->build();
-		$this->assertNull( LangDetectFallbackMethod::build( $factory, $query, [] ) );
+		$this->assertNull( LangDetectFallbackMethod::build( $query, [] ) );
 	}
 }

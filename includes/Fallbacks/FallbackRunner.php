@@ -42,14 +42,12 @@ class FallbackRunner implements SearchMetricsProvider {
 	}
 
 	/**
-	 * @param SearcherFactory $factory
 	 * @param SearchQuery $query
 	 * @param string $profileContext
 	 * @param array $profileContextParam
 	 * @return FallbackRunner
 	 */
 	public static function create(
-		SearcherFactory $factory,
 		SearchQuery $query,
 		$profileContext = SearchProfileService::CONTEXT_DEFAULT,
 		$profileContextParam = []
@@ -60,17 +58,16 @@ class FallbackRunner implements SearchMetricsProvider {
 			// not define any defaults for it.
 			return self::noopRunner();
 		}
-		return self::createFromProfile( $factory, $query,
+		return self::createFromProfile( $query,
 			$service->loadProfile( SearchProfileService::FALLBACKS, $profileContext, null, $profileContextParam ) );
 	}
 
 	/**
-	 * @param SearcherFactory $factory
 	 * @param SearchQuery $query
 	 * @param array $profile
 	 * @return FallbackRunner
 	 */
-	public static function createFromProfile( SearcherFactory $factory, SearchQuery $query, array $profile ): FallbackRunner {
+	public static function createFromProfile( SearchQuery $query, array $profile ): FallbackRunner {
 		$fallbackMethods = [];
 		$methodDefs = $profile['methods'] ?? [];
 		foreach ( $methodDefs as $methodDef ) {
@@ -85,7 +82,7 @@ class FallbackRunner implements SearchMetricsProvider {
 			if ( !is_subclass_of( $clazz, FallbackMethod::class ) ) {
 				throw new SearchProfileException( "Invalid FallbackMethod: $clazz must implement " . FallbackMethod::class );
 			}
-			$method = call_user_func( [ $clazz, 'build' ], $factory, $query, $params );
+			$method = call_user_func( [ $clazz, 'build' ], $query, $params );
 			if ( $method !== null ) {
 				$fallbackMethods[] = $method;
 			}
@@ -94,14 +91,15 @@ class FallbackRunner implements SearchMetricsProvider {
 	}
 
 	/**
+	 * @param SearcherFactory $factory
 	 * @param ResultSet $initialResult
 	 * @param MSearchResponses $responses
 	 * @return ResultSet
 	 */
-	public function run( ResultSet $initialResult, MSearchResponses $responses ) {
+	public function run( SearcherFactory $factory, ResultSet $initialResult, MSearchResponses $responses ) {
 		$methods = [];
 		$position = 0;
-		$context = new FallbackRunnerContextImpl( $initialResult );
+		$context = new FallbackRunnerContextImpl( $initialResult, $factory );
 		foreach ( $this->fallbackMethods as $fallback ) {
 			$position++;
 			$context->resetSuggestResponse();

@@ -25,11 +25,6 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	private $query;
 
 	/**
-	 * @var SearcherFactory
-	 */
-	private $searcherFactory;
-
-	/**
 	 * @var QueryFixer
 	 */
 	private $queryFixer;
@@ -46,27 +41,24 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 
 	/**
 	 * PhraseSuggestFallbackMethod constructor.
-	 * @param SearcherFactory $factory
 	 * @param SearchQuery $query
 	 * @param string $profileName name of the profile to use (null to use the defaults provided by the ProfileService)
 	 */
-	private function __construct( SearcherFactory $factory, SearchQuery $query, $profileName ) {
+	private function __construct( SearchQuery $query, $profileName ) {
 		Assert::precondition( $query->isWithDYMSuggestion() &&
 							  $query->getSearchConfig()->get( 'CirrusSearchEnablePhraseSuggest' ) &&
 							  $query->getOffset() == 0, "Unsupported query" );
-		$this->searcherFactory = $factory;
 		$this->query = $query;
 		$this->queryFixer = QueryFixer::build( $query->getParsedQuery() );
 		$this->profileName = $profileName;
 	}
 
 	/**
-	 * @param SearcherFactory $factory
 	 * @param SearchQuery $query
 	 * @param array $params
 	 * @return FallbackMethod|null
 	 */
-	public static function build( SearcherFactory $factory, SearchQuery $query, array $params ) {
+	public static function build( SearchQuery $query, array $params ) {
 		if ( !$query->isWithDYMSuggestion() ) {
 			return null;
 		}
@@ -80,7 +72,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		if ( !isset( $params['profile'] ) ) {
 			throw new SearchProfileException( "Missing mandatory parameter 'profile'" );
 		}
-		return new self( $factory, $query, $params['profile'] );
+		return new self( $query, $params['profile'] );
 	}
 
 	/**
@@ -120,7 +112,8 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 			return $previousSet;
 		}
 		$this->showDYMSuggestion( $firstPassResults, $previousSet );
-		if ( !$this->query->isAllowRewrite()
+		if ( !$context->costlyCallAllowed()
+			|| !$this->query->isAllowRewrite()
 			|| $this->resultsThreshold( $previousSet )
 			|| !$this->query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::SIMPLE_BAG_OF_WORDS )
 		) {
@@ -129,7 +122,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 
 		$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $this->query,
 			$firstPassResults->getSuggestionQuery() )->build();
-		$searcher = $this->searcherFactory->makeSearcher( $rewrittenQuery );
+		$searcher = $context->makeSearcher( $rewrittenQuery );
 		$status = $searcher->search( $rewrittenQuery );
 		if ( $status->isOK() && $status->getValue() instanceof ResultSet ) {
 			/**

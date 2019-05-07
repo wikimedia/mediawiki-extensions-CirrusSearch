@@ -237,6 +237,12 @@ class Connection extends ElasticaConnection {
 			);
 		}
 
+		if ( !$this->getSettings()->isPrivateCluster() ) {
+			$indexTypes = array_filter( $indexTypes, function ( $type ) {
+				return $type !== self::ARCHIVE_INDEX_TYPE;
+			} );
+		}
+
 		return $indexTypes;
 	}
 

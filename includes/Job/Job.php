@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Job;
 
+use CirrusSearch\ClusterSettings;
 use CirrusSearch\Connection;
 use CirrusSearch\ExternalIndex;
 use CirrusSearch\HashSearchConfig;
@@ -226,6 +227,19 @@ abstract class Job extends MWJob {
 			}
 			$clusterNames = array_filter( $clusterNames, function ( $cluster ) use ( $otherIndex ) {
 				return !$otherIndex->isClusterBlacklisted( $cluster );
+			} );
+		}
+
+		// Limit private data writes, such as archive index, to appropriately
+		// flagged clusters
+		if ( $this->params['private_data'] ?? false ) {
+			// $clusterNames could be empty after this filter.  All consumers
+			// must work appropriately with no connections returned, typically
+			// by looping over the connections and doing nothing when no
+			// connections are provided.
+			$clusterNames = array_filter( $clusterNames, function ( $name ) use ( $config ) {
+				$settings = new ClusterSettings( $config, $name );
+				return $settings->isPrivateCluster();
 			} );
 		}
 

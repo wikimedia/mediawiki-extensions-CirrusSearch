@@ -194,4 +194,35 @@ class ClusterSettingsTest extends CirrusTestCase {
 		$settings = new ClusterSettings( $config, $cluster );
 		$this->assertEquals( $expect, $settings->getDropDelayedJobsAfter() );
 	}
+
+	public static function provideIsPrivate() {
+		return [
+			'null allows all' => [
+				'expected' => true,
+				'cluster' => 'dc.a',
+				'privateClusters' => null,
+			],
+			'listed clusters are private' => [
+				'expected' => true,
+				'cluster' => 'dc.a',
+				'privateClusters' => [ 'dc.a', 'dc.b' ],
+			],
+			'unlisted clusters are not private' => [
+				'expected' => false,
+				'cluster' => 'unk',
+				'privateClusters' => [ 'dc.a', 'dc.b' ],
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideIsPrivate
+	 */
+	public function testIsPrivate( $expected, $cluster, $privateClusters ) {
+		$config = new HashSearchConfig( [
+			'CirrusSearchPrivateClusters' => $privateClusters,
+		] );
+		$settings = new ClusterSettings( $config, $cluster );
+		$this->assertEquals( $expected, $settings->isPrivateCluster() );
+	}
 }

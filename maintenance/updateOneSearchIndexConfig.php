@@ -231,6 +231,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->masterTimeout = $wgCirrusSearchMasterTimeout;
 		$this->refreshInterval = $wgCirrusSearchRefreshInterval;
 
+		if ( $this->indexType === Connection::ARCHIVE_INDEX_TYPE &&
+			!$this->getConnection()->getSettings()->isPrivateCluster()
+		) {
+			$this->fatalError( "Not allowing {$this->indexType} on a non-private cluster" );
+			return true;
+		}
+
 		$this->initMappingConfigBuilder();
 
 		try{

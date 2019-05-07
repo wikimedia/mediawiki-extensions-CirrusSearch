@@ -194,9 +194,10 @@ abstract class Job extends MWJob {
 	 */
 	protected function decideClusters() {
 		$cluster = $this->params['cluster'] ?? null;
+		$assignment = $this->searchConfig->getClusterAssignment();
 		if ( $cluster === null ) {
-			$clusterNames = $this->searchConfig->getClusterAssignment()->getWritableClusters();
-		} elseif ( $this->searchConfig->canWriteToCluster( $cluster ) ) {
+			$clusterNames = $assignment->getWritableClusters();
+		} elseif ( $assignment->canWriteToCluster( $cluster ) ) {
 			$clusterNames = [ $cluster ];
 		} else {
 			// Just in case a job is present in the queue but its cluster

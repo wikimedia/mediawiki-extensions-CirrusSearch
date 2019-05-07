@@ -29,6 +29,10 @@ class ConstantAssignment implements ClusterAssignment {
 		return [ 'default' ];
 	}
 
+	public function canWriteToCluster( $clusterName ) {
+		return true;
+	}
+
 	public function getCrossClusterName() {
 		return null;
 	}

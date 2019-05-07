@@ -14,6 +14,12 @@ interface ClusterAssignment {
 	public function getWritableClusters(): array;
 
 	/**
+	 * @param string $clusterName
+	 * @return bool True when the named cluster is writable
+	 */
+	public function canWriteToCluster( $clusterName );
+
+	/**
 	 * @param string|null $cluster Name of cluster group to return connection
 	 *  configuration for, or null for the default search cluster.
 	 * @return string[]|array[] Either a list of hostnames, for default

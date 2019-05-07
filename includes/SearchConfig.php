@@ -250,21 +250,6 @@ class SearchConfig implements \Config {
 	}
 
 	/**
-	 * Check if a cluster is declared "writable".
-	 * NOTE: a cluster is considered writable even if one of its index is
-	 * frozen.
-	 * Before sending any writes in this cluster, the forzen index status
-	 * must be checked fr the  target index.
-	 * @see DataSender::isAvailableForWrites()
-	 *
-	 * @param string $cluster
-	 * @return bool
-	 */
-	public function canWriteToCluster( $cluster ) {
-		return in_array( $cluster, $this->getClusterAssignment()->getWritableClusters() );
-	}
-
-	/**
 	 * for unit tests purpose only
 	 * @return string[] list of "non-cirrus" var names
 	 */

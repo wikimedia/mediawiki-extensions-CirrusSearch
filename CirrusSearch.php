@@ -825,11 +825,6 @@ $wgCirrusSearchPoolCounterKey = '_elasticsearch';
 $wgCirrusSearchMergeSettings = [];
 
 /**
- * Whether search events should be logged in the client side.
- */
-$wgCirrusSearchEnableSearchLogging = false;
-
-/**
  * Whether elasticsearch queries should be logged on the server side.
  */
 $wgCirrusSearchLogElasticRequests = true;

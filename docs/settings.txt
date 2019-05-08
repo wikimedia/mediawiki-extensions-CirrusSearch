@@ -996,13 +996,6 @@ Merge configuration for the indices.  See
 http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/index-modules-merge.html
 for the meanings.
 
-; $wgCirrusSearchEnableSearchLogging
-
-Default:
-    $wgCirrusSearchEnableSearchLogging = false;
-
-Whether search events should be logged in the client side.
-
 ; $wgCirrusSearchLogElasticRequests
 
 Default:

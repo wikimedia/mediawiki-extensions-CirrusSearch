@@ -199,10 +199,11 @@ class MultiClusterAssignmentTest extends \MediaWikiTestCase {
 		$config = new SearchConfig();
 		// Unclear if it's right to not filter out with available cluster
 		// ElasticaWrite should error out if the cluster is unknown tho.
-		$this->assertEquals( [ 'one', 'two', 'unknown' ], $config->getClusterAssignment()->getWritableClusters() );
-		$this->assertTrue( $config->canWriteToCluster( 'one' ) );
-		$this->assertTrue( $config->canWriteToCluster( 'unknown' ) );
-		$this->assertFalse( $config->canWriteToCluster( 'readonly' ) );
+		$assignment = $config->getClusterAssignment();
+		$this->assertEquals( [ 'one', 'two', 'unknown' ], $assignment->getWritableClusters() );
+		$this->assertTrue( $assignment->canWriteToCluster( 'one' ) );
+		$this->assertTrue( $assignment->canWriteToCluster( 'unknown' ) );
+		$this->assertFalse( $assignment->canWriteToCluster( 'readonly' ) );
 	}
 
 	public function testReplicasMustExist() {

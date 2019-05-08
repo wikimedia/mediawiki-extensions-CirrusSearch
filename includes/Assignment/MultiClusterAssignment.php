@@ -67,6 +67,14 @@ class MultiClusterAssignment implements ClusterAssignment {
 	}
 
 	/**
+	 * @param string $cluster Name of requested cluster
+	 * @return string Uniquely identifies the connection properties.
+	 */
+	public function uniqueId( $cluster ) {
+		return "{$this->group}:$cluster";
+	}
+
+	/**
 	 * @return string[] List of CirrusSearch cluster names to write to.
 	 */
 	public function getWritableClusters(): array {

@@ -13,6 +13,10 @@ class ConstantAssignment implements ClusterAssignment {
 		$this->servers = $servers;
 	}
 
+	public function uniqueId( $cluster ) {
+		return 'default';
+	}
+
 	/**
 	 * @param string|null $cluster
 	 * @return string[]|array[]

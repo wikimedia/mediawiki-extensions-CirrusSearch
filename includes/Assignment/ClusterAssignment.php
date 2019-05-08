@@ -3,6 +3,15 @@
 namespace CirrusSearch\Assignment;
 
 interface ClusterAssignment {
+
+	/**
+	 * @param string $cluster The cluster to id.
+	 * @return string An identifier that unique describes the
+	 *  connection properties. Instances of the same implementation
+	 *  will return same value for same configuration.
+	 */
+	public function uniqueId( $cluster );
+
 	/**
 	 * @return string Name of the cluster group to search against
 	 */

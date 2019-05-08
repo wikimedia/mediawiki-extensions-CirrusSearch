@@ -130,4 +130,55 @@ class ConnectionTest extends CirrusTestCase {
 		$this->assertArrayEquals( [ Connection::ARCHIVE_INDEX_TYPE ],
 			$con->getAllIndexTypes( Connection::ARCHIVE_TYPE_NAME ) );
 	}
+
+	public function providePoolCaching() {
+		return [
+			'constant returns same' => [
+				'config' => [
+					'CirrusSearchServers' => [ 'localhost:9092' ],
+				],
+				'update' => [],
+			],
+			'separate clusters' => [
+				'config' => [
+					'CirrusSearchDefaultCluster' => 'a',
+					'CirrusSearchReplicaGroup' => 'default',
+					'CirrusSearchClusters' => [
+						'a' => [ 'localhost:9092', 'replica' => 'a' ],
+						'b' => [ 'localhost:9192', 'replica' => 'b' ],
+					],
+				],
+				'update' => [
+					'CirrusSearchDefaultCluster' => 'b',
+				],
+			],
+			'separate replica groups' => [
+				'config' => [
+					'CirrusSearchDefaultCluster' => 'ut',
+					'CirrusSearchReplicaGroup' => 'a',
+					'CirrusSearchClusters' => [
+						'a' => [ 'localhost:9092', 'replica' => 'ut', 'group' => 'a' ],
+						'b' => [ 'localhost:9192', 'replica' => 'ut', 'group' => 'b' ],
+					],
+				],
+				'update' => [
+					'CirrusSearchReplicaGroup' => 'b',
+				],
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider providePoolCaching
+	 */
+	public function testPoolCaching( array $config, array $update ) {
+		$conn = Connection::getPool( new HashSearchConfig( $config ) );
+		$conn2 = Connection::getPool( new HashSearchConfig( $config ) );
+		$this->assertEquals( $conn, $conn2 );
+
+		if ( $update ) {
+			$conn3 = Connection::getPool( new HashSearchConfig( $update + $config ) );
+			$this->assertNotEquals( $conn, $conn3 );
+		}
+	}
 }

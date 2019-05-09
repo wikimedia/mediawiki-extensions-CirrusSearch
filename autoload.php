@@ -66,6 +66,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Fallbacks\\FallbackRunner' => __DIR__ . '/includes/Fallbacks/FallbackRunner.php',
 	'CirrusSearch\\Fallbacks\\FallbackRunnerContext' => __DIR__ . '/includes/Fallbacks/FallbackRunnerContext.php',
 	'CirrusSearch\\Fallbacks\\FallbackRunnerContextImpl' => __DIR__ . '/includes/Fallbacks/FallbackRunnerContextImpl.php',
+	'CirrusSearch\\Fallbacks\\IndexLookupFallbackMethod' => __DIR__ . '/includes/Fallbacks/IndexLookupFallbackMethod.php',
 	'CirrusSearch\\Fallbacks\\LangDetectFallbackMethod' => __DIR__ . '/includes/Fallbacks/LangDetectFallbackMethod.php',
 	'CirrusSearch\\Fallbacks\\PhraseSuggestFallbackMethod' => __DIR__ . '/includes/Fallbacks/PhraseSuggestFallbackMethod.php',
 	'CirrusSearch\\Fallbacks\\SearcherFactory' => __DIR__ . '/includes/Fallbacks/SearcherFactory.php',

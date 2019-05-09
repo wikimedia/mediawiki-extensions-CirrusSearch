@@ -1,0 +1,17 @@
+{
+    "path": "lookup_index_name\/_search",
+    "options": [],
+    "query": {
+        "query": {
+            "match": {
+                "lookup_query_field": "hello wolrd"
+            }
+        },
+        "from": 0,
+        "size": 1,
+        "_source": false,
+        "stored_fields": [
+            "lookup_suggestion_field"
+        ]
+    }
+}

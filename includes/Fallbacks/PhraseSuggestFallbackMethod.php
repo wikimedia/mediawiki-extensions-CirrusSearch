@@ -9,7 +9,6 @@ use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchQuery;
-use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
 use Wikimedia\Assert\Assert;
 
@@ -120,21 +119,8 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 			return $previousSet;
 		}
 
-		$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $this->query,
-			$firstPassResults->getSuggestionQuery() )->build();
-		$searcher = $context->makeSearcher( $rewrittenQuery );
-		$status = $searcher->search( $rewrittenQuery );
-		if ( $status->isOK() && $status->getValue() instanceof ResultSet ) {
-			/**
-			 * @var ResultSet $newresults
-			 */
-			$newresults = $status->getValue();
-			$newresults->setRewrittenQuery( $firstPassResults->getSuggestionQuery(),
-				$firstPassResults->getSuggestionSnippet() );
-			return $newresults;
-		} else {
-			return $previousSet;
-		}
+		return $this->maybeSearchAndRewrite( $context, $this->query,
+			$previousSet->getSuggestionQuery(), $previousSet->getSuggestionSnippet() );
 	}
 
 	/**

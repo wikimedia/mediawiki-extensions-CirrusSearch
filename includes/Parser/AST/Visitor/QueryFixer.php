@@ -24,6 +24,11 @@ use Wikimedia\Assert\Assert;
  */
 class QueryFixer implements Visitor {
 	/**
+	 * @var \SplObjectStorage
+	 */
+	private static $cache;
+
+	/**
 	 * @var ParsedQuery
 	 */
 	private $parsedQuery;
@@ -63,6 +68,30 @@ class QueryFixer implements Visitor {
 	 */
 	public function __construct( ParsedQuery $query ) {
 		$this->parsedQuery = $query;
+	}
+
+	/**
+	 * @param ParsedQuery $query
+	 * @return QueryFixer|object|null
+	 */
+	public static function build( ParsedQuery $query ) {
+		if ( self::$cache === null || count( self::$cache ) > 100 ) {
+			// Build the cache for the first time or drop it for a new empty one just in case this class
+			// is used from a maint script that treats/parses millions of queries
+			self::$cache = new \SplObjectStorage();
+		}
+
+		if ( defined( 'HHVM_VERSION' ) ) {
+			/** @phan-suppress-next-line PhanPluginDuplicateConditionalNullCoalescing HHVM does not support the ?? operator on SplObjectStorage */
+			$fixer = isset( self::$cache[$query] ) ? self::$cache[$query] : null;
+		} else {
+			$fixer = self::$cache[$query] ?? null;
+		}
+		if ( $fixer === null ) {
+			$fixer = new self( $query );
+			self::$cache[$query] = $fixer;
+		}
+		return $fixer;
 	}
 
 	/**

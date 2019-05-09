@@ -56,7 +56,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 							  $query->getOffset() == 0, "Unsupported query" );
 		$this->searcherFactory = $factory;
 		$this->query = $query;
-		$this->queryFixer = new QueryFixer( $query->getParsedQuery() );
+		$this->queryFixer = QueryFixer::build( $query->getParsedQuery() );
 		$this->profileName = $profileName;
 	}
 

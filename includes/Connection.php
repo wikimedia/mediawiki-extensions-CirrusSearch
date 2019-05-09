@@ -103,15 +103,13 @@ class Connection extends ElasticaConnection {
 	 * @return Connection
 	 */
 	public static function getPool( SearchConfig $config, $cluster = null ) {
+		$assignment = $config->getClusterAssignment();
 		if ( $cluster === null ) {
-			$cluster = $config->getClusterAssignment()->getSearchCluster();
+			$cluster = $assignment->getSearchCluster();
 		}
 		$wiki = $config->getWikiId();
-		if ( isset( self::$pool[$wiki][$cluster] ) ) {
-			return self::$pool[$wiki][$cluster];
-		} else {
-			return new self( $config, $cluster );
-		}
+		$clusterId = $assignment->uniqueId( $cluster );
+		return self::$pool[$wiki][$clusterId] ?? new self( $config, $cluster );
 	}
 
 	/**
@@ -129,12 +127,16 @@ class Connection extends ElasticaConnection {
 	 */
 	public function __construct( SearchConfig $config, $cluster = null ) {
 		$this->config = $config;
-		$this->cluster = $cluster ?? $config->getClusterAssignment()->getSearchCluster();
+		$assignment = $config->getClusterAssignment();
+		$this->cluster = $cluster ?? $assignment->getSearchCluster();
 		$this->setConnectTimeout( $this->getSettings()->getConnectTimeout() );
 		// overwrites previous connection if it exists, but these
 		// seemed more centralized than having the entry points
 		// all call a static method unnecessarily.
-		self::$pool[$config->getWikiId()][$this->cluster] = $this;
+		// TODO: Assumes all $config that return same wiki id have same config, but there
+		// are places that expect they can wrap config with new values and use them.
+		$clusterId = $assignment->uniqueId( $this->cluster );
+		self::$pool[$config->getWikiId()][$clusterId] = $this;
 	}
 
 	public function __sleep() {

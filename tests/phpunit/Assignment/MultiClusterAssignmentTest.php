@@ -185,6 +185,7 @@ class MultiClusterAssignmentTest extends \MediaWikiTestCase {
 		$this->assertEquals( [ 'search-b.svc.eqiad.wmnet:9201' ], $clusters->getServerList( 'eqiad' ) );
 		$this->assertEquals( [ 'search-b.svc.codfw.wmnet:9201' ], $clusters->getServerList( 'codfw' ) );
 		$this->assertEquals( [ 'cloudsearch.svc.eqiad.wmnet:9200' ], $clusters->getServerList( 'cloud' ) );
+		$this->assertNotEquals( $clusters->uniqueId( 'eqiad' ), $clusters->uniqueId( 'codfw' ) );
 	}
 
 	public function testWritableClusters() {

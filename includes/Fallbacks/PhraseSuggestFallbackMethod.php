@@ -111,7 +111,14 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	public function rewrite( FallbackRunnerContext $context ) {
 		$firstPassResults = $context->getInitialResultSet();
 		$previousSet = $context->getPreviousResultSet();
-
+		if ( $previousSet->getQueryAfterRewrite() !== null ) {
+			// a method rewrote the query before us.
+			return $previousSet;
+		}
+		if ( $previousSet->getSuggestionQuery() !== null ) {
+			// a method suggested something before us
+			return $previousSet;
+		}
 		$this->showDYMSuggestion( $firstPassResults, $previousSet );
 		if ( !$this->query->isAllowRewrite()
 			|| $this->resultsThreshold( $previousSet )
@@ -148,6 +155,8 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	private function showDYMSuggestion( ResultSet $fromResultSet, ResultSet $toResultSet ) {
 		$suggestion = $this->findSuggestion( $fromResultSet );
 		Assert::precondition( $suggestion !== null, "showDYMSuggestion called with no suggestions available" );
+		Assert::precondition( $toResultSet->getSuggestionQuery() === null, "must not have a suggestion yet" );
+		Assert::precondition( $toResultSet->getQueryAfterRewrite() === null, "must not have been rewritten" );
 		$toResultSet->setSuggestionQuery(
 			$this->queryFixer->fix( $suggestion['text'] ),
 			$this->queryFixer->fix( $this->escapeHighlightedSuggestion( $suggestion['highlighted'] ), true )

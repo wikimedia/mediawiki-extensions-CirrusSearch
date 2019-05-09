@@ -28,6 +28,18 @@ class ClusterSettings {
 	}
 
 	/**
+	 * @return bool True when the cluster is allowed to contain private indices
+	 */
+	public function isPrivateCluster() {
+		$privateClusters = $this->config->get( 'CirrusSearchPrivateClusters' );
+		if ( $privateClusters === null ) {
+			return true;
+		} else {
+			return in_array( $this->cluster, $privateClusters );
+		}
+	}
+
+	/**
 	 * @param string $indexType
 	 * @return int Number of shards the index should have
 	 */

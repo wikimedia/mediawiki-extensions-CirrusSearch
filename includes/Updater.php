@@ -276,7 +276,7 @@ class Updater extends ElasticsearchIntermediary {
 				$head['title'],
 				'sendData',
 				[ Connection::ARCHIVE_INDEX_TYPE, $chunked, Connection::ARCHIVE_TYPE_NAME ],
-				[ 'cluster' => $this->writeToClusterName ]
+				[ 'cluster' => $this->writeToClusterName, 'private_data' => true ]
 			);
 			$job->run();
 		}

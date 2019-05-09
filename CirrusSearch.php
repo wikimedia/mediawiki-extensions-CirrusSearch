@@ -86,6 +86,15 @@ $wgCirrusSearchClusters = [
 $wgCirrusSearchWriteClusters = null;
 
 /**
+ * List of cluster names that are allowed to contain private indices. This
+ * provides an additional whitelist on top of $wgCirrusSearchWriteClusters
+ * for the archive index which should not be written to clusters that will
+ * be publicly readable. When set to the default value of null all clusters
+ * are allowed to contain private indices.
+ */
+$wgCirrusSearchPrivateClusters = null;
+
+/**
  * Replica group the current wiki belongs to. This can be either a
  * string for constant assignment, or a configuration array specifying
  * a strategy for choosing the replica group. This should not be changed

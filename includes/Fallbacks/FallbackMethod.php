@@ -20,12 +20,11 @@ use CirrusSearch\Search\SearchQuery;
 interface FallbackMethod {
 
 	/**
-	 * @param SearcherFactory $searcherFactory
 	 * @param SearchQuery $query
 	 * @param array $params
 	 * @return FallbackMethod|null the method instance or null if unavailable
 	 */
-	public static function build( SearcherFactory $searcherFactory, SearchQuery $query, array $params );
+	public static function build( SearchQuery $query, array $params );
 
 	/**
 	 * Approximation of the success of this fallback method

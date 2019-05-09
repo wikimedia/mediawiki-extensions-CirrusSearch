@@ -57,20 +57,17 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 	 * LangDetectFallbackMethod constructor.
 	 * (visible for tests)
 	 * @param SearchQuery $query
-	 * @param SearcherFactory $searcherFactory
 	 * @param Detector[] $detectors
 	 * @param InterwikiResolver|null $interwikiResolver
 	 */
 	public function __construct(
 		SearchQuery $query,
-		SearcherFactory $searcherFactory,
 		array $detectors,
 		InterwikiResolver $interwikiResolver = null
 	) {
 		Assert::precondition( $query->getCrossSearchStrategy()->isCrossLanguageSearchSupported(),
 			"Cross language search must be supported for this query" );
 		$this->query = $query;
-		$this->searcherFactory = $searcherFactory;
 		$this->detectors = $detectors;
 		$this->interwikiResolver =
 			$interwikiResolver ??
@@ -79,17 +76,16 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 	}
 
 	/**
-	 * @param SearcherFactory $factory
 	 * @param SearchQuery $query
 	 * @param array $params
 	 * @return FallbackMethod
 	 */
-	public static function build( SearcherFactory $factory, SearchQuery $query, array $params ) {
+	public static function build( SearchQuery $query, array $params ) {
 		if ( !$query->getCrossSearchStrategy()->isCrossLanguageSearchSupported() ) {
 			return null;
 		}
 		$langDetectFactory = new LanguageDetectorFactory( $query->getSearchConfig() );
-		return new self( $query, $factory, $langDetectFactory->getDetectors() );
+		return new self( $query, $langDetectFactory->getDetectors() );
 	}
 
 	/**
@@ -153,9 +149,13 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 			return $previousSet;
 		}
 
+		if ( !$context->costlyCallAllowed() ) {
+			return $previousSet;
+		}
+
 		$crossLangQuery = SearchQueryBuilder::forCrossLanguageSearch( $this->detectedLangWikiConfig,
 			$this->query )->build();
-		$searcher = $this->searcherFactory->makeSearcher( $crossLangQuery );
+		$searcher = $context->makeSearcher( $crossLangQuery );
 		$status = $searcher->search( $crossLangQuery );
 		if ( !$status->isOK() ) {
 			return $previousSet;

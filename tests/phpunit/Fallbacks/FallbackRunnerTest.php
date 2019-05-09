@@ -44,7 +44,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 		$methods[] = $this->getFallbackMethod( 0.5, $this->trackingCb( 'C' ), [ 'C' => 'C' ] );
 		$methods[] = $this->getFallbackMethod( 0.6, $this->trackingCb( 'A' ), [ 'A' => 'A' ] );
 		$runner = new FallbackRunner( $methods );
-		$runner->run( $results, new MSearchResponses( [], [] ) );
+		$runner->run( $this->getMock( SearcherFactory::class ), $results, new MSearchResponses( [], [] ) );
 		$this->assertEquals( [ 'A', 'B', 'C', 'D', 'E' ], $this->execOrder );
 		$this->assertEquals( [
 			'A' => 'A',
@@ -66,7 +66,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 		$methods[] = self::getFallbackMethod( -0.5 );
 		$methods[] = self::getFallbackMethod( -0.6 );
 		$runner = new FallbackRunner( $methods );
-		$runner->run( $results, new MSearchResponses( [], [] ) );
+		$runner->run( $this->getMock( SearcherFactory::class ), $results, new MSearchResponses( [], [] ) );
 		$this->assertEquals( [ 'A' ], $this->execOrder );
 	}
 
@@ -102,13 +102,11 @@ class FallbackRunnerTest extends CirrusTestCase {
 			}
 
 			/**
-			 * @param SearcherFactory $searcherFactory
 			 * @param SearchQuery $query
 			 * @param array $params
 			 * @return void
 			 */
 			public static function build(
-				SearcherFactory $searcherFactory,
 				SearchQuery $query,
 				array $params = []
 			) {
@@ -180,7 +178,8 @@ class FallbackRunnerTest extends CirrusTestCase {
 				$this->mockSearcher( DummyResultSet::fakeTotalHits( 2 ) ),
 				$this->mockSearcher( DummyResultSet::fakeTotalHits( 3 ) )
 			);
-		$runner = FallbackRunner::create( $searcherFactory, $query );
+		$runner = FallbackRunner::create( $query );
+		// Phrase suggester wins and runs its fallback query
 		$response = [
 			"hits" => [
 				"total" => 0,
@@ -202,11 +201,31 @@ class FallbackRunnerTest extends CirrusTestCase {
 				]
 			]
 		];
+		$this->assertNotEmpty( $runner->getElasticSuggesters() );
 		$initialResults = new ResultSet( false,
 			( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() ) );
-		$this->assertNotEmpty( $runner->getElasticSuggesters() );
-		$newResults = $runner->run( $initialResults, new MSearchResponses( [], [] ) );
+		$newResults = $runner->run( $searcherFactory, $initialResults, new MSearchResponses( [], [] ) );
 		$this->assertEquals( 2, $newResults->getTotalHits() );
+		$iwResults = $newResults->getInterwikiResults( \SearchResultSet::INLINE_RESULTS );
+		$this->assertEmpty( $iwResults );
+
+		// LangDetect wins and runs its fallback query
+		$runner = FallbackRunner::create( $query );
+		$response = [
+			"hits" => [
+				"total" => 0,
+				"hits" => [],
+			],
+			"suggest" => [
+				"suggest" => []
+			]
+		];
+
+		$this->assertNotEmpty( $runner->getElasticSuggesters() );
+		$initialResults = new ResultSet( false,
+			( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() ) );
+		$newResults = $runner->run( $searcherFactory, $initialResults, new MSearchResponses( [], [] ) );
+		$this->assertEquals( 0, $newResults->getTotalHits() );
 		$iwResults = $newResults->getInterwikiResults( \SearchResultSet::INLINE_RESULTS );
 		$this->assertNotEmpty( $iwResults );
 		$this->assertArrayHasKey( 'frwiki', $iwResults );
@@ -247,14 +266,14 @@ class FallbackRunnerTest extends CirrusTestCase {
 		$runner->attachSearchRequests( $requests, $client );
 		$this->assertNotEmpty( $requests->getRequests() );
 		$mresponses = $requests->toMSearchResponses( [ $resp ] );
-		$this->assertSame( $rewritten, $runner->run( $inital, $mresponses ) );
+		$this->assertSame( $rewritten, $runner->run( $this->getMock( SearcherFactory::class ), $inital, $mresponses ) );
 
 		$runner = new FallbackRunner( [ $this->mockElasticSearchRequestFallbackMethod( $query, 0.0, $resp, null ) ] );
 		$requests = new MSearchRequests();
 		$runner->attachSearchRequests( $requests, $client );
 		$this->assertEmpty( $requests->getRequests() );
 		$mresponses = $requests->canceled();
-		$this->assertSame( $inital, $runner->run( $inital, $mresponses ) );
+		$this->assertSame( $inital, $runner->run( $this->getMock( SearcherFactory::class ), $inital, $mresponses ) );
 
 		$runner = new FallbackRunner( [
 			$this->mockElasticSearchRequestFallbackMethod( $query, 0.0, $resp, null ),
@@ -265,7 +284,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 		$mresponses = $requests->toMSearchResponses( [ $resp ] );
 		$this->assertFalse( $mresponses->hasResultsFor( 'fallback-1' ) );
 		$this->assertTrue( $mresponses->hasResultsFor( 'fallback-2' ) );
-		$this->assertSame( $rewritten, $runner->run( $inital, $mresponses ) );
+		$this->assertSame( $rewritten, $runner->run( $this->getMock( SearcherFactory::class ), $inital, $mresponses ) );
 	}
 
 	public function mockElasticSearchRequestFallbackMethod( $query, $approx, $expectedResponse, $rewritten ) {
@@ -291,7 +310,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 				return $search;
 			}
 
-			public static function build( SearcherFactory $searcherFactory, SearchQuery $query, array $params = [] ) {
+			public static function build( SearchQuery $query, array $params = [] ) {
 				throw new \AssertionError();
 			}
 

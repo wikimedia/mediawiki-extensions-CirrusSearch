@@ -51,11 +51,11 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		$rewrittenResults = $rewritten ? DummyResultSet::fakeTotalHits( 1 ) : null;
 		$rewrittenQuery = $rewritten ? SearchQueryBuilder::forRewrittenQuery( $query, $suggestion )->build() : null;
 		$searcherFactory = $this->getSearcherFactoryMock( $rewrittenQuery, $rewrittenResults );
-		$fallback = PhraseSuggestFallbackMethod::build( $searcherFactory, $query, [ 'profile' => 'default' ] );
+		$fallback = PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] );
 		if ( $expectedApproxScore > 0.0 ) {
 			$this->assertNotNull( $fallback->getSuggestQueries() );
 		}
-		$context = new FallbackRunnerContextImpl( $initialResults );
+		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory );
 		$this->assertEquals( $expectedApproxScore, $fallback->successApproximation( $context ) );
 		if ( $expectedApproxScore > 0 ) {
 			$actualNewResults = $fallback->rewrite( $context );
@@ -99,7 +99,7 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 			->setOffset( $offset )
 			->setWithDYMSuggestion( $withDYMSuggestion )
 			->build();
-		$method = PhraseSuggestFallbackMethod::build( $this->getSearcherFactoryMock(), $query, [ 'profile' => $profile ] );
+		$method = PhraseSuggestFallbackMethod::build( $query, [ 'profile' => $profile ] );
 		$suggestQueries = null;
 		if ( $method !== null ) {
 			$suggestQueries = $method->getSuggestQueries();
@@ -114,52 +114,59 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 	}
 
 	public function testBuild() {
-		$factory = $this->getMock( SearcherFactory::class );
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar' )
 			->setWithDYMSuggestion( false )
 			->build();
-		$this->assertNull( PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] ) );
+		$this->assertNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );
 
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar' )
 			->setWithDYMSuggestion( true )
 			->build();
-		$this->assertNull( PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] ) );
+		$this->assertNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );
 
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => false ] ), 'foo bar' )
 			->setWithDYMSuggestion( true )
 			->build();
-		$this->assertNull( PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] ) );
+		$this->assertNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );
 
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ), 'foo bar' )
 			->setWithDYMSuggestion( true )
 			->build();
-		$this->assertNotNull( PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] ) );
+		$this->assertNotNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );
 
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ), 'foo bar' )
 			->setWithDYMSuggestion( false )
 			->build();
-		$this->assertNull( PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] ) );
+		$this->assertNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );
 	}
 
+	/**
+	 * @covers \CirrusSearch\Fallbacks\FallbackRunnerContextImpl
+	 */
 	public function testDisabledIfHasASuggestionOrWasRewritten() {
-		$factory = $this->getSearcherFactoryMock();
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ), "foo bar" )
 			->setWithDYMSuggestion( true )
 			->build();
 		/**
 		 * @var $method PhraseSuggestFallbackMethod
 		 */
-		$method = PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] );
+		$method = PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] );
 		$this->assertNotNull( $method->getSuggestQueries() );
 
 		$rset = DummyResultSet::fakeTotalHits( 10 );
 		$rset->setSuggestionQuery( "test", "test" );
-		$context = new FallbackRunnerContextImpl( $rset );
-		$this->assertSame( $rset, $method->rewrite( $context ) );
+		$factory = $this->getMock( SearcherFactory::class );
+		$factory->expects( $this->never() )->method( 'makeSearcher' );
+		$context = new FallbackRunnerContextImpl( $rset, $factory );
+		$method->rewrite( $context );
+		$this->assertTrue( $context->costlyCallAllowed() );
 
 		$rset = DummyResultSet::fakeTotalHits( 10 );
+		$factory = $this->getMock( SearcherFactory::class );
+		$factory->expects( $this->never() )->method( 'makeSearcher' );
+		$context = new FallbackRunnerContextImpl( $rset, $factory );
+		$this->assertTrue( $context->costlyCallAllowed() );
 		$rset->setRewrittenQuery( "test", "test" );
-		$context = new FallbackRunnerContextImpl( $rset );
 		$this->assertSame( $rset, $method->rewrite( $context ) );
 	}
 }

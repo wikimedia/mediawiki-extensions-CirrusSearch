@@ -3,6 +3,8 @@
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\SearchQuery;
+use CirrusSearch\Searcher;
 use Elastica\ResultSet as ElasticaResultSet;
 use Wikimedia\Assert\Assert;
 
@@ -30,12 +32,24 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	private $suggestResponse;
 
 	/**
+	 * @var SearcherFactory
+	 */
+	private $searcherFactory;
+
+	/**
+	 * @var bool
+	 */
+	private $canMakeCostlyCall = true;
+
+	/**
 	 * FallbackRunnerContextImpl constructor.
 	 * @param ResultSet $initialResultSet
+	 * @param SearcherFactory $searcherFactory
 	 */
-	public function __construct( ResultSet $initialResultSet ) {
+	public function __construct( ResultSet $initialResultSet, SearcherFactory $searcherFactory ) {
 		$this->initialResultSet = $initialResultSet;
 		$this->previousResultSet = $initialResultSet;
+		$this->searcherFactory = $searcherFactory;
 	}
 
 	/**
@@ -78,5 +92,25 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	public function getMethodResponse(): ElasticaResultSet {
 		Assert::precondition( $this->suggestResponse !== null, 'Must have a resultset set' );
 		return $this->suggestResponse;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function costlyCallAllowed() {
+		return $this->canMakeCostlyCall;
+	}
+
+	/**
+	 * @param \CirrusSearch\Search\SearchQuery $rewrittenQuery
+	 * @return Searcher
+	 */
+	public function makeSearcher( SearchQuery $rewrittenQuery ): Searcher {
+		Assert::precondition( $this->canMakeCostlyCall,
+			'Costly calls are no longer accepted, check costlyCallAllowed before calling makeSearcher' );
+		// For now we just allow a single call, we might prefer a time constrained approach
+		// So that multiple calls can be made if we still have some processing time left.
+		$this->canMakeCostlyCall = false;
+		return $this->searcherFactory->makeSearcher( $rewrittenQuery );
 	}
 }

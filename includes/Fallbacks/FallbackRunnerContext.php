@@ -3,6 +3,8 @@
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\SearchQuery;
+use CirrusSearch\Searcher;
 use Elastica\ResultSet as ElasicaResultSet;
 
 /**
@@ -37,4 +39,21 @@ interface FallbackRunnerContext {
 	 * @see ElasticSearchRequestFallbackMethod::getSearchRequest()
 	 */
 	public function getMethodResponse(): ElasicaResultSet;
+
+	/**
+	 * Whether or not a costly call is still allowed.
+	 * @return bool
+	 */
+	public function costlyCallAllowed();
+
+	/**
+	 * Prepare a Searcher able to search for $rewrittenQuery.
+	 * Calling this method.
+	 * NOTE: a costly call must still be allowed before creating
+	 * a new Searcher.
+	 * @param \CirrusSearch\Search\SearchQuery $rewrittenQuery
+	 * @return Searcher
+	 * @see FallbackRunnerContext::costlyCallAllowed()
+	 */
+	public function makeSearcher( SearchQuery $rewrittenQuery );
 }

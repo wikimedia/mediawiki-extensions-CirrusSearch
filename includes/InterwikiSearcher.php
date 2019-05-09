@@ -76,7 +76,7 @@ class InterwikiSearcher extends Searcher {
 		$msearches = new MSearchRequests();
 		foreach ( $iwQueries as $interwiki => $iwQuery ) {
 			$context = SearchContext::fromSearchQuery( $iwQuery,
-				FallbackRunner::create( $this, $iwQuery ) );
+				FallbackRunner::create( $iwQuery ) );
 			$this->searchContext = $context;
 			$this->config = $context->getConfig();
 			$this->limit = $iwQuery->getLimit();

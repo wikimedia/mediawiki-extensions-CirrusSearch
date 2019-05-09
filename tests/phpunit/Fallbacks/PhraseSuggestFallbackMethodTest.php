@@ -51,7 +51,7 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		$rewrittenResults = $rewritten ? DummyResultSet::fakeTotalHits( 1 ) : null;
 		$rewrittenQuery = $rewritten ? SearchQueryBuilder::forRewrittenQuery( $query, $suggestion )->build() : null;
 		$searcherFactory = $this->getSearcherFactoryMock( $rewrittenQuery, $rewrittenResults );
-		$fallback = new PhraseSuggestFallbackMethod( $searcherFactory, $query );
+		$fallback = PhraseSuggestFallbackMethod::build( $searcherFactory, $query, [ 'profile' => 'default' ] );
 		if ( $expectedApproxScore > 0.0 ) {
 			$this->assertNotNull( $fallback->getSuggestQueries() );
 		}
@@ -83,6 +83,7 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 				$fixture['namespaces'],
 				$fixture['offset'],
 				$fixture['with_dym'] ?? true,
+				$fixture['profile'] ?? 'default',
 				$fixture['config']
 			];
 		}
@@ -92,19 +93,51 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 	/**
 	 * @dataProvider provideTestSuggestQueries
 	 */
-	public function testSuggestQuery( $expectedFile, $query, $namespaces, $offset, $withDYMSuggestion, $config ) {
+	public function testSuggestQuery( $expectedFile, $query, $namespaces, $offset, $withDYMSuggestion, $profile, $config ) {
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( $config ), $query )
 			->setInitialNamespaces( $namespaces )
 			->setOffset( $offset )
 			->setWithDYMSuggestion( $withDYMSuggestion )
 			->build();
-		$method = new PhraseSuggestFallbackMethod( $this->getSearcherFactoryMock(), $query );
+		$method = PhraseSuggestFallbackMethod::build( $this->getSearcherFactoryMock(), $query, [ 'profile' => $profile ] );
+		$suggestQueries = null;
+		if ( $method !== null ) {
+			$suggestQueries = $method->getSuggestQueries();
+		}
 		$createIfMissing = getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes';
 
 		$this->assertFileContains(
 			CirrusTestCase::fixturePath( $expectedFile ),
-			CirrusTestCase::encodeFixture( $method->getSuggestQueries() ),
+			CirrusTestCase::encodeFixture( $suggestQueries ),
 			$createIfMissing
 		);
+	}
+
+	public function testBuild() {
+		$factory = $this->getMock( SearcherFactory::class );
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar' )
+			->setWithDYMSuggestion( false )
+			->build();
+		$this->assertNull( PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] ) );
+
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar' )
+			->setWithDYMSuggestion( true )
+			->build();
+		$this->assertNull( PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] ) );
+
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => false ] ), 'foo bar' )
+			->setWithDYMSuggestion( true )
+			->build();
+		$this->assertNull( PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] ) );
+
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ), 'foo bar' )
+			->setWithDYMSuggestion( true )
+			->build();
+		$this->assertNotNull( PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] ) );
+
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ), 'foo bar' )
+			->setWithDYMSuggestion( false )
+			->build();
+		$this->assertNull( PhraseSuggestFallbackMethod::build( $factory, $query, [ 'profile' => 'default' ] ) );
 	}
 }

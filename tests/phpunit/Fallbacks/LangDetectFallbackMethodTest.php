@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\LanguageDetector\Detector;
@@ -18,7 +19,6 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 	public function provideTest() {
 		return [
 			'fallback worked' => [
-				true,
 				'foobar',
 				0.5,
 				'fr',
@@ -31,7 +31,6 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 				]
 			],
 			'fallback not triggered because the initial set has enough results' => [
-				true,
 				'foobar',
 				0.0,
 				null,
@@ -41,7 +40,6 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 				[]
 			],
 			'fallback triggered but it encountered an error during search' => [
-				true,
 				'foobar',
 				0.5,
 				'fr',
@@ -53,7 +51,6 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 				]
 			],
 			'fallback not triggered because the query is complex' => [
-				true,
 				'foo NOT bar',
 				0.0,
 				null,
@@ -62,18 +59,7 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 				0,
 				[]
 			],
-			'fallback not triggered because disabled in config' => [
-				false,
-				'foo',
-				0.0,
-				null,
-				3,
-				0,
-				0,
-				[]
-			],
 			'fallback not triggered because lang detection failed' => [
-				true,
 				'foo',
 				0.0,
 				null,
@@ -83,7 +69,6 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 				[]
 			],
 			'fallback not triggered because an unsupported language was detected' => [
-				true,
 				'foo',
 				0.0,
 				'pl',
@@ -93,7 +78,6 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 				[]
 			],
 			'fallback not triggered because same lang was detected' => [
-				true,
 				'foo',
 				0.0,
 				'en',
@@ -110,7 +94,6 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 	 * @throws \Exception
 	 */
 	public function test(
-		$allowCrossLang,
 		$query,
 		$expectedScoreApprox,
 		$returnedLang,
@@ -121,7 +104,7 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 	) {
 		$config = new HashSearchConfig( [
 			'CirrusSearchInterwikiThreshold' => $threshold,
-			'CirrusSearchEnableAltLanguage' => $allowCrossLang,
+			'CirrusSearchEnableAltLanguage' => true,
 			'LanguageCode' => 'en',
 		] );
 		$targetWikiConfig = new HashSearchConfig( [
@@ -217,5 +200,24 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 			->method( 'getSameProjectConfigByLang' )
 			->willReturn( $detectedLang === 'fr' ? [ 'fr' => $targetWikiConfig ] : [] );
 		return $mock;
+	}
+
+	public function testBuild() {
+		$factory = $this->getMock( SearcherFactory::class );
+
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar' )
+			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
+			->build();
+		$this->assertNull( LangDetectFallbackMethod::build( $factory, $query, [] ) );
+
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnableAltLanguage' => false ] ), 'foo bar' )
+			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
+			->build();
+		$this->assertNull( LangDetectFallbackMethod::build( $factory, $query, [] ) );
+
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnableAltLanguage' => false ] ), 'foo bar' )
+			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
+			->build();
+		$this->assertNull( LangDetectFallbackMethod::build( $factory, $query, [] ) );
 	}
 }

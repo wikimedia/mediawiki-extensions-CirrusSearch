@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\Profile\SearchProfileException;
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\MSearchRequests;
 use CirrusSearch\Search\MSearchResponses;
 use CirrusSearch\Search\ResultSet;
@@ -39,13 +41,54 @@ class FallbackRunner implements SearchMetricsProvider {
 		return self::$NOOP_RUNNER;
 	}
 
-	public static function create( SearcherFactory $factory, SearchQuery $query ) {
-		$fallbackMethods = [];
-		if ( $query->isWithDYMSuggestion() ) {
-			$fallbackMethods[] = PhraseSuggestFallbackMethod::build( $factory, $query );
+	/**
+	 * @param SearcherFactory $factory
+	 * @param SearchQuery $query
+	 * @param string $profileContext
+	 * @param array $profileContextParam
+	 * @return FallbackRunner
+	 */
+	public static function create(
+		SearcherFactory $factory,
+		SearchQuery $query,
+		$profileContext = SearchProfileService::CONTEXT_DEFAULT,
+		$profileContextParam = []
+	): FallbackRunner {
+		$service = $query->getSearchConfig()->getProfileService();
+		if ( !$service->supportsContext( SearchProfileService::FALLBACKS, $profileContext ) ) {
+			// This component is optional and we simply avoid building it if the $profileContext does
+			// not define any defaults for it.
+			return self::noopRunner();
 		}
-		if ( $query->getCrossSearchStrategy()->isCrossLanguageSearchSupported() ) {
-			$fallbackMethods[] = LangDetectFallbackMethod::build( $factory, $query );
+		return self::createFromProfile( $factory, $query,
+			$service->loadProfile( SearchProfileService::FALLBACKS, $profileContext, null, $profileContextParam ) );
+	}
+
+	/**
+	 * @param SearcherFactory $factory
+	 * @param SearchQuery $query
+	 * @param array $profile
+	 * @return FallbackRunner
+	 */
+	public static function createFromProfile( SearcherFactory $factory, SearchQuery $query, array $profile ): FallbackRunner {
+		$fallbackMethods = [];
+		$methodDefs = $profile['methods'] ?? [];
+		foreach ( $methodDefs as $methodDef ) {
+			if ( !isset( $methodDef['class'] ) ) {
+				throw new SearchProfileException( "Invalid FallbackMethod: missing 'class' definition in profile" );
+			}
+			$clazz = $methodDef['class'];
+			$params = $methodDef['params'] ?? [];
+			if ( !class_exists( $clazz ) ) {
+				throw new SearchProfileException( "Invalid FallbackMethod: unknown class $clazz" );
+			}
+			if ( !is_subclass_of( $clazz, FallbackMethod::class ) ) {
+				throw new SearchProfileException( "Invalid FallbackMethod: $clazz must implement " . FallbackMethod::class );
+			}
+			$method = call_user_func( [ $clazz, 'build' ], $factory, $query, $params );
+			if ( $method !== null ) {
+				$fallbackMethods[] = $method;
+			}
 		}
 		return new self( $fallbackMethods );
 	}

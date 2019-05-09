@@ -289,6 +289,13 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getProfileContextParams(): array {
+		return $this->profileContextParams;
+	}
+
+	/**
 	 * @param string $profileContext
 	 * @param string[] $contextParams
 	 */

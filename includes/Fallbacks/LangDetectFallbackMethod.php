@@ -55,6 +55,7 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 
 	/**
 	 * LangDetectFallbackMethod constructor.
+	 * (visible for tests)
 	 * @param SearchQuery $query
 	 * @param SearcherFactory $searcherFactory
 	 * @param Detector[] $detectors
@@ -66,6 +67,8 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 		array $detectors,
 		InterwikiResolver $interwikiResolver = null
 	) {
+		Assert::precondition( $query->getCrossSearchStrategy()->isCrossLanguageSearchSupported(),
+			"Cross language search must be supported for this query" );
 		$this->query = $query;
 		$this->searcherFactory = $searcherFactory;
 		$this->detectors = $detectors;
@@ -78,9 +81,13 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 	/**
 	 * @param SearcherFactory $factory
 	 * @param SearchQuery $query
+	 * @param array $params
 	 * @return FallbackMethod
 	 */
-	public static function build( SearcherFactory $factory, SearchQuery $query ) {
+	public static function build( SearcherFactory $factory, SearchQuery $query, array $params ) {
+		if ( !$query->getCrossSearchStrategy()->isCrossLanguageSearchSupported() ) {
+			return null;
+		}
 		$langDetectFactory = new LanguageDetectorFactory( $query->getSearchConfig() );
 		return new self( $query, $factory, $langDetectFactory->getDetectors() );
 	}
@@ -92,9 +99,6 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 	public function successApproximation( FallbackRunnerContext $context ) {
 		$firstPassResults = $context->getInitialResultSet();
 		if ( !$this->query->isAllowRewrite() ) {
-			return 0.0;
-		}
-		if ( !$this->query->getCrossSearchStrategy()->isCrossLanguageSearchSupported() ) {
 			return 0.0;
 		}
 		if ( $this->resultsThreshold( $firstPassResults, $this->threshold ) ) {

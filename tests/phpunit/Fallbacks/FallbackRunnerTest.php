@@ -104,11 +104,13 @@ class FallbackRunnerTest extends CirrusTestCase {
 			/**
 			 * @param SearcherFactory $searcherFactory
 			 * @param SearchQuery $query
-			 * @return FallbackMethod
+			 * @param array $params
+			 * @return void
 			 */
 			public static function build(
 				SearcherFactory $searcherFactory,
-				SearchQuery $query
+				SearchQuery $query,
+				array $params = []
 			) {
 				throw new AssertionFailedError();
 			}
@@ -154,6 +156,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 			'CirrusSearchMockLanguage' => 'fr',
 			'CirrusSearchFetchConfigFromApi' => false,
 			'CirrusSearchEnablePhraseSuggest' => true,
+			'CirrusSearchFallbackProfile' => 'phrase_suggest_and_language_detection',
 		] );
 
 		MediaWikiServices::getInstance()->redefineService( InterwikiResolver::SERVICE,
@@ -288,7 +291,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 				return $search;
 			}
 
-			public static function build( SearcherFactory $searcherFactory, SearchQuery $query ) {
+			public static function build( SearcherFactory $searcherFactory, SearchQuery $query, array $params = [] ) {
 				throw new \AssertionError();
 			}
 

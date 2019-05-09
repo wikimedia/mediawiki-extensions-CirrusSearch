@@ -164,6 +164,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @return Status
 	 */
 	public function search( SearchQuery $query ) {
+		// TODO: properly pass the profile context name and its params once we have a dispatch service.
 		$this->searchContext = SearchContext::fromSearchQuery( $query, FallbackRunner::create( $this, $query ) );
 		$this->setOffsetLimit( $query->getOffset(), $query->getLimit() );
 		$this->config = $query->getSearchConfig();

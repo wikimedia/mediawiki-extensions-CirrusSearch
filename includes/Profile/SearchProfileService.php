@@ -90,6 +90,12 @@ class SearchProfileService {
 	const FT_QUERY_BUILDER = 'ft_query_builder';
 
 	/**
+	 * Profile type used by FallbackRunner.
+	 * @see \CirrusSearch\Fallbacks\FallbackRunner::create()
+	 */
+	const FALLBACKS = 'fallbacks';
+
+	/**
 	 * Profile context used for prefix search queries
 	 */
 	const CONTEXT_PREFIXSEARCH = 'prefixsearch';
@@ -158,6 +164,15 @@ class SearchProfileService {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * @param string $type
+	 * @param string $context
+	 * @return bool
+	 */
+	public function supportsContext( $type, $context ) {
+		return isset( $this->defaultProfiles[$type][$context] );
 	}
 
 	/**

@@ -100,7 +100,7 @@ class ExternalIndexTest extends \PHPUnit\Framework\TestCase {
 	 */
 	public function testGetWriteClusters( $config, $sourceCluster, $targetCluster ) {
 		$config = new HashSearchConfig( [ 'CirrusSearchReplicaGroup' => $sourceCluster ],
-			[ 'inherit' ], new HashSearchConfig( $config ) );
+			[ HashSearchConfig::FLAG_INHERIT ], new HashSearchConfig( $config ) );
 		$idx = new ExternalIndex( $config, $config->getElement( 'CirrusSearchExtraIndex', NS_FILE ) );
 		$this->assertEquals( $targetCluster, $idx->getCrossClusterName() );
 	}

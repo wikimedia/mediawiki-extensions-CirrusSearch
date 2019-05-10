@@ -88,7 +88,7 @@ class CrossProjectBlockScorerTest extends \PHPUnit\Framework\TestCase {
 		];
 		$hashConfig = new HashSearchConfig(
 			[ 'CirrusSearchCrossProjectOrder' => 'wmf_enwiki' ],
-			[ 'inherit' ]
+			[ HashSearchConfig::FLAG_INHERIT ]
 		);
 		$scorer = CrossProjectBlockScorerFactory::load( $hashConfig );
 		$reordered = $scorer->reorder( $retval );

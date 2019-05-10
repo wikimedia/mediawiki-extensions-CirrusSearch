@@ -381,7 +381,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		$this->setMwGlobals( $myGlobals );
 		$myGlobals['_wikiID'] = $wikiId;
 		// We need to reset this service so it can load wgInterwikiCache
-		$config = new HashSearchConfig( $myGlobals, [ 'inherit' ] );
+		$config = new HashSearchConfig( $myGlobals, [ HashSearchConfig::FLAG_INHERIT ] );
 		$resolver = MediaWikiServices::getInstance()
 			->getService( InterwikiResolverFactory::SERVICE )
 			->getResolver( $config );
@@ -434,7 +434,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		// We need to reset this service so it can load wgInterwikiCache
 		MediaWikiServices::getInstance()
 			->resetServiceForTesting( 'InterwikiLookup' );
-		$config = new HashSearchConfig( [ '_wikiID' => $wikiId ], [ 'inherit' ] );
+		$config = new HashSearchConfig( [ '_wikiID' => $wikiId ], [ HashSearchConfig::FLAG_INHERIT ] );
 		$wanCache = \WANObjectCache::newEmpty();
 		$srvCache = new \EmptyBagOStuff();
 		$resolver = MediaWikiServices::getInstance()

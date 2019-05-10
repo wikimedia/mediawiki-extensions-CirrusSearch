@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch;
+use CirrusSearch\HashSearchConfig;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\ResultSet;
 use OrderedStreamingForkController;
@@ -258,8 +259,8 @@ class RunSearch extends Maintenance {
 			$this->getOption( 'explain', false ) ? 'raw' : null
 		);
 
-		$config = new CirrusSearch\HashSearchConfig( [ SearchConfig::INDEX_BASE_NAME => $this->indexBaseName ],
-			[ 'inherit' ] );
+		$config = new HashSearchConfig( [ SearchConfig::INDEX_BASE_NAME => $this->indexBaseName ],
+			[ HashSearchConfig::FLAG_INHERIT ] );
 		$engine = new CirrusSearch( $config, $options );
 		$namespaces = array_keys( $engine->getConfig()->get( 'NamespacesToBeSearchedDefault' ), true );
 		$engine->setNamespaces( $namespaces );

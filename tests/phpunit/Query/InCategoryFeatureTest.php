@@ -180,7 +180,7 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 	}
 
 	public function testParsedValue() {
-		$feature = new InCategoryFeature( new HashSearchConfig( [], [ 'inherit' ] ) );
+		$feature = new InCategoryFeature( new HashSearchConfig( [], [ HashSearchConfig::FLAG_INHERIT ] ) );
 		$this->assertParsedValue( $feature, 'incategory:test',
 			[ 'names' => [ 'test' ], 'pageIds' => [] ] );
 		$this->assertParsedValue( $feature, 'incategory:foo|bar',
@@ -193,7 +193,7 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function testExpandedData() {
 		$this->mockDB();
-		$feature = new InCategoryFeature( new HashSearchConfig( [], [ 'inherit' ] ) );
+		$feature = new InCategoryFeature( new HashSearchConfig( [], [ HashSearchConfig::FLAG_INHERIT ] ) );
 		$this->assertExpandedData( $feature, "incategory:test|id:2",
 			[ 'test', 'Cat2' ] );
 	}

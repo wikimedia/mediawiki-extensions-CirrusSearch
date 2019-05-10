@@ -118,7 +118,7 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$linkCache->addGoodLinkObj( 23456, Title::newFromText( 'Other page' ) );
 
 		// @todo Use a HashConfig with explicit values?
-		$config = new HashSearchConfig( [ 'CirrusSearchMoreLikeThisTTL' => 600 ], [ 'inherit' ] );
+		$config = new HashSearchConfig( [ 'CirrusSearchMoreLikeThisTTL' => 600 ], [ HashSearchConfig::FLAG_INHERIT ] );
 
 		$context = new SearchContext( $config );
 

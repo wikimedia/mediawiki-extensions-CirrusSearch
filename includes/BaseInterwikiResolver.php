@@ -115,7 +115,10 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 			return [];
 		}
 		list( $wiki, $prefix ) = $wikiAndPrefix;
-		return $this->loadConfigFromAPI( [ $prefix => $wiki ], [ 'load-cont-lang' ], [ $this, 'minimalSearchConfig' ] );
+		return $this->loadConfigFromAPI(
+			[ $prefix => $wiki ],
+			[ HashSearchConfig::FLAG_LOAD_CONT_LANG ],
+			[ $this, 'minimalSearchConfig' ] );
 	}
 
 	/** @return array[] */
@@ -196,7 +199,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 
 				$retValue[$prefix] = new HashSearchConfig(
 					$config,
-					array_merge( $hashConfigFlags, [ 'inherit' ] )
+					array_merge( $hashConfigFlags, [ HashSearchConfig::FLAG_INHERIT ] )
 				);
 			} else {
 				$retValue[$prefix] = $fallbackConfig( $wiki, $hashConfigFlags );
@@ -289,7 +292,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 				'_wikiID' => $wiki,
 				'CirrusSearchIndexBaseName' => $wiki,
 			],
-			array_merge( [ 'inherit' ], $hashConfigFlags )
+			array_merge( [ HashSearchConfig::FLAG_INHERIT ], $hashConfigFlags )
 		);
 	}
 }

@@ -900,7 +900,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			return null;
 		}
 
-		$config = new HashSearchConfig( $overrides, [ 'inherit' ] );
+		$config = new HashSearchConfig( $overrides, [ HashSearchConfig::FLAG_INHERIT ] );
 		$other = clone $this;
 		$other->config = $config;
 		$other->searchContext = $other->searchContext->withConfig( $config );

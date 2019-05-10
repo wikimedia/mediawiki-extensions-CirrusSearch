@@ -223,7 +223,7 @@ abstract class Job extends MWJob {
 				// So that changing the CirrusSearchReplicaGroup to the CrossClusterName of the external
 				// index we build the correct config to write to desired replica group.
 				$config = new HashSearchConfig( [ 'CirrusSearchReplicaGroup' => $otherIndex->getCrossClusterName() ],
-					[ 'inherited' ], $config );
+					[ HashSearchConfig::FLAG_INHERIT ], $config );
 			}
 			$clusterNames = array_filter( $clusterNames, function ( $cluster ) use ( $otherIndex ) {
 				return !$otherIndex->isClusterBlacklisted( $cluster );

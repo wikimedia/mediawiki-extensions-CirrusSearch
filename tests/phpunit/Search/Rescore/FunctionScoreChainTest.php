@@ -89,7 +89,7 @@ class FunctionScoreChainTest extends \MediaWikiTestCase {
 			'CirrusSearchBoostTemplates' => [
 				'Some Page' => 1.23,
 			],
-		], [ 'inherit' ] );
+		], [ HashSearchConfig::FLAG_INHERIT ] );
 		$this->assertTrue( $config->isLocalWiki(), 'only local wiki runs profile hook' );
 		$context = new SearchContext( $config );
 		return new FunctionScoreChain( $context, 'phpunit', $overrides );

@@ -122,7 +122,7 @@ class DataSenderTest extends CirrusTestCase {
 				'super_detect_noop' => true,
 				'super_detect_noop_handlers' => $extraHandlers,
 			],
-		], [ 'inherit' ] );
+		], [ HashSearchConfig::FLAG_INHERIT ] );
 	}
 
 	private function builDoc( array $doc, array $hints ) {

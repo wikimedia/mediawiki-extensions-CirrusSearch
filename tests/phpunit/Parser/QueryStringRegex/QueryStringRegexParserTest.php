@@ -60,7 +60,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 	public function assertQuery( array $expected, $queryString, array $config = [] ) {
 		$config = new HashSearchConfig(
 			$config + [ 'CirrusSearchStripQuestionMarks' => 'all' ],
-			[ 'inherit' ]
+			[ HashSearchConfig::FLAG_INHERIT ]
 		);
 		$parser = $this->buildParser( $config );
 		$parsedQuery = $parser->parse( $queryString );
@@ -110,21 +110,21 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 	private function parse( $query, $config ) {
 		$config = new HashSearchConfig(
 			$config + [ 'CirrusSearchStripQuestionMarks' => 'all' ],
-			[ 'inherit' ]
+			[ HashSearchConfig::FLAG_INHERIT ]
 		);
 
 		return $this->buildParser( $config )->parse( $query );
 	}
 
 	public function testEmpty() {
-		$config = new HashSearchConfig( [], [ 'inherit' ] );
+		$config = new HashSearchConfig( [], [ HashSearchConfig::FLAG_INHERIT ] );
 
 		$parser = $this->buildParser( $config );
 		$this->assertEquals( new EmptyQueryNode( 0, 0 ), $parser->parse( '' )->getRoot() );
 	}
 
 	public function testLastUnbalanced() {
-		$config = new HashSearchConfig( [], [ 'inherit' ] );
+		$config = new HashSearchConfig( [], [ HashSearchConfig::FLAG_INHERIT ] );
 
 		$parser = $this->buildParser( $config );
 		/** @var ParsedBooleanNode $parsedNode */

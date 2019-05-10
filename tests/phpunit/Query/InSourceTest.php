@@ -119,7 +119,7 @@ class InSourceTest extends BaseSimpleKeywordFeatureTest {
 		$config = new HashSearchConfig( [
 			'CirrusSearchEnableRegex' => true,
 			'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ]
-		], [ 'inherit' ] );
+		], [ HashSearchConfig::FLAG_INHERIT ] );
 		$feature = new InSourceFeature( $config );
 		$this->assertNotConsumed( $feature, 'foo bar' );
 	}
@@ -139,7 +139,7 @@ class InSourceTest extends BaseSimpleKeywordFeatureTest {
 		$config = new HashSearchConfig( [
 				'CirrusSearchEnableRegex' => true,
 				'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ]
-			], [ 'inherit' ] );
+			], [ HashSearchConfig::FLAG_INHERIT ] );
 		$feature = new InSourceFeature( $config );
 
 		if ( $filterValue !== null ) {

@@ -164,7 +164,7 @@ class KeywordParserTest extends CirrusTestCase {
 		$query = ' unrelated insource:/test\\/"/i ';
 		$config = new HashSearchConfig( [
 			'CirrusSearchEnableRegex' => false,
-		], [ 'inherit' ] );
+		], [ HashSearchConfig::FLAG_INHERIT ] );
 
 		$nodes = $parser->parse( $query, new InSourceFeature( $config ), new OffsetTracker() );
 		$this->assertEquals( 1, count( $nodes ) );
@@ -184,7 +184,7 @@ class KeywordParserTest extends CirrusTestCase {
 		// .      0000000000111111111122222222223333333333
 		// .      0123456789012345678901234567890123456789
 		$query = 'prefer-recent:intitle:test';
-		$config = new HashSearchConfig( [], [ 'inherit' ] );
+		$config = new HashSearchConfig( [], [ HashSearchConfig::FLAG_INHERIT ] );
 
 		$assertFunc = function ( array $nodes ) {
 			uasort( $nodes, function ( KeywordFeatureNode $a, KeywordFeatureNode $b ) {

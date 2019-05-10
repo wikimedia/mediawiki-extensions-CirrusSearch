@@ -7,6 +7,7 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CompletionSuggester;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\HashSearchConfig;
 use CirrusSearch\RequestLogger;
 use CirrusSearch\RequestLog;
 use CirrusSearch\SearchConfig;
@@ -157,9 +158,9 @@ class RequestLoggerTest extends CirrusTestCase {
 				$offset = isset( $query['offset'] ) ? $query['offset'] : 0;
 				$limit = isset( $query['limit'] ) ? $query['limit'] : 20;
 				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;
-				$config = new CirrusSearch\HashSearchConfig(
+				$config = new HashSearchConfig(
 					[ CirrusSearch\SearchConfig::INDEX_BASE_NAME => 'wiki' ],
-					[ 'inherit' ] );
+					[ HashSearchConfig::FLAG_INHERIT ] );
 				$searchEngine = new CirrusSearch( $config );
 				$searchEngine->setConnection( $connection );
 				$searchEngine->setLimitOffset( $limit, $offset );

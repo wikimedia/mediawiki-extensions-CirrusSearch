@@ -202,7 +202,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 	public function testMinMaxDefaultProfile( $len, $query ) {
 		$config = new HashSearchConfig( [
 			'CirrusSearchCompletionSettings' => 'fuzzy',
-		], [ 'inherit' ] );
+		], [ HashSearchConfig::FLAG_INHERIT ] );
 		// Test that we generate at most 4 profiles
 		$completion = new CompSuggestQueryBuilder(
 			new SearchContext( $config ),

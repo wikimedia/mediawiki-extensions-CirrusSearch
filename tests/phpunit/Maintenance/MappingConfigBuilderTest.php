@@ -47,7 +47,7 @@ class MappingConfigBuilderTest extends \MediaWikiTestCase {
 				'build' => true,
 			],
 		];
-		$config = new HashSearchConfig( $defaultConfig + $extraConfig, [ 'inherit' ] );
+		$config = new HashSearchConfig( $defaultConfig + $extraConfig, [ HashSearchConfig::FLAG_INHERIT ] );
 		$builder = new $buildClass( true, 0, $config );
 		$flags = 0;
 		$mapping = $builder->buildConfig( $flags );

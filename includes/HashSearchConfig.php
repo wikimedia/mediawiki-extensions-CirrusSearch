@@ -9,6 +9,9 @@ use MultiConfig;
  * SearchConfig implemenation backed by a simple \HashConfig
  */
 class HashSearchConfig extends SearchConfig {
+	const FLAG_INHERIT = 'inherit';
+	const FLAG_LOAD_CONT_LANG = 'load-cont-lang';
+
 	/** @var bool */
 	private $localWiki = false;
 
@@ -22,11 +25,15 @@ class HashSearchConfig extends SearchConfig {
 	public function __construct( array $settings, array $flags = [], \Config $inherited = null ) {
 		parent::__construct();
 		$config = new \HashConfig( $settings );
-		if ( in_array( 'load-cont-lang', $flags ) && !$config->has( 'ContLang' ) && $config->has( 'LanguageCode' ) ) {
+		$extra = array_diff( $flags, [ self::FLAG_LOAD_CONT_LANG, self::FLAG_INHERIT ] );
+		if ( $extra ) {
+			throw new \RuntimeException( "Unknown config flags: " . implode( ',', $extra ) );
+		}
+		if ( in_array( self::FLAG_LOAD_CONT_LANG, $flags ) && !$config->has( 'ContLang' ) && $config->has( 'LanguageCode' ) ) {
 			$config->set( 'ContLang', \Language::factory( $config->get( 'LanguageCode' ) ) );
 		}
 
-		if ( in_array( 'inherit', $flags ) ) {
+		if ( in_array( self::FLAG_INHERIT, $flags ) ) {
 			$config = new MultiConfig( [ $config, $inherited ?? new GlobalVarConfig ] );
 			$this->localWiki = !isset( $settings['_wikiID' ] );
 		}

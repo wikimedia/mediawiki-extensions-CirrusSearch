@@ -13,7 +13,7 @@ class RegexFeatureTest extends BaseSimpleKeywordFeatureTest {
 	public function testGivesWarningIfNotEnabled() {
 		$config = new HashSearchConfig( [
 			'CirrusSearchEnableRegex' => false,
-		], [ 'inherit' ] );
+		], [ HashSearchConfig::FLAG_INHERIT ] );
 		$this->assertWarnings(
 			new InSourceFeature( $config ),
 			[ [ 'cirrussearch-feature-not-available', 'insource regex' ] ],

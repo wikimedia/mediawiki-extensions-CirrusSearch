@@ -63,12 +63,12 @@ class SearchConfigTest extends CirrusTestCase {
 		$this->assertEquals( 'bar', $config->get( 'foo' ) );
 		$this->assertFalse( $config->has( 'TestVar' ) );
 
-		$config = new HashSearchConfig( [ 'foo' => 'bar', 'Overridden' => 'hop' ], [ 'inherit' ] );
+		$config = new HashSearchConfig( [ 'foo' => 'bar', 'Overridden' => 'hop' ], [ HashSearchConfig::FLAG_INHERIT ] );
 		$this->assertEquals( 'bar', $config->get( 'foo' ) );
 		$this->assertTrue( $config->has( 'TestVar' ) );
 		$this->assertEquals( 'hop', $config->get( 'Overridden' ) );
 
-		$config = new HashSearchConfig( [ 'baz' => 'qux' ], [ 'inherit' ], $config );
+		$config = new HashSearchConfig( [ 'baz' => 'qux' ], [ HashSearchConfig::FLAG_INHERIT ], $config );
 		$this->assertEquals( 'bar', $config->get( 'foo' ) );
 		$this->assertTrue( $config->has( 'TestVar' ) );
 		$this->assertEquals( 'qux', $config->get( 'baz' ) );
@@ -96,7 +96,9 @@ class SearchConfigTest extends CirrusTestCase {
 
 	public function testLoadContLang() {
 		global $wgContLang;
-		$config = new HashSearchConfig( [ 'LanguageCode' => 'fr' ], [ 'load-cont-lang', 'inherit' ] );
+		$config = new HashSearchConfig(
+			[ 'LanguageCode' => 'fr' ],
+			[ HashSearchConfig::FLAG_LOAD_CONT_LANG, HashSearchConfig::FLAG_INHERIT ] );
 		$frContLang = $config->get( 'ContLang' );
 		$this->assertNotSame( $wgContLang, $frContLang );
 		$this->assertSame( \Language::factory( 'fr' ), $frContLang );
@@ -144,13 +146,13 @@ class SearchConfigTest extends CirrusTestCase {
 			'default' => [ 'same', new SearchConfig() ],
 			'override with inherit and same wikiid is same' => [ 'same', new HashSearchConfig( [
 				'CirrusSearchIndexBaseName' => 'phpunit',
-			], [ 'inherit' ] ) ],
+			], [ HashSearchConfig::FLAG_INHERIT ] ) ],
 			'override without inherit and same wikiid is not same' => [ 'not', new HashSearchConfig( [
 				'CirrusSearchIndexBaseName' => 'phpunit',
 			] ) ],
 			'override with inherit and different wikiid is not same' => [ 'not', new HashSearchConfig( [
 				'_wikiID' => 'zomgwtfbbqwiki',
-			], [ 'inherit' ] ) ],
+			], [ HashSearchConfig::FLAG_INHERIT ] ) ],
 			'override without inherit and different wikiid is not same' => [ 'not', new HashSearchConfig( [
 				'_wikiID' => 'zomgwtfbbqwiki',
 			] ) ],

@@ -212,7 +212,7 @@ final class SearchQueryBuilder {
 		Assert::precondition( $original->isAllowRewrite(), 'The original query must allow rewrites' );
 		// Hack to prevent a second pass on this cleaning algo because its destructive
 		$config = new HashSearchConfig( [ 'CirrusSearchStripQuestionMarks' => 'no' ],
-			[ 'inherit' ], $original->getSearchConfig() );
+			[ HashSearchConfig::FLAG_INHERIT ], $original->getSearchConfig() );
 
 		$builder = self::newFTSearchQueryBuilder( $config, $term );
 		$builder->contextualFilters = $original->getContextualFilters();

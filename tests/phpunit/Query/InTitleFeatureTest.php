@@ -117,7 +117,7 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 				'CirrusSearchEnableRegex' => true,
 				'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ]
 			],
-			[ 'inherit' ]
+			[ HashSearchConfig::FLAG_INHERIT ]
 		) );
 
 		$this->assertFilter( $feature, $query, $filterCallback, [] );

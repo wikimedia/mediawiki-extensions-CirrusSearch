@@ -331,7 +331,7 @@ class SearcherTest extends CirrusTestCase {
 	 * @dataProvider provideTestOffsetLimitBounds
 	 */
 	public function testOffsetLimitBounds( $offset, $limit, $expected ) {
-		$conf = new HashSearchConfig( [], [ 'inherit' ] );
+		$conf = new HashSearchConfig( [], [ HashSearchConfig::FLAG_INHERIT ] );
 		$searcher = new Searcher( new DummyConnection( $conf ), $offset, $limit, $conf );
 		$this->assertEquals( $expected, $searcher->getOffsetLimit() );
 		$searcher = new Searcher( new DummyConnection( $conf ), 0, 20, $conf );
@@ -367,7 +367,7 @@ class SearcherTest extends CirrusTestCase {
 	public function testPhraseSuggest( $expectedFile, $query, $namespaces, $offset, $withDym, $config ) {
 		$engine = new \CirrusSearch( new HashSearchConfig( $config + [
 					'CirrusSearchPhraseSuggestReverseField' => [ 'use' => false ],
-				], [ 'inherit' ] ),
+				], [ HashSearchConfig::FLAG_INHERIT ] ),
 				CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		$engine->setShowSuggestion( $withDym );
 		$engine->setNamespaces( $namespaces );
@@ -433,7 +433,7 @@ class SearcherTest extends CirrusTestCase {
 			],
 			'CirrusSearchEnablePhraseSuggest' => true,
 			'CirrusSearchPhraseSuggestReverseField' => [ 'use' => false ],
-		], [ 'inherit' ] );
+		], [ HashSearchConfig::FLAG_INHERIT ] );
 		$engine = new \CirrusSearch( $config );
 		$engine->setFeatureData( 'rewrite', true );
 		$engine->setShowSuggestion( true );

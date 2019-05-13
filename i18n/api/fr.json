@@ -3,20 +3,21 @@
 		"authors": [
 			"Gomoko",
 			"Urhixidur",
-			"Wladek92"
+			"Wladek92",
+			"Orlodrim"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "Vidage de la configuration CirrusSearch.",
-	"apihelp-cirrus-config-dump-summary": "Vidage de la configuration de CirrusSearch.",
+	"apihelp-cirrus-config-dump-summary": "Dump de la configuration de CirrusSearch.",
 	"apihelp-cirrus-config-dump-example": "Obtenir un vidage de la configuration de CirrusSearch",
 	"apihelp-cirrus-mapping-dump-description": "Vidage de la correspondance CirrusSearch pour ce wiki.",
-	"apihelp-cirrus-mapping-dump-summary": "Vidage de la correspondance de CirrusSearch pour ce wiki.",
+	"apihelp-cirrus-mapping-dump-summary": "Dump de la table de correspondance de CirrusSearch pour ce wiki.",
 	"apihelp-cirrus-mapping-dump-example": "Obtenir un vidage de la correspondance de CirrusSearch pour ce wiki.",
 	"apihelp-cirrus-settings-dump-description": "Vidage des paramètres CirrusSearch pour ce wiki.",
-	"apihelp-cirrus-settings-dump-summary": "Vidage des paramètres de CirrusSearch pour ce wiki.",
+	"apihelp-cirrus-settings-dump-summary": "Dump des paramètres de CirrusSearch pour ce wiki.",
 	"apihelp-cirrus-settings-dump-example": "Obtenir un vidage des paramètres de CirrusSearch pour ce wiki.",
 	"apihelp-cirrus-profiles-dump-description": "Données des profils CirrusSearch de ce wiki.",
-	"apihelp-cirrus-profiles-dump-summary": "Vider les profils CirrusSearch de ce wiki.",
+	"apihelp-cirrus-profiles-dump-summary": "Dumps des profils CirrusSearch de ce wiki.",
 	"apihelp-cirrus-profiles-dump-example": "Obtenir le vidage des profils CirrusSearch de ce wiki.",
 	"apihelp-cirrus-profiles-dump-param-verbose": "Vider le contenu des profils",
 	"apihelp-query+cirrusdoc-description": "Dump d'un document article CirrusSearch",

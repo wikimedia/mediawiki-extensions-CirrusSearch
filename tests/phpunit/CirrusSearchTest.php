@@ -109,15 +109,6 @@ class CirrusSearchTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider provideCompletionSuggesterEnabled
-	 * @covers \CirrusSearch::completionSuggesterEnabled
-	 */
-	public function testCompletionSuggesterEnabled( $configValue, $expected ) {
-		$engine = $this->getSearchEngine( [ 'CirrusSearchUseCompletionSuggester' => $configValue ] );
-		$this->assertEquals( !empty( $engine->getProfiles( \CirrusSearch::COMPLETION_PROFILE_TYPE ) ),
-			$expected );
-	}
-	/**
 	 * @param array|null $config
 	 * @return \CirrusSearch
 	 * @throws \ConfigException

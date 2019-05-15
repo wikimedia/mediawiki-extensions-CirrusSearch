@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Api;
 
+use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -32,6 +33,13 @@ class MappingDump extends \ApiBase {
 			$mapping = $conn->getIndex( $indexPrefix, $index )->getMapping();
 			$this->getResult()->addValue( null, $index, $mapping );
 		}
+		if ( $this->getSearchConfig()->isCompletionSuggesterEnabled() ) {
+			$index = $conn->getIndex( $indexPrefix, Connection::TITLE_SUGGEST_TYPE );
+			if ( $index->exists() ) {
+				$mapping = $index->getMapping();
+				$this->getResult()->addValue( null, Connection::TITLE_SUGGEST_TYPE, $mapping );
+			}
+		};
 	}
 
 	public function getAllowedParams() {

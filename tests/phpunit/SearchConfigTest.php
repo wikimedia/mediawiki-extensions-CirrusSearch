@@ -186,4 +186,32 @@ class SearchConfigTest extends CirrusTestCase {
 		] );
 		$this->assertEquals( [ '10.9.8.7:9200' ], $config->getClusterAssignment()->getServerList() );
 	}
+
+	public function provideCompletionSuggesterEnabled() {
+		return [
+			'enabled' => [
+				'yes', true
+			],
+			'enabled with bool' => [
+				true, true
+			],
+			'disabled' => [
+				'no', false
+			],
+			'disabled with bool' => [
+				false, false
+			],
+			'disabled with random' => [
+				'foo', false
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideCompletionSuggesterEnabled
+	 */
+	public function testIsUseCompletionSuggester( $confValue, $expected ) {
+		$conf = [ 'CirrusSearchUseCompletionSuggester' => $confValue ];
+		$this->assertEquals( $expected, ( new HashSearchConfig( $conf ) )->isCompletionSuggesterEnabled() );
+	}
 }

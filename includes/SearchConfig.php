@@ -298,4 +298,15 @@ class SearchConfig implements \Config {
 		}
 		return $this->profileService;
 	}
+
+	/**
+	 * @return bool true if the completion suggester is enabled
+	 */
+	public function isCompletionSuggesterEnabled() {
+		$useCompletion = $this->getElement( 'CirrusSearchUseCompletionSuggester' );
+		if ( is_string( $useCompletion ) ) {
+			return wfStringToBool( $useCompletion );
+		}
+		return $useCompletion === true;
+	}
 }

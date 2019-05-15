@@ -1,12 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Vlad5250"
+			"Vlad5250",
+			"StanProg"
 		]
 	},
-	"apihelp-cirrus-config-dump-description": "Резервно хранилище на настройките на CirrusSearch.",
-	"apihelp-cirrus-config-dump-summary": "Резервно хранилище на настройките на CirrusSearch.",
-	"apihelp-cirrus-config-dump-example": "Дай резервно хранилище на настройките на CirrusSearch.",
+	"apihelp-cirrus-config-dump-description": "Връща настройките на CirrusSearch.",
+	"apihelp-cirrus-config-dump-summary": "Връща настройките на CirrusSearch.",
+	"apihelp-cirrus-config-dump-example": "Връща настройките на CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Резервно хранилище на мапинг на CirrusSearch за това уики.",
 	"apihelp-cirrus-mapping-dump-summary": "Резервно хранилище на мапинг на CirrusSearch за това уики.",
 	"apihelp-cirrus-mapping-dump-example": "Дай резервно хранилище на мапинг на CirrusSearch за това уики.",

@@ -321,7 +321,7 @@ class RequestLogger {
 			'$schema' => '/mediawiki/cirrussearch/request/0.0.1',
 			'meta' => [
 				'request_id' => $webrequest->getRequestId(),
-				'id' => UIDGenerator::newUUIDv1(),
+				'id' => UIDGenerator::newUUIDv4(),
 				'dt' => wfTimestamp( TS_ISO_8601 ),
 				'domain' => $wgServerName,
 				'stream' => 'mediawiki.cirrussearch-request',

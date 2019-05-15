@@ -123,9 +123,7 @@ class AnalysisConfigBuilder {
 		case 'no':
 			return false;
 		case 'default':
-			if ( isset( $this->languagesWithIcuFolding[ $language ] ) ) {
-				return $this->languagesWithIcuFolding[ $language ];
-			}
+			return $this->languagesWithIcuFolding[$language] ?? false;
 		default:
 			return false;
 		}
@@ -148,9 +146,7 @@ class AnalysisConfigBuilder {
 		case 'no':
 			return false;
 		case 'default':
-			if ( isset( $this->languagesWithIcuTokenization[ $language ] ) ) {
-				return $this->languagesWithIcuTokenization[ $language ];
-			}
+			return $this->languagesWithIcuTokenization[$language] ?? false;
 		default:
 			return false;
 		}
@@ -184,10 +180,7 @@ class AnalysisConfigBuilder {
 	 * @return array|null the similarity config
 	 */
 	public function buildSimilarityConfig() {
-		if ( $this->similarity != null && isset( $this->similarity[ 'similarity' ] ) ) {
-			return $this->similarity[ 'similarity' ];
-		}
-		return null;
+		return $this->similarity['similarity'] ?? null;
 	}
 	/**
 	 * replace the standard tokenizer with icu_tokenizer

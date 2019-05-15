@@ -27,7 +27,6 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 	private $wrapped;
 
 	/**
-	 * PhraseSuggesterProfileRepoWrapper constructor.
 	 * @param SearchProfileRepository $wrapped
 	 */
 	private function __construct( SearchProfileRepository $wrapped ) {

@@ -22,7 +22,6 @@ class DummyResultSet extends ResultSet {
 	private $useOverriddenSuggestion = false;
 
 	/**
-	 * DummyResultSet constructor.
 	 * @param int $totalHits
 	 * @param bool $withSyntax
 	 */

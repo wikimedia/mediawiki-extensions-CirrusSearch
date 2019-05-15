@@ -15,7 +15,6 @@ class WordsQueryNode extends ParsedNode {
 	private $words;
 
 	/**
-	 * WordsQueryNode constructor.
 	 * @param int $startOffset
 	 * @param int $endOffset
 	 * @param string $words

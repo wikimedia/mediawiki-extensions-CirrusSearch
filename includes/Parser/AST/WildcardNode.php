@@ -15,8 +15,6 @@ class WildcardNode extends ParsedNode {
 	private $wildcardQuery;
 
 	/**
-	 *
-	 * WildcardNode constructor.
 	 * @param int $startOffset
 	 * @param int $endOffset
 	 * @param string $wildcard the wildcard query (should remain as written by the user)

@@ -141,7 +141,6 @@ class SearchProfileService {
 	private $frozen;
 
 	/**
-	 * SearchProfileService constructor.
 	 * @param WebRequest|null $request obtained from \RequestContext::getMain()->getRequest() if null
 	 * @param User|null $user obtained from \RequestContext::getMain()->getUser() if null
 	 */

@@ -39,7 +39,6 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	private $profile;
 
 	/**
-	 * PhraseSuggestFallbackMethod constructor.
 	 * @param SearchQuery $query
 	 * @param string $profileName name of the profile to use (null to use the defaults provided by the ProfileService)
 	 */

@@ -69,7 +69,6 @@ class ArrayPathSetter {
 	private $compiledReplacements;
 
 	/**
-	 * SearchProfileRepositoryTransformer constructor.
 	 * @param mixed[] $replacements array of replacements indexed with a string in the syntax supported
 	 * by this class
 	 */

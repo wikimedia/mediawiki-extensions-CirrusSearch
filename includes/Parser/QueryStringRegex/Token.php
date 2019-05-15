@@ -75,7 +75,6 @@ class Token {
 	private $node;
 
 	/**
-	 * Token constructor.
 	 * @param string $query
 	 */
 	public function __construct( $query ) {

@@ -16,7 +16,6 @@ class TextCat implements Detector {
 	private $config;
 
 	/**
-	 * TextCat constructor.
 	 * @param SearchConfig $config
 	 */
 	public function __construct( SearchConfig $config ) {

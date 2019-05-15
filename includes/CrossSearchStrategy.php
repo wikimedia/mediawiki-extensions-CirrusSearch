@@ -64,8 +64,8 @@ class CrossSearchStrategy {
 		}
 		return self::$allWikisStrategy;
 	}
+
 	/**
-	 * CrossSearchStrategy constructor.
 	 * @param bool $crossProjectSearchSupported
 	 * @param bool $crossLanguageSearchSupported
 	 * @param bool $extraIndicesSupported

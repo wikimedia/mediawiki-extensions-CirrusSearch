@@ -23,7 +23,6 @@ abstract class LeafVisitor implements Visitor {
 	private $inNegation;
 
 	/**
-	 * LeafVisitor constructor.
 	 * @param int[] $excludeOccurs
 	 */
 	public function __construct( $excludeOccurs = [] ) {

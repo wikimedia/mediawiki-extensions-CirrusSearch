@@ -98,8 +98,8 @@ class CirrusSearch extends SearchEngine {
 	 * @var CirrusDebugOptions
 	 */
 	private $debugOptions;
+
 	/**
-	 * CirrusSearch constructor.
 	 * @param SearchConfig|null $config
 	 * @param CirrusDebugOptions|null $debugOptions
 	 * @throws ConfigException

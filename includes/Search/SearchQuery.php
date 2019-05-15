@@ -105,7 +105,6 @@ class SearchQuery {
 	private $allowRewrite;
 
 	/**
-	 * SearchQuery constructor.
 	 * @param ParsedQuery $parsedQuery
 	 * @param int[] $initialNamespaces
 	 * @param CrossSearchStrategy $initialCrosswikiStrategy

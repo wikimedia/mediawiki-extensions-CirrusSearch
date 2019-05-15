@@ -37,7 +37,6 @@ class ParsedBooleanNode extends ParsedNode {
 	private $clauses;
 
 	/**
-	 * ParsedBooleanNode constructor.
 	 * @param int $startOffset
 	 * @param int $endOffset
 	 * @param BooleanClause[] $children

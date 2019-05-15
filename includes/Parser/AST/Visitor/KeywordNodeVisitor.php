@@ -22,7 +22,6 @@ abstract class KeywordNodeVisitor extends LeafVisitor {
 	private $keywordClasses;
 
 	/**
-	 * KeywordFeatureVisitor constructor.
 	 * @param array $excludeOccurs list of boolean accurence type to ignore
 	 * @param array $keywordClasses list of KeywordFeature classes to accept (empty to accept them all)
 	 */

@@ -26,7 +26,6 @@ class FTQueryClassifiersRepository implements ParsedQueryClassifiersRepository {
 	private $frozen = false;
 
 	/**
-	 * ParsedQueryClassifiersRepository constructor.
 	 * @param SearchConfig $config
 	 * @throws ParsedQueryClassifierException
 	 */

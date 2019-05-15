@@ -164,7 +164,6 @@ class QueryStringRegexParser implements QueryParser {
 	const DEFAULT_OCCUR = BooleanClause::MUST;
 
 	/**
-	 * QueryStringRegexParser constructor.
 	 * @param \CirrusSearch\Parser\KeywordRegistry $keywordRegistry
 	 * @param Escaper $escaper
 	 * @param string $qmarkStripLevel level of question mark stripping to apply

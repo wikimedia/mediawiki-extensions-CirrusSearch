@@ -26,7 +26,6 @@ class KeywordFeatureAssertions {
 	private $testCase;
 
 	/**
-	 * KeywordFeatureAssertions constructor.
 	 * @param \MediaWikiTestCase $testCase
 	 */
 	public function __construct( \PHPUnit\Framework\TestCase $testCase ) {

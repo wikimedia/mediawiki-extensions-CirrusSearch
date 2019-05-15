@@ -292,7 +292,7 @@ class Reindexer {
 	 */
 	private function getMaxReplicaCount() {
 		$replica = explode( '-', $this->replicaCount );
-		return (int)$replica[ count( $replica ) - 1 ];
+		return (int)end( $replica );
 	}
 
 	/**

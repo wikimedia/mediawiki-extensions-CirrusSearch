@@ -164,6 +164,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @return Status
 	 */
 	public function search( SearchQuery $query ) {
+		if ( $query->getDebugOptions()->isCirrusDumpQueryAST() ) {
+			return Status::newGood( [ 'ast' => $query->getParsedQuery()->toArray() ] );
+		}
 		// TODO: properly pass the profile context name and its params once we have a dispatch service.
 		$this->searchContext = SearchContext::fromSearchQuery( $query, FallbackRunner::create( $query ) );
 		$this->setOffsetLimit( $query->getOffset(), $query->getLimit() );

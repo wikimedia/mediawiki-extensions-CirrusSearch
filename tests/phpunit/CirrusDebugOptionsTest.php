@@ -22,6 +22,7 @@ class CirrusDebugOptionsTest extends TestCase {
 			'cirrusSuppressSuggest' => '',
 			'cirrusCompletionVariant' => [ 'foo', 'bar' ],
 			'cirrusDumpQuery' => '',
+			'cirrusDumpQueryAST' => '',
 			'cirrusDumpResult' => '',
 			'cirrusExplain' => 'pretty'
 		] );
@@ -29,6 +30,7 @@ class CirrusDebugOptionsTest extends TestCase {
 		$this->assertEquals( 'my_model', $debugOptions->getCirrusMLRModel() );
 		$this->assertEquals( 'pretty', $debugOptions->getCirrusExplainFormat() );
 		$this->assertTrue( $debugOptions->isCirrusDumpQuery() );
+		$this->assertTrue( $debugOptions->isCirrusDumpQueryAST() );
 		$this->assertTrue( $debugOptions->isCirrusDumpResult() );
 		$this->assertEquals( [ 'foo', 'bar' ], $debugOptions->getCirrusCompletionVariant() );
 		$this->assertTrue( $debugOptions->isReturnRaw() );
@@ -60,6 +62,7 @@ class CirrusDebugOptionsTest extends TestCase {
 		$this->assertNull( $debugOptions->getCirrusMLRModel() );
 		$this->assertNull( $debugOptions->getCirrusExplainFormat() );
 		$this->assertFalse( $debugOptions->isCirrusDumpQuery() );
+		$this->assertFalse( $debugOptions->isCirrusDumpQueryAST() );
 		$this->assertFalse( $debugOptions->isCirrusDumpResult() );
 		$this->assertNull( $debugOptions->getCirrusCompletionVariant() );
 		$this->assertFalse( $debugOptions->isReturnRaw() );

@@ -61,7 +61,8 @@ class InterwikiSearcher extends Searcher {
 			->getService( InterwikiResolver::SERVICE )
 			->getSisterProjectConfigs();
 		if ( !$sources ) {
-			return null;
+			// Nothing to search for
+			return Status::newGood( [] );
 		}
 
 		$iwQueries = [];

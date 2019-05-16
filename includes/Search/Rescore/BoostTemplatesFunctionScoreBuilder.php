@@ -20,7 +20,6 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 	private $boostedQueries;
 
 	/**
-	 * BoostTemplatesFunctionScoreBuilder constructor.
 	 * @param SearchConfig $config
 	 * @param int[]|null $requestedNamespaces
 	 * @param bool $localSearch

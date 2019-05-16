@@ -31,7 +31,6 @@ class ParseWarning {
 	private $messageParams;
 
 	/**
-	 * ParseWarning constructor.
 	 * @param string $message
 	 * @param int $start
 	 * @param string[] $expectedTokens

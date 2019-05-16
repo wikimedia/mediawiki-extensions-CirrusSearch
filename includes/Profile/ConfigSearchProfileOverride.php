@@ -23,7 +23,6 @@ class ConfigSearchProfileOverride implements SearchProfileOverride {
 	private $priority;
 
 	/**
-	 * ConfigSearchProfileOverride constructor.
 	 * @param \Config $config
 	 * @param string $configEntry the name of the config entry holding the name of the overridden profile
 	 * @param int $priority

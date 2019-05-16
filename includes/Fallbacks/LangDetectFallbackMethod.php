@@ -54,8 +54,7 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 	private $threshold;
 
 	/**
-	 * LangDetectFallbackMethod constructor.
-	 * (visible for tests)
+	 * Do not use this constructor outside of tests!
 	 * @param SearchQuery $query
 	 * @param Detector[] $detectors
 	 * @param InterwikiResolver|null $interwikiResolver

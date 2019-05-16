@@ -12,7 +12,6 @@ class LanguageDetectorFactory {
 	private $config;
 
 	/**
-	 * LanguageDetectorFactory constructor.
 	 * @param SearchConfig $config
 	 */
 	public function __construct( SearchConfig $config ) {

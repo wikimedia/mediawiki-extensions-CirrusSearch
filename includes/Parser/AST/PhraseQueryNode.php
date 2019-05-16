@@ -29,7 +29,6 @@ class PhraseQueryNode extends ParsedNode {
 	private $unbalanced = false;
 
 	/**
-	 * PhraseQueryNode constructor.
 	 * @param int $start
 	 * @param int $end
 	 * @param string $phrase

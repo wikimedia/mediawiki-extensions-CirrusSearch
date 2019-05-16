@@ -15,7 +15,6 @@ class StaticProfileOverride implements SearchProfileOverride {
 	private $priority;
 
 	/**
-	 * StaticProfileOverride constructor.
 	 * @param string $name
 	 * @param int $priority
 	 */

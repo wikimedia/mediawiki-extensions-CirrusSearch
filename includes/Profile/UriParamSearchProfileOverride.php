@@ -20,7 +20,6 @@ class UriParamSearchProfileOverride implements SearchProfileOverride {
 	private $priority;
 
 	/**
-	 * UriParamSearchProfileOverride constructor.
 	 * @param \WebRequest $request
 	 * @param string $uriParam
 	 * @param int $priority

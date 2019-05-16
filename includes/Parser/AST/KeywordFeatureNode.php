@@ -48,7 +48,6 @@ class KeywordFeatureNode extends ParsedNode {
 	private $parsedValue;
 
 	/**
-	 * SimpleKeywordFeatureNode constructor.
 	 * @param int $startOffset
 	 * @param int $endOffset
 	 * @param KeywordFeature $keyword

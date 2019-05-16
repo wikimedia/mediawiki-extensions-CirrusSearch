@@ -65,7 +65,6 @@ class ArrayProfileRepository implements SearchProfileRepository {
 	}
 
 	/**
-	 * ArrayProfileRepository constructor.
 	 * @param string $repoType
 	 * @param string $repoName
 	 * @param array[]|callable $profilesOrCallback

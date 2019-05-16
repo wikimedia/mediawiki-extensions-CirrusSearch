@@ -24,8 +24,6 @@ class NegatedNode extends ParsedNode {
 	private $negationType;
 
 	/**
-	 * NegatedNode constructor.
-	 *
 	 * @param int $startOffset
 	 * @param int $endOffset
 	 * @param ParsedNode $child

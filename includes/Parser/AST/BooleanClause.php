@@ -31,7 +31,6 @@ class BooleanClause implements Visitable {
 	private $explicit = false;
 
 	/**
-	 * BooleanClause constructor.
 	 * @param ParsedNode $node
 	 * @param string $occur Specifies how this clause is to occur in matching documents.
 	 * @param bool $explicit whether or not this node is explicitly connected

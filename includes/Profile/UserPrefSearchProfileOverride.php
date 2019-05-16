@@ -24,7 +24,6 @@ class UserPrefSearchProfileOverride implements SearchProfileOverride {
 	private $priority;
 
 	/**
-	 * UserPrefSearchProfileOverride constructor.
 	 * @param User $user
 	 * @param string $preference
 	 * @param int $priority

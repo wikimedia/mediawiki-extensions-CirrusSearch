@@ -15,7 +15,6 @@ class PrefixNode extends ParsedNode {
 	private $prefix;
 
 	/**
-	 * PrefixNode constructor.
 	 * @param int $startOffset
 	 * @param int $endOffset
 	 * @param string $prefix

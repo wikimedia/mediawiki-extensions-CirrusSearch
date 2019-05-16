@@ -18,7 +18,6 @@ class FuzzyNode extends ParsedNode {
 	private $fuzziness;
 
 	/**
-	 * FuzzyNode constructor.
 	 * @param int $start
 	 * @param int $end
 	 * @param string $word

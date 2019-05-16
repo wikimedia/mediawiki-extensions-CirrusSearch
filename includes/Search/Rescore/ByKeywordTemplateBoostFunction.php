@@ -10,7 +10,6 @@ class ByKeywordTemplateBoostFunction implements BoostFunctionBuilder {
 	private $queries;
 
 	/**
-	 * ByKeywordTemplateBoostFunction constructor.
 	 * @param array $boostTemplates
 	 */
 	public function __construct( array $boostTemplates ) {

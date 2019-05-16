@@ -22,7 +22,6 @@ class PreferRecentFunctionScoreBuilder extends FunctionScoreBuilder {
 	private $decayPortion;
 
 	/**
-	 * PreferRecentFunctionScoreBuilder constructor.
 	 * @param SearchConfig $config
 	 * @param float $weight
 	 * @param float $halfLife

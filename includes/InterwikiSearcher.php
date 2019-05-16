@@ -60,9 +60,8 @@ class InterwikiSearcher extends Searcher {
 		$sources = MediaWikiServices::getInstance()
 			->getService( InterwikiResolver::SERVICE )
 			->getSisterProjectConfigs();
-		$msearches = new MSearchRequests();
 		if ( !$sources ) {
-			return Status::newGood( $msearches->canceled() );
+			return null;
 		}
 
 		$iwQueries = [];
@@ -74,6 +73,7 @@ class InterwikiSearcher extends Searcher {
 
 		$this->setResultsType( $resultsType );
 		$blockScorer = CrossProjectBlockScorerFactory::load( $this->config );
+		$msearches = new MSearchRequests();
 		foreach ( $iwQueries as $interwiki => $iwQuery ) {
 			$context = SearchContext::fromSearchQuery( $iwQuery,
 				FallbackRunner::create( $iwQuery ) );

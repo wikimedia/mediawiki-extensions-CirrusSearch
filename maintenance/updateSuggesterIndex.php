@@ -368,10 +368,8 @@ class UpdateSuggesterIndex extends Maintenance {
 			return false;
 		}
 
-		list( $mMaj ) = explode( '.',
-			\CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
-		list( $aMaj ) = explode( '.',
-			\CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
+		$mMaj = explode( '.', SuggesterMappingConfigBuilder::VERSION, 2 )[0];
+		$aMaj = explode( '.', SuggesterAnalysisConfigBuilder::VERSION, 2 )[0];
 
 		try {
 			$store = new MetaVersionStore( $this->getConnection() );
@@ -682,9 +680,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * @return AnalysisConfigBuilder
 	 */
 	private function pickAnalyzer( $langCode, array $availablePlugins = [] ) {
-		$analysisConfigBuilder = new \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder(
-			$langCode, $availablePlugins
-		);
+		$analysisConfigBuilder = new SuggesterAnalysisConfigBuilder( $langCode, $availablePlugins );
 		$this->outputIndented( 'Picking analyzer...' .
 								$analysisConfigBuilder->getDefaultTextAnalyzerType( $langCode ) .
 								"\n" );

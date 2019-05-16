@@ -113,14 +113,14 @@ class MetaVersionStore implements MetaStore {
 	public static function buildDocument( Connection $connection, $baseName, $typeName ) {
 		global $IP, $wgVersion;
 		if ( $typeName == Connection::TITLE_SUGGEST_TYPE ) {
-			list( $aMaj, $aMin ) = explode( '.', SuggesterAnalysisConfigBuilder::VERSION );
-			list( $mMaj, $mMin ) = explode( '.', SuggesterMappingConfigBuilder::VERSION );
+			list( $aMaj, $aMin ) = explode( '.', SuggesterAnalysisConfigBuilder::VERSION, 3 );
+			list( $mMaj, $mMin ) = explode( '.', SuggesterMappingConfigBuilder::VERSION, 3 );
 		} elseif ( $typeName === Connection::ARCHIVE_INDEX_TYPE ) {
-			list( $aMaj, $aMin ) = explode( '.', AnalysisConfigBuilder::VERSION );
-			list( $mMaj, $mMin ) = explode( '.', ArchiveMappingConfigBuilder::VERSION );
+			list( $aMaj, $aMin ) = explode( '.', AnalysisConfigBuilder::VERSION, 3 );
+			list( $mMaj, $mMin ) = explode( '.', ArchiveMappingConfigBuilder::VERSION, 3 );
 		} else {
-			list( $aMaj, $aMin ) = explode( '.', AnalysisConfigBuilder::VERSION );
-			list( $mMaj, $mMin ) = explode( '.', MappingConfigBuilder::VERSION );
+			list( $aMaj, $aMin ) = explode( '.', AnalysisConfigBuilder::VERSION, 3 );
+			list( $mMaj, $mMin ) = explode( '.', MappingConfigBuilder::VERSION, 3 );
 		}
 		$mwInfo = new GitInfo( $IP );
 		$cirrusInfo = new GitInfo( __DIR__ . '/../..' );

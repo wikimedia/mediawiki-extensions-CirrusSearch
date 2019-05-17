@@ -557,21 +557,19 @@ class FullTextResultsType extends BaseResultsType {
 					$config[ 'fields' ][ "$field.plain" ][ 'options' ] = $fieldOptions;
 				}
 			} else {
-				foreach ( $extraHighlightFields as $field => $parts ) {
-					$queryStrings = [];
-					foreach ( $parts as $part ) {
-						if ( isset( $part[ 'query' ] ) ) {
-							$queryStrings[] = $part[ 'query' ];
-						}
+				$queryStrings = [];
+				foreach ( $parts as $part ) {
+					if ( isset( $part['query'] ) ) {
+						$queryStrings[] = $part['query'];
 					}
-					if ( count( $queryStrings ) ) {
-						$config['fields']["$field.plain"] = $fieldOptions;
-						$bool = new \Elastica\Query\BoolQuery();
-						foreach ( $queryStrings as $queryString ) {
-							$bool->addShould( $queryString );
-						}
-						$config[ 'fields' ][ "$field.plain" ][ 'highlight_query' ] = $bool->toArray();
+				}
+				if ( count( $queryStrings ) ) {
+					$config['fields']["$field.plain"] = $fieldOptions;
+					$bool = new \Elastica\Query\BoolQuery();
+					foreach ( $queryStrings as $queryString ) {
+						$bool->addShould( $queryString );
 					}
+					$config['fields']["$field.plain"]['highlight_query'] = $bool->toArray();
 				}
 			}
 		}

@@ -38,6 +38,21 @@
                 "\\u3000=>\\u0020",
                 "\\ufeff=>\\u0020"
             ]
+        },
+        "arabic_numeral_map": {
+            "type": "mapping",
+            "mappings": [
+                "\\u0660=>0",
+                "\\u0661=>1",
+                "\\u0662=>2",
+                "\\u0663=>3",
+                "\\u0664=>4",
+                "\\u0665=>5",
+                "\\u0666=>6",
+                "\\u0667=>7",
+                "\\u0668=>8",
+                "\\u0669=>9"
+            ]
         }
     },
     "filter": {
@@ -86,7 +101,8 @@
         "plain": {
             "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "word_break_helper",
+                "arabic_numeral_map"
             ],
             "filter": [
                 "remove_empty",
@@ -98,7 +114,8 @@
         "plain_search": {
             "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "word_break_helper",
+                "arabic_numeral_map"
             ],
             "filter": [
                 "remove_empty",

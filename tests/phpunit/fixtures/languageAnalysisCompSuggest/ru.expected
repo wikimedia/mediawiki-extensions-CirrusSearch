@@ -36,7 +36,12 @@
                 "\\u202f=>\\u0020",
                 "\\u205f=>\\u0020",
                 "\\u3000=>\\u0020",
-                "\\ufeff=>\\u0020",
+                "\\ufeff=>\\u0020"
+            ]
+        },
+        "russian_diacritic_map": {
+            "type": "mapping",
+            "mappings": [
                 "\\u0301=>",
                 "\\u0451=>\\u0435",
                 "\\u0401=>\\u0415",
@@ -91,7 +96,8 @@
         "plain": {
             "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "word_break_helper",
+                "russian_diacritic_map"
             ],
             "filter": [
                 "remove_empty",
@@ -103,7 +109,8 @@
         "plain_search": {
             "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "word_break_helper",
+                "russian_diacritic_map"
             ],
             "filter": [
                 "remove_empty",

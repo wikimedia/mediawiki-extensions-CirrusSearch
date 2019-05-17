@@ -221,10 +221,7 @@ class CheckIndexes extends Maintenance {
 	 * @return array|null Index metadata from elasticsearch cluster state
 	 */
 	private function getIndexMetadata( $indexName ) {
-		if ( isset( $this->clusterState[ 'metadata' ][ 'indices' ][ $indexName ] ) ) {
-			return $this->clusterState[ 'metadata' ][ 'indices' ][ $indexName ];
-		}
-		return null;
+		return $this->clusterState['metadata']['indices'][$indexName] ?? null;
 	}
 
 	/**

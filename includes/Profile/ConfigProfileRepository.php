@@ -67,10 +67,7 @@ class ConfigProfileRepository implements SearchProfileRepository {
 	 */
 	public function getProfile( $name ) {
 		$profiles = $this->extractProfiles();
-		if ( isset( $profiles[$name] ) ) {
-			return $profiles[$name];
-		}
-		return null;
+		return $profiles[$name] ?? null;
 	}
 
 	/**

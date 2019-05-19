@@ -124,10 +124,8 @@ class QueryFixer implements Visitor {
 		}
 
 		if ( $this->node instanceof KeywordFeatureNode ) {
-			/** @phan-suppress-next-line PhanUndeclaredMethod */
 			return $this->node->getValue();
 		} elseif ( $this->node instanceof WordsQueryNode ) {
-			/** @phan-suppress-next-line PhanUndeclaredMethod */
 			return $this->node->getWords();
 		} else {
 			Assert::invariant( false, "Unsupported node type " . get_class( $this->node ) );
@@ -154,7 +152,6 @@ class QueryFixer implements Visitor {
 		}
 		$res .= substr( $this->parsedQuery->getQuery(), 0, $this->node->getStartOffset() );
 		if ( $this->node instanceof KeywordFeatureNode ) {
-			/** @phan-suppress-next-line PhanUndeclaredMethod */
 			$res .= $this->node->getKey() . ':';
 		}
 		if ( $escapeBoundaries ) {

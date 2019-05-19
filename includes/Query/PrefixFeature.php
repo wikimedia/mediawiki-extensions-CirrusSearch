@@ -167,7 +167,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 			return $query;
 		}
 
-		return $nsFilter !== null ? $nsFilter : $prefixQuery;
+		return $nsFilter ?? $prefixQuery;
 	}
 
 	/**

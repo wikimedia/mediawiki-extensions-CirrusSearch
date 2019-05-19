@@ -70,6 +70,7 @@ abstract class Job extends MWJob {
 		// When the 'cluster' parameter is provided the job must only operate on
 		// the specified cluster, take special care to ensure nested jobs get the
 		// correct cluster set.  When set to null all clusters should be written to.
+		/** @phan-suppress-next-line PhanTypeMismatchArgument */
 		$this->connection = Connection::getPool( $this->searchConfig, $params['cluster'] );
 	}
 

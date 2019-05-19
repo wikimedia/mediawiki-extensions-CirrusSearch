@@ -106,7 +106,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	private $optimizeIndex;
 
 	/**
-	 * @var array(String) list of available plugins
+	 * @var array list of available plugins
 	 */
 	private $availablePlugins;
 

@@ -45,7 +45,7 @@ class RequestLogger {
 	private $logs = [];
 
 	/**
-	 * @var array[string] Result page ids that were returned to user
+	 * @var string[] Result page ids that were returned to user
 	 */
 	private $resultTitleStrings = [];
 

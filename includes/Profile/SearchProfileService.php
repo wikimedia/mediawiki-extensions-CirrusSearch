@@ -145,8 +145,8 @@ class SearchProfileService {
 	 * @param User|null $user obtained from \RequestContext::getMain()->getUser() if null
 	 */
 	public function __construct( WebRequest $request = null, User $user = null ) {
-		$this->request = $request !== null ? $request : RequestContext::getMain()->getRequest();
-		$this->user = $user !== null ? $user : RequestContext::getMain()->getUser();
+		$this->request = $request ?? RequestContext::getMain()->getRequest();
+		$this->user = $user ?? RequestContext::getMain()->getUser();
 	}
 
 	/**

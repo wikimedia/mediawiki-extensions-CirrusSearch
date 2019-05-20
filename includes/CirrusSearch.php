@@ -304,17 +304,6 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
-	 * @return bool
-	 */
-	private function completionSuggesterEnabled() {
-		$useCompletion = $this->config->getElement( 'CirrusSearchUseCompletionSuggester' );
-		if ( is_string( $useCompletion ) ) {
-			return wfStringToBool( $useCompletion );
-		}
-		return $useCompletion === true;
-	}
-
-	/**
 	 * Perform a completion search.
 	 * Does not resolve namespaces and does not check variants.
 	 * We use parent search for:
@@ -341,7 +330,7 @@ class CirrusSearch extends SearchEngine {
 			$variants = array_slice( $variants, 0, 3 );
 		}
 
-		if ( !$this->completionSuggesterEnabled() ) {
+		if ( !$this->config->isCompletionSuggesterEnabled() ) {
 			// Completion suggester is not enabled, fallback to
 			// default implementation
 			return $this->prefixSearch( $search, $variants );
@@ -431,7 +420,7 @@ class CirrusSearch extends SearchEngine {
 		$serviceProfileType = null;
 		switch ( $profileType ) {
 		case SearchEngine::COMPLETION_PROFILE_TYPE:
-			if ( $this->completionSuggesterEnabled() ) {
+			if ( $this->config->isCompletionSuggesterEnabled() ) {
 				$serviceProfileType = SearchProfileService::COMPLETION;
 			}
 			break;

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Api;
 
+use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -35,6 +36,13 @@ class SettingsDump extends \ApiBase {
 				$conn->getIndex( $indexPrefix, $index )->getSettings()->get()
 			);
 		}
+		if ( $this->getSearchConfig()->isCompletionSuggesterEnabled() ) {
+			$index = $conn->getIndex( $indexPrefix, Connection::TITLE_SUGGEST_TYPE );
+			if ( $index->exists() ) {
+				$mapping = $index->getSettings()->get();
+				$this->getResult()->addValue( [ Connection::TITLE_SUGGEST_TYPE, Connection::TITLE_SUGGEST_TYPE ], 'index', $mapping );
+			}
+		};
 	}
 
 	public function getAllowedParams() {

@@ -272,7 +272,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 		$requests = new MSearchRequests();
 		$runner->attachSearchRequests( $requests, $client );
 		$this->assertEmpty( $requests->getRequests() );
-		$mresponses = $requests->canceled();
+		$mresponses = $requests->failure( \Status::newFatal( 'error' ) );
 		$this->assertSame( $inital, $runner->run( $this->getMock( SearcherFactory::class ), $inital, $mresponses ) );
 
 		$runner = new FallbackRunner( [

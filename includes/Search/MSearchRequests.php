@@ -66,13 +66,6 @@ class MSearchRequests {
 	}
 
 	/**
-	 * @return MSearchResponses
-	 */
-	public function canceled(): MSearchResponses {
-		return new MSearchResponses( [], [] );
-	}
-
-	/**
 	 * @param Status $status
 	 * @return MSearchResponses
 	 */

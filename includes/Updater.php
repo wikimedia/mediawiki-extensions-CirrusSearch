@@ -11,6 +11,7 @@ use ParserOutput;
 use Sanitizer;
 use TextContent;
 use Title;
+use Wikimedia\Assert\Assert;
 use WikiPage;
 
 /**
@@ -50,26 +51,29 @@ class Updater extends ElasticsearchIntermediary {
 	private $updated = [];
 
 	/**
-	 * @var string|null Name of cluster to write to, or null if none
+	 * @var string|null Name of cluster to write to, or null if none (write to all)
 	 */
 	protected $writeToClusterName;
 
 	/**
-	 * @var SearchConfig
+	 * @param Connection $readConnection connection used to pull data out of elasticsearch
+	 * @param string|null $writeToClusterName
 	 */
-	protected $searchConfig;
+	public function __construct( Connection $readConnection, $writeToClusterName = null ) {
+		parent::__construct( $readConnection, null, 0 );
+		$this->writeToClusterName = $writeToClusterName;
+	}
 
 	/**
-	 * @param Connection $conn
 	 * @param SearchConfig $config
-	 * @param string[] $flags
+	 * @param string|null $cluster cluster to read from and write to,
+	 * null to read from the default cluster and write to all
+	 * @return Updater
 	 */
-	public function __construct( Connection $conn, SearchConfig $config, array $flags = [] ) {
-		parent::__construct( $conn, null, 0 );
-		$this->searchConfig = $config;
-		if ( in_array( 'same-cluster', $flags ) ) {
-			$this->writeToClusterName = $this->connection->getClusterName();
-		}
+	public static function build( SearchConfig $config, $cluster ): Updater {
+		Assert::invariant( self::class === static::class, 'Must be invoked as Updater::build( ... )' );
+		$connection = Connection::getPool( $config, $cluster );
+		return new self( $connection, $cluster );
 	}
 
 	/**
@@ -94,7 +98,7 @@ class Updater extends ElasticsearchIntermediary {
 		}
 		$redirectDocIds = [];
 		foreach ( $redirects as $redirect ) {
-			$redirectDocIds[] = $this->searchConfig->makeId( $redirect->getId() );
+			$redirectDocIds[] = $this->connection->getConfig()->makeId( $redirect->getId() );
 		}
 		return $this->deletePages( [], $redirectDocIds );
 	}
@@ -200,7 +204,7 @@ class Updater extends ElasticsearchIntermediary {
 
 		$titles = $this->pagesToTitles( $pages );
 		if ( !$isInstantIndex ) {
-			Job\OtherIndex::queueIfRequired( $this->searchConfig, $titles, $this->writeToClusterName );
+			Job\OtherIndex::queueIfRequired( $this->connection->getConfig(), $titles, $this->writeToClusterName );
 		}
 
 		$allDocuments = array_fill_keys( $this->connection->getAllIndexTypes(), [] );
@@ -245,7 +249,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return bool Always returns true.
 	 */
 	public function deletePages( $titles, $docIds, $indexType = null, $elasticType = null ) {
-		Job\OtherIndex::queueIfRequired( $this->searchConfig, $titles, $this->writeToClusterName );
+		Job\OtherIndex::queueIfRequired( $this->connection->getConfig(), $titles, $this->writeToClusterName );
 		$job = Job\ElasticaWrite::build(
 			$titles ? reset( $titles ) : Title::makeTitle( NS_SPECIAL, "Badtitle/" . Job\ElasticaWrite::class ),
 			'sendDeletes',
@@ -265,7 +269,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return bool
 	 */
 	public function archivePages( $archived ) {
-		if ( !$this->searchConfig->getElement( 'CirrusSearchIndexDeletes' ) ) {
+		if ( !$this->connection->getConfig()->getElement( 'CirrusSearchIndexDeletes' ) ) {
 			// Disabled by config - don't do anything
 			return true;
 		}
@@ -305,7 +309,7 @@ class Updater extends ElasticsearchIntermediary {
 				'wiki' => wfWikiID(),
 			] );
 			$doc->setDocAsUpsert( true );
-			$doc->setRetryOnConflict( $this->searchConfig->getElement( 'CirrusSearchUpdateConflictRetryCount' ) );
+			$doc->setRetryOnConflict( $this->connection->getConfig()->getElement( 'CirrusSearchUpdateConflictRetryCount' ) );
 
 			$docs[] = $doc;
 		}
@@ -430,7 +434,7 @@ class Updater extends ElasticsearchIntermediary {
 
 			$doc = self::buildDocument(
 				$engine, $page, $this->connection, $forceParse, $skipParse, $skipLinks );
-			$doc->setId( $this->searchConfig->makeId( $page->getId() ) );
+			$doc->setId( $this->connection->getConfig()->makeId( $page->getId() ) );
 
 			// Everything as sent as an update to prevent overwriting fields maintained in other processes
 			// like OtherIndex::updateOtherIndex.
@@ -441,7 +445,7 @@ class Updater extends ElasticsearchIntermediary {
 			// unless they are objects in both doc and the indexed source.  We're ok with this because all of
 			// our fields are either regular types or lists of objects and lists are overwritten.
 			$doc->setDocAsUpsert( $fullDocument || $indexOnSkip );
-			$doc->setRetryOnConflict( $this->searchConfig->get( 'CirrusSearchUpdateConflictRetryCount' ) );
+			$doc->setRetryOnConflict( $this->connection->getConfig()->get( 'CirrusSearchUpdateConflictRetryCount' ) );
 
 			$documents[] = $doc;
 		}

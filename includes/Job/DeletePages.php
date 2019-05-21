@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Job;
 
+use CirrusSearch\Updater;
+
 /**
  * Job wrapper around Updater::deletePages.  If indexType parameter is
  * specified then only deletes from that type of index.
@@ -36,7 +38,7 @@ class DeletePages extends Job {
 	 */
 	protected function doJob() {
 		global $wgCirrusSearchIndexDeletes;
-		$updater = $this->createUpdater();
+		$updater = Updater::build( $this->searchConfig, $this->params['cluster'] ?? null );
 		$indexType = $this->params[ 'indexType' ] ?? null;
 		$updater->deletePages( [ $this->title ], [ $this->params['docId'] ], $indexType );
 

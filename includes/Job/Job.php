@@ -6,7 +6,6 @@ use CirrusSearch\ClusterSettings;
 use CirrusSearch\Connection;
 use CirrusSearch\ExternalIndex;
 use CirrusSearch\HashSearchConfig;
-use CirrusSearch\Updater;
 use CirrusSearch\SearchConfig;
 use Job as MWJob;
 use JobQueueGroup;
@@ -33,11 +32,6 @@ use Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 abstract class Job extends MWJob {
-	/**
-	 * @var Connection
-	 */
-	protected $connection;
-
 	/**
 	 * @var SearchConfig
 	 */
@@ -67,15 +61,6 @@ abstract class Job extends MWJob {
 		$this->searchConfig = MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
-		// When the 'cluster' parameter is provided the job must only operate on
-		// the specified cluster, take special care to ensure nested jobs get the
-		// correct cluster set.  When set to null all clusters should be written to.
-		/** @phan-suppress-next-line PhanTypeMismatchArgument */
-		$this->connection = Connection::getPool( $this->searchConfig, $params['cluster'] );
-	}
-
-	public function setConnection( Connection $connection ) {
-		$this->connection = $connection;
 	}
 
 	/**
@@ -132,20 +117,6 @@ abstract class Job extends MWJob {
 			return;
 		}
 		$this->params[ 'jobReleaseTimestamp' ] = $newTime;
-	}
-
-	/**
-	 * Create an Updater instance that will respect cluster configuration
-	 * settings of this job.
-	 *
-	 * @return Updater
-	 */
-	protected function createUpdater() {
-		$flags = [];
-		if ( isset( $this->params['cluster'] ) ) {
-			$flags[] = 'same-cluster';
-		}
-		return new Updater( $this->connection, $this->searchConfig, $flags );
 	}
 
 	/**

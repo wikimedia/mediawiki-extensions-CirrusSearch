@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Job;
 
+use CirrusSearch\Updater;
 use MediaWiki\Logger\LoggerFactory;
 use Title;
 use WikiPage;
@@ -67,7 +68,7 @@ class MassIndex extends Job {
 			$pageData[] = WikiPage::factory( $title );
 		}
 		// Now invoke the updater!
-		$updater = $this->createUpdater();
+		$updater = Updater::build( $this->searchConfig, $this->params['cluster'] ?? null );
 		$count = $updater->updatePages( $pageData, $this->params[ 'updateFlags' ] );
 		return $count >= 0;
 	}

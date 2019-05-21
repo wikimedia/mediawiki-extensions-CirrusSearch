@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Job;
 
+use CirrusSearch\Updater;
+
 /**
  * Updates link counts to page when it is newly linked or unlinked.
  *
@@ -30,7 +32,7 @@ class IncomingLinkCount extends Job {
 	 */
 	protected function doJob() {
 		// Load the titles and filter out any that no longer exist.
-		$updater = $this->createUpdater();
+		$updater = Updater::build( $this->searchConfig, $this->params['cluster'] ?? null );
 		// We're intentionally throwing out whether or not this job succeeds.
 		// We're logging it but we're not retrying.
 		$updater->updateLinkedArticles( [ $this->getTitle() ] );

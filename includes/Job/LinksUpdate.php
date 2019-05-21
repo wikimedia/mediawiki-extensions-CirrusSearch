@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Job;
 
+use CirrusSearch\Updater;
 use JobQueueGroup;
 use Title;
 
@@ -48,7 +49,7 @@ class LinksUpdate extends Job {
 	protected function doJob() {
 		global $wgCirrusSearchRefreshInterval;
 
-		$updater = $this->createUpdater();
+		$updater = Updater::build( $this->searchConfig, $this->params['cluster'] ?? null );
 		$res = $updater->updateFromTitle( $this->title );
 		if ( $res === false ) {
 			// Couldn't update. Bail early and retry rather than adding an

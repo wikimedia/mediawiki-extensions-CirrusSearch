@@ -884,7 +884,7 @@ class Hooks {
 		// Update newly created page. This may not have all the correct link data, etc.
 		// but that will be picked up later by the LinkUpdate job.
 		DeferredUpdates::addCallableUpdate( function () use ( $wikiPage ) {
-			$updater = new Updater( self::getConnection(), self::getConfig() );
+			$updater = Updater::build( self::getConfig(), null );
 			$updater->updatePages( [ $wikiPage ],
 				Updater::SKIP_LINKS | Updater::INDEX_ON_SKIP | Updater::INSTANT_INDEX );
 		} );

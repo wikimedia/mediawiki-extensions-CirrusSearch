@@ -26,7 +26,7 @@ use WikiPage;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class MassIndex extends Job {
+class MassIndex extends CirrusGenericJob {
 	/**
 	 * @param WikiPage[] $pages
 	 * @param int $updateFlags
@@ -41,7 +41,7 @@ class MassIndex extends Job {
 		}
 
 		// We don't have a "title" for this job so we use the Main Page because it exists.
-		return new self( Title::newMainPage(), [
+		return new self( [
 			'pageDBKeys' => $pageDBKeys,
 			'updateFlags' => $updateFlags,
 			'cluster' => $cluster,

@@ -25,7 +25,7 @@ use Title;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class OtherIndex extends Job {
+class OtherIndex extends CirrusGenericJob {
 	/**
 	 * Check if we need to make a job and inject one if so.
 	 *
@@ -45,7 +45,7 @@ class OtherIndex extends Job {
 			// Note that we're updating a bunch of titles but we have to pick one to
 			// attach to the job so we pick the first one.
 			JobQueueGroup::singleton()->push(
-				new self( $titles[0], [
+				new self( [
 					'titles' => $titlesToUpdate,
 					'cluster' => $cluster,
 				] )

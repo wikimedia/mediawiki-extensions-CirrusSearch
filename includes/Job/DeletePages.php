@@ -23,7 +23,7 @@ use CirrusSearch\Updater;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class DeletePages extends Job {
+class DeletePages extends CirrusTitleJob {
 	public function __construct( $title, $params ) {
 		parent::__construct( $title, $params );
 

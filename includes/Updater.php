@@ -219,7 +219,6 @@ class Updater extends ElasticsearchIntermediary {
 			// against the max.  So we chunk it and do them sequentially.
 			foreach ( array_chunk( $documents, 10 ) as $chunked ) {
 				$job = Job\ElasticaWrite::build(
-					reset( $titles ),
 					'sendData',
 					[ $indexType, $chunked ],
 					[
@@ -251,7 +250,6 @@ class Updater extends ElasticsearchIntermediary {
 	public function deletePages( $titles, $docIds, $indexType = null, $elasticType = null ) {
 		Job\OtherIndex::queueIfRequired( $this->connection->getConfig(), $titles, $this->writeToClusterName );
 		$job = Job\ElasticaWrite::build(
-			$titles ? reset( $titles ) : Title::makeTitle( NS_SPECIAL, "Badtitle/" . Job\ElasticaWrite::class ),
 			'sendDeletes',
 			[ $docIds, $indexType, $elasticType ],
 			[ 'cluster' => $this->writeToClusterName ]
@@ -277,7 +275,6 @@ class Updater extends ElasticsearchIntermediary {
 		$head = reset( $archived );
 		foreach ( array_chunk( $docs, 10 ) as $chunked ) {
 			$job = Job\ElasticaWrite::build(
-				$head['title'],
 				'sendData',
 				[ Connection::ARCHIVE_INDEX_TYPE, $chunked, Connection::ARCHIVE_TYPE_NAME ],
 				[ 'cluster' => $this->writeToClusterName, 'private_data' => true ]

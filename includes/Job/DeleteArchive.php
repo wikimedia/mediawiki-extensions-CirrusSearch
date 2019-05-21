@@ -8,7 +8,7 @@ use CirrusSearch\Updater;
 /**
  * Job wrapper for deleting pages from archive.
  */
-class DeleteArchive extends Job {
+class DeleteArchive extends CirrusTitleJob {
 	public function __construct( $title, $params ) {
 		parent::__construct( $title, $params );
 

@@ -364,7 +364,7 @@ class Checker {
 	 * @throws \Exception if an error occurred
 	 */
 	private function loadPagesFromIndex( array $docIds ) {
-		$status = $this->searcher->get( $docIds, [ 'namespace', 'title', 'version' ] );
+		$status = $this->searcher->get( $docIds, [ 'namespace', 'title', 'version' ], false );
 		if ( !$status->isOK() ) {
 			throw new \Exception( 'Cannot fetch ids from index' );
 		}

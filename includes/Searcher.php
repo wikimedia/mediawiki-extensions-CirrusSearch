@@ -377,10 +377,11 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * It is possible to find more then one page if the page is in multiple indexes.
 	 * @param string[] $docIds array of document ids
 	 * @param string[]|true|false $sourceFiltering source filtering to apply
+	 * @param bool $usePoolCounter false to disable the pool counter
 	 * @return Status containing pages found, containing an empty array if not found,
 	 *    or an error if there was an error
 	 */
-	public function get( array $docIds, $sourceFiltering ) {
+	public function get( array $docIds, $sourceFiltering, $usePoolCounter = true ) {
 		$connection = $this->getOverriddenConnection();
 		$indexType = $connection->pickIndexTypeForNamespaces(
 			$this->searchContext->getNamespaces()
@@ -393,39 +394,42 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		) );
 		$size *= count( $docIds );
 
-		return Util::doPoolCounterWork(
-			$this->getPoolCounterType(),
-			$this->user,
-			function () use ( $docIds, $sourceFiltering, $indexType, $size, $connection ) {
-				try {
-					$this->startNewLog( 'get of {indexType}.{docIds}', 'get', [
-						'indexType' => $indexType,
-						'docIds' => $docIds,
-					] );
-					// Shard timeout not supported on get requests so we just use the client side timeout
-					$connection->setTimeout( $this->getClientTimeout( 'get' ) );
-					// We use a search query instead of _get/_mget, these methods are
-					// theorically well suited for this kind of job but they are not
-					// supported on aliases with multiple indices (content/general)
-					$pageType = $connection->getPageType( $this->indexBaseName, $indexType );
-					$query = new \Elastica\Query( new \Elastica\Query\Ids( $docIds ) );
-					$query->setParam( '_source', $sourceFiltering );
-					$query->addParam( 'stats', 'get' );
-					// We ignore limits provided to the searcher
-					// otherwize we could return fewer results than
-					// the ids requested.
-					$query->setFrom( 0 );
-					$query->setSize( $size );
-					$resultSet = $pageType->search( $query, [ 'search_type' => 'query_then_fetch' ] );
-					return $this->success( $resultSet->getResults(), $connection );
-				} catch ( \Elastica\Exception\NotFoundException $e ) {
-					// NotFoundException just means the field didn't exist.
-					// It is up to the caller to decide if that is an error.
-					return $this->success( [], $connection );
-				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					return $this->failure( $e, $connection );
-				}
-			} );
+		$work = function () use ( $docIds, $sourceFiltering, $indexType, $size, $connection ) {
+			try {
+				$this->startNewLog( 'get of {indexType}.{docIds}', 'get', [
+					'indexType' => $indexType,
+					'docIds' => $docIds,
+				] );
+				// Shard timeout not supported on get requests so we just use the client side timeout
+				$connection->setTimeout( $this->getClientTimeout( 'get' ) );
+				// We use a search query instead of _get/_mget, these methods are
+				// theorically well suited for this kind of job but they are not
+				// supported on aliases with multiple indices (content/general)
+				$pageType = $connection->getPageType( $this->indexBaseName, $indexType );
+				$query = new \Elastica\Query( new \Elastica\Query\Ids( $docIds ) );
+				$query->setParam( '_source', $sourceFiltering );
+				$query->addParam( 'stats', 'get' );
+				// We ignore limits provided to the searcher
+				// otherwize we could return fewer results than
+				// the ids requested.
+				$query->setFrom( 0 );
+				$query->setSize( $size );
+				$resultSet = $pageType->search( $query, [ 'search_type' => 'query_then_fetch' ] );
+				return $this->success( $resultSet->getResults(), $connection );
+			} catch ( \Elastica\Exception\NotFoundException $e ) {
+				// NotFoundException just means the field didn't exist.
+				// It is up to the caller to decide if that is an error.
+				return $this->success( [], $connection );
+			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+				return $this->failure( $e, $connection );
+			}
+		};
+
+		if ( $usePoolCounter ) {
+			return Util::doPoolCounterWork( $this->getPoolCounterType(), $this->user, $work );
+		} else {
+			return $work();
+		}
 	}
 
 	/**

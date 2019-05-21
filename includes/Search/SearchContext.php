@@ -5,7 +5,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\ExternalIndex;
 use CirrusSearch\Fallbacks\FallbackRunner;
-use CirrusSearch\OtherIndexes;
+use CirrusSearch\OtherIndexesUpdater;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
@@ -728,13 +728,13 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * Must be called only once the list of namespaces has been set.
 	 *
 	 * @return ExternalIndex[]
-	 * @see OtherIndexes::getExtraIndexesForNamespaces()
+	 * @see OtherIndexesUpdater::getExtraIndexesForNamespaces()
 	 */
 	public function getExtraIndices() {
 		if ( $this->getLimitSearchToLocalWiki() || !$this->getNamespaces() ) {
 			return [];
 		}
-		return OtherIndexes::getExtraIndexesForNamespaces(
+		return OtherIndexesUpdater::getExtraIndexesForNamespaces(
 			$this->config,
 			$this->getNamespaces()
 		);

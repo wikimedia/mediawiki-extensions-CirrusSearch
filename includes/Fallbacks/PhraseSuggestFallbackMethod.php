@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
-use CirrusSearch\OtherIndexes;
+use CirrusSearch\OtherIndexesUpdater;
 use CirrusSearch\Parser\AST\Visitor\QueryFixer;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Profile\SearchProfileException;
@@ -240,7 +240,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		// on other wikis.
 		if ( $config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'use' )
 			&& ( !$this->query->getCrossSearchStrategy()->isExtraIndicesSearchSupported()
-				|| empty( OtherIndexes::getExtraIndexesForNamespaces(
+				|| empty( OtherIndexesUpdater::getExtraIndexesForNamespaces(
 					$config,
 					$this->query->getNamespaces()
 				)

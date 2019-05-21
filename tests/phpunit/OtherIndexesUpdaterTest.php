@@ -5,9 +5,9 @@ namespace CirrusSearch;
 use Title;
 
 /**
- * @covers \CirrusSearch\OtherIndexes
+ * @covers \CirrusSearch\OtherIndexesUpdater
  */
-class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
+class OtherIndexesUpdaterTest extends \PHPUnit\Framework\TestCase {
 
 	public function getExternalIndexesProvider() {
 		return [
@@ -26,7 +26,7 @@ class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \CirrusSearch\OtherIndexes::getExternalIndexes
+	 * @covers \CirrusSearch\OtherIndexesUpdater::getExternalIndexes
 	 * @dataProvider getExternalIndexesProvider
 	 */
 	public function testGetExternalIndexes( $assertions, $extraIndexes ) {
@@ -40,7 +40,7 @@ class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
 				function ( $other ) {
 					return $other->getSearchIndex( 'default' );
 				},
-				OtherIndexes::getExternalIndexes( $config, Title::newFromText( $title ) )
+				OtherIndexesUpdater::getExternalIndexes( $config, Title::newFromText( $title ) )
 			);
 
 			$this->assertEquals( $expectedIndices, $found );
@@ -69,7 +69,7 @@ class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers \CirrusSearch\OtherIndexes::getExtraIndexesForNamespaces
+	 * @covers \CirrusSearch\OtherIndexesUpdater::getExtraIndexesForNamespaces
 	 * @dataProvider getExtraIndexesForNamespaceProvider
 	 */
 	public function testGetExtraIndexesForNamespace( $assertions, $extraIndexes ) {
@@ -84,7 +84,7 @@ class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
 				function ( $other ) {
 					return $other->getSearchIndex( 'default' );
 				},
-				OtherIndexes::getExtraIndexesForNamespaces( $config, $namespaces )
+				OtherIndexesUpdater::getExtraIndexesForNamespaces( $config, $namespaces )
 			);
 			$this->assertEquals( $indices, $found );
 		}
@@ -130,7 +130,7 @@ class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
 		] );
 
 		$conn = new Connection( $config );
-		$oi = $this->getMockBuilder( OtherIndexes::class )
+		$oi = $this->getMockBuilder( OtherIndexesUpdater::class )
 			->setConstructorArgs( [ $conn, $config, [], wfWikiId() ] )
 			->setMethods( [ 'runUpdates' ] )
 			->getMock();

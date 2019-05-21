@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Job;
 
-use CirrusSearch\OtherIndexes;
+use CirrusSearch\OtherIndexesUpdater;
 use CirrusSearch\SearchConfig;
 use JobQueueGroup;
 use Title;
@@ -37,7 +37,7 @@ class OtherIndex extends Job {
 	public static function queueIfRequired( SearchConfig $config, array $titles, $cluster ) {
 		$titlesToUpdate = [];
 		foreach ( $titles as $title ) {
-			if ( OtherIndexes::getExternalIndexes( $config, $title, $cluster ) ) {
+			if ( OtherIndexesUpdater::getExternalIndexes( $config, $title, $cluster ) ) {
 				$titlesToUpdate[] = [ $title->getNamespace(), $title->getText() ];
 			}
 		}
@@ -62,7 +62,7 @@ class OtherIndex extends Job {
 			list( $namespace, $title ) = $titleArr;
 			$titles[] = Title::makeTitle( $namespace, $title );
 		}
-		$otherIdx = OtherIndexes::buildOtherIndexes( $this->searchConfig, $this->params['cluster'], wfWikiID() );
+		$otherIdx = OtherIndexesUpdater::buildOtherIndexesUpdater( $this->searchConfig, $this->params['cluster'], wfWikiID() );
 		$otherIdx->updateOtherIndex( $titles );
 
 		return true;

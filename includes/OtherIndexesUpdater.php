@@ -24,7 +24,7 @@ use Title;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class OtherIndexes extends Updater {
+class OtherIndexesUpdater extends Updater {
 	/** @var string Local site we're tracking */
 	private $localSite;
 
@@ -42,9 +42,9 @@ class OtherIndexes extends Updater {
 	 * @param SearchConfig $config
 	 * @param string|null $cluster
 	 * @param string $localSite
-	 * @return OtherIndexes
+	 * @return OtherIndexesUpdater
 	 */
-	public static function buildOtherIndexes( SearchConfig $config, $cluster, $localSite ): OtherIndexes {
+	public static function buildOtherIndexesUpdater( SearchConfig $config, $cluster, $localSite ): OtherIndexesUpdater {
 		$connection = Connection::getPool( $config, $cluster );
 		return new self( $connection, $cluster, $localSite );
 	}

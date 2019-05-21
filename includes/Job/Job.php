@@ -56,13 +56,6 @@ abstract class Job extends MWJob {
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	public function allowRetries() {
-		return true;
-	}
-
-	/**
 	 * @return SearchConfig
 	 */
 	public function getSearchConfig(): SearchConfig {

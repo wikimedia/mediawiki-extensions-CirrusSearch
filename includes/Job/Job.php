@@ -38,11 +38,6 @@ abstract class Job extends MWJob {
 	protected $searchConfig;
 
 	/**
-	 * @var bool should we retry if this job failed
-	 */
-	private $allowRetries = true;
-
-	/**
 	 * @param Title $title
 	 * @param array $params
 	 */
@@ -132,14 +127,7 @@ abstract class Job extends MWJob {
 	 * @inheritDoc
 	 */
 	public function allowRetries() {
-		return $this->allowRetries;
-	}
-
-	/**
-	 * @param bool $allowRetries Whether this job should be retried if it fails
-	 */
-	protected function setAllowRetries( $allowRetries ) {
-		$this->allowRetries = $allowRetries;
+		return true;
 	}
 
 	/**

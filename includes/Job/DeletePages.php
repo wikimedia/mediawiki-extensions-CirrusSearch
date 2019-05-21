@@ -37,12 +37,11 @@ class DeletePages extends Job {
 	 * @return bool
 	 */
 	protected function doJob() {
-		global $wgCirrusSearchIndexDeletes;
 		$updater = Updater::build( $this->searchConfig, $this->params['cluster'] ?? null );
 		$indexType = $this->params[ 'indexType' ] ?? null;
 		$updater->deletePages( [ $this->title ], [ $this->params['docId'] ], $indexType );
 
-		if ( $wgCirrusSearchIndexDeletes ) {
+		if ( $this->searchConfig->get( 'CirrusSearchIndexDeletes' ) ) {
 			$updater->archivePages( [
 				[
 					'title' => $this->title,

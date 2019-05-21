@@ -182,11 +182,13 @@ class ElasticaWrite extends Job {
 				]
 			);
 		} else {
-			$delay = self::backoffDelay( $this->params['retryCount'] );
-			$job = clone $this;
-			$job->params['retryCount']++;
-			$job->params['cluster'] = $conn->getClusterName();
-			$job->setDelay( $delay );
+			$delay = $this->backoffDelay( $this->params['retryCount'] );
+			$params = $this->params;
+			$params['retryCount']++;
+			$params['cluster'] = $conn->getClusterName();
+			unset( $params['jobReleaseTimestamp'] );
+			$params += Job::buildJobDelayOptions( self::class, $delay );
+			$job = new self( $this->getTitle(), $params );
 			LoggerFactory::getInstance( 'CirrusSearch' )->debug(
 				"ElasticaWrite job reported frozen on cluster {cluster}. Requeueing job with delay of {delay}s",
 				[
@@ -214,11 +216,13 @@ class ElasticaWrite extends Job {
 				]
 			);
 		} else {
-			$delay = self::backoffDelay( $this->params['errorCount'] );
-			$job = clone $this;
-			$job->params['errorCount']++;
-			$job->params['cluster'] = $conn->getClusterName();
-			$job->setDelay( $delay );
+			$delay = $this->backoffDelay( $this->params['retryCount'] );
+			$params = $this->params;
+			$params['errorCount']++;
+			$params['cluster'] = $conn->getClusterName();
+			unset( $params['jobReleaseTimestamp'] );
+			$params += Job::buildJobDelayOptions( self::class, $delay );
+			$job = new self( $this->getTitle(), $params );
 			// Individual failures should have already logged specific errors,
 			LoggerFactory::getInstance( 'CirrusSearch' )->info(
 				"ElasticaWrite job reported failure on cluster {cluster}. Requeueing job with delay of {delay}.",

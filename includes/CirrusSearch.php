@@ -485,7 +485,7 @@ class CirrusSearch extends SearchEngine {
 	 * @param string $type
 	 * @return SearchIndexField
 	 */
-	public function makeSearchFieldMapping( $name, $type ) {
+	public function makeSearchFieldMapping( $name, $type ): SearchIndexField {
 		return $this->searchIndexFieldFactory->makeSearchFieldMapping( $name, $type );
 	}
 

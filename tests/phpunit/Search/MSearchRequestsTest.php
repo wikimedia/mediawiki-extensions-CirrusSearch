@@ -41,17 +41,6 @@ class MSearchRequestsTest extends CirrusTestCase {
 		], $dumpQuery->getValue() );
 	}
 
-	public function testCanceled() {
-		$search1 = ( new Index( new Client(), "test_one" ) )
-			->createSearch( new Match( 'one', 'test' ), [ 'terminate_after' => 10 ] );
-		$requests = MSearchRequests::build( 'first', $search1 );
-		$canceled = $requests->canceled();
-		$this->assertFalse( $canceled->hasFailure() );
-		$this->assertFalse( $canceled->hasTimeout() );
-		$this->assertFalse( $canceled->hasResponses() );
-		$this->assertFalse( $canceled->hasResultsFor( 'first' ) );
-	}
-
 	public function testTimeout() {
 		$search1 = ( new Index( new Client(), "test_one" ) )
 			->createSearch( new Match( 'one', 'test' ), [ 'terminate_after' => 10 ] );

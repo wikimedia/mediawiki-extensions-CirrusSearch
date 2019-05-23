@@ -491,10 +491,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			return $mresults->getFailure();
 		}
 
-		if ( !$mresults->hasResponses() ) {
-			return $this->emptyResultSet();
-		}
-
 		if ( $this->searchContext->getDebugOptions()->isReturnRaw() ) {
 			return $mresults->dumpResults( $description );
 		}
@@ -515,10 +511,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 
 		// TODO: should this be moved upper in the stack?
 		if ( $this->limit <= 0 ) {
-			$this->searchContext->setResultsPossible( false );
-			$this->searchContext->addWarning( 'cirrussearch-offset-too-large',
-				self::MAX_OFFSET_LIMIT, $this->offset );
-			return $msearches->canceled();
+			return $msearches->failure( Status::newFatal( 'cirrussearch-offset-too-large',
+				self::MAX_OFFSET_LIMIT, $this->offset ) );
 		}
 
 		$connection = $this->getOverriddenConnection();

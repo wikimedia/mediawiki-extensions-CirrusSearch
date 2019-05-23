@@ -22,6 +22,11 @@ class CirrusDebugOptions {
 	/**
 	 * @var bool
 	 */
+	private $cirrusDumpQueryAST = false;
+
+	/**
+	 * @var bool
+	 */
 	private $cirrusDumpResult = false;
 
 	/**
@@ -50,10 +55,11 @@ class CirrusDebugOptions {
 		$options = new self();
 		$options->cirrusCompletionVariant = $request->getArray( 'cirrusCompletionVariant' );
 		$options->cirrusDumpQuery = $request->getCheck( 'cirrusDumpQuery' );
+		$options->cirrusDumpQueryAST = $request->getCheck( 'cirrusDumpQueryAST' );
 		$options->cirrusDumpResult = $request->getCheck( 'cirrusDumpResult' );
 		$options->cirrusExplain = self::debugOption( $request, 'cirrusExplain', [ 'verbose', 'pretty', 'hot', 'raw' ] );
 		$options->cirrusMLRModel = $request->getVal( 'cirrusMLRModel' );
-		$options->dumpAndDie = $options->cirrusDumpQuery || $options->cirrusDumpResult;
+		$options->dumpAndDie = $options->cirrusDumpQuery || $options->cirrusDumpQueryAST || $options->cirrusDumpResult;
 		return $options;
 	}
 
@@ -123,6 +129,13 @@ class CirrusDebugOptions {
 	/**
 	 * @return bool
 	 */
+	public function isCirrusDumpQueryAST() {
+		return $this->cirrusDumpQueryAST;
+	}
+
+	/**
+	 * @return bool
+	 */
 	public function isCirrusDumpResult() {
 		return $this->cirrusDumpResult;
 	}
@@ -152,7 +165,7 @@ class CirrusDebugOptions {
 	 * @return bool true if raw data (query or results) needs to be returned
 	 */
 	public function isReturnRaw() {
-		return $this->cirrusDumpQuery || $this->cirrusDumpResult;
+		return $this->cirrusDumpQuery || $this->cirrusDumpQueryAST || $this->cirrusDumpResult;
 	}
 
 	/**
@@ -171,6 +184,6 @@ class CirrusDebugOptions {
 	 *  not have their results cached and returned to other users.
 	 */
 	public function mustNeverBeCached() {
-		return $this->cirrusDumpResult || $this->cirrusExplain;
+		return $this->isReturnRaw() || $this->cirrusExplain !== null;
 	}
 }

@@ -1425,29 +1425,6 @@ $wgResourceModules += [
 ];
 
 /**
- * Mapping of result types to CirrusSearch classes.
- */
-$wgCirrusSearchFieldTypes = [
-	SearchIndexField::INDEX_TYPE_TEXT => \CirrusSearch\Search\TextIndexField::class,
-	SearchIndexField::INDEX_TYPE_KEYWORD => \CirrusSearch\Search\KeywordIndexField::class,
-	SearchIndexField::INDEX_TYPE_INTEGER => \CirrusSearch\Search\IntegerIndexField::class,
-	SearchIndexField::INDEX_TYPE_NUMBER => \CirrusSearch\Search\NumberIndexField::class,
-	SearchIndexField::INDEX_TYPE_DATETIME => \CirrusSearch\Search\DatetimeIndexField::class,
-	SearchIndexField::INDEX_TYPE_BOOL => \CirrusSearch\Search\BooleanIndexField::class,
-	SearchIndexField::INDEX_TYPE_NESTED => \CirrusSearch\Search\NestedIndexField::class,
-	SearchIndexField::INDEX_TYPE_SHORT_TEXT => \CirrusSearch\Search\ShortTextIndexField::class,
-];
-
-/**
- * Customize certain fields with a specific implementation.
- * Useful to apply CirrusSearch specific config to fields
- * controlled by MediaWiki core.
- */
-$wgCirrusSearchFieldTypeOverrides = [
-	'opening_text' => \CirrusSearch\Search\OpeningTextIndexField::class,
-];
-
-/**
  * Custom settings to be provided with index creation. Used for setting
  * slow logs threhsolds and such. Alternatively index templates could
  * be used within elasticsearch.

@@ -3,7 +3,6 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\SearchConfig;
-use Exception;
 use NullIndexField;
 use SearchIndexField;
 
@@ -43,27 +42,35 @@ class CirrusSearchIndexFieldFactory {
 	 * Create a search field definition
 	 * @param string $name
 	 * @param string $type
-	 * @throws Exception
 	 * @return SearchIndexField
 	 */
-	public function makeSearchFieldMapping( $name, $type ) {
-		$overrides = $this->searchConfig->get( 'CirrusSearchFieldTypeOverrides' );
-		$mappings = $this->searchConfig->get( 'CirrusSearchFieldTypes' );
-		if ( !isset( $mappings[$type] ) ) {
-			return new NullIndexField();
-		}
-		$klass = $mappings[$type];
-
-		// Check if a specific class is provided for this field
-		if ( isset( $overrides[$name] ) ) {
-			if ( $klass !== $overrides[$name] && !is_subclass_of( $overrides[$name], $klass ) ) {
-				throw new Exception( "Specialized class " . $overrides[$name] .
-					" for field $name is not compatible with type class $klass" );
-			}
-			$klass = $overrides[$name];
+	public function makeSearchFieldMapping( $name, $type ): SearchIndexField {
+		// Specific type for opening_text
+		switch ( $name ) {
+			case 'opening_text':
+				return new OpeningTextIndexField( $name, $type, $this->searchConfig );
 		}
 
-		return new $klass( $name, $type, $this->searchConfig );
+		switch ( $type ) {
+			case SearchIndexField::INDEX_TYPE_TEXT:
+				return new TextIndexField( $name, $type, $this->searchConfig );
+			case SearchIndexField::INDEX_TYPE_KEYWORD:
+				return new KeywordIndexField( $name, $type, $this->searchConfig );
+			case SearchIndexField::INDEX_TYPE_INTEGER:
+				return new IntegerIndexField( $name, $type, $this->searchConfig );
+			case SearchIndexField::INDEX_TYPE_NUMBER:
+				return new NumberIndexField( $name, $type, $this->searchConfig );
+			case SearchIndexField::INDEX_TYPE_DATETIME:
+				return new DatetimeIndexField( $name, $type, $this->searchConfig );
+			case SearchIndexField::INDEX_TYPE_BOOL:
+				return new BooleanIndexField( $name, $type, $this->searchConfig );
+			case SearchIndexField::INDEX_TYPE_NESTED:
+				return new NestedIndexField( $name, $type, $this->searchConfig );
+			case SearchIndexField::INDEX_TYPE_SHORT_TEXT:
+				return new ShortTextIndexField( $name, $type, $this->searchConfig );
+		}
+
+		return new NullIndexField();
 	}
 
 	/**

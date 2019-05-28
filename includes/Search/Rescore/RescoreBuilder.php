@@ -75,7 +75,7 @@ class RescoreBuilder {
 	}
 
 	/**
-	 * @return array of rescore queries
+	 * @return array[] List of rescore queries
 	 */
 	public function build() {
 		$rescores = [];

@@ -8,8 +8,6 @@ use Elastica\Type;
 use MediaWiki\Logger\LoggerFactory;
 
 /**
- * Class SearchRequestBuilder
- *
  * Build the search request body
  */
 class SearchRequestBuilder {
@@ -31,7 +29,7 @@ class SearchRequestBuilder {
 	/** @var string search timeout, string with time and unit, e.g. 20s for 20 seconds*/
 	private $timeout;
 
-	/** @var Type force the type when set, use {@link Connection::pickIndexTypeForNamespaces}
+	/** @var Type|null Force the type when set, use {@link Connection::pickIndexTypeForNamespaces}
 	 * otherwise */
 	private $pageType;
 

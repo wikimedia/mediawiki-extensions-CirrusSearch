@@ -1,4 +1,5 @@
 <?php
+
 namespace CirrusSearch\Maintenance;
 
 // phpcs:disable MediaWiki.Usage.ForbiddenFunctions.escapeshellarg

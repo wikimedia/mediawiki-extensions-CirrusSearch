@@ -10,7 +10,7 @@ use OrderedStreamingForkController;
 use PageArchive;
 use SearchSuggestionSet;
 use Status;
-use Wikimedia\Rdbms\ResultWrapper;
+use Wikimedia\Rdbms\IResultWrapper;
 
 /**
  * Run search queries provided on stdin
@@ -128,7 +128,7 @@ class RunSearch extends Maintenance {
 		$status = $this->searchFor( $query );
 		if ( $status->isOK() ) {
 			$value = $status->getValue();
-			if ( $value instanceof ResultWrapper ) {
+			if ( $value instanceof IResultWrapper ) {
 				// Archive search results
 				$data += $this->processArchiveResult( $value );
 			} elseif ( $value instanceof ResultSet ) {
@@ -158,6 +158,7 @@ class RunSearch extends Maintenance {
 		// these are prefix or full text results
 		$rows = [];
 		foreach ( $value as $result ) {
+			/** @var CirrusSearch\Search\Result $result */
 			$row = [
 				// use getDocId() rather than asking the title to allow this script
 				// to work when a production index has been imported to a test es instance
@@ -211,10 +212,10 @@ class RunSearch extends Maintenance {
 
 	/**
 	 * Extract data from archive search results.
-	 * @param ResultWrapper $value
+	 * @param IResultWrapper $value
 	 * @return array
 	 */
-	protected function processArchiveResult( ResultWrapper $value ) {
+	protected function processArchiveResult( IResultWrapper $value ) {
 		$rows = [];
 		foreach ( $value as $row ) {
 			$rows[] = [
@@ -232,7 +233,7 @@ class RunSearch extends Maintenance {
 	/**
 	 * Search for term in the archive.
 	 * @param string $query
-	 * @return Status<ResultWrapper>
+	 * @return Status<IResultWrapper>
 	 */
 	protected function searchArchive( $query ) {
 		$result = PageArchive::listPagesBySearch( $query );
@@ -244,7 +245,7 @@ class RunSearch extends Maintenance {
 	 * search result. Varies based on CLI input argument `type`.
 	 *
 	 * @param string $query
-	 * @return Status<ResultSet|ResultWrapper>
+	 * @return Status<ResultSet|IResultWrapper>
 	 */
 	protected function searchFor( $query ) {
 		$searchType = $this->getOption( 'type', 'full_text' );

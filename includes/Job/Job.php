@@ -64,30 +64,11 @@ abstract class Job extends MWJob {
 	 * @return bool
 	 */
 	public function run() {
-		global $wgDisableSearchUpdate, $wgPoolCounterConf;
-
-		if ( $wgDisableSearchUpdate ) {
+		if ( $this->searchConfig->get( 'DisableSearchUpdate' ) ) {
 			return true;
 		}
 
-		// Make sure we don't flood the pool counter.  This is safe since this is only used
-		// to batch update wikis and we don't want to subject those to the pool counter.
-		$backupPoolCounterSearch = null;
-		if ( isset( $wgPoolCounterConf['CirrusSearch-Search'] ) ) {
-			$backupPoolCounterSearch = $wgPoolCounterConf['CirrusSearch-Search'];
-			unset( $wgPoolCounterConf['CirrusSearch-Search'] );
-		}
-
-		try {
-			$ret = $this->doJob();
-		} finally {
-			// Restore the pool counter settings in case other jobs need them
-			if ( $backupPoolCounterSearch ) {
-				$wgPoolCounterConf['CirrusSearch-Search'] = $backupPoolCounterSearch;
-			}
-		}
-
-		return $ret;
+		return $this->doJob();
 	}
 
 	/**

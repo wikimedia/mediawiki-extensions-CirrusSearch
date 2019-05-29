@@ -62,11 +62,7 @@ class OtherIndex extends Job {
 			list( $namespace, $title ) = $titleArr;
 			$titles[] = Title::makeTitle( $namespace, $title );
 		}
-		$flags = [];
-		if ( $this->params['cluster'] ) {
-			$flags[] = 'same-cluster';
-		}
-		$otherIdx = new OtherIndexes( $this->connection, $this->searchConfig, $flags, wfWikiID() );
+		$otherIdx = OtherIndexes::buildOtherIndexes( $this->searchConfig, $this->params['cluster'], wfWikiID() );
 		$otherIdx->updateOtherIndex( $titles );
 
 		return true;

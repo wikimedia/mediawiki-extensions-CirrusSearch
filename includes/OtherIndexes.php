@@ -29,14 +29,24 @@ class OtherIndexes extends Updater {
 	private $localSite;
 
 	/**
-	 * @param Connection $connection
-	 * @param SearchConfig $config
-	 * @param array $flags
+	 * @param Connection $readConnection
+	 * @param string|null $writeToClusterName
 	 * @param string $localSite
 	 */
-	public function __construct( Connection $connection, SearchConfig $config, array $flags, $localSite ) {
-		parent::__construct( $connection, $config, $flags );
+	public function __construct( Connection $readConnection, $writeToClusterName, $localSite ) {
+		parent::__construct( $readConnection, $writeToClusterName );
 		$this->localSite = $localSite;
+	}
+
+	/**
+	 * @param SearchConfig $config
+	 * @param string|null $cluster
+	 * @param string $localSite
+	 * @return OtherIndexes
+	 */
+	public static function buildOtherIndexes( SearchConfig $config, $cluster, $localSite ): OtherIndexes {
+		$connection = Connection::getPool( $config, $cluster );
+		return new self( $connection, $cluster, $localSite );
 	}
 
 	/**
@@ -82,7 +92,7 @@ class OtherIndexes extends Updater {
 	 * @param Title[] $titles array of titles in other indexes to update
 	 */
 	public function updateOtherIndex( $titles ) {
-		if ( !$this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop' ) ) {
+		if ( !$this->connection->getConfig()->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop' ) ) {
 			$this->logFailure( $titles, 'super_detect_noop plugin not enabled' );
 			return;
 		}
@@ -94,7 +104,7 @@ class OtherIndexes extends Updater {
 		$findIdsClosures = [];
 		$readClusterName = $this->connection->getConfig()->getClusterAssignment()->getCrossClusterName();
 		foreach ( $titles as $title ) {
-			foreach ( self::getExternalIndexes( $this->searchConfig, $title ) as $otherIndex ) {
+			foreach ( self::getExternalIndexes( $this->connection->getConfig(), $title ) as $otherIndex ) {
 				$searchIndex = $otherIndex->getSearchIndex( $readClusterName );
 				$type = $this->connection->getPageType( $searchIndex );
 				$query = $this->queryForTitle( $title );

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
+use CirrusSearch\Updater;
 
 /**
  * Job wrapper for deleting pages from archive.
@@ -33,7 +34,7 @@ class DeleteArchive extends Job {
 			return true;
 		}
 
-		$updater = $this->createUpdater();
+		$updater = Updater::build( $this->searchConfig, $this->params['cluster'] ?? null );
 		$updater->deletePages(
 			[ $this->title ],
 			array_keys( $docs ),

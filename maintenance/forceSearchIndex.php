@@ -681,11 +681,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return Updater
 	 */
 	private function createUpdater() {
-		$flags = [];
-		if ( $this->hasOption( 'cluster' ) ) {
-			$flags[] = 'same-cluster';
-		}
-		return new Updater( $this->getConnection(), $this->getSearchConfig(), $flags );
+		return Updater::build( $this->getSearchConfig(), $this->getOption( 'cluster', null ) );
 	}
 }
 

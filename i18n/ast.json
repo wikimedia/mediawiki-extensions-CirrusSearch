@@ -36,7 +36,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Clasificación basada principalmente na cuenta d'enllaces entrantes",
 	"prefs-completion": "Completáu de la gueta",
 	"cirrussearch-pref-completion-section-desc": "Suxeridor de completáu",
-	"cirrussearch-pref-completion-profile-help": "Configurar el comportamientu de les suxerencies d'auto-completáu (buscar de la qu'escribes).",
+	"cirrussearch-pref-completion-profile-help": "Configurar el comportamientu de les suxerencies d'auto-completáu (buscar de la qu'escribes).\n\nEl [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester suxeridor de completáu] ye un algoritmu de suxerencies de gueta con meyor correición d'escritura y relevancia de gueta. La gueta por Prefixu ye l'antiguu algoritmu de suxerencies pa buscar de la qu'escribes.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predetermináu (encamentáu)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Igua hasta dos faltes d'ortografía. Desanicia les redireiciones que s'asemeyen enforma al títulu principal.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Casa con partes de la frase (recomendao pa los títulos de páxina más llargos)",

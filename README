@@ -3,28 +3,10 @@ MediaWiki extension: CirrusSearch
 
 Installation
 ------------
-Get Elasticsearch up and running somewhere. Elasticsearch v5.x is only supported but 5.3.1 or higher is
+Get Elasticsearch up and running somewhere. Elasticsearch v6.x is only supported but 6.5.4 or higher is
 recommended.
 
-CONFIG CHANGES
---------------
-
-- 1.31
-  - The config var wgCirrusSearchBoostLinks has been removed, to disable link boosting
-    set $wgCirrusSearchRescoreProfile = 'classic_noboostlinks'
-
-KNOWN ISSUES
-------------
-All elastic versions prior to 5.3.1 have bugs that affect CirrusSearch:
-- elastic versions before 5.3.x requires the following config in your LocalSettings.php:
-  $CirrusSearchElasticQuirks = [ 'query_string_max_determinized_states' => true ];
-- elastic versions before 5.3.1 suffer from a bug that prevent an index to be reindexed
-  properly without missing docs when using multiple elasticsearch machines
-- when using elastic prior to 5.5.2 with the extra plugin and the super_detect_noop script
-  you must activate the "super_detect_noop_enable_native" option (see docs/settings.txt)
-
 Place the CirrusSearch extension in your extensions directory.
-Make sure you have the curl php library installed (sudo apt-get install php5-curl in Debian.)
 You also need to install the Elastica MediaWiki extension.
 Add this to LocalSettings.php:
  wfLoadExtension( 'Elastica' );

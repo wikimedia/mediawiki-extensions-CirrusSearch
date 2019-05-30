@@ -434,10 +434,12 @@ class Hooks {
 		// single page update jobs over those triggered by template changes or the saneitizer.
 		if ( PHP_SAPI != 'cli' ) {
 			$params[ 'prioritize' ] = true;
+			$delay = $wgCirrusSearchUpdateDelay['prioritized'];
+		} else {
+			$delay = $wgCirrusSearchUpdateDelay['default'];
 		}
+		$params += CirrusSearch\Job\Job::buildJobDelayOptions( Job\LinksUpdate::class, $delay );
 		$job = new Job\LinksUpdate( $linksUpdate->getTitle(), $params );
-		$delay = $wgCirrusSearchUpdateDelay[ $job->isPrioritized() ? 'prioritized' : 'default' ];
-		$job->setDelay( $delay );
 
 		JobQueueGroup::singleton()->push( $job );
 	}

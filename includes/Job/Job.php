@@ -44,7 +44,8 @@ abstract class Job extends MWJob {
 	public function __construct( $title, $params ) {
 		$params += [ 'cluster' => null ];
 		// eg: DeletePages -> cirrusSearchDeletePages
-		$jobName = 'cirrusSearch' . str_replace( 'CirrusSearch\\Job\\', '', static::class );
+		$jobName = self::buildJobName( static::class );
+
 		parent::__construct( $jobName, $title, $params );
 
 		// All CirrusSearch jobs are reasonably expensive.  Most involve parsing and it
@@ -72,7 +73,7 @@ abstract class Job extends MWJob {
 	}
 
 	/**
-	 * Set a delay for this job.  Note that this might not be possible the JobQueue
+	 * Get options to enable delayed jobs. Note that this might not be possible the JobQueue
 	 * implementation handling this job doesn't support it (JobQueueDB) but is possible
 	 * for the high performance JobQueueRedis.  Note also that delays are minimums -
 	 * at least JobQueueRedis makes no effort to remove the delay as soon as possible
@@ -80,19 +81,24 @@ abstract class Job extends MWJob {
 	 * Note yet again that if another delay has been set that is longer then this one
 	 * then the _longer_ delay stays.
 	 *
+	 * @param string $jobClass name of the job class
 	 * @param int $delay seconds to delay this job if possible
+	 * @return array options to set to add to the job param
 	 */
-	public function setDelay( $delay ) {
-		$jobQueue = JobQueueGroup::singleton()->get( $this->getType() );
+	public static function buildJobDelayOptions( $jobClass, $delay ): array {
+		$jobQueue = JobQueueGroup::singleton()->get( $jobClass );
 		if ( !$delay || !$jobQueue->delayedJobsEnabled() ) {
-			return;
+			return [];
 		}
-		$oldTime = $this->getReleaseTimestamp();
-		$newTime = time() + $delay;
-		if ( $oldTime != null && $oldTime >= $newTime ) {
-			return;
-		}
-		$this->params[ 'jobReleaseTimestamp' ] = $newTime;
+		return [ 'jobReleaseTimestamp' => time() + $delay ];
+	}
+
+	/**
+	 * @param string $clazz
+	 * @return string
+	 */
+	public static function buildJobName( $clazz ) {
+		return 'cirrusSearch' . str_replace( 'CirrusSearch\\Job\\', '', $clazz );
 	}
 
 	/**
@@ -117,14 +123,14 @@ abstract class Job extends MWJob {
 	 *  of 6 the possible return values are  64, 128, 256, 512 and 1024 giving a
 	 *  maximum delay of 17 minutes.
 	 */
-	public static function backoffDelay( $retryCount ) {
-		global $wgCirrusSearchWriteBackoffExponent;
+	public function backoffDelay( $retryCount ) {
+		$exponent = $this->searchConfig->get( 'CirrusSearchWriteBackoffExponent' );
 		$minIncrease = 0;
 		if ( $retryCount > 1 ) {
 			// Delay at least 2 minutes for everything that fails more than once
 			$minIncrease = 1;
 		}
-		return ceil( pow( 2, $wgCirrusSearchWriteBackoffExponent + rand( $minIncrease, min( $retryCount, 4 ) ) ) );
+		return ceil( pow( 2, $exponent + rand( $minIncrease, min( $retryCount, 4 ) ) ) );
 	}
 
 	/**

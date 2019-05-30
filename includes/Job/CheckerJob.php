@@ -56,8 +56,7 @@ class CheckerJob extends Job {
 			'profile' => $profile,
 			'cluster' => $cluster,
 			'loopId' => $loopId,
-		] );
-		$job->setDelay( $delay );
+		] + Job::buildJobDelayOptions( self::class, $delay ) );
 		return $job;
 	}
 
@@ -290,11 +289,13 @@ class CheckerJob extends Job {
 			return;
 		}
 
-		$delay = self::backoffDelay( $this->params['retryCount'] );
-		$job = clone $this;
-		$job->params['retryCount']++;
-		$job->params['fromPageId'] = $newFrom;
-		$job->setDelay( $delay );
+		$delay = $this->backoffDelay( $this->params['retryCount'] );
+		$params = $this->params;
+		$params['retryCount']++;
+		$params['fromPageId'] = $newFrom;
+		unset( $params['jobReleaseTimestamp'] );
+		$params += Job::buildJobDelayOptions( self::class, $delay );
+		$job = new self( $this->getTitle(), $params );
 		LoggerFactory::getInstance( 'CirrusSearch' )->info(
 			"Sanitize CheckerJob: $cause ({fromPageId}:{toPageId}), Requeueing CheckerJob with a delay of {delay}s.",
 			[

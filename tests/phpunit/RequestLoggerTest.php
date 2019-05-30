@@ -15,6 +15,7 @@ use CirrusSearch\Searcher;
 use Elastica\Response;
 use Elastica\Transport\AbstractTransport;
 use Psr\Log\AbstractLogger;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Tests full text and completion search request logging. Could be expanded for
@@ -27,9 +28,14 @@ use Psr\Log\AbstractLogger;
  * @covers \CirrusSearch\Hooks::prefixSearchExtractNamespaceWithConnection()
  */
 class RequestLoggerTest extends CirrusTestCase {
+	/** @var array mediawiki/cirrussearch/request schema */
+	private $schema;
 
 	protected function setUp() {
 		parent::setUp();
+
+		$schemaPath = self::FIXTURE_DIR . 'requestLogging/mediawiki_cirrussearch_request.schema.yaml';
+		$this->schema = Yaml::parseFile( $schemaPath );
 	}
 
 	protected function tearDown() {
@@ -319,11 +325,21 @@ class RequestLoggerTest extends CirrusTestCase {
 				if ( $channel === 'CirrusSearchRequestSet' ) {
 					$log = $this->filterCSRQ( $log );
 				} elseif ( $channel == 'cirrussearch-request' ) {
-					// TODO: There should be validation that the log
-					// matches the schema, but due to complications
-					// between CI, -dev dependencies, cross-extension
-					// dependencies, and whatnot that is not happening
-					// right now. T220723.
+					// Before we filter this log for testing against fixture
+					// data, we should make sure that the event in
+					// $log['context'] validates against the expected
+					// mediwiki/cirrussearch/request event JSONSchema. If the
+					// JSONSchema has changed, you'll need to make sure the
+					// schema file in the fixtures/ directory is also updated.
+					$validator = new \JsonSchema\Validator;
+					$fixed = json_decode( json_encode( $log['context'] ) );
+					$validator->validate( $fixed, $this->schema );
+
+					$errors = [];
+					foreach ( $validator->getErrors() as $error ) {
+						$errors[] = sprintf( "[%s] %s\n", $error['property'], $error['message'] );
+					}
+					$this->assertTrue( $validator->isValid(), implode( '\n', $errors ) );
 
 					// Now return the filtered requestset event for fixture testing.
 					$log = $this->filterCirrusSearchRequestEvent( $log );
@@ -419,7 +435,7 @@ class RequestLoggerTest extends CirrusTestCase {
 		foreach (
 			[
 				'meta', 'database', 'mediawiki_host', 'identity',
-				'request_time_ms', 'search_token'
+				'request_time_ms', 'search_id'
 			] as $key
 		) {
 			$this->assertArrayHasKey( $key, $log['context'], $debug );

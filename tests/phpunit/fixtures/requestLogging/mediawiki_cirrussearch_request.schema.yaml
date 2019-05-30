@@ -82,6 +82,13 @@ properties:
     type: string
     description: Hostname of Mediawiki server handling these CirrusSearch requests
 
+  params:
+    type: object
+    description: >
+      Request parameters. Usually from the HTTP query string.
+    additionalProperties:
+      type: string
+
   # -- cirrussearchrequestset .id
   search_id:
     type: string

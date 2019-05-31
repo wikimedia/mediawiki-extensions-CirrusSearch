@@ -69,8 +69,6 @@ class ConfigDump extends \ApiBase {
 		'CirrusSearchInterwikiSources',
 		'CirrusSearchRefreshInterval',
 		'CirrusSearchFragmentSize',
-		'CirrusSearchMainPageCacheWarmer',
-		'CirrusSearchCacheWarmers',
 		'CirrusSearchIndexAllocation',
 		'CirrusSearchFullTextQueryBuilderProfile',
 		'CirrusSearchRescoreProfile',

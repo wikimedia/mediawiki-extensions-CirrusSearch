@@ -202,7 +202,7 @@ class CheckerJob extends Job {
 				$pageCache,
 				$isOld
 			);
-			$checkers[] = $checker;
+			$checkers[$cluster] = $checker;
 		}
 
 		$ranges = array_chunk( range( $from, $to ), $batchSize );
@@ -216,12 +216,12 @@ class CheckerJob extends Job {
 				return true;
 			}
 			$pageCache->exchangeArray( [] );
-			foreach ( $checkers as $checker ) {
+			foreach ( $checkers as $cluster => $checker ) {
 				try {
 					$checker->check( $pageIds );
 				} catch ( CheckerException $checkerException ) {
-					$this->retry( "Failed to verify ids: " . $checkerException->getMessage(), reset( $pageIds ) );
-					return true;
+					$this->retry( "Failed to verify ids: " . $checkerException->getMessage(), reset( $pageIds ), $cluster );
+					unset( $checkers[$cluster] );
 				}
 			}
 		}
@@ -284,15 +284,18 @@ class CheckerJob extends Job {
 	 * Retry the job later with a new from offset
 	 * @param string $cause why we retry
 	 * @param int $newFrom the new from offset
+	 * @param string|null $cluster Cluster job is for
 	 */
-	private function retry( $cause, $newFrom ) {
+	private function retry( $cause, $newFrom, $cluster = null ) {
 		if ( $this->params['retryCount'] >= self::JOB_MAX_RETRIES ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->info(
-				"Sanitize CheckerJob: $cause ({fromPageId}:{toPageId}), Abandonning CheckerJob after {retries} retries, (jobs_chunk_size too high?).",
+				"Sanitize CheckerJob: $cause ({fromPageId}:{toPageId}), Abandonning CheckerJob after {retries} retries " .
+				"for {cluster}, (jobs_chunk_size too high?).",
 				[
 					'retries' => $this->params['retryCount'],
 					'fromPageId' => $this->params['fromPageId'],
 					'toPageId' => $this->params['toPageId'],
+					'cluster' => $cluster ?: 'all clusters'
 				]
 			);
 			return;
@@ -300,17 +303,22 @@ class CheckerJob extends Job {
 
 		$delay = $this->backoffDelay( $this->params['retryCount'] );
 		$params = $this->params;
+		if ( $cluster !== null ) {
+			$params['cluster'] = $cluster;
+		}
 		$params['retryCount']++;
 		$params['fromPageId'] = $newFrom;
 		unset( $params['jobReleaseTimestamp'] );
 		$params += Job::buildJobDelayOptions( self::class, $delay );
 		$job = new self( $this->getTitle(), $params );
 		LoggerFactory::getInstance( 'CirrusSearch' )->info(
-			"Sanitize CheckerJob: $cause ({fromPageId}:{toPageId}), Requeueing CheckerJob with a delay of {delay}s.",
+			"Sanitize CheckerJob: $cause ({fromPageId}:{toPageId}), Requeueing CheckerJob " .
+			"for {cluster} with a delay of {delay}s.",
 			[
 				'delay' => $delay,
 				'fromPageId' => $job->params['fromPageId'],
 				'toPageId' => $job->params['toPageId'],
+				'cluster' => $cluster ?: 'all clusters'
 			]
 		);
 		JobQueueGroup::singleton()->push( $job );

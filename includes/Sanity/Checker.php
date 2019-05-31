@@ -114,6 +114,7 @@ class Checker {
 	 *
 	 * @param int[] $pageIds page to check
 	 * @return int the number of pages updated
+	 * @throws CheckerException
 	 */
 	public function check( array $pageIds ) {
 		$docIds = array_map( [ $this->searchConfig, 'makeId' ], $pageIds );
@@ -361,12 +362,12 @@ class Checker {
 	/**
 	 * @param string[] $docIds document ids
 	 * @return \Elastica\Result[][] search results indexed by page id
-	 * @throws \Exception if an error occurred
+	 * @throws CheckerException if an error occurred
 	 */
 	private function loadPagesFromIndex( array $docIds ) {
 		$status = $this->searcher->get( $docIds, [ 'namespace', 'title', 'version' ], false );
 		if ( !$status->isOK() ) {
-			throw new \Exception( 'Cannot fetch ids from index' );
+			throw new CheckerException( 'Cannot fetch ids from index' );
 		}
 		/** @var \Elastica\ResultSet $dataFromIndex */
 		$dataFromIndex = $status->getValue();

@@ -4,6 +4,7 @@ namespace CirrusSearch\Job;
 
 use ArrayObject;
 use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Sanity\CheckerException;
 use CirrusSearch\Searcher;
 use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\QueueingRemediator;
@@ -185,6 +186,9 @@ class CheckerJob extends Job {
 		$startTime = time();
 
 		$pageCache = new ArrayObject();
+		/**
+		 * @var Checker[] $checkers
+		 */
 		$checkers = [];
 		foreach ( $connections as $cluster => $connection ) {
 			$searcher = new Searcher( $connection, 0, 0, $this->searchConfig, [], null );
@@ -213,7 +217,12 @@ class CheckerJob extends Job {
 			}
 			$pageCache->exchangeArray( [] );
 			foreach ( $checkers as $checker ) {
-				$checker->check( $pageIds );
+				try {
+					$checker->check( $pageIds );
+				} catch ( CheckerException $checkerException ) {
+					$this->retry( "Failed to verify ids: " . $checkerException->getMessage(), reset( $pageIds ) );
+					return true;
+				}
 			}
 		}
 		return true;

@@ -333,7 +333,7 @@ class RequestLogger {
 			],
 			'database' => wfWikiID(),
 			'mediawiki_host' => gethostname(),
-			'search_token' => Util::getRequestSetToken(),
+			'search_id' => Util::getRequestSetToken(),
 			'source' => Util::getExecutionContext(),
 			'identity' => Util::generateIdentToken(),
 			'request_time_ms' => $this->getPhpRequestTookMs(),

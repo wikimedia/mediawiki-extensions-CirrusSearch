@@ -614,9 +614,6 @@
 		"CirrusSearchElasticQuirks": {
 			"value": []
 		},
-		"CirrusSearchRequestEventSampling": {
-			"value": 0.0
-		},
 		"CirrusSearchExtraIndexSettings": {
 			"value": []
 		},

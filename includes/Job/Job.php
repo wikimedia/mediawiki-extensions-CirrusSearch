@@ -65,7 +65,7 @@ abstract class Job extends MWJob {
 	 * @return bool
 	 */
 	public function run() {
-		if ( $this->searchConfig->get( 'DisableSearchUpdate' ) ) {
+		if ( $this->getSearchConfig()->get( 'DisableSearchUpdate' ) ) {
 			return true;
 		}
 
@@ -124,7 +124,7 @@ abstract class Job extends MWJob {
 	 *  maximum delay of 17 minutes.
 	 */
 	public function backoffDelay( $retryCount ) {
-		$exponent = $this->searchConfig->get( 'CirrusSearchWriteBackoffExponent' );
+		$exponent = $this->getSearchConfig()->get( 'CirrusSearchWriteBackoffExponent' );
 		$minIncrease = 0;
 		if ( $retryCount > 1 ) {
 			// Delay at least 2 minutes for everything that fails more than once
@@ -141,8 +141,12 @@ abstract class Job extends MWJob {
 	 * @return Connection[] indexed by cluster name
 	 */
 	protected function decideClusters() {
-		$cluster = $this->params['cluster'] ?? null;
-		$assignment = $this->searchConfig->getClusterAssignment();
+		$params = $this->getParams();
+		$searchConfig = $this->getSearchConfig();
+		$jobType = $this->getType();
+
+		$cluster = $params['cluster'] ?? null;
+		$assignment = $searchConfig->getClusterAssignment();
 		if ( $cluster === null ) {
 			$clusterNames = $assignment->getWritableClusters();
 		} elseif ( $assignment->canWriteToCluster( $cluster ) ) {
@@ -153,17 +157,17 @@ abstract class Job extends MWJob {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Received {command} job for unwritable cluster {cluster}",
 				[
-					'command' => $this->command,
+					'command' => $jobType,
 					'cluster' => $cluster
 				]
 			);
 			// this job does not allow retries so we just need to throw an exception
-			throw new \RuntimeException( "Received {$this->command} job for an unwritable cluster $cluster." );
+			throw new \RuntimeException( "Received {$jobType} job for an unwritable cluster $cluster." );
 		}
 
-		$config = $this->searchConfig;
-		if ( isset( $this->params['external-index'] ) ) {
-			$otherIndex = new ExternalIndex( $this->searchConfig, $this->params['external-index'] );
+		$config = $searchConfig;
+		if ( isset( $params['external-index'] ) ) {
+			$otherIndex = new ExternalIndex( $searchConfig, $params['external-index'] );
 			if ( $otherIndex->getCrossClusterName() !== null ) {
 				// We assume that the cluster configs is mostly shared across cluster groups
 				// e.g. this group config is available in CirrusSearchClusters
@@ -179,7 +183,7 @@ abstract class Job extends MWJob {
 
 		// Limit private data writes, such as archive index, to appropriately
 		// flagged clusters
-		if ( $this->params['private_data'] ?? false ) {
+		if ( $params['private_data'] ?? false ) {
 			// $clusterNames could be empty after this filter.  All consumers
 			// must work appropriately with no connections returned, typically
 			// by looping over the connections and doing nothing when no
@@ -197,5 +201,12 @@ abstract class Job extends MWJob {
 		}
 
 		return $conns;
+	}
+
+	/**
+	 * @return SearchConfig
+	 */
+	public function getSearchConfig(): SearchConfig {
+		return $this->searchConfig;
 	}
 }

@@ -10,6 +10,7 @@
 	"cirrussearch-desc": "Serĉo por MediaWiki bazita sur Elasticsearch",
 	"cirrussearch-backend-error": "Pro dumtempa problemo ne eblis fini vian serĉo. Bonvolu reprovi postnelonge.",
 	"cirrussearch-too-busy-error": "Serĉado estas nuntempe tro okupita. Bonvolu reprovi postnelonge.",
+	"cirrussearch-regex-syntax-error": "Eraro pri sintakso de regula esprimo ĉe $2: $1",
 	"cirrussearch-regex-too-complex-error": "Regula esprimo estas tro komplika. Lernu plu pri ĝia simpligo [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|ĉi tie]].",
 	"cirrussearch-now-using": "Tiu ĉi vikio uzas novan serĉilon. ([[mw:Special:MyLanguage/Help:CirrusSearch|Lernu pli]])",
 	"cirrussearch-pref-label": "Nova serĉo",
@@ -18,5 +19,12 @@
 	"cirrussearch-pref-completion-section-desc": "Kompletiga sugestilo",
 	"cirrussearch-pref-completion-profile-help": "Igi la konduton por aŭtomata kompletigo (serĉado dum tajpado).",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Defaŭlta (inda)",
-	"cirrussearch-completion-profile-classic-pref-name": "Klasika prefiksa serĉo"
+	"cirrussearch-completion-profile-strict-pref-name": "Strikta reĝimo (altnivela)",
+	"cirrussearch-completion-profile-classic-pref-name": "Klasika prefiksa serĉo",
+	"cirrussearch-explore-similar-related": "Rilata",
+	"cirrussearch-explore-similar-categories": "Kategorioj",
+	"cirrussearch-explore-similar-languages": "Lingvoj",
+	"cirrussearch-explore-similar-related-none": "Neniu rilata paĝo havebla",
+	"cirrussearch-explore-similar-categories-none": "Neniu kategorio havebla",
+	"cirrussearch-explore-similar-languages-none": "Ne havebla en aliaj lingvoj"
 }

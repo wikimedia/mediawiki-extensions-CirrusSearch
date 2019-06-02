@@ -3,7 +3,8 @@
 		"authors": [
 			"KATRINE1992",
 			"Nikosgranturismogt",
-			"Twopix"
+			"Twopix",
+			"Sarri.greek"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "Εξαγωγή αρχείου ρυθμίσεων του CirrusSearch.",
@@ -14,7 +15,7 @@
 	"apihelp-cirrus-mapping-dump-example": "Λάβετε αρχείο αντιστοίχισης του CirrusSearch για αυτό το wiki.",
 	"apihelp-cirrus-settings-dump-description": "Αρχείο ρυθμίσεων του CirrusSearch για αυτό το wiki.",
 	"apihelp-cirrus-settings-dump-summary": "Αρχείο ρυθμίσεων του CirrusSearch για αυτό το wiki.",
-	"apihelp-cirrus-settings-dump-example": "Λάβετε αρχέιο ρυθμήσεων του CirrusSearch για αυτό το wiki",
+	"apihelp-cirrus-settings-dump-example": "Λάβετε αρχείο ρυθμίσεων του CirrusSearch για αυτό το wiki",
 	"apihelp-query+cirrusdoc-description": "Έγγραφο άρθρου Dump ενός CirrusSearch",
 	"apihelp-query+cirrusdoc-summary": "Έγγραφο άρθρου Dump ενός CirrusSearch",
 	"apihelp-query+cirrusdoc-example": "Συλλέξετε ένα άρθρο κενό ενός απλού CirrusSearch.",

@@ -168,7 +168,6 @@ class OtherIndexesUpdater extends Updater {
 			// create an appropriate ExternalIndex instance in the job.
 			$externalIndex = $otherIndex->getGroupAndIndexName();
 			$job = Job\ElasticaWrite::build(
-				$title,
 				'sendOtherIndexUpdates',
 				[ $this->localSite, $indexName, $actions ],
 				[ 'cluster' => $this->writeToClusterName, 'external-index' => $externalIndex ]

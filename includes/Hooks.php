@@ -6,6 +6,7 @@ use ApiBase;
 use ApiMain;
 use ApiOpenSearch;
 use CirrusSearch;
+use CirrusSearch\Job\JobTraits;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
 use Content;
@@ -438,7 +439,7 @@ class Hooks {
 		} else {
 			$delay = $wgCirrusSearchUpdateDelay['default'];
 		}
-		$params += CirrusSearch\Job\Job::buildJobDelayOptions( Job\LinksUpdate::class, $delay );
+		$params += JobTraits::buildJobDelayOptions( Job\LinksUpdate::class, $delay );
 		$job = new Job\LinksUpdate( $linksUpdate->getTitle(), $params );
 
 		JobQueueGroup::singleton()->push( $job );

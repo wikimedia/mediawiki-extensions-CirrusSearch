@@ -10,7 +10,6 @@ use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\QueueingRemediator;
 use MediaWiki\Logger\LoggerFactory;
 use JobQueueGroup;
-use Title;
 
 /**
  * Job wrapper around Sanity\Checker
@@ -30,7 +29,7 @@ use Title;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CheckerJob extends Job {
+class CheckerJob extends CirrusGenericJob {
 	/**
 	 * @const int max number of retries, 3 means that the job can be run at
 	 * most 4 times.
@@ -49,7 +48,7 @@ class CheckerJob extends Job {
 	 * @return CheckerJob
 	 */
 	public static function build( $fromPageId, $toPageId, $delay, $profile, $cluster, $loopId ) {
-		$job = new self( Title::makeTitle( NS_SPECIAL, "Badtitle/" . __CLASS__ ), [
+		$job = new self( [
 			'fromPageId' => $fromPageId,
 			'toPageId' => $toPageId,
 			'createdAt' => time(),
@@ -57,15 +56,14 @@ class CheckerJob extends Job {
 			'profile' => $profile,
 			'cluster' => $cluster,
 			'loopId' => $loopId,
-		] + Job::buildJobDelayOptions( self::class, $delay ) );
+		] + self::buildJobDelayOptions( self::class, $delay ) );
 		return $job;
 	}
 
 	/**
-	 * @param Title $title
 	 * @param array $params
 	 */
-	public function __construct( $title, $params ) {
+	public function __construct( array $params ) {
 		// BC for jobs created before id fields were clarified to be explicitly page id's
 		if ( isset( $params['fromId'] ) ) {
 			$params['fromPageId'] = $params['fromId'];
@@ -79,7 +77,7 @@ class CheckerJob extends Job {
 		if ( !isset( $params['loopId'] ) ) {
 			$params['loopId'] = 0;
 		}
-		parent::__construct( $title, $params );
+		parent::__construct( $params );
 	}
 
 	/**
@@ -309,8 +307,8 @@ class CheckerJob extends Job {
 		$params['retryCount']++;
 		$params['fromPageId'] = $newFrom;
 		unset( $params['jobReleaseTimestamp'] );
-		$params += Job::buildJobDelayOptions( self::class, $delay );
-		$job = new self( $this->getTitle(), $params );
+		$params += self::buildJobDelayOptions( self::class, $delay );
+		$job = new self( $params );
 		LoggerFactory::getInstance( 'CirrusSearch' )->info(
 			"Sanitize CheckerJob: $cause ({fromPageId}:{toPageId}), Requeueing CheckerJob " .
 			"for {cluster} with a delay of {delay}s.",

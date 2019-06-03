@@ -7,7 +7,6 @@ use CirrusSearch\DataSender;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use Status;
-use Title;
 
 /**
  * Performs writes to elasticsearch indexes with requeuing and an
@@ -28,7 +27,7 @@ use Title;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class ElasticaWrite extends Job {
+class ElasticaWrite extends CirrusGenericJob {
 	const MAX_ERROR_RETRY = 4;
 
 	/**
@@ -39,8 +38,14 @@ class ElasticaWrite extends Job {
 		'sendData' => [ null, ElasticaDocumentsJsonSerde::class ],
 	];
 
-	public static function build( Title $title, $method, array $arguments, array $params ) {
-		return new self( $title, [
+	/**
+	 * @param string $method
+	 * @param array $arguments
+	 * @param array $params
+	 * @return ElasticaWrite
+	 */
+	public static function build( $method, array $arguments, array $params ) {
+		return new self( [
 			'method' => $method,
 			'arguments' => self::serde( $method, $arguments ),
 			'serialized' => true,
@@ -67,11 +72,10 @@ class ElasticaWrite extends Job {
 	 * Entry point for jobs received from the job queue. Creating new
 	 * jobs should be done via self::build.
 	 *
-	 * @param Title $title A mediawiki title related to the job
 	 * @param array $params
 	 */
-	public function __construct( $title, $params ) {
-		parent::__construct( $title, $params + [
+	public function __construct( array $params ) {
+		parent::__construct( $params + [
 			'createdAt' => time(),
 			'errorCount' => 0,
 			'retryCount' => 0,
@@ -187,8 +191,8 @@ class ElasticaWrite extends Job {
 			$params['retryCount']++;
 			$params['cluster'] = $conn->getClusterName();
 			unset( $params['jobReleaseTimestamp'] );
-			$params += Job::buildJobDelayOptions( self::class, $delay );
-			$job = new self( $this->getTitle(), $params );
+			$params += self::buildJobDelayOptions( self::class, $delay );
+			$job = new self( $params );
 			LoggerFactory::getInstance( 'CirrusSearch' )->debug(
 				"ElasticaWrite job reported frozen on cluster {cluster}. Requeueing job with delay of {delay}s",
 				[
@@ -221,8 +225,8 @@ class ElasticaWrite extends Job {
 			$params['errorCount']++;
 			$params['cluster'] = $conn->getClusterName();
 			unset( $params['jobReleaseTimestamp'] );
-			$params += Job::buildJobDelayOptions( self::class, $delay );
-			$job = new self( $this->getTitle(), $params );
+			$params += self::buildJobDelayOptions( self::class, $delay );
+			$job = new self( $params );
 			// Individual failures should have already logged specific errors,
 			LoggerFactory::getInstance( 'CirrusSearch' )->info(
 				"ElasticaWrite job reported failure on cluster {cluster}. Requeueing job with delay of {delay}.",

@@ -3,7 +3,6 @@
 namespace CirrusSearch\Job;
 
 use CirrusSearch\CirrusTestCase;
-use Title;
 
 /**
  * Test for MassIndex job.
@@ -31,7 +30,7 @@ class MassIndexTest extends CirrusTestCase {
 	 * @dataProvider workItemCountTestCases
 	 */
 	public function testWorkItemCount( $pageDBKeys, $expected ) {
-		$job = new MassIndex( Title::newMainPage(), [
+		$job = new MassIndex( [
 			'pageDBKeys' => $pageDBKeys,
 		] );
 		$this->assertEquals( $expected, $job->workItemCount() );

@@ -31,7 +31,7 @@ use Title;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class LinksUpdate extends Job {
+class LinksUpdate extends CirrusTitleJob {
 	public function __construct( $title, $params ) {
 		parent::__construct( $title, $params );
 
@@ -72,7 +72,7 @@ class LinksUpdate extends Job {
 			$delay = 2 * $refreshInterval + 1;
 			$linkCount = new IncomingLinkCount( $title, [
 				'cluster' => $this->params['cluster'],
-			] + Job::buildJobDelayOptions( IncomingLinkCount::class, $delay ) );
+			] + self::buildJobDelayOptions( IncomingLinkCount::class, $delay ) );
 			JobQueueGroup::singleton()->push( $linkCount );
 		}
 

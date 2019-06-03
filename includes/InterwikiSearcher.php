@@ -56,7 +56,7 @@ class InterwikiSearcher extends Searcher {
 	 * @param SearchQuery $query original search query
 	 * @return Status
 	 */
-	public function getInterwikiResults( SearchQuery $query ) {
+	public function getInterwikiResults( SearchQuery $query ): Status {
 		$sources = MediaWikiServices::getInstance()
 			->getService( InterwikiResolver::SERVICE )
 			->getSisterProjectConfigs();

@@ -84,7 +84,6 @@ class RequestLogger {
 	 * them along with the test they belong to.
 	 */
 	private function reportLogs() {
-		global $wgCirrusSearchRequestEventSampling;
 		if ( $this->logs ) {
 
 			// Build the Avro CirrusSearchRequestSet Avro event and log it to the
@@ -95,14 +94,9 @@ class RequestLogger {
 
 			// Build the mediawiki/search/requestset event and log it to the (json+EventBus)
 			// cirrussearch-request channel.
-			// For initial deployment this has a sampling parameter to prevent somehow triggering
-			// errors across a significant portion of requests. This can be removed once we are
-			// confident in the new logging pipeline.
-			if ( $this->sample( $wgCirrusSearchRequestEventSampling ) ) {
-				LoggerFactory::getInstance( 'cirrussearch-request' )->debug(
-					'', $this->buildCirrusSearchRequestEvent()
-				);
-			}
+			LoggerFactory::getInstance( 'cirrussearch-request' )->debug(
+				'', $this->buildCirrusSearchRequestEvent()
+			);
 
 			// reset logs
 			$this->logs = [];

@@ -38,16 +38,23 @@ class SearchRequestLog extends BaseRequestLog {
 	private $lastResponse;
 
 	/**
+	 * @var int[]|null $namespaces (null if unknown)
+	 */
+	private $namespaces;
+
+	/**
 	 * @param \Elastica\Client $client
 	 * @param string $description
 	 * @param string $queryType
 	 * @param array $extra
+	 * @param int[]|null $namespaces list of known namespaces to query, null if unknown or inappropriate
 	 */
-	public function __construct( \Elastica\Client $client, $description, $queryType, array $extra = [] ) {
+	public function __construct( \Elastica\Client $client, $description, $queryType, array $extra = [], array $namespaces = null ) {
 		parent::__construct( $description, $queryType, $extra );
 		$this->client = $client;
 		$this->lastRequest = $client->getLastRequest();
 		$this->lastResponse = $client->getLastResponse();
+		$this->namespaces = $namespaces;
 	}
 
 	/**
@@ -106,6 +113,9 @@ class SearchRequestLog extends BaseRequestLog {
 
 		$index = explode( '/', $this->request->getPath() );
 		$vars['index'] = $index[0];
+		if ( $this->namespaces !== null ) {
+			$vars['namespaces'] = $this->namespaces;
+		}
 
 		return $this->extractRequestVariables( $this->request->getData() ) +
 			$this->extractResponseVariables( $this->response->getData() ) +
@@ -140,10 +150,6 @@ class SearchRequestLog extends BaseRequestLog {
 		$vars = [
 			'hitsOffset' => $query['from'] ?? 0,
 		];
-		// @todo detecting this seems like a hack, would be better to explicitly pass in
-		if ( isset( $query['query']['filtered']['filter']['terms']['namespace'] ) ) {
-			$vars['namespaces'] = $query['query']['filtered']['filter']['terms']['namespace'];
-		}
 		if ( !empty( $query['suggest'] ) ) {
 			$vars['suggestionRequested'] = true;
 		} else {

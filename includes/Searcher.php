@@ -529,7 +529,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				'limit' => $this->limit ?: null,
 				// Used syntax
 				'syntax' => $this->searchContext->getSyntaxUsed(),
-			]
+			],
+			$this->searchContext->getNamespaces() ?: []
 		);
 
 		// Similar to indexing support only the bulk code path, rather than

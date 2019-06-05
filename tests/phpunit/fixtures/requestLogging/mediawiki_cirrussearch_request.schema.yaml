@@ -5,6 +5,7 @@ description: >
 $id: /mediawiki/cirrussearch/request/0.0.1
 $schema: http://json-schema.org/draft-07/schema#
 type: object
+additionalProperties: false
 properties:
   # global event fields
   $schema:
@@ -131,6 +132,7 @@ properties:
     description: Final set of result pages returned for the CirrusSearch request
     items:
       type: object
+      additionalProperties: false
       properties:
         page_title:
           type: string
@@ -160,6 +162,7 @@ properties:
       and elasticsearch in a single execution context
     items:
       type: object
+      additionalProperties: false
       properties:
         query:
           type: string
@@ -238,6 +241,7 @@ properties:
           description: Final set of result pages returned for this single Elasticsearch request
           items:
             type: object
+            additionalProperties: false
             properties:
               page_title:
                 type: string

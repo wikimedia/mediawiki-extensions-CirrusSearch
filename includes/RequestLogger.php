@@ -237,7 +237,7 @@ class RequestLogger {
 						if ( empty( $v ) ) {
 							return $v;
 						} else {
-							return array_map( 'intval', $v );
+							return array_values( array_map( 'intval', $v ) );
 						}
 					}
 				);

@@ -113,12 +113,11 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 				];
 			}
 		}
-		$createIfMissing = getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes';
 
 		$this->assertFileContains(
 			CirrusTestCase::fixturePath( $expectedFile ),
 			CirrusTestCase::encodeFixture( $searchQuery ),
-			$createIfMissing
+			self::canRebuildFixture()
 		);
 	}
 

@@ -52,8 +52,7 @@ class SuggesterAnalysisConfigBuilderTest extends CirrusTestCase {
 		];
 		$builder = new SuggesterAnalysisConfigBuilder( $langCode, $plugins, $config );
 		if ( !CirrusTestCase::hasFixture( $expected ) ) {
-			$createIfMissing = getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes';
-			if ( $createIfMissing ) {
+			if ( self::canRebuildFixture() ) {
 				CirrusTestCase::saveFixture( $expected, $builder->buildConfig() );
 				$this->markTestSkipped();
 				return;

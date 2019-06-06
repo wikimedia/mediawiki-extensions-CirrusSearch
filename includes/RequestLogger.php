@@ -335,7 +335,11 @@ class RequestLogger {
 		];
 
 		if ( !empty( $_GET ) ) {
-			$requestEvent['params'] = $_GET;
+			$requestEvent['params'] = [];
+			// Make sure all params are string keys and values
+			foreach ( $_GET as $k => $v ) {
+				$requestEvent['params'][(string)$k] = (string)$v;
+			}
 		}
 
 		// Don't set these fields if there is no data.
@@ -354,7 +358,8 @@ class RequestLogger {
 		$httpRequestHeadersToLog = [ 'accept-language', 'referer', 'user-agent' ];
 		foreach ( $httpRequestHeadersToLog as $header ) {
 			if ( $webrequest->getHeader( $header ) ) {
-				$requestEvent['http']['request_headers'][$header] = $webrequest->getHeader( $header );
+				$requestEvent['http']['request_headers'][$header] =
+					(string)$webrequest->getHeader( $header );
 			}
 		}
 

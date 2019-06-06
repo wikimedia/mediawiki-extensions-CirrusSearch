@@ -333,15 +333,7 @@ class RequestLogger {
 			'request_time_ms' => $this->getPhpRequestTookMs(),
 			'all_elasticsearch_requests_cached' => $allRequestsCached,
 		];
-		if ( $webrequest instanceof \FauxRequest && defined( 'MW_PHPUNIT_TEST' ) ) {
-			try {
-				$requestContext['meta']['uri'] = $webrequest->getFullRequestURL();
-			} catch ( \MWException $e ) {
-				// Ignore this error to not force unrelated unit tests to fail.
-			}
-		} else {
-			$requestContext['meta']['uri'] = $webrequest->getFullRequestURL();
-		}
+
 		if ( !empty( $_GET ) ) {
 			$requestEvent['params'] = $_GET;
 		}

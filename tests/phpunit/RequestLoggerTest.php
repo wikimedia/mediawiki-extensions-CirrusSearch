@@ -109,9 +109,7 @@ class RequestLoggerTest extends CirrusTestCase {
 		$this->setMwGlobals( 'wgSiteMatrixSites', [] );
 		// This ends up breaking WebRequest::getIP(), so
 		// provide an explicit value
-		$request = new \FauxRequest();
-		$request->setRequestURL( 'http://unittest.wikipedia.org/w/api.php?action=test' );
-		\RequestContext::getMain()->setRequest( $request );
+		\RequestContext::getMain()->getRequest()->setIP( '127.0.0.1' );
 		// Make sure OtherIndex is configured for use as well
 		$this->setMwGlobals( 'wgCirrusSearchExtraIndexes', [
 			NS_FILE => [

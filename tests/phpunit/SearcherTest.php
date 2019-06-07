@@ -33,9 +33,7 @@ class SearcherTest extends CirrusTestCase {
 	}
 
 	public function searchTextProvider() {
-		$configs = [
-			'default' => [],
-		];
+		$configs = [];
 		// globals overrides. All tests will be run for each defined configuration
 		foreach ( CirrusTestCase::findFixtures( 'searchText/*.config' ) as $configFile ) {
 			$configName = substr( basename( $configFile ), 0, -7 );
@@ -62,7 +60,7 @@ class SearcherTest extends CirrusTestCase {
 			}
 		}
 
-		return $tests;
+		return self::randomizeFixtures( $tests );
 	}
 
 	/**
@@ -373,7 +371,6 @@ class SearcherTest extends CirrusTestCase {
 		$engine->setNamespaces( $namespaces );
 		$engine->setLimitOffset( 20, $offset );
 		$status = $engine->searchText( $query );
-		$createIfMissing = getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes';
 		$res = json_decode( $status->getValue(), JSON_OBJECT_AS_ARRAY );
 		$q = null;
 		if ( isset( $res[Searcher::MAINSEARCH_MSEARCH_KEY]['query']['suggest'] ) ) {
@@ -382,7 +379,7 @@ class SearcherTest extends CirrusTestCase {
 		$this->assertFileContains(
 			CirrusTestCase::fixturePath( $expectedFile ),
 			CirrusTestCase::encodeFixture( $q ),
-			$createIfMissing
+			self::canRebuildFixture()
 		);
 	}
 

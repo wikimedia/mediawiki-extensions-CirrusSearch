@@ -105,12 +105,11 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		if ( $method !== null ) {
 			$suggestQueries = $method->getSuggestQueries();
 		}
-		$createIfMissing = getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes';
 
 		$this->assertFileContains(
 			CirrusTestCase::fixturePath( $expectedFile ),
 			CirrusTestCase::encodeFixture( $suggestQueries ),
-			$createIfMissing
+			self::canRebuildFixture()
 		);
 	}
 

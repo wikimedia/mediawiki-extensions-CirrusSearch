@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use MediaWiki\Logger\LoggerFactory;
 use MediaWikiTestCase;
 use MediaWiki\MediaWikiServices;
 
@@ -11,6 +12,52 @@ use MediaWiki\MediaWikiServices;
  */
 abstract class CirrusTestCase extends MediaWikiTestCase {
 	const FIXTURE_DIR = __DIR__ . '/fixtures/';
+	const CIRRUS_REBUILD_FIXTURES = 'CIRRUS_REBUILD_FIXTURES';
+
+	/**
+	 * @var int|null (lazy loaded)
+	 */
+	private static $SEED;
+
+	/**
+	 * @var int
+	 */
+	private static $MAX_TESTED_FIXTURES_PER_TEST;
+
+	/**
+	 * @return bool
+	 */
+	public static function canRebuildFixture() {
+		return getenv( self::CIRRUS_REBUILD_FIXTURES ) === 'yes';
+	}
+
+	/**
+	 * @return int
+	 */
+	public static function getSeed() {
+		if ( self::$SEED === null ) {
+			if ( is_numeric( getenv( 'CIRRUS_SEARCH_UNIT_TESTS_SEED' ) ) ) {
+				self::$SEED = intval( getenv( 'CIRRUS_SEARCH_UNIT_TESTS_SEED' ) );
+			} else {
+				self::$SEED = time();
+			}
+		}
+		return self::$SEED;
+	}
+
+	/**
+	 * @return int
+	 */
+	public static function getMaxTestedFixturesPerTest() {
+		if ( self::$MAX_TESTED_FIXTURES_PER_TEST === null ) {
+			if ( is_numeric( getenv( 'CIRRUS_SEARCH_UNIT_TESTS_MAX_FIXTURES_PER_TEST' ) ) ) {
+				self::$MAX_TESTED_FIXTURES_PER_TEST = intval( getenv( 'CIRRUS_SEARCH_UNIT_TESTS_MAX_FIXTURES_PER_TEST' ) );
+			} else {
+				self::$MAX_TESTED_FIXTURES_PER_TEST = 200;
+			}
+		}
+		return self::$MAX_TESTED_FIXTURES_PER_TEST;
+	}
 
 	protected function setUp() {
 		parent::setUp();
@@ -19,6 +66,11 @@ abstract class CirrusTestCase extends MediaWikiTestCase {
 		// MediaWikiTestCase::makeTestConfigFactoryInstantiator ends up carrying
 		// over the same instance of SearchConfig between tests. Evil but necessary.
 		$services->getConfigFactory()->makeConfig( 'CirrusSearch' )->clearCachesForTesting();
+	}
+
+	public static function setUpBeforeClass() {
+		parent::setUpBeforeClass();
+		LoggerFactory::getInstance( 'CirrusSearchUnitTest' )->debug( 'Using seed ' . self::getSeed() );
 	}
 
 	public static function findFixtures( $path ) {
@@ -44,6 +96,21 @@ abstract class CirrusTestCase extends MediaWikiTestCase {
 		} finally {
 			ini_set( 'serialize_precision', $old );
 		}
+	}
+
+	/**
+	 * @param array $cases
+	 * @return array
+	 */
+	public static function randomizeFixtures( array $cases ): array {
+		if ( self::canRebuildFixture() ) {
+			return $cases;
+		}
+		ksort( $cases );
+		srand( self::getSeed() );
+		$randomizedKeys = array_rand( $cases, min( count( $cases ), self::getMaxTestedFixturesPerTest() ) );
+		$randomizedCases = array_intersect_key( $cases, array_flip( $randomizedKeys ) );
+		return $randomizedCases;
 	}
 
 	public static function hasFixture( $testFile ) {

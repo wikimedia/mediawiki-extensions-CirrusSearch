@@ -53,11 +53,10 @@ class MappingConfigBuilderTest extends \MediaWikiTestCase {
 		$mapping = $builder->buildConfig( $flags );
 		$mappingJson = \FormatJson::encode( $mapping, true );
 
-		$createIfMissing = getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes';
 		$this->assertFileContains(
 			CirrusTestCase::fixturePath( $expectedFile ),
 			$mappingJson,
-			$createIfMissing
+			CirrusTestCase::canRebuildFixture()
 		);
 	}
 

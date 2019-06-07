@@ -21,6 +21,9 @@ use CirrusSearch\InterwikiResolverFactory;
  * @covers \CirrusSearch\EmptyInterwikiResolver
  */
 class InterwikiResolverTest extends CirrusTestCase {
+	/**
+	 * @return bool
+	 */
 	public function testCirrusConfigInterwikiResolver() {
 		$resolver = $this->getCirrusConfigInterwikiResolver();
 
@@ -247,8 +250,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		}
 		$fixtureFile = 'configDump/enwiki_sisterproject_configs.json';
 		if ( !CirrusTestCase::hasFixture( $fixtureFile ) ) {
-			$createIfMissing = getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes';
-			if ( $createIfMissing ) {
+			if ( self::canRebuildFixture() ) {
 				CirrusTestCase::saveFixture( $fixtureFile, $this->genSisterProjectFixtures() );
 				$this->markTestSkipped();
 				return;
@@ -313,8 +315,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		$this->setMwGlobals( [ 'wgCirrusSearchRescoreProfile' => 'test_inheritance' ] );
 		$fixtureFile = 'configDump/enwiki_crosslang_frwiki' . ( !$valid ? '_invalid' : '' ) . '_config.json';
 		if ( !CirrusTestCase::hasFixture( $fixtureFile ) ) {
-			$createIfMissing = getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes';
-			if ( $createIfMissing ) {
+			if ( self::canRebuildFixture() ) {
 				CirrusTestCase::saveFixture( $fixtureFile, $this->genFrProjectConfig( $valid ) );
 				$this->markTestSkipped();
 				return;

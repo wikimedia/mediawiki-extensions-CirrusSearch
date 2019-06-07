@@ -182,7 +182,7 @@ class DataSenderTest extends CirrusTestCase {
 					$this->assertFileContains(
 						CirrusTestCase::fixturePath( $expectedFile ),
 						CirrusTestCase::encodeFixture( $actual ),
-						getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes'
+						self::canRebuildFixture()
 					);
 					$responses = array_map(
 						function ( Document $d ) {
@@ -256,7 +256,7 @@ class DataSenderTest extends CirrusTestCase {
 					$this->assertFileContains(
 						CirrusTestCase::fixturePath( $expectedFile ),
 						CirrusTestCase::encodeFixture( $actual ),
-						getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes'
+						self::canRebuildFixture()
 					);
 					$responses = array_map(
 						function ( $d ) {
@@ -368,7 +368,7 @@ class DataSenderTest extends CirrusTestCase {
 		$this->assertFileContains(
 			CirrusTestCase::fixturePath( $expectedFile ),
 			CirrusTestCase::encodeFixture( $merged ),
-			getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes'
+			self::canRebuildFixture()
 		);
 	}
 

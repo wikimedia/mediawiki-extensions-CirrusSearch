@@ -139,7 +139,6 @@
 		"SpecialStatsAddExtra": "CirrusSearch\\Hooks::onSpecialStatsAddExtra",
 		"TitleMove": "CirrusSearch\\Hooks::onTitleMove",
 		"TitleMoveComplete": "CirrusSearch\\Hooks::onTitleMoveComplete",
-		"UnitTestsList": "CirrusSearch\\Hooks::onUnitTestsList",
 		"UserGetDefaultOptions": "CirrusSearch\\Hooks::onUserGetDefaultOptions",
 		"PageContentInsertComplete": "CirrusSearch\\Hooks::onPageContentInsertComplete"
 	},

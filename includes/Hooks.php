@@ -19,8 +19,6 @@ use Revision;
 use SearchResultSet;
 use SpecialSearch;
 use Title;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use RequestContext;
 use ApiUsageException;
 use User;
@@ -443,26 +441,6 @@ class Hooks {
 		$job = new Job\LinksUpdate( $linksUpdate->getTitle(), $params );
 
 		JobQueueGroup::singleton()->push( $job );
-	}
-
-	/**
-	 * Register Cirrus's unit tests.
-	 * @param array &$files containing tests
-	 */
-	public static function onUnitTestsList( &$files ) {
-		// This is pretty much exactly how the Translate extension declares its
-		// multiple test directories.  There really isn't any excuse for doing
-		// it any other way.
-		$dir = __DIR__ . '/../tests/phpunit';
-		$directoryIterator = new RecursiveDirectoryIterator( $dir );
-		$fileIterator = new RecursiveIteratorIterator( $directoryIterator );
-
-		/** @var \SplFileInfo $fileInfo */
-		foreach ( $fileIterator as $fileInfo ) {
-			if ( substr( $fileInfo->getFilename(), -8 ) === 'Test.php' ) {
-				$files[] = $fileInfo->getPathname();
-			}
-		}
 	}
 
 	/**

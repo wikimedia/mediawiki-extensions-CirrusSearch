@@ -272,18 +272,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$features = ( new FullTextKeywordRegistry( $this->config ) )->getKeywords();
 		$qb = self::buildFullTextBuilder( $builderSettings, $this->config, $features );
 
-		\Hooks::run( 'CirrusSearchFulltextQueryBuilder', [ &$qb, $this->searchContext ] );
-		// Query builder could be replaced here!
-		if ( !( $qb instanceof FullTextQueryBuilder ) ) {
-			throw new RuntimeException(
-				"Bad query builder object override, must implement FullTextQueryBuilder!" );
-		}
-
 		$qb->build( $this->searchContext, $term );
-
-		// Give other builder opportunity to override
-		\Hooks::run( 'CirrusSearchFulltextQueryBuilderComplete',
-			[ $qb, $term, $this->searchContext ] );
 
 		return $qb;
 	}

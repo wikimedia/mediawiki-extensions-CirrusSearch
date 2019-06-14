@@ -182,4 +182,11 @@ class UpdaterTest extends \MediaWikiTestCase {
 		$refl->setAccessible( true );
 		$refl->setValue( $title, [ $langCode, $wgLanguageCode ] );
 	}
+
+	public function testFixAndFlagInvalidUTF8InSource() {
+		$this->assertNotContains( 'CirrusSearchInvalidUTF8',
+			Updater::fixAndFlagInvalidUTF8InSource( [ 'source_text' => 'valid' ], 1 )['template'] ?? [], 1 );
+		$this->assertContains( 'Template:CirrusSearchInvalidUTF8',
+			Updater::fixAndFlagInvalidUTF8InSource( [ 'source_text' => chr( 130 ) ], 1 )['template'] ?? [] );
+	}
 }

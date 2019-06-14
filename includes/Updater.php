@@ -77,6 +77,31 @@ class Updater extends ElasticsearchIntermediary {
 	}
 
 	/**
+	 * Find invalid UTF-8 sequence in the source text.
+	 * Fix them and flag the doc with the CirrusSearchInvalidUTF8 template.
+	 *
+	 * Temporary solution to help investigate/fix T225200
+	 *
+	 * Visible for testing only
+	 * @param array $fieldDefinitions
+	 * @param int $pageId
+	 * @return array
+	 */
+	public static function fixAndFlagInvalidUTF8InSource( array $fieldDefinitions, $pageId ) {
+		if ( isset( $fieldDefinitions['source_text'] ) ) {
+			$fixedVersion = mb_convert_encoding( $fieldDefinitions['source_text'], 'UTF-8', 'UTF-8' );
+			if ( $fixedVersion !== $fieldDefinitions['source_text'] ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )
+					->warning( 'Fixing invalid UTF-8 sequences in source text for page id {}',
+						[ $pageId ] );
+				$fieldDefinitions['source_text'] = $fixedVersion;
+				$fieldDefinitions['template'][] = Title::makeTitle( NS_TEMPLATE, 'CirrusSearchInvalidUTF8' )->getPrefixedText();
+			}
+		}
+		return $fieldDefinitions;
+	}
+
+	/**
 	 * Update a single page.
 	 * @param Title $title
 	 * @return bool true if the page updated, false if it failed, null if it didn't need updating
@@ -272,7 +297,6 @@ class Updater extends ElasticsearchIntermediary {
 			return true;
 		}
 		$docs = $this->buildArchiveDocuments( $archived );
-		$head = reset( $archived );
 		foreach ( array_chunk( $docs, 10 ) as $chunked ) {
 			$job = Job\ElasticaWrite::build(
 				'sendData',
@@ -353,8 +377,9 @@ class Updater extends ElasticsearchIntermediary {
 			$output = $contentHandler->getParserOutputForIndexing( $page, $parserCache );
 
 			$fieldDefinitions = $contentHandler->getFieldsForSearchIndex( $engine );
-			foreach ( $contentHandler->getDataForSearchIndex( $page, $output, $engine ) as
-				$field => $fieldData ) {
+			$fieldContent = $contentHandler->getDataForSearchIndex( $page, $output, $engine );
+			$fieldContent = self::fixAndFlagInvalidUTF8InSource( $fieldContent, $page->getId() );
+			foreach ( $fieldContent as $field => $fieldData ) {
 				$doc->set( $field, $fieldData );
 				if ( isset( $fieldDefinitions[$field] ) ) {
 					$hints = $fieldDefinitions[$field]->getEngineHints( $engine );

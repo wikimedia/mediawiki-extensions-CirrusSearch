@@ -274,7 +274,7 @@ class Result extends SearchResult {
 	 * @param array $terms
 	 * @return string|null
 	 */
-	public function getTextSnippet( $terms ) {
+	public function getTextSnippet( $terms = [] ) {
 		return $this->textSnippet;
 	}
 

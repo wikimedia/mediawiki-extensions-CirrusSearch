@@ -166,7 +166,7 @@ class RunSearch extends Maintenance {
 				'title' => $result->getTitle()->getPrefixedText(),
 				'score' => $result->getScore(),
 				'snippets' => [
-					'text' => $result->getTextSnippet( [ $query ] ),
+					'text' => $result->getTextSnippet(),
 					'title' => $result->getTitleSnippet(),
 					'redirect' => $result->getRedirectSnippet(),
 					'section' => $result->getSectionSnippet(),

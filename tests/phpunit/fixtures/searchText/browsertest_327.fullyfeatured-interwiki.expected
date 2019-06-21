@@ -360,6 +360,7 @@
                         {
                             "multi_match": {
                                 "fields": [
+                                    "all_near_match.asciifolding^1.5",
                                     "all_near_match^2"
                                 ],
                                 "query": "to"
@@ -833,6 +834,7 @@
                         {
                             "multi_match": {
                                 "fields": [
+                                    "all_near_match.asciifolding^1.5",
                                     "all_near_match^2"
                                 ],
                                 "query": "to"
@@ -1266,6 +1268,7 @@
                         {
                             "multi_match": {
                                 "fields": [
+                                    "all_near_match.asciifolding^1.5",
                                     "all_near_match^2"
                                 ],
                                 "query": "to"
@@ -1726,6 +1729,7 @@
                         {
                             "multi_match": {
                                 "fields": [
+                                    "all_near_match.asciifolding^1.5",
                                     "all_near_match^2"
                                 ],
                                 "query": "to"

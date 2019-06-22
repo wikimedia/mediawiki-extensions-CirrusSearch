@@ -551,7 +551,7 @@ return [
 	'sqwikinews' => 'Wikilajme',
 	'srwiki' => 'Википедија',
 	'srwikibooks' => 'Викикњиге',
-	'srwikinews' => 'Викивести',
+	'srwikinews' => 'Викиновости', // T226315
 	'srwikiquote' => 'Викицитат', // T111247
 	'srwikisource' => 'Викизворник',
 	'srwiktionary' => 'Викиречник', // T121278

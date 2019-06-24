@@ -9,6 +9,7 @@ use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Parser\FullTextKeywordRegistry;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\CountContentWordsBuilder;
+use CirrusSearch\Query\KeywordFeature;
 use CirrusSearch\Query\NearMatchQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
 use CirrusSearch\Search\FullTextResultsType;
@@ -37,6 +38,7 @@ use Title;
 use User;
 use WebRequest;
 use Wikimedia\Assert\Assert;
+use Wikimedia\ObjectFactory;
 
 /**
  * Performs searches using Elasticsearch.  Note that each instance of this class
@@ -268,16 +270,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			->loadProfileByName( SearchProfileService::FT_QUERY_BUILDER,
 				$this->searchContext->getFulltextQueryBuilderProfile() );
 		$features = ( new FullTextKeywordRegistry( $this->config ) )->getKeywords();
-		/** @var FullTextQueryBuilder $qb */
-		$qb = new $builderSettings['builder_class'](
-			$this->config,
-			$features,
-			$builderSettings['settings']
-		);
-
-		if ( !( $qb instanceof FullTextQueryBuilder ) ) {
-			throw new RuntimeException( "Bad builder class configured: {$builderSettings['builder_class']}" );
-		}
+		$qb = self::buildFullTextBuilder( $builderSettings, $this->config, $features );
 
 		\Hooks::run( 'CirrusSearchFulltextQueryBuilder', [ &$qb, $this->searchContext ] );
 		// Query builder could be replaced here!
@@ -961,5 +954,63 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		Assert::precondition( defined( 'MW_PHPUNIT_TEST' ),
 			'getOffsetLimit must only be called for testing purposes' );
 		return [ $this->offset, $this->limit ];
+	}
+
+	/**
+	 * Build a FullTextQueryBuilder defined in the $builderSettings:
+	 * format is:
+	 * [
+	 *     'builder_factory' => callback
+	 *     'settings' => ...
+	 * ]
+	 * where callback must be function that accepts the settings array and returns a FullTextQueryBuilder
+	 *
+	 * Legacy version:
+	 * [
+	 *     'builder_class' => ClassName
+	 *     'settings' => ...
+	 * ]
+	 * where ClassName must declare a constructor with these arguments:
+	 *   SearchConfig $config, KeywordFeature[] $features, $settings
+	 *
+	 * Visible for testing only
+	 * @param array $builderSettings
+	 * @param SearchConfig $config
+	 * @param KeywordFeature[] $features
+	 * @return FullTextQueryBuilder
+	 * @throws \ReflectionException
+	 */
+	final public static function buildFullTextBuilder(
+		array $builderSettings,
+		SearchConfig $config,
+		array $features
+	): FullTextQueryBuilder {
+		if ( isset( $builderSettings['builder_class'] ) ) {
+			$objectFactorySpecs = [
+				'class' => $builderSettings['builder_class'],
+				'args' => [
+					$config,
+					$features,
+					$builderSettings['settings']
+				]
+			];
+		} elseif ( $builderSettings['builder_factory'] ) {
+			$objectFactorySpecs = [
+				'factory' => $builderSettings['builder_factory'],
+				'args' => [
+					$builderSettings['settings']
+				]
+			];
+		} else {
+			throw new \InvalidArgumentException( 'Missing builder_class or builder_factory in the builderSettings' );
+		}
+
+		/** @var FullTextQueryBuilder $qb */
+		$qb = ObjectFactory::getObjectFromSpec( $objectFactorySpecs );
+		if ( !( $qb instanceof FullTextQueryBuilder ) ) {
+			throw new RuntimeException( 'Bad builder class configured.' );
+		}
+
+		return $qb;
 	}
 }

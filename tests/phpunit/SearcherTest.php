@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Query\FullTextQueryStringQueryBuilder;
 use CirrusSearch\Test\SearchConfigUsageDecorator;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchQueryBuilder;
@@ -467,5 +468,28 @@ class SearcherTest extends CirrusTestCase {
 		} else {
 			$this->assertArrayNotHasKey( 'suggest', $query[Searcher::MAINSEARCH_MSEARCH_KEY] );
 		}
+	}
+
+	/**
+	 * @covers \CirrusSearch\Searcher::buildFullTextBuilder()
+	 * @throws \ReflectionException
+	 */
+	public function testBuildFullTextBuilder() {
+		$config = new HashSearchConfig( [] );
+		$mysettings = [ 'random' => 'data' ];
+
+		$profile = [ 'builder_class' => FullTextQueryStringQueryBuilder::class, 'settings' => $mysettings ];
+		$this->assertEquals( new FullTextQueryStringQueryBuilder( $config, [], $mysettings ),
+			Searcher::buildFullTextBuilder( $profile, $config, [] ) );
+
+		$profile = [
+			'builder_factory' => function ( $settings ) use ( $config, $mysettings ) {
+				$this->assertSame( $mysettings, $settings );
+				return new FullTextQueryStringQueryBuilder( $config, [], $settings );
+			},
+			'settings' => $mysettings
+		];
+		$this->assertInstanceOf( FullTextQueryStringQueryBuilder::class,
+			Searcher::buildFullTextBuilder( $profile, $config, [] ) );
 	}
 }

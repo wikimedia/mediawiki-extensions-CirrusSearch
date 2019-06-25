@@ -338,6 +338,9 @@ class RequestLogger {
 			$requestEvent['params'] = [];
 			// Make sure all params are string keys and values
 			foreach ( $_GET as $k => $v ) {
+				if ( is_array( $v ) ) {
+					$v = implode( ',', $v );
+				}
 				$requestEvent['params'][(string)$k] = (string)$v;
 			}
 		}

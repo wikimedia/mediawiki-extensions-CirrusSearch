@@ -181,17 +181,7 @@ class RequestLoggerTest extends CirrusTestCase {
 		case 'completion':
 			if ( is_array( $expectedLogs ) ) {
 				foreach ( $expectedLogs as $logIdx => $log ) {
-					if ( $log['channel'] === 'CirrusSearchRequestSet' ) {
-						foreach ( $log['context']['requests'] as $reqIdx => $request ) {
-							// json doesn't round trip a float with no decimal correctly,
-							// so force maxscore into a float
-							$expectedLogs[$logIdx]['context']['requests'][$reqIdx]['maxScore']
-								= (float)$request['maxScore'];
-							// elastic took ms doesn't get reported by completion api, force
-							// to 0 since our cached request wont take any real-time.
-							$expectedLogs[$logIdx]['context']['requests'][$reqIdx]['elasticTookMs'] = 0;
-						}
-					} elseif ( $log['channel'] === 'CirrusSearchRequests' ) {
+					if ( $log['channel'] === 'CirrusSearchRequests' ) {
 						if ( isset( $log['context']['maxScore'] ) ) {
 							// Again, json reound trips 0.0 into 0, so we need to get it back to being a float.
 							$expectedLogs[$logIdx]['context']['maxScore'] = (float)$log['context']['maxScore'];
@@ -247,7 +237,6 @@ class RequestLoggerTest extends CirrusTestCase {
 
 		// Override the logging channel with our own so we can capture logs
 		$loggers = [
-			'CirrusSearchRequestSet'	=> new ArrayLogger(),
 			'cirrussearch-request' => new ArrayLogger(),
 			'CirrusSearchRequests' => new ArrayLogger(),
 			'CirrusSearch' => new ArrayLogger(),
@@ -305,8 +294,7 @@ class RequestLoggerTest extends CirrusTestCase {
 
 	/**
 	 * Collects and filter dynamic data out of the logs that can't be
-	 * statically referred to. Still asserts the keys exist, as otherwise avro
-	 * would fail to encode them.
+	 * statically referred to.
 	 *
 	 * @param AbstractLogger[] $loggers
 	 * @return array
@@ -321,9 +309,7 @@ class RequestLoggerTest extends CirrusTestCase {
 					'channel' => $channel,
 				] + $log;
 
-				if ( $channel === 'CirrusSearchRequestSet' ) {
-					$log = $this->filterCSRQ( $log );
-				} elseif ( $channel == 'cirrussearch-request' ) {
+				if ( $channel == 'cirrussearch-request' ) {
 					// Before we filter this log for testing against fixture
 					// data, we should make sure that the event in
 					// $log['context'] validates against the expected
@@ -395,33 +381,7 @@ class RequestLoggerTest extends CirrusTestCase {
 	}
 
 	/**
-	 * Filter out vairable data from logs formatted for
-	 * CirrusSearchRequestSet
-	 *
-	 * @param array $log
-	 * @return log
-	 */
-	private function filterCSRQ( array $log ) {
-		$debug = json_encode( $log, JSON_PRETTY_PRINT );
-		// we need to remove some quasi-random data. To be safe
-		// assert this exists before deleting it.
-		foreach ( [ 'id', 'ts', 'wikiId', 'identity', 'tookMs' ] as $key ) {
-			$this->assertArrayHasKey( $key, $log['context'], $debug );
-			unset( $log['context'][$key] );
-		}
-		$this->assertArrayHasKey( 'host', $log['context']['payload'], $debug );
-		unset( $log['context']['payload']['host'] );
-
-		// Do same for the requests in the log
-		foreach ( array_keys( $log['context']['requests'] ) as $idx ) {
-			$this->assertArrayHasKey( 'tookMs', $log['context']['requests'][$idx], $debug );
-			unset( $log['context']['requests'][$idx]['tookMs'] );
-		}
-		return $log;
-	}
-
-	/**
-	 * Filter out vairable data from logs formatted for
+	 * Filter out variable data from logs formatted for
 	 * cirrussearch-request event
 	 *
 	 * @param array $log

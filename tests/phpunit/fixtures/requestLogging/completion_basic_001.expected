@@ -1,51 +1,5 @@
 [
     {
-        "channel": "CirrusSearchRequestSet",
-        "context": {
-            "backendUserTests": [],
-            "hits": [],
-            "ip": "127.0.0.1",
-            "payload": {
-                "acceptLang": "",
-                "hascookies": "0",
-                "queryString": "",
-                "referer": ""
-            },
-            "requests": [
-                {
-                    "elasticTookMs": 0,
-                    "hits": [
-                        {
-                            "index": "wiki_titlesuggest",
-                            "pageId": 1,
-                            "profileName": "plain",
-                            "score": 5679327,
-                            "title": "Main Page"
-                        }
-                    ],
-                    "hitsOffset": 0,
-                    "hitsReturned": 1,
-                    "hitsTotal": 4,
-                    "indices": [
-                        "wiki_titlesuggest"
-                    ],
-                    "limit": -1,
-                    "maxScore": 5679327,
-                    "namespaces": [],
-                    "payload": [],
-                    "query": "main p",
-                    "queryType": "comp_suggest",
-                    "suggestion": "",
-                    "suggestionRequested": false
-                }
-            ],
-            "source": "cli",
-            "userAgent": ""
-        },
-        "level": "debug",
-        "message": ""
-    },
-    {
         "channel": "cirrussearch-request",
         "context": {
             "$schema": "/mediawiki/cirrussearch/request/0.0.1",

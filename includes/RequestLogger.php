@@ -29,7 +29,7 @@ use UIDGenerator;
  */
 class RequestLogger {
 	/**
-	 * @const int max number of results to store in CirrusSearchRequestSet logs (per request)
+	 * @const int max number of results to store in cirrussearch-request logs (per request)
 	 */
 	const LOG_MAX_RESULTS = 50;
 
@@ -85,12 +85,6 @@ class RequestLogger {
 	 */
 	private function reportLogs() {
 		if ( $this->logs ) {
-
-			// Build the Avro CirrusSearchRequestSet Avro event and log it to the
-			// (avro+Kafka) CirrusSearchRequestSet channel
-			LoggerFactory::getInstance( 'CirrusSearchRequestSet' )->debug(
-				'', $this->buildRequestSetLog()
-			);
 
 			// Build the mediawiki/search/requestset event and log it to the (json+EventBus)
 			// cirrussearch-request channel.
@@ -370,152 +364,6 @@ class RequestLogger {
 	}
 
 	/**
-	 * NOTE: Avro logging is being deprecated as part of T214080.
-	 * This method will be removed once complete.
-	 *
-	 * Builds and ships a log context that is serialized to an avro
-	 * schema. Avro is very specific that all fields must be defined,
-	 * even if they have a default, and that types must match exactly.
-	 * "5" is not an int as much as php would like it to be.
-	 *
-	 * To ensure no problems serializing all properties must be explicitly
-	 * cast to the correct type.
-	 *
-	 * Avro will happily ignore fields that are present but not used. To
-	 * add new fields to the schema they must first be added here and
-	 * deployed. Then the schema can be updated. Removing goes in reverse,
-	 * adjust the schema to ignore the column, then deploy code no longer
-	 * providing it.
-	 *
-	 * All default values should match those use in the
-	 * CirrusSearchRequestSet.idl (mediawiki-event-schemas repository)
-	 *
-	 * @return array CirrusSearchRequestSet object suitable for serializing into Avro.
-	 * @deprecated
-	 */
-	private function buildRequestSetLog() {
-		global $wgRequest;
-
-		// for the moment RequestLog::getRequests() is still created in the
-		// old format to serve the old log formats, so here we transform the
-		// context into the new avro defined format. At some point the context
-		// should just be created in the correct format.
-		$requests = [];
-		$allCached = true;
-		$allHits = [];
-		foreach ( $this->logs as $idx => $log ) {
-			foreach ( $log->getRequests() as $context ) {
-				$request = [
-					'query' => isset( $context['query'] ) ? (string)$context['query'] : '',
-					'queryType' => isset( $context['queryType'] ) ? (string)$context['queryType'] : '',
-					// populated below
-					'indices' => isset( $context['index'] ) ? explode( ',', $context['index'] ) : [],
-					'tookMs' => isset( $context['tookMs'] ) ? (int)$context['tookMs'] : -1,
-					'elasticTookMs' => isset( $context['elasticTookMs'] ) ? (int)$context['elasticTookMs'] : -1,
-					'limit' => isset( $context['limit'] ) ? (int)$context['limit'] : -1,
-					'hitsTotal' => isset( $context['hitsTotal'] ) ? (int)$context['hitsTotal'] : -1,
-					'hitsReturned' => isset( $context['hitsReturned'] ) ? (int)$context['hitsReturned'] : -1,
-					'hitsOffset' => isset( $context['hitsOffset'] ) ? (int)$context['hitsOffset'] : -1,
-					// populated below
-					'namespaces' => isset( $context['namespaces'] ) ? array_map( 'intval', $context['namespaces'] ) : [],
-					'suggestion' => isset( $context['suggestion'] ) ? (string)$context['suggestion'] : '',
-					'suggestionRequested' => (bool)( $context['suggestionRequested'] ?? isset( $context['suggestion'] ) ),
-					'maxScore' => isset( $context['maxScore'] ) ? (float)$context['maxScore'] : -1.0,
-					'payload' => isset( $context['payload'] ) ? array_map( 'strval', $context['payload'] ) : [],
-					'hits' => isset( $context['hits'] ) ? $this->encodeHits( $context['hits'], true ) : [],
-				];
-				if ( !empty( $context['syntax'] ) ) {
-					$request['payload']['syntax'] = implode( ',', $context['syntax'] );
-				}
-				$allHits = array_merge( $allHits, $request['hits'] );
-				if ( $log->isCachedResponse() ) {
-					$request['payload']['cached'] = 'true';
-				} else {
-					$allCached = false;
-				}
-				if ( isset( $this->extraPayload[$idx] ) ) {
-					foreach ( $this->extraPayload[$idx] as $key => $value ) {
-						$request['payload'][$key] = (string)$value;
-					}
-				}
-
-				$requests[] = $request;
-			}
-		}
-
-		// Reindex allHits by page title's. It's maybe not perfect, but it's
-		// hopefully a "close enough" representation of where our final result
-		// set came from. maybe :(
-		$allHitsByTitle = [];
-		foreach ( $allHits as $hit ) {
-			$allHitsByTitle[$hit['title']] = $hit;
-		}
-		$resultHits = [];
-		// FIXME: temporary hack to investigate why SpecialSearch can display results
-		// that do not come from cirrus.
-		$bogusResult = null;
-		$resultTitleStrings = array_slice( $this->resultTitleStrings, 0, self::LOG_MAX_RESULTS );
-		foreach ( $resultTitleStrings as $titleString ) {
-			// Track only the first missing title.
-			if ( $bogusResult === null && !isset( $allHitsByTitle[$titleString] ) ) {
-				$bogusResult = $titleString;
-			}
-
-			$resultHits[] = $allHitsByTitle[$titleString] ?? [
-				'title' => $titleString,
-				'index' => "",
-				'pageId' => -1,
-				'score' => -1,
-				'profileName' => ""
-			];
-		}
-
-		$requestSet = [
-			'id' => Util::getRequestSetToken(),
-			'ts' => time(),
-			'wikiId' => wfWikiID(),
-			'source' => Util::getExecutionContext(),
-			'identity' => Util::generateIdentToken(),
-			'ip' => $wgRequest->getIP() ?: '',
-			'userAgent' => $wgRequest->getHeader( 'User-Agent' ) ?: '',
-			'backendUserTests' => UserTesting::getInstance()->getActiveTestNamesWithBucket(),
-			'tookMs' => $this->getPhpRequestTookMs(),
-			'hits' => $resultHits,
-			'payload' => [
-				// useful while we are testing accept-lang based interwiki
-				'acceptLang' => (string)( $wgRequest->getHeader( 'Accept-Language' ) ?: '' ),
-				// Helps to track down what actually caused the request. Will promote to full
-				// param if it proves useful
-				'queryString' => http_build_query( $_GET ),
-				// When tracking down performance issues it is useful to know if they are localized
-				// to a particular set of instances
-				'host' => gethostname(),
-				// Referer can be helpful when trying to figure out what requests were made by bots.
-				'referer' => (string)( $wgRequest->getHeader( 'Referer' ) ?: '' ),
-				// Reasonable indication it's not a "normal" web request, as a standard web request
-				// would have first had a WMF-Last-Access cookie set, and then submitting an
-				// autocomplete/fulltext search would have sent that as well.
-				'hascookies' => $wgRequest->getHeader( 'Cookie' ) ? "1" : "0",
-			],
-			'requests' => $requests,
-		];
-
-		if ( $bogusResult !== null ) {
-			if ( is_string( $bogusResult ) ) {
-				$requestSet['payload']['bogusResult'] = $bogusResult;
-			} else {
-				$requestSet['payload']['bogusResult'] = 'NOT_A_STRING?: ' . gettype( $bogusResult );
-			}
-		}
-
-		if ( $allCached ) {
-			$requestSet['payload']['cached'] = 'true';
-		}
-
-		return $requestSet;
-	}
-
-	/**
 	 * @param SearchResultSet $matches
 	 * @return string[]
 	 */
@@ -559,38 +407,22 @@ class RequestLogger {
 	}
 
 	/**
-	 * Enforce all avro-specified type constraints on CirrusSearchHit and limit
-	 * the number of results to the maximum specified. The defaults should
-	 * match the defaults specified in CirrusSearchRequestSet.idl
-	 * (mediawiki-event-schemas repository)
+	 * Enforce all type constraints on the hits field and limit
+	 * the number of results to the maximum specified.
 	 *
 	 * @param array[] $hits
-	 * @param bool $forAvro If true, hits will be formatted for legacy Avro schema
-	 *				instead of mediawiki/search/requestset event JSONSchema.
 	 * @return array[]
 	 */
-	private function encodeHits( array $hits, $forAvro = false ) {
+	private function encodeHits( array $hits ) {
 		$formattedHits = [];
 		foreach ( array_slice( $hits, 0, self::LOG_MAX_RESULTS )  as $hit ) {
-			if ( $forAvro ) {
-				// Formatted for (legacy) Avro schema.
-				$formattedHits[] = [
-					'title' => isset( $hit['title'] ) ? (string)$hit['title'] : '',
-					'index' => isset( $hit['index'] ) ? (string)$hit['index'] : '',
-					// @todo this can be a string, and should be docId
-					'pageId' => isset( $hit['pageId'] ) ? (int)$hit['pageId'] : -1,
-					'score' => isset( $hit['score'] ) ? (float)$hit['score'] : -1,
-					'profileName' => isset( $hit['profileName'] ) ? (string)$hit['profileName'] : '',
-				];
-			} else {
-				$formattedHit = [];
-				Util::setIfDefined( $hit, 'title', $formattedHit, 'page_title', 'strval' );
-				Util::setIfDefined( $hit, 'pageId', $formattedHit, 'page_id', 'intval' );
-				Util::setIfDefined( $hit, 'index', $formattedHit, 'index', 'strval' );
-				Util::setIfDefined( $hit, 'score', $formattedHit, 'score', 'floatval' );
-				Util::setIfDefined( $hit, 'profileName', $formattedHit, 'profile_name', 'strval' );
-				$formattedHits[] = $formattedHit;
-			}
+			$formattedHit = [];
+			Util::setIfDefined( $hit, 'title', $formattedHit, 'page_title', 'strval' );
+			Util::setIfDefined( $hit, 'pageId', $formattedHit, 'page_id', 'intval' );
+			Util::setIfDefined( $hit, 'index', $formattedHit, 'index', 'strval' );
+			Util::setIfDefined( $hit, 'score', $formattedHit, 'score', 'floatval' );
+			Util::setIfDefined( $hit, 'profileName', $formattedHit, 'profile_name', 'strval' );
+			$formattedHits[] = $formattedHit;
 		}
 		return $formattedHits;
 	}

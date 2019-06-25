@@ -1,43 +1,5 @@
 [
     {
-        "channel": "CirrusSearchRequestSet",
-        "context": {
-            "backendUserTests": [],
-            "hits": [],
-            "ip": "127.0.0.1",
-            "payload": {
-                "acceptLang": "",
-                "hascookies": "0",
-                "queryString": "",
-                "referer": ""
-            },
-            "requests": [
-                {
-                    "elasticTookMs": 1,
-                    "hits": [],
-                    "hitsOffset": 0,
-                    "hitsReturned": 0,
-                    "hitsTotal": 0,
-                    "indices": [
-                        "mw_cirrus_metastore"
-                    ],
-                    "limit": -1,
-                    "maxScore": -1,
-                    "namespaces": [],
-                    "payload": [],
-                    "query": "qwertyytrewq",
-                    "queryType": "namespace",
-                    "suggestion": "",
-                    "suggestionRequested": false
-                }
-            ],
-            "source": "cli",
-            "userAgent": ""
-        },
-        "level": "debug",
-        "message": ""
-    },
-    {
         "channel": "cirrussearch-request",
         "context": {
             "$schema": "/mediawiki/cirrussearch/request/0.0.1",

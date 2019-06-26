@@ -498,6 +498,10 @@ class Updater extends ElasticsearchIntermediary {
 			// Resolve one level of redirects because only one level of redirects is scored.
 			if ( $page->isRedirect() ) {
 				$target = $page->getRedirectTarget();
+				if ( $target === null ) {
+					// Redirect to itself or broken redirect? ignore.
+					continue;
+				}
 				$page = new WikiPage( $target );
 				if ( !$page->exists() ) {
 					// Skip redirects to nonexistent pages

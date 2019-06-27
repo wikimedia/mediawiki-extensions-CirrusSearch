@@ -2,6 +2,12 @@
 
 namespace CirrusSearch;
 
+use Elastica\Exception\ExceptionInterface;
+use Elastica\Exception\NotFoundException;
+use Elastica\Exception\ResponseException;
+use Elastica\Request;
+use Elastica\Response;
+
 /**
  * @group CirrusSearch
  * @covers \CirrusSearch\ElasticaErrorHandler
@@ -62,5 +68,55 @@ class ElasticaErrorHandlerTest extends CirrusTestCase {
 				]
 			)
 		);
+	}
+
+	public function extractMessageAndStatusProvider() {
+		return [
+			'non-elasticsearch error' => [
+				'expected' => 'unknown: ' . ( wfIsHHVM() ? 'Status code 503' : 'Status code 503; 503 Bad Gateway' ),
+				'exception' => new ResponseException(
+					new Request( 'dummy' ),
+					new Response( '503 Bad Gateway', 503 )
+				),
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider extractMessageAndStatusProvider
+	 */
+	public function testExtractMessageAndStatus( $expected, $exception ) {
+		list( $status, $message ) = ElasticaErrorHandler::extractMessageAndStatus( $exception );
+		$this->assertEquals( $expected, $message );
+	}
+
+	public function extractFullErrorProvider() {
+		return [
+			'non-elasticsearch error' => [
+				'expected' => [
+					'type' => 'unknown',
+					'reason' => wfIsHHVM() ? 'Status code 503' : 'Status code 503; 503 Bad Gateway',
+				],
+				'exception' => new ResponseException(
+					new Request( 'dummy' ),
+					new Response( '503 Bad Gateway', 503 )
+				),
+				'message' => print_r( ( new Response( '503 Bad Gateway', 503 ) )->getData(), true )
+			],
+			'non-response error' => [
+				'expected' => [
+					'type' => 'unknown',
+					'reason' => 'not found at 1234',
+				],
+				'exception' => new NotFoundException( 'not found at 1234' )
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider extractFullErrorProvider
+	 */
+	public function testExtractFullError( $expected, ExceptionInterface $exception, $message = '' ) {
+		$this->assertEquals( $expected, ElasticaErrorHandler::extractFullError( $exception ), $message );
 	}
 }

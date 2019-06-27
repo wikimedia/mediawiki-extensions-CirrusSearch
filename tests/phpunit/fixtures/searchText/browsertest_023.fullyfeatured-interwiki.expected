@@ -337,6 +337,7 @@
                         {
                             "multi_match": {
                                 "fields": [
+                                    "all_near_match.asciifolding^1.5",
                                     "all_near_match^2"
                                 ],
                                 "query": "noble prize"
@@ -797,6 +798,7 @@
                         {
                             "multi_match": {
                                 "fields": [
+                                    "all_near_match.asciifolding^1.5",
                                     "all_near_match^2"
                                 ],
                                 "query": "noble prize"
@@ -1217,6 +1219,7 @@
                         {
                             "multi_match": {
                                 "fields": [
+                                    "all_near_match.asciifolding^1.5",
                                     "all_near_match^2"
                                 ],
                                 "query": "noble prize"
@@ -1664,6 +1667,7 @@
                         {
                             "multi_match": {
                                 "fields": [
+                                    "all_near_match.asciifolding^1.5",
                                     "all_near_match^2"
                                 ],
                                 "query": "noble prize"

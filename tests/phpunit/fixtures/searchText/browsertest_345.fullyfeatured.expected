@@ -337,6 +337,7 @@
                         {
                             "multi_match": {
                                 "fields": [
+                                    "all_near_match.asciifolding^1.5",
                                     "all_near_match^2"
                                 ],
                                 "query": "\u0935\u093e\u0919\u094d\u092e\u092f"

@@ -11,7 +11,8 @@
 			"HakanIST",
 			"Rapsar",
 			"Diyapazon",
-			"By erdo can"
+			"By erdo can",
+			"Hedda"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki için elastik arama-güçlü arama",
@@ -19,11 +20,13 @@
 	"cirrussearch-parse-error": "Sorgu anlaşılamadı. Lütfen daha basit olun. Sorgu arama sistemini iyileştirmek için oturum açmış olmalısınız.",
 	"cirrussearch-too-busy-error": "Arama şu anda çok meşgul. Lütfen daha sonra tekrar deneyiniz.",
 	"cirrussearch-regex-too-busy-error": "Çok fazla sıradan ifade araması çalışmakta. Lütfen daha sonra tekrar deneyiniz.",
+	"cirrussearch-regex-too-complex-error": "Düzenli ifade çok karmaşık. [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|Burada]] sadeleştirme hakkında daha fazla bilgi edinin.",
 	"cirrussearch-now-using": "Bu wiki yeni bir arama motoru kullanıyor.\n([[mw:Special:MyLanguage/Help:CirrusSearch|Daha fazla bilgi]])",
 	"cirrussearch-ignored-headings": " #<!-- bu satırı olduğu gibi bırakın --> <pre>\n# Başlıklar aramada göz ardı edilecektir.\n# Bu değişiklikler başlık ve sayfa endeksli şekilde en kısa sürede yürürlüğe girecektir.\n# Boş bir düzenleme yaparak, yeniden dizin oluşturulmasını zorlayabilirsiniz.\n# Sözdizimi aşağıdaki gibidir:\n#   * \"#\" karakteri ile başlayan her satır, satır sonuna kadar bir yorumdur.\n#   * Boş olmayan her türlü satırın tam başlığı her durumda görmezden gelinir.\nKaynaklar\nDış bağlantılar\nAyrıca bakınız\n #</pre> <!-- bu satırları olduğu gibi bırakın-->",
 	"cirrussearch-boost-templates": " #<!-- bu satırın altındakileri olduğu gibi bırakın --> <pre>\n# Eğer bir sayfa aşağıdaki şablonlardan birisini içeriyorsa, arama skoru kendi yapılandırmasının yüzdesi ile çarpılır.\n# Yapılan bu değişiklikler hemen yürürlüğe girecektir.\n# Sözdizimi aşağıdaki gibidir:\n#   * Satırın sonuna konulacak \"#\" karakterine kadar olan her şey bir yorumdur.\n#   * Her türlü boş olmayan satır başları kesin şablon adıdır, ad alanı, durumunda ve her şey,  \"|\" karakterini takip edene kadar \"%\" karakterini takip ettiği bir diziyi temsil eder.\n# Güzel satırlardan örnekler:\n# Şablon:İyi|150%\n# Şablon:Çok Çok İyi|300%\n# Şablon:Kötü|50%\n# Güzel olmayan satırlara örnekler:\n# Şablon:Değişken|150.234234% <-- ondalık noktalara izin verilir!\n# Değişken|150% <--- teknik çalışmalar, ancak ad alanından sonra gelen çapraz değişken için\n# Şablonlara bir ön-ek sorgusu yaparak, arama sonuçlarının artıp, artmadığını test edebilirsiniz:\"XX\" nerede XX yerine, istediğiniz tüm şablonlarda satır sonlarındaki ayrılan boşlukları arttırarak sonuca ulaşabilirsiniz.\n# Arttırma-Şablonlarındaki sorguları belirtebilirsiniz:\"XX\" şeklinde olan alanın içeriği göz ardı edilecektir.\n #</pre> <!-- bu satırın üstündekileri olduğu gibi bırakın -->",
 	"cirrussearch-pref-label": "Yeni arama",
 	"cirrussearch-pref-desc": "Daha fazla dili destekleyen yeni bir arama yapmayı deneyin, daha üst seviyede güncel sonuçlar görün ve hatta şablonlar içerisinde bile arama yapın.",
+	"cirrussearch-give-feedback": "Bize geri bildirim verin",
 	"prefs-completion": "Arama tamamlama",
 	"cirrussearch-pref-completion-section-desc": "Tamamlama önerici",
 	"cirrussearch-pref-completion-profile-help": "Otomatik tamamlama (yazdığınız gibi arama) önerilerinin nasıl olacağını ayarlayın.",

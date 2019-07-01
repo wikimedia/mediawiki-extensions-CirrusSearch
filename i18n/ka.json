@@ -30,5 +30,6 @@
 	"cirrussearch-completion-profile-normal-pref-name": "გადამისამართების რეჟიმი (გაფართოებული)",
 	"cirrussearch-completion-profile-normal-pref-desc": "არ ასწორებს მცდარბეჭდილებს. ანაცვლებს შესაფერის გადამისამართებას.",
 	"cirrussearch-completion-profile-classic-pref-name": "კლასიკური ძიება პრეფიქსით",
-	"cirrussearch-completion-profile-classic-pref-desc": "არ ასწორებს მცდარბეჭდილებს. კარნახობს სახელწოდებას დასაწყისიდან შეყვანის შესაბამისად"
+	"cirrussearch-completion-profile-classic-pref-desc": "არ ასწორებს მცდარბეჭდილებს. კარნახობს სახელწოდებას დასაწყისიდან შეყვანის შესაბამისად",
+	"cirrussearch-article-words": "სიტყვების რაოდენობა ყველა გვერდზე"
 }

@@ -92,8 +92,8 @@ class Updater extends ElasticsearchIntermediary {
 			$fixedVersion = mb_convert_encoding( $fieldDefinitions['source_text'], 'UTF-8', 'UTF-8' );
 			if ( $fixedVersion !== $fieldDefinitions['source_text'] ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )
-					->warning( 'Fixing invalid UTF-8 sequences in source text for page id {}',
-						[ $pageId ] );
+					->warning( 'Fixing invalid UTF-8 sequences in source text for page id {page_id}',
+						[ 'page_id' => $pageId ] );
 				$fieldDefinitions['source_text'] = $fixedVersion;
 				$fieldDefinitions['template'][] = Title::makeTitle( NS_TEMPLATE, 'CirrusSearchInvalidUTF8' )->getPrefixedText();
 			}

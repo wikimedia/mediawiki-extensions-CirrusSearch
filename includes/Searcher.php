@@ -31,7 +31,6 @@ use Elastica\Query\MultiMatch;
 use Elastica\Search;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use ObjectCache;
 use RequestContext;
 use Status;
 use Title;
@@ -573,8 +572,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$skipCache = $cirrusDebugOptions->mustNeverBeCached();
 		if ( $this->searchContext->getCacheTtl() > 0 && !$skipCache ) {
 			$work = function () use ( $work, $searches, $log, $contextResultsType ) {
-				$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
-				$cache = ObjectCache::getMainWANInstance();
+				$services = MediaWikiServices::getInstance();
+				$requestStats = $services->getStatsdDataFactory();
+				$cache = $services->getMainWANObjectCache();
 				$keyParts = [];
 				foreach ( $searches as $key => $search ) {
 					$keyParts[] = $search->getPath() .

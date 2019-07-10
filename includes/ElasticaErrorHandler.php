@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
+use MediaWiki\Logger\LoggerFactory;
 use Status;
 
 /**
@@ -11,6 +12,15 @@ use Status;
  * from Elastica.
  */
 class ElasticaErrorHandler {
+
+	public static function logRequestResponse( Connection $conn, $message, array $context = [] ) {
+		$client = $conn->getClient();
+		LoggerFactory::getInstance( 'CirrusSearch' )->info( $message, $context + [
+			'cluster' => $conn->getClusterName(),
+			'elasticsearch_request' => (string)$client->getLastRequest(),
+			'elasticsearch_response' => (string)$client->getLastResponse(),
+		] );
+	}
 
 	/**
 	 * @param \Elastica\Exception\ExceptionInterface $exception

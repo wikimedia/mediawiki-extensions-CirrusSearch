@@ -3,6 +3,7 @@
 namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\SearchRequestLog;
 use CirrusSearch\Connection;
@@ -167,6 +168,14 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 								$numNulls++;
 							}
 						}
+
+						// Log the raw request/response until we understand how these happen
+						ElasticaErrorHandler::logRequestResponse( $this->connection,
+							"Received null for link count on {numNulls} out of {linkCountClosureCount} pages", [
+								'numNulls' => $numNulls,
+								'linkCountClosureCount' => $linkCountClosureCount,
+							] );
+
 						throw new \Elastica\Exception\RuntimeException(
 							"Received null for link count on $numNulls out of $linkCountClosureCount pages" );
 					}

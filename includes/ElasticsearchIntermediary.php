@@ -239,7 +239,15 @@ abstract class ElasticsearchIntermediary {
 			$connection = $this->connection;
 		}
 		$log = $this->finishRequest( $connection );
-		$context = $log->getLogVariables();
+		if ( $log === null ) {
+			// Request was never started, likely trying to close a request
+			// a second time. If so that was already logged by finishRequest.
+			$context = [];
+			$logType = 'not_started';
+		} else {
+			$context = $log->getLogVariables();
+			$logType = $log->getDescription();
+		}
 		list( $status, $message ) = ElasticaErrorHandler::extractMessageAndStatus( $exception );
 		$context['error_message'] = $message;
 
@@ -249,7 +257,7 @@ abstract class ElasticsearchIntermediary {
 		$stats->increment( "CirrusSearch.$clusterName.backend_failure.$type" );
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-			"Search backend error during {$log->getDescription()} after {tookMs}: {error_message}",
+			"Search backend error during {$logType} after {tookMs}: {error_message}",
 			$context
 		);
 		return $status;

@@ -5,7 +5,7 @@ namespace CirrusSearch;
 /**
  * Represents logging information for a single network operation made between
  * php and elasticsearch. Information returned from here goes through the
- * RequestLogger class and gets logged to the CirrusSearchRequestSet channel
+ * RequestLogger class and gets logged to the cirrussearch-request channel
  * for later processing in analytics platforms.
  */
 interface RequestLog {

@@ -1311,8 +1311,7 @@ CirrusSearch\LanguageDetector\Detector interface.
 
 Detectors will be called in the order given until one
 returns a non-null result. The array key will, currently, only be logged to the
-UserTesting logs. This is intended to be added to CirrusSearchRequestSet payload
-as well once schema migration is complete.
+UserTesting logs.
 
 The options that are built in:
 * CirrusSearch\LanguageDetector\HttpAccept - uses the first language in the Accept-Language header that is not the current content language.

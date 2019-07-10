@@ -3,12 +3,13 @@
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\Parser\AST\Visitor\QueryFixer;
+use CirrusSearch\Profile\ArrayPathSetter;
 use CirrusSearch\Profile\SearchProfileException;
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchQuery;
 use Elastica\Client;
 use Elastica\Query;
-use Elastica\Query\Match;
 use Elastica\Search;
 
 class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestFallbackMethod {
@@ -25,14 +26,24 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	private $index;
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	private $queryField;
+	private $queryTemplate;
+
+	/**
+	 * @var string[]
+	 */
+	private $queryParams;
 
 	/**
 	 * @var string
 	 */
 	private $suggestionField;
+
+	/**
+	 * @var array
+	 */
+	private $profileParams;
 
 	/**
 	 * @var QueryFixer
@@ -49,7 +60,22 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 		if ( $fixablePart === null ) {
 			return null;
 		}
-		$query = new Query( new Match( $this->queryField, $fixablePart ) );
+		$queryParams = array_map(
+			function ( $v ) {
+				switch ( $v ) {
+					case 'query':
+						return $this->queryFixer->getFixablePart();
+					case 'wiki':
+						return $this->query->getSearchConfig()->getWikiId();
+					default:
+						return $this->extractParam( $v );
+				}
+			},
+			$this->queryParams
+		);
+		$arrayPathSetter = new ArrayPathSetter( $queryParams );
+		$query = $arrayPathSetter->transform( $this->queryTemplate );
+		$query = new Query( [ 'query' => $query ] );
 		$query->setFrom( 0 )
 			->setSize( 1 )
 			->setSource( false )
@@ -61,16 +87,49 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	}
 
 	/**
+	 * @param string $keyAndValue
+	 * @return mixed
+	 */
+	private function extractParam( $keyAndValue ) {
+		$ar = explode( ':', $keyAndValue, 2 );
+		if ( count( $ar ) != 2 ) {
+			throw new SearchProfileException( "Invalid profile parameter [$keyAndValue]" );
+		}
+		list( $key, $value ) = $ar;
+		switch ( $key ) {
+			case 'params':
+				$paramValue = $this->profileParams[$value] ?? null;
+				if ( $paramValue == null ) {
+					throw new SearchProfileException( "Missing profile parameter [$value]" );
+				}
+				return $paramValue;
+			default:
+				throw new SearchProfileException( "Unsupported profile parameter type [$key]" );
+		}
+	}
+
+	/**
 	 * @param SearchQuery $query
 	 * @param string $index
-	 * @param string $queryField
+	 * @param array $queryTemplate
 	 * @param string $suggestionField
+	 * @param string[] $queryParams
+	 * @param array $profileParams
 	 */
-	public function __construct( SearchQuery $query, $index, $queryField, $suggestionField ) {
+	public function __construct(
+		SearchQuery $query,
+		$index,
+		$queryTemplate,
+		$suggestionField,
+		array $queryParams,
+		array $profileParams
+	) {
 		$this->query = $query;
 		$this->index = $index;
-		$this->queryField = $queryField;
+		$this->queryTemplate = $queryTemplate;
 		$this->suggestionField = $suggestionField;
+		$this->queryParams = $queryParams;
+		$this->profileParams = $profileParams;
 		$this->queryFixer = QueryFixer::build( $this->query->getParsedQuery() );
 	}
 
@@ -87,13 +146,16 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 		if ( $query->getOffset() !== 0 ) {
 			return null;
 		}
-
-		$missingFields = array_diff_key( array_flip( [ 'index', 'query_field', 'suggestion_field' ] ), $params );
-		if ( $missingFields !== [] ) {
-			throw new SearchProfileException( "Missing mandatory fields: " . implode( ', ', array_keys( $missingFields ) ) );
+		if ( !isset( $params['profile'] ) ) {
+			throw new SearchProfileException( "Missing mandatory field profile" );
 		}
 
-		return new self( $query, $params['index'], $params['query_field'], $params['suggestion_field'] );
+		$profileParams = $params['profile_params'] ?? [];
+
+		$profile = $query->getSearchConfig()->getProfileService()
+			->loadProfileByName( SearchProfileService::INDEX_LOOKUP_FALLBACK, $params['profile'] );
+
+		return new self( $query, $profile['index'], $profile['query'], $profile['suggestion_field'], $profile['params'], $profileParams );
 	}
 
 	/**

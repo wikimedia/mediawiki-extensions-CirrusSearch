@@ -44,5 +44,28 @@ return [
 			],
 		]
 	],
+	'phrase_suggest_glentM0_and_langdetect' => [
+		'methods' => [
+			[
+				'class' => \CirrusSearch\Fallbacks\IndexLookupFallbackMethod::class,
+				'params' => [
+					'profile' => 'glent',
+					'profile_params' => [
+						'methods' => [ 'm0' ],
+					]
+				]
+			],
+			[
+				'class' => \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod::class,
+				'params' => [
+					'profile' => 'default',
+				]
+			],
+			[
+				'class' => \CirrusSearch\Fallbacks\LangDetectFallbackMethod::class,
+				'params' => []
+			],
+		]
+	],
 	'none' => []
 ];

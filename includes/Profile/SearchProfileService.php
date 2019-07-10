@@ -21,6 +21,7 @@ use Wikimedia\Assert\Assert;
  * - CROSS_PROJECT_BLOCK_SCORER: used when reordering blocks of crossproject search results
  * - FT_QUERY_BUILDER: used when building fulltext search queries
  * - PHRASE_SUGGESTER: Controls the behavior of the phrase suggester (did you mean suggestions)
+ * - INDEX_LOOKUP_FALLBACK: Controls the behavior of the index lookup fallback method (did you mean suggestions)
  * - RESCORE: Controls how elasticsearch rescore queries are built
  * - RESCORE_FUNCTION_CHAINS: Controls the list of functions used by a rescore profile
  * - SANEITIZER: Controls the saneitizer
@@ -80,9 +81,15 @@ class SearchProfileService {
 
 	/**
 	 * Profile type used by the phrase suggester (fulltext search only)
-	 * @see \CirrusSearch\Query\FullTextQueryStringQueryBuilder::buildSuggestConfig()
+	 * @see \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod
 	 */
 	const PHRASE_SUGGESTER = 'phrase_suggester';
+
+	/**
+	 * Profile type used by the index lookup fallback method method
+	 * @see \CirrusSearch\Fallbacks\IndexLookupFallbackMethod
+	 */
+	const INDEX_LOOKUP_FALLBACK = 'index_lookup_fallback';
 
 	/**
 	 * Profile type used by saneitizer

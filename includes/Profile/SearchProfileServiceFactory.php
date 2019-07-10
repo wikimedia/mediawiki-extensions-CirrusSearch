@@ -117,6 +117,7 @@ class SearchProfileServiceFactory {
 		$this->loadRescoreProfiles( $service, $config );
 		$this->loadCompletionProfiles( $service, $config );
 		$this->loadPhraseSuggesterProfiles( $service, $config );
+		$this->loadIndexLookupFallbackProfiles( $service, $config );
 		$this->loadSaneitizerProfiles( $service );
 		$this->loadFullTextQueryProfiles( $service, $config );
 		$this->loadInterwikiOverrides( $service, $config );
@@ -228,6 +229,14 @@ class SearchProfileServiceFactory {
 
 		$service->registerRepository( PhraseSuggesterProfileRepoWrapper::fromConfig( SearchProfileService::PHRASE_SUGGESTER,
 			self::CIRRUS_CONFIG, 'CirrusSearchPhraseSuggestProfiles', $config ) );
+	}
+
+	private function loadIndexLookupFallbackProfiles( SearchProfileService $service, SearchConfig $config ) {
+		$service->registerFileRepository( SearchProfileService::INDEX_LOOKUP_FALLBACK,
+			self::CIRRUS_BASE, __DIR__ . '/../../profiles/IndexLookupFallbackProfiles.config.php' );
+
+		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::INDEX_LOOKUP_FALLBACK,
+			self::CIRRUS_CONFIG, 'CirrusSearchIndexLookupFallbackProfiles', $config ) );
 	}
 
 	/**

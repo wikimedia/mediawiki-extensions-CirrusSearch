@@ -3,8 +3,27 @@
     "options": [],
     "query": {
         "query": {
-            "match": {
-                "lookup_query_field": "hello wolrd"
+            "bool": {
+                "filter": [
+                    {
+                        "match": {
+                            "lookup_query_field": "hello wolrd"
+                        }
+                    },
+                    {
+                        "terms": {
+                            "filtering_field": [
+                                "filter1",
+                                "filter2"
+                            ]
+                        }
+                    },
+                    {
+                        "match": {
+                            "wiki": "my_test_wiki"
+                        }
+                    }
+                ]
             }
         },
         "from": 0,

@@ -60,4 +60,26 @@ class ElasticsearchIntermediaryTest extends CirrusTestCase {
 		$this->expectException( \ConfigException::class );
 		$this->testTimeouts( [], 'test', 1, '1s' );
 	}
+
+	public function testConcludeRequestTwice() {
+		$connection = new DummyConnection( new HashSearchConfig( [] ) );
+		$intermediary = new class( $connection ) extends ElasticsearchIntermediary {
+			public function __construct( Connection $connection ) {
+				parent::__construct( $connection );
+			}
+
+			protected function newLog( $description, $queryType, array $extra = [] ) {
+				throw new AssertionFailedError( "Not supposed to be called" );
+			}
+		};
+
+		$log = $this->getMockBuilder( RequestLog::class )->getMock();
+		$log->method( 'getLogVariables' )->will( $this->returnValue( [] ) );
+		$log->method( 'getRequests' )->will( $this->returnValue( [] ) );
+		$intermediary->start( $log );
+		$intermediary->success();
+		$intermediary->failure();
+		// Basically assert the mistaken second failure call still "worked"
+		$this->assertTrue( true );
+	}
 }

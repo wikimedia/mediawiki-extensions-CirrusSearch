@@ -157,7 +157,6 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 					'query' => $pageCount,
 				] );
 				$result = $this->linkCountMultiSearch->search();
-				$this->success();
 				for ( $index = 0; $index < $linkCountClosureCount; $index++ ) {
 					if ( $result[$index] === null ) {
 						// Seems to happen during connection issues? Treat it the
@@ -173,6 +172,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 					}
 					$this->linkCountClosures[ $index ]( $result[ $index ]->getTotalHits() );
 				}
+				$this->success();
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				// Note that we still return the pages and execute the update here, we just complain
 				$this->failure( $e );

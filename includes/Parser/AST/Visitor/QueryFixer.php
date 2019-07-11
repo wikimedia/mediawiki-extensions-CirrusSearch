@@ -154,16 +154,24 @@ class QueryFixer implements Visitor {
 		if ( $this->node instanceof KeywordFeatureNode ) {
 			$res .= $this->node->getKey() . ':';
 		}
+
 		if ( $escapeBoundaries ) {
-			$res = htmlspecialchars( $res );
+			$safeRes = htmlspecialchars( $res );
+		} else {
+			$safeRes = $res;
 		}
-		$res .= $fixedQuery;
-		$suffix = substr( $this->parsedQuery->getQuery(), $this->node->getEndOffset() );
+		$safeRes .= $fixedQuery;
+
 		if ( $escapeBoundaries ) {
-			$suffix = htmlspecialchars( $suffix );
+			$suffix = htmlspecialchars(
+				substr( $this->parsedQuery->getQuery(), $this->node->getEndOffset() )
+			);
+		} else {
+			$suffix = substr( $this->parsedQuery->getQuery(), $this->node->getEndOffset() );
 		}
-		$res .= $suffix;
-		return $res;
+
+		$safeRes .= $suffix;
+		return $safeRes;
 	}
 
 	/**

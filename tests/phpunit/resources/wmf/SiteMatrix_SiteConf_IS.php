@@ -89,7 +89,6 @@ return [
 	'votewiki' => 'en', // T132667, T148352
 	'wikimania' => 'en',
 	'wikimaniateamwiki' => 'en',
-	'zerowiki' => 'en',
 ],
 # @} end of wgLanguageCode
 
@@ -171,7 +170,6 @@ return [
 	'wikimania2016wiki' => 'https://wikimania2016.wikimedia.org',
 	'wikimania2017wiki' => 'https://wikimania2017.wikimedia.org',
 	'wikimaniateamwiki' => 'https://wikimaniateam.wikimedia.org',
-	'zerowiki' => 'https://zero.wikimedia.org',
 ],
 # @} end of wgCanonicalServer
 
@@ -617,7 +615,6 @@ return [
 	'yiwiki' => 'װיקיפּעדיע',
 	'yiwikisource' => 'װיקיביבליאָטעק',
 	'yiwiktionary' => 'װיקיװערטערבוך',
-	'zerowiki' => 'Wikipedia',
 	'zh_min_nanwikisource' => 'Wiki Tô·-su-kóan',
 	'zh_classicalwiki' => '維基大典',
 	'zhwikivoyage' => '维基导游', // T61077

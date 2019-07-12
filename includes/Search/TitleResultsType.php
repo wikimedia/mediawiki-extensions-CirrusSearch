@@ -19,7 +19,7 @@ class TitleResultsType extends BaseResultsType {
 	 * @param array $extraHighlightFields
 	 * @return array|null
 	 */
-	public function getHighlightingConfiguration( array $extraHighlightFields ) {
+	public function getHighlightingConfiguration( array $extraHighlightFields = [] ) {
 		return null;
 	}
 

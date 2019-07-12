@@ -3,6 +3,9 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
+use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Parser\FullTextKeywordRegistry;
+use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Searcher;
 use Elastica\Query;
 use Elastica\Response;
@@ -26,6 +29,10 @@ use Elastica\Response;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @covers \CirrusSearch\Search\FullTextResultsType
+ * @covers \CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder
+ * @covers \CirrusSearch\Search\Fetch\FetchedFieldBuilder
+ * @covers \CirrusSearch\Search\Fetch\BaseHighlightedFieldBuilder
+ * @covers \CirrusSearch\Search\Fetch\ExperimentalHighlightedFieldBuilder
  * @group CirrusSearch
  */
 class ResultsTypeTest extends CirrusTestCase {
@@ -34,12 +41,27 @@ class ResultsTypeTest extends CirrusTestCase {
 	 */
 	public function testFullTextHighlightingConfiguration(
 		$useExperimentalHighlighter,
-		array $highlightSource,
+		$query,
 		array $expected
 	) {
-		$this->setMwGlobals( 'wgCirrusSearchUseExperimentalHighlighter', $useExperimentalHighlighter );
-		$type = new FullTextResultsType();
-		$this->assertEquals( $expected, $type->getHighlightingConfiguration( $highlightSource ) );
+		$config = new HashSearchConfig( [
+			'CirrusSearchUseExperimentalHighlighter' => $useExperimentalHighlighter,
+			'CirrusSearchFragmentSize' => 150,
+			'LanguageCode' => 'testlocale',
+			'CirrusSearchEnableRegex' => true,
+			'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ],
+			'CirrusSearchRegexMaxDeterminizedStates' => 20000,
+		] );
+		$fetchPhaseBuilder = new FetchPhaseConfigBuilder( $config, SearchQuery::SEARCH_TEXT );
+		$type = new FullTextResultsType( $fetchPhaseBuilder, $query !== null );
+		if ( $query ) {
+			// TODO: switch to new parser.
+			$context = new SearchContext( $config, [], null, null, $fetchPhaseBuilder );
+			foreach ( ( new FullTextKeywordRegistry( $config ) )->getKeywords() as $kw ) {
+				$kw->apply( $context, $query );
+			};
+		}
+		$this->assertEquals( $expected, $type->getHighlightingConfiguration( [] ) );
 	}
 
 	public static function fullTextHighlightingConfigurationTestCases() {
@@ -53,7 +75,7 @@ class ResultsTypeTest extends CirrusTestCase {
 		return [
 			'default configuration' => [
 				false,
-				[],
+				null,
 				[
 					'pre_tags' => [ json_decode( '"\uE000"' ) ],
 					'post_tags' => [ json_decode( '"\uE001"' ) ],
@@ -112,7 +134,7 @@ class ResultsTypeTest extends CirrusTestCase {
 			],
 			'default configuration with experimental highlighter' => [
 				true,
-				[],
+				null,
 				[
 					'pre_tags' => [ json_decode( '"\uE000"' ) ],
 					'post_tags' => [ json_decode( '"\uE001"' ) ],
@@ -191,15 +213,7 @@ class ResultsTypeTest extends CirrusTestCase {
 			],
 			'source configuration with experimental-highlighter' => [
 				true,
-				[
-					'source_text' => [
-						[
-							'pattern' => '(some|thing)',
-							'locale' => 'testlocale',
-							'insensitive' => false,
-						]
-					],
-				],
+				'insource:/(some|thing)/',
 				[
 					'pre_tags' => [ json_decode( '"\uE000"' ) ],
 					'post_tags' => [ json_decode( '"\uE001"' ) ],
@@ -220,6 +234,75 @@ class ResultsTypeTest extends CirrusTestCase {
 								'max_fragments_scored' => 5000,
 							],
 							'no_match_size' => 150,
+							'fragmenter' => 'scan',
+						],
+						'title' => [
+							'number_of_fragments' => 1,
+							'type' => 'experimental',
+							'matched_fields' => [ 'title', 'title.plain' ],
+							'fragmenter' => 'none',
+						],
+						'redirect.title' => [
+							'number_of_fragments' => 1,
+							'type' => 'experimental',
+							'order' => 'score',
+							'options' => [ 'skip_if_last_matched' => true ],
+							'matched_fields' => [ 'redirect.title', 'redirect.title.plain' ],
+							'fragmenter' => 'none',
+						],
+						'category' => [
+							'number_of_fragments' => 1,
+							'type' => 'experimental',
+							'order' => 'score',
+							'options' => [ 'skip_if_last_matched' => true ],
+							'matched_fields' => [ 'category', 'category.plain' ],
+							'fragmenter' => 'none',
+						],
+						'heading' => [
+							'number_of_fragments' => 1,
+							'type' => 'experimental',
+							'order' => 'score',
+							'options' => [ 'skip_if_last_matched' => true ],
+							'matched_fields' => [ 'heading', 'heading.plain' ],
+							'fragmenter' => 'none',
+						],
+						'text' => [
+							'number_of_fragments' => 1,
+							'fragment_size' => 150,
+							'type' => 'experimental',
+							'options' => [
+								'top_scoring' => true,
+								'boost_before' => $boostBefore,
+								'max_fragments_scored' => 5000,
+							],
+							'no_match_size' => 150,
+							'matched_fields' => [ 'text', 'text.plain' ],
+							'fragmenter' => 'scan',
+						],
+						'auxiliary_text' => [
+							'number_of_fragments' => 1,
+							'fragment_size' => 150,
+							'type' => 'experimental',
+							'options' => [
+								'top_scoring' => true,
+								'boost_before' => $boostBefore,
+								'max_fragments_scored' => 5000,
+								'skip_if_last_matched' => true,
+							],
+							'matched_fields' => [ 'auxiliary_text', 'auxiliary_text.plain' ],
+							'fragmenter' => 'scan',
+						],
+						'file_text' => [
+							'number_of_fragments' => 1,
+							'fragment_size' => 150,
+							'type' => 'experimental',
+							'options' => [
+								'top_scoring' => true,
+								'boost_before' => $boostBefore,
+								'max_fragments_scored' => 5000,
+								'skip_if_last_matched' => true,
+							],
+							'matched_fields' => [ 'file_text', 'file_text.plain' ],
 							'fragmenter' => 'scan',
 						],
 					],
@@ -349,12 +432,12 @@ class ResultsTypeTest extends CirrusTestCase {
 	 */
 	public function testFullTextSyntax() {
 		$res = new \Elastica\ResultSet( new Response( [] ), new Query( [] ), [] );
-		$fullTextRes = new FullTextResultsType( true );
+		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ), true );
 		$this->assertTrue( $fullTextRes->transformElasticsearchResult( $res )->searchContainedSyntax() );
 
-		$fullTextRes = new FullTextResultsType( false );
+		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ), false );
 		$this->assertFalse( $fullTextRes->transformElasticsearchResult( $res )->searchContainedSyntax() );
-		$fullTextRes = new FullTextResultsType( false );
+		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ), false );
 		$this->assertFalse( $fullTextRes->transformElasticsearchResult( $res )->searchContainedSyntax() );
 	}
 }

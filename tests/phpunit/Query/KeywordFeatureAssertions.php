@@ -11,8 +11,11 @@ use CirrusSearch\Parser\QueryStringRegex\KeywordParser;
 use CirrusSearch\Parser\QueryStringRegex\OffsetTracker;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Escaper;
+use CirrusSearch\Search\Fetch\ExperimentalHighlightedFieldBuilder;
+use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\AbstractQuery;
 
@@ -35,7 +38,7 @@ class KeywordFeatureAssertions {
 	/**
 	 * @return SearchContext
 	 */
-	private function mockContext( SearchConfig $config = null ) {
+	private function mockContext( SearchConfig $config = null, FetchPhaseConfigBuilder $fetchPhaseConfigBuilder = null ) {
 		$context = $this->testCase->getMockBuilder( SearchContext::class )
 			->disableOriginalConstructor()
 			->getMock();
@@ -43,6 +46,8 @@ class KeywordFeatureAssertions {
 			$config = new SearchConfig();
 		}
 		$context->expects( $this->testCase->any() )->method( 'getConfig' )->willReturn( $config );
+		$fetchPhaseConfigBuilder = $fetchPhaseConfigBuilder ?? new FetchPhaseConfigBuilder( $config );
+		$context->method( 'getFetchPhaseBuilder' )->willReturn( $fetchPhaseConfigBuilder );
 		$context->expects( $this->testCase->any() )->method( 'escaper' )
 			->willReturn( new Escaper( 'en', true ) );
 
@@ -60,9 +65,8 @@ class KeywordFeatureAssertions {
 		$negated = false,
 		SearchConfig $config
 	) {
-		$context = $this->mockContext();
+		$context = $this->mockContext( $config );
 
-		$context->method( 'getConfig' )->willReturn( $config );
 		if ( $expectedQuery === null ) {
 			$context->expects( $this->testCase->never() )
 				->method( 'addFilter' );
@@ -357,43 +361,76 @@ class KeywordFeatureAssertions {
 	 * @param KeywordFeature $feature
 	 * @param string $term
 	 * @param array|string|null $highlightField
-	 * @param array|null $higlightQuery
+	 * @param array|null $highlightQuery
 	 */
 	public function assertHighlighting(
 		KeywordFeature $feature,
 		$term,
 		$highlightField = null,
-		array $higlightQuery = null
+		array $highlightQuery = null
 	) {
-		$context = $this->mockContext();
+		foreach ( [ true, false ] as $useExp ) {
+			$searchConfig = new HashSearchConfig( [
+				'CirrusSearchUseExperimentalHighlighter' => $useExp,
+				'CirrusSearchFragmentSize' => 100
+			] );
+			$fetchPhaseConfig = new FetchPhaseConfigBuilder( $searchConfig, SearchQuery::SEARCH_TEXT );
+			$context = $this->mockContext( $searchConfig, $fetchPhaseConfig );
+			$feature->apply( $context, $term );
+			if ( $highlightField !== null && $highlightField !== [] && !$this->isNegated( $feature, $term )
+			) {
+				if ( is_string( $highlightField ) ) {
+					$this->assertHLField( $highlightField, $highlightQuery, $fetchPhaseConfig, $useExp );
+				} else {
+					$this->testCase->assertTrue( is_array( $highlightField ) );
+					$this->testCase->assertEquals( count( $highlightField ),
+						count( $highlightQuery ),
+						'must have the same number of highlightFields than $higlightQueries' );
 
-		if ( $highlightField !== null && $highlightField !== [] && !$this->isNegated( $feature, $term ) ) {
-			if ( is_string( $highlightField ) ) {
-				$context->expects( $this->testCase->once() )
-					->method( 'addHighlightField' )
-					->with( $highlightField, $higlightQuery );
-			} else {
-				$this->testCase->assertTrue( is_array( $highlightField ) );
-				$this->testCase->assertEquals( count( $highlightField ), count( $higlightQuery ),
-					'must have the same number of highlightFields than $higlightQueries' );
-
-				$calls = [];
-				$mi = new \MultipleIterator();
-				$mi->attachIterator( new \ArrayIterator( $highlightField ) );
-				$mi->attachIterator( new \ArrayIterator( $higlightQuery ) );
-				foreach ( $mi as $value ) {
-					$calls[] = $value;
+					$mi = new \MultipleIterator();
+					$mi->attachIterator( new \ArrayIterator( $highlightField ) );
+					$mi->attachIterator( new \ArrayIterator( $highlightQuery ) );
+					foreach ( $mi as $value ) {
+						$this->assertHLField( $value[0], $value[1], $fetchPhaseConfig, $useExp );
+					}
 				}
-
-				$mock = $context->expects( $this->testCase->exactly( count( $highlightField ) ) )
-					->method( 'addHighlightField' );
-				$mock->withConsecutive( ...$calls );
+			} else {
+				$this->testCase->assertEmpty( $fetchPhaseConfig->buildHLConfig()['fields'] );
 			}
-		} else {
-			$context->expects( $this->testCase->never() )
-				->method( 'addHighlightField' );
 		}
-		$feature->apply( $context, $term );
+	}
+
+	/**
+	 * @param string|array $highlightField
+	 * @param array $highlightQuery
+	 * @param FetchPhaseConfigBuilder $fetchPhaseConfig
+	 * @param bool $useExp
+	 */
+	private function assertHLField( $highlightField, array $highlightQuery, FetchPhaseConfigBuilder $fetchPhaseConfig, $useExp ) {
+		if ( isset( $highlightQuery['pattern'] ) && !$useExp ) {
+			$this->testCase->assertNull( $fetchPhaseConfig->getHLField( $highlightField ),
+				"The highlighted field $highlightField should be absent with it " .
+				"is a regex and the experimental highlighter is not used" );
+			return;
+		}
+		$hlField = $fetchPhaseConfig->getHLField( $highlightField );
+		$this->testCase->assertNotNull( $hlField,
+			"The highlighted field $highlightField should be present" );
+		if ( isset( $highlightQuery['pattern'] ) ) {
+			$this->testCase->assertInstanceOf( ExperimentalHighlightedFieldBuilder::class,
+				$hlField, "The highlighted field $highlightField should be of correct type" );
+			$this->testCase->assertEquals( [ $highlightQuery['pattern'] ],
+				$hlField->getOptions()['regex'],
+				"The highlighted field $highlightField should have the proper patterns" );
+			$this->testCase->assertEquals( $highlightQuery['insensitive'],
+				$hlField->getOptions()['regex_case_insensitive'],
+				"The highlighted field $highlightField should have the proper case sensitivity option" );
+		} else {
+			$this->testCase->assertNotNull( $hlField->getHighlightQuery(),
+				"The highlighted field $highlightField should have a query" );
+			$this->testCase->assertEquals( $highlightQuery['query'],
+				$hlField->getHighlightQuery() );
+		}
 	}
 
 	/**

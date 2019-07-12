@@ -5,6 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Escaper;
+use CirrusSearch\Search\Fetch\FetchedFieldBuilder;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
@@ -38,7 +39,13 @@ class InTitleFeature extends BaseRegexFeature {
 	private $escaper;
 
 	public function __construct( SearchConfig $config ) {
-		parent::__construct( $config, [ 'title', 'redirect.title' ] );
+		parent::__construct(
+			$config,
+			[
+				'title' => FetchedFieldBuilder::TARGET_TITLE_SNIPPET,
+				'redirect.title' => FetchedFieldBuilder::TARGET_TITLE_SNIPPET
+			]
+		);
 		$this->escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 	}
 

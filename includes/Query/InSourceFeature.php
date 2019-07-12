@@ -5,6 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Escaper;
+use CirrusSearch\Search\Fetch\FetchedFieldBuilder;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
@@ -48,7 +49,7 @@ class InSourceFeature extends BaseRegexFeature {
 	 * @param SearchConfig $config
 	 */
 	public function __construct( SearchConfig $config ) {
-		parent::__construct( $config, [ self::FIELD ] );
+		parent::__construct( $config, [ self::FIELD => FetchedFieldBuilder::TARGET_MAIN_SNIPPET ] );
 		$this->escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 	}
 
@@ -70,7 +71,10 @@ class InSourceFeature extends BaseRegexFeature {
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$filter = Filters::insource( $context->escaper(), $quotedValue );
 		if ( !$negated ) {
-			$context->addHighlightField( self::FIELD, [ 'query' => $filter ] );
+			$field = $context->getFetchPhaseBuilder()->newHighlightField( self::FIELD . '.plain',
+				FetchedFieldBuilder::TARGET_MAIN_SNIPPET, FetchedFieldBuilder::EXPERT_SYNTAX_PRIORITY );
+			$field->setHighlightQuery( $filter );
+			$context->getFetchPhaseBuilder()->addHLField( $field );
 		}
 		return [ $filter, false ];
 	}

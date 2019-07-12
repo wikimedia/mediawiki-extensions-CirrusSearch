@@ -36,9 +36,11 @@ class InSourceTest extends BaseSimpleKeywordFeatureTest {
 		$feature = new InSourceFeature( $config );
 		if ( $filterValue !== null ) {
 			$this->assertCrossSearchStrategy( $feature, $query,	CrossSearchStrategy::allWikisStrategy() );
+			$this->assertHighlighting( $feature, $query, 'source_text.plain', [ 'query' => $qsQuery ] );
+		} else {
+			$this->assertHighlighting( $feature, $query );
 		}
 		$this->assertFilter( $feature, $query, $qsQuery, [], $config );
-		$this->assertHighlighting( $feature, $query, 'source_text', [ 'query' => $qsQuery ] );
 		// TODO: remove should be a parser test, the keyword is not responsible for this
 		$this->assertRemaining( $feature, $query, $expectedRemaining );
 	}

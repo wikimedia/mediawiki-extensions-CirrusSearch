@@ -176,7 +176,11 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 
 		if ( $query->getSearchEngineEntryPoint() === SearchQuery::SEARCH_TEXT ) {
 			$this->searchContext->setResultsType(
-				new FullTextResultsType( $query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ) ) );
+				new FullTextResultsType(
+					$this->searchContext->getFetchPhaseBuilder(),
+					$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY )
+				)
+			);
 			return $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );
 		} else {
 			throw new \RuntimeException( 'Only ' . SearchQuery::SEARCH_TEXT . ' is supported for now' );
@@ -330,6 +334,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		if ( $responses->hasFailure() ) {
 			$status = $responses->getFailure();
 			if ( ElasticaErrorHandler::isParseError( $status ) ) {
+				// Rebuild the search context because we need a fresh fetchPhaseBuilder
+				$this->searchContext = $this->searchContext->withConfig( $this->config );
 				if ( $qb->buildDegraded( $this->searchContext ) ) {
 					// If that doesn't work we're out of luck but it should.
 					// There no guarantee it'll work properly with the syntax

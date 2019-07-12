@@ -106,8 +106,8 @@ abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 	/**
 	 * @param KeywordFeature $feature
 	 * @param string $term
-	 * @param array|string|null $highlightField
-	 * @param array|null $highlightField
+	 * @param string|string[]|null $highlightField
+	 * @param array|null $higlightQuery
 	 */
 	protected function assertHighlighting(
 		KeywordFeature $feature,

@@ -88,7 +88,7 @@ class MSearchRequestsTest extends CirrusTestCase {
 				return [];
 			}
 
-			public function getHighlightingConfiguration( array $extraHighlightFields ) {
+			public function getHighlightingConfiguration( array $extraHighlightFields = [] ) {
 				return [];
 			}
 

@@ -13,7 +13,8 @@
 			"Rubentl134",
 			"Dgstranz",
 			"Peter Bowman",
-			"Jelou"
+			"Jelou",
+			"MarcoAurelio"
 		]
 	},
 	"cirrussearch-desc": "Búsqueda con Elasticsearch para MediaWiki",
@@ -37,7 +38,7 @@
 	"cirrussearch-pref-completion-section-desc": "Herramienta de sugerencia de completado",
 	"cirrussearch-pref-completion-profile-help": "Define el comportamiento para las sugerencias de autocompletado (búsqueda a medida que escribes).",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predeterminado (recomendado)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige hasta dos errores tipográficos. Resuelve redirecciones próximas.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige hasta dos errores tipográficos. Elimina redirecciones que son muy similares al título principal.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Corrige hasta dos errores tipográficos. Resuelve redirecciones cercanas. Identifica correspondencias con subfrases en los títulos.",
 	"cirrussearch-completion-profile-strict-pref-name": "Modo estricto (avanzado)",
 	"cirrussearch-completion-profile-strict-pref-desc": "No corrige errores tipográficos. Es inflexible con los acentos. Correspondencia estricta.",

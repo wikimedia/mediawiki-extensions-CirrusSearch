@@ -586,7 +586,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 					$keyParts[] = $search->getPath() .
 						serialize( $search->getOptions() ) .
 						serialize( $search->getQuery()->toArray() ) .
-						serialize( $contextResultsType );
+						( $contextResultsType !== null ? get_class( $contextResultsType ) : "NONE" );
 				}
 				$key = $cache->makeKey( 'cirrussearch', 'search', 'v2', md5(
 					implode( '|', $keyParts )

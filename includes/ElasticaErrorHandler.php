@@ -18,7 +18,7 @@ class ElasticaErrorHandler {
 		LoggerFactory::getInstance( 'CirrusSearch' )->info( $message, $context + [
 			'cluster' => $conn->getClusterName(),
 			'elasticsearch_request' => (string)$client->getLastRequest(),
-			'elasticsearch_response' => (string)$client->getLastResponse(),
+			'elasticsearch_response' => $client->getLastResponse() !== null ? json_encode( $client->getLastResponse()->getData() ) : "NULL",
 		] );
 	}
 

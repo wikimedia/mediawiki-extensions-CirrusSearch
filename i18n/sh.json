@@ -12,6 +12,7 @@
 	"cirrussearch-regex-too-busy-error": "Trenutačno postoji previše pretraživanja regularnih izraza. Pokušajte ponovo kasnije.",
 	"cirrussearch-regex-too-complex-error": "Regularni izraz je previše složen. Saznajte više o njegovom pojednostavljenju [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|ovdje]].",
 	"cirrussearch-now-using": "Ovaj wiki koristi novi pretraživač. ([[mw:Special:MyLanguage/Help:CirrusSearch|Saznajte više]])",
+	"cirrussearch-ignored-headings": " #<!-- ne mijenjajte ništa u ovom redu --> <pre>\n# Zaglavlja što će biti zanemarena pri pretrazi.\n# Izmjene u ovome stupit će na snagu čim se stranica sa zaglavljem indeksira.\n# Možete nametnuti preindeksiranje stranice ako izvršite prazno uređivanje.\n# Sintaksa je sljedeća:\n#   * Sve od znaka \"#\" pa do kraja reda je komentar\n#   * Svaki neprazan red jest tačan naziv što treba se zanemariti, s tim da se razlikuju mala i velika slova i sve ostalo\nReference\nVanjski linkovi\nTakođer pogledajte\n #</pre> <!-- ne mijenjajte ništa u ovom redu -->",
 	"cirrussearch-pref-label": "Nova pretraga",
 	"cirrussearch-pref-desc": "Probajte naš novi način pretrage koji podržava veliki broj jezika, dava aktualnije i navremenije ishodne stavke, pa čak i pronalazi tekst u predložcima.",
 	"cirrussearch-give-feedback": "Dajte nam Vaše mišljenje",

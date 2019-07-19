@@ -328,10 +328,11 @@ class RequestLogger {
 			'all_elasticsearch_requests_cached' => $allRequestsCached,
 		];
 
-		if ( !empty( $_GET ) ) {
+		$webRequestValues = $webrequest->getValues();
+		if ( !empty( $webRequestValues ) ) {
 			$requestEvent['params'] = [];
 			// Make sure all params are string keys and values
-			foreach ( $_GET as $k => $v ) {
+			foreach ( $webRequestValues as $k => $v ) {
 				if ( is_array( $v ) ) {
 					$v = implode( ',', $v );
 				}
@@ -356,7 +357,7 @@ class RequestLogger {
 		foreach ( $httpRequestHeadersToLog as $header ) {
 			if ( $webrequest->getHeader( $header ) ) {
 				$requestEvent['http']['request_headers'][$header] =
-					(string)$webrequest->getHeader( $header );
+					(string)$webrequest->normalizeUnicode( $webrequest->getHeader( $header ) );
 			}
 		}
 

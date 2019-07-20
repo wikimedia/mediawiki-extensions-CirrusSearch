@@ -4,6 +4,7 @@ namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummyResultSet;
 use Elastica\Client;
@@ -48,11 +49,11 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		$rewrittenResults = DummyResultSet::fakeTotalHits( 1 );
 		$rewrittenQuery = $suggestion != null ? SearchQueryBuilder::forRewrittenQuery( $query, $suggestion )->build() : null;
 		$searcherFactory = $this->getSearcherFactoryMock( $rewrittenQuery, $rewrittenResults );
-		$config = [ 'index' => 'lookup_index', 'query_field' => 'lookup_query_field', 'suggestion_field' => 'lookup_suggestion_field' ];
 		/**
 		 * @var IndexLookupFallbackMethod $fallback
 		 */
-		$fallback = IndexLookupFallbackMethod::build( $query, $config );
+		$fallback = new IndexLookupFallbackMethod( $query, 'lookup_index', [],
+			'lookup_suggestion_field', [], [] );
 		$this->assertNotNull( $fallback->getSearchRequest( $this->getMockBuilder( Client::class )->disableOriginalConstructor()->getMock() ) );
 		$initialResults = DummyResultSet::fakeTotalHits( 0 );
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory );
@@ -80,6 +81,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 				$fixture['offset'],
 				$fixture['with_dym'] ?? true,
 				$fixture['profile'],
+				$fixture['profile_params'] ?? [],
 			];
 		}
 		return $tests;
@@ -88,8 +90,22 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 	/**
 	 * @dataProvider provideTestLookupQueries
 	 */
-	public function testSuggestQuery( $expectedFile, $query, $namespaces, $offset, $withDYMSuggestion, $profile ) {
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), $query )
+	public function testSuggestQuery(
+		$expectedFile,
+		$query,
+		$namespaces,
+		$offset,
+		$withDYMSuggestion,
+		$profile,
+		array $profileParams
+	) {
+		$config = [
+			'_wikiID' => 'my_test_wiki',
+			'CirrusSearchIndexLookupFallbackProfiles' => [
+				'my_profile' => $profile
+			]
+		];
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( $config ), $query )
 			->setInitialNamespaces( $namespaces )
 			->setOffset( $offset )
 			->setWithDYMSuggestion( $withDYMSuggestion )
@@ -97,7 +113,8 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		/**
 		 * @var IndexLookupFallbackMethod $method
 		 */
-		$method = IndexLookupFallbackMethod::build( $query, $profile );
+		$method = IndexLookupFallbackMethod::build( $query,
+			[ 'profile' => 'my_profile', 'profile_params' => $profileParams ] );
 		$searchQuery = null;
 		if ( $method !== null ) {
 			$query = $method->getSearchRequest(
@@ -122,22 +139,82 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 	}
 
 	public function testBuild() {
-		$config = [ 'index' => 'lookup_index', 'query_field' => 'lookup_query_field', 'suggestion_field' => 'lookup_suggestion_field' ];
+		$config = [
+			'CirrusSearchIndexLookupFallbackProfiles' => [
+				'my_profile' => [
+					'index' => 'lookup_index',
+					'params' => [
+						'match.lookup_suggestion_field' => '__query__',
+					],
+					'query' => [
+						'match' => [
+							'lookup_query_field' => '{{query}}',
+						]
+					],
+					'suggestion_field' => 'lookup_suggestion_field'
+				]
+			]
+		];
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar' )
+		$params = [ 'profile' => 'my_profile' ];
+
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( $config ), 'foo bar' )
 			->setWithDYMSuggestion( false )
 			->build();
-		$this->assertNull( IndexLookupFallbackMethod::build( $query, $config ) );
+		$this->assertNull( IndexLookupFallbackMethod::build( $query, $params ) );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar' )
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( $config ), 'foo bar' )
 			->setWithDYMSuggestion( true )
 			->build();
-		$this->assertNotNull( IndexLookupFallbackMethod::build( $query, $config ) );
+		$this->assertNotNull( IndexLookupFallbackMethod::build( $query, $params ) );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar' )
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( $config ), 'foo bar' )
 			->setWithDYMSuggestion( true )
 			->setOffset( 10 )
 			->build();
-		$this->assertNull( IndexLookupFallbackMethod::build( $query, $config ) );
+		$this->assertNull( IndexLookupFallbackMethod::build( $query, $params ) );
+	}
+
+	/**
+	 *
+	 */
+	public function profileInvalidProfileParams() {
+		return [
+			[
+				[
+					'query' => 'random'
+				],
+				"Invalid profile parameter [random]"
+			],
+			[
+				[
+					'query' => 'random:test'
+				],
+				"Unsupported profile parameter type [random]"
+			],
+			[
+				[
+					'query' => 'params:missing'
+				],
+				"Missing profile parameter [missing]"
+			]
+		];
+	}
+
+	/**
+	 * @dataProvider profileInvalidProfileParams
+	 */
+	public function testInvalidProfileParam( array $queryParams, $excMessage ) {
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
+			->setWithDYMSuggestion( true )
+			->build();
+		$lookup = new IndexLookupFallbackMethod( $query, 'index', [ 'query' => 'test' ],
+			'field', $queryParams, [] );
+		try {
+			$lookup->getSearchRequest( $this->createMock( Client::class ) );
+			$this->fail( "Expected " . SearchProfileException::class . " to be thrown" );
+		} catch ( SearchProfileException $e ) {
+			$this->assertEquals( $excMessage, $e->getMessage() );
+		}
 	}
 }

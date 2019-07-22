@@ -167,7 +167,7 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 		$this->searchMetrics['wgCirrusSearchAltLanguageNumResults'] = $crossLangResults->numRows();
 		if ( $crossLangResults->numRows() > 0 ) {
 			$previousSet->addInterwikiResults( $crossLangResults,
-				\SearchResultSet::INLINE_RESULTS, $this->detectedLangWikiConfig->getWikiId() );
+				\ISearchResultSet::INLINE_RESULTS, $this->detectedLangWikiConfig->getWikiId() );
 		}
 		return $previousSet;
 	}

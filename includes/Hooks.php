@@ -16,7 +16,7 @@ use LinksUpdate;
 use OutputPage;
 use MediaWiki\MediaWikiServices;
 use Revision;
-use SearchResultSet;
+use ISearchResultSet;
 use SpecialSearch;
 use Title;
 use RequestContext;
@@ -684,8 +684,8 @@ class Hooks {
 
 	/**
 	 * @param string $term
-	 * @param SearchResultSet|null $titleMatches
-	 * @param SearchResultSet|null $textMatches
+	 * @param ISearchResultSet|null $titleMatches
+	 * @param ISearchResultSet|null $textMatches
 	 */
 	public static function onSpecialSearchResults( $term, $titleMatches, $textMatches ) {
 		global $wgOut,

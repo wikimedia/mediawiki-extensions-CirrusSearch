@@ -18,15 +18,15 @@ trait FallbackMethodTrait {
 	 * @param ResultSet $resultSet
 	 * @param int $threshold (defaults to 1).
 	 *
-	 * @see \SearchResultSet::getInterwikiResults()
-	 * @see \SearchResultSet::SECONDARY_RESULTS
+	 * @see \ISearchResultSet::getInterwikiResults()
+	 * @see \ISearchResultSet::SECONDARY_RESULTS
 	 * @return bool
 	 */
 	public function resultsThreshold( ResultSet $resultSet, $threshold = 1 ) {
 		if ( $resultSet->getTotalHits() >= $threshold ) {
 			return true;
 		}
-		foreach ( $resultSet->getInterwikiResults( \SearchResultSet::SECONDARY_RESULTS ) as $resultSet ) {
+		foreach ( $resultSet->getInterwikiResults( \ISearchResultSet::SECONDARY_RESULTS ) as $resultSet ) {
 			if ( $resultSet->getTotalHits() >= $threshold ) {
 				return true;
 			}

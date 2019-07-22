@@ -206,7 +206,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 			( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() ) );
 		$newResults = $runner->run( $searcherFactory, $initialResults, new MSearchResponses( [], [] ) );
 		$this->assertEquals( 2, $newResults->getTotalHits() );
-		$iwResults = $newResults->getInterwikiResults( \SearchResultSet::INLINE_RESULTS );
+		$iwResults = $newResults->getInterwikiResults( \ISearchResultSet::INLINE_RESULTS );
 		$this->assertEmpty( $iwResults );
 
 		// LangDetect wins and runs its fallback query
@@ -226,7 +226,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 			( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() ) );
 		$newResults = $runner->run( $searcherFactory, $initialResults, new MSearchResponses( [], [] ) );
 		$this->assertEquals( 0, $newResults->getTotalHits() );
-		$iwResults = $newResults->getInterwikiResults( \SearchResultSet::INLINE_RESULTS );
+		$iwResults = $newResults->getInterwikiResults( \ISearchResultSet::INLINE_RESULTS );
 		$this->assertNotEmpty( $iwResults );
 		$this->assertArrayHasKey( 'frwiki', $iwResults );
 		$this->assertEquals( 3, $iwResults['frwiki']->getTotalHits() );

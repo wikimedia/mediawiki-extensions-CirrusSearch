@@ -4,6 +4,7 @@ namespace CirrusSearch\Search;
 
 use LinkBatch;
 use SearchResultSet;
+use ISearchResultSet;
 
 /**
  * A set of results from Elasticsearch.
@@ -194,9 +195,9 @@ class ResultSet extends SearchResultSet {
 
 	/**
 	 * @param int $type
-	 * @return SearchResultSet[]
+	 * @return ISearchResultSet[]
 	 */
-	public function getInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
+	public function getInterwikiResults( $type = self::SECONDARY_RESULTS ) {
 		return $this->interwikiResults[$type] ?? [];
 	}
 
@@ -204,7 +205,7 @@ class ResultSet extends SearchResultSet {
 	 * @param int $type
 	 * @return bool
 	 */
-	public function hasInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
+	public function hasInterwikiResults( $type = self::SECONDARY_RESULTS ) {
 		return isset( $this->interwikiResults[$type] );
 	}
 

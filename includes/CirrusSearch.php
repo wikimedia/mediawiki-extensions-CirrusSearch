@@ -17,7 +17,7 @@ use MediaWiki\MediaWikiServices;
 use RequestContext;
 use SearchEngine;
 use SearchIndexField;
-use SearchResultSet;
+use ISearchResultSet;
 use SearchSuggestionSet;
 use Status;
 use Title;
@@ -250,7 +250,7 @@ class CirrusSearch extends SearchEngine {
 						$result[$interwiki] = $interwikiResult;
 					} elseif ( $interwikiResult && $interwikiResult->numRows() > 0 ) {
 						$result->addInterwikiResults(
-							$interwikiResult, SearchResultSet::SECONDARY_RESULTS, $interwiki
+							$interwikiResult, ISearchResultSet::SECONDARY_RESULTS, $interwiki
 						);
 					}
 				}

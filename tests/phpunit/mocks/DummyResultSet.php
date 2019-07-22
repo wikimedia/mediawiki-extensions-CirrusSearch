@@ -3,7 +3,6 @@
 namespace CirrusSearch\Test;
 
 use CirrusSearch\Search\ResultSet;
-use SearchResultSet;
 
 class DummyResultSet extends ResultSet {
 	/**
@@ -41,7 +40,7 @@ class DummyResultSet extends ResultSet {
 	public static function fakeTotalHits( $totalHits, array $interwikiTotals = [] ) {
 		$results = new self( $totalHits );
 		foreach ( $interwikiTotals as $pref => $iwTotal ) {
-			$results->addInterwikiResults( self::fakeTotalHits( $iwTotal ), SearchResultSet::SECONDARY_RESULTS, (string)$pref );
+			$results->addInterwikiResults( self::fakeTotalHits( $iwTotal ), self::SECONDARY_RESULTS, (string)$pref );
 		}
 		return $results;
 	}

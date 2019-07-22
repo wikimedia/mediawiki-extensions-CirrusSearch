@@ -4,7 +4,7 @@ namespace CirrusSearch;
 
 use DeferredUpdates;
 use MediaWiki\Logger\LoggerFactory;
-use SearchResultSet;
+use ISearchResultSet;
 use User;
 use UIDGenerator;
 
@@ -172,7 +172,7 @@ class RequestLogger {
 	 * API's that is correct, for Special:Search a hook catches the final results and
 	 * sets them here.
 	 *
-	 * @param SearchResultSet[] $matches
+	 * @param ISearchResultSet[] $matches
 	 */
 	public function setResultPages( array $matches ) {
 		$titleStrings = [];
@@ -365,10 +365,10 @@ class RequestLogger {
 	}
 
 	/**
-	 * @param SearchResultSet $matches
+	 * @param ISearchResultSet $matches
 	 * @return string[]
 	 */
-	private function extractTitleStrings( SearchResultSet $matches ) {
+	private function extractTitleStrings( ISearchResultSet $matches ) {
 		$strings = [];
 		foreach ( $matches as $result ) {
 			$strings[] = (string)$result->getTitle();

@@ -12,11 +12,11 @@ use CirrusSearch\Query\CountContentWordsBuilder;
 use CirrusSearch\Query\KeywordFeature;
 use CirrusSearch\Query\NearMatchQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
+use CirrusSearch\Search\BaseCirrusSearchResultSet;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\MSearchRequests;
 use CirrusSearch\Search\MSearchResponses;
 use CirrusSearch\Search\ResultsType;
-use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchRequestBuilder;
@@ -902,7 +902,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @return Status
 	 */
 	private function emptyResultSet() {
-		$status = Status::newGood( ResultSet::emptyResultSet( $this->searchContext->isSpecialKeywordUsed() ) );
+		$status = Status::newGood( BaseCirrusSearchResultSet::emptyResultSet( $this->searchContext->isSpecialKeywordUsed() ) );
 		foreach ( $this->searchContext->getWarnings() as $warning ) {
 			$status->warning( ...$warning );
 		}

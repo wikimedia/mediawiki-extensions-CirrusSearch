@@ -3,8 +3,8 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Query\FullTextQueryStringQueryBuilder;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Test\SearchConfigUsageDecorator;
-use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummyConnection;
 use Elastica\Query;
@@ -451,7 +451,7 @@ class SearcherTest extends CirrusTestCase {
 		$engine->setFeatureData( 'rewrite', true );
 		$engine->setShowSuggestion( true );
 		/**
-		 * @var ResultSet $resultSet
+		 * @var CirrusSearchResultSet $resultSet
 		 */
 		$resultSet = $engine->searchText( $query )->getValue();
 

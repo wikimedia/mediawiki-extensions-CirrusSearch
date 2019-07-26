@@ -4,9 +4,9 @@ namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\MSearchRequests;
 use CirrusSearch\Search\MSearchResponses;
-use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use Elastica\Client;
@@ -92,11 +92,11 @@ class FallbackRunner implements SearchMetricsProvider {
 
 	/**
 	 * @param SearcherFactory $factory
-	 * @param ResultSet $initialResult
+	 * @param CirrusSearchResultSet $initialResult
 	 * @param MSearchResponses $responses
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 */
-	public function run( SearcherFactory $factory, ResultSet $initialResult, MSearchResponses $responses ) {
+	public function run( SearcherFactory $factory, CirrusSearchResultSet $initialResult, MSearchResponses $responses ) {
 		$methods = [];
 		$position = 0;
 		$context = new FallbackRunnerContextImpl( $initialResult, $factory );
@@ -183,9 +183,9 @@ class FallbackRunner implements SearchMetricsProvider {
 
 	/**
 	 * @param FallbackMethod $fallbackMethod
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 */
-	private function execute( FallbackMethod $fallbackMethod, FallbackRunnerContext $context ) {
+	private function execute( FallbackMethod $fallbackMethod, FallbackRunnerContext $context ): CirrusSearchResultSet {
 		$newResults = $fallbackMethod->rewrite( $context );
 		if ( $fallbackMethod instanceof SearchMetricsProvider ) {
 			$this->searchMetrics += $fallbackMethod->getMetrics() ?? [];

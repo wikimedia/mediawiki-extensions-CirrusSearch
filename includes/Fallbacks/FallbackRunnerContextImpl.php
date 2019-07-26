@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
-use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Searcher;
 use Elastica\ResultSet as ElasticaResultSet;
@@ -16,13 +16,13 @@ use Wikimedia\Assert\Assert;
 class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	/**
 	 * Initial ResultSet as returned by the main search query
-	 * @var ResultSet (final)
+	 * @var CirrusSearchResultSet (final)
 	 */
 	private $initialResultSet;
 
 	/**
 	 * The resultset as returned by the last call to FallbackMethod::rewrite()
-	 * @var ResultSet (mutable)
+	 * @var CirrusSearchResultSet (mutable)
 	 */
 	private $previousResultSet;
 
@@ -43,10 +43,10 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 
 	/**
 	 * FallbackRunnerContextImpl constructor.
-	 * @param ResultSet $initialResultSet
+	 * @param CirrusSearchResultSet $initialResultSet
 	 * @param SearcherFactory $searcherFactory
 	 */
-	public function __construct( ResultSet $initialResultSet, SearcherFactory $searcherFactory ) {
+	public function __construct( CirrusSearchResultSet $initialResultSet, SearcherFactory $searcherFactory ) {
 		$this->initialResultSet = $initialResultSet;
 		$this->previousResultSet = $initialResultSet;
 		$this->searcherFactory = $searcherFactory;
@@ -55,9 +55,9 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	/**
 	 * Initialize the previous resultset
 	 * (only visible by FallbackRunner)
-	 * @param ResultSet $previousResultSet
+	 * @param CirrusSearchResultSet $previousResultSet
 	 */
-	public function setPreviousResultSet( ResultSet $previousResultSet ) {
+	public function setPreviousResultSet( CirrusSearchResultSet $previousResultSet ) {
 		$this->previousResultSet = $previousResultSet;
 	}
 
@@ -73,16 +73,16 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	}
 
 	/**
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 */
-	public function getInitialResultSet() {
+	public function getInitialResultSet(): CirrusSearchResultSet {
 		return $this->initialResultSet;
 	}
 
 	/**
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 */
-	public function getPreviousResultSet() {
+	public function getPreviousResultSet(): CirrusSearchResultSet {
 		return $this->previousResultSet;
 	}
 

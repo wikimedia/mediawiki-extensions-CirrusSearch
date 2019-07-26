@@ -22,12 +22,12 @@ class TeamDraftInterleaver {
 	}
 
 	/**
-	 * @param ResultSet $a Results for team A
-	 * @param ResultSet $b Results for team B
+	 * @param CirrusSearchResultSet $a Results for team A
+	 * @param CirrusSearchResultSet $b Results for team B
 	 * @param int $limit Maximum number of results to return
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 */
-	public function interleave( ResultSet $a, ResultSet $b, $limit ) {
+	public function interleave( CirrusSearchResultSet $a, CirrusSearchResultSet $b, $limit ): CirrusSearchResultSet {
 		// Seed the randomness so an individual user the clicks a result and then
 		// comes back to the search page sees the same interleaving. This is not
 		// strictly necessary for the test, but provides the user a more consistent
@@ -46,8 +46,9 @@ class TeamDraftInterleaver {
 		return new InterleavedResultSet( $a, $interleaved, $teamA, $teamB, $aOffset );
 	}
 
-	private function extractResults( ResultSet $resultSet ) {
+	private function extractResults( CirrusSearchResultSet $resultSet ) {
 		$extracted = [];
+		/** @var $result Result */
 		foreach ( $resultSet as $result ) {
 			$extracted[$result->getDocId()] = $result;
 		}

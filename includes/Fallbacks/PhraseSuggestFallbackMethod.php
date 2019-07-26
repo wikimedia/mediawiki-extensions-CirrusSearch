@@ -7,7 +7,7 @@ use CirrusSearch\Parser\AST\Visitor\QueryFixer;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Profile\SearchProfileService;
-use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Searcher;
 use Wikimedia\Assert\Assert;
@@ -96,9 +96,9 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 
 	/**
 	 * @param FallbackRunnerContext $context
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 */
-	public function rewrite( FallbackRunnerContext $context ) {
+	public function rewrite( FallbackRunnerContext $context ): CirrusSearchResultSet {
 		$firstPassResults = $context->getInitialResultSet();
 		$previousSet = $context->getPreviousResultSet();
 		if ( $previousSet->getQueryAfterRewrite() !== null ) {
@@ -123,14 +123,14 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	}
 
 	/**
-	 * @param ResultSet $resultSet
+	 * @param CirrusSearchResultSet $resultSet
 	 * @return bool
 	 */
-	public function haveSuggestion( ResultSet $resultSet ) {
+	public function haveSuggestion( CirrusSearchResultSet $resultSet ) {
 		return $this->findSuggestion( $resultSet ) !== null;
 	}
 
-	private function showDYMSuggestion( ResultSet $fromResultSet, ResultSet $toResultSet ) {
+	private function showDYMSuggestion( CirrusSearchResultSet $fromResultSet, CirrusSearchResultSet $toResultSet ) {
 		$suggestion = $this->findSuggestion( $fromResultSet );
 		Assert::precondition( $suggestion !== null, "showDYMSuggestion called with no suggestions available" );
 		Assert::precondition( $toResultSet->getSuggestionQuery() === null, "must not have a suggestion yet" );
@@ -164,10 +164,11 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	}
 
 	/**
+	 * @param CirrusSearchResultSet $resultSet
 	 * @return array|null Suggestion options, see "options" part in
 	 *      https://www.elastic.co/guide/en/elasticsearch/reference/6.4/search-suggesters.html
 	 */
-	private function findSuggestion( ResultSet $resultSet ) {
+	private function findSuggestion( CirrusSearchResultSet $resultSet ) {
 		// TODO some kind of weighting?
 		$response = $resultSet->getElasticResponse();
 		if ( $response === null ) {

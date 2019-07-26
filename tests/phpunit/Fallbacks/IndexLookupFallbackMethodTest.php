@@ -6,7 +6,7 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Search\SearchQueryBuilder;
-use CirrusSearch\Test\DummyResultSet;
+use CirrusSearch\Test\DummySearchResultSet;
 use Elastica\Client;
 use Elastica\Query;
 use Elastica\Response;
@@ -46,7 +46,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 			->setAllowRewrite( true )
 			->build();
 
-		$rewrittenResults = DummyResultSet::fakeTotalHits( 1 );
+		$rewrittenResults = DummySearchResultSet::fakeTotalHits( 1 );
 		$rewrittenQuery = $suggestion != null ? SearchQueryBuilder::forRewrittenQuery( $query, $suggestion )->build() : null;
 		$searcherFactory = $this->getSearcherFactoryMock( $rewrittenQuery, $rewrittenResults );
 		/**
@@ -55,7 +55,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		$fallback = new IndexLookupFallbackMethod( $query, 'lookup_index', [],
 			'lookup_suggestion_field', [], [] );
 		$this->assertNotNull( $fallback->getSearchRequest( $this->getMockBuilder( Client::class )->disableOriginalConstructor()->getMock() ) );
-		$initialResults = DummyResultSet::fakeTotalHits( 0 );
+		$initialResults = DummySearchResultSet::fakeTotalHits( 0 );
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory );
 		$context->setSuggestResponse( $response );
 		$this->assertEquals( $expectedApproxScore, $fallback->successApproximation( $context ) );

@@ -8,10 +8,10 @@ namespace CirrusSearch\Search;
 class RecallCrossProjectBlockScorer extends CrossProjectBlockScorer {
 	/**
 	 * @param string $prefix
-	 * @param ResultSet $results
+	 * @param CirrusSearchResultSet $results
 	 * @return float
 	 */
-	public function score( $prefix, ResultSet $results ) {
+	public function score( $prefix, CirrusSearchResultSet $results ) {
 		return log( $results->getTotalHits() + 2 );
 	}
 }

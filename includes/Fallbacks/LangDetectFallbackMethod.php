@@ -6,7 +6,7 @@ use CirrusSearch\InterwikiResolver;
 use CirrusSearch\LanguageDetector\Detector;
 use CirrusSearch\LanguageDetector\LanguageDetectorFactory;
 use CirrusSearch\Parser\BasicQueryClassifier;
-use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
@@ -137,9 +137,9 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 
 	/**
 	 * @param FallbackRunnerContext $context
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 */
-	public function rewrite( FallbackRunnerContext $context ) {
+	public function rewrite( FallbackRunnerContext $context ): CirrusSearchResultSet {
 		$previousSet = $context->getPreviousResultSet();
 		Assert::precondition( $this->detectedLangWikiConfig !== null,
 			'nothing has been detected, this should not even be tried.' );
@@ -160,7 +160,7 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 			return $previousSet;
 		}
 		$crossLangResults = $status->getValue();
-		if ( !$crossLangResults instanceof ResultSet ) {
+		if ( !$crossLangResults instanceof CirrusSearchResultSet ) {
 			// NOTE: Can/should this happen?
 			return $previousSet;
 		}

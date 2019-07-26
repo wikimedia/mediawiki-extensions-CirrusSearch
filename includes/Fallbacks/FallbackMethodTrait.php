@@ -3,10 +3,12 @@
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\Parser\BasicQueryClassifier;
-use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
+use Elastica\ResultSet as ElasticaResultSet;
+use ISearchResultSet;
 
 trait FallbackMethodTrait {
 
@@ -15,18 +17,18 @@ trait FallbackMethodTrait {
 	 * and return true if it's greater or equals than $threshold
 	 * NOTE: inter wiki results are check
 	 *
-	 * @param ResultSet $resultSet
+	 * @param CirrusSearchResultSet $resultSet
 	 * @param int $threshold (defaults to 1).
 	 *
 	 * @see \ISearchResultSet::getInterwikiResults()
 	 * @see \ISearchResultSet::SECONDARY_RESULTS
 	 * @return bool
 	 */
-	public function resultsThreshold( ResultSet $resultSet, $threshold = 1 ) {
+	public function resultsThreshold( CirrusSearchResultSet $resultSet, $threshold = 1 ) {
 		if ( $resultSet->getTotalHits() >= $threshold ) {
 			return true;
 		}
-		foreach ( $resultSet->getInterwikiResults( \ISearchResultSet::SECONDARY_RESULTS ) as $resultSet ) {
+		foreach ( $resultSet->getInterwikiResults( ISearchResultSet::SECONDARY_RESULTS ) as $resultSet ) {
 			if ( $resultSet->getTotalHits() >= $threshold ) {
 				return true;
 			}
@@ -39,7 +41,7 @@ trait FallbackMethodTrait {
 	 * @param \Elastica\ResultSet $results
 	 * @return bool true if a result has its title fully highlighted
 	 */
-	public function resultContainsFullyHighlightedMatch( \Elastica\ResultSet $results ) {
+	public function resultContainsFullyHighlightedMatch( ElasticaResultSet $results ) {
 		foreach ( $results as $result ) {
 			$highlights = $result->getHighlights();
 			// TODO: Should we check redirects as well?
@@ -66,7 +68,7 @@ trait FallbackMethodTrait {
 	 * @param string $suggestedQuery
 	 * @param string|null $suggestedQuerySnippet
 	 * @param int $resultsThreshold
-	 * @return ResultSet the new resultSet or the previous set found in the FallbackRunnerContext
+	 * @return CirrusSearchResultSet the new resultSet or the previous set found in the FallbackRunnerContext
 	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
 	 * @see SearchQuery::isAllowRewrite()
 	 * @see FallbackRunnerContext::costlyCallAllowed()
@@ -78,7 +80,7 @@ trait FallbackMethodTrait {
 		$suggestedQuery,
 		$suggestedQuerySnippet = null,
 		$resultsThreshold = 1
-	) {
+	): CirrusSearchResultSet {
 		$previousSet = $context->getPreviousResultSet();
 		if ( !$originalQuery->isAllowRewrite()
 			 || !$context->costlyCallAllowed()
@@ -92,9 +94,9 @@ trait FallbackMethodTrait {
 			$suggestedQuery )->build();
 		$searcher = $context->makeSearcher( $rewrittenQuery );
 		$status = $searcher->search( $rewrittenQuery );
-		if ( $status->isOK() && $status->getValue() instanceof ResultSet ) {
+		if ( $status->isOK() && $status->getValue() instanceof CirrusSearchResultSet ) {
 			/**
-			 * @var ResultSet $newresults
+			 * @var CirrusSearchResultSet $newresults
 			 */
 			$newresults = $status->getValue();
 			$newresults->setRewrittenQuery( $suggestedQuery, $suggestedQuerySnippet );

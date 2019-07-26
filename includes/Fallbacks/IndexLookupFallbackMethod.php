@@ -6,7 +6,7 @@ use CirrusSearch\Parser\AST\Visitor\QueryFixer;
 use CirrusSearch\Profile\ArrayPathSetter;
 use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Profile\SearchProfileService;
-use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 use Elastica\Client;
 use Elastica\Query;
@@ -180,9 +180,9 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	 * must be returned.
 	 *
 	 * @param FallbackRunnerContext $context
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 */
-	public function rewrite( FallbackRunnerContext $context ): ResultSet {
+	public function rewrite( FallbackRunnerContext $context ): CirrusSearchResultSet {
 		$previousSet = $context->getPreviousResultSet();
 		if ( !$context->costlyCallAllowed() ) {
 			// a method rewrote the query before us.

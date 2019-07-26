@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
-use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 
 /**
@@ -50,7 +50,7 @@ interface FallbackMethod {
 	 * must be returned.
 	 *
 	 * @param FallbackRunnerContext $context
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 */
-	public function rewrite( FallbackRunnerContext $context );
+	public function rewrite( FallbackRunnerContext $context ): CirrusSearchResultSet;
 }

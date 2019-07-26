@@ -3,7 +3,6 @@
 namespace CirrusSearch\Search;
 
 use Elastica\ResultSet as ElasticaResultSet;
-use CirrusSearch\Search\ResultSet as CirrusResultSet;
 use Elastica\Search;
 use Status;
 use Wikimedia\Assert\Assert;
@@ -84,9 +83,9 @@ class MSearchResponses {
 	 * NOTE: The $tranformation provided must emit a CirrusResultSet
 	 * @param ResultsType $transformation
 	 * @param string $key
-	 * @return CirrusResultSet
+	 * @return CirrusSearchResultSet
 	 */
-	public function transformAsResultSet( ResultsType $transformation, $key ): CirrusResultSet {
+	public function transformAsResultSet( ResultsType $transformation, $key ): CirrusSearchResultSet {
 		return $transformation->transformElasticsearchResult( $this->resultSets[$key] );
 	}
 

@@ -50,7 +50,7 @@ return [
 			'version' => 1,
 			'settings' => [
 				'number_of_shards' => 2,
-				'number_of_replicas' => '0-5',
+				'auto_expand_replicas' => '0-5',
 			],
 			'mappings' => [
 				'_doc' => [

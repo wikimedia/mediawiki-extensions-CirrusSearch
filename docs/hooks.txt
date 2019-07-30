@@ -50,17 +50,5 @@ really been settled.
 'CirrusSearchProfileService': Allows extensions to register search profile repositories
 $service - \CirrusSearch\Profile\SearchProfileService the profile service being built
 
-'CirrusSearchFulltextQueryBuilder': Allows to override fulltext query builder settings or query builder itself.
-NOTE: this hook is EXPERIMENTAL and it is possible that it will be changed or removed in future versions.
- &$builder - FullTextQueryBuilder object, can be overriden by extensions
- $context - SearchContext object
-
-'CirrusSearchFulltextQueryBuilderComplete': Allows to modify fulltext query builder result after default query
-has been built.
-NOTE: this hook is EXPERIMENTAL and it is possible that it will be changed or removed in future versions.
- $builder - Default FullTextQueryBuilder object
- $term - search term
- $context - SearchContext object
-
 'CirrusSearchRegisterFullTextQueryClassifiers': Allows extensions to register fulltext query classifiers.
   $repository - CirrusSearch\Parser\ParsedQueryClassifiersRepository : the repository to register new classifiers.

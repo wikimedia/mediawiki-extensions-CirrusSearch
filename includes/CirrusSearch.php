@@ -305,6 +305,7 @@ class CirrusSearch extends SearchEngine {
 			'incoming_links_asc', 'incoming_links_desc',
 			'last_edit_asc', 'last_edit_desc',
 			'create_timestamp_asc', 'create_timestamp_desc',
+			'random',
 		];
 	}
 

@@ -31,6 +31,7 @@ class DefaultPagePropertiesTest extends \MediaWikiUnitTestCase {
 
 		$expectFields = [
 			'wiki' => '',
+			'page_id' => 2,
 			'namespace' => NS_CATEGORY,
 			'namespace_text' => 'Category',
 			'timestamp' => "2022-09-02T13:05:06Z",

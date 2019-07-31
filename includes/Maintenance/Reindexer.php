@@ -149,7 +149,8 @@ class Reindexer {
 		if ( $remote !== null ) {
 			$request->setRemoteInfo( $remote );
 		}
-		$script = $this->makeDeleteFieldsScript();
+
+		$script = $this->makeUpdateFieldsScript();
 		if ( $script !== null ) {
 			$request->setScript( $script );
 		}
@@ -334,11 +335,7 @@ class Reindexer {
 	 *  the _reindex api script parameter to delete fields from
 	 *  the copied documents, or null if no script is needed.
 	 */
-	private function makeDeleteFieldsScript() {
-		if ( !$this->fieldsToDelete ) {
-			return null;
-		}
-
+	private function makeUpdateFieldsScript() {
 		$script = [
 			'source' => '',
 			'lang' => 'painless',
@@ -348,6 +345,13 @@ class Reindexer {
 			if ( strlen( $field ) ) {
 				$script['source'] .= "ctx._source.remove('$field');";
 			}
+		}
+		// Populate the page_id if it's the first time we add the page_id field to the mapping
+		if ( !isset( $this->oldIndex->getMapping()['properties']['page_id'] )
+				 && isset( $this->index->getMapping()['properties']['page_id'] ) ) {
+			$this->outputIndented( "Populating the page_id field if not set\n" );
+			$prefLen = strlen( $this->searchConfig->makeId( 1 ) ) - 1;
+			$script['source'] .= "if (ctx._source.page_id == null) {ctx._source.page_id = Long.parseLong(ctx._id.substring($prefLen));}";
 		}
 		if ( $script['source'] === '' ) {
 			return null;

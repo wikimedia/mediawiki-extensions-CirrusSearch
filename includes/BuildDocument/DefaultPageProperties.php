@@ -34,6 +34,7 @@ class DefaultPageProperties implements PagePropertyBuilder {
 	public function initialize( Document $doc, WikiPage $page, RevisionRecord $revision ): void {
 		$title = $page->getTitle();
 		$doc->set( 'wiki', WikiMap::getCurrentWikiId() );
+		$doc->set( 'page_id', $page->getId() );
 		$doc->set( 'namespace',
 			$title->getNamespace() );
 		$doc->set( 'namespace_text',

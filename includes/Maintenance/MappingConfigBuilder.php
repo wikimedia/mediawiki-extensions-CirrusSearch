@@ -154,6 +154,11 @@ class MappingConfigBuilder {
 					'type' => 'date',
 					'format' => 'dateOptionalTime',
 				],
+				'page_id' => [
+					'type' => 'long',
+					'index' => false,
+					'doc_values' => true,
+				],
 				'wiki' => $this->searchIndexFieldFactory
 					->newKeywordField( 'wiki' )
 					->getMapping( $this->engine ),

@@ -9,6 +9,11 @@
             "type": "date",
             "format": "dateOptionalTime"
         },
+        "page_id": {
+            "type": "long",
+            "index": false,
+            "doc_values": true
+        },
         "wiki": {
             "type": "text",
             "analyzer": "keyword",

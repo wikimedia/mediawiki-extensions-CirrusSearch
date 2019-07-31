@@ -179,7 +179,7 @@ class ResultSet extends \BaseSearchResultSet implements CirrusSearchResultSet {
 
 	/**
 	 * @param \Elastica\Result $result Result from search engine
-	 * @return Result Elasticsearch result transformed into mediawiki
+	 * @return CirrusSearchResult Elasticsearch result transformed into mediawiki
 	 *  search result object.
 	 */
 	protected function transformOneResult( \Elastica\Result $result ) {

@@ -21,7 +21,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	private $hasMoreResults = false;
 
 	/**
-	 * @var Result[]|null
+	 * @var CirrusSearchResult[]|null
 	 */
 	private $results;
 
@@ -52,7 +52,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 
 	/**
 	 * @param \Elastica\Result $result Result from search engine
-	 * @return Result Elasticsearch result transformed into mediawiki
+	 * @return CirrusSearchResult Elasticsearch result transformed into mediawiki
 	 *  search result object.
 	 */
 	abstract protected function transformOneResult( \Elastica\Result $result );
@@ -150,7 +150,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	}
 
 	/**
-	 * @return Result[]|SearchResult[]
+	 * @return CirrusSearchResult[]|SearchResult[]
 	 */
 	final public function extractResults() {
 		if ( $this->results === null ) {

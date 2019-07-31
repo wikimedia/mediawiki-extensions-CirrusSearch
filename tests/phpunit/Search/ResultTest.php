@@ -10,6 +10,7 @@ use Sanitizer;
 /**
  * @group CirrusSearch
  * @covers \CirrusSearch\Search\Result
+ * @covers \CirrusSearch\Search\CirrusSearchResult
  */
 class ResultTest extends CirrusTestCase {
 

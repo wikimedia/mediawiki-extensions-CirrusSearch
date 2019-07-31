@@ -158,7 +158,7 @@ class RunSearch extends Maintenance {
 		// these are prefix or full text results
 		$rows = [];
 		foreach ( $value as $result ) {
-			/** @var CirrusSearch\Search\Result $result */
+			/** @var CirrusSearch\Search\CirrusSearchResult $result */
 			$row = [
 				// use getDocId() rather than asking the title to allow this script
 				// to work when a production index has been imported to a test es instance

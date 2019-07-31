@@ -19,12 +19,12 @@ class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchRe
 	private $offset;
 	/** @var CirrusSearchResultSet $delegate */
 	private $delegate;
-	/** @var Result[] */
+	/** @var CirrusSearchResult[] */
 	private $results;
 
 	/**
 	 * @param CirrusSearchResultSet $nested Original result set for team A (control)
-	 * @param Result[] $interleaved Interleaved results
+	 * @param CirrusSearchResult[] $interleaved Interleaved results
 	 * @param string[] $teamA Document id's belonging to team A
 	 * @param string[] $teamB Document id's belonging to team B
 	 * @param int $offset Offset to calculate next unused result in team A
@@ -60,7 +60,7 @@ class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchRe
 	}
 
 	/**
-	 * @return Result[]
+	 * @return CirrusSearchResult[]
 	 */
 	public function extractResults() {
 		return $this->results;

@@ -336,6 +336,7 @@ class RequestLogger {
 				if ( is_array( $v ) ) {
 					$v = implode( ',', $v );
 				}
+				$k = $webrequest->normalizeUnicode( $k );
 				$requestEvent['params'][(string)$k] = (string)$v;
 			}
 		}

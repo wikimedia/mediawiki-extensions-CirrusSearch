@@ -198,6 +198,7 @@ class SearchQueryTest extends CirrusTestCase {
 	private function getContextualFilter( array $namespaces = null ) {
 		return new class( $namespaces ) implements ContextualFilter {
 			private $namespaces;
+
 			public function __construct( $namespaces ) {
 				$this->namespaces = $namespaces;
 			}

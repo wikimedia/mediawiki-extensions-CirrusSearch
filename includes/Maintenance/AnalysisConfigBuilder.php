@@ -182,6 +182,7 @@ class AnalysisConfigBuilder {
 	public function buildSimilarityConfig() {
 		return $this->similarity['similarity'] ?? null;
 	}
+
 	/**
 	 * replace the standard tokenizer with icu_tokenizer
 	 * @param mixed[] $config

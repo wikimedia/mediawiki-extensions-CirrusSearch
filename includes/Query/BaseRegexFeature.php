@@ -206,6 +206,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 				$pattern, $insensitive, FetchedFieldBuilder::COSTLY_EXPERT_SYNTAX_PRIORITY );
 		}
 	}
+
 	/**
 	 * Builds a regular expression query using the wikimedia-extra plugin.
 	 *

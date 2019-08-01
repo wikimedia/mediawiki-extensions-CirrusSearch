@@ -20,6 +20,7 @@ class FTQueryClassifiersRepositoryTest extends CirrusTestCase {
 		$repo = new FTQueryClassifiersRepository( $config );
 		$this->assertSame( $config, $repo->getConfig() );
 	}
+
 	/**
 	 * @throws ParsedQueryClassifierException
 	 */

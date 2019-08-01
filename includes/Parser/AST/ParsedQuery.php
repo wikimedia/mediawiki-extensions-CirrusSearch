@@ -153,6 +153,7 @@ class ParsedQuery {
 		}
 		return $this->query;
 	}
+
 	/**
 	 * The raw query as received by the search engine
 	 * @return string

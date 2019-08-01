@@ -202,6 +202,7 @@ class SearchQuery {
 		}
 		return $this->crossSearchStrategy;
 	}
+
 	/**
 	 * @return \CirrusSearch\Query\Builder\ContextualFilter[]
 	 */

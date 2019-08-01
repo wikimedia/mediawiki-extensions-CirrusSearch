@@ -468,6 +468,7 @@ class QueryStringRegexParser implements QueryParser {
 		return new WordsQueryNode( $start, $end,
 			$this->escaper->unescape( substr( $this->query, $start, $end - $start ) ) );
 	}
+
 	/**
 	 * @param int[] $expected token types
 	 * @return WordsQueryNode

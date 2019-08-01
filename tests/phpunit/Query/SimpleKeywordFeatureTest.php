@@ -172,6 +172,7 @@ class SimpleKeywordFeatureTest extends CirrusTestCase {
 			],
 		];
 	}
+
 	/**
 	 * @dataProvider applyProvider
 	 */

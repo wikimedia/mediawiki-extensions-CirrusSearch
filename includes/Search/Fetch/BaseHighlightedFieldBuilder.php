@@ -51,6 +51,7 @@ class BaseHighlightedFieldBuilder extends FetchedFieldBuilder {
 		parent::__construct( self::TYPE, $fieldName, $target, $priority );
 		$this->highlighterType = $highlighterType;
 	}
+
 	/**
 	 * @param string $option
 	 * @param mixed $value (json serialization value)

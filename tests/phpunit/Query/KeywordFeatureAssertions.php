@@ -179,6 +179,7 @@ class KeywordFeatureAssertions {
 			$this->testCase->assertEquals( $expectedWarnings, $actualWarnings );
 		}
 	}
+
 	/**
 	 * @param KeywordFeature $feature
 	 * @param string $term

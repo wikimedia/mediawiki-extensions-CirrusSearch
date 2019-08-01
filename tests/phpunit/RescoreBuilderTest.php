@@ -381,6 +381,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 		];
 	}
+
 	/**
 	 * @dataProvider provideRescoreProfilesWithWindowSize
 	 * @covers \CirrusSearch\Search\Rescore\RescoreBuilder

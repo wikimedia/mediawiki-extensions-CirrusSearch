@@ -125,6 +125,7 @@ class InSourceTest extends BaseSimpleKeywordFeatureTest {
 		$feature = new InSourceFeature( $config );
 		$this->assertNotConsumed( $feature, 'foo bar' );
 	}
+
 	/**
 	 * @dataProvider provideRegexQueries
 	 * @param $query

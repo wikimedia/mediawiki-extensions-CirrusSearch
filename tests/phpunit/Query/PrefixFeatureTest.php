@@ -278,6 +278,7 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 			],
 		];
 	}
+
 	/**
 	 * @dataProvider provideBadPrefixQueries()
 	 * @covers \CirrusSearch\Parser\AST\KeywordFeatureNode

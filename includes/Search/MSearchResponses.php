@@ -111,6 +111,7 @@ class MSearchResponses {
 		Assert::precondition( $this->failure !== null, 'must have failed' );
 		return $this->failure;
 	}
+
 	/**
 	 * @return bool
 	 */

@@ -77,6 +77,7 @@ class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeat
 	protected function doGetFilterQuery( array $parsedValue ) {
 		return QueryHelper::matchPage( 'template', $parsedValue['value'] );
 	}
+
 	/**
 	 * @param KeywordFeatureNode $node
 	 * @param QueryBuildingContext $context

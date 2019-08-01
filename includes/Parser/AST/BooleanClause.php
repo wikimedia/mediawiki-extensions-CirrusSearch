@@ -58,6 +58,7 @@ class BooleanClause implements Visitable {
 		Assert::parameter( $occur === self::MUST || $occur === self::SHOULD || $occur === self::MUST_NOT,
 			'$occur', 'must be either: MUST, SHOULD or MUST_NOT' );
 	}
+
 	/**
 	 * Specifies how this clause is to occur in matching documents
 	 * @return string

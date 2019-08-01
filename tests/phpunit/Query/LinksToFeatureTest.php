@@ -26,6 +26,7 @@ class LinksToFeatureTest extends BaseSimpleKeywordFeatureTest {
 			]
 		];
 	}
+
 	/**
 	 * @dataProvider provideQueries()
 	 * @param $query

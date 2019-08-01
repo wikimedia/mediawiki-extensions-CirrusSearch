@@ -189,6 +189,7 @@ class FileNumericFeature extends SimpleKeywordFeature implements FilterQueryFeat
 		}
 		return new Query\Range( $field, $range );
 	}
+
 	/**
 	 * @param string $field
 	 * @param int $value

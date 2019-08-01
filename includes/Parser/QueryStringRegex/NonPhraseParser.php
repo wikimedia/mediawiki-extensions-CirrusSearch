@@ -68,6 +68,7 @@ class NonPhraseParser {
 	 * @var string regex used to detect wildcards
 	 */
 	private $wildcardRegex;
+
 	/**
 	 * @param Escaper $escaper
 	 */

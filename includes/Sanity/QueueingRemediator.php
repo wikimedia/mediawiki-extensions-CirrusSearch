@@ -44,6 +44,7 @@ class QueueingRemediator implements Remediator {
 	public function redirectInIndex( WikiPage $page ) {
 		$this->pushLinksUpdateJob( $page );
 	}
+
 	public function pageNotInIndex( WikiPage $page ) {
 		$this->pushLinksUpdateJob( $page );
 	}

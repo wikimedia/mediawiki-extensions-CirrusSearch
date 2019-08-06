@@ -328,8 +328,7 @@
             "type": "icu_folding"
         },
         "sk_icu_folding": {
-            "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00c1\u00e1\u00c4\u00e4\u010c\u010d\u010e\u010f\u00c9\u00e9\u00cd\u00ed\u0139\u013a\u013d\u013e\u0147\u0148\u00d3\u00f3\u00d4\u00f4\u0154\u0155\u0160\u0161\u0164\u0165\u00da\u00fa\u00dd\u00fd\u017d\u017e]"
+            "type": "icu_folding"
         },
         "sv_icu_folding": {
             "type": "icu_folding",

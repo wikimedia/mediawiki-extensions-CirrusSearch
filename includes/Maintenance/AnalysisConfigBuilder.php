@@ -327,13 +327,15 @@ class AnalysisConfigBuilder {
 			return $this->config->get( 'CirrusSearchICUFoldingUnicodeSetFilter' );
 		}
 		switch ( $language ) {
-		// @todo: complete the default filters per language
-		// For Swedish (sv), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
-		// For Serbian (sr), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
-		// For Slovak (sk), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
-		// For Bosnian (bs), Croatian (hr), and Serbo-Croatian (sh),
-		// see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
-		// For Esperanto (eo), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
+		/* @todo: complete the default filters per language
+		 * For Swedish (sv), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
+		 * For Serbian (sr), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
+		 * For Bosnian (bs), Croatian (hr), and Serbo-Croatian (sh),
+		 *   see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
+		 * For Esperanto (eo), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
+		 * For Slovak (sk)—which has no folding configured here!—see:
+		 *   https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
+		 */
 		case 'bs':
 		case 'hr':
 		case 'sh':
@@ -345,8 +347,6 @@ class AnalysisConfigBuilder {
 			return '[^åäöÅÄÖ]';
 		case 'ru':
 			return '[^йЙ]';
-		case 'sk':
-			return '[^ÁáÄäČčĎďÉéÍíĹĺĽľŇňÓóÔôŔŕŠšŤťÚúÝýŽž]';
 		case 'sv':
 			return '[^åäöÅÄÖ]';
 		default:
@@ -1163,15 +1163,17 @@ STEMMER_RULES
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'slovak':
-			// Unpack default analyzer to add Slovak stemming and custom folding
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
+			/* Unpack default analyzer to add Slovak stemming and custom folding
+			 * See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
+			 *   and https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
+			 */
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'filter' => [
 					'lowercase',
-					'asciifolding',
 					'slovak_stemmer',
+					'asciifolding',
 				],
 			];
 

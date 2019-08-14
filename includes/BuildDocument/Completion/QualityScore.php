@@ -71,9 +71,9 @@ class QualityScore implements SuggestScoringMethod {
 	}
 
 	protected function intermediateScore( array $doc ) {
-		$incLinks = $this->scoreNormL2( $doc['incoming_links'] ?? 0,
+		$incLinks = $this->scoreNormLog2( $doc['incoming_links'] ?? 0,
 			$this->incomingLinksNorm );
-		$pageSize = $this->scoreNormL2( $doc['text_bytes'] ?? 0,
+		$pageSize = $this->scoreNormLog2( $doc['text_bytes'] ?? 0,
 			self::PAGE_SIZE_NORM );
 		$extLinks = $this->scoreNorm( isset( $doc['external_link'] )
 			? count( $doc['external_link'] ) : 0, self::EXTERNAL_LINKS_NORM );
@@ -103,7 +103,7 @@ class QualityScore implements SuggestScoringMethod {
 	 * @param float $norm
 	 * @return float between 0 and 1
 	 */
-	public function scoreNormL2( $value, $norm ) {
+	public function scoreNormLog2( $value, $norm ) {
 		return log( $value > $norm ? 2 : ( $value / $norm ) + 1, 2 );
 	}
 

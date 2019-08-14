@@ -42,11 +42,11 @@ class SuggestScoringTest extends CirrusTestCase {
 			$this->assertGreaterThanOrEqual( 0, $score,
 				"scoreNorm cannot produce a score lower than 0" );
 
-			$score = $qs->scoreNormL2( $value, $norm );
+			$score = $qs->scoreNormLog2( $value, $norm );
 			$this->assertLessThanOrEqual( 1, $score,
-				"scoreNormL2 cannot produce a score greater than 1" );
+				"scoreNormLog2 cannot produce a score greater than 1" );
 			$this->assertGreaterThanOrEqual( 0, $score,
-				"scoreNormL2 cannot produce a score lower than 0" );
+				"scoreNormLog2 cannot produce a score lower than 0" );
 		}
 
 		// Edges
@@ -62,17 +62,17 @@ class SuggestScoringTest extends CirrusTestCase {
 		$this->assertGreaterThanOrEqual( 0, $score,
 			"scoreNorm cannot produce a score lower than 0" );
 
-		$score = $qs->scoreNormL2( 1, 1 );
+		$score = $qs->scoreNormLog2( 1, 1 );
 		$this->assertLessThanOrEqual( 1, $score,
-			"scoreNormL2 cannot produce a score greater than 1" );
+			"scoreNormLog2 cannot produce a score greater than 1" );
 		$this->assertGreaterThanOrEqual( 0, $score,
-			"scoreNormL2 cannot produce a score lower than 0" );
+			"scoreNormLog2 cannot produce a score lower than 0" );
 
-		$score = $qs->scoreNormL2( 0, 1 );
+		$score = $qs->scoreNormLog2( 0, 1 );
 		$this->assertLessThanOrEqual( 1, $score,
-			"scoreNormL2 cannot produce a score greater than 1" );
+			"scoreNormLog2 cannot produce a score greater than 1" );
 		$this->assertGreaterThanOrEqual( 0, $score,
-			"scoreNormL2 cannot produce a score lower than 0" );
+			"scoreNormLog2 cannot produce a score lower than 0" );
 	}
 
 	/**

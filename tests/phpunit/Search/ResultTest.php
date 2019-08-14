@@ -5,6 +5,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Searcher;
 use MediaWiki\MediaWikiServices;
+use Sanitizer;
 
 /**
  * @group CirrusSearch
@@ -35,19 +36,52 @@ class ResultTest extends CirrusTestCase {
 		];
 	}
 
-	public function testHighlightedSectionSnippet() {
+	public function highlightedSectionSnippetProvider() {
+		return [
+			'stuff' => [ [ '', 'stuff', '' ] ],
+			// non-ASCII encoding of "fragment" is ugly, so test on easier
+			// German case
+			'german' => [ [ '', 'tschüß', '' ] ],
+			// English combining umlaut should move from post to highlight
+			'english' => [ [ 'Sp', 'ın', '̈al' ], [ 'Sp', 'ın̈', 'al' ] ],
+			// Hindi combining vowel mark should move from post to highlight
+			'hindi' => [ [ '', 'म', 'ेला' ], [ '', 'मे', 'ला' ] ],
+			// Javanese final full character in pre should move to highlight
+			// to join consonant mark; vowel mark in post should move to highlight
+			'javanese' => [ [ 'ꦎꦂꦠꦺꦴꦒ', 'ꦿꦥ꦳', 'ꦶ' ], [ 'ꦎꦂꦠꦺꦴ', 'ꦒꦿꦥ꦳ꦶ', '' ] ],
+			// Myanmar final full character in pre and two post combining marks
+			// should move to highlight
+			'myanmar' => [ [ 'ခင်ဦးမ', 'ြိ', 'ု့နယ်' ], [ 'ခင်ဦး', 'မြို့', 'နယ်' ] ],
+			// Full character and combining mark should move from pre to highlight
+			// to join combining mark; post combining marks should move to highlight
+			'wtf' => [ [ 'Q̃̓', '̧̑', '̫̯' ], [ '', 'Q̧̫̯̃̓̑', '' ] ],
+		];
+	}
+
+	/**
+	 * @dataProvider highlightedSectionSnippetProvider
+	 */
+	public function testHighlightedSectionSnippet( array $input, array $output = [], $plain = '' ) {
+		// If no output segementation is specified, it should break up the same as the input.
+		if ( empty( $output ) ) {
+			$output = $input;
+		}
+		// If no plain version is specified, join the input together.
+		if ( $plain === '' ) {
+			$plain = implode( '', $input );
+		}
+
+		// Input has PRE/POST_MARKER character; output has PRE/POST HTML.
+		$elasticInput = $input[0] . Searcher::HIGHLIGHT_PRE_MARKER . $input[1] . Searcher::HIGHLIGHT_POST_MARKER . $input[2];
+		$htmlOutput = $output[0] . Searcher::HIGHLIGHT_PRE . $output[1] . Searcher::HIGHLIGHT_POST . $output[2];
+
 		$data = $this->exampleHit();
-		$data['highlight']['heading'] = [ Searcher::HIGHLIGHT_PRE_MARKER . 'stuff' . Searcher::HIGHLIGHT_POST_MARKER ];
+		$data['highlight']['heading'] = [ $elasticInput ];
 
 		$result = $this->mockResult( $data );
-		$this->assertEquals(
-			Searcher::HIGHLIGHT_PRE . 'stuff' . Searcher::HIGHLIGHT_POST,
-			$result->getSectionSnippet()
-		);
-		$this->assertEquals(
-			'stuff',
-			$result->getSectionTitle()->getFragment()
-		);
+		$this->assertEquals( $htmlOutput, $result->getSectionSnippet() );
+		$this->assertEquals( Sanitizer::escapeIdForLink( $plain ),
+			$result->getSectionTitle()->getFragment() );
 	}
 
 	public function testInterwikiResults() {

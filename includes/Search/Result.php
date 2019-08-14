@@ -187,6 +187,21 @@ class Result extends SearchResult {
 	 * @return string $snippet with html escaped _except_ highlighting pre and post tags
 	 */
 	private function escapeHighlightedText( $snippet ) {
+		/**
+		 * \p{M} matches any combining Unicode character
+		 * \P{M} matches any non-combining Unicode character
+		 *
+		 * For HIGHLIGHT_PRE_MARKER, move the marker earlier if it occurs before a
+		 * combining character, and there is a non-combining character (and zero
+		 * or more combining characters) directly before it.
+		 *
+		 * For HIGHLIGHT_POST_MARKER, move the marker later if it occurs before
+		 * one or more combining characters.
+		 */
+		$snippet = preg_replace( '/(\P{M}\p{M}*)(' . Searcher::HIGHLIGHT_PRE_MARKER .
+			')(\p{M}+)/u', '$2$1$3', $snippet );
+		$snippet = preg_replace( '/(' . Searcher::HIGHLIGHT_POST_MARKER . ')(\p{M}+)/u',
+			'$2$1', $snippet );
 		return strtr( htmlspecialchars( $snippet ), [
 			Searcher::HIGHLIGHT_PRE_MARKER => Searcher::HIGHLIGHT_PRE,
 			Searcher::HIGHLIGHT_POST_MARKER => Searcher::HIGHLIGHT_POST

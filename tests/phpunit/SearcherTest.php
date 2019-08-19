@@ -57,6 +57,7 @@ class SearcherTest extends CirrusTestCase {
 					$config,
 					$expected,
 					$querySettings['query'],
+					$querySettings['sort'] ?? 'relevance'
 				];
 			}
 		}
@@ -67,7 +68,7 @@ class SearcherTest extends CirrusTestCase {
 	/**
 	 * @dataProvider searchTextProvider
 	 */
-	public function testSearchText( array $config, $expected, $queryString ) {
+	public function testSearchText( array $config, $expected, $queryString, $sort ) {
 		// Override some config for parsing purposes
 		$this->setMwGlobals( $config + [
 			// We want to override the wikiid for consistent output, but this might break everything else...
@@ -122,12 +123,16 @@ class SearcherTest extends CirrusTestCase {
 		] );
 		$engine->setShowSuggestion( true );
 		$engine->setLimitOffset( 20, 0 );
+		$engine->setSort( $sort );
+
 		$encodedQuery = $engine->searchText( $queryString )->getValue();
 		$elasticQuery = json_decode( $encodedQuery, true );
 		// Drop the keys to keep fixture clean
 		// For extra fun, prefer-recent queries include a 'now' timestamp. We need to normalize that so
 		// the output is actually the same.
 		$elasticQuery = $this->normalizeNow( $elasticQuery );
+		// random seeds also need to be made constant
+		$elasticQuery = $this->normalizeSeed( $elasticQuery );
 		// The helps with ensuring if there are minor code changes that change the ordering,
 		// regenerating the fixture wont cause changes. Do it always, instead of only when
 		// writing, so that the diff's from phpunit are also as minimal as possible.
@@ -191,6 +196,16 @@ class SearcherTest extends CirrusTestCase {
 		array_walk_recursive( $query, function ( &$value, $key ) {
 			if ( $key === 'now' && is_int( $value ) ) {
 				$value = 1468084245000;
+			}
+		} );
+
+		return $query;
+	}
+
+	private function normalizeSeed( array $query ) {
+		array_walk_recursive( $query, function ( &$value, $key ) {
+			if ( $key === 'seed' && is_string( $value ) ) {
+				$value = 'phpunit searchText random seed';
 			}
 		} );
 

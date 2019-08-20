@@ -3,7 +3,8 @@
 		"authors": [
 			"Jopparn",
 			"Lokal Profil",
-			"WikiPhoenix"
+			"WikiPhoenix",
+			"Skalman"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "Dumpa av CirrusSearch-konfiguration.",
@@ -15,6 +16,10 @@
 	"apihelp-cirrus-settings-dump-description": "Dumpa av CirrusSearch-inställningar för denna wiki.",
 	"apihelp-cirrus-settings-dump-summary": "Dumpa av CirrusSearch-inställningar för denna wiki.",
 	"apihelp-cirrus-settings-dump-example": "Få en dump av CirrusSearch-inställningarna för denna wiki.",
+	"apihelp-cirrus-profiles-dump-description": "Dump av CirrusSearch-profiler för denna wiki.",
+	"apihelp-cirrus-profiles-dump-summary": "Dump av CirrusSearch-profiler för denna wiki.",
+	"apihelp-cirrus-profiles-dump-example": "Hämta en dump av CirrusSearch-profiler för denna wiki.",
+	"apihelp-cirrus-profiles-dump-param-verbose": "Dumpa profilinnehållet",
 	"apihelp-query+cirrusdoc-description": "Kopia av ett CirrusSearch-artikeldokument",
 	"apihelp-query+cirrusdoc-summary": "Kopia av ett CirrusSearch-artikeldokument från sökservrarna",
 	"apihelp-query+cirrusdoc-example": "Hämta en kopia av en CirrusSearch-artikel som den för nuvarande är indexerad till sökning.",

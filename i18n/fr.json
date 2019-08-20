@@ -82,5 +82,6 @@
 	"cirrussearch-article-words": "Mots de toutes les pages de contenu",
 	"cirrussearch-keyword-prefix-ns-mismatch": "L’espace de noms trouvé dans la condition de recherche <code>prefix:</code> n’est pas compatible avec les espaces de noms demandés. Vous pouvez corriger cela en préfixant votre requête par <code>all:</code>.",
 	"cirrussearch-autoselect-profile": "Laisser le moteur de recherche décider du meilleur profil à utiliser.",
-	"cirrussearch-offset-too-large": "Impossible de récupérer les résultats. Jusqu’à $1 résultats de recherche sont supportés, mais des résultats commençant à $2 ont été demandés."
+	"cirrussearch-offset-too-large": "Impossible de récupérer les résultats. Jusqu’à $1 résultats de recherche sont supportés, mais des résultats commençant à $2 ont été demandés.",
+	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorer la requête pour paginer aléatoirement les résultats triés."
 }

@@ -76,5 +76,6 @@
 	"cirrussearch-article-words": "Ord i alla innehållssidor",
 	"cirrussearch-keyword-prefix-ns-mismatch": "Namnrymden som hittas i söktermen <code>prefix:</code> är inte kompatibel med den begärda namnrymden. Du kan åtgärda detta genom att lägga till <code>all:</code> som ett prefix i din fråga.",
 	"cirrussearch-autoselect-profile": "Låt sökmotorn bestämma den bästa profilen att använda.",
-	"cirrussearch-offset-too-large": "Kunde inte hämta resultat. Upp till $1 sökresultat stöds, men resultat från $2 efterfrågades."
+	"cirrussearch-offset-too-large": "Kunde inte hämta resultat. Upp till $1 sökresultat stöds, men resultat från $2 efterfrågades.",
+	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorerar begäran att paginera slumpvist sorterade resultat."
 }

@@ -80,7 +80,7 @@ class LtrQuery extends AbstractQuery {
 	}
 
 	/**
-	 * Set all paramters used for templated features.
+	 * Set all parameters used for templated features.
 	 *
 	 * @param string[] $params map of string -> string containing templating
 	 *  parameters for ltr features.

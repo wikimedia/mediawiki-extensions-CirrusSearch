@@ -85,6 +85,83 @@ class SuggestBuilderTest extends CirrusTestCase {
 		$this->assertSame( $expected, $suggestions );
 	}
 
+	public function testExplain() {
+		$builder = $this->buildBuilder( 'incomingLinks' );
+		$score = 10;
+		$redirScore = (int)( $score * SuggestBuilder::REDIRECT_DISCOUNT );
+		$doc = [
+			'id' => 123,
+			'title' => 'Albert Einstein',
+			'namespace' => 0,
+			'redirect' => [
+				[ 'title' => "Albert Enstein", 'namespace' => 0 ],
+				[ 'title' => "Albert Einsten", 'namespace' => 0 ],
+				[ 'title' => 'Albert Einstine', 'namespace' => 0 ],
+				[ 'title' => "Enstein", 'namespace' => 0 ],
+				[ 'title' => "Einstein", 'namespace' => 0 ],
+			],
+			'incoming_links' => $score
+		];
+		$expected = [
+			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Albert Einstein',
+					'namespace' => 0,
+				],
+				'suggest' => [
+					'input' => [
+						0 => 'Albert Einstein',
+						1 => 'Albert Enstein',
+						2 => 'Albert Einsten',
+						3 => 'Albert Einstine',
+					],
+					'weight' => $score,
+				],
+				'suggest-stop' => [
+					'input' => [
+						0 => 'Albert Einstein',
+						1 => 'Albert Enstein',
+						2 => 'Albert Einsten',
+						3 => 'Albert Einstine',
+					],
+					'weight' => $score,
+				],
+				'score_explanation' => [
+					'value' => $score,
+					'description' => 'Number of incoming links',
+				],
+			],
+			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Albert Einstein',
+					'namespace' => 0,
+				],
+				'suggest' => [
+					'input' => [
+						0 => 'Enstein',
+						1 => 'Einstein',
+					],
+					'weight' => $redirScore,
+				],
+				'suggest-stop' => [
+					'input' => [
+						0 => 'Enstein',
+						1 => 'Einstein',
+					],
+					'weight' => $redirScore,
+				],
+				'score_explanation' => [
+					'value' => $score, // TODO: add explanation of weighting done in SuggestBuilder
+					'description' => 'Number of incoming links',
+				],
+			],
+		];
+		$suggestions = $this->buildSuggestions( $builder, $doc, true );
+		$this->assertSame( $expected, $suggestions );
+	}
+
 	public function testDefaultSort() {
 		$builder = $this->buildBuilder( 'incomingLinks' );
 		$this->assertContains( 'defaultsort', $builder->getRequiredFields() );
@@ -348,7 +425,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 		$this->assertSame( $expected, $suggestions );
 	}
 
-	private function buildSuggestions( $builder, $doc ) {
+	private function buildSuggestions( $builder, $doc, $explain = false ) {
 		$id = $doc['id'];
 		unset( $doc['id'] );
 		return array_map(
@@ -357,7 +434,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 				unset( $dat['batch_id'] );
 				return $dat;
 			},
-			$builder->build( [ [ 'id' => $id, 'source' => $doc ] ] )
+			$builder->build( [ [ 'id' => $id, 'source' => $doc ] ], $explain )
 		);
 	}
 

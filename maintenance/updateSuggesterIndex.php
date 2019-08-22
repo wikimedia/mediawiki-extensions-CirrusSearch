@@ -2,21 +2,16 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
 use CirrusSearch\ElasticaErrorHandler;
-use CirrusSearch\BuildDocument\Completion\DefaultSortSuggestionsBuilder;
-use CirrusSearch\BuildDocument\Completion\NaiveSubphrasesSuggestionsBuilder;
-use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
-use CirrusSearch\BuildDocument\Completion\SuggestScoringMethodFactory;
-use CirrusSearch\BuildDocument\Completion\SuggestScoringMethod;
 use CirrusSearch\Maintenance\Validators\AnalyzersValidator;
 use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\MetaStore\MetaVersionStore;
 use CirrusSearch\SearchConfig;
 use Elastica;
 use Elastica\Index;
-use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query;
 use Elastica\Request;
 use Elastica\Status;
@@ -79,16 +74,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * @var string
 	 */
 	private $indexIdentifier;
-
-	/**
-	 * @var string the score method name to use.
-	 */
-	private $scoreMethodName;
-
-	/**
-	 * @var SuggestScoringMethod the score function to use.
-	 */
-	private $scoreMethod;
 
 	/**
 	 * @var Index old suggester index that will be deleted at the end of the process
@@ -178,8 +163,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	public function execute() {
 		global $wgLanguageCode,
 			$wgCirrusSearchBannedPlugins,
-			$wgCirrusSearchMasterTimeout,
-			$wgCirrusSearchCompletionDefaultScore;
+			$wgCirrusSearchMasterTimeout;
 
 		$this->disablePoolCountersAndLogging();
 		$this->masterTimeout = $this->getOption( 'masterTimeout', $wgCirrusSearchMasterTimeout );
@@ -221,22 +205,6 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$this->utils->checkElasticsearchVersion();
 
-		$this->scoreMethodName = $this->getOption(
-			'scoringMethod', $wgCirrusSearchCompletionDefaultScore
-		);
-		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $this->scoreMethodName );
-
-		$extraBuilders = [];
-		if ( $this->getSearchConfig()->get( 'CirrusSearchCompletionSuggesterUseDefaultSort' ) ) {
-			$extraBuilders[] = new DefaultSortSuggestionsBuilder();
-		}
-		$subPhrasesConfig = $this->getSearchConfig()
-			->get( 'CirrusSearchCompletionSuggesterSubphrases' );
-		if ( $subPhrasesConfig['build'] ) {
-			$extraBuilders[] = NaiveSubphrasesSuggestionsBuilder::create( $subPhrasesConfig );
-		}
-		$this->builder = new SuggestBuilder( $this->scoreMethod, $extraBuilders );
-
 		try {
 			// If the version does not exist it's certainly because nothing has been indexed.
 			if ( !MetaStoreIndex::cirrusReady( $this->getConnection() ) ) {
@@ -249,6 +217,8 @@ class UpdateSuggesterIndex extends Maintenance {
 				$this->fatalError( 'Index/Cluster is frozen. Giving up.' );
 			}
 
+			$this->builder = SuggestBuilder::create( $this->getConnection(),
+				$this->getOption( 'scoringMethod' ), $this->indexBaseName );
 			# check for broken indices and delete them
 			$this->checkAndDeleteBrokenIndices();
 
@@ -546,11 +516,6 @@ class UpdateSuggesterIndex extends Maintenance {
 		// This does not support extra indices like FILES on commons.
 		$sourceIndexTypes = [ Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE ];
 
-		// Indices to use for counting max_docs used by scoring functions
-		// Since we work mostly on the content namespace it seems OK to count
-		// only docs in the CONTENT index.
-		$countIndices = [ Connection::CONTENT_INDEX_TYPE ];
-
 		$query = new Query();
 		$query->setSource( [
 			'includes' => $this->builder->getRequiredFields()
@@ -565,27 +530,6 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$query->setQuery( $bool );
 		$query->setSort( [ '_doc' ] );
-
-		// Run a first query to count the number of docs.
-		// This is needed for the scoring methods that need
-		// to normalize values against wiki size.
-		$mSearch = new MultiSearch( $this->getClient() );
-		foreach ( $countIndices as $sourceIndexType ) {
-			$search = new \Elastica\Search( $this->getClient() );
-			$search->addIndex(
-				$this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType )
-			);
-			$search->getQuery()->setSize( 0 );
-			$mSearch->addSearch( $search );
-		}
-
-		$mSearchRes = $mSearch->search();
-		$total = 0;
-		foreach ( $mSearchRes as $res ) {
-			$total += $res->getTotalHits();
-		}
-		$this->log( "Setting max_docs to $total\n" );
-		$this->scoreMethod->setMaxDocs( $total );
 
 		foreach ( $sourceIndexTypes as $sourceIndexType ) {
 			$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType );
@@ -607,8 +551,7 @@ class UpdateSuggesterIndex extends Maintenance {
 						break;
 					}
 					$this->log( "Indexing $totalDocsToDump documents from $sourceIndexType with " .
-						"batchId: {$this->builder->getBatchId()} and scoring method: " .
-						"{$this->scoreMethodName}\n" );
+						"batchId: {$this->builder->getBatchId()}\n" );
 				}
 				$inputDocs = [];
 				foreach ( $results as $result ) {

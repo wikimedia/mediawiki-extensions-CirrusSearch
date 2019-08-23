@@ -49,7 +49,7 @@ return [
 			'index_patterns' => [ 'glent_*' ],
 			'version' => 1,
 			'settings' => [
-				'number_of_shards' => 2,
+				'number_of_shards' => 1,
 				'auto_expand_replicas' => '0-5',
 			],
 			'mappings' => [

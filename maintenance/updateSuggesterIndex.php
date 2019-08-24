@@ -185,6 +185,12 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->masterTimeout = $this->getOption( 'masterTimeout', $wgCirrusSearchMasterTimeout );
 		$this->indexTypeName = Connection::TITLE_SUGGEST_TYPE;
 
+		$useCompletion = $this->getSearchConfig()->get( 'CirrusSearchUseCompletionSuggester' );
+
+		if ( $useCompletion !== 'build' && $useCompletion !== 'yes' && $useCompletion !== true ) {
+			$this->fatalError( "Completion suggester disabled, quitting..." );
+		}
+
 		// Check that all shards and replicas settings are set
 		try {
 			$this->getShardCount();

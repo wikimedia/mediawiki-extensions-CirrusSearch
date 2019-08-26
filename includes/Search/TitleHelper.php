@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\SearchConfig;
 use Title;
 use CirrusSearch\InterwikiResolver;
 use MediaWiki\MediaWikiServices;
@@ -12,11 +13,23 @@ use MediaWiki\MediaWikiServices;
  * by reading the elasticsearch output.
  */
 class TitleHelper {
+	/**
+	 * @var SearchConfig
+	 */
+	private $config;
 
 	/**
-	 * Utility class, should not be instantiated
+	 * @var InterwikiResolver
 	 */
-	private function __construct() {
+	private $interwikiResolver;
+
+	/**
+	 * @param SearchConfig|null $config
+	 * @param InterwikiResolver|null $interwikiResolver
+	 */
+	public function __construct( SearchConfig $config = null, InterwikiResolver $interwikiResolver = null ) {
+		$this->config = $config ?: MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
+		$this->interwikiResolver = $interwikiResolver ?: MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
 	}
 
 	/**
@@ -29,8 +42,8 @@ class TitleHelper {
 	 * @param \Elastica\Result $r int $namespace
 	 * @return Title
 	 */
-	public static function makeTitle( \Elastica\Result $r ) {
-		$iwPrefix = self::identifyInterwikiPrefix( $r );
+	public function makeTitle( \Elastica\Result $r ) {
+		$iwPrefix = $this->identifyInterwikiPrefix( $r );
 		if ( empty( $iwPrefix ) ) {
 			return Title::makeTitle( $r->namespace, $r->title );
 		} else {
@@ -50,7 +63,7 @@ class TitleHelper {
 	 * @param int $redirNamespace
 	 * @return Title|null the Title to the Redirect or null if we can't build it
 	 */
-	public static function makeRedirectTitle( \Elastica\Result $r, $redirectText, $redirNamespace ) {
+	public function makeRedirectTitle( \Elastica\Result $r, $redirectText, $redirNamespace ) {
 		$iwPrefix = self::identifyInterwikiPrefix( $r );
 		if ( empty( $iwPrefix ) ) {
 			return Title::makeTitle( $redirNamespace, $redirectText );
@@ -75,8 +88,8 @@ class TitleHelper {
 	 * @param \Elastica\Result $r
 	 * @return bool true if this result refers to an external Title
 	 */
-	public static function isExternal( \Elastica\Result $r ) {
-		if ( isset( $r->wiki ) && $r->wiki !== wfWikiID() ) {
+	public function isExternal( \Elastica\Result $r ) {
+		if ( isset( $r->wiki ) && $r->wiki !== $this->config->getWikiId() ) {
 			return true;
 		}
 		// no wiki is suspicious, should we log a warning?
@@ -88,11 +101,9 @@ class TitleHelper {
 	 * @return string|null the interwiki prefix for this result or null or
 	 * empty if local.
 	 */
-	public static function identifyInterwikiPrefix( $r ) {
-		if ( isset( $r->wiki ) && $r->wiki !== wfWikiID() ) {
-			return MediaWikiServices::getInstance()
-				->getService( InterwikiResolver::SERVICE )
-				->getInterwikiPrefix( $r->wiki );
+	private function identifyInterwikiPrefix( $r ) {
+		if ( isset( $r->wiki ) && $r->wiki !== $this->config->getWikiId() ) {
+			return $this->interwikiResolver->getInterwikiPrefix( $r->wiki );
 		}
 		// no wiki is suspicious, should we log something?
 		return null;

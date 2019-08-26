@@ -18,8 +18,10 @@ class FancyTitleResultsType extends TitleResultsType {
 	 * was from the title or a redirect (and is kind of a leaky abstraction.)
 	 *
 	 * @param string $matchedAnalyzer the analyzer used to match the title
+	 * @param TitleHelper|null $titleHelper
 	 */
-	public function __construct( $matchedAnalyzer ) {
+	public function __construct( $matchedAnalyzer, TitleHelper $titleHelper = null ) {
+		parent::__construct( $titleHelper );
 		$this->matchedAnalyzer = $matchedAnalyzer;
 	}
 
@@ -127,7 +129,7 @@ class FancyTitleResultsType extends TitleResultsType {
 	 *   redirectMatches => an array of redirect matches, one per matched redirect
 	 */
 	public function transformOneElasticResult( \Elastica\Result $r, array $namespaces = [] ) {
-		$title = TitleHelper::makeTitle( $r );
+		$title = $this->getTitleHelper()->makeTitle( $r );
 		$highlights = $r->getHighlights();
 		$resultForTitle = [];
 
@@ -191,23 +193,23 @@ class FancyTitleResultsType extends TitleResultsType {
 			// Instead of getting the redirect's real namespace we're going to just use the namespace
 			// of the title.  This is not great.
 			// TODO: Should we just bail at this point?
-			return TitleHelper::makeRedirectTitle( $r, $redirectTitleString, $r->namespace );
+			return $this->getTitleHelper()->makeRedirectTitle( $r, $redirectTitleString, $r->namespace );
 		}
 
 		$redirs = $docRedirects[$redirectTitleString];
 		if ( count( $redirs ) === 1 ) {
 			// may or may not be the right namespace, but we don't seem to have any other options.
-			return TitleHelper::makeRedirectTitle( $r, $redirectTitleString, $redirs[0]['namespace'] );
+			return $this->getTitleHelper()->makeRedirectTitle( $r, $redirectTitleString, $redirs[0]['namespace'] );
 		}
 
 		if ( $namespaces ) {
 			foreach ( $redirs as $redir ) {
 				if ( array_search( $redir['namespace'], $namespaces ) ) {
-					return TitleHelper::makeRedirectTitle( $r, $redirectTitleString, $redir['namespace'] );
+					return $this->getTitleHelper()->makeRedirectTitle( $r, $redirectTitleString, $redir['namespace'] );
 				}
 			}
 		}
 		// Multiple redirects with same text from different namespaces, but none of them match the requested namespaces. What now?
-		return TitleHelper::makeRedirectTitle( $r, $redirectTitleString, $redirs[0]['namespace'] );
+		return $this->getTitleHelper()->makeRedirectTitle( $r, $redirectTitleString, $redirs[0]['namespace'] );
 	}
 }

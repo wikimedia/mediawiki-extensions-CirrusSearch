@@ -76,12 +76,29 @@ class ResultSet extends \BaseSearchResultSet implements CirrusSearchResultSet {
 	private $searchContainedSyntax;
 
 	/**
+	 * @var FullTextCirrusSearchResultBuilder
+	 */
+	private $resultBuilder;
+
+	/**
+	 * @var TitleHelper
+	 */
+	private $titleHelper;
+
+	/**
 	 * @param bool $searchContainedSyntax
 	 * @param \Elastica\ResultSet|null $elasticResultSet
+	 * @param TitleHelper|null $titleHelper
 	 */
-	public function __construct( $searchContainedSyntax = false, \Elastica\ResultSet $elasticResultSet = null ) {
+	public function __construct(
+		$searchContainedSyntax = false,
+		\Elastica\ResultSet $elasticResultSet = null,
+		TitleHelper $titleHelper = null
+	) {
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->result = $elasticResultSet;
+		$this->titleHelper = $titleHelper ?: new TitleHelper();
+		$this->resultBuilder = new FullTextCirrusSearchResultBuilder();
 	}
 
 	/**
@@ -131,7 +148,7 @@ class ResultSet extends \BaseSearchResultSet implements CirrusSearchResultSet {
 		// We can only pull in information about the local wiki
 		$lb = new LinkBatch;
 		foreach ( $resultSet->getResults() as $result ) {
-			if ( !TitleHelper::isExternal( $result ) ) {
+			if ( !$this->titleHelper->isExternal( $result ) ) {
 				$lb->add( $result->namespace, $result->title );
 			}
 		}
@@ -183,7 +200,7 @@ class ResultSet extends \BaseSearchResultSet implements CirrusSearchResultSet {
 	 *  search result object.
 	 */
 	protected function transformOneResult( \Elastica\Result $result ) {
-		return new Result( $this->result, $result );
+		return $this->resultBuilder->build( $result );
 	}
 
 	/**

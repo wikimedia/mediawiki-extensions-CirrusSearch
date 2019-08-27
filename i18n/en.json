@@ -56,6 +56,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint should be set to a valid SPARQL endpoint to use deep category search.",
 	"cirrussearch-feature-deepcat-exception": "Deep category search SPARQL query failed",
 	"cirrussearch-feature-deepcat-toomany": "Deep category query returned too many categories",
+	"cirrussearch-feature-deepcat-invalid-title": "The provided category is invalid.",
 	"cirrussearch-incategory-feature-no-valid-categories": "No valid categories provided to '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "No valid titles provided to '$1'.",
 	"cirrussearch-mlt-not-configured": "The '$1' feature is misconfigured. Ask an admin to fix $wgCirrusSearchMoreLikeThisFields",

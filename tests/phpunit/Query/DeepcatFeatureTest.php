@@ -66,7 +66,7 @@ class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 				]
 			],
 			"one result" => [
-				'"Duck & <duckling>"',
+				'"Duck & duckling"',
 				[
 					[ 'out' => 'Wigeons' ],
 				],

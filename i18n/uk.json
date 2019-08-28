@@ -8,7 +8,8 @@
 			"Dars",
 			"Piramidion",
 			"Similartothissimilartothat",
-			"SimondR"
+			"SimondR",
+			"Movses"
 		]
 	},
 	"cirrussearch-desc": "Пошук для MediaWiki на базі Elasticsearch",
@@ -77,5 +78,6 @@
 	"cirrussearch-article-words": "Слова в усіх контентних сторінках",
 	"cirrussearch-keyword-prefix-ns-mismatch": "Простір назв, виявлений у пошуковому терміні <code>prefix:</code> є несумісним із запитуваними просторами назв. Ви можете це виправити, додавши до свого запиту префікс <code>all:</code>.",
 	"cirrussearch-autoselect-profile": "Нехай пошукова програма самостійно підбере найкращий профіль для використання.",
-	"cirrussearch-offset-too-large": "Не вдалося отримати результати. Підтримується до $1 пошукових результатів, але запитано результати, що починаються з $2."
+	"cirrussearch-offset-too-large": "Не вдалося отримати результати. Підтримується до $1 пошукових результатів, але запитано результати, що починаються з $2.",
+	"cirrussearch-offset-not-allowed-with-random-sort": "Запит пагінації буде ігноровано, оскільки результати відсортовано випадково."
 }

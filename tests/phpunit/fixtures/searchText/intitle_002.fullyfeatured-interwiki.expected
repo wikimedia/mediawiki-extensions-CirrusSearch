@@ -182,6 +182,9 @@
                         "type": "experimental"
                     }
                 },
+                "highlight_query": {
+                    "match_all": []
+                },
                 "post_tags": [
                     "\ue001"
                 ],

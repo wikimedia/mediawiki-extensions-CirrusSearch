@@ -5,6 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Extra\Query\TokenCountRouter;
+use Elastica\Query\MatchAll;
 use MediaWiki\Logger\LoggerFactory;
 
 /**
@@ -156,6 +157,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 		if ( $this->queryStringQueryString === '' ) {
 			$searchContext->addSyntaxUsed( 'filter_only' );
+			$searchContext->setHighlightQuery( new MatchAll() );
 			return;
 		}
 

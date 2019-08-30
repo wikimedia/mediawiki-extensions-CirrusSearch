@@ -66,6 +66,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint має бути встановлено як дійсна кінцева точка SPARQL для використання глибокого пошуку категорії.",
 	"cirrussearch-feature-deepcat-exception": "Запит SPARQL на пошук глибокої категорії зазнав невдачі",
 	"cirrussearch-feature-deepcat-toomany": "Запит глибокої категорії повернув надто багато категорій",
+	"cirrussearch-feature-deepcat-invalid-title": "Некоректно вказана категорія.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Не задано жодних дійсних категорій для «$1».",
 	"cirrussearch-mlt-feature-no-valid-titles": "Не задано жодних дійсних назв для «$1».",
 	"cirrussearch-mlt-not-configured": "Функція «$1» неправильно налаштована. Попросіть адміністратора виправити $wgCirrusSearchMoreLikeThisFields",

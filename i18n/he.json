@@ -59,6 +59,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "<span dir=\"ltr\">$wgCirrusSearchCategoryEndpoint</span> צריך להיות מוגדר לנקודת סיום תקינה של SPARQL כדי שניתן יהיה לבצע חיפוש עמוק בקטגוריה.",
 	"cirrussearch-feature-deepcat-exception": "שאילתת ה־SPARQL לחיפוש עמוק בקטגוריה נכשלה",
 	"cirrussearch-feature-deepcat-toomany": "שאילתת החיפוש העמוק בקטגוריה החזירה יותר מדי קטגוריות",
+	"cirrussearch-feature-deepcat-invalid-title": "הקטגוריה שניתנה אינה תקינה.",
 	"cirrussearch-incategory-feature-no-valid-categories": "לא ניתנו קטגוריות תקינות לפקודה \"$1\".",
 	"cirrussearch-mlt-feature-no-valid-titles": "לא ניתנו כותרת תקינות לפקודה \"$1\".",
 	"cirrussearch-mlt-not-configured": "האפשרות \"$1\" אינה מוגדרת באופן תקין. נא לבקש ממנהל האתר לתקן את $wgCirrusSearchMoreLikeThisFields",

@@ -55,6 +55,7 @@
 	"cirrussearch-feature-too-many-conditions": "'$1'에 지정한 조건이 너무 많습니다. $2으(로) 줄입니다.",
 	"cirrussearch-feature-deepcat-exception": "심층 분류 검색 SPARQL 쿼리가 실패했습니다",
 	"cirrussearch-feature-deepcat-toomany": "심층 분류 질의는 너무 많은 분류를 반환했습니다",
+	"cirrussearch-feature-deepcat-invalid-title": "지정된 분류는 유효하지 않습니다.",
 	"cirrussearch-incategory-feature-no-valid-categories": "유효한 분류가 '$1'에 추가되지 않았습니다.",
 	"cirrussearch-mlt-feature-no-valid-titles": "유효한 제목이 '$1'에 추가되지 않았습니다.",
 	"cirrussearch-mlt-not-configured": "'$1' 기능은 잘못 구성되어 있습니다. 관리자에게 $wgCirrusSearchMoreLikeThisFields의 수정을 요청하십시오",

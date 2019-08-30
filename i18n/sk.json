@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Sudo77(new)",
-			"Teslaton"
+			"Teslaton",
+			"Luky001"
 		]
 	},
 	"cirrussearch-backend-error": "Kvôli dočasnému problému sme nemohli dokončiť požadované vyhľadávanie. Skúste to znovu neskôr.",
@@ -22,5 +23,6 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Klasické prefixové vyhľadávanie",
 	"cirrussearch-completion-profile-classic-pref-desc": "Bez opravy preklepov. Porovnáva začiatky názvov.",
 	"cirrussearch-timed-out": "Časový limit pre vyhľadávanie vypršal, dostupné sú len čiastkové výsledky.",
-	"cirrussearch-regex-timed-out": "Časový limit pre vyhľadávanie vypršal, dostupné sú len čiastkové výsledky. Pre získanie úplných výsledkov skúste regulárny výraz zjednodušiť."
+	"cirrussearch-regex-timed-out": "Časový limit pre vyhľadávanie vypršal, dostupné sú len čiastkové výsledky. Pre získanie úplných výsledkov skúste regulárny výraz zjednodušiť.",
+	"cirrussearch-article-words": "Slová vo všetkých obsahových stránkach"
 }

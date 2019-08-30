@@ -67,6 +67,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint ينبغي أن تكون مضبوطة لنقطة نهايةSPARQ صحيحة لاستخدام بحث التصنيفات العميق.",
 	"cirrussearch-feature-deepcat-exception": "استعلام بحث التصنيفات العميق لSPARQL فشل",
 	"cirrussearch-feature-deepcat-toomany": "استعلام التصنيف العميق أرجع تصنيفات كثيرة جدا",
+	"cirrussearch-feature-deepcat-invalid-title": "التصنيف المقدم غير صالح.",
 	"cirrussearch-incategory-feature-no-valid-categories": "لا تصنيفات صحيحة تم توفيرها ل'$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "لا عناوين صحيحة تم توفيرها ل'$1'.",
 	"cirrussearch-mlt-not-configured": "الخاصية '$1' مضبوطة بشكل غير صحيح. سل إداريا أن يصلح $wgCirrusSearchMoreLikeThisFields",

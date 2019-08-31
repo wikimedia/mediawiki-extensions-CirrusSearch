@@ -68,6 +68,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint 應被設定成有效的 SPARQL 端點以使用深層分類搜尋。",
 	"cirrussearch-feature-deepcat-exception": "深層分類搜尋 SPARQL 查詢失敗",
 	"cirrussearch-feature-deepcat-toomany": "深層分類查詢回傳太多的分類",
+	"cirrussearch-feature-deepcat-invalid-title": "提供的分類無效。",
 	"cirrussearch-incategory-feature-no-valid-categories": "沒有提供給「$1」可用分類。",
 	"cirrussearch-mlt-feature-no-valid-titles": "沒有提供給「$1」可用標題。",
 	"cirrussearch-mlt-not-configured": "「$1」功能未被設置，請向管理員請求修正 $wgCirrusSearchMoreLikeThisFields",

@@ -494,8 +494,6 @@ class Hooks {
 	 * @throws ApiUsageException
 	 */
 	public static function onSearchGetNearMatch( $term, &$titleResult ) {
-		global $wgContLang;
-
 		$title = Title::newFromText( $term );
 		if ( $title === null ) {
 			return false;
@@ -526,7 +524,8 @@ class Hooks {
 			return true;
 		}
 
-		$picker = new NearMatchPicker( $wgContLang, $term, $status->getValue() );
+		$contLang = MediaWikiServices::getInstance()->getContentLanguage();
+		$picker = new NearMatchPicker( $contLang, $term, $status->getValue() );
 		$best = $picker->pickBest();
 		if ( $best ) {
 			$titleResult = $best;

@@ -247,12 +247,11 @@ class UtilTest extends CirrusTestCase {
 	}
 
 	public function testgetDefaultBoostTemplatesLocal() {
-		global $wgContLang;
+		$services = MediaWikiServices::getInstance();
 		try {
 			$this->setPrivateVar( \MessageCache::class, 'instance', $this->getMockCache() );
 		} catch ( \ReflectionException $e ) {
 			// Service-ized already
-			$services = MediaWikiServices::getInstance();
 			$services->resetServiceForTesting( 'MessageCache' );
 			$services->redefineService(
 				'MessageCache',
@@ -278,7 +277,9 @@ class UtilTest extends CirrusTestCase {
 		// seem to be trivial.
 		$cur = Util::getDefaultBoostTemplates( $config );
 		reset( $cur );
-		$this->assertContains( ' in ' . $wgContLang->getCode(), key( $cur ) );
+		$this->assertContains(
+			' in ' . $services->getContentLanguage()->getCode(), key( $cur )
+		);
 
 		// Check we cached it
 		$cached = $cache->get( $key );

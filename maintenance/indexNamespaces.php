@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Maintenance;
 
+use MediaWiki\MediaWikiServices;
+
 /**
  * Index all namespaces for quick lookup.
  *
@@ -30,11 +32,9 @@ require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class IndexNamespaces extends Maintenance {
 	public function execute() {
-		global $wgContLang;
-
 		$store = $this->maybeCreateMetastore()->namespaceStore();
 		$this->outputIndented( "Indexing namespaces..." );
-		$store->reindex( $wgContLang );
+		$store->reindex( MediaWikiServices::getInstance()->getContentLanguage() );
 		$this->output( "done\n" );
 
 		return true;

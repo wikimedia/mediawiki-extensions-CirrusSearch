@@ -180,7 +180,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 *
 	 * @param string $text Search term
 	 * @param string[]|null $variants Search term variants
-	 * (usually issued from $wgContLang->autoConvertToAllVariants( $text ) )
+	 *  Usually issued via Language::autoConvertToAllVariants( $text ) for the content language.
 	 * @return Status
 	 */
 	public function suggest( $text, $variants = null ) {
@@ -309,7 +309,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	/**
 	 * @param string $text Search term
 	 * @param string[]|null $variants Search term variants
-	 * (usually issued from $wgContLang->autoConvertToAllVariants( $text ) )
+	 *  Usually issued via Language::autoConvertToAllVariants( $text ) for the content language.
 	 * @return Search|null
 	 */
 	private function getSuggestSearchRequest( $text, $variants ) {
@@ -331,7 +331,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	/**
 	 * @param string $term Search term
 	 * @param string[]|null $variants Search term variants
-	 * (usually issued from $wgContLang->autoConvertToAllVariants( $text ) )
+	 *  Usually issued via Language::autoConvertToAllVariants( $text ) for the content language.
 	 * @return Search|null
 	 */
 	private function getPrefixSearchRequest( $term, $variants ) {

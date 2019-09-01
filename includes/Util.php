@@ -480,8 +480,7 @@ class Util {
 		Assert::postcondition( $normalizer !== null,
 			'Failed to load Transliterator with method ' . $method );
 		if ( $language === null ) {
-			global $wgContLang;
-			$language = $wgContLang;
+			$language = MediaWikiServices::getInstance()->getContentLanguage();
 		}
 		$namespace = $normalizer->transliterate( $namespace );
 		if ( $namespace === '' ) {

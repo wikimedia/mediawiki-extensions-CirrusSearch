@@ -95,12 +95,12 @@ class SearchConfigTest extends CirrusTestCase {
 	}
 
 	public function testLoadContLang() {
-		global $wgContLang;
+		$contLang = MediaWikiServices::getInstance()->getContentLanguage();
 		$config = new HashSearchConfig(
 			[ 'LanguageCode' => 'fr' ],
 			[ HashSearchConfig::FLAG_LOAD_CONT_LANG, HashSearchConfig::FLAG_INHERIT ] );
 		$frContLang = $config->get( 'ContLang' );
-		$this->assertNotSame( $wgContLang, $frContLang );
+		$this->assertNotSame( $contLang, $frContLang );
 		$this->assertSame( \Language::factory( 'fr' ), $frContLang );
 	}
 

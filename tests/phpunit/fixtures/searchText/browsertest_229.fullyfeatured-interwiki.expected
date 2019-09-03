@@ -138,29 +138,7 @@
                     "bool": {
                         "should": [
                             {
-                                "bool": {
-                                    "filter": [
-                                        {
-                                            "terms": {
-                                                "namespace": [
-                                                    0,
-                                                    1,
-                                                    2,
-                                                    3
-                                                ]
-                                            }
-                                        }
-                                    ],
-                                    "must": [
-                                        {
-                                            "match_phrase_prefix": {
-                                                "all.plain": {
-                                                    "query": "pick"
-                                                }
-                                            }
-                                        }
-                                    ]
-                                }
+                                "match_all": []
                             },
                             {
                                 "query_string": {
@@ -408,29 +386,7 @@
                     "bool": {
                         "should": [
                             {
-                                "bool": {
-                                    "filter": [
-                                        {
-                                            "terms": {
-                                                "namespace": [
-                                                    0,
-                                                    1,
-                                                    2,
-                                                    3
-                                                ]
-                                            }
-                                        }
-                                    ],
-                                    "must": [
-                                        {
-                                            "match_phrase_prefix": {
-                                                "all.plain": {
-                                                    "query": "pick"
-                                                }
-                                            }
-                                        }
-                                    ]
-                                }
+                                "match_all": []
                             },
                             {
                                 "query_string": {
@@ -678,29 +634,7 @@
                     "bool": {
                         "should": [
                             {
-                                "bool": {
-                                    "filter": [
-                                        {
-                                            "terms": {
-                                                "namespace": [
-                                                    0,
-                                                    1,
-                                                    2,
-                                                    3
-                                                ]
-                                            }
-                                        }
-                                    ],
-                                    "must": [
-                                        {
-                                            "match_phrase_prefix": {
-                                                "all.plain": {
-                                                    "query": "pick"
-                                                }
-                                            }
-                                        }
-                                    ]
-                                }
+                                "match_all": []
                             },
                             {
                                 "query_string": {
@@ -948,29 +882,7 @@
                     "bool": {
                         "should": [
                             {
-                                "bool": {
-                                    "filter": [
-                                        {
-                                            "terms": {
-                                                "namespace": [
-                                                    0,
-                                                    1,
-                                                    2,
-                                                    3
-                                                ]
-                                            }
-                                        }
-                                    ],
-                                    "must": [
-                                        {
-                                            "match_phrase_prefix": {
-                                                "all.plain": {
-                                                    "query": "pick"
-                                                }
-                                            }
-                                        }
-                                    ]
-                                }
+                                "match_all": []
                             },
                             {
                                 "query_string": {

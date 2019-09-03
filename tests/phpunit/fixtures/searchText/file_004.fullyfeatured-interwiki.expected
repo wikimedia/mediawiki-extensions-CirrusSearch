@@ -134,6 +134,9 @@
                         "type": "experimental"
                     }
                 },
+                "highlight_query": {
+                    "match_all": []
+                },
                 "post_tags": [
                     "\ue001"
                 ],
@@ -374,6 +377,9 @@
                         "number_of_fragments": 1,
                         "type": "experimental"
                     }
+                },
+                "highlight_query": {
+                    "match_all": []
                 },
                 "post_tags": [
                     "\ue001"
@@ -616,6 +622,9 @@
                         "type": "experimental"
                     }
                 },
+                "highlight_query": {
+                    "match_all": []
+                },
                 "post_tags": [
                     "\ue001"
                 ],
@@ -856,6 +865,9 @@
                         "number_of_fragments": 1,
                         "type": "experimental"
                     }
+                },
+                "highlight_query": {
+                    "match_all": []
                 },
                 "post_tags": [
                     "\ue001"

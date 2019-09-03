@@ -21,5 +21,6 @@
 	"cirrussearch-pref-desc": "Proveu el nostre cercador nou que suporta un nombre de llengües més gran, proporciona resultats més actualitzats i fins i tot pot trobar text dins de plantilles.",
 	"cirrussearch-give-feedback": "Doneu-nos la vostra opinió",
 	"cirrussearch-query-too-long": "La sol·licitud de cerca és superior a la longitud màxima permesa. ($1 > $2)",
-	"prefs-completion": "Compleció de cerques"
+	"prefs-completion": "Compleció de cerques",
+	"cirrussearch-feature-deepcat-invalid-title": "La categoria proporcionada no és vàlida."
 }

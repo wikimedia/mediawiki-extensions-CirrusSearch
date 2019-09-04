@@ -48,7 +48,7 @@ class TeamDraftInterleaver {
 
 	private function extractResults( CirrusSearchResultSet $resultSet ) {
 		$extracted = [];
-		/** @var $result Result */
+		/** @var $result CirrusSearchResult */
 		foreach ( $resultSet as $result ) {
 			$extracted[$result->getDocId()] = $result;
 		}

@@ -6,7 +6,6 @@ use CirrusSearch\Util;
 use CirrusSearch\Searcher;
 use MediaWiki\Logger\LoggerFactory;
 use MWTimestamp;
-use SearchResult;
 use Sanitizer;
 use Title;
 
@@ -28,7 +27,7 @@ use Title;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class Result extends SearchResult {
+class Result extends CirrusSearchResult {
 
 	/** @var int */
 	private $namespace;
@@ -64,8 +63,6 @@ class Result extends SearchResult {
 	private $score;
 	/** @var array */
 	private $explanation;
-	/** @var bool */
-	private $ignoreMissingRev;
 
 	/**
 	 * Build the result.
@@ -74,16 +71,11 @@ class Result extends SearchResult {
 	 * @param \Elastica\Result $result containing the given search result
 	 */
 	public function __construct( $results, $result ) {
-		global $wgCirrusSearchDevelOptions;
-		$this->ignoreMissingRev = isset( $wgCirrusSearchDevelOptions['ignore_missing_rev'] );
+		parent::__construct( TitleHelper::makeTitle( $result ) );
 		$this->namespaceText = $result->namespace_text;
 		$this->wiki = $result->wiki;
 		$this->docId = $result->getId();
 		$this->namespace = $result->namespace;
-		$this->mTitle = TitleHelper::makeTitle( $result );
-		if ( $this->getTitle()->getNamespace() == NS_FILE ) {
-			$this->mImage = wfFindFile( $this->mTitle );
-		}
 
 		$fields = $result->getFields();
 		// Not all results requested a word count. Just pretend we have none if so
@@ -102,10 +94,10 @@ class Result extends SearchResult {
 			$nstext = $this->getTitle()->getNamespace() === 0 ? '' :
 				Util::getNamespaceText( $this->getTitle() ) . ':';
 			$this->titleSnippet = $nstext . $this->escapeHighlightedText( $highlights[ 'title' ][ 0 ] );
-		} elseif ( $this->mTitle->isExternal() ) {
+		} elseif ( $this->getTitle()->isExternal() ) {
 			// Interwiki searches are weird. They won't have title highlights by design, but
 			// if we don't return a title snippet we'll get weird display results.
-			$this->titleSnippet = $this->mTitle->getText();
+			$this->titleSnippet = $this->getTitle()->getText();
 		}
 
 		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {
@@ -164,20 +156,6 @@ class Result extends SearchResult {
 			}
 		}
 		return $mainSnippet;
-	}
-
-	/**
-	 * Don't bother hitting the revision table and loading extra stuff like
-	 * that into memory like the parent does, just return if we've got an idea
-	 * about page existence.
-	 *
-	 * Protects against things like bug 61464, where a page clearly doesn't
-	 * exist anymore but we've got something stuck in the index.
-	 *
-	 * @return bool
-	 */
-	public function isMissingRevision() {
-		return !( $this->ignoreMissingRev || $this->mTitle->isKnown() );
 	}
 
 	/**
@@ -348,7 +326,7 @@ class Result extends SearchResult {
 	 * @return string
 	 */
 	public function getInterwikiPrefix() {
-		return $this->mTitle->getInterwiki();
+		return $this->getTitle()->getInterwiki();
 	}
 
 	/**

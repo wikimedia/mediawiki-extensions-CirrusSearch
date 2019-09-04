@@ -8,7 +8,6 @@ use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\MetaStore\MetaSaneitizeJobStore;
 use CirrusSearch\Profile\SearchProfileService;
 use JobQueueGroup;
-use Wikimedia\Assert\Assert;
 
 /**
  * Push some sanitize jobs to the JobQueue
@@ -265,14 +264,7 @@ EOD
 			}
 			$this->clusters = [ $this->getOption( 'cluster' ) ];
 		}
-		if ( $sanityCheckSetup === true ) {
-			$this->clusters = $assignment->getWritableClusters();
-		} else {
-			Assert::precondition( is_array( $sanityCheckSetup ),
-				"wgCirrusSearchSanityCheck must be " . "a bolean or an array of strings" );
-			$this->clusters =
-				array_intersect( $sanityCheckSetup, $assignment->getWritableClusters() );
-		}
+		$this->clusters = $assignment->getWritableClusters();
 		if ( count( $this->clusters ) === 0 ) {
 			$this->fatalError( 'No clusters are writable...' );
 		}

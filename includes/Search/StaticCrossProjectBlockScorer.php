@@ -19,10 +19,10 @@ class StaticCrossProjectBlockScorer extends CrossProjectBlockScorer {
 
 	/**
 	 * @param string $prefix
-	 * @param ResultSet $results
+	 * @param CirrusSearchResultSet $results
 	 * @return float
 	 */
-	public function score( $prefix, ResultSet $results ) {
+	public function score( $prefix, CirrusSearchResultSet $results ) {
 		$staticScoreKey = '__default__';
 		if ( isset( $this->staticScores[$prefix] ) ) {
 			$staticScoreKey = $prefix;

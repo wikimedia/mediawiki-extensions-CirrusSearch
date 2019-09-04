@@ -12,10 +12,10 @@ abstract class CrossProjectBlockScorer {
 	/**
 	 * Compute a score for a given bloack of crossproject searchresults
 	 * @param string $prefix
-	 * @param ResultSet $results
+	 * @param CirrusSearchResultSet $results
 	 * @return float the score for this block
 	 */
-	abstract public function score( $prefix, ResultSet $results );
+	abstract public function score( $prefix, CirrusSearchResultSet $results );
 
 	/**
 	 * Reorder crossproject blocks using the $scorer
@@ -25,7 +25,7 @@ abstract class CrossProjectBlockScorer {
 	public function reorder( array $resultsets ) {
 		$sortKeys = [];
 		foreach ( $resultsets as $pref => $results ) {
-			if ( $results instanceof ResultSet ) {
+			if ( $results instanceof CirrusSearchResultSet ) {
 				$sortKeys[] = $this->score( $pref, $results );
 			} else {
 				$sortKeys[] = -1.0;

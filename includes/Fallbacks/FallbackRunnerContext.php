@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
-use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Searcher;
 use Elastica\ResultSet as ElasicaResultSet;
@@ -16,19 +16,19 @@ interface FallbackRunnerContext {
 
 	/**
 	 * The initial resultset as returned by the main search query.
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 */
-	public function getInitialResultSet();
+	public function getInitialResultSet(): CirrusSearchResultSet;
 
 	/**
 	 * The resultset as rewritten by the previous fallback method.
 	 * It may be equal to getInitialResultSet() if this is accessed by the
 	 * first fallback method or if it was not rewritten yet.
 	 * Technically this method returns the value of the previous FallbackMethod::rewrite()
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 * @see FallbackMethod::rewrite()
 	 */
-	public function getPreviousResultSet();
+	public function getPreviousResultSet(): CirrusSearchResultSet;
 
 	/**
 	 * Retrieve the response of the query attached to the main

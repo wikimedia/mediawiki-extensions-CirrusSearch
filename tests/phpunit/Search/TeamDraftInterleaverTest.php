@@ -37,6 +37,88 @@ class TeamDraftInterleaverTest extends \PHPUnit\Framework\TestCase {
 		}
 	}
 
+	/**
+	 * Test that the InterleavedResultSet class is properly delegating to teamA
+	 * all the methods declared in CirrusSearchResultSet except the few that
+	 * are decorated
+	 */
+	public function testInterleavedResultSetDelegates() {
+		$interleavedRset = new \ReflectionClass( InterleavedResultSet::class );
+		$csrs = new \ReflectionClass( CirrusSearchResultSet::class );
+		$interleavedRsetMethods = $interleavedRset->getMethods( \ReflectionMethod::IS_PUBLIC );
+		$csrsmethods = array_map(
+			function ( \ReflectionMethod $method ) {
+				return $method->getName();
+			},
+			$csrs->getMethods( \ReflectionMethod::IS_PUBLIC ) );
+
+		$delegatedMethods = array_diff(
+			$csrsmethods,
+			[ 'getOffset', 'extractResults', 'numRows', 'count', 'setAugmentedData',
+				'augmentResult', 'getIterator' ]
+		);
+		$interleavedRsetMethods = array_filter(
+			$interleavedRsetMethods,
+			function ( \ReflectionMethod $method ) use ( $delegatedMethods ) {
+				return in_array(
+					$method->getName(),
+					$delegatedMethods
+				);
+			}
+		);
+		$cscrMockTeamA = $this->getMockBuilder( CirrusSearchResultSet::class )
+			->getMock();
+		/** @var \ReflectionMethod $method */
+		$allParams = [];
+		foreach ( $interleavedRsetMethods as $method ) {
+			$params = [];
+			foreach ( $method->getParameters() as $param ) {
+				$paramId = $method->getName() . '-' . $param->getPosition();
+				if ( $param->hasType() ) {
+					if ( method_exists( $param->getType(), "getName" ) ) {
+						$typeName = $param->getType()->getName();
+					} else {
+						$typeName = $param->getType()->__toString();
+					}
+					switch ( $typeName ) {
+						case 'int':
+							$params[] = mt_rand();
+							break;
+						case 'float':
+							$params[] = mt_rand() / mt_rand( 1 );
+							break;
+						case 'string':
+							$params[] = $paramId;
+							break;
+						case 'array':
+							$params[] = [ $paramId ];
+							break;
+						default:
+							if ( !$param->getClass() ) {
+								$this->fail( "Invalid param type " . $param->getName() );
+							}
+							$params[] = $this->getMockBuilder( $param->getClass()->getName() )
+								->disableOriginalConstructor()
+								->getMock();
+					}
+				} else {
+					$params[] = $paramId;
+				}
+			}
+			$cscrMockTeamA->expects( $this->once() )
+				->method( $method->getName() )
+				->willReturnCallback( function () use ( $params ) {
+					$this->assertEquals( $params, func_get_args() );
+				} );
+			$allParams[$method->getName()] = $params;
+		}
+		$interleaved = new InterleavedResultSet( $cscrMockTeamA, [], [], [], 1 );
+		/** @var \ReflectionMethod $method */
+		foreach ( $interleavedRsetMethods as $method ) {
+			$method->invokeArgs( $interleaved, $allParams[$method->getName()] );
+		}
+	}
+
 	public function testTeamAExhausted() {
 		$a = range( 100, 104 );
 		$b = range( 0, 20 );

@@ -4,8 +4,8 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\SearchConfig;
-use CirrusSearch\Search\ResultSet;
 use OrderedStreamingForkController;
 use PageArchive;
 use SearchSuggestionSet;
@@ -131,7 +131,7 @@ class RunSearch extends Maintenance {
 			if ( $value instanceof IResultWrapper ) {
 				// Archive search results
 				$data += $this->processArchiveResult( $value );
-			} elseif ( $value instanceof ResultSet ) {
+			} elseif ( $value instanceof CirrusSearchResultSet ) {
 				$data += $this->processResultSet( $value, $query );
 			} elseif ( $value instanceof SearchSuggestionSet ) {
 				// these are suggestion results
@@ -150,11 +150,11 @@ class RunSearch extends Maintenance {
 
 	/**
 	 * Extract data from a search result set.
-	 * @param ResultSet $value
+	 * @param CirrusSearchResultSet $value
 	 * @param string $query
 	 * @return array
 	 */
-	protected function processResultSet( ResultSet $value, $query ) {
+	protected function processResultSet( CirrusSearchResultSet $value, $query ) {
 		// these are prefix or full text results
 		$rows = [];
 		foreach ( $value as $result ) {
@@ -245,7 +245,7 @@ class RunSearch extends Maintenance {
 	 * search result. Varies based on CLI input argument `type`.
 	 *
 	 * @param string $query
-	 * @return Status<ResultSet|IResultWrapper>
+	 * @return Status<CirrusSearch\Search\CirrusSearchResultSet|SearchSuggestionSet|IResultWrapper>
 	 */
 	protected function searchFor( $query ) {
 		$searchType = $this->getOption( 'type', 'full_text' );

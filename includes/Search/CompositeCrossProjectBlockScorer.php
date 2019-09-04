@@ -23,10 +23,10 @@ class CompositeCrossProjectBlockScorer extends CrossProjectBlockScorer {
 
 	/**
 	 * @param string $prefix
-	 * @param ResultSet $results
+	 * @param CirrusSearchResultSet $results
 	 * @return float
 	 */
-	public function score( $prefix, ResultSet $results ) {
+	public function score( $prefix, CirrusSearchResultSet $results ) {
 		$score = 0;
 		foreach ( $this->scorers as $scorer ) {
 			$score += $scorer['weight'] * $scorer['scorer']->score( $prefix, $results );

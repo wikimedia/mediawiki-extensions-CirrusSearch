@@ -6,6 +6,7 @@ use CirrusSearch\CirrusConfigInterwikiResolver;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolver;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\MSearchRequests;
 use CirrusSearch\Search\MSearchResponses;
 use CirrusSearch\Search\ResultSet;
@@ -14,7 +15,7 @@ use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
 use CirrusSearch\Test\DummyConnection;
-use CirrusSearch\Test\DummyResultSet;
+use CirrusSearch\Test\DummySearchResultSet;
 use CirrusSearch\Test\MockLanguageDetector;
 use Elastica\Client;
 use Elastica\Query;
@@ -34,7 +35,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 	private $execOrder = [];
 
 	public function testOrdering() {
-		$results = DummyResultSet::fakeTotalHits( 0 );
+		$results = DummySearchResultSet::fakeTotalHits( 0 );
 		$methods = [];
 
 		$methods[] = $this->getFallbackMethod( 0.1, $this->trackingCb( 'E' ), [ 'E' => 'E' ] );
@@ -56,7 +57,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 	}
 
 	public function testEarlyStop() {
-		$results = DummyResultSet::fakeTotalHits( 0 );
+		$results = DummySearchResultSet::fakeTotalHits( 0 );
 		$methods = [];
 
 		$methods[] = self::getFallbackMethod( 0.1 );
@@ -114,7 +115,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 			}
 
 			/**
-			 * @param ResultSet $firstPassResults
+			 * @param CirrusSearchResultSet $firstPassResults
 			 * @return float
 			 */
 			public function successApproximation( FallbackRunnerContext $context ) {
@@ -122,11 +123,11 @@ class FallbackRunnerTest extends CirrusTestCase {
 			}
 
 			/**
-			 * @param ResultSet $firstPassResults results of the initial query
-			 * @param ResultSet $previousSet results returned by previous fallback method
-			 * @return ResultSet
+			 * @param CirrusSearchResultSet $firstPassResults results of the initial query
+			 * @param CirrusSearchResultSet $previousSet results returned by previous fallback method
+			 * @return CirrusSearchResultSet
 			 */
-			public function rewrite( FallbackRunnerContext $context ) {
+			public function rewrite( FallbackRunnerContext $context ): CirrusSearchResultSet {
 				Assert::assertNotNull( $this->rewritteCallback );
 				return ( $this->rewritteCallback )( $context );
 			}
@@ -175,8 +176,8 @@ class FallbackRunnerTest extends CirrusTestCase {
 		$searcherFactory->expects( $this->exactly( 2 ) )
 			->method( 'makeSearcher' )
 			->willReturnOnConsecutiveCalls(
-				$this->mockSearcher( DummyResultSet::fakeTotalHits( 2 ) ),
-				$this->mockSearcher( DummyResultSet::fakeTotalHits( 3 ) )
+				$this->mockSearcher( DummySearchResultSet::fakeTotalHits( 2 ) ),
+				$this->mockSearcher( DummySearchResultSet::fakeTotalHits( 3 ) )
 			);
 		$runner = FallbackRunner::create( $query );
 		// Phrase suggester wins and runs its fallback query
@@ -239,7 +240,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 		);
 	}
 
-	public function mockSearcher( ResultSet $resultSet ) {
+	public function mockSearcher( CirrusSearchResultSet $resultSet ) {
 		$mock = $this->createMock( Searcher::class );
 		$mock->expects( $this->once() )
 			->method( 'search' )
@@ -321,7 +322,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 				return $this->approx;
 			}
 
-			public function rewrite( FallbackRunnerContext $context ) {
+			public function rewrite( FallbackRunnerContext $context ): CirrusSearchResultSet {
 				Assert::assertSame( $this->expectedResponse, $context->getMethodResponse( $this ) );
 				return $this->rewritten;
 			}

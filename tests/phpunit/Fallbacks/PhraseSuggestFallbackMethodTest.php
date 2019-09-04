@@ -4,9 +4,10 @@ namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchQueryBuilder;
-use CirrusSearch\Test\DummyResultSet;
+use CirrusSearch\Test\DummySearchResultSet;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet\DefaultBuilder;
@@ -43,13 +44,20 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 	/**
 	 * @dataProvider provideTest
 	 */
-	public function test( $queryString, ResultSet $initialResults, $expectedApproxScore, $suggestion, $suggestionSnippet, $rewritten ) {
+	public function test(
+		$queryString,
+		CirrusSearchResultSet $initialResults,
+		$expectedApproxScore,
+		$suggestion,
+		$suggestionSnippet,
+		$rewritten
+	) {
 		$config = new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] );
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, $queryString )
 			->setAllowRewrite( true )
 			->build();
 
-		$rewrittenResults = $rewritten ? DummyResultSet::fakeTotalHits( 1 ) : null;
+		$rewrittenResults = $rewritten ? DummySearchResultSet::fakeTotalHits( 1 ) : null;
 		$rewrittenQuery = $rewritten ? SearchQueryBuilder::forRewrittenQuery( $query, $suggestion )->build() : null;
 		$searcherFactory = $this->getSearcherFactoryMock( $rewrittenQuery, $rewrittenResults );
 		$fallback = PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] );
@@ -153,7 +161,7 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		$method = PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] );
 		$this->assertNotNull( $method->getSuggestQueries() );
 
-		$rset = DummyResultSet::fakeTotalHits( 10 );
+		$rset = DummySearchResultSet::fakeTotalHits( 10 );
 		$rset->setSuggestionQuery( "test", "test" );
 		$factory = $this->getMock( SearcherFactory::class );
 		$factory->expects( $this->never() )->method( 'makeSearcher' );
@@ -161,7 +169,7 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		$method->rewrite( $context );
 		$this->assertTrue( $context->costlyCallAllowed() );
 
-		$rset = DummyResultSet::fakeTotalHits( 10 );
+		$rset = DummySearchResultSet::fakeTotalHits( 10 );
 		$factory = $this->getMock( SearcherFactory::class );
 		$factory->expects( $this->never() )->method( 'makeSearcher' );
 		$context = new FallbackRunnerContextImpl( $rset, $factory );

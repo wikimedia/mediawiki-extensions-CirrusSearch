@@ -6,8 +6,8 @@ use ApiUsageException;
 use CirrusSearch\Profile\ContextualProfileOverride;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\FancyTitleResultsType;
-use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
@@ -200,7 +200,7 @@ class CirrusSearch extends SearchEngine {
 
 		$status = $this->searchTextReal( $query );
 		$matches = $status->getValue();
-		if ( $matches instanceof ResultSet ) {
+		if ( $matches instanceof CirrusSearchResultSet ) {
 			ElasticsearchIntermediary::setResultPages( [ $matches ] );
 		}
 		if ( $matches instanceof SearchMetricsProvider ) {

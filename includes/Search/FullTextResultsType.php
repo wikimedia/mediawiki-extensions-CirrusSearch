@@ -83,7 +83,7 @@ final class FullTextResultsType extends BaseResultsType {
 
 	/**
 	 * @param ElasticaResultSet $result
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 */
 	public function transformElasticsearchResult( ElasticaResultSet $result ) {
 		return new ResultSet(
@@ -101,7 +101,7 @@ final class FullTextResultsType extends BaseResultsType {
 	}
 
 	/**
-	 * @return ResultSet
+	 * @return CirrusSearchResultSet
 	 */
 	public function createEmptyResult() {
 		return ResultSet::emptyResultSet();

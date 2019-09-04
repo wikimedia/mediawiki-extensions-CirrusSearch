@@ -3,17 +3,17 @@
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\CirrusTestCase;
-use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Searcher;
-use CirrusSearch\Test\DummyResultSet;
+use CirrusSearch\Test\DummySearchResultSet;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\Result;
 
 class BaseFallbackMethodTest extends CirrusTestCase {
 
-	public function getSearcherFactoryMock( SearchQuery $query = null, ResultSet $resultSet = null ) {
+	public function getSearcherFactoryMock( SearchQuery $query = null, CirrusSearchResultSet $resultSet = null ) {
 		$searcherMock = $this->createMock( Searcher::class );
 		$searcherMock->expects( $query != null ? $this->once() : $this->never() )
 			->method( 'search' )
@@ -100,7 +100,7 @@ class BaseFallbackMethodTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Fallbacks\FallbackMethodTrait::resultsThreshold()
 	 */
 	public function testResultThreshold( $threshold, $mainTotal, array $interwikiTotals, $met ) {
-		$resultSet = DummyResultSet::fakeTotalHits( $mainTotal, $interwikiTotals );
+		$resultSet = DummySearchResultSet::fakeTotalHits( $mainTotal, $interwikiTotals );
 		$mock = $this->getMockForTrait( FallbackMethodTrait::class );
 		$this->assertEquals( $met, $mock->resultsThreshold( $resultSet, $threshold ) );
 		if ( $threshold === 1 ) {

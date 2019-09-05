@@ -6,6 +6,8 @@ use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\SearchContext;
+use Elastica\Query\AbstractQuery;
+use Elastica\Query\BoolQuery;
 use MediaWiki\MediaWikiServices;
 use Title;
 
@@ -28,6 +30,8 @@ use Title;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @covers \CirrusSearch\Query\MoreLikeFeature
+ * @covers \CirrusSearch\Query\MoreLikeThisFeature
+ * @covers \CirrusSearch\Query\MoreLikeTrait
  * @covers \CirrusSearch\Query\SimpleKeywordFeature
  * @group CirrusSearch
  */
@@ -35,22 +39,25 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function applyProvider() {
 		return [
-			'doesnt eat unrelated queries' => [
+			'morelike: doesnt eat unrelated queries' => [
 				'other stuff',
 				new \Elastica\Query\MatchAll(),
 				false,
+				MoreLikeFeature::class,
 			],
-			'morelike is a queryHeader but ideally should not' => [
+			'morelike: is a queryHeader but ideally should not' => [
 				'other stuff morelike:Test',
 				new \Elastica\Query\MatchAll(),
 				false,
+				MoreLikeFeature::class,
 			],
-			'no query given for unknown page' => [
+			'morelire: no query given for unknown page' => [
 				'morelike:Does not exist or at least I hope not',
 				null,
 				true,
+				MoreLikeFeature::class,
 			],
-			'single page morelike' => [
+			'morelike: single page' => [
 				'morelike:Some page',
 				( new \Elastica\Query\MoreLikeThis() )
 					->setParams( [
@@ -67,8 +74,9 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 						[ '_id' => '12345' ],
 					] ),
 				true,
+				MoreLikeFeature::class,
 			],
-			'multi page morelike' => [
+			'morelike: multi page' => [
 				'morelike:Some page|Other page',
 				( new \Elastica\Query\MoreLikeThis() )
 					->setParams( [
@@ -86,8 +94,9 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 						[ '_id' => '12345' ],
 					] ),
 				true,
+				MoreLikeFeature::class
 			],
-			'multi page morelike with only one valid' => [
+			'morelike: multi page with only one valid' => [
 				'morelike:Some page|Does not exist or at least I hope not',
 				( new \Elastica\Query\MoreLikeThis() )
 					->setParams( [
@@ -104,6 +113,97 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 						[ '_id' => '12345' ],
 					] ),
 				true,
+				MoreLikeFeature::class
+			],
+			'morelikethis: doesnt eat unrelated queries' => [
+				'other stuff',
+				new \Elastica\Query\MatchAll(),
+				false,
+				MoreLikeThisFeature::class,
+			],
+			'morelikethis: can be combined' => [
+				'other stuff morelikethis:"Some page" and other stuff',
+				$this->wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
+					->setParams( [
+						'min_doc_freq' => 2,
+						'max_doc_freq' => null,
+						'max_query_terms' => 25,
+						'min_term_freq' => 2,
+						'min_word_length' => 0,
+						'max_word_length' => 0,
+						'minimum_should_match' => '30%',
+					] )
+					->setFields( [ 'text' ] )
+					->setLike( [
+						[ '_id' => '12345' ],
+					] ) ),
+				true,
+				MoreLikeThisFeature::class,
+				'other stuff and other stuff'
+			],
+			'morelikethis: no query given for unknown page' => [
+				'morelikethis:"Does not exist or at least I hope not"',
+				null,
+				true,
+				MoreLikeThisFeature::class,
+			],
+			'morelikethis: single page' => [
+				'morelikethis:"Some page"',
+				$this->wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
+					->setParams( [
+						'min_doc_freq' => 2,
+						'max_doc_freq' => null,
+						'max_query_terms' => 25,
+						'min_term_freq' => 2,
+						'min_word_length' => 0,
+						'max_word_length' => 0,
+						'minimum_should_match' => '30%',
+					] )
+					->setFields( [ 'text' ] )
+					->setLike( [
+						[ '_id' => '12345' ],
+					] ) ),
+				true,
+				MoreLikeThisFeature::class,
+			],
+			'morelikethis: multi page' => [
+				'morelikethis:"Some page|Other page"',
+				$this->wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
+					->setParams( [
+						'min_doc_freq' => 2,
+						'max_doc_freq' => null,
+						'max_query_terms' => 25,
+						'min_term_freq' => 2,
+						'min_word_length' => 0,
+						'max_word_length' => 0,
+						'minimum_should_match' => '30%',
+					] )
+					->setFields( [ 'text' ] )
+					->setLike( [
+						[ '_id' => '23456' ],
+						[ '_id' => '12345' ],
+					] ) ),
+				true,
+				MoreLikeThisFeature::class,
+			],
+			'morelikethis: multi page with only one valid' => [
+				'morelikethis:"Some page|Does not exist or at least I hope not"',
+				$this->wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
+					->setParams( [
+						'min_doc_freq' => 2,
+						'max_doc_freq' => null,
+						'max_query_terms' => 25,
+						'min_term_freq' => 2,
+						'min_word_length' => 0,
+						'max_word_length' => 0,
+						'minimum_should_match' => '30%',
+					] )
+					->setFields( [ 'text' ] )
+					->setLike( [
+						[ '_id' => '12345' ],
+					] ) ),
+				true,
+				MoreLikeThisFeature::class,
 			],
 		];
 	}
@@ -111,8 +211,8 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 	/**
 	 * @dataProvider applyProvider
 	 */
-	public function testApply( $term, $expectedQuery, $mltUsed ) {
-		// Inject fake pages for MoreLikeFeature::collectTitles() to find
+	public function testApply( $term, $expectedQuery, $mltUsed, $featureClass, $remainingText = '' ) {
+		// Inject fake pages for MoreLikeTrait::collectTitles() to find
 		$linkCache = MediaWikiServices::getInstance()->getLinkCache();
 		$linkCache->addGoodLinkObj( 12345, Title::newFromText( 'Some page' ) );
 		$linkCache->addGoodLinkObj( 23456, Title::newFromText( 'Other page' ) );
@@ -123,7 +223,7 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$context = new SearchContext( $config );
 
 		// Finally run the test
-		$feature = new MoreLikeFeature( $config );
+		$feature = new $featureClass( $config );
 
 		if ( $mltUsed ) {
 			$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::hostWikiOnlyStrategy() );
@@ -144,7 +244,7 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 			if ( $expectedQuery instanceof \Elastica\Query\MatchAll ) {
 				$this->assertEquals( $term, $result, 'Term must be unchanged' );
 			} else {
-				$this->assertEquals( '', $result, 'Term must be empty string' );
+				$this->assertEquals( $remainingText, $result, 'Term must be empty string' );
 			}
 		}
 	}
@@ -179,5 +279,11 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 			[ [ 'cirrussearch-mlt-feature-no-valid-titles', 'morelike' ] ],
 			$config
 		);
+	}
+
+	private function wrapInMust( AbstractQuery $query ): AbstractQuery {
+		$boolQuery = new BoolQuery();
+		$boolQuery->addMust( $query );
+		return $boolQuery;
 	}
 }

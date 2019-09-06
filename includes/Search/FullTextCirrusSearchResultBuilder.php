@@ -3,7 +3,6 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\Search\Fetch\HighlightingTrait;
-use CirrusSearch\Util;
 use MWTimestamp;
 use Title;
 
@@ -66,7 +65,7 @@ class FullTextCirrusSearchResultBuilder {
 
 		if ( isset( $highlights[ 'title' ] ) ) {
 			$nstext = $title->getNamespace() === 0 ? '' :
-				Util::getNamespaceText( $title ) . ':';
+				$this->titleHelper->getNamespaceText( $title ) . ':';
 			$builder->titleSnippet( $nstext . $this->escapeHighlightedText( $highlights[ 'title' ][ 0 ] ) );
 		} elseif ( $title->isExternal() ) {
 			// Interwiki searches are weird. They won't have title highlights by design, but

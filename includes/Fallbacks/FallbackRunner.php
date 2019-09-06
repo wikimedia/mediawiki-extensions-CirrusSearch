@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusSearchResultSet;
@@ -94,12 +95,18 @@ class FallbackRunner implements SearchMetricsProvider {
 	 * @param SearcherFactory $factory
 	 * @param CirrusSearchResultSet $initialResult
 	 * @param MSearchResponses $responses
+	 * @param NamespacePrefixParser $namespacePrefixParser
 	 * @return CirrusSearchResultSet
 	 */
-	public function run( SearcherFactory $factory, CirrusSearchResultSet $initialResult, MSearchResponses $responses ) {
+	public function run(
+		SearcherFactory $factory,
+		CirrusSearchResultSet $initialResult,
+		MSearchResponses $responses,
+		NamespacePrefixParser $namespacePrefixParser
+	) {
 		$methods = [];
 		$position = 0;
-		$context = new FallbackRunnerContextImpl( $initialResult, $factory );
+		$context = new FallbackRunnerContextImpl( $initialResult, $factory, $namespacePrefixParser );
 		foreach ( $this->fallbackMethods as $fallback ) {
 			$position++;
 			$context->resetSuggestResponse();

@@ -47,12 +47,15 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	 * @param \MultiHttpClient|null $client http client to fetch cirrus config
 	 * @param WANObjectCache|null $wanCache Cache object for caching repeated requests
 	 * @param BagOStuff|null $srvCache Local server cache object for caching repeated requests
+	 * @param InterwikiLookup|null $iwLookup
+	 * @throws \Exception
 	 */
 	public function __construct(
 		SearchConfig $config,
 		MultiHttpClient $client = null,
 		WANObjectCache $wanCache = null,
-		BagOStuff $srvCache = null
+		BagOStuff $srvCache = null,
+		InterwikiLookup $iwLookup = null
 	) {
 		$this->config = $config;
 		$this->useConfigDumpApi = $this->config->get( 'CirrusSearchFetchConfigFromApi' );
@@ -63,9 +66,8 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 			] );
 		}
 		$this->httpClient = $client;
-		$services = MediaWikiServices::getInstance();
-		$this->interwikiLookup = $services->getInterwikiLookup();
-		$this->srvCache = $srvCache ?: $services->getLocalServerObjectCache();
+		$this->interwikiLookup = $iwLookup ?: MediaWikiServices::getInstance()->getInterwikiLookup();
+		$this->srvCache = $srvCache ?: MediaWikiServices::getInstance()->getLocalServerObjectCache();
 	}
 
 	/**

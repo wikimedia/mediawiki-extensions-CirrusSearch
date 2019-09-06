@@ -7,6 +7,7 @@ use CirrusSearch\Fallbacks\SearcherFactory;
 use CirrusSearch\MetaStore\MetaNamespaceStore;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Parser\FullTextKeywordRegistry;
+use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\CountContentWordsBuilder;
 use CirrusSearch\Query\KeywordFeature;
@@ -126,6 +127,11 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	private $pageType;
 
 	/**
+	 * @var NamespacePrefixParser|null
+	 */
+	private $namespacePrefixParser;
+
+	/**
 	 * @param Connection $conn
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
@@ -134,6 +140,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string|bool $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
 	 * @param CirrusDebugOptions|null $options the debugging options to use or null to use defaults
+	 * @param NamespacePrefixParser|null $namespacePrefixParser
 	 * @see CirrusDebugOptions::defaultOptions()
 	 */
 	public function __construct(
@@ -143,7 +150,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		array $namespaces = null,
 		User $user = null,
 		$index = false,
-		CirrusDebugOptions $options = null
+		CirrusDebugOptions $options = null,
+		NamespacePrefixParser $namespacePrefixParser = null
 	) {
 		parent::__construct(
 			$conn,
@@ -155,6 +163,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$this->setOffsetLimit( $offset, $limit );
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->searchContext = new SearchContext( $this->config, $namespaces, $options );
+		// TODO: Make this param mandatory once WBCS stops extending this class
+		$this->namespacePrefixParser = $namespacePrefixParser;
 	}
 
 	/**
@@ -350,8 +360,10 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			$response = $mainSet;
 		}
 
-		$status = Status::newGood( $fallbackRunner->run( $this, $response, $responses ) );
-		$this->appendMetrics( $fallbackRunner );
+		if ( $this->namespacePrefixParser !== null ) {
+			$status = Status::newGood( $fallbackRunner->run( $this, $response, $responses, $this->namespacePrefixParser ) );
+			$this->appendMetrics( $fallbackRunner );
+		}
 
 		foreach ( $this->searchContext->getWarnings() as $warning ) {
 			$status->warning( ...$warning );
@@ -946,7 +958,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	public function makeSearcher( SearchQuery $query ) {
 		return new self( $this->connection, $query->getOffset(), $query->getLimit(),
 			$query->getSearchConfig(), $query->getNamespaces(), $this->user,
-			null, $query->getDebugOptions() );
+			null, $query->getDebugOptions(), $this->namespacePrefixParser );
 	}
 
 	/**

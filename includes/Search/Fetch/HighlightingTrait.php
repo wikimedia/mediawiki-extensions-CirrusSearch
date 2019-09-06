@@ -5,7 +5,6 @@ namespace CirrusSearch\Search\Fetch;
 use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Searcher;
 use MediaWiki\Logger\LoggerFactory;
-use Sanitizer;
 use Title;
 
 trait HighlightingTrait {
@@ -92,7 +91,7 @@ trait HighlightingTrait {
 	 * @return Title
 	 */
 	protected function findSectionTitle( $highlighted, Title $title ) {
-		return $title->createFragmentTarget( Sanitizer::escapeIdForLink(
+		return $title->createFragmentTarget( $this->getTitleHelper()->sanitizeSectionFragment(
 			$this->stripHighlighting( $highlighted )
 		) );
 	}

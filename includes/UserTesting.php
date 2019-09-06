@@ -79,13 +79,15 @@ class UserTesting {
 	 * @return self
 	 */
 	public static function getInstance( $callback = null, $trigger = null ) {
+		// TODO: stop relying on globals
 		global $wgCirrusSearchUserTesting;
 		if ( self::$instance === null ) {
+			$userTestingConfig = $wgCirrusSearchUserTesting ?? [];
 			if ( $trigger === null ) {
 				$trigger = \RequestContext::getMain()->getRequest()
 					->getVal( 'cirrusUserTesting' );
 			}
-			self::$instance = new self( $wgCirrusSearchUserTesting, $callback, $trigger );
+			self::$instance = new self( $userTestingConfig, $callback, $trigger );
 		}
 		return self::$instance;
 	}

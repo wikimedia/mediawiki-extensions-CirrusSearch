@@ -24,7 +24,7 @@ use CirrusSearch\Query\SubPageOfFeature;
 use CirrusSearch\Query\TextFieldFilterFeature;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\Sparql\SparqlClient;
 
 /**
  * Registry of keywords suited for fulltext searches
@@ -35,14 +35,22 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 	 */
 	private $features;
 
-	public function __construct( SearchConfig $config ) {
+	/**
+	 * FullTextKeywordRegistry constructor.
+	 * @param SearchConfig $config
+	 * @param NamespacePrefixParser|null $namespacePrefixParser
+	 * @param SparqlClient|null $client
+	 * @throws \FatalError
+	 * @throws \MWException
+	 */
+	public function __construct( SearchConfig $config, NamespacePrefixParser $namespacePrefixParser = null, SparqlClient $client = null ) {
 		$this->features = [
 			// Handle morelike keyword (greedy). Kept for BC reasons with existing clients.
 			// The morelikethis keyword should be preferred.
 			new MoreLikeFeature( $config ),
 			// Handle title prefix notation (greedy). Kept for BC reasons with existing clients.
 			// The subpageof keyword should be preferred.
-			new PrefixFeature(),
+			new PrefixFeature( $namespacePrefixParser ),
 			// Handle prefer-recent keyword
 			new PreferRecentFeature( $config ),
 			// Handle local keyword
@@ -72,8 +80,7 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			// subpageof keyword
 			new SubPageOfFeature(),
 			// deepcat feature
-			new DeepcatFeature( $config,
-				MediaWikiServices::getInstance()->getService( 'CirrusCategoriesClient' ) ),
+			new DeepcatFeature( $config, $client ),
 			// morelikethis feature: a non-greedy version of the morelike keyword.
 			new MoreLikeThisFeature( $config )
 		];

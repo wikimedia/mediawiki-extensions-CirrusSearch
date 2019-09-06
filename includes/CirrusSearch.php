@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use ApiUsageException;
+use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Profile\ContextualProfileOverride;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
@@ -111,6 +112,11 @@ class CirrusSearch extends SearchEngine {
 	private $debugOptions;
 
 	/**
+	 * @var NamespacePrefixParser
+	 */
+	private $namespacePrefixParser;
+
+	/**
 	 * @param SearchConfig|null $config
 	 * @param CirrusDebugOptions|null $debugOptions
 	 * @throws ConfigException
@@ -126,6 +132,11 @@ class CirrusSearch extends SearchEngine {
 		$this->requestContext = RequestContext::getMain();
 		$this->request = $this->requestContext->getRequest();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
+		$this->namespacePrefixParser = new class() implements NamespacePrefixParser {
+			public function parse( $query ) {
+				return CirrusSearch::parseNamespacePrefixes( $query, true, true );
+			}
+		};
 
 		// enable interwiki by default
 		$this->features['interwiki'] = true;
@@ -175,7 +186,7 @@ class CirrusSearch extends SearchEngine {
 	 * @return Status Value is either SearchResultSet, or null on error.
 	 */
 	protected function doSearchText( $term ) {
-		$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $this->config, $term )
+		$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $this->config, $term, $this->namespacePrefixParser )
 			->setDebugOptions( $this->debugOptions )
 			->setInitialNamespaces( $this->namespaces )
 			->setLimit( $this->limit )
@@ -547,7 +558,7 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private function makeSearcher( SearchConfig $config = null ) {
 		return new Searcher( $this->connection, $this->offset, $this->limit, $config ?? $this->config, $this->namespaces,
-				null, null, $this->debugOptions );
+				null, null, $this->debugOptions, $this->namespacePrefixParser );
 	}
 }
 

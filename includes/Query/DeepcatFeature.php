@@ -36,7 +36,7 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	private $limit;
 	/**
 	 * Category URL prefix for this wiki
-	 * @var string
+	 * @var string|null (lazy loaded)
 	 */
 	private $prefix;
 	/**
@@ -64,15 +64,14 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 
 	/**
 	 * @param Config $config
-	 * @param SparqlClient $client
+	 * @param SparqlClient|null $client
 	 */
-	public function __construct( Config $config, SparqlClient $client ) {
+	public function __construct( Config $config, SparqlClient $client = null ) {
 		$this->depth = (int)$config->get( 'CirrusSearchCategoryDepth' );
 		$this->limit = (int)$config->get( 'CirrusSearchCategoryMax' );
-		$this->prefix = $this->getCategoryPrefix();
 		$endpoint = $config->get( 'CirrusSearchCategoryEndpoint' );
 		if ( !empty( $endpoint ) ) {
-			$this->client = $client;
+			$this->client = $client ?: MediaWikiServices::getInstance()->getService( 'CirrusCategoriesClient' );
 		}
 	}
 
@@ -165,9 +164,12 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	 * @return bool|string
 	 */
 	private function getCategoryPrefix() {
-		$title = Title::makeTitle( NS_CATEGORY, 'ZZ' );
-		$fullName = $title->getFullURL( '', false, PROTO_CANONICAL );
-		return substr( $fullName, 0, - 2 );
+		if ( $this->prefix === null ) {
+			$title = Title::makeTitle( NS_CATEGORY, 'ZZ' );
+			$fullName = $title->getFullURL( '', false, PROTO_CANONICAL );
+			$this->prefix = substr( $fullName, 0, - 2 );
+		}
+		return $this->prefix;
 	}
 
 	/**
@@ -219,7 +221,7 @@ SPARQL;
 			return [];
 		}
 
-		$prefixLen = strlen( $this->prefix );
+		$prefixLen = strlen( $this->getCategoryPrefix() );
 		return array_map( function ( $row ) use ( $prefixLen ) {
 			// TODO: maybe we want to check the prefix is indeed the same?
 			// It should be but who knows...

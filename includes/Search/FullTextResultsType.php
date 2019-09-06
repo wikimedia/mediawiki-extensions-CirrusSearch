@@ -19,14 +19,24 @@ final class FullTextResultsType extends BaseResultsType {
 	 * @var FetchPhaseConfigBuilder $fetchPhaseBuilder
 	 */
 	private $fetchPhaseBuilder;
+	/**
+	 * @var TitleHelper|null
+	 */
+	private $titleHelper;
 
 	/**
 	 * @param FetchPhaseConfigBuilder $fetchPhaseBuilder
 	 * @param bool $searchContainedSyntax
+	 * @param TitleHelper|null $titleHelper
 	 */
-	public function __construct( FetchPhaseConfigBuilder $fetchPhaseBuilder, $searchContainedSyntax = false ) {
+	public function __construct(
+		FetchPhaseConfigBuilder $fetchPhaseBuilder,
+		$searchContainedSyntax = false,
+		TitleHelper $titleHelper = null
+	) {
 		$this->fetchPhaseBuilder = $fetchPhaseBuilder;
 		$this->searchContainedSyntax = $searchContainedSyntax;
+		$this->titleHelper = $titleHelper;
 	}
 
 	/**
@@ -88,7 +98,8 @@ final class FullTextResultsType extends BaseResultsType {
 	public function transformElasticsearchResult( ElasticaResultSet $result ) {
 		return new ResultSet(
 			$this->searchContainedSyntax,
-			$result
+			$result,
+			$this->titleHelper
 		);
 	}
 
@@ -97,7 +108,7 @@ final class FullTextResultsType extends BaseResultsType {
 	 * @return FullTextResultsType
 	 */
 	public function withFetchPhaseBuilder( FetchPhaseConfigBuilder $builder ): FullTextResultsType {
-		return new self( $builder, $this->searchContainedSyntax );
+		return new self( $builder, $this->searchContainedSyntax, $this->titleHelper );
 	}
 
 	/**

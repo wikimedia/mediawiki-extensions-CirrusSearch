@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
+use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use Config;
 use MediaWiki\MediaWikiServices;
 use RequestContext;
@@ -57,14 +58,21 @@ class SearchConfig implements \Config {
 	private $profileService;
 
 	/**
-	 * Create new search config for the current wiki.
+	 * @var SearchProfileServiceFactoryFactory|null (lazy loaded)
 	 */
-	public function __construct() {
+	private $searchProfileServiceFactoryFactory;
+
+	/**
+	 * Create new search config for the current wiki.
+	 * @param SearchProfileServiceFactoryFactory|null $searchProfileServiceFactoryFactory
+	 */
+	public function __construct( SearchProfileServiceFactoryFactory $searchProfileServiceFactoryFactory = null ) {
 		$this->source = new \GlobalVarConfig();
 		$this->wikiId = wfWikiID();
 		// The only ability to mutate SearchConfig is via a protected method, setSource.
 		// As long as we have an instance of SearchConfig it must then be the hostConfig.
 		$this->hostConfig = static::class === self::class ? $this : new SearchConfig();
+		$this->searchProfileServiceFactoryFactory = $searchProfileServiceFactoryFactory;
 	}
 
 	/**
@@ -291,9 +299,14 @@ class SearchConfig implements \Config {
 	 */
 	public function getProfileService() {
 		if ( $this->profileService === null ) {
-			/** @var SearchProfileServiceFactory $factory */
-			$factory = MediaWikiServices::getInstance()
-				->getService( SearchProfileServiceFactory::SERVICE_NAME );
+			if ( $this->searchProfileServiceFactoryFactory === null ) {
+
+				/** @var SearchProfileServiceFactory $factory */
+				$factory = MediaWikiServices::getInstance()
+					->getService( SearchProfileServiceFactory::SERVICE_NAME );
+			} else {
+				$factory = $this->searchProfileServiceFactoryFactory->getFactory( $this );
+			}
 			$this->profileService = $factory->loadService( $this );
 		}
 		return $this->profileService;

@@ -4,11 +4,10 @@ namespace CirrusSearch;
 
 use CirrusSearch\Search\SearchMetricsProvider;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\User\UserIdentity;
 use RequestContext;
 use ISearchResultSet;
 use Status;
-use User;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -36,7 +35,7 @@ abstract class ElasticsearchIntermediary {
 	protected $connection;
 
 	/**
-	 * @var User|null user for which we're performing this search or null in
+	 * @var UserIdentity|null user for which we're performing this search or null in
 	 * the case of requests kicked off by jobs
 	 */
 	protected $user;
@@ -69,7 +68,7 @@ abstract class ElasticsearchIntermediary {
 
 	/**
 	 * @param Connection $connection
-	 * @param User|null $user user for which this search is being performed.
+	 * @param UserIdentity|null $user user for which this search is being performed.
 	 *  Attached to slow request logs.  Note that null isn't for anonymous users
 	 *  - those are still User objects and should be provided if possible.  Null
 	 *  is for when the action is being performed in some context where the user
@@ -80,7 +79,7 @@ abstract class ElasticsearchIntermediary {
 	 *  as slow. Defaults to CirrusSearchSlowSearch config option.
 	 * @param int $extraBackendLatency artificial backend latency.
 	 */
-	protected function __construct( Connection $connection, User $user = null, $slowSeconds = null, $extraBackendLatency = 0 ) {
+	protected function __construct( Connection $connection, UserIdentity $user = null, $slowSeconds = null, $extraBackendLatency = 0 ) {
 		$this->connection = $connection;
 		if ( is_null( $user ) ) {
 			$user = RequestContext::getMain()->getUser();
@@ -251,7 +250,7 @@ abstract class ElasticsearchIntermediary {
 		list( $status, $message ) = ElasticaErrorHandler::extractMessageAndStatus( $exception );
 		$context['error_message'] = $message;
 
-		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
+		$stats = Util::getStatsDataFactory();
 		$type = ElasticaErrorHandler::classifyError( $exception );
 		$clusterName = $connection->getClusterName();
 		$stats->increment( "CirrusSearch.$clusterName.backend_failure.$type" );
@@ -290,7 +289,7 @@ abstract class ElasticsearchIntermediary {
 		$log->finish();
 		$tookMs = $log->getTookMs();
 		$clusterName = $connection->getClusterName();
-		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
+		$stats = Util::getStatsDataFactory();
 		$stats->timing( "CirrusSearch.$clusterName.requestTime", $tookMs );
 		$this->searchMetrics['wgCirrusTookMs'] = $tookMs;
 		self::$requestLogger->addRequest( $log, $this->user, $this->slowMillis );

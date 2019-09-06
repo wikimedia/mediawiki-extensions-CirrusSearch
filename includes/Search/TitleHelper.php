@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Util;
 use Title;
 use CirrusSearch\InterwikiResolver;
 use MediaWiki\MediaWikiServices;
@@ -24,12 +25,21 @@ class TitleHelper {
 	private $interwikiResolver;
 
 	/**
+	 * @var callable accepts a string and returns a string
+	 */
+	private $linkSanitizer;
+
+	/**
 	 * @param SearchConfig|null $config
 	 * @param InterwikiResolver|null $interwikiResolver
+	 * @param callable|null $linkSanitizer
 	 */
-	public function __construct( SearchConfig $config = null, InterwikiResolver $interwikiResolver = null ) {
+	public function __construct( SearchConfig $config = null, InterwikiResolver $interwikiResolver = null, callable $linkSanitizer = null ) {
 		$this->config = $config ?: MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
 		$this->interwikiResolver = $interwikiResolver ?: MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
+		$this->linkSanitizer = $linkSanitizer ?: function ( $v ) {
+			return \Sanitizer::escapeIdForLink( $v );
+		};
 	}
 
 	/**
@@ -107,5 +117,21 @@ class TitleHelper {
 		}
 		// no wiki is suspicious, should we log something?
 		return null;
+	}
+
+	/**
+	 * @param string $id
+	 * @return string
+	 */
+	public function sanitizeSectionFragment( $id ) {
+		return ( $this->linkSanitizer )( $id );
+	}
+
+	/**
+	 * @param Title $title
+	 * @return string
+	 */
+	public function getNamespaceText( Title $title ) {
+		return Util::getNamespaceText( $title );
 	}
 }

@@ -129,6 +129,7 @@ class CirrusSearch extends SearchEngine {
 
 		// enable interwiki by default
 		$this->features['interwiki'] = true;
+		$this->features['show-multimedia-search-results'] = $this->config->get( 'CirrusSearchCrossProjectShowMultimedia' ) == true;
 		$this->debugOptions = $debugOptions ?? CirrusDebugOptions::fromRequest( $this->request );
 	}
 

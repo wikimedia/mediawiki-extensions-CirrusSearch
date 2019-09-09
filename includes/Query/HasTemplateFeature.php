@@ -5,6 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
+use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
@@ -16,6 +17,8 @@ use Title;
  * Since we don't actually index templates like that, munge the query here.
  */
 class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeature {
+	const MAX_CONDITIONS = 256;
+
 	/**
 	 * @return string[]
 	 */
@@ -50,16 +53,33 @@ class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeat
 	 * @return array|false|null
 	 */
 	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
-		if ( strpos( $value, ':' ) === 0 ) {
-			$value = substr( $value, 1 );
-		} else {
-			$title = Title::newFromText( $value );
-			if ( $title && $title->getNamespace() === NS_MAIN ) {
-				$value = Title::makeTitle( NS_TEMPLATE, $title->getDBkey() )
-					->getPrefixedText();
-			}
+		$values = explode( '|', $value, self::MAX_CONDITIONS + 1 );
+		if ( count( $values ) > self::MAX_CONDITIONS ) {
+			$warningCollector->addWarning(
+				'cirrussearch-feature-too-many-conditions',
+				$key,
+				self::MAX_CONDITIONS
+			);
+			$values = array_slice(
+				$values,
+				0,
+				self::MAX_CONDITIONS
+			);
 		}
-		return [ 'value' => $value ];
+		$templates = [];
+		foreach ( $values as $template ) {
+			if ( strpos( $template, ':' ) === 0 ) {
+				$template = substr( $template, 1 );
+			} else {
+				$title = Title::newFromText( $template );
+				if ( $title && $title->getNamespace() === NS_MAIN ) {
+					$template = Title::makeTitle( NS_TEMPLATE, $title->getDBkey() )
+						->getPrefixedText();
+				}
+			}
+			$templates[] = $template;
+		}
+		return [ 'templates' => $templates ];
 	}
 
 	/**
@@ -71,11 +91,16 @@ class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeat
 	}
 
 	/**
-	 * @param string[] $parsedValue
+	 * @param string[][] $parsedValue
 	 * @return AbstractQuery
 	 */
 	protected function doGetFilterQuery( array $parsedValue ) {
-		return QueryHelper::matchPage( 'template', $parsedValue['value'] );
+		return Filters::booleanOr( array_map(
+			function ( $v ) {
+				return QueryHelper::matchPage( 'template', $v );
+			},
+			$parsedValue['templates']
+		) );
 	}
 
 	/**

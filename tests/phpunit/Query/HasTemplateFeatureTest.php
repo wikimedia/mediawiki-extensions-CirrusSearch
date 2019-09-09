@@ -18,7 +18,7 @@ class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'query' => 'Template:Coord',
 					],
 				] ],
-				[ 'value' => 'Template:Coord' ],
+				[ 'templates' => [ 'Template:Coord' ] ],
 				'hastemplate:Coord',
 			],
 			'calling out Template NS directly' => [
@@ -27,7 +27,7 @@ class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'query' => 'Template:Coord',
 					],
 				] ],
-				[ 'value' => 'Template:Coord' ],
+				[ 'templates' => [ 'Template:Coord' ] ],
 				'hastemplate:Template:Coord',
 			],
 			'with namespace' => [
@@ -36,7 +36,7 @@ class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'query' => 'User talk:Zomg',
 					],
 				] ],
-				[ 'value' => 'User_talk:Zomg' ],
+				[ 'templates' => [ 'User_talk:Zomg' ] ],
 				'hastemplate:User_talk:Zomg',
 			],
 			'using colon prefix to indicate NS_MAIN' => [
@@ -45,8 +45,32 @@ class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'query' => 'Main page',
 					],
 				] ],
-				[ 'value' => 'Main_page' ],
+				[ 'templates' => [ 'Main_page' ] ],
 				'hastemplate::Main_page',
+			],
+			'multiple templates' => [
+				[
+					'bool' => [
+						'should' => [
+							[
+								'match' => [
+									'template' => [
+										'query' => 'Template:Coord',
+									],
+								],
+							],
+							[
+								'match' => [
+									'template' => [
+										'query' => 'Template:Main Page',
+									],
+								],
+							]
+						]
+					]
+				],
+				[ 'templates' => [ 'Template:Coord', 'Template:Main Page' ] ],
+				'hastemplate:"Coord|Main Page"',
 			],
 		];
 	}
@@ -60,5 +84,22 @@ class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
 		$this->assertExpandedData( $feature, $term, [], [] );
 		$this->assertFilter( $feature, $term, $expected, [] );
+	}
+
+	public function testParseLimit() {
+		$feature = new HasTemplateFeature();
+		$q = implode( '|', range( 1, HasTemplateFeature::MAX_CONDITIONS + 1 ) );
+		$parsedValue = array_map(
+			function ( $v ) {
+				return "Template:$v";
+			},
+			range( 1, HasTemplateFeature::MAX_CONDITIONS )
+		);
+		$this->assertParsedValue( $feature, 'hastemplate:' . $q, [ 'templates' => $parsedValue ],
+			[ [
+				'cirrussearch-feature-too-many-conditions',
+				'hastemplate',
+				HasTemplateFeature::MAX_CONDITIONS
+		] ] );
 	}
 }

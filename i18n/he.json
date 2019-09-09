@@ -72,5 +72,6 @@
 	"cirrussearch-article-words": "מילים בכל דפי התוכן",
 	"cirrussearch-keyword-prefix-ns-mismatch": "מרחב השם שנמצא בביטוי החיפוש <code dir=\"ltr\">prefix:</code> אינו תואם למרחבי השם המבוקשים. באפשרותך לתקן זאת באמצעות שימוש בתחילית <code dir=\"ltr\">all:</code> בשאילתה שלך.",
 	"cirrussearch-autoselect-profile": "לתת למנוע החיפוש לבחור את הפרופיל הטוב ביותר לשימוש.",
-	"cirrussearch-offset-too-large": "לא היה אפשר לאחזר את התוצאות. נתמכות עד $1 תוצאות חיפוש, אבל התבקשו תוצאות שמתחילות ב־$2."
+	"cirrussearch-offset-too-large": "לא היה אפשר לאחזר את התוצאות. נתמכות עד $1 תוצאות חיפוש, אבל התבקשו תוצאות שמתחילות ב־$2.",
+	"cirrussearch-offset-not-allowed-with-random-sort": "אין התייחסות לבקשה לחלק לדפים תוצאות ממוינות אקראית."
 }

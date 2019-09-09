@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Calak",
-			"Épine"
+			"Épine",
+			"Muhammed taha"
 		]
 	},
 	"cirrussearch-now-using": "ئەم ویکییە مۆتۆرێکی نوێی گەڕان بە کار دەھێنی. ([[mw:Special:MyLanguage/Help:CirrusSearch|زیاتر بزانە]])",
@@ -28,5 +29,6 @@
 	"cirrussearch-explore-similar-languages": "زمانەکان",
 	"cirrussearch-explore-similar-related-none": "ھیچ پەڕەیەکی پەیوەستدار بەردەست نییە",
 	"cirrussearch-explore-similar-categories-none": "ھیچ پۆلێک بەردەست نییە",
-	"cirrussearch-explore-similar-languages-none": "بە زمانی تر بەردەست نییە"
+	"cirrussearch-explore-similar-languages-none": "بە زمانی تر بەردەست نییە",
+	"cirrussearch-article-words": "وشەکانی ھەموو وتارەکان"
 }

@@ -587,7 +587,28 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 					$requestStats->increment( "$statsKey.hit" );
 					$log->setCachedResult( $logVariables );
 					$this->successViaCache( $log );
-					return $multiResultSet;
+
+					if ( $multiResultSet->isOK() ) {
+						/**
+						 * @var $cachedMResultSet \Elastica\Multi\ResultSet
+						 */
+						$cachedMResultSet = $multiResultSet->getValue();
+						if ( count( $cachedMResultSet->getResultSets() ) !== count( $searches ) ) {
+							LoggerFactory::getInstance( 'CirrusSearch' )
+								->warning( 'Ignoring a cached Multi/ResultSet wanted {nb_queries} response(s) but received {nb_responses}',
+									[
+										'nb_queries' => count( $searches ),
+										'nb_responses' => count( $cachedMResultSet->getResultSets() )
+									] );
+							$requestStats->increment( "$statsKey.incoherent" );
+						} else {
+							return $multiResultSet;
+						}
+					} else {
+						LoggerFactory::getInstance( 'CirrusSearch' )
+							->warning( 'Cached a Status value that is not OK' );
+						$requestStats->increment( "$statsKey.nok" );
+					}
 				} else {
 					$requestStats->increment( "$statsKey.miss" );
 				}

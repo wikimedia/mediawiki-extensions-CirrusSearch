@@ -53,7 +53,7 @@ class MSearchRequests {
 	 */
 	public function toMSearchResponses( array $resultSets ): MSearchResponses {
 		Assert::parameter( count( $resultSets ) === count( $this->requests ), '$responses',
-			'must have as many responses as requests' );
+			'must have as many responses as requests (wanted ' . count( $this->requests ) . ' received ' . count( $resultSets ) . ')' );
 		$mi = new MultipleIterator( MultipleIterator::MIT_NEED_ALL );
 		$mi->attachIterator( new ArrayIterator( $this->requests ) );
 		$mi->attachIterator( new ArrayIterator( $resultSets ) );

@@ -51,7 +51,7 @@ return [
 				'params' => [
 					'profile' => 'glent',
 					'profile_params' => [
-						'methods' => [ 'm0' ],
+						'methods' => [ 'm0run' ],
 					]
 				]
 			],

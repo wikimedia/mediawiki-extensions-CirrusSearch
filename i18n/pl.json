@@ -10,7 +10,8 @@
 			"Nux",
 			"InternerowyGołąb",
 			"Rzuwig",
-			"Railfail536"
+			"Railfail536",
+			"Rail"
 		]
 	},
 	"cirrussearch-desc": "Wyszukiwanie dla MediaWiki za pomocą Elasticsearch",

@@ -429,9 +429,8 @@ class Hooks {
 			'removedLinks' => self::prepareTitlesForLinksUpdate(
 				$linksUpdate->getRemovedLinks(), $wgCirrusSearchUnlinkedArticlesToUpdate ),
 		];
-		// Prioritize jobs that are triggered from a web process.  This should prioritize
-		// single page update jobs over those triggered by template changes or the saneitizer.
-		if ( PHP_SAPI != 'cli' ) {
+		// non recursive LinksUpdate can go to the non prioritized queue
+		if ( $linksUpdate->isRecursive() ) {
 			$params[ 'prioritize' ] = true;
 			$delay = $wgCirrusSearchUpdateDelay['prioritized'];
 		} else {

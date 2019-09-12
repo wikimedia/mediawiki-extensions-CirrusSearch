@@ -11,7 +11,7 @@
 	"cirrussearch-now-using": "Това уики ползва нова търсачка. ([[mw:Special:MyLanguage/Help:CirrusSearch|Повече информация]])",
 	"cirrussearch-pref-label": "Ново търсене",
 	"prefs-completion": "Допълване при търсене",
-	"cirrussearch-pref-completion-profile-help": "Настройки за предложения при търсене по време на писане.",
+	"cirrussearch-pref-completion-profile-help": "Настройки за предложения при търсене по време на писане.\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester CompletionSuggester] е алгоритъм за предположения при търсене с по-добра корекция на правописните грешки и търсене на уместни резултати. Търсене по представка е остарял алгоритъм за търсене от типа „търсене при въвеждане“.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "По подразбиране (препоръчително)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Коригира до две правописни грешки. Премахва пренасочвания, които са подобни на главното заглавие.",
 	"cirrussearch-completion-profile-strict-pref-name": "Стриктен режим (за напреднали)",

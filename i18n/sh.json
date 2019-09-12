@@ -55,6 +55,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint treba dati valjanu SPARQL-završnicu kako bi koristio duboku pretragu kategorija.",
 	"cirrussearch-feature-deepcat-exception": "Nije uspjelo duboko SPARQL-pretraživanje kategorija",
 	"cirrussearch-feature-deepcat-toomany": "Duboka pretraga dala je previše kategorija",
+	"cirrussearch-feature-deepcat-invalid-title": "Naznačena kategorija je nevažeća.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nisu pružene ispravne kategorije za '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nisu pruženi ispravni naslovi za '$1'.",
 	"cirrussearch-mlt-not-configured": "Mogućnost '$1' pogrešno je postavljena. Obratite se administratoru da ga ispravi $wgCirrusSearchMoreLikeThisFields",
@@ -67,5 +68,6 @@
 	"cirrussearch-article-words": "Riječi u svim sadržajnim stranicama",
 	"cirrussearch-keyword-prefix-ns-mismatch": "Imenski prostor koji se nalazi u pretraženome <code>prefix:</code> ne odgovara traženim imenskim prostorima. Možete ga popraviti stavljanjem <code>all:</code> prije zahtjeva.",
 	"cirrussearch-autoselect-profile": "Neka tražilica odredi najprikladniji profil.",
-	"cirrussearch-offset-too-large": "Nisam mogao dobiti ishod. Podržane su do $1 stavki, ali se traže stavke počevši od $2."
+	"cirrussearch-offset-too-large": "Nisam mogao dobiti ishod. Podržane su do $1 stavki, ali se traže stavke počevši od $2.",
+	"cirrussearch-offset-not-allowed-with-random-sort": "Zanemarujem zahtjez za stranično razbijanje proizvoljno sortitanih ishodnih unosa."
 }

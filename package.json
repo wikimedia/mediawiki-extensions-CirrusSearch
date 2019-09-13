@@ -12,7 +12,7 @@
 	"devDependencies": {
 		"bluebird": "3.5.1",
 		"chai": "4.1.2",
-		"cucumber": "3.0.1",
+		"cucumber": "4.2.1",
 		"deepmerge": "2.0.1",
 		"eslint-config-wikimedia": "0.12.0",
 		"grunt": "1.0.4",
@@ -28,7 +28,7 @@
 		"semlog": "0.6.10",
 		"stylelint": "8.2.0",
 		"stylelint-config-wikimedia": "0.4.2",
-		"wdio-cucumber-framework": "1.0.1",
+		"wdio-cucumber-framework": "2.2.8",
 		"wdio-junit-reporter": "0.4.4",
 		"wdio-mediawiki": "0.4.0",
 		"wdio-mocha-framework": "0.6.4",

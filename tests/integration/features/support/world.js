@@ -7,7 +7,7 @@
  * to the same apiClient instance as `World` (useful because the apiClient
  * keeps a user/login state).
  */
-const { defineSupportCode } = require( 'cucumber' ),
+const { setWorldConstructor } = require( 'cucumber' ),
 	request = require( 'request-promise-native' ),
 	log = require( 'semlog' ).log,
 	Bot = require( 'mwbot' ),
@@ -156,6 +156,4 @@ function World( { attach, parameters } ) {
 	};
 }
 
-defineSupportCode( function ( { setWorldConstructor } ) {
-	setWorldConstructor( World );
-} );
+setWorldConstructor( World );

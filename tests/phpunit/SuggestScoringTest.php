@@ -263,6 +263,8 @@ class SuggestScoringTest extends CirrusTestCase {
 			$this->assertGreaterThan( 0, $qs->score( $page ), "Score is always greater than 0" );
 			$this->assertLessThan( QualityScore::SCORE_RANGE, $qs->score( $page ),
 				"Score is always lower than " . QualityScore::SCORE_RANGE );
+			$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
+			"Explanation matches", 2 );
 		}
 
 		// Edges
@@ -276,6 +278,8 @@ class SuggestScoringTest extends CirrusTestCase {
 		];
 		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ),
 			"Highest score is " . QualityScore::SCORE_RANGE );
+		$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
+			"Explanation matches", 2 );
 
 		$page = [
 			'incoming_links' => 0,
@@ -286,9 +290,13 @@ class SuggestScoringTest extends CirrusTestCase {
 			'template' => []
 		];
 		$this->assertEquals( 0, $qs->score( $page ), "Lowest score is 0" );
+		$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
+			"Explanation matches", 2 );
 
 		$page = [];
 		$this->assertEquals( 0, $qs->score( $page ), "Score of a broken article is 0" );
+		$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
+			"Explanation matches", 2 );
 
 		// A very small wiki
 		$qs = new QualityScore();
@@ -303,6 +311,8 @@ class SuggestScoringTest extends CirrusTestCase {
 		];
 		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ),
 			"With very small wiki the highest score is also " . QualityScore::SCORE_RANGE );
+		$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
+			"Explanation matches", 2 );
 
 		// The scoring function should not fail with 0 page
 		$qs = new QualityScore();
@@ -316,6 +326,8 @@ class SuggestScoringTest extends CirrusTestCase {
 		];
 		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ),
 			"With a zero page wiki the highest score is also " . QualityScore::SCORE_RANGE );
+		$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
+			"Explanation matches", 2 );
 	}
 
 	/**
@@ -358,6 +370,8 @@ class SuggestScoringTest extends CirrusTestCase {
 				$this->assertTrue( $score <= QualityScore::SCORE_RANGE,
 					"Score is always lower than QualityScore::SCORE_RANGE " . get_class( $scorer ) .
 					" with these values $pagedebug" );
+				$this->assertEquals( $scorer->explain( $page )['value'], $scorer->score( $page ),
+					get_class( $scorer ) . " : explain gives same score with these values $pagedebug", 2 );
 			}
 		}
 	}

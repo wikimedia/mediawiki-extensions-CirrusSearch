@@ -43,4 +43,11 @@ interface SuggestScoringMethod {
 	 * @param int $maxDocs the total number of docs in the index
 	 */
 	public function setMaxDocs( $maxDocs );
+
+	/**
+	 * Explain the score
+	 * @param array $doc
+	 * @return array
+	 */
+	public function explain( array $doc );
 }

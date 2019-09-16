@@ -2,8 +2,11 @@
 
 namespace CirrusSearch\BuildDocument\Completion;
 
-use Title;
+use CirrusSearch\Connection;
+use Elastica\Multi\Search as MultiSearch;
+use Elastica\Search;
 use LinkBatch;
+use Title;
 
 /**
  * Build a doc ready for the titlesuggest index.
@@ -103,10 +106,35 @@ class SuggestBuilder {
 	}
 
 	/**
+	 * @param Connection $connection
+	 * @param string|null $scoreMethodName
+	 * @param string|null $indexBaseName
+	 * @return SuggestBuilder
+	 * @throws \Exception
+	 */
+	public static function create( Connection $connection, $scoreMethodName = null, $indexBaseName = null ): SuggestBuilder {
+		$config  = $connection->getConfig();
+		$scoreMethodName = $scoreMethodName ?: $config->get( 'CirrusSearchCompletionDefaultScore' );
+		$scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName );
+
+		$extraBuilders = [];
+		if ( $config->get( 'CirrusSearchCompletionSuggesterUseDefaultSort' ) ) {
+			$extraBuilders[] = new DefaultSortSuggestionsBuilder();
+		}
+		$subPhrasesConfig = $config->get( 'CirrusSearchCompletionSuggesterSubphrases' );
+		if ( $subPhrasesConfig['build'] ) {
+			$extraBuilders[] = NaiveSubphrasesSuggestionsBuilder::create( $subPhrasesConfig );
+		}
+		$scoreMethod->setMaxDocs( self::fetchMaxDoc( $connection, $indexBaseName ) );
+		return new SuggestBuilder( $scoreMethod, $extraBuilders );
+	}
+
+	/**
 	 * @param array[] $inputDocs a batch of docs to build
+	 * @param bool $explain
 	 * @return \Elastica\Document[] a set of suggest documents
 	 */
-	public function build( $inputDocs ) {
+	public function build( $inputDocs, $explain = false ) {
 		// Cross namespace titles
 		$crossNsTitles = [];
 		$docs = [];
@@ -125,7 +153,7 @@ class SuggestBuilder {
 					// Bad doc, nothing to do here.
 					continue;
 				}
-				$docs = array_merge( $docs, $this->buildNormalSuggestions( $docId, $inputDoc ) );
+				$docs = array_merge( $docs, $this->buildNormalSuggestions( $docId, $inputDoc, $explain ) );
 			} else {
 				if ( !isset( $inputDoc['redirect'] ) ) {
 					// Bad doc, nothing to do here.
@@ -142,6 +170,11 @@ class SuggestBuilder {
 					$score = $this->scoringMethod->score( $inputDoc );
 					// Discount the score of these suggestions.
 					$score = (int)( $score * self::CROSSNS_DISCOUNT );
+					$explainDetails = null;
+					if ( $explain ) {
+						// TODO: add explanation of the crossns discount
+						$explainDetails = $this->scoringMethod->explain( $inputDoc );
+					}
 
 					$title = Title::makeTitle( $redir['namespace'], $redir['title'] );
 					$crossNsTitles[] = [
@@ -149,6 +182,7 @@ class SuggestBuilder {
 						'score' => $score,
 						'text' => $redir['title'],
 						'inputDoc' => $inputDoc,
+						'explain' => $explainDetails,
 					];
 				}
 			}
@@ -173,7 +207,8 @@ class SuggestBuilder {
 					'text' => $data['text'],
 					'variants' => []
 				];
-				$docs[] = $this->buildTitleSuggestion( $data['title']->getArticleID(), $suggestion, $data['score'], $data['inputDoc'] );
+				$docs[] = $this->buildTitleSuggestion( $data['title']->getArticleID(), $suggestion,
+					$data['score'], $data['inputDoc'], $data['explain'] );
 			}
 		}
 		return $docs;
@@ -184,21 +219,26 @@ class SuggestBuilder {
 	 *
 	 * @param string $docId
 	 * @param array $inputDoc
+	 * @param bool $explain
 	 * @return \Elastica\Document[] a set of suggest documents
 	 */
-	private function buildNormalSuggestions( $docId, array $inputDoc ) {
+	private function buildNormalSuggestions( $docId, array $inputDoc, $explain = false ) {
 		if ( !isset( $inputDoc['title'] ) ) {
 			// Bad doc, nothing to do here.
 			return [];
 		}
 
 		$score = $this->scoringMethod->score( $inputDoc );
+		$explainDetails = null;
+		if ( $explain ) {
+			$explainDetails = $this->scoringMethod->explain( $inputDoc );
+		}
 
 		$suggestions = $this->extractTitleAndSimilarRedirects( $inputDoc );
 
-		$docs = [ $this->buildTitleSuggestion( $docId, $suggestions['group'], $score, $inputDoc ) ];
+		$docs = [ $this->buildTitleSuggestion( $docId, $suggestions['group'], $score, $inputDoc, $explainDetails ) ];
 		if ( !empty( $suggestions['candidates'] ) ) {
-			$docs[] = $this->buildRedirectsSuggestion( $docId, $suggestions['candidates'], $score, $inputDoc );
+			$docs[] = $this->buildRedirectsSuggestion( $docId, $suggestions['candidates'], $score, $inputDoc, $explainDetails );
 		}
 		return $docs;
 	}
@@ -224,9 +264,10 @@ class SuggestBuilder {
 	 * @param array $title the title in 'text' and an array of similar redirects in 'variants'
 	 * @param int $score the weight of the suggestion
 	 * @param mixed[] $inputDoc
+	 * @param array|null $scoreExplanation
 	 * @return \Elastica\Document the suggestion document
 	 */
-	private function buildTitleSuggestion( $docId, array $title, $score, array $inputDoc ) {
+	private function buildTitleSuggestion( $docId, array $title, $score, array $inputDoc, array $scoreExplanation = null ) {
 		$inputs = [ $title['text'] ];
 		foreach ( $title['variants'] as $variant ) {
 			$inputs[] = $variant;
@@ -236,7 +277,8 @@ class SuggestBuilder {
 			$docId,
 			$inputs,
 			$score,
-			$inputDoc
+			$inputDoc,
+			$scoreExplanation
 		);
 	}
 
@@ -251,16 +293,18 @@ class SuggestBuilder {
 	 * @param string[] $redirects
 	 * @param int $score the weight of the suggestion
 	 * @param mixed[] $inputDoc
+	 * @param array|null $scoreExplanation
 	 * @return \Elastica\Document the suggestion document
 	 */
-	private function buildRedirectsSuggestion( $docId, array $redirects, $score, array $inputDoc ) {
+	private function buildRedirectsSuggestion( $docId, array $redirects, $score, array $inputDoc, array $scoreExplanation = null ) {
 		$inputs = [];
 		foreach ( $redirects as $redirect ) {
 			$inputs[] = $redirect;
 		}
+		// TODO: add redirect discount explanation
 		$score = (int)( $score * self::REDIRECT_DISCOUNT );
 		return $this->buildSuggestion( self::REDIRECT_SUGGESTION, $docId, $inputs,
-			$score, $inputDoc );
+			$score, $inputDoc, $scoreExplanation );
 	}
 
 	/**
@@ -271,9 +315,10 @@ class SuggestBuilder {
 	 * @param string[] $inputs the suggestion inputs
 	 * @param int $score the weight of the suggestion
 	 * @param mixed[] $inputDoc
+	 * @param array|null $scoreExplanation
 	 * @return \Elastica\Document a doc ready to be indexed in the completion suggester
 	 */
-	private function buildSuggestion( $suggestionType, $docId, array $inputs, $score, array $inputDoc ) {
+	private function buildSuggestion( $suggestionType, $docId, array $inputs, $score, array $inputDoc, array $scoreExplanation = null ) {
 		$doc = [
 			'batch_id' => $this->batchId,
 			'source_doc_id' => $inputDoc['id'],
@@ -295,20 +340,10 @@ class SuggestBuilder {
 		foreach ( $this->extraBuilders as $builder ) {
 			$builder->build( $inputDoc, $suggestionType, $score, $suggestDoc, $this->targetNamespace );
 		}
-		return $suggestDoc;
-	}
-
-	/**
-	 * @param array $input Document to build inputs for
-	 * @return array list of prepared suggestions that should
-	 *  resolve to the document.
-	 */
-	public function buildInputs( array $input ) {
-		$inputs = [ $input['text'] ];
-		foreach ( $input['variants'] as $variant ) {
-			$inputs[] = $variant;
+		if ( $scoreExplanation !== null ) {
+			$suggestDoc->set( 'score_explanation', $scoreExplanation );
 		}
-		return $inputs;
+		return $suggestDoc;
 	}
 
 	/**
@@ -470,5 +505,39 @@ class SuggestBuilder {
 	 */
 	public function getTargetNamespace() {
 		return $this->targetNamespace;
+	}
+
+	/**
+	 * @param Connection $connection
+	 * @param $indexBaseName
+	 * @return int
+	 */
+	private static function fetchMaxDoc( Connection $connection, $indexBaseName = null ) {
+		// Indices to use for counting max_docs used by scoring functions
+		// Since we work mostly on the content namespace it seems OK to count
+		// only docs in the CONTENT index.
+		$countIndices = [ Connection::CONTENT_INDEX_TYPE ];
+
+		$indexBaseName = $indexBaseName ?: $connection->getConfig()->get( 'CirrusSearchIndexBaseName' );
+
+		// Run a first query to count the number of docs.
+		// This is needed for the scoring methods that need
+		// to normalize values against wiki size.
+		$mSearch = new MultiSearch( $connection->getClient() );
+		foreach ( $countIndices as $sourceIndexType ) {
+			$search = new Search( $connection->getClient() );
+			$search->addIndex(
+				$connection->getIndex( $indexBaseName, $sourceIndexType )
+			);
+			$search->getQuery()->setSize( 0 );
+			$mSearch->addSearch( $search );
+		}
+
+		$mSearchRes = $mSearch->search();
+		$total = 0;
+		foreach ( $mSearchRes as $res ) {
+			$total += $res->getTotalHits();
+		}
+		return $total;
 	}
 }

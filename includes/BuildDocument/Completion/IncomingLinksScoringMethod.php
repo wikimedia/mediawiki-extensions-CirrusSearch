@@ -25,4 +25,16 @@ class IncomingLinksScoringMethod implements SuggestScoringMethod {
 	 */
 	public function setMaxDocs( $maxDocs ) {
 	}
+
+	/**
+	 * Explain the score
+	 * @param array $doc
+	 * @return array
+	 */
+	public function explain( array $doc ) {
+		return [
+			'value' => $this->score( $doc ),
+			'description' => 'Number of incoming links'
+		];
+	}
 }

@@ -201,4 +201,183 @@ class QualityScore implements SuggestScoringMethod {
 			$this->incomingLinksNorm = 1;
 		}
 	}
+
+	/**
+	 * Explain the score
+	 * @param array $doc
+	 * @return array
+	 */
+	public function explain( array $doc ) {
+		$intermediateExplain = $this->intermediateExplain( $doc );
+		return [
+			'value' => (int)( $intermediateExplain['value'] * self::SCORE_RANGE ),
+			'description' => 'Convert to an integer score: ' . $intermediateExplain['value'] . ' * ' . self::SCORE_RANGE,
+			'details' => [ 'normalized_score' => $intermediateExplain ]
+		];
+	}
+
+	/**
+	 * @param array $doc
+	 * @return array
+	 */
+	protected function intermediateExplain( array $doc ) {
+		$incLinks = $this->explainScoreNormLog2( $doc['incoming_links'] ?? 0,
+			$this->incomingLinksNorm, 'incoming_links' );
+		$pageSize = $this->explainScoreNormLog2( $doc['text_bytes'] ?? 0,
+			self::PAGE_SIZE_NORM, 'text_bytes' );
+		$extLinks = $this->explainScoreNorm( isset( $doc['external_link'] )
+			? count( $doc['external_link'] ) : 0, self::EXTERNAL_LINKS_NORM, 'external_links_count' );
+		$headings = $this->explainScoreNorm( isset( $doc['heading'] )
+			? count( $doc['heading'] ) : 0, self::HEADING_NORM, 'headings_count' );
+		$redirects = $this->explainScoreNorm( isset( $doc['redirect'] )
+			? count( $doc['redirect'] ) : 0, self::REDIRECT_NORM, 'redirects_count' );
+
+		$details = [];
+		$total = self::INCOMING_LINKS_WEIGHT + self::EXTERNAL_LINKS_WEIGHT +
+				 self::PAGE_SIZE_WEIGHT + self::HEADING_WEIGHT + self::REDIRECT_WEIGHT;
+		$details['incoming_links_weighted'] = $this->explainWeight( $incLinks, self::INCOMING_LINKS_WEIGHT,
+			$total, 'incoming_links_normalized' );
+		$details['external_links_weighted'] = $this->explainWeight( $extLinks, self::EXTERNAL_LINKS_WEIGHT,
+			$total, 'external_links_count_normalized' );
+		$details['text_bytes_weighted'] = $this->explainWeight( $pageSize, self::PAGE_SIZE_WEIGHT,
+			$total, 'text_bytes_normalized' );
+		$details['headings_count_weighted'] = $this->explainWeight( $headings, self::HEADING_WEIGHT,
+			$total, 'headings_count_normalized' );
+		$details['redirects_count_weighted'] = $this->explainWeight( $redirects, self::REDIRECT_WEIGHT,
+			$total, 'redirects_count_normalized' );
+
+		$score = 0;
+		foreach ( $details as $detail ) {
+			$score += $detail['value'];
+		}
+		$metadataExplain = [
+			'value' => $score,
+			'description' => 'weighted sum of document metadata',
+			'details' => $details
+		];
+
+		if ( $this->boostTemplates ) {
+			return $this->explainBoostTemplates( $metadataExplain, $doc );
+		}
+		return $metadataExplain;
+	}
+
+	/**
+	 * @param array $doc
+	 * @return array
+	 */
+	private function explainTemplateBoosts( array $doc ) {
+		if ( !isset( $doc['template'] ) ) {
+			return [
+				'value' => 1,
+				'description' => 'No templates'
+			];
+		}
+
+		if ( $this->boostTemplates ) {
+			$details = [];
+			$boost = 1;
+			// compute the global boost
+			foreach ( $this->boostTemplates as $k => $v ) {
+				if ( in_array( $k, $doc['template'] ) ) {
+					$details["$k: boost for " . $v] = [
+						'value' => $v,
+						'description' => $k
+					];
+					$boost *= $v;
+				}
+			}
+			if ( $details !== [] ) {
+				return [
+					'value' => $boost,
+					'description' => 'Product of all template boosts',
+					'details' => $details
+				];
+			}
+			return [
+				'value' => 1,
+				'description' => "No templates match any boosted templates"
+			];
+		} else {
+			return [
+				'value' => 1,
+				'description' => "No configured boosted templates"
+			];
+		}
+	}
+
+	/**
+	 * @param array $metadataExplain
+	 * @param array $doc
+	 * @return array
+	 */
+	private function explainBoostTemplates( array $metadataExplain, array $doc ) {
+		$boostExplain = $this->explainTemplateBoosts( $doc );
+		$score = $metadataExplain['value'];
+		$boost = $boostExplain['value'];
+		$boostExplain = [
+			'value' => $boost > 1 ? 1 - ( 1 / $boost ) : - ( 1 - $boost ),
+			'description' => ( $boost > 1 ? "1-(1/boost)" : "-(1-boost)" ) . "; boost = $boost",
+			'details' => [ 'template_boosts' => $boostExplain ]
+		];
+		$boost = $boostExplain['value'];
+
+		if ( $boost > 0 ) {
+			return [
+				'value' => $score + ( ( ( 1 - $score ) / 2 ) * $boost ),
+				'description' => "score + (((1-score)/2)*boost); score = $score, boost = $boost",
+				'details' => [ $metadataExplain, $boostExplain ]
+			];
+		} else {
+			return [
+				'value' => $score + ( ( $score / 2 ) * $boost ),
+				'description' => "score+(((1-score)/2)*boost); score = $score, boost = $boost",
+				'details' => [ 'score' => $metadataExplain, 'boost' => $boostExplain ]
+			];
+		}
+	}
+
+	/**
+	 * @param float|int $value
+	 * @param float|int $norm
+	 * @param string $valueName
+	 * @return array
+	 */
+	private function explainScoreNormLog2( $value, $norm, $valueName ) {
+		$score = $this->scoreNormLog2( $value, $norm );
+		return [
+			'value' => $score,
+			'description' => "log₂((min($valueName,max)/max)+1); $valueName = $value, max = $norm",
+		];
+	}
+
+	/**
+	 * @param int|float $value
+	 * @param int|float $norm
+	 * @param string $valueName
+	 * @return array
+	 */
+	private function explainScoreNorm( $value, $norm, $valueName ) {
+		$score = $this->scoreNorm( $value, $norm );
+		return [
+			'value' => $score,
+			'description' => "min($valueName,max)/max; $valueName = $value, max = $norm",
+		];
+	}
+
+	/**
+	 * @param array $detail
+	 * @param float $weight
+	 * @param float $allWeights
+	 * @param string $valueName
+	 * @return array
+	 */
+	protected function explainWeight( array $detail, $weight, $allWeights, $valueName ) {
+		$value = $detail['value'];
+		return [
+			'value' => $value * $weight / $allWeights,
+			'description' => "$valueName*weight/total; $valueName = $value, weight = $weight, total = $allWeights",
+			'details' => [ $valueName => $detail ]
+		];
+	}
 }

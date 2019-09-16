@@ -58,5 +58,5 @@ Feature: More like an article
 
   Scenario: Morelikethis can be combined
     When I api search for morelikethis:"More Like Me 1|More Like Me Set 2 Page 1" intitle:3
-    Then More Like Me Set 3 is part of the api search result
+    Then More Like Me Set 2 Page 3 is part of the api search result
       And More Like Me Set 2 is not in the api search results

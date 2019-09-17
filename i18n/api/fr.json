@@ -25,5 +25,9 @@
 	"apihelp-query+cirrusdoc-example": "Obtenir le dump d’un article unique CirrusSearch tel qu’il est actuellement indexé dans la recherche.",
 	"apihelp-query+cirrusbuilddoc-summary": "Dump du document d’un article de CirrusSearch depuis les serveurs de base de données",
 	"apihelp-query+cirrusbuilddoc-example": "Obtenir un dump d’un unique article de CirrusSearch généré depuis la base de données.",
-	"apierror-cirrus-requesttoolong": "La requête de recherche de préfixe a dépassé la longueur maximale autorisée ($1 &gt; $2)."
+	"apierror-cirrus-requesttoolong": "La requête de recherche de préfixe a dépassé la longueur maximale autorisée ($1 &gt; $2).",
+	"apihelp-query+compsuggestbuilddoc+param-method": "La méthode de notation à utiliser",
+	"apierror-compsuggestbuilddoc-bad-method": "Méthode de notation inconnue",
+	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Contenu du document utilisé par l’outil de suggestion de complétude",
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Obtenir un contenu du document utilisé par l’outil de suggestion de complétude"
 }

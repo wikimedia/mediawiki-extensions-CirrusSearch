@@ -2,22 +2,22 @@
 
 namespace CirrusSearch\Search;
 
-use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 use Title;
 
 /**
  * @covers \CirrusSearch\Search\CirrusSearchResultBuilder
  * @covers \CirrusSearch\Search\ArrayCirrusSearchResult
  */
-class CirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
+class CirrusSearchResultBuilderTest extends CirrusTestCase {
 	/**
 	 * @var CirrusSearchResultBuilder
 	 */
 	private $builder;
 
 	public function testMandatoryFields() {
-		$builder = new CirrusSearchResultBuilder( Title::newMainPage(), 'foo|234' );
-		$this->assertEquals( Title::newMainPage(), $builder->build()->getTitle() );
+		$builder = new CirrusSearchResultBuilder( Title::makeTitle( NS_MAIN, 'Main Page' ), 'foo|234' );
+		$this->assertEquals( Title::makeTitle( NS_MAIN, 'Main Page' ), $builder->build()->getTitle() );
 		$this->assertEquals( 'foo|234', $builder->build()->getDocId() );
 
 		$interwikiTitle = Title::makeTitle( NS_CATEGORY, 'MyTitle', '', 'iw' );
@@ -35,8 +35,8 @@ class CirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 			'redirectSnippet' => [ 'redirectSnippet', 'some text', '' ],
 			'sectionSnippet' => [ 'sectionSnippet', 'some text', '' ],
 			'categorySnippet' => [ 'categorySnippet', 'some text', '' ],
-			'redirectTitle' => [ 'redirectTitle', Title::newMainPage(), null ],
-			'sectionTitle' => [ 'sectionTitle', Title::newMainPage(), null ],
+			'redirectTitle' => [ 'redirectTitle', Title::makeTitle( NS_MAIN, 'Main Page' ), null ],
+			'sectionTitle' => [ 'sectionTitle', Title::makeTitle( NS_MAIN, 'Main Page' ), null ],
 			'timestamp' => [ 'timestamp', $now, '', $now->getTimestamp( TS_MW ) ],
 			'wordCount' => [ 'wordCount', 4, 0 ],
 			'byteSize' => [ 'byteSize', 324, 0 ],
@@ -58,8 +58,8 @@ class CirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 		$setter = $this->setter( $field );
 
 		$this->builder = $this->builder !== null ?
-			$this->builder->reset( Title::newMainPage(), '1' ) :
-			new CirrusSearchResultBuilder( Title::newMainPage(), '1' );
+			$this->builder->reset( Title::makeTitle( NS_MAIN, 'Main Page' ), '1' ) :
+			new CirrusSearchResultBuilder( Title::makeTitle( NS_MAIN, 'Main Page' ), '1' );
 
 		$res = $this->builder->build();
 		$this->assertEquals( $expectedDefaultValue, $getter( $res ) );

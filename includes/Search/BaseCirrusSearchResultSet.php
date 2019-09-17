@@ -319,5 +319,4 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 		}
 		return $this->titleHelper;
 	}
-
 }

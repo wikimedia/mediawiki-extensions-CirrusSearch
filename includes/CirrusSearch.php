@@ -13,12 +13,11 @@ use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Search\TitleResultsType;
-use ConfigException;
+use ISearchResultSet;
 use MediaWiki\MediaWikiServices;
 use RequestContext;
 use SearchEngine;
 use SearchIndexField;
-use ISearchResultSet;
 use SearchSuggestionSet;
 use Status;
 use Title;
@@ -117,11 +116,22 @@ class CirrusSearch extends SearchEngine {
 	private $namespacePrefixParser;
 
 	/**
+	 * @var InterwikiResolver
+	 */
+	private $interwikiResolver;
+
+	/**
 	 * @param SearchConfig|null $config
 	 * @param CirrusDebugOptions|null $debugOptions
-	 * @throws ConfigException
+	 * @param NamespacePrefixParser|null $namespacePrefixParser
+	 * @param InterwikiResolver|null $interwikiResolver
 	 */
-	public function __construct( SearchConfig $config = null, CirrusDebugOptions $debugOptions = null ) {
+	public function __construct(
+		SearchConfig $config = null,
+		CirrusDebugOptions $debugOptions = null,
+		NamespacePrefixParser $namespacePrefixParser = null,
+		InterwikiResolver $interwikiResolver = null
+	) {
 		// Initialize UserTesting before we create a Connection
 		// This is useful to do tests across multiple clusters
 		UserTesting::getInstance();
@@ -132,11 +142,12 @@ class CirrusSearch extends SearchEngine {
 		$this->requestContext = RequestContext::getMain();
 		$this->request = $this->requestContext->getRequest();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
-		$this->namespacePrefixParser = new class() implements NamespacePrefixParser {
+		$this->namespacePrefixParser = $namespacePrefixParser ?: new class() implements NamespacePrefixParser {
 			public function parse( $query ) {
 				return CirrusSearch::parseNamespacePrefixes( $query, true, true );
 			}
 		};
+		$this->interwikiResolver = $interwikiResolver ?: MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
 
 		// enable interwiki by default
 		$this->features['interwiki'] = true;
@@ -254,7 +265,8 @@ class CirrusSearch extends SearchEngine {
 			$searcher->getSearchContext()->areResultsPossible() &&
 			( $this->debugOptions->isReturnRaw() || method_exists( $result, 'addInterwikiResults' ) )
 		) {
-			$iwSearch = new InterwikiSearcher( $this->connection, $query->getSearchConfig(), $this->namespaces, null, $this->debugOptions );
+			$iwSearch = new InterwikiSearcher( $this->connection, $query->getSearchConfig(), $this->namespaces, null,
+				$this->debugOptions, $this->namespacePrefixParser, $this->interwikiResolver );
 			$interwikiResults = $iwSearch->getInterwikiResults( $query );
 			if ( $interwikiResults->isOK() && $interwikiResults->getValue() !== [] ) {
 				foreach ( $interwikiResults->getValue() as $interwiki => $interwikiResult ) {
@@ -558,7 +570,7 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private function makeSearcher( SearchConfig $config = null ) {
 		return new Searcher( $this->connection, $this->offset, $this->limit, $config ?? $this->config, $this->namespaces,
-				null, null, $this->debugOptions, $this->namespacePrefixParser );
+				null, null, $this->debugOptions, $this->namespacePrefixParser, $this->interwikiResolver );
 	}
 }
 

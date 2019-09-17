@@ -3,25 +3,25 @@
 namespace CirrusSearch\Search\Fetch;
 
 use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CirrusTestCaseTrait;
-use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MatchAll;
 
 /**
- * @covers \CirrusSearch\Search\Fetch\FetchedFieldBuilder
- * @covers \CirrusSearch\Search\Fetch\BaseHighlightedFieldBuilder
+ * @covers \CirrusSearch\Search\Fetch\HighlightedField
+ * @covers \CirrusSearch\Search\Fetch\BaseHighlightedField
  * @covers \CirrusSearch\Search\Fetch\ExperimentalHighlightedFieldBuilder
  */
-class HighlightedFieldBuilderTest extends CirrusIntegrationTestCase {
+class HighlightedFieldBuilderTest extends CirrusTestCase {
 	public function provideTestFactories() {
 		$tests = [];
-		$config = new HashSearchConfig( [
+		$config = $this->newHashSearchConfig( [
 			'CirrusSearchFragmentSize' => 350,
 		] );
-		$baseFactories = BaseHighlightedFieldBuilder::getFactories();
+		$baseFactories = BaseHighlightedField::getFactories();
 		$expFactories = ExperimentalHighlightedFieldBuilder::getFactories();
 		$factoryGroups = [
 			SearchQuery::SEARCH_TEXT => [
@@ -64,7 +64,7 @@ class HighlightedFieldBuilderTest extends CirrusIntegrationTestCase {
 		$this->assertArrayHasKey( $factoryGroup, $factories );
 		$this->assertArrayHasKey( $fieldName, $factories[$factoryGroup] );
 		$this->assertTrue( is_callable( $factories[$factoryGroup][$fieldName] ) );
-		/** @var BaseHighlightedFieldBuilder $actualField */
+		/** @var BaseHighlightedField $actualField */
 		$actualField = ( $factories[$factoryGroup][$fieldName] ) ( $config, $fieldName, 'dummyTarget', 1234 );
 		$this->assertFileContains( $expectedFile, CirrusIntegrationTestCase::encodeFixture( $actualField->toArray() ),
 			CirrusIntegrationTestCase::canRebuildFixture() );
@@ -72,10 +72,10 @@ class HighlightedFieldBuilderTest extends CirrusIntegrationTestCase {
 
 	public function testSetters() {
 		$expField = new ExperimentalHighlightedFieldBuilder( 'myfield', 'mytarget', 123 );
-		$baseField = new BaseHighlightedFieldBuilder( 'myfield', BaseHighlightedFieldBuilder::FVH_HL_TYPE, 'mytarget', 123 );
+		$baseField = new BaseHighlightedField( 'myfield', BaseHighlightedField::FVH_HL_TYPE, 'mytarget', 123 );
 		foreach ( [ $expField, $baseField ] as $field ) {
-			/** @var $field BaseHighlightedFieldBuilder */
-			$this->assertEquals( BaseHighlightedFieldBuilder::TYPE, $field->getType() );
+			/** @var $field BaseHighlightedField */
+			$this->assertEquals( BaseHighlightedField::TYPE, $field->getType() );
 			$this->assertEquals( 'myfield', $field->getFieldName() );
 			$this->assertEquals( 'mytarget', $field->getTarget() );
 			$this->assertEquals( 123, $field->getPriority() );
@@ -117,7 +117,7 @@ class HighlightedFieldBuilderTest extends CirrusIntegrationTestCase {
 
 	public function testSkipIfLastMatched() {
 		$expField = new ExperimentalHighlightedFieldBuilder( 'myfield', 'mytarget', 123 );
-		$baseField = new BaseHighlightedFieldBuilder( 'myfield', 'mytarget', 123 );
+		$baseField = new BaseHighlightedField( 'myfield', 'mytarget', 123 );
 
 		$expField->skipIfLastMatched();
 		$this->assertEquals( [ 'skip_if_last_matched' => true ], $expField->getOptions() );
@@ -127,7 +127,7 @@ class HighlightedFieldBuilderTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testRegex() {
-		$config = new HashSearchConfig( [
+		$config = $this->newHashSearchConfig( [
 			'CirrusSearchRegexMaxDeterminizedStates' => 233,
 			'LanguageCode' => 'testLangCode',
 			'CirrusSearchFragmentSize' => 345,
@@ -203,8 +203,8 @@ class HighlightedFieldBuilderTest extends CirrusIntegrationTestCase {
 	public function testMerge() {
 		$fields = [
 			[
-				new BaseHighlightedFieldBuilder( 'test', BaseHighlightedFieldBuilder::FVH_HL_TYPE, 'test', 123 ),
-				new BaseHighlightedFieldBuilder( 'test', BaseHighlightedFieldBuilder::FVH_HL_TYPE, 'test', 123 )
+				new BaseHighlightedField( 'test', BaseHighlightedField::FVH_HL_TYPE, 'test', 123 ),
+				new BaseHighlightedField( 'test', BaseHighlightedField::FVH_HL_TYPE, 'test', 123 )
 			],
 			[
 				new ExperimentalHighlightedFieldBuilder( 'test', 'test', 123 ),
@@ -229,24 +229,24 @@ class HighlightedFieldBuilderTest extends CirrusIntegrationTestCase {
 
 	public function testMergeGuards() {
 		$this->assertMergeFailure(
-			new BaseHighlightedFieldBuilder( 'field1', 'hltype', 'target', 123 ),
-			new BaseHighlightedFieldBuilder( 'field2', 'hltype', 'target', 123 ),
+			new BaseHighlightedField( 'field1', 'hltype', 'target', 123 ),
+			new BaseHighlightedField( 'field2', 'hltype', 'target', 123 ),
 			"HL Field [field1] must have the same field name to be mergeable with [field2]" );
 
 		$this->assertMergeFailure(
-			new BaseHighlightedFieldBuilder( 'field1', 'hltype', 'target', 123 ),
-			new BaseHighlightedFieldBuilder( 'field1', 'hltype2', 'target', 123 ),
+			new BaseHighlightedField( 'field1', 'hltype', 'target', 123 ),
+			new BaseHighlightedField( 'field1', 'hltype2', 'target', 123 ),
 			"HL Field [field1] must have the same highlighterType to be mergeable" );
 
 		$this->assertMergeFailure(
-			new BaseHighlightedFieldBuilder( 'field1', 'hltype', 'target', 123 ),
-			new BaseHighlightedFieldBuilder( 'field1', 'hltype', 'target2', 123 ),
+			new BaseHighlightedField( 'field1', 'hltype', 'target', 123 ),
+			new BaseHighlightedField( 'field1', 'hltype', 'target2', 123 ),
 			"HL Field [field1] must have the same target to be mergeable" );
 
 		$fieldCouples = [
 			[
-				new BaseHighlightedFieldBuilder( 'test', 'hltype', 'target', 123 ),
-				new BaseHighlightedFieldBuilder( 'test', 'hltype', 'target', 124 )
+				new BaseHighlightedField( 'test', 'hltype', 'target', 123 ),
+				new BaseHighlightedField( 'test', 'hltype', 'target', 124 )
 			],
 			[
 				new ExperimentalHighlightedFieldBuilder( 'test', 'target', 123 ),
@@ -255,8 +255,8 @@ class HighlightedFieldBuilderTest extends CirrusIntegrationTestCase {
 		];
 
 		foreach ( $fieldCouples as $couple ) {
-			/** @var BaseHighlightedFieldBuilder $f1 */
-			/** @var BaseHighlightedFieldBuilder $f2 */
+			/** @var BaseHighlightedField $f1 */
+			/** @var BaseHighlightedField $f2 */
 			list( $f1, $f2 ) = $couple;
 			$this->assertMergeFailure( $f1, $f2, 'HL Field [test] must have a query to be mergeable' );
 			$f1->setHighlightQuery( new MatchAll() );
@@ -287,7 +287,7 @@ class HighlightedFieldBuilderTest extends CirrusIntegrationTestCase {
 		}
 	}
 
-	public function assertMergeFailure( BaseHighlightedFieldBuilder $f1, BaseHighlightedFieldBuilder $f2, $msg ) {
+	public function assertMergeFailure( BaseHighlightedField $f1, BaseHighlightedField $f2, $msg ) {
 		try {
 			$f1->merge( $f2 );
 			$this->fail( "Expected InvalidArumentException with message $msg" );

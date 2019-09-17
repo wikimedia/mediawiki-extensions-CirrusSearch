@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\InterwikiResolver;
 use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Profile\SearchProfileService;
@@ -44,31 +45,37 @@ class FallbackRunner implements SearchMetricsProvider {
 
 	/**
 	 * @param SearchQuery $query
+	 * @param InterwikiResolver $interwikiResolver
 	 * @param string $profileContext
 	 * @param array $profileContextParam
 	 * @return FallbackRunner
 	 */
 	public static function create(
 		SearchQuery $query,
+		InterwikiResolver $interwikiResolver,
 		$profileContext = SearchProfileService::CONTEXT_DEFAULT,
 		$profileContextParam = []
 	): FallbackRunner {
-		$service = $query->getSearchConfig()->getProfileService();
-		if ( !$service->supportsContext( SearchProfileService::FALLBACKS, $profileContext ) ) {
+		$profileService = $query->getSearchConfig()->getProfileService();
+		if ( !$profileService->supportsContext( SearchProfileService::FALLBACKS, $profileContext ) ) {
 			// This component is optional and we simply avoid building it if the $profileContext does
 			// not define any defaults for it.
 			return self::noopRunner();
 		}
-		return self::createFromProfile( $query,
-			$service->loadProfile( SearchProfileService::FALLBACKS, $profileContext, null, $profileContextParam ) );
+		return self::createFromProfile(
+			$query,
+			$profileService->loadProfile( SearchProfileService::FALLBACKS, $profileContext, null, $profileContextParam ),
+			$interwikiResolver
+		);
 	}
 
 	/**
 	 * @param SearchQuery $query
 	 * @param array $profile
+	 * @param InterwikiResolver $interwikiResolver
 	 * @return FallbackRunner
 	 */
-	public static function createFromProfile( SearchQuery $query, array $profile ): FallbackRunner {
+	private static function createFromProfile( SearchQuery $query, array $profile, InterwikiResolver $interwikiResolver ): FallbackRunner {
 		$fallbackMethods = [];
 		$methodDefs = $profile['methods'] ?? [];
 		foreach ( $methodDefs as $methodDef ) {
@@ -83,7 +90,7 @@ class FallbackRunner implements SearchMetricsProvider {
 			if ( !is_subclass_of( $clazz, FallbackMethod::class ) ) {
 				throw new SearchProfileException( "Invalid FallbackMethod: $clazz must implement " . FallbackMethod::class );
 			}
-			$method = call_user_func( [ $clazz, 'build' ], $query, $params );
+			$method = call_user_func( [ $clazz, 'build' ], $query, $params, $interwikiResolver );
 			if ( $method !== null ) {
 				$fallbackMethods[] = $method;
 			}

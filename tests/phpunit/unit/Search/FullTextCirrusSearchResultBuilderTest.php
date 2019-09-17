@@ -3,6 +3,8 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
+use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
+use CirrusSearch\Search\Fetch\HighlightedField;
 use CirrusSearch\Searcher;
 use Title;
 
@@ -37,11 +39,22 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 			'CirrusSearchWikiToNameMap' => [
 				'cs' => 'cswiki',
 			],
+			// We test regex behavior
+			'CirrusSearchUseExperimentalHighlighter' => true,
 			'_wikiID' => 'mywiki'
 		] );
 		$resolver = $this->newManualInterwikiResolver( $config );
 		$this->titleHelper = $this->newTitleHelper( $config, $resolver );
-		$this->fulltextResultBuilder = new FullTextCirrusSearchResultBuilder( $this->titleHelper );
+		$fetchPhaseConfigBuilder = new FetchPhaseConfigBuilder( $config, SearchQuery::SEARCH_TEXT );
+		$fetchPhaseConfigBuilder->addNewRegexHLField( "title.plain", HighlightedField::TARGET_TITLE_SNIPPET,
+			'/unused/', true, HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY );
+		$fetchPhaseConfigBuilder->addNewRegexHLField( "redirect.title.plain", HighlightedField::TARGET_REDIRECT_SNIPPET,
+			'/unused/', true, HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY );
+		$fetchPhaseConfigBuilder->addNewRegexHLField( "source_text.plain", HighlightedField::TARGET_MAIN_SNIPPET,
+			'/unused/', true, HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY );
+		$fetchPhaseConfigBuilder->configureDefaultFullTextFields();
+		$this->fulltextResultBuilder = new FullTextCirrusSearchResultBuilder( $this->titleHelper,
+			$fetchPhaseConfigBuilder->getHLFieldsPerTargetAndPriority() );
 	}
 
 	public function provideTest() {
@@ -78,7 +91,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 					] ], self::$MINIMAL_HIT ),
 				[ 'titleSnippet' => 'Template:' . Searcher::HIGHLIGHT_PRE . 'title' . Searcher::HIGHLIGHT_POST . ' &lt;match' ]
 			],
-			'titleSnippet (intitle:// hack prefers title)' => [
+			'titleSnippet (intitle:// prefers title.plain)' => [
 				array_merge_recursive( [ 'highlight' => [
 					'title' => [
 						Searcher::HIGHLIGHT_PRE_MARKER . 'title' . Searcher::HIGHLIGHT_POST_MARKER . ' <match'
@@ -87,15 +100,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 						Searcher::HIGHLIGHT_PRE_MARKER . 'regex match' . Searcher::HIGHLIGHT_POST_MARKER . ' <match'
 					],
 				] ], self::$MINIMAL_HIT ),
-				[ 'titleSnippet' => 'Template:' . Searcher::HIGHLIGHT_PRE . 'title' . Searcher::HIGHLIGHT_POST . ' &lt;match' ],
-			],
-			'titleSnippet (intitle:// hack can match title.plain)' => [
-				array_merge_recursive( [ 'highlight' => [
-					'title.plain' => [
-						Searcher::HIGHLIGHT_PRE_MARKER . 'regex match' . Searcher::HIGHLIGHT_POST_MARKER . ' <match'
-					],
-				] ], self::$MINIMAL_HIT ),
-				[ 'titleSnippet' => 'Template:' . Searcher::HIGHLIGHT_PRE . 'regex match' . Searcher::HIGHLIGHT_POST . ' &lt;match' ]
+				[ 'titleSnippet' => 'Template:' . Searcher::HIGHLIGHT_PRE . 'regex match' . Searcher::HIGHLIGHT_POST . ' &lt;match' ],
 			],
 			'redirectSnippet' => [
 				array_replace_recursive( self::$MINIMAL_HIT, [
@@ -114,33 +119,13 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 				] ),
 				[ 'redirectSnippet' => Searcher::HIGHLIGHT_PRE . 'redirect' . Searcher::HIGHLIGHT_POST . ' &lt;match' ]
 			],
-			'redirectSnippet (intitle:// hack prefers redirect.title)' => [
+			'redirectSnippet (intitle:// prefers redirect.title.plain)' => [
 				array_merge_recursive( [
 					'highlight' => [
 						'redirect.title' => [
 							Searcher::HIGHLIGHT_PRE_MARKER . 'redirect' .
 							Searcher::HIGHLIGHT_POST_MARKER . ' <match',
 						],
-						'redirect.title.plain' => [
-							Searcher::HIGHLIGHT_PRE_MARKER . 'regex redir' .
-							Searcher::HIGHLIGHT_POST_MARKER . ' <match',
-						],
-					],
-					'_source' => [
-						'redirect' => [
-							[ 'title' => 'redirect <match', 'namespace' => 2 ],
-							[ 'title' => 'redirect <match', 'namespace' => 0 ],
-							[ 'title' => 'redirect', 'namespace' => 0 ],
-							[ 'title' => 'regex redir <match', 'namespace' => 2 ],
-							[ 'title' => 'regex redir <match', 'namespace' => 0 ],
-						],
-					],
-				], self::$MINIMAL_HIT ),
-				[ 'redirectSnippet' => Searcher::HIGHLIGHT_PRE . 'redirect' . Searcher::HIGHLIGHT_POST . ' &lt;match' ]
-			],
-			'redirectSnippet (intitle:// hack can match redirect.title.plain)' => [
-				array_merge_recursive( [
-					'highlight' => [
 						'redirect.title.plain' => [
 							Searcher::HIGHLIGHT_PRE_MARKER . 'regex redir' .
 							Searcher::HIGHLIGHT_POST_MARKER . ' <match',
@@ -386,8 +371,6 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 			$getter = $this->getter( $field, gettype( $value ) );
 			$this->assertEquals( $value, $getter( $result ),
 				"value for for field $field should match with a hit: " . print_r( $hit, true ) );
-			$this->assertEquals( $value, $getter( new Result( null, $hit, $this->titleHelper ) ),
-				"value for for field $field should match with a hit (using legacy Result constructor): " . print_r( $hit, true ) );
 		}
 	}
 

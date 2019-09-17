@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\InterwikiResolver;
 use CirrusSearch\OtherIndexesUpdater;
 use CirrusSearch\Parser\AST\Visitor\QueryFixer;
 use CirrusSearch\Parser\BasicQueryClassifier;
@@ -54,9 +55,10 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	/**
 	 * @param SearchQuery $query
 	 * @param array $params
+	 * @param InterwikiResolver|null $interwikiResolver
 	 * @return FallbackMethod|null
 	 */
-	public static function build( SearchQuery $query, array $params ) {
+	public static function build( SearchQuery $query, array $params, InterwikiResolver $interwikiResolver = null ) {
 		if ( !$query->isWithDYMSuggestion() ) {
 			return null;
 		}

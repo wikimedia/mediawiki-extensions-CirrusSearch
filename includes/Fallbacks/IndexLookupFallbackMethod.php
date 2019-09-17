@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\InterwikiResolver;
 use CirrusSearch\Parser\AST\Visitor\QueryFixer;
 use CirrusSearch\Profile\ArrayPathSetter;
 use CirrusSearch\Profile\SearchProfileException;
@@ -136,9 +137,10 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	/**
 	 * @param SearchQuery $query
 	 * @param array $params
+	 * @param InterwikiResolver|null $interwikiResolver
 	 * @return FallbackMethod|null the method instance or null if unavailable
 	 */
-	public static function build( SearchQuery $query, array $params ) {
+	public static function build( SearchQuery $query, array $params, InterwikiResolver $interwikiResolver = null ) {
 		if ( !$query->isWithDYMSuggestion() ) {
 			return null;
 		}

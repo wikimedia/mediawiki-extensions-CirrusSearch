@@ -5,7 +5,7 @@ namespace CirrusSearch\Search\Fetch;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\SearchConfig;
 
-class ExperimentalHighlightedFieldBuilder extends BaseHighlightedFieldBuilder {
+class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 	const EXPERIMENTAL_HL_TYPE = 'experimental';
 
 	/**
@@ -82,7 +82,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedFieldBuilder {
 	protected static function mainText(): callable {
 		return function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = ( self::text() )( $config, $fieldName, $target, $priority );
-			/** @var BaseHighlightedFieldBuilder $self */
+			/** @var BaseHighlightedField $self */
 			$self->setNoMatchSize( $config->get( 'CirrusSearchFragmentSize' ) );
 			return $self;
 		};
@@ -124,7 +124,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedFieldBuilder {
 	/**
 	 * @inheritDoc
 	 */
-	public function merge( BaseHighlightedFieldBuilder $other ): BaseHighlightedFieldBuilder {
+	public function merge( BaseHighlightedField $other ): BaseHighlightedField {
 		if ( isset( $this->options['regex'] ) &&
 			 $other instanceof ExperimentalHighlightedFieldBuilder &&
 			 isset( $other->options['regex'] ) &&
@@ -150,7 +150,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedFieldBuilder {
 	/**
 	 * @return ExperimentalHighlightedFieldBuilder
 	 */
-	public function skipIfLastMatched(): BaseHighlightedFieldBuilder {
+	public function skipIfLastMatched(): BaseHighlightedField {
 		$this->addOption( 'skip_if_last_matched', true );
 		return $this;
 	}

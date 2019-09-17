@@ -67,6 +67,7 @@
 		"CirrusSearch\\Saneitize": "maintenance/saneitize.php",
 		"CirrusSearch\\Query\\SimpleKeywordFeatureTestTrait": "tests/phpunit/unit/Query/SimpleKeywordFeatureTestTrait.php",
 		"CirrusSearch\\Query\\KeywordFeatureAssertions": "tests/phpunit/unit/Query/KeywordFeatureAssertions.php",
+		"CirrusSearch\\Fallbacks\\BaseFallbackMethodTest": "tests/phpunit/unit/Fallbacks/BaseFallbackMethodTest.php",
 		"CirrusSearch\\Search\\TermBoostScoreBuilder": "includes/Search/Rescore/TermBoostScoreBuilder.php",
 		"CirrusSearch\\Search\\FunctionScoreBuilder": "includes/Search/Rescore/FunctionScoreBuilder.php",
 		"CirrusSearch\\Search\\Rescore\\TermBoostScoreBuilder": "includes/Search/Rescore/TermBoostScoreBuilder.php",

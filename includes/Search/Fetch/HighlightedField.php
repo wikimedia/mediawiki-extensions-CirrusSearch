@@ -4,7 +4,7 @@ namespace CirrusSearch\Search\Fetch;
 
 use CirrusSearch\Search\ArrayCirrusSearchResult;
 
-abstract class FetchedFieldBuilder {
+abstract class HighlightedField {
 	/** Priority for properties that are doc dependent (e.g. doc size) */
 	const DEFAULT_TARGET_PRIORITY = 100;
 
@@ -21,6 +21,8 @@ abstract class FetchedFieldBuilder {
 	const TARGET_CATEGORY_SNIPPET = ArrayCirrusSearchResult::CATEGORY_SNIPPET;
 
 	const TARGET_MAIN_SNIPPET = ArrayCirrusSearchResult::TEXT_SNIPPET;
+
+	const TARGET_SECTION_SNIPPET = ArrayCirrusSearchResult::SECTION_SNIPPET;
 
 	/**
 	 * Priority for properties are query dependent and triggered using costly search keywords

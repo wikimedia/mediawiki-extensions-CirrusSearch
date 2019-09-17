@@ -13,7 +13,8 @@ use Elastica\Query\AbstractQuery;
  * source filtering and stored field.
  */
 class FetchPhaseConfigBuilder {
-	/** @var BaseHighlightedFieldBuilder[] */
+
+	/** @var BaseHighlightedField[] */
 	private $highlightedFields = [];
 
 	/** @var SearchConfig $config */
@@ -38,18 +39,18 @@ class FetchPhaseConfigBuilder {
 	 * @param string $name
 	 * @param string $target
 	 * @param int $priority
-	 * @return BaseHighlightedFieldBuilder
+	 * @return BaseHighlightedField
 	 */
 	public function newHighlightField(
 		$name,
 		$target,
-		$priority = FetchedFieldBuilder::DEFAULT_TARGET_PRIORITY
-	): BaseHighlightedFieldBuilder {
+		$priority = HighlightedField::DEFAULT_TARGET_PRIORITY
+	): BaseHighlightedField {
 		$useExp = $this->config->get( 'CirrusSearchUseExperimentalHighlighter' );
 		if ( $useExp ) {
 			$factories = ExperimentalHighlightedFieldBuilder::getFactories();
 		} else {
-			$factories = BaseHighlightedFieldBuilder::getFactories();
+			$factories = BaseHighlightedField::getFactories();
 		}
 		if ( $this->factoryGroup !== null && isset( $factories[$this->factoryGroup][$name] ) ) {
 			return ( $factories[$this->factoryGroup][$name] )( $this->config, $name, $target, $priority );
@@ -57,7 +58,7 @@ class FetchPhaseConfigBuilder {
 		if ( $useExp ) {
 			return new ExperimentalHighlightedFieldBuilder( $name, $target, $priority );
 		} else {
-			return new BaseHighlightedFieldBuilder( $name, BaseHighlightedFieldBuilder::FVH_HL_TYPE, $target, $priority );
+			return new BaseHighlightedField( $name, BaseHighlightedField::FVH_HL_TYPE, $target, $priority );
 		}
 	}
 
@@ -73,7 +74,7 @@ class FetchPhaseConfigBuilder {
 		$target,
 		$pattern,
 		$caseInsensitive,
-		$priority = FetchedFieldBuilder::COSTLY_EXPERT_SYNTAX_PRIORITY
+		$priority = HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY
 	) {
 		if ( !$this->config->get( 'CirrusSearchUseExperimentalHighlighter' ) ) {
 			return;
@@ -83,9 +84,9 @@ class FetchPhaseConfigBuilder {
 	}
 
 	/**
-	 * @param BaseHighlightedFieldBuilder $field
+	 * @param BaseHighlightedField $field
 	 */
-	public function addHLField( BaseHighlightedFieldBuilder $field ) {
+	public function addHLField( BaseHighlightedField $field ) {
 		$prev = $this->highlightedFields[$field->getFieldName()] ?? null;
 		if ( $prev === null ) {
 			$this->highlightedFields[$field->getFieldName()] = $field;
@@ -96,7 +97,7 @@ class FetchPhaseConfigBuilder {
 
 	/**
 	 * @param string $field
-	 * @return BaseHighlightedFieldBuilder|null
+	 * @return BaseHighlightedField|null
 	 */
 	public function getHLField( $field ) {
 		return $this->highlightedFields[$field] ?? null;
@@ -130,5 +131,50 @@ class FetchPhaseConfigBuilder {
 	 */
 	public function withConfig( SearchConfig $config ): self {
 		return new self( $config, $this->factoryGroup );
+	}
+
+	/**
+	 * Return the list of highlighted fields indexed per target
+	 * and ordered by priority (reverse natural order)
+	 * @return HighlightedField[][]
+	 */
+	public function getHLFieldsPerTargetAndPriority(): array {
+		$fields = [];
+		foreach ( $this->highlightedFields as $f ) {
+			$fields[$f->getTarget()][] = $f;
+		}
+		return array_map(
+			function ( array $v ) {
+				usort( $v, function ( HighlightedField $g1, HighlightedField $g2 ) {
+					return $g2->getPriority() <=> $g1->getPriority();
+				} );
+				return $v;
+			},
+			$fields
+		);
+	}
+
+	public function configureDefaultFullTextFields() {
+		// TODO: find a better place for this
+		// Title/redir/category/template
+		$field = $this->newHighlightField( 'title', HighlightedField::TARGET_TITLE_SNIPPET );
+		$this->addHLField( $field );
+		$field = $this->newHighlightField( 'redirect.title', HighlightedField::TARGET_REDIRECT_SNIPPET );
+		$this->addHLField( $field->skipIfLastMatched() );
+		$field = $this->newHighlightField( 'category', HighlightedField::TARGET_CATEGORY_SNIPPET );
+		$this->addHLField( $field->skipIfLastMatched() );
+
+		$field = $this->newHighlightField( 'heading', HighlightedField::TARGET_SECTION_SNIPPET );
+		$this->addHLField( $field->skipIfLastMatched() );
+
+		// content
+		$field = $this->newHighlightField( 'text', HighlightedField::TARGET_MAIN_SNIPPET );
+		$this->addHLField( $field );
+
+		$field = $this->newHighlightField( 'auxiliary_text', HighlightedField::TARGET_MAIN_SNIPPET );
+		$this->addHLField( $field->skipIfLastMatched() );
+
+		$field = $this->newHighlightField( 'file_text', HighlightedField::TARGET_MAIN_SNIPPET );
+		$this->addHLField( $field->skipIfLastMatched() );
 	}
 }

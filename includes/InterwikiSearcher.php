@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\Parser\BasicQueryClassifier;
+use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Search\CrossProjectBlockScorerFactory;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\MSearchRequests;
@@ -33,22 +34,28 @@ use User;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class InterwikiSearcher extends Searcher {
+
 	/**
 	 * @param Connection $connection
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces Namespace numbers to search, or null for all of them
 	 * @param User|null $user
 	 * @param CirrusDebugOptions|null $debugOptions
+	 * @param NamespacePrefixParser|null $namespacePrefixParser
+	 * @param InterwikiResolver|null $interwikiResolver
 	 */
 	public function __construct(
 		Connection $connection,
 		SearchConfig $config,
 		array $namespaces = null,
 		User $user = null,
-		CirrusDebugOptions $debugOptions = null
+		CirrusDebugOptions $debugOptions = null,
+		NamespacePrefixParser $namespacePrefixParser = null,
+		InterwikiResolver $interwikiResolver = null
 	) {
 		$maxResults = $config->get( 'CirrusSearchNumCrossProjectSearchResults' );
-		parent::__construct( $connection, 0, $maxResults, $config, $namespaces, $user, false, $debugOptions );
+		parent::__construct( $connection, 0, $maxResults, $config, $namespaces, $user, false,
+			$debugOptions, $namespacePrefixParser, $interwikiResolver );
 	}
 
 	/**
@@ -75,10 +82,10 @@ class InterwikiSearcher extends Searcher {
 		$msearches = new MSearchRequests();
 		foreach ( $iwQueries as $interwiki => $iwQuery ) {
 			$context = SearchContext::fromSearchQuery( $iwQuery,
-				FallbackRunner::create( $iwQuery ) );
+				FallbackRunner::create( $iwQuery, $this->interwikiResolver ) );
 			$this->searchContext = $context;
 			$this->setResultsType( new FullTextResultsType( $this->searchContext->getFetchPhaseBuilder(),
-				$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ) ) );
+				$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ), $this->titleHelper ) );
 			$this->config = $context->getConfig();
 			$this->limit = $iwQuery->getLimit();
 			$this->offset = $iwQuery->getOffset();

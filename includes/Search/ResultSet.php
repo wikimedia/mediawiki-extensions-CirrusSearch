@@ -26,6 +26,7 @@ use Wikimedia\Assert\Assert;
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
+ * @deprecated use a subclass of BaseCirrusSearchResultSet
  */
 class ResultSet extends \BaseSearchResultSet implements CirrusSearchResultSet {
 	use \SearchResultSetTrait;
@@ -89,6 +90,7 @@ class ResultSet extends \BaseSearchResultSet implements CirrusSearchResultSet {
 	 * @param bool $searchContainedSyntax
 	 * @param \Elastica\ResultSet|null $elasticResultSet
 	 * @param TitleHelper|null $titleHelper
+	 * @deprecated use a subclass of BaseCirrusSearchResultSet
 	 */
 	public function __construct(
 		$searchContainedSyntax = false,
@@ -98,15 +100,7 @@ class ResultSet extends \BaseSearchResultSet implements CirrusSearchResultSet {
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->result = $elasticResultSet;
 		$this->titleHelper = $titleHelper ?: new TitleHelper();
-		$this->resultBuilder = new FullTextCirrusSearchResultBuilder( $this->titleHelper );
-	}
-
-	/**
-	 * @param bool $searchContainedSyntax
-	 * @return ResultSet an empty result set
-	 */
-	final public static function emptyResultSet( $searchContainedSyntax = false ) {
-		return new self( $searchContainedSyntax );
+		$this->resultBuilder = new FullTextCirrusSearchResultBuilder( $this->titleHelper, [] );
 	}
 
 	/**

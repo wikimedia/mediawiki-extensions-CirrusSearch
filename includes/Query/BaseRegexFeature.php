@@ -6,7 +6,7 @@ use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Extra\Query\SourceRegex;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
-use CirrusSearch\Search\Fetch\FetchedFieldBuilder;
+use CirrusSearch\Search\Fetch\HighlightedField;
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\Filters;
@@ -203,7 +203,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	private function configureHighlighting( $pattern, $insensitive, FetchPhaseConfigBuilder $fetchPhaseConfigBuilder ) {
 		foreach ( $this->fields as $field => $hlTarget ) {
 			$fetchPhaseConfigBuilder->addNewRegexHLField( "$field.plain", $hlTarget,
-				$pattern, $insensitive, FetchedFieldBuilder::COSTLY_EXPERT_SYNTAX_PRIORITY );
+				$pattern, $insensitive, HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY );
 		}
 	}
 

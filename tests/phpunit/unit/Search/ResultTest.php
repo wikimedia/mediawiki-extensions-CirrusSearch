@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
+use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Searcher;
 
 /**
@@ -47,9 +48,11 @@ class ResultTest extends CirrusTestCase {
 		$config = $this->newHashSearchConfig( [
 			'CirrusSearchWikiToNameMap' => [ 'es' => 'eswiki', ]
 		] );
+		$fetchPhaseBuilder = new FetchPhaseConfigBuilder( $config, SearchQuery::SEARCH_TEXT );
+		$fetchPhaseBuilder->configureDefaultFullTextFields();
 		$this->titleHelper = $this->newTitleHelper( $config,
 			$this->newManualInterwikiResolver( $config ) );
-		$this->builder = new FullTextCirrusSearchResultBuilder( $this->titleHelper );
+		$this->builder = new FullTextCirrusSearchResultBuilder( $this->titleHelper, $fetchPhaseBuilder->getHLFieldsPerTargetAndPriority() );
 	}
 
 	public function highlightedSectionSnippetProvider() {
@@ -101,7 +104,7 @@ class ResultTest extends CirrusTestCase {
 		$data['highlight']['heading'] = [ $elasticInput ];
 
 		if ( $useFTResultBuilder ) {
-			$result = ( new FullTextCirrusSearchResultBuilder( $this->titleHelper ) )->build( new \Elastica\Result( $data ) );
+			$result = $this->builder->build( new \Elastica\Result( $data ) );
 		} else {
 			$result = $this->buildResult( $data );
 		}

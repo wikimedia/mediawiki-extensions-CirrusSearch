@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\Search\Fetch\HighlightedField;
 use CirrusSearch\Search\Fetch\HighlightingTrait;
 use MWTimestamp;
 use Title;
@@ -15,11 +16,16 @@ class FullTextCirrusSearchResultBuilder {
 	/** @var TitleHelper */
 	private $titleHelper;
 
+	/** @var HighlightedField[][] indexed per target and ordered by priority */
+	private $highligtedFields;
+
 	/**
-	 * @param TitleHelper|null $titleHelper
+	 * @param TitleHelper $titleHelper
+	 * @param HighlightedField[][] $hlFieldsPerTarget list of highlighted field indexed per target and sorted by priority
 	 */
-	public function __construct( TitleHelper $titleHelper = null ) {
+	public function __construct( TitleHelper $titleHelper, array $hlFieldsPerTarget ) {
 		$this->titleHelper = $titleHelper ?: new TitleHelper();
+		$this->highligtedFields = $hlFieldsPerTarget;
 	}
 
 	/**
@@ -55,63 +61,11 @@ class FullTextCirrusSearchResultBuilder {
 		}
 
 		$highlights = $result->getHighlights();
-				// Evil hax to not special case .plain fields for intitle regex
-		foreach ( [ 'title', 'redirect.title' ] as $field ) {
-			if ( isset( $highlights["$field.plain"] ) && !isset( $highlights[$field] ) ) {
-				$highlights[$field] = $highlights["$field.plain"];
-				unset( $highlights["$field.plain"] );
-			}
-		}
+		$this->doTitleSnippet( $title, $result, $highlights );
+		$this->doMainSnippet( $highlights );
+		$this->doHeadings( $title, $highlights );
+		$this->doCategory( $highlights );
 
-		if ( isset( $highlights[ 'title' ] ) ) {
-			$nstext = $title->getNamespace() === 0 ? '' :
-				$this->titleHelper->getNamespaceText( $title ) . ':';
-			$builder->titleSnippet( $nstext . $this->escapeHighlightedText( $highlights[ 'title' ][ 0 ] ) );
-		} elseif ( $title->isExternal() ) {
-			// Interwiki searches are weird. They won't have title highlights by design, but
-			// if we don't return a title snippet we'll get weird display results.
-			$builder->titleSnippet( $title->getText() );
-		}
-
-		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {
-			// Make sure to find the redirect title before escaping because escaping breaks it....
-			$redirTitle = $this->findRedirectTitle( $result, $highlights[ 'redirect.title' ][ 0 ] );
-			if ( $redirTitle !== null ) {
-				$builder->redirectTitle( $redirTitle )
-					->redirectSnippet( $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] ) );
-			}
-		}
-
-		// This can get skipped if there the page was sent to Elasticsearch without text.
-		// This could be a bug or it could be that the page simply doesn't have any text.
-		// Prefer source_text.plain it's likely a regex
-		// TODO: use the priority system from the FetchPhaseConfigBuilder
-		$textHLFields = [ 'source_text.plain', 'text', 'auxiliary_text', 'file_text' ];
-		$hasTextSnippet = false;
-		foreach ( $textHLFields as $hlField ) {
-			if ( isset( $highlights[ $hlField ] ) ) {
-				$snippet = $highlights[$hlField][ 0 ];
-				if ( $this->containsMatches( $snippet ) ) {
-					$builder->textSnippet( $this->escapeHighlightedText( $snippet ) )
-						->fileMatch( $hlField === 'file_text' );
-					$hasTextSnippet = true;
-					break;
-				}
-			}
-		}
-
-		if ( !$hasTextSnippet && isset( $highlights['text'][0] ) ) {
-			$builder->textSnippet( $this->escapeHighlightedText( $highlights['text'][0] ) );
-		}
-
-		if ( isset( $highlights[ 'heading' ] ) ) {
-			$builder->sectionSnippet( $this->escapeHighlightedText( $highlights[ 'heading' ][ 0 ] ) )
-				->sectionTitle( $this->findSectionTitle( $highlights[ 'heading' ][ 0 ], $title ) );
-		}
-
-		if ( isset( $highlights[ 'category' ] ) ) {
-			$builder->categorySnippet( $this->escapeHighlightedText( $highlights[ 'category' ][ 0 ] ) );
-		}
 		return $builder->build();
 	}
 
@@ -120,5 +74,84 @@ class FullTextCirrusSearchResultBuilder {
 	 */
 	protected function getTitleHelper(): TitleHelper {
 		return $this->titleHelper;
+	}
+
+	private function doTitleSnippet( Title $title, \Elastica\Result $result, array $highlights ) {
+		$matched = false;
+		foreach ( $this->highligtedFields[ArrayCirrusSearchResult::TITLE_SNIPPET] as $hlField ) {
+			if ( isset( $highlights[$hlField->getFieldName()] ) ) {
+				$nstext = $title->getNamespace() === 0 ? '' :
+					$this->titleHelper->getNamespaceText( $title ) . ':';
+				$this->builder->titleSnippet( $nstext . $this->escapeHighlightedText( $highlights[ $hlField->getFieldName() ][ 0 ] ) );
+				$matched = true;
+				break;
+			}
+		}
+		if ( !$matched && $title->isExternal() ) {
+			// Interwiki searches are weird. They won't have title highlights by design, but
+			// if we don't return a title snippet we'll get weird display results.
+			$this->builder->titleSnippet( $title->getText() );
+		}
+
+		if ( !$matched && isset( $this->highligtedFields[ArrayCirrusSearchResult::REDIRECT_SNIPPET] ) ) {
+			foreach ( $this->highligtedFields[ArrayCirrusSearchResult::REDIRECT_SNIPPET] as $hlField ) {
+				// Make sure to find the redirect title before escaping because escaping breaks it....
+				if ( !isset( $highlights[$hlField->getFieldName()][0] ) ) {
+					continue;
+				}
+				$redirTitle = $this->findRedirectTitle( $result, $highlights[$hlField->getFieldName()][0] );
+				if ( $redirTitle !== null ) {
+					$this->builder->redirectTitle( $redirTitle )
+						->redirectSnippet( $this->escapeHighlightedText( $highlights[$hlField->getFieldName()][0] ) );
+					break;
+				}
+			}
+		}
+	}
+
+	private function doMainSnippet( $highlights ) {
+		$hasTextSnippet = false;
+		foreach ( $this->highligtedFields[ArrayCirrusSearchResult::TEXT_SNIPPET] as $hlField ) {
+			if ( isset( $highlights[$hlField->getFieldName()][0] ) ) {
+				$snippet = $highlights[$hlField->getFieldName()][0];
+				if ( $this->containsMatches( $snippet ) ) {
+					$this->builder->textSnippet( $this->escapeHighlightedText( $snippet ) )->
+						fileMatch( $hlField->getFieldName() === 'file_text' );
+					$hasTextSnippet = true;
+					break;
+				}
+			}
+		}
+
+		// Hardcode the fallback to the "text" highlight, it generally contains the beginning of the
+		// text content if nothing has matched.
+		if ( !$hasTextSnippet && isset( $highlights['text'][0] ) ) {
+			$this->builder->textSnippet( $this->escapeHighlightedText( $highlights['text'][0] ) );
+		}
+	}
+
+	private function doHeadings( Title $title, $highlights ) {
+		if ( !isset( $this->highligtedFields[ArrayCirrusSearchResult::SECTION_SNIPPET] ) ) {
+			return;
+		}
+		foreach ( $this->highligtedFields[ArrayCirrusSearchResult::SECTION_SNIPPET] as $hlField ) {
+			if ( isset( $highlights[$hlField->getFieldName()] ) ) {
+				$this->builder->sectionSnippet( $this->escapeHighlightedText( $highlights[$hlField->getFieldName()][0] ) )
+					->sectionTitle( $this->findSectionTitle( $highlights[$hlField->getFieldName()][0], $title ) );
+				break;
+			}
+		}
+	}
+
+	private function doCategory( $highlights ) {
+		if ( !isset( $this->highligtedFields[ArrayCirrusSearchResult::CATEGORY_SNIPPET] ) ) {
+			return;
+		}
+		foreach ( $this->highligtedFields[ArrayCirrusSearchResult::CATEGORY_SNIPPET] as $hlField ) {
+			if ( isset( $highlights[$hlField->getFieldName()] ) ) {
+				$this->builder->categorySnippet( $this->escapeHighlightedText( $highlights[$hlField->getFieldName()][0] ) );
+			}
+			break;
+		}
 	}
 }

@@ -2,27 +2,20 @@
 
 namespace CirrusSearch\Fallbacks;
 
-use CirrusSearch\CirrusConfigInterwikiResolver;
-use CirrusSearch\CirrusIntegrationTestCase;
-use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\MSearchRequests;
 use CirrusSearch\Search\MSearchResponses;
-use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
-use CirrusSearch\Test\DummyConnection;
 use CirrusSearch\Test\DummySearchResultSet;
 use CirrusSearch\Test\MockLanguageDetector;
 use Elastica\Client;
 use Elastica\Query;
 use Elastica\Response;
-use Elastica\ResultSet\DefaultBuilder;
 use Elastica\Search;
-use MediaWiki\MediaWikiServices;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
 
@@ -31,11 +24,11 @@ use PHPUnit\Framework\AssertionFailedError;
  * @covers \CirrusSearch\Fallbacks\LangDetectFallbackMethod
  * @covers \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod
  */
-class FallbackRunnerTest extends CirrusIntegrationTestCase {
+class FallbackRunnerTest extends BaseFallbackMethodTest {
 	private $execOrder = [];
 
 	public function testOrdering() {
-		$results = DummySearchResultSet::fakeTotalHits( 0 );
+		$results = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
 		$methods = [];
 
 		$methods[] = $this->getFallbackMethod( 0.1, $this->trackingCb( 'E' ), [ 'E' => 'E' ] );
@@ -57,7 +50,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testEarlyStop() {
-		$results = DummySearchResultSet::fakeTotalHits( 0 );
+		$results = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
 		$methods = [];
 
 		$methods[] = self::getFallbackMethod( 0.1 );
@@ -103,13 +96,12 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			}
 
 			/**
-			 * @param SearchQuery $query
-			 * @param array $params
-			 * @return void
+			 * @inheritDoc
 			 */
 			public static function build(
 				SearchQuery $query,
-				array $params = []
+				array $params,
+				InterwikiResolver $resolver
 			) {
 				throw new AssertionFailedError();
 			}
@@ -139,7 +131,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testDefaultSetup() {
-		$config = new HashSearchConfig( [
+		$config = $this->newHashSearchConfig( [
 			'LanguageCode' => 'en',
 			'CirrusSearchEnableAltLanguage' => true,
 			'CirrusSearchInterwikiThreshold' => 3,
@@ -158,16 +150,6 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			'CirrusSearchFallbackProfile' => 'phrase_suggest_and_language_detection',
 		] );
 
-		MediaWikiServices::getInstance()->redefineService( InterwikiResolver::SERVICE,
-			function () use ( $config ) {
-				return new CirrusConfigInterwikiResolver(
-					$config,
-					$this->createMock( \MultiHttpClient::class ),
-					\WANObjectCache::newEmpty(),
-					new \EmptyBagOStuff()
-				);
-			}
-		);
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, 'foobars', $this->namespacePrefixParser() )
 			->setAllowRewrite( true )
 			->setWithDYMSuggestion( true )
@@ -176,10 +158,10 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$searcherFactory->expects( $this->exactly( 2 ) )
 			->method( 'makeSearcher' )
 			->willReturnOnConsecutiveCalls(
-				$this->mockSearcher( DummySearchResultSet::fakeTotalHits( 2 ) ),
-				$this->mockSearcher( DummySearchResultSet::fakeTotalHits( 3 ) )
+				$this->mockSearcher( DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 2 ) ),
+				$this->mockSearcher( DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 3 ) )
 			);
-		$runner = FallbackRunner::create( $query );
+		$runner = FallbackRunner::create( $query, $this->newManualInterwikiResolver( $config ) );
 		// Phrase suggester wins and runs its fallback query
 		$response = [
 			"hits" => [
@@ -203,15 +185,14 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			]
 		];
 		$this->assertNotEmpty( $runner->getElasticSuggesters() );
-		$initialResults = new ResultSet( false,
-			( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() ) );
+		$initialResults = $this->newResultSet( $response );
 		$newResults = $runner->run( $searcherFactory, $initialResults, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
 		$this->assertEquals( 2, $newResults->getTotalHits() );
 		$iwResults = $newResults->getInterwikiResults( \ISearchResultSet::INLINE_RESULTS );
 		$this->assertEmpty( $iwResults );
 
 		// LangDetect wins and runs its fallback query
-		$runner = FallbackRunner::create( $query );
+		$runner = FallbackRunner::create( $query, $this->newManualInterwikiResolver( $config ) );
 		$response = [
 			"hits" => [
 				"total" => 0,
@@ -223,20 +204,23 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		];
 
 		$this->assertNotEmpty( $runner->getElasticSuggesters() );
-		$initialResults = new ResultSet( false,
-			( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() ) );
+		$initialResults = $this->newResultSet( $response );
 		$newResults = $runner->run( $searcherFactory, $initialResults, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
 		$this->assertEquals( 0, $newResults->getTotalHits() );
 		$iwResults = $newResults->getInterwikiResults( \ISearchResultSet::INLINE_RESULTS );
 		$this->assertNotEmpty( $iwResults );
 		$this->assertArrayHasKey( 'frwiki', $iwResults );
 		$this->assertEquals( 3, $iwResults['frwiki']->getTotalHits() );
-		$this->assertArrayEquals(
+		$this->assertEquals(
 			[
 				'wgCirrusSearchAltLanguageNumResults' => 3,
 				'wgCirrusSearchAltLanguage' => [ 'frwiki', 'fr' ],
 			],
-			$runner->getMetrics()
+			$runner->getMetrics(),
+			"metrics must be set",
+			0.0,
+			10,
+			true
 		);
 	}
 
@@ -255,13 +239,12 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testElasticSearchRequestFallbackMethod() {
-		$client = ( new DummyConnection() )->getClient();
+		$client = $this->newEngine()->getConnection()->getClient();
 
-		$initialResp = new \Elastica\ResultSet( new Response( [] ), new Query( new Query\Match( 'text', 'first' ) ), [] );
-		$inital = new ResultSet( false, $initialResp );
+		$inital = $this->newResultSet( [] );
 		$query = new Query( new Query\Match( 'foo', 'bar' ) );
 		$resp = new \Elastica\ResultSet( new Response( [] ), $query, [] );
-		$rewritten = new ResultSet( false, $resp );
+		$rewritten = $this->newResultSet( [] );
 		$runner = new FallbackRunner( [ $this->mockElasticSearchRequestFallbackMethod( $query, 0.5, $resp, $rewritten ) ] );
 		$requests = new MSearchRequests();
 		$runner->attachSearchRequests( $requests, $client );
@@ -314,7 +297,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 				return $search;
 			}
 
-			public static function build( SearchQuery $query, array $params = [] ) {
+			public static function build( SearchQuery $query, array $params = [], InterwikiResolver $interwikiResolver ) {
 				throw new \AssertionError();
 			}
 

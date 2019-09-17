@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Parser\NamespacePrefixParser;
+use CirrusSearch\Profile\PhraseSuggesterProfileRepoWrapper;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use CirrusSearch\Search\TitleHelper;
@@ -183,7 +184,8 @@ trait CirrusTestCaseTrait {
 			}
 
 			public function getFactory( SearchConfig $config ): SearchProfileServiceFactory {
-				return new SearchProfileServiceFactory( $this->testCase->getInterWikiResolver( $config ), $config );
+				return new SearchProfileServiceFactory( $this->testCase->getInterWikiResolver( $config ),
+					$config, $this->testCase->localServerCacheForProfileService() );
 			}
 		};
 	}
@@ -228,7 +230,8 @@ trait CirrusTestCaseTrait {
 	 * @return CirrusSearch
 	 */
 	public function newEngine(): CirrusSearch {
-		return new CirrusSearch( $this->newHashSearchConfig( [ 'CirrusSearchServers' => [] ] ) );
+		return new CirrusSearch( $this->newHashSearchConfig( [ 'CirrusSearchServers' => [] ] ),
+			CirrusDebugOptions::defaultOptions(), $this->namespacePrefixParser(), new EmptyInterwikiResolver() );
 	}
 
 	public function newTitleHelper( SearchConfig $config = null, InterwikiResolver $iwResolver = null ): TitleHelper {
@@ -284,5 +287,14 @@ trait CirrusTestCaseTrait {
 	public function newManualInterwikiResolver( SearchConfig $config ): InterwikiResolver {
 		return new CirrusConfigInterwikiResolver( $config, null, null, new \EmptyBagOStuff(),
 			$this->createMock( InterwikiLookup::class ) );
+	}
+
+	public function localServerCacheForProfileService(): \BagOStuff {
+		$bagOSTuff = new \HashBagOStuff();
+		$bagOSTuff->set(
+			$bagOSTuff->makeKey( PhraseSuggesterProfileRepoWrapper::CIRRUSSEARCH_DIDYOUMEAN_SETTINGS ),
+			[]
+		);
+		return $bagOSTuff;
 	}
 }

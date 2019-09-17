@@ -12,7 +12,6 @@ use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
-use MediaWiki\MediaWikiServices;
 use Wikimedia\Assert\Assert;
 
 class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider {
@@ -57,34 +56,33 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 	 * Do not use this constructor outside of tests!
 	 * @param SearchQuery $query
 	 * @param Detector[] $detectors
-	 * @param InterwikiResolver|null $interwikiResolver
+	 * @param InterwikiResolver $interwikiResolver
 	 */
 	public function __construct(
 		SearchQuery $query,
 		array $detectors,
-		InterwikiResolver $interwikiResolver = null
+		InterwikiResolver $interwikiResolver
 	) {
 		Assert::precondition( $query->getCrossSearchStrategy()->isCrossLanguageSearchSupported(),
 			"Cross language search must be supported for this query" );
 		$this->query = $query;
 		$this->detectors = $detectors;
-		$this->interwikiResolver =
-			$interwikiResolver ??
-			MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
+		$this->interwikiResolver = $interwikiResolver;
 		$this->threshold = $query->getSearchConfig()->get( 'CirrusSearchInterwikiThreshold' );
 	}
 
 	/**
 	 * @param SearchQuery $query
 	 * @param array $params
+	 * @param InterwikiResolver $interwikiResolver
 	 * @return FallbackMethod
 	 */
-	public static function build( SearchQuery $query, array $params ) {
+	public static function build( SearchQuery $query, array $params, InterwikiResolver $interwikiResolver ) {
 		if ( !$query->getCrossSearchStrategy()->isCrossLanguageSearchSupported() ) {
 			return null;
 		}
 		$langDetectFactory = new LanguageDetectorFactory( $query->getSearchConfig() );
-		return new self( $query, $langDetectFactory->getDetectors() );
+		return new self( $query, $langDetectFactory->getDetectors(), $interwikiResolver );
 	}
 
 	/**

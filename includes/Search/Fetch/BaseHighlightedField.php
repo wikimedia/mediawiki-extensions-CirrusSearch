@@ -7,7 +7,7 @@ use CirrusSearch\SearchConfig;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 
-class BaseHighlightedFieldBuilder extends FetchedFieldBuilder {
+class BaseHighlightedField extends HighlightedField {
 	const TYPE = 'highlighting';
 
 	const FVH_HL_TYPE = 'fvh';
@@ -137,10 +137,10 @@ class BaseHighlightedFieldBuilder extends FetchedFieldBuilder {
 	}
 
 	/**
-	 * @param BaseHighlightedFieldBuilder $other
-	 * @return BaseHighlightedFieldBuilder
+	 * @param BaseHighlightedField $other
+	 * @return BaseHighlightedField
 	 */
-	public function merge( BaseHighlightedFieldBuilder $other ): self {
+	public function merge( BaseHighlightedField $other ): self {
 		if ( $this->getFieldName() !== $other->getFieldName() ) {
 			throw new \InvalidArgumentException(
 				"HL Field [{$this->getFieldName()}] must have the same field name to " .
@@ -332,7 +332,7 @@ class BaseHighlightedFieldBuilder extends FetchedFieldBuilder {
 	protected static function mainText(): callable {
 		return function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = ( self::text() )( $config, $fieldName, $target, $priority );
-			/** @var BaseHighlightedFieldBuilder $self */
+			/** @var BaseHighlightedField $self */
 			$self->setNoMatchSize( $config->get( 'CirrusSearchFragmentSize' ) );
 			return $self;
 		};

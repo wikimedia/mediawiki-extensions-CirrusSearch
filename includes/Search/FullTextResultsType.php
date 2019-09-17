@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Search;
 
-use CirrusSearch\Search\Fetch\FetchedFieldBuilder;
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use Elastica\ResultSet as ElasticaResultSet;
 
@@ -31,8 +30,8 @@ final class FullTextResultsType extends BaseResultsType {
 	 */
 	public function __construct(
 		FetchPhaseConfigBuilder $fetchPhaseBuilder,
-		$searchContainedSyntax = false,
-		TitleHelper $titleHelper = null
+		$searchContainedSyntax,
+		TitleHelper $titleHelper
 	) {
 		$this->fetchPhaseBuilder = $fetchPhaseBuilder;
 		$this->searchContainedSyntax = $searchContainedSyntax;
@@ -67,27 +66,7 @@ final class FullTextResultsType extends BaseResultsType {
 	 * @return array|null of highlighting configuration
 	 */
 	public function getHighlightingConfiguration( array $extraHighlightFields = [] ) {
-		// Title/redir/category/template
-		$field = $this->fetchPhaseBuilder->newHighlightField( 'title', FetchedFieldBuilder::TARGET_TITLE_SNIPPET );
-		$this->fetchPhaseBuilder->addHLField( $field );
-		$field = $this->fetchPhaseBuilder->newHighlightField( 'redirect.title', FetchedFieldBuilder::TARGET_REDIRECT_SNIPPET );
-		$this->fetchPhaseBuilder->addHLField( $field->skipIfLastMatched() );
-		$field = $this->fetchPhaseBuilder->newHighlightField( 'category', FetchedFieldBuilder::TARGET_CATEGORY_SNIPPET );
-		$this->fetchPhaseBuilder->addHLField( $field->skipIfLastMatched() );
-
-		$field = $this->fetchPhaseBuilder->newHighlightField( 'heading', FetchedFieldBuilder::TARGET_CATEGORY_SNIPPET );
-		$this->fetchPhaseBuilder->addHLField( $field->skipIfLastMatched() );
-
-		// content
-		$field = $this->fetchPhaseBuilder->newHighlightField( 'text', FetchedFieldBuilder::TARGET_MAIN_SNIPPET );
-		$this->fetchPhaseBuilder->addHLField( $field );
-
-		$field = $this->fetchPhaseBuilder->newHighlightField( 'auxiliary_text', FetchedFieldBuilder::TARGET_MAIN_SNIPPET );
-		$this->fetchPhaseBuilder->addHLField( $field->skipIfLastMatched() );
-
-		$field = $this->fetchPhaseBuilder->newHighlightField( 'file_text', FetchedFieldBuilder::TARGET_MAIN_SNIPPET );
-		$this->fetchPhaseBuilder->addHLField( $field->skipIfLastMatched() );
-
+		$this->fetchPhaseBuilder->configureDefaultFullTextFields();
 		return $this->fetchPhaseBuilder->buildHLConfig();
 	}
 
@@ -96,11 +75,56 @@ final class FullTextResultsType extends BaseResultsType {
 	 * @return CirrusSearchResultSet
 	 */
 	public function transformElasticsearchResult( ElasticaResultSet $result ) {
-		return new ResultSet(
-			$this->searchContainedSyntax,
-			$result,
-			$this->titleHelper
-		);
+		// Should we make this a concrete class?
+		return new class( $this->titleHelper, $this->fetchPhaseBuilder, $result, $this->searchContainedSyntax )
+				extends BaseCirrusSearchResultSet {
+			/** @var TitleHelper */
+			private $titleHelper;
+			/** @var FullTextCirrusSearchResultBuilder */
+			private $resultBuilder;
+			/** @var ElasticaResultSet */
+			private $results;
+			/** @var bool */
+			private $searchContainedSyntax;
+
+			public function __construct(
+				TitleHelper $titleHelper,
+				FetchPhaseConfigBuilder $builder,
+				ElasticaResultSet $results,
+				$searchContainedSyntax
+			) {
+				$this->titleHelper = $titleHelper;
+				$this->resultBuilder = new FullTextCirrusSearchResultBuilder( $this->titleHelper,
+					$builder->getHLFieldsPerTargetAndPriority() );
+				$this->results = $results;
+				$this->searchContainedSyntax = $searchContainedSyntax;
+			}
+
+			/**
+			 * @inheritDoc
+			 */
+			protected function transformOneResult( \Elastica\Result $result ) {
+				return $this->resultBuilder->build( $result );
+			}
+
+			/**
+			 * @return \Elastica\ResultSet|null
+			 */
+			public function getElasticaResultSet() {
+				return $this->results;
+			}
+
+			/**
+			 * @inheritDoc
+			 */
+			public function searchContainedSyntax() {
+				return $this->searchContainedSyntax;
+			}
+
+			protected function getTitleHelper(): TitleHelper {
+				return $this->titleHelper;
+			}
+		};
 	}
 
 	/**
@@ -115,6 +139,6 @@ final class FullTextResultsType extends BaseResultsType {
 	 * @return CirrusSearchResultSet
 	 */
 	public function createEmptyResult() {
-		return ResultSet::emptyResultSet();
+		return BaseCirrusSearchResultSet::emptyResultSet();
 	}
 }

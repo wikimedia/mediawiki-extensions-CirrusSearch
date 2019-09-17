@@ -783,8 +783,12 @@ class Hooks {
 			function ( MediaWikiServices $serviceContainer ) {
 				$config = $serviceContainer->getConfigFactory()
 					->makeConfig( 'CirrusSearch' );
-				/** @phan-suppress-next-line PhanTypeMismatchArgument $config is actually a SearchConfig */
-				return new SearchProfileServiceFactory( $serviceContainer->getService( InterwikiResolver::SERVICE ), $config );
+				return new SearchProfileServiceFactory(
+					$serviceContainer->getService( InterwikiResolver::SERVICE ),
+					/** @phan-suppress-next-line PhanTypeMismatchArgument $config is actually a SearchConfig */
+					$config,
+					$serviceContainer->getLocalServerObjectCache()
+				);
 			}
 		);
 	}

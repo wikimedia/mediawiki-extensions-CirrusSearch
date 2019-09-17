@@ -5,12 +5,8 @@ namespace CirrusSearch\Fallbacks;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\CirrusSearchResultSet;
-use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummySearchResultSet;
-use Elastica\Query;
-use Elastica\Response;
-use Elastica\ResultSet\DefaultBuilder;
 
 /**
  * @covers \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod
@@ -23,11 +19,7 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'phraseSuggestResponses/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
-			$resp = new Response( $fixture['response'], 200 );
-			$resultSet = new ResultSet(
-				false, // Ignored here
-				( new DefaultBuilder() )->buildResultSet( $resp, new Query() )
-			);
+			$resultSet = $this->newResultSet( $fixture['response'] );
 			$tests[$testName] = [
 				$fixture['query'],
 				$resultSet,
@@ -52,12 +44,12 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		$suggestionSnippet,
 		$rewritten
 	) {
-		$config = new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] );
+		$config = $this->newHashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] );
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, $queryString, $this->namespacePrefixParser() )
 			->setAllowRewrite( true )
 			->build();
 
-		$rewrittenResults = $rewritten ? DummySearchResultSet::fakeTotalHits( 1 ) : null;
+		$rewrittenResults = $rewritten ? DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 1 ) : null;
 		$rewrittenQuery = $rewritten ? SearchQueryBuilder::forRewrittenQuery( $query, $suggestion, $this->namespacePrefixParser() )
 			->build() : null;
 		$searcherFactory = $this->getSearcherFactoryMock( $rewrittenQuery, $rewrittenResults );
@@ -104,7 +96,7 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 	 * @dataProvider provideTestSuggestQueries
 	 */
 	public function testSuggestQuery( $expectedFile, $query, $namespaces, $offset, $withDYMSuggestion, $profile, $config ) {
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( $config ), $query, $this->namespacePrefixParser() )
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $this->newHashSearchConfig( $config ), $query, $this->namespacePrefixParser() )
 			->setInitialNamespaces( $namespaces )
 			->setOffset( $offset )
 			->setWithDYMSuggestion( $withDYMSuggestion )
@@ -156,7 +148,8 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 	 * @covers \CirrusSearch\Fallbacks\FallbackRunnerContextImpl
 	 */
 	public function testDisabledIfHasASuggestionOrWasRewritten() {
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ), "foo bar",
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+				$this->newHashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ), "foo bar",
 				$this->namespacePrefixParser() )
 			->setWithDYMSuggestion( true )
 			->build();
@@ -166,7 +159,7 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		$method = PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] );
 		$this->assertNotNull( $method->getSuggestQueries() );
 
-		$rset = DummySearchResultSet::fakeTotalHits( 10 );
+		$rset = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 10 );
 		$rset->setSuggestionQuery( "test", "test" );
 		$factory = $this->getMock( SearcherFactory::class );
 		$factory->expects( $this->never() )->method( 'makeSearcher' );
@@ -174,7 +167,7 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		$method->rewrite( $context );
 		$this->assertTrue( $context->costlyCallAllowed() );
 
-		$rset = DummySearchResultSet::fakeTotalHits( 10 );
+		$rset = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 10 );
 		$factory = $this->getMock( SearcherFactory::class );
 		$factory->expects( $this->never() )->method( 'makeSearcher' );
 		$context = new FallbackRunnerContextImpl( $rset, $factory, $this->namespacePrefixParser() );

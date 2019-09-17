@@ -15,6 +15,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Elastica\Aggregation\AbstractAggregation;
 use Elastica\Query\AbstractQuery;
+use Wikimedia\Assert\Assert;
 
 /**
  * The search context, maintains the state of the current search query.
@@ -712,9 +713,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @return ResultsType $resultsType results type to return
 	 */
 	public function getResultsType() {
-		if ( $this->resultsType === null ) {
-			return new FullTextResultsType( $this->fetchPhaseBuilder );
-		}
+		Assert::precondition( $this->resultsType !== null, "resultsType unset" );
 		return $this->resultsType;
 	}
 

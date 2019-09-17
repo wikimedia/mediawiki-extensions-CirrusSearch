@@ -22,6 +22,7 @@ use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchRequestBuilder;
 use CirrusSearch\Search\TeamDraftInterleaver;
+use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\Query\FullTextQueryBuilder;
 use Elastica\Exception\RuntimeException;
@@ -130,6 +131,13 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @var NamespacePrefixParser|null
 	 */
 	private $namespacePrefixParser;
+	/**
+	 * @var InterwikiResolver
+	 */
+	protected $interwikiResolver;
+
+	/** @var TitleHelper */
+	protected $titleHelper;
 
 	/**
 	 * @param Connection $conn
@@ -141,6 +149,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @param string|bool $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
 	 * @param CirrusDebugOptions|null $options the debugging options to use or null to use defaults
 	 * @param NamespacePrefixParser|null $namespacePrefixParser
+	 * @param InterwikiResolver|null $interwikiResolver
 	 * @see CirrusDebugOptions::defaultOptions()
 	 */
 	public function __construct(
@@ -151,7 +160,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		User $user = null,
 		$index = false,
 		CirrusDebugOptions $options = null,
-		NamespacePrefixParser $namespacePrefixParser = null
+		NamespacePrefixParser $namespacePrefixParser = null,
+		InterwikiResolver $interwikiResolver = null
 	) {
 		parent::__construct(
 			$conn,
@@ -163,8 +173,10 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$this->setOffsetLimit( $offset, $limit );
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->searchContext = new SearchContext( $this->config, $namespaces, $options );
-		// TODO: Make this param mandatory once WBCS stops extending this class
+		// TODO: Make these params mandatory once WBCS stops extending this class
 		$this->namespacePrefixParser = $namespacePrefixParser;
+		$this->interwikiResolver = $interwikiResolver ?: MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
+		$this->titleHelper = new TitleHelper( $this->config, $this->interwikiResolver );
 	}
 
 	/**
@@ -179,7 +191,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			return Status::newGood( [ 'ast' => $query->getParsedQuery()->toArray() ] );
 		}
 		// TODO: properly pass the profile context name and its params once we have a dispatch service.
-		$this->searchContext = SearchContext::fromSearchQuery( $query, FallbackRunner::create( $query ) );
+		$this->searchContext = SearchContext::fromSearchQuery( $query, FallbackRunner::create( $query, $this->interwikiResolver ) );
 		$this->setOffsetLimit( $query->getOffset(), $query->getLimit() );
 		$this->config = $query->getSearchConfig();
 		$this->sort = $query->getSort();
@@ -188,7 +200,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			$this->searchContext->setResultsType(
 				new FullTextResultsType(
 					$this->searchContext->getFetchPhaseBuilder(),
-					$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY )
+					$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ),
+					$this->titleHelper
 				)
 			);
 			return $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );

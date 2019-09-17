@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Profile;
 
+use BagOStuff;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\SearchConfig;
 use User;
@@ -95,9 +96,15 @@ class SearchProfileServiceFactory {
 	 */
 	private $hostWikiConfig;
 
-	public function __construct( InterwikiResolver $resolver, SearchConfig $hostWikiConfig ) {
+	/**
+	 * @var BagOStuff
+	 */
+	private $localServerCache;
+
+	public function __construct( InterwikiResolver $resolver, SearchConfig $hostWikiConfig, BagOStuff $localServerCache ) {
 		$this->interwikiResolver = $resolver;
 		$this->hostWikiConfig = $hostWikiConfig;
+		$this->localServerCache = $localServerCache;
 	}
 
 	/**
@@ -225,10 +232,10 @@ class SearchProfileServiceFactory {
 	 */
 	private function loadPhraseSuggesterProfiles( SearchProfileService $service, SearchConfig $config ) {
 		$service->registerRepository( PhraseSuggesterProfileRepoWrapper::fromFile( SearchProfileService::PHRASE_SUGGESTER,
-			self::CIRRUS_BASE, __DIR__ . '/../../profiles/PhraseSuggesterProfiles.config.php' ) );
+			self::CIRRUS_BASE, __DIR__ . '/../../profiles/PhraseSuggesterProfiles.config.php', $this->localServerCache ) );
 
 		$service->registerRepository( PhraseSuggesterProfileRepoWrapper::fromConfig( SearchProfileService::PHRASE_SUGGESTER,
-			self::CIRRUS_CONFIG, 'CirrusSearchPhraseSuggestProfiles', $config ) );
+			self::CIRRUS_CONFIG, 'CirrusSearchPhraseSuggestProfiles', $config, $this->localServerCache ) );
 	}
 
 	private function loadIndexLookupFallbackProfiles( SearchProfileService $service, SearchConfig $config ) {

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\InterwikiResolver;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 
@@ -22,9 +23,10 @@ interface FallbackMethod {
 	/**
 	 * @param SearchQuery $query
 	 * @param array $params
+	 * @param InterwikiResolver $interwikiResolver
 	 * @return FallbackMethod|null the method instance or null if unavailable
 	 */
-	public static function build( SearchQuery $query, array $params );
+	public static function build( SearchQuery $query, array $params, InterwikiResolver $interwikiResolver );
 
 	/**
 	 * Approximation of the success of this fallback method

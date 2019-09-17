@@ -2,9 +2,9 @@
 
 namespace CirrusSearch\Profile;
 
+use BagOStuff;
 use CirrusSearch\Util;
 use Config;
-use MediaWiki\MediaWikiServices;
 
 /**
  * Wrapper to augment the phrase suggester profile settings
@@ -15,6 +15,7 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 	const MAX_ERRORS_HARD_LIMIT = 2;
 	const MAX_TERM_FREQ_HARD_LIMIT = 0.6;
 	const PREFIX_LENGTH_HARD_LIMIT = 2;
+	const CIRRUSSEARCH_DIDYOUMEAN_SETTINGS = 'cirrussearch-didyoumean-settings';
 
 	/**
 	 * @var string[]
@@ -27,20 +28,28 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 	private $wrapped;
 
 	/**
-	 * @param SearchProfileRepository $wrapped
+	 * @var BagOStuff
 	 */
-	private function __construct( SearchProfileRepository $wrapped ) {
+	private $bagOStuff;
+
+	/**
+	 * @param SearchProfileRepository $wrapped
+	 * @param BagOStuff $bagOStuff
+	 */
+	private function __construct( SearchProfileRepository $wrapped, BagOStuff $bagOStuff ) {
 		$this->wrapped = $wrapped;
+		$this->bagOStuff = $bagOStuff;
 	}
 
 	/**
 	 * @param string $type
 	 * @param string $name
 	 * @param string $phpFile
+	 * @param BagOStuff $cache
 	 * @return SearchProfileRepository
 	 */
-	public static function fromFile( $type, $name, $phpFile ) {
-		return new self( ArrayProfileRepository::fromFile( $type, $name, $phpFile ) );
+	public static function fromFile( $type, $name, $phpFile, BagOStuff $cache ) {
+		return new self( ArrayProfileRepository::fromFile( $type, $name, $phpFile ), $cache );
 	}
 
 	/**
@@ -48,10 +57,11 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 	 * @param string $name
 	 * @param string $configEntry
 	 * @param Config $config
+	 * @param BagOStuff $cache
 	 * @return PhraseSuggesterProfileRepoWrapper
 	 */
-	public static function fromConfig( $type, $name, $configEntry, Config $config ) {
-		return new self( new ConfigProfileRepository( $type, $name, $configEntry, $config ) );
+	public static function fromConfig( $type, $name, $configEntry, Config $config, BagOStuff $cache ) {
+		return new self( new ConfigProfileRepository( $type, $name, $configEntry, $config ), $cache );
 	}
 
 	/**
@@ -80,9 +90,8 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 		if ( $settings === null ) {
 			return null;
 		}
-		$cache = MediaWikiServices::getInstance()->getLocalServerObjectCache();
-		$lines = $cache->getWithSetCallback(
-			$cache->makeKey( 'cirrussearch-didyoumean-settings' ),
+		$lines = $this->bagOStuff->getWithSetCallback(
+			$this->bagOStuff->makeKey( self::CIRRUSSEARCH_DIDYOUMEAN_SETTINGS ),
 			600,
 			function () {
 				$source = wfMessage( 'cirrussearch-didyoumean-settings' )->inContentLanguage();

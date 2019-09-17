@@ -37,9 +37,9 @@ class CirrusSearchIndexFieldFactoryTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Search\CirrusSearchIndexFieldFactory::makeSearchFieldMapping()
 	 */
 	public function testFactory( $name, $type, $expectedClass ) {
-		$factory = new CirrusSearchIndexFieldFactory( $this->getSearchConfig() );
+		$factory = new CirrusSearchIndexFieldFactory( new HashSearchConfig( [] ) );
 		$this->assertInstanceOf( $expectedClass, $factory->makeSearchFieldMapping( $name, $type ) );
-		$cirrus = new \CirrusSearch( $this->getSearchConfig() );
+		$cirrus = $this->newEngine();
 		$this->assertInstanceOf( $expectedClass, $cirrus->makeSearchFieldMapping( $name, $type ) );
 	}
 
@@ -74,7 +74,6 @@ class CirrusSearchIndexFieldFactoryTest extends CirrusTestCase {
 	}
 
 	private function getSearchConfig(): SearchConfig {
-		return new HashSearchConfig( [ 'CirrusSearchServers' => [] ] );
+		return new HashSearchConfig( [] );
 	}
-
 }

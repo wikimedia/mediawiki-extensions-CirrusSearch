@@ -4,6 +4,8 @@ namespace CirrusSearch\Test;
 
 use CirrusSearch\Search\BaseCirrusSearchResultSet;
 use CirrusSearch\Search\Result;
+use CirrusSearch\Search\TitleHelper;
+use SearchResult;
 
 class DummySearchResultSet extends BaseCirrusSearchResultSet {
 	/**
@@ -12,9 +14,16 @@ class DummySearchResultSet extends BaseCirrusSearchResultSet {
 	private $resultSet;
 
 	/**
+	 * @var TitleHelper
+	 */
+	private $titleHelper;
+
+	/**
+	 * @param TitleHelper $titleHelper
 	 * @param int $totalHits
 	 */
-	private function __construct( $totalHits ) {
+	private function __construct( TitleHelper $titleHelper, $totalHits ) {
+		$this->titleHelper = $titleHelper;
 		$results = [];
 		foreach ( range( 1, min( $totalHits, 20 ) ) as $i ) {
 			$results[] = new \Elastica\Result( [] );
@@ -27,29 +36,17 @@ class DummySearchResultSet extends BaseCirrusSearchResultSet {
 	}
 
 	/**
+	 * @param TitleHelper $titleHelper
 	 * @param int $totalHits
 	 * @param int[] $interwikiTotals total hits for secondary results interwiki results.
 	 * @return DummySearchResultSet
 	 */
-	public static function fakeTotalHits( $totalHits, array $interwikiTotals = [] ) {
-		$results = new self( $totalHits );
+	public static function fakeTotalHits( TitleHelper $titleHelper, $totalHits, array $interwikiTotals = [] ) {
+		$results = new self( $titleHelper, $totalHits );
 		foreach ( $interwikiTotals as $pref => $iwTotal ) {
-			$results->addInterwikiResults( self::fakeTotalHits( $iwTotal ), self::SECONDARY_RESULTS, (string)$pref );
+			$results->addInterwikiResults( self::fakeTotalHits( $titleHelper, $iwTotal ), self::SECONDARY_RESULTS, (string)$pref );
 		}
 		return $results;
-	}
-
-	/**
-	 * @param int $totalHits
-	 * @param string|null $suggestionQuery
-	 * @param null $suggestionSnippet
-	 * @return DummySearchResultSet
-	 */
-	public static function fakeTotalHitsWithSuggestion( $totalHits, $suggestionQuery = null, $suggestionSnippet = null ) {
-		$res = self::fakeTotalHits( $totalHits );
-		$res->setSuggestionQuery( $suggestionQuery, $suggestionSnippet );
-
-		return $res;
 	}
 
 	/**
@@ -58,7 +55,7 @@ class DummySearchResultSet extends BaseCirrusSearchResultSet {
 	 *  search result object.
 	 */
 	protected function transformOneResult( \Elastica\Result $result ) {
-		return new Result( $this, $result );
+		return new Result( $this, $result, $this->titleHelper );
 	}
 
 	/**
@@ -76,5 +73,18 @@ class DummySearchResultSet extends BaseCirrusSearchResultSet {
 	 */
 	public function searchContainedSyntax() {
 		return false;
+	}
+
+	protected function getTitleHelper(): TitleHelper {
+		return $this->titleHelper;
+	}
+
+	/**
+	 * Returns extra data for specific result and store it in SearchResult object.
+	 * @param SearchResult $result
+	 */
+	public function augmentResult( SearchResult $result ) {
+		// Do nothing, we do not test result augmentation
+		// it relies on Title::getArticleID() which depends on MWServices
 	}
 }

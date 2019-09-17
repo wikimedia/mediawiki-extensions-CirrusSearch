@@ -97,7 +97,7 @@ class CrossProjectBlockScorerTest extends CirrusIntegrationTestCase {
 	}
 
 	private function mockRS( $totalHits ) {
-		$rs = $this->getMockBuilder( ResultSet::class )
+		$rs = $this->getMockBuilder( CirrusSearchResultSet::class )
 			->disableOriginalConstructor()
 			->getMock();
 		$rs->expects( $this->any() )

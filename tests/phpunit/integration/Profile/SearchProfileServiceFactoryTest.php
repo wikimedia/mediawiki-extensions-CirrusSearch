@@ -5,6 +5,7 @@ namespace CirrusSearch\Profile;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolverFactory;
+use EmptyBagOStuff;
 
 /**
  * @group CirrusSearch
@@ -246,6 +247,6 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 	private function getFactory( array $hostWikiConfig = [] ) {
 		$config = new HashSearchConfig( $hostWikiConfig );
 		$resolver = ( new InterwikiResolverFactory() )->getResolver( $config );
-		return new SearchProfileServiceFactory( $resolver, $config );
+		return new SearchProfileServiceFactory( $resolver, $config, new EmptyBagOStuff() );
 	}
 }

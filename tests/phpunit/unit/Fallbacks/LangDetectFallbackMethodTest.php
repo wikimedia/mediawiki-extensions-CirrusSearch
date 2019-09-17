@@ -3,6 +3,7 @@
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\EmptyInterwikiResolver;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\LanguageDetector\Detector;
@@ -102,7 +103,7 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 		$secondTryNumResults,
 		$expectedMetrics
 	) {
-		$config = new HashSearchConfig( [
+		$config = $this->newHashSearchConfig( [
 			'CirrusSearchInterwikiThreshold' => $threshold,
 			'CirrusSearchEnableAltLanguage' => true,
 			'LanguageCode' => 'en',
@@ -114,7 +115,8 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, $query, $this->namespacePrefixParser() )
 			->setAllowRewrite( true )
 			->build();
-		$expectedRewrittenResults = $secondTryNumResults >= 0 ? DummySearchResultSet::fakeTotalHits( $secondTryNumResults ) : null;
+		$expectedRewrittenResults = $secondTryNumResults >= 0 ?
+			DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), $secondTryNumResults ) : null;
 		$searcherFactory = null;
 		if ( $expectedScoreApprox > 0 ) {
 			$searcherFactory = $this->getSearcherFactoryMock(
@@ -132,7 +134,7 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 			],
 			$this->getInterwikiMock( $targetWikiConfig, $returnedLang !== 'en' ? $returnedLang : null ) );
 
-		$initialResults = DummySearchResultSet::fakeTotalHits( $initialNumResults );
+		$initialResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), $initialNumResults );
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory, $this->namespacePrefixParser() );
 		$this->assertEquals( $expectedScoreApprox, $fallback->successApproximation( $context ) );
 		if ( $expectedScoreApprox > 0 ) {
@@ -181,7 +183,7 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 			[ 'tested_detector' => $this->getLanguageDetector( 'fr' ) ],
 			$this->getInterwikiMock( $targetWikiConfig, $allowRewrite ? 'fr' : null ) );
 
-		$initialResults = DummySearchResultSet::fakeTotalHits( 0 );
+		$initialResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory, $this->namespacePrefixParser() );
 		$this->assertEquals( $expectedScore, $fallback->successApproximation( $context ) );
 	}
@@ -206,18 +208,18 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar', $this->namespacePrefixParser() )
 			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
 			->build();
-		$this->assertNull( LangDetectFallbackMethod::build( $query, [] ) );
+		$this->assertNull( LangDetectFallbackMethod::build( $query, [], new EmptyInterwikiResolver() ) );
 
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnableAltLanguage' => false ] ), 'foo bar',
 				$this->namespacePrefixParser() )
 			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
 			->build();
-		$this->assertNull( LangDetectFallbackMethod::build( $query, [] ) );
+		$this->assertNull( LangDetectFallbackMethod::build( $query, [], new EmptyInterwikiResolver() ) );
 
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnableAltLanguage' => false ] ), 'foo bar',
 				$this->namespacePrefixParser() )
 			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
 			->build();
-		$this->assertNull( LangDetectFallbackMethod::build( $query, [] ) );
+		$this->assertNull( LangDetectFallbackMethod::build( $query, [], new EmptyInterwikiResolver() ) );
 	}
 }

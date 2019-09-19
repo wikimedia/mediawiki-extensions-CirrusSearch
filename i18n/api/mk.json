@@ -22,5 +22,9 @@
 	"apihelp-query+cirrusdoc-example": "Дај резервен склад на поединечна статија на CirrusSearch тековно индексирани во пребарувањето.",
 	"apihelp-query+cirrusbuilddoc-summary": "Резервен склад на статиски документ на CirrusSearch од базните опслужвачи",
 	"apihelp-query+cirrusbuilddoc-example": "Даја резервен склад на поединечна статија на CirrusSearch создаден од базата.",
-	"apierror-cirrus-requesttoolong": "Пребараното со претставка ја надмина допуштената должина. ($1 &gt; $2)"
+	"apierror-cirrus-requesttoolong": "Пребараното со претставка ја надмина допуштената должина. ($1 &gt; $2)",
+	"apihelp-query+compsuggestbuilddoc+param-method": "Кој начин на оценување да се користи",
+	"apierror-compsuggestbuilddoc-bad-method": "Непознат начин на оценување",
+	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Склад на документот што го користи дополнувачкиот предлагач",
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Дај склад на документот што го користи дополнувачкиот предлагач"
 }

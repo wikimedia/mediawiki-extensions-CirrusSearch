@@ -6,7 +6,9 @@ use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
+use Elastica\Query\MultiMatch;
 
 /**
  * subpagesof, find subpages of a given page
@@ -41,7 +43,12 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		return [ $this->doGetFilterQuery( $value ), false ];
+		$parsedValue = $this->doParseValue( $value );
+		if ( $parsedValue === null ) {
+			return [ null, false ];
+		}
+		$q = $this->doGetFilterQuery( $parsedValue );
+		return [ $q, false ];
 	}
 
 	/**
@@ -50,24 +57,44 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 	 * @return AbstractQuery|null
 	 */
 	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
-		return $this->doGetFilterQuery( $node->getValue() );
+		if ( $node->getParsedValue() === null ) {
+			return null;
+		}
+		return $this->doGetFilterQuery( $node->getParsedValue() );
+	}
+
+	/**
+	 * @param array $parsedValue
+	 * @return AbstractQuery
+	 */
+	private function doGetFilterQuery( array $parsedValue ): AbstractQuery {
+		$query = new MultiMatch();
+		$query->setFields( [ 'title.prefix', 'redirect.title.prefix' ] );
+		$query->setQuery( $parsedValue['prefix'] );
+		return $query;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
+		return $this->doParseValue( $value );
 	}
 
 	/**
 	 * @param string $value
-	 * @return \Elastica\Query\MultiMatch|null
+	 * @return array|null
 	 */
-	private function doGetFilterQuery( $value ) {
-		$query = null;
+	private function doParseValue( $value ) {
 		if ( $value !== '' ) {
-			if ( substr( $value, - 1 ) != '/' ) {
+			$lastC = substr( $value, - 1 );
+			if ( $lastC !== '/' && $lastC !== '*' ) {
 				$value .= '/';
+			} elseif ( $lastC === '*' ) {
+				$value = substr( $value, 0, -1 );
 			}
-			$query = new \Elastica\Query\MultiMatch();
-			$query->setFields( [ 'title.prefix', 'redirect.title.prefix' ] );
-			$query->setQuery( $value );
+			return [ 'prefix' => $value ];
 		}
-
-		return $query;
+		return null;
 	}
 }

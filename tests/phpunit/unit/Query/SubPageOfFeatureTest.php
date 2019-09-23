@@ -4,6 +4,8 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Search\Fetch\HighlightedField;
+use Elastica\Query\Match;
 use Elastica\Query\MultiMatch;
 
 /**
@@ -34,6 +36,11 @@ class SubPageOfFeatureTest extends CirrusTestCase {
 			'allow wildcard to act as classic prefix query' => [
 				'subpageof:"test*"',
 				'test'
+			],
+			'Negated is not highlighted' => [
+				'-subpageof:test',
+				'test/',
+				false,
 			]
 		];
 	}
@@ -42,8 +49,9 @@ class SubPageOfFeatureTest extends CirrusTestCase {
 	 * @dataProvider provideQueries()
 	 * @param $query
 	 * @param $filterValue
+	 * @param bool $expectHighlighting
 	 */
-	public function test( $query, $filterValue ) {
+	public function test( $query, $filterValue, $expectHighlighting = true ) {
 		$feature = new SubPageOfFeature();
 		$this->assertExpandedData( $feature, $query, [], [] );
 		$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::allWikisStrategy() );
@@ -57,6 +65,29 @@ class SubPageOfFeatureTest extends CirrusTestCase {
 				$this->assertEquals( $filterValue, $match->getParam( 'query' ) );
 				return true;
 			};
+			if ( $expectHighlighting ) {
+				$this->assertHighlighting( $feature, $query, [ 'title.prefix', 'redirect.title.prefix' ],
+					[
+						[
+							'query' => new Match( 'title.prefix', $filterValue ),
+							'target' => HighlightedField::TARGET_TITLE_SNIPPET,
+							'priority' => HighlightedField::EXPERT_SYNTAX_PRIORITY,
+							'number_of_fragments' => 1,
+							'fragment_size' => 10000,
+						],
+						[
+							'query' => new Match( 'redirect.title.prefix', $filterValue ),
+							'skip_if_last_matched' => true,
+							'target' => HighlightedField::TARGET_REDIRECT_SNIPPET,
+							'priority' => HighlightedField::EXPERT_SYNTAX_PRIORITY,
+							'number_of_fragments' => 1,
+							'fragment_size' => 10000,
+						]
+					]
+				);
+			} else {
+				$this->assertNoHighlighting( $feature, $query );
+			}
 		} else {
 			$this->assertParsedValue( $feature, $query, null );
 		}

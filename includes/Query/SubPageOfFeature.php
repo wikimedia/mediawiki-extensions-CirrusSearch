@@ -5,9 +5,12 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
+use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
+use CirrusSearch\Search\Fetch\HighlightedField;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
+use Elastica\Query\Match;
 use Elastica\Query\MultiMatch;
 
 /**
@@ -48,6 +51,11 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 			return [ null, false ];
 		}
 		$q = $this->doGetFilterQuery( $parsedValue );
+		if ( !$negated ) {
+			foreach ( $this->doGetHLFields( $parsedValue, $context->getFetchPhaseBuilder() ) as $f ) {
+				$context->getFetchPhaseBuilder()->addHLField( $f );
+			}
+		}
 		return [ $q, false ];
 	}
 
@@ -96,5 +104,28 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 			return [ 'prefix' => $value ];
 		}
 		return null;
+	}
+
+	private function doGetHLFields( array $parsedValue, FetchPhaseConfigBuilder $fetchPhaseConfigBuilder ) {
+		$hlfields = [];
+		$definition = [
+			HighlightedField::TARGET_TITLE_SNIPPET => 'title.prefix',
+			HighlightedField::TARGET_REDIRECT_SNIPPET => 'redirect.title.prefix',
+		];
+		$first = true;
+		foreach ( $definition as $target => $esfield ) {
+			$field = $fetchPhaseConfigBuilder->newHighlightField( $esfield, $target,
+				 HighlightedField::EXPERT_SYNTAX_PRIORITY );
+			$field->setHighlightQuery( new Match( $esfield, $parsedValue['prefix'] ) );
+			$field->setNumberOfFragments( 1 );
+			$field->setFragmentSize( 10000 );
+			if ( $first ) {
+				$first = false;
+			} else {
+				$field->skipIfLastMatched();
+			}
+			$hlfields[] = $field;
+		}
+		return $hlfields;
 	}
 }

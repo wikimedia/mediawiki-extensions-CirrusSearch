@@ -103,6 +103,19 @@
                         "order": "score",
                         "type": "experimental"
                     },
+                    "redirect.title.prefix": {
+                        "fragment_size": 10000,
+                        "highlight_query": {
+                            "match": {
+                                "redirect.title.prefix": "parent page\/"
+                            }
+                        },
+                        "number_of_fragments": 1,
+                        "options": {
+                            "skip_if_last_matched": true
+                        },
+                        "type": "experimental"
+                    },
                     "text": {
                         "fragment_size": 150,
                         "fragmenter": "scan",
@@ -130,6 +143,16 @@
                             "title",
                             "title.plain"
                         ],
+                        "number_of_fragments": 1,
+                        "type": "experimental"
+                    },
+                    "title.prefix": {
+                        "fragment_size": 10000,
+                        "highlight_query": {
+                            "match": {
+                                "title.prefix": "parent page\/"
+                            }
+                        },
                         "number_of_fragments": 1,
                         "type": "experimental"
                     }

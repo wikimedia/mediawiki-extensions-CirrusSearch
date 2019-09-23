@@ -361,6 +361,14 @@ class KeywordFeatureAssertions {
 	/**
 	 * @param KeywordFeature $feature
 	 * @param string $term
+	 */
+	public function assertNoHighlighting( KeywordFeature $feature, $term ) {
+		$this->assertHighlighting( $feature, $term, null, null );
+	}
+
+	/**
+	 * @param KeywordFeature $feature
+	 * @param string $term
 	 * @param array|string|null $highlightField
 	 * @param array|null $highlightQuery
 	 */
@@ -431,6 +439,29 @@ class KeywordFeatureAssertions {
 				"The highlighted field $highlightField should have a query" );
 			$this->testCase->assertEquals( $highlightQuery['query'],
 				$hlField->getHighlightQuery() );
+		}
+		if ( isset( $highlightQuery['skip_if_last_matched'] ) && $useExp ) {
+			$this->testCase->assertArrayHasKey( 'skip_if_last_matched', $hlField->getOptions(),
+				 "Expected skip_if_last_matched option to be set for $highlightField" );
+			$this->testCase->assertEquals( $highlightQuery['skip_if_last_matched'],
+				$hlField->getOptions()['skip_if_last_matched'],
+				"Expected skip_if_last_matched options to match for $highlightField" );
+		}
+		if ( isset( $highlightQuery['target'] ) ) {
+			$this->testCase->assertEquals( $highlightQuery['target'], $hlField->getTarget(),
+				"Expected target to match for $highlightField" );
+		}
+		if ( isset( $highlightQuery['priority'] ) ) {
+			$this->testCase->assertEquals( $highlightQuery['priority'], $hlField->getPriority(),
+				"Expected priority to match for $highlightField" );
+		}
+		if ( isset( $highlightQuery['number_of_fragments'] ) ) {
+			$this->testCase->assertEquals( $highlightQuery['number_of_fragments'], $hlField->getNumberOfFragments(),
+				"Expected number_of_fragments to match for $highlightField" );
+		}
+		if ( isset( $highlightQuery['fragment_size'] ) ) {
+			$this->testCase->assertEquals( $highlightQuery['fragment_size'], $hlField->getFragmentSize(),
+				"Expected fragment_size to match for $highlightField" );
 		}
 	}
 

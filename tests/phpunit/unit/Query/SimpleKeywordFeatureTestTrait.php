@@ -105,6 +105,14 @@ trait SimpleKeywordFeatureTestTrait {
 	/**
 	 * @param KeywordFeature $feature
 	 * @param string $term
+	 */
+	protected function assertNoHighlighting( KeywordFeature $feature, $term ) {
+		$this->kwAssertions->assertNoHighlighting( $feature, $term );
+	}
+
+	/**
+	 * @param KeywordFeature $feature
+	 * @param string $term
 	 * @param string|string[]|null $highlightField
 	 * @param array|null $higlightQuery
 	 */

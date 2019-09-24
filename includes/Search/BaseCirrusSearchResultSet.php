@@ -51,6 +51,11 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	private $rewrittenQuerySnippet;
 
 	/**
+	 * @var TitleHelper
+	 */
+	private $titleHelper;
+
+	/**
 	 * @param \Elastica\Result $result Result from search engine
 	 * @return CirrusSearchResult Elasticsearch result transformed into mediawiki
 	 *  search result object.
@@ -85,7 +90,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 		// We can only pull in information about the local wiki
 		$lb = new LinkBatch;
 		foreach ( $resultSet->getResults() as $result ) {
-			if ( !TitleHelper::isExternal( $result )
+			if ( !$this->getTitleHelper()->isExternal( $result )
 				&& isset( $result->namespace )
 				&& isset( $result->title )
 			) {
@@ -302,6 +307,17 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	final public function getElasticResponse() {
 		$elasticaResultSet = $this->getElasticaResultSet();
 		return $elasticaResultSet != null ? $elasticaResultSet->getResponse() : null;
+	}
+
+	/**
+	 * Useful to inject your own TitleHelper during tests
+	 * @return TitleHelper
+	 */
+	protected function getTitleHelper(): TitleHelper {
+		if ( $this->titleHelper === null ) {
+			$this->titleHelper = new TitleHelper();
+		}
+		return $this->titleHelper;
 	}
 
 }

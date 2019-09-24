@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Search\Fetch;
 
+use CirrusSearch\Search\ArrayCirrusSearchResult;
+
 abstract class FetchedFieldBuilder {
 	/** Priority for properties that are doc dependent (e.g. doc size) */
 	const DEFAULT_TARGET_PRIORITY = 100;
@@ -12,13 +14,13 @@ abstract class FetchedFieldBuilder {
 	/** Priority for properties that are query dependent and triggered using search keywords (intitle:foo highlight) */
 	const EXPERT_SYNTAX_PRIORITY = 300;
 
-	const TARGET_TITLE_SNIPPET = 'title';
+	const TARGET_TITLE_SNIPPET = ArrayCirrusSearchResult::TITLE_SNIPPET;
 
-	const TARGET_REDIRECT_SNIPPET = 'redirect';
+	const TARGET_REDIRECT_SNIPPET = ArrayCirrusSearchResult::REDIRECT_SNIPPET;
 
-	const TARGET_CATEGORY_SNIPPET = 'category';
+	const TARGET_CATEGORY_SNIPPET = ArrayCirrusSearchResult::CATEGORY_SNIPPET;
 
-	const TARGET_MAIN_SNIPPET = 'mainSnippet';
+	const TARGET_MAIN_SNIPPET = ArrayCirrusSearchResult::TEXT_SNIPPET;
 
 	/**
 	 * Priority for properties are query dependent and triggered using costly search keywords

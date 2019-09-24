@@ -2,11 +2,9 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\Search\Fetch\HighlightingTrait;
 use CirrusSearch\Util;
-use CirrusSearch\Searcher;
-use MediaWiki\Logger\LoggerFactory;
 use MWTimestamp;
-use Sanitizer;
 use Title;
 
 /**
@@ -28,9 +26,8 @@ use Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Result extends CirrusSearchResult {
+	use HighlightingTrait;
 
-	/** @var int */
-	private $namespace;
 	/** @var string */
 	private $titleSnippet = '';
 	/** @var Title|null */
@@ -47,8 +44,6 @@ class Result extends CirrusSearchResult {
 	private $textSnippet;
 	/** @var bool */
 	private $isFileMatch = false;
-	/* @var string result wiki */
-	private $wiki;
 	/** @var string */
 	private $namespaceText = '';
 	/** @var int */
@@ -63,19 +58,21 @@ class Result extends CirrusSearchResult {
 	private $score;
 	/** @var array */
 	private $explanation;
+	/** @var TitleHelper */
+	private $titleHelper;
 
 	/**
 	 * Build the result.
 	 *
 	 * @param \Elastica\ResultSet $results containing all search results
 	 * @param \Elastica\Result $result containing the given search result
+	 * @param TitleHelper|null $titleHelper
 	 */
-	public function __construct( $results, $result ) {
-		parent::__construct( TitleHelper::makeTitle( $result ) );
+	public function __construct( $results, $result, TitleHelper $titleHelper = null ) {
+		$this->titleHelper = $titleHelper ?: new TitleHelper();
+		parent::__construct( $this->titleHelper->makeTitle( $result ) );
 		$this->namespaceText = $result->namespace_text;
-		$this->wiki = $result->wiki;
 		$this->docId = $result->getId();
-		$this->namespace = $result->namespace;
 
 		$fields = $result->getFields();
 		// Not all results requested a word count. Just pretend we have none if so
@@ -103,14 +100,16 @@ class Result extends CirrusSearchResult {
 		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {
 			// Make sure to find the redirect title before escaping because escaping breaks it....
 			$this->redirectTitle = $this->findRedirectTitle( $result, $highlights[ 'redirect.title' ][ 0 ] );
-			$this->redirectSnippet = $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
+			if ( $this->redirectTitle !== null ) {
+				$this->redirectSnippet = $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
+			}
 		}
 
 		$this->textSnippet = $this->escapeHighlightedText( $this->pickTextSnippet( $highlights ) );
 
 		if ( isset( $highlights[ 'heading' ] ) ) {
 			$this->sectionSnippet = $this->escapeHighlightedText( $highlights[ 'heading' ][ 0 ] );
-			$this->sectionTitle = $this->findSectionTitle( $highlights[ 'heading' ][ 0 ] );
+			$this->sectionTitle = $this->findSectionTitle( $highlights[ 'heading' ][ 0 ], $this->getTitle() );
 		}
 
 		if ( isset( $highlights[ 'category' ] ) ) {
@@ -156,92 +155,6 @@ class Result extends CirrusSearchResult {
 			}
 		}
 		return $mainSnippet;
-	}
-
-	/**
-	 * Escape highlighted text coming back from Elasticsearch.
-	 *
-	 * @param string $snippet highlighted snippet returned from elasticsearch
-	 * @return string $snippet with html escaped _except_ highlighting pre and post tags
-	 */
-	private function escapeHighlightedText( $snippet ) {
-		/**
-		 * \p{M} matches any combining Unicode character
-		 * \P{M} matches any non-combining Unicode character
-		 *
-		 * For HIGHLIGHT_PRE_MARKER, move the marker earlier if it occurs before a
-		 * combining character, and there is a non-combining character (and zero
-		 * or more combining characters) directly before it.
-		 *
-		 * For HIGHLIGHT_POST_MARKER, move the marker later if it occurs before
-		 * one or more combining characters.
-		 */
-		$snippet = preg_replace( '/(\P{M}\p{M}*)(' . Searcher::HIGHLIGHT_PRE_MARKER .
-			')(\p{M}+)/u', '$2$1$3', $snippet );
-		$snippet = preg_replace( '/(' . Searcher::HIGHLIGHT_POST_MARKER . ')(\p{M}+)/u',
-			'$2$1', $snippet );
-		return strtr( htmlspecialchars( $snippet ), [
-			Searcher::HIGHLIGHT_PRE_MARKER => Searcher::HIGHLIGHT_PRE,
-			Searcher::HIGHLIGHT_POST_MARKER => Searcher::HIGHLIGHT_POST
-		] );
-	}
-
-	/**
-	 * Checks if a snippet contains matches by looking for HIGHLIGHT_PRE.
-	 *
-	 * @param string $snippet highlighted snippet returned from elasticsearch
-	 * @return boolean true if $snippet contains matches, false otherwise
-	 */
-	private function containsMatches( $snippet ) {
-		return strpos( $snippet, Searcher::HIGHLIGHT_PRE_MARKER ) !== false;
-	}
-
-	/**
-	 * Build the redirect title from the highlighted redirect snippet.
-	 *
-	 * @param \Elastica\Result $result
-	 * @param string $snippet Highlighted redirect snippet
-	 * @return Title|null object representing the redirect
-	 */
-	private function findRedirectTitle( \Elastica\Result $result, $snippet ) {
-		$title = $this->stripHighlighting( $snippet );
-		// Grab the redirect that matches the highlighted title with the lowest namespace.
-		$redirects = $result->redirect;
-		// That is pretty arbitrary but it prioritizes 0 over others.
-		$best = null;
-		if ( $redirects !== null ) {
-			foreach ( $redirects as $redirect ) {
-				if ( $redirect[ 'title' ] === $title && ( $best === null || $best[ 'namespace' ] > $redirect['namespace'] ) ) {
-					$best = $redirect;
-				}
-			}
-		}
-		if ( $best === null ) {
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Search backend highlighted a redirect ({title}) but didn't return it.",
-				[ 'title' => $title ]
-			);
-			return null;
-		}
-		return TitleHelper::makeRedirectTitle( $result, $best['title'], $best['namespace'] );
-	}
-
-	/**
-	 * @return Title
-	 */
-	private function findSectionTitle( $highlighted ) {
-		return $this->getTitle()->createFragmentTarget( Sanitizer::escapeIdForLink(
-			$this->stripHighlighting( $highlighted )
-		) );
-	}
-
-	/**
-	 * @param string $highlighted
-	 * @return string
-	 */
-	private function stripHighlighting( $highlighted ) {
-		$markers = [ Searcher::HIGHLIGHT_PRE_MARKER, Searcher::HIGHLIGHT_POST_MARKER ];
-		return str_replace( $markers, '', $highlighted );
 	}
 
 	/**
@@ -356,5 +269,12 @@ class Result extends CirrusSearchResult {
 	 */
 	public function getExplanation() {
 		return $this->explanation;
+	}
+
+	/**
+	 * @return TitleHelper
+	 */
+	protected function getTitleHelper(): TitleHelper {
+		return $this->titleHelper;
 	}
 }

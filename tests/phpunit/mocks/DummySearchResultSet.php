@@ -13,7 +13,6 @@ class DummySearchResultSet extends BaseCirrusSearchResultSet {
 
 	/**
 	 * @param int $totalHits
-	 * @param bool $withSyntax
 	 */
 	private function __construct( $totalHits ) {
 		$results = [];

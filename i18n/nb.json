@@ -60,6 +60,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint må settes til et gyldig SPARQL-endpoint for å bruke dypt kategorisøk.",
 	"cirrussearch-feature-deepcat-exception": "SPARQL-spørring for dypt kategorisøk feilet",
 	"cirrussearch-feature-deepcat-toomany": "Spørringen for dype kategorier returnerte for mange kategorier",
+	"cirrussearch-feature-deepcat-invalid-title": "Den gitte kategorien er ugyldig.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Ingen gyldige kategorier gitt til «$1».",
 	"cirrussearch-mlt-feature-no-valid-titles": "Ingen gyldige titler gitt til «$1».",
 	"cirrussearch-mlt-not-configured": "Funksjonen «$1» er feilkonfigurert. Be en administrator om å fikse $wgCirrusSearchMoreLikeThisFields",

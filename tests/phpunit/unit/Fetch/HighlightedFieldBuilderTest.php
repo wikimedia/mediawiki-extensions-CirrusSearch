@@ -73,6 +73,8 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 	public function testSetters() {
 		$expField = new ExperimentalHighlightedFieldBuilder( 'myfield', 'mytarget', 123 );
 		$baseField = new BaseHighlightedField( 'myfield', BaseHighlightedField::FVH_HL_TYPE, 'mytarget', 123 );
+		$this->assertEquals( $expField->getHighlighterType(), ExperimentalHighlightedFieldBuilder::EXPERIMENTAL_HL_TYPE );
+		$this->assertEquals( BaseHighlightedField::FVH_HL_TYPE, $baseField->getHighlighterType() );
 		foreach ( [ $expField, $baseField ] as $field ) {
 			/** @var $field BaseHighlightedField */
 			$this->assertEquals( BaseHighlightedField::TYPE, $field->getType() );
@@ -227,21 +229,23 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 		}
 	}
 
-	public function testMergeGuards() {
-		$this->assertMergeFailure(
-			new BaseHighlightedField( 'field1', 'hltype', 'target', 123 ),
+	public function testInvalidMerge() {
+		$this->assertMergeFailure( new BaseHighlightedField( 'field1', 'hltype', 'target', 123 ),
 			new BaseHighlightedField( 'field2', 'hltype', 'target', 123 ),
-			"HL Field [field1] must have the same field name to be mergeable with [field2]" );
+			"Rejecting nonsense merge: Refusing to merge two HighlightFields with different field names: " .
+			"[field2] != [field1]" );
+	}
 
-		$this->assertMergeFailure(
+	public function testMergeOnPrio() {
+		$this->assertMergeOnPrio(
 			new BaseHighlightedField( 'field1', 'hltype', 'target', 123 ),
 			new BaseHighlightedField( 'field1', 'hltype2', 'target', 123 ),
-			"HL Field [field1] must have the same highlighterType to be mergeable" );
+			"highlightType" );
 
-		$this->assertMergeFailure(
+		$this->assertMergeOnPrio(
 			new BaseHighlightedField( 'field1', 'hltype', 'target', 123 ),
 			new BaseHighlightedField( 'field1', 'hltype', 'target2', 123 ),
-			"HL Field [field1] must have the same target to be mergeable" );
+			"different target" );
 
 		$fieldCouples = [
 			[
@@ -258,29 +262,29 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 			/** @var BaseHighlightedField $f1 */
 			/** @var BaseHighlightedField $f2 */
 			list( $f1, $f2 ) = $couple;
-			$this->assertMergeFailure( $f1, $f2, 'HL Field [test] must have a query to be mergeable' );
+			$this->assertMergeOnPrio( $f1, $f2, 'query' );
 			$f1->setHighlightQuery( new MatchAll() );
-			$this->assertMergeFailure( $f1, $f2, 'HL Field [test] must have a query to be mergeable' );
+			$this->assertMergeOnPrio( $f1, $f2, 'query' );
 			$f2->setHighlightQuery( new MatchAll() );
 
 			$f1->addMatchedField( 'foo' );
-			$this->assertMergeFailure( $f1, $f2, 'HL Field [test] must have the same matchedFields to be mergeable' );
+			$this->assertMergeOnPrio( $f1, $f2, 'matched_fields' );
 			$f2->addMatchedField( 'foo' );
 
 			$f1->setFragmenter( 'foo' );
-			$this->assertMergeFailure( $f1, $f2, 'HL Field [test] must have the same fragmenter to be mergeable' );
+			$this->assertMergeOnPrio( $f1, $f2, 'fragmenter' );
 			$f2->setFragmenter( 'foo' );
 
 			$f1->setNumberOfFragments( 3 );
-			$this->assertMergeFailure( $f1, $f2, 'HL Field [test] must have the same numberOfFragments to be mergeable' );
+			$this->assertMergeOnPrio( $f1, $f2, 'number_of_fragments' );
 			$f2->setNumberOfFragments( 3 );
 
 			$f1->setNoMatchSize( 123 );
-			$this->assertMergeFailure( $f1, $f2, 'HL Field [test] must have the same noMatchSize to be mergeable' );
+			$this->assertMergeOnPrio( $f1, $f2, 'no_match_size' );
 			$f2->setNoMatchSize( 123 );
 
 			$f1->setOptions( [ 'foo' => 'bar' ] );
-			$this->assertMergeFailure( $f1, $f2, 'HL Field [test] must have the same options to be mergeable' );
+			$this->assertMergeOnPrio( $f1, $f2, 'options' );
 			$f2->setOptions( [ 'foo' => 'bar' ] );
 
 			$this->assertSame( $f1, $f1->merge( $f2 ) );
@@ -294,5 +298,14 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 		} catch ( \InvalidArgumentException $iae ) {
 			$this->assertContains( $msg, $iae->getMessage() );
 		}
+	}
+
+	private function assertMergeOnPrio( BaseHighlightedField $f1, BaseHighlightedField $f2, $testedField ) {
+		$bestField = $f1->getPriority() >= $f2->getPriority() ? $f1 : $f2;
+		// clone the field and check equality
+		// assertSame/assertEqual without cloning is invalid as the field can mutate during a merge operation.
+		$bestField = clone $bestField;
+		$this->assertEquals( $bestField, $f1->merge( $f2 ),
+			"Should keep the highest prio field when merging two fields with different $testedField" );
 	}
 }

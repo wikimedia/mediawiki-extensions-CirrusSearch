@@ -23,8 +23,10 @@ class InSourceTest extends CirrusTestCase {
 	 * @param string $query
 	 * @param string $expectedRemaining
 	 * @param string|null $filterValue
+	 * @param bool $negated
+	 * @throws \MWException
 	 */
-	public function testSimple( $query, $expectedRemaining, $filterValue ) {
+	public function testSimple( $query, $expectedRemaining, $filterValue, $negated = false ) {
 		$qsQuery = null;
 		if ( $filterValue !== null ) {
 			$qsQuery = Filters::insource( new Escaper( 'en', true ),
@@ -38,9 +40,11 @@ class InSourceTest extends CirrusTestCase {
 		$feature = new InSourceFeature( $config );
 		if ( $filterValue !== null ) {
 			$this->assertCrossSearchStrategy( $feature, $query,	CrossSearchStrategy::allWikisStrategy() );
+		}
+		if ( $filterValue !== null && !$negated ) {
 			$this->assertHighlighting( $feature, $query, 'source_text.plain', [ 'query' => $qsQuery ] );
 		} else {
-			$this->assertHighlighting( $feature, $query );
+			$this->assertNoHighlighting( $feature, $query );
 		}
 		$this->assertFilter( $feature, $query, $qsQuery, [], $config );
 		// TODO: remove should be a parser test, the keyword is not responsible for this
@@ -73,6 +77,7 @@ class InSourceTest extends CirrusTestCase {
 				'-insource:bar',
 				'',
 				'bar',
+				true
 			],
 			'can be combined' => [
 				'foo insource:bar baz',
@@ -130,9 +135,11 @@ class InSourceTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideRegexQueries
-	 * @param $query
-	 * @param $expectedRemaining
-	 * @param $filterValue
+	 * @param string $query
+	 * @param string $expectedRemaining
+	 * @param mixed $filterValue
+	 * @param bool $insensitive
+	 * @throws \MWException
 	 */
 	public function testRegex( $query, $expectedRemaining, $filterValue, $insensitive ) {
 		$filterCallback = function ( SourceRegex $x ) use ( $filterValue, $insensitive ) {
@@ -148,6 +155,12 @@ class InSourceTest extends CirrusTestCase {
 		$feature = new InSourceFeature( $config );
 
 		if ( $filterValue !== null ) {
+			$parsedValue = [
+				'type' => 'regex',
+				'pattern' => $filterValue,
+				'insensitive' => $insensitive,
+			];
+			$this->assertParsedValue( $feature, $query, $parsedValue, [] );
 			$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
 		}
 		$this->assertFilter( $feature, $query, $filterCallback, [] );
@@ -200,5 +213,16 @@ class InSourceTest extends CirrusTestCase {
 				true,
 			],
 		];
+	}
+
+	public function testDisabled() {
+		$feature = new InSourceFeature( new HashSearchConfig( [] ) );
+		$this->assertParsedValue( $feature, 'insource:/test/',
+			[
+				'type' => 'regex',
+				'pattern' => 'test',
+				'insensitive' => false,
+			],
+			[ [ 'cirrussearch-feature-not-available', 'insource regex' ] ] );
 	}
 }

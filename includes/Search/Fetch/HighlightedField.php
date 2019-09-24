@@ -82,4 +82,15 @@ abstract class HighlightedField {
 	public function getType() {
 		return $this->type;
 	}
+
+	/**
+	 * @param HighlightedField $field
+	 * @return HighlightedField
+	 */
+	abstract public function merge( HighlightedField $field ): HighlightedField;
+
+	/**
+	 * @return array an entry in the fields section of the highlighting part of a search request body
+	 */
+	abstract public function toArray();
 }

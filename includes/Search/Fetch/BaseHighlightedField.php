@@ -137,50 +137,62 @@ class BaseHighlightedField extends HighlightedField {
 	}
 
 	/**
-	 * @param BaseHighlightedField $other
-	 * @return BaseHighlightedField
+	 * @inheritDoc
 	 */
-	public function merge( BaseHighlightedField $other ): self {
+	public function merge( HighlightedField $other ): HighlightedField {
 		if ( $this->getFieldName() !== $other->getFieldName() ) {
 			throw new \InvalidArgumentException(
-				"HL Field [{$this->getFieldName()}] must have the same field name to " .
-				"be mergeable with [{$other->getFieldName()}]" );
+				"Rejecting nonsense merge: Refusing to merge two HighlightFields with different field names: " .
+			"[{$other->getFieldName()}] != [{$this->getFieldName()}]" );
 		}
+		if ( $other instanceof BaseHighlightedField && $this->canMerge( $other ) ) {
+			if ( $this->highlightQuery instanceof BoolQuery ) {
+				$this->highlightQuery->addShould( $other->highlightQuery );
+			} else {
+				$thisQuery = $this->highlightQuery;
+				$otherQuery = $other->highlightQuery;
+				$this->highlightQuery = new BoolQuery();
+				$this->highlightQuery->addShould( $thisQuery );
+				$this->highlightQuery->addShould( $otherQuery );
+			}
+			return $this;
+		} elseif ( $this->getPriority() >= $other->getPriority() ) {
+			return $this;
+		} else {
+			return $other;
+		}
+	}
+
+	/**
+	 * @param BaseHighlightedField $other
+	 * @return true
+	 */
+	private function canMerge( BaseHighlightedField $other ) {
 		if ( $this->highlighterType !== $other->highlighterType ) {
-			throw new \InvalidArgumentException(
-				"HL Field [{$this->getFieldName()}] must have the same highlighterType to be mergeable" );
+			return false;
 		}
 		if ( $this->getTarget() !== $other->getTarget() ) {
-			throw new \InvalidArgumentException( "HL Field [{$this->getFieldName()}] must have the same target to be mergeable" );
+			return false;
 		}
 		if ( $this->highlightQuery === null || $other->highlightQuery === null ) {
-			throw new \InvalidArgumentException( "HL Field [{$this->getFieldName()}] must have a query to be mergeable" );
+			return false;
 		}
 		if ( $this->matchedFields !== $other->matchedFields ) {
-			throw new \InvalidArgumentException( "HL Field [{$this->getFieldName()}] must have the same matchedFields to be mergeable" );
+			return false;
 		}
 		if ( $this->getFragmenter() !== $other->getFragmenter() ) {
-			throw new \InvalidArgumentException( "HL Field [{$this->getFieldName()}] must have the same fragmenter to be mergeable" );
+			return false;
 		}
 		if ( $this->getNumberOfFragments() !== $other->getNumberOfFragments() ) {
-			throw new \InvalidArgumentException( "HL Field [{$this->getFieldName()}] must have the same numberOfFragments to be mergeable" );
+			return false;
 		}
 		if ( $this->getNoMatchSize() !== $other->getNoMatchSize() ) {
-			throw new \InvalidArgumentException( "HL Field [{$this->getFieldName()}] must have the same noMatchSize to be mergeable" );
+			return false;
 		}
 		if ( $this->options !== $other->options ) {
-			throw new \InvalidArgumentException( "HL Field [{$this->getFieldName()}] must have the same options to be mergeable" );
+			return false;
 		}
-		if ( $this->highlightQuery instanceof BoolQuery ) {
-			$this->highlightQuery->addShould( $other->highlightQuery );
-		} else {
-			$thisQuery = $this->highlightQuery;
-			$otherQuery = $other->highlightQuery;
-			$this->highlightQuery = new BoolQuery();
-			$this->highlightQuery->addShould( $thisQuery );
-			$this->highlightQuery->addShould( $otherQuery );
-		}
-		return $this;
+		return true;
 	}
 
 	public function setOptions( array $options ) {

@@ -124,7 +124,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 	/**
 	 * @inheritDoc
 	 */
-	public function merge( BaseHighlightedField $other ): BaseHighlightedField {
+	public function merge( HighlightedField $other ): HighlightedField {
 		if ( isset( $this->options['regex'] ) &&
 			 $other instanceof ExperimentalHighlightedFieldBuilder &&
 			 isset( $other->options['regex'] ) &&
@@ -133,14 +133,6 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 			$this->options['regex'] = array_merge( $this->options['regex'], $other->options['regex'] );
 			$mergedInsensitivity = (bool)( $this->options['regex_case_insensitive'] || $other->options['regex_case_insensitive'] );
 			$this->options['regex_case_insensitive'] = $mergedInsensitivity;
-			return $this;
-		} elseif ( isset( $other->options['regex'] ) && $this->getFieldName() === $other->getFieldName() ) {
-			// Ignore HL field for when insource:/pattern/ and insource:word are used together, keep the regex
-			// TODO: get rid of this hack by using the priority information
-			return $other;
-		} elseif ( isset( $this->options['regex'] ) && $this->getFieldName() === $other->getFieldName() ) {
-			// Ignore HL field for when insource:/pattern/ and insource:word are used together, keep the regex
-			// FIXME: get rid of this hack by using the priority information
 			return $this;
 		} else {
 			return parent::merge( $other );

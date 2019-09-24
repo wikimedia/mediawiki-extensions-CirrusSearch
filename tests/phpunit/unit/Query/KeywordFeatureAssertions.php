@@ -11,8 +11,10 @@ use CirrusSearch\Parser\QueryStringRegex\KeywordParser;
 use CirrusSearch\Parser\QueryStringRegex\OffsetTracker;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Escaper;
+use CirrusSearch\Search\Fetch\BaseHighlightedField;
 use CirrusSearch\Search\Fetch\ExperimentalHighlightedFieldBuilder;
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
+use CirrusSearch\Search\Fetch\HighlightFieldGenerator;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
@@ -371,41 +373,84 @@ class KeywordFeatureAssertions {
 	 * @param string $term
 	 * @param array|string|null $highlightField
 	 * @param array|null $highlightQuery
+	 * @param SearchConfig|null $expandConfig config used when calling KeywordFeature::expand
+	 * @throws \MWException
 	 */
 	public function assertHighlighting(
 		KeywordFeature $feature,
 		$term,
 		$highlightField = null,
-		array $highlightQuery = null
+		array $highlightQuery = null,
+		SearchConfig $expandConfig = null
 	) {
+		$highlightQuery = is_string( $highlightField ) ? [ $highlightQuery ] : $highlightQuery;
+		$highlightField = is_string( $highlightField ) ? [ $highlightField ] : $highlightField;
+		// Legacy parsing
+		foreach ( [ true, false ] as $useExp ) {
+			$searchConfig = new HashSearchConfig( [
+				'CirrusSearchUseExperimentalHighlighter' => $useExp,
+				'CirrusSearchFragmentSize' => 100
+			] );
+			$fetchPhaseConfig =
+				new FetchPhaseConfigBuilder( $searchConfig, SearchQuery::SEARCH_TEXT );
+			$context = $this->mockContext( $searchConfig, $fetchPhaseConfig );
+			$feature->apply( $context, $term );
+			if ( $highlightField !== null && $highlightField !== [] &&
+				 !$this->isNegated( $feature, $term ) ) {
+				$this->testCase->assertTrue( is_array( $highlightField ) );
+				$this->testCase->assertEquals( count( $highlightField ),
+					count( $highlightQuery ),
+					'must have the same number of highlightFields than $higlightQueries' );
+
+				$mi = new \MultipleIterator();
+				$mi->attachIterator( new \ArrayIterator( $highlightField ) );
+				$mi->attachIterator( new \ArrayIterator( $highlightQuery ) );
+				foreach ( $mi as $value ) {
+					$this->assertHLField( $value[0], $value[1], $fetchPhaseConfig, $useExp );
+				}
+			} else {
+				$this->testCase->assertEmpty( $fetchPhaseConfig->buildHLConfig()['fields'] );
+			}
+		}
+		// New parsing:
+		$this->testCase->assertInstanceOf( HighlightingFeature::class, $feature );
+		/**
+		 * @var HighlightingFeature $hlFeature
+		 */
+		$hlFeature = $feature;
+		$parser = new KeywordParser();
+		$node = $this->getParsedKeyword( $term, $feature, $parser, true );
+		if ( $node === null ) {
+			$this->testCase->assertNull( $highlightField );
+			return;
+		}
 		foreach ( [ true, false ] as $useExp ) {
 			$searchConfig = new HashSearchConfig( [
 				'CirrusSearchUseExperimentalHighlighter' => $useExp,
 				'CirrusSearchFragmentSize' => 100
 			] );
 			$fetchPhaseConfig = new FetchPhaseConfigBuilder( $searchConfig, SearchQuery::SEARCH_TEXT );
-			$context = $this->mockContext( $searchConfig, $fetchPhaseConfig );
-			$feature->apply( $context, $term );
-			if ( $highlightField !== null && $highlightField !== [] && !$this->isNegated( $feature, $term )
-			) {
-				if ( is_string( $highlightField ) ) {
-					$this->assertHLField( $highlightField, $highlightQuery, $fetchPhaseConfig, $useExp );
-				} else {
-					$this->testCase->assertTrue( is_array( $highlightField ) );
-					$this->testCase->assertEquals( count( $highlightField ),
-						count( $highlightQuery ),
-						'must have the same number of highlightFields than $higlightQueries' );
-
-					$mi = new \MultipleIterator();
-					$mi->attachIterator( new \ArrayIterator( $highlightField ) );
-					$mi->attachIterator( new \ArrayIterator( $highlightQuery ) );
-					foreach ( $mi as $value ) {
-						$this->assertHLField( $value[0], $value[1], $fetchPhaseConfig, $useExp );
-					}
-				}
-			} else {
-				$this->testCase->assertEmpty( $fetchPhaseConfig->buildHLConfig()['fields'] );
+			$context = $this->mockBuilderContext( $feature->expand( $node, $expandConfig ?: $searchConfig, $parser ),
+				$expandConfig ?: $searchConfig, $fetchPhaseConfig );
+			$fields = $hlFeature->buildHighlightFields( $node, $context );
+			$hlFieldsPerName = [];
+			foreach ( $fields as $hlField ) {
+				$hlFieldsPerName[$hlField->getFieldName()] = $hlField;
 			}
+			$mi = new \MultipleIterator();
+			$mi->attachIterator( new \ArrayIterator( $highlightField ?: [] ) );
+			$mi->attachIterator( new \ArrayIterator( $highlightQuery ?: [] ) );
+			foreach ( $mi as $tuple ) {
+				list( $fieldName, $hlQuery ) = $tuple;
+				if ( isset( $hlQuery['pattern'] ) && !$useExp ) {
+					$this->testCase->assertArrayNotHasKey( $fieldName, $hlFieldsPerName );
+					continue;
+				}
+				$this->testCase->assertArrayHasKey( $fieldName, $hlFieldsPerName );
+				$hlField = $hlFieldsPerName[$fieldName];
+				$this->assertHighlightField( $fieldName, $hlQuery, $useExp, $hlField );
+			}
+			$this->testCase->assertEmpty( array_diff_key( $hlFieldsPerName, array_flip( $highlightField ?: [] ) ) );
 		}
 	}
 
@@ -423,46 +468,7 @@ class KeywordFeatureAssertions {
 			return;
 		}
 		$hlField = $fetchPhaseConfig->getHLField( $highlightField );
-		$this->testCase->assertNotNull( $hlField,
-			"The highlighted field $highlightField should be present" );
-		if ( isset( $highlightQuery['pattern'] ) ) {
-			$this->testCase->assertInstanceOf( ExperimentalHighlightedFieldBuilder::class,
-				$hlField, "The highlighted field $highlightField should be of correct type" );
-			$this->testCase->assertEquals( [ $highlightQuery['pattern'] ],
-				$hlField->getOptions()['regex'],
-				"The highlighted field $highlightField should have the proper patterns" );
-			$this->testCase->assertEquals( $highlightQuery['insensitive'],
-				$hlField->getOptions()['regex_case_insensitive'],
-				"The highlighted field $highlightField should have the proper case sensitivity option" );
-		} else {
-			$this->testCase->assertNotNull( $hlField->getHighlightQuery(),
-				"The highlighted field $highlightField should have a query" );
-			$this->testCase->assertEquals( $highlightQuery['query'],
-				$hlField->getHighlightQuery() );
-		}
-		if ( isset( $highlightQuery['skip_if_last_matched'] ) && $useExp ) {
-			$this->testCase->assertArrayHasKey( 'skip_if_last_matched', $hlField->getOptions(),
-				 "Expected skip_if_last_matched option to be set for $highlightField" );
-			$this->testCase->assertEquals( $highlightQuery['skip_if_last_matched'],
-				$hlField->getOptions()['skip_if_last_matched'],
-				"Expected skip_if_last_matched options to match for $highlightField" );
-		}
-		if ( isset( $highlightQuery['target'] ) ) {
-			$this->testCase->assertEquals( $highlightQuery['target'], $hlField->getTarget(),
-				"Expected target to match for $highlightField" );
-		}
-		if ( isset( $highlightQuery['priority'] ) ) {
-			$this->testCase->assertEquals( $highlightQuery['priority'], $hlField->getPriority(),
-				"Expected priority to match for $highlightField" );
-		}
-		if ( isset( $highlightQuery['number_of_fragments'] ) ) {
-			$this->testCase->assertEquals( $highlightQuery['number_of_fragments'], $hlField->getNumberOfFragments(),
-				"Expected number_of_fragments to match for $highlightField" );
-		}
-		if ( isset( $highlightQuery['fragment_size'] ) ) {
-			$this->testCase->assertEquals( $highlightQuery['fragment_size'], $hlField->getFragmentSize(),
-				"Expected fragment_size to match for $highlightField" );
-		}
+		$this->assertHighlightField( $highlightField, $highlightQuery, $useExp, $hlField );
 	}
 
 	/**
@@ -490,11 +496,13 @@ class KeywordFeatureAssertions {
 	}
 
 	/**
-	 * @param KeywordParser $parser
 	 * @param string $term
-	 * @return KeywordFeatureNode
+	 * @param KeywordFeature $feature
+	 * @param KeywordParser $parser
+	 * @param bool $ignoreNegatedNodes returns null if the keyword is negated
+	 * @return KeywordFeatureNode|null
 	 */
-	private function getParsedKeyword( $term, KeywordFeature $feature, KeywordParser $parser = null ) {
+	private function getParsedKeyword( $term, KeywordFeature $feature, KeywordParser $parser = null, $ignoreNegatedNodes = false ) {
 		if ( $parser === null ) {
 			$parser = new KeywordParser();
 		}
@@ -503,6 +511,9 @@ class KeywordFeatureAssertions {
 			"A single keyword expression must be provided for this test" );
 		$node = $nodes[0];
 		if ( $node instanceof NegatedNode ) {
+			if ( $ignoreNegatedNodes ) {
+				return null;
+			}
 			$node = $node->getChild();
 		}
 		$this->testCase->assertInstanceOf( KeywordFeatureNode::class, $node );
@@ -526,9 +537,10 @@ class KeywordFeatureAssertions {
 	/**
 	 * @param $data
 	 * @param SearchConfig $config
-	 * @return QueryBuildingContext
+	 * @param HighlightFieldGenerator|null $fetchPhaseConfigBuilder
+	 * @return \PHPUnit\Framework\MockObject\MockObject
 	 */
-	private function mockBuilderContext( $data, SearchConfig $config ) {
+	private function mockBuilderContext( $data, SearchConfig $config, HighlightFieldGenerator $fetchPhaseConfigBuilder = null ) {
 		$mock = $this->testCase->getMockBuilder( QueryBuildingContext::class )
 			->disableOriginalConstructor()
 			->getMock();
@@ -537,6 +549,8 @@ class KeywordFeatureAssertions {
 			->willReturn( $data );
 		$mock->method( 'getSearchConfig' )
 			->willReturn( $config );
+		$mock->method( 'getHighlightFieldGenerator' )
+			->willReturn( $fetchPhaseConfigBuilder );
 		return $mock;
 	}
 
@@ -548,5 +562,56 @@ class KeywordFeatureAssertions {
 		return array_map( function ( ParseWarning $warning ) {
 			return array_merge( [ $warning->getMessage() ], $warning->getMessageParams() );
 		}, $parser->getWarnings() );
+	}
+
+	/**
+	 * @param $highlightField
+	 * @param array $highlightQuery
+	 * @param $useExp
+	 * @param BaseHighlightedField $hlField
+	 */
+	private function assertHighlightField( $highlightField, array $highlightQuery, $useExp, BaseHighlightedField $hlField ) {
+		$this->testCase->assertNotNull( $hlField,
+			"The highlighted field $highlightField should be present" );
+		if ( isset( $highlightQuery['pattern'] ) ) {
+			$this->testCase->assertInstanceOf( ExperimentalHighlightedFieldBuilder::class, $hlField,
+				"The highlighted field $highlightField should be of correct type" );
+			$this->testCase->assertEquals( [ $highlightQuery['pattern'] ],
+				$hlField->getOptions()['regex'],
+				"The highlighted field $highlightField should have the proper patterns" );
+			$this->testCase->assertEquals( $highlightQuery['insensitive'],
+				$hlField->getOptions()['regex_case_insensitive'],
+				"The highlighted field $highlightField should have the proper case sensitivity option" );
+		} else {
+			$this->testCase->assertNotNull( $hlField->getHighlightQuery(),
+				"The highlighted field $highlightField should have a query" );
+			$this->testCase->assertEquals( $highlightQuery['query'],
+				$hlField->getHighlightQuery() );
+		}
+		if ( isset( $highlightQuery['skip_if_last_matched'] ) && $useExp ) {
+			$this->testCase->assertArrayHasKey( 'skip_if_last_matched', $hlField->getOptions(),
+				"Expected skip_if_last_matched option to be set for $highlightField" );
+			$this->testCase->assertEquals( $highlightQuery['skip_if_last_matched'],
+				$hlField->getOptions()['skip_if_last_matched'],
+				"Expected skip_if_last_matched options to match for $highlightField" );
+		}
+		if ( isset( $highlightQuery['target'] ) ) {
+			$this->testCase->assertEquals( $highlightQuery['target'], $hlField->getTarget(),
+				"Expected target to match for $highlightField" );
+		}
+		if ( isset( $highlightQuery['priority'] ) ) {
+			$this->testCase->assertEquals( $highlightQuery['priority'], $hlField->getPriority(),
+				"Expected priority to match for $highlightField" );
+		}
+		if ( isset( $highlightQuery['number_of_fragments'] ) ) {
+			$this->testCase->assertEquals( $highlightQuery['number_of_fragments'],
+				$hlField->getNumberOfFragments(),
+				"Expected number_of_fragments to match for $highlightField" );
+		}
+		if ( isset( $highlightQuery['fragment_size'] ) ) {
+			$this->testCase->assertEquals( $highlightQuery['fragment_size'],
+				$hlField->getFragmentSize(),
+				"Expected fragment_size to match for $highlightField" );
+		}
 	}
 }

@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Query\Builder\ContextualFilter;
 use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
@@ -11,7 +12,6 @@ use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Term;
-use SearchEngine;
 use CirrusSearch\Search\SearchContext;
 use Wikimedia\Assert\Assert;
 
@@ -43,6 +43,23 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	 * @see KeywordFeature::parsedValue()
 	 */
 	const PARSED_NAMESPACES = 'parsed_namespaces';
+
+	/**
+	 * @var NamespacePrefixParser
+	 */
+	private $namespacePrefixParser;
+
+	public function __construct( NamespacePrefixParser $namespacePrefixParser = null ) {
+		$this->namespacePrefixParser = $namespacePrefixParser ?: self::defaultNSPrefixParser();
+	}
+
+	private static function defaultNSPrefixParser(): NamespacePrefixParser {
+		return new class() implements NamespacePrefixParser {
+			public function parse( $query ) {
+				return \SearchEngine::parseNamespacePrefixes( $query, true, false );
+			}
+		};
+	}
 
 	/**
 	 * @return bool
@@ -115,7 +132,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 
 		// Suck namespaces out of $value. Note that this overrides provided
 		// namespace filters.
-		$queryAndNamespace = SearchEngine::parseNamespacePrefixes( $value );
+		$queryAndNamespace = $this->namespacePrefixParser->parse( $value );
 		if ( $queryAndNamespace !== false ) {
 			// parseNamespacePrefixes returns the whole query if it's made of single namespace prefix
 			$value = $value === $queryAndNamespace[0] ? '' : $queryAndNamespace[0];
@@ -184,9 +201,10 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	 * Adds a prefix filter to the search context
 	 * @param SearchContext $context
 	 * @param string $prefix
+	 * @param NamespacePrefixParser|null $namespacePrefixParser
 	 */
-	public static function prepareSearchContext( SearchContext $context, $prefix ) {
-		$filter = self::asContextualFilter( $prefix );
+	public static function prepareSearchContext( SearchContext $context, $prefix, NamespacePrefixParser $namespacePrefixParser = null ) {
+		$filter = self::asContextualFilter( $prefix, $namespacePrefixParser );
 		$filter->populate( $context );
 		$namespaces = $filter->requiredNamespaces();
 		Assert::postcondition( $namespaces !== null && count( $namespaces ) <= 1,
@@ -217,10 +235,11 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 
 	/**
 	 * @param string $prefix
+	 * @param NamespacePrefixParser|null $namespacePrefixParser
 	 * @return ContextualFilter
 	 */
-	public static function asContextualFilter( $prefix ) {
-		$feature = new self();
+	public static function asContextualFilter( $prefix, NamespacePrefixParser $namespacePrefixParser = null ) {
+		$feature = new self( $namespacePrefixParser );
 		$parsedValue = $feature->internalParseValue( $prefix );
 		$namespace = $parsedValue['namespace'] ?? null;
 		$query = $feature->buildQuery( $parsedValue['value'], $namespace );

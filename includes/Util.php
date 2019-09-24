@@ -2,8 +2,11 @@
 
 namespace CirrusSearch;
 
+use IBufferingStatsdDataFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\User\UserIdentity;
+use NullStatsdDataFactory;
 use PoolCounterWorkViaCallback;
 use Status;
 use Title;
@@ -126,7 +129,7 @@ class Util {
 	 * that Cirrus always uses.
 	 *
 	 * @param string $type same as type parameter on PoolCounter::factory
-	 * @param \User|null $user the user
+	 * @param UserIdentity|null $user the user
 	 * @param callable $workCallback callback when pool counter is acquired.  Called with
 	 *  no parameters.
 	 * @param string|null $busyErrorMsg The i18n key to return when the queue
@@ -561,5 +564,15 @@ class Util {
 			}
 		}
 		return $destArray;
+	}
+
+	/**
+	 * @return IBufferingStatsdDataFactory
+	 */
+	public static function getStatsDataFactory(): IBufferingStatsdDataFactory {
+		if ( defined( 'MW_PHPUNIT_TEST' ) ) {
+			return new NullStatsdDataFactory();
+		}
+		return MediaWikiServices::getInstance()->getStatsdDataFactory();
 	}
 }

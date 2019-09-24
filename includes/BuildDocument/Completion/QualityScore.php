@@ -60,7 +60,7 @@ class QualityScore implements SuggestScoringMethod {
 	 *     boost factor. Defaults to Util::getDefaultBoostTemplates()
 	 */
 	public function __construct( $boostTemplates = null ) {
-		$this->boostTemplates = $boostTemplates ?: Util::getDefaultBoostTemplates();
+		$this->boostTemplates = $boostTemplates === null ? Util::getDefaultBoostTemplates() : $boostTemplates;
 	}
 
 	/**

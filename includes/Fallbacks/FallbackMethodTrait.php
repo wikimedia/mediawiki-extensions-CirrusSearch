@@ -91,7 +91,7 @@ trait FallbackMethodTrait {
 		}
 
 		$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $originalQuery,
-			$suggestedQuery )->build();
+			$suggestedQuery, $context->getNamespacePrefixParser() )->build();
 		$searcher = $context->makeSearcher( $rewrittenQuery );
 		$status = $searcher->search( $rewrittenQuery );
 		if ( $status->isOK() && $status->getValue() instanceof CirrusSearchResultSet ) {

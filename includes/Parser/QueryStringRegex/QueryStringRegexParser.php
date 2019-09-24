@@ -14,6 +14,7 @@ use CirrusSearch\Parser\AST\ParseWarning;
 use CirrusSearch\Parser\AST\PhraseQueryNode;
 use CirrusSearch\Parser\AST\Visitor\KeywordNodeVisitor;
 use CirrusSearch\Parser\AST\WordsQueryNode;
+use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Parser\ParsedQueryClassifiersRepository;
 use CirrusSearch\Parser\QueryParser;
 use CirrusSearch\Query\KeywordFeature;
@@ -159,6 +160,10 @@ class QueryStringRegexParser implements QueryParser {
 	private $namespaceHeader;
 
 	/**
+	 * @var NamespacePrefixParser
+	 */
+	private $namespacePrefixParser;
+	/**
 	 * Default
 	 */
 	const DEFAULT_OCCUR = BooleanClause::MUST;
@@ -168,13 +173,15 @@ class QueryStringRegexParser implements QueryParser {
 	 * @param Escaper $escaper
 	 * @param string $qmarkStripLevel level of question mark stripping to apply
 	 * @param ParsedQueryClassifiersRepository $classifierRepository
+	 * @param NamespacePrefixParser|null $namespacePrefixParser
 	 * @see Util::stripQuestionMarks() for acceptable $qmarkStripLevel values
 	 */
 	public function __construct(
 		\CirrusSearch\Parser\KeywordRegistry $keywordRegistry,
 		Escaper $escaper,
 		$qmarkStripLevel,
-		ParsedQueryClassifiersRepository $classifierRepository
+		ParsedQueryClassifiersRepository $classifierRepository,
+		NamespacePrefixParser $namespacePrefixParser
 	) {
 		$this->keywordRegistry = $keywordRegistry;
 		$this->escaper = $escaper;
@@ -183,6 +190,7 @@ class QueryStringRegexParser implements QueryParser {
 		$this->nonPhraseParser = new NonPhraseParser( $escaper );
 		$this->questionMarkStripLevel = $qmarkStripLevel;
 		$this->classifierRepository = $classifierRepository;
+		$this->namespacePrefixParser = $namespacePrefixParser;
 	}
 
 	/**
@@ -757,7 +765,7 @@ class QueryStringRegexParser implements QueryParser {
 	private function parseNsHeader() {
 		Assert::precondition( $this->offset === 0, 'ns header must be the first parsed bits or ' .
 			'you must properly handle offset in this method.' );
-		$queryAndNs = \SearchEngine::parseNamespacePrefixes( $this->query, true, true );
+		$queryAndNs = $this->namespacePrefixParser->parse( $this->query );
 		if ( $queryAndNs !== false ) {
 			Assert::postcondition( count( $queryAndNs ) === 2,
 				'\SearchEngine::parseNamespacePrefixes() must return false or a 2 elements array' );

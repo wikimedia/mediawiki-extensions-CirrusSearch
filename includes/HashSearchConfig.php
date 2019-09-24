@@ -2,7 +2,9 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use GlobalVarConfig;
+use InvalidArgumentException;
 use MultiConfig;
 
 /**
@@ -21,13 +23,20 @@ class HashSearchConfig extends SearchConfig {
 	 * - inherit: config vars not part the settings provided are fetched from GlobalVarConfig
 	 * - load-cont-lang: eagerly load ContLang from \Language::factory( 'LanguageCode' )
 	 * @param \Config|null $inherited (only useful when the inherit flag is set)
+	 * @param SearchProfileServiceFactoryFactory|null $searchProfileServiceFactoryFactory
+	 * @throws \MWException
 	 */
-	public function __construct( array $settings, array $flags = [], \Config $inherited = null ) {
-		parent::__construct();
+	public function __construct(
+		array $settings,
+		array $flags = [],
+		\Config $inherited = null,
+		SearchProfileServiceFactoryFactory $searchProfileServiceFactoryFactory = null
+	) {
+		parent::__construct( $searchProfileServiceFactoryFactory );
 		$config = new \HashConfig( $settings );
 		$extra = array_diff( $flags, [ self::FLAG_LOAD_CONT_LANG, self::FLAG_INHERIT ] );
 		if ( $extra ) {
-			throw new \RuntimeException( "Unknown config flags: " . implode( ',', $extra ) );
+			throw new InvalidArgumentException( "Unknown config flags: " . implode( ',', $extra ) );
 		}
 		if ( in_array( self::FLAG_LOAD_CONT_LANG, $flags ) && !$config->has( 'ContLang' ) && $config->has( 'LanguageCode' ) ) {
 			$config->set( 'ContLang', \Language::factory( $config->get( 'LanguageCode' ) ) );

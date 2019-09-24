@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Searcher;
@@ -42,14 +43,25 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	private $canMakeCostlyCall = true;
 
 	/**
+	 * @var NamespacePrefixParser
+	 */
+	private $namespacePrefixParser;
+
+	/**
 	 * FallbackRunnerContextImpl constructor.
 	 * @param CirrusSearchResultSet $initialResultSet
 	 * @param SearcherFactory $searcherFactory
+	 * @param NamespacePrefixParser $namespacePrefixParser
 	 */
-	public function __construct( CirrusSearchResultSet $initialResultSet, SearcherFactory $searcherFactory ) {
+	public function __construct(
+		CirrusSearchResultSet $initialResultSet,
+		SearcherFactory $searcherFactory,
+		NamespacePrefixParser $namespacePrefixParser
+	) {
 		$this->initialResultSet = $initialResultSet;
 		$this->previousResultSet = $initialResultSet;
 		$this->searcherFactory = $searcherFactory;
+		$this->namespacePrefixParser = $namespacePrefixParser;
 	}
 
 	/**
@@ -112,5 +124,12 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 		// So that multiple calls can be made if we still have some processing time left.
 		$this->canMakeCostlyCall = false;
 		return $this->searcherFactory->makeSearcher( $rewrittenQuery );
+	}
+
+	/**
+	 * @return NamespacePrefixParser
+	 */
+	public function getNamespacePrefixParser(): NamespacePrefixParser {
+		return $this->namespacePrefixParser;
 	}
 }

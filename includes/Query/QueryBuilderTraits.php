@@ -16,6 +16,7 @@ trait QueryBuilderTraits {
 	public function checkTitleSearchRequestLength( $term ) {
 		$requestLength = mb_strlen( $term );
 		if ( $requestLength > CirrusSearch::MAX_TITLE_SEARCH ) {
+			// TODO: stop using ApiUsageException we are not even sure that we are in an API call
 			throw ApiUsageException::newWithMessage(
 				null,
 				[ 'apierror-cirrus-requesttoolong', $requestLength, CirrusSearch::MAX_TITLE_SEARCH ],

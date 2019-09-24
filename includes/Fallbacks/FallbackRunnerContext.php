@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Searcher;
@@ -56,4 +57,9 @@ interface FallbackRunnerContext {
 	 * @see FallbackRunnerContext::costlyCallAllowed()
 	 */
 	public function makeSearcher( SearchQuery $rewrittenQuery );
+
+	/**
+	 * @return NamespacePrefixParser
+	 */
+	public function getNamespacePrefixParser(): NamespacePrefixParser;
 }

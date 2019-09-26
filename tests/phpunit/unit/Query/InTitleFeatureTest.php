@@ -76,6 +76,7 @@ class InTitleFeatureTest extends CirrusTestCase {
 		$feature = new InTitleFeature( $config );
 		$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
 		$this->assertFilter( $feature, $term, $expectedQuery, [], $config );
+		$this->assertNoHighlighting( $feature, $term );
 
 		$this->assertRemaining( $feature, $term, $expectedTerm );
 	}
@@ -123,9 +124,14 @@ class InTitleFeatureTest extends CirrusTestCase {
 		) );
 
 		$this->assertFilter( $feature, $query, $filterCallback, [] );
-		$this->assertParsedValue( $feature, $query, null, [] );
 		$this->assertExpandedData( $feature, $query, [], [] );
 		if ( $filterValue !== null ) {
+			$parsedValue = [
+				'type' => 'regex',
+				'pattern' => $filterValue,
+				'insensitive' => $insensitive,
+			];
+			$this->assertParsedValue( $feature, $query, $parsedValue, [] );
 			$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
 			$highlightQuery = [
 				'pattern' => $filterValue,
@@ -194,5 +200,16 @@ class InTitleFeatureTest extends CirrusTestCase {
 		// TODO: remove, should be a parser test
 		$feature = new InTitleFeature( new HashSearchConfig( [] ) );
 		$this->assertNotConsumed( $feature, "foo bar" );
+	}
+
+	public function testDisabled() {
+		$feature = new InTitleFeature( new HashSearchConfig( [] ) );
+		$this->assertParsedValue( $feature, 'intitle:/test/',
+			[
+				'type' => 'regex',
+				'pattern' => 'test',
+				'insensitive' => false,
+			],
+			[ [ 'cirrussearch-feature-not-available', 'intitle regex' ] ] );
 	}
 }

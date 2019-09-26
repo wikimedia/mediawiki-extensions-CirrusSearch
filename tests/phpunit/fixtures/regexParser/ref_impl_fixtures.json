@@ -2249,7 +2249,12 @@
                                     "value": "[a-z]",
                                     "quotedValue": "\/[a-z]\/",
                                     "delimiter": "\/",
-                                    "suffix": ""
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "type": "regex",
+                                        "pattern": "[a-z]",
+                                        "insensitive": false
+                                    }
                                 }
                             },
                             "explicit": false
@@ -2264,7 +2269,12 @@
                                     "value": "<\/a>[^ ]",
                                     "quotedValue": "\/<\\\/a>[^ ]\/",
                                     "delimiter": "\/",
-                                    "suffix": "i"
+                                    "suffix": "i",
+                                    "parsedValue": {
+                                        "type": "regex",
+                                        "pattern": "<\\\/a>[^ ]",
+                                        "insensitive": true
+                                    }
                                 }
                             },
                             "explicit": false
@@ -2652,7 +2662,12 @@
                                     "value": "201[0-9]",
                                     "quotedValue": "\/201[0-9]\/",
                                     "delimiter": "\/",
-                                    "suffix": "i"
+                                    "suffix": "i",
+                                    "parsedValue": {
+                                        "type": "regex",
+                                        "pattern": "201[0-9]",
+                                        "insensitive": true
+                                    }
                                 }
                             },
                             "explicit": false
@@ -3033,7 +3048,12 @@
                                     "value": "201[0-0]",
                                     "quotedValue": "\/201[0-0]\/",
                                     "delimiter": "\/",
-                                    "suffix": "i"
+                                    "suffix": "i",
+                                    "parsedValue": {
+                                        "type": "regex",
+                                        "pattern": "201[0-0]",
+                                        "insensitive": true
+                                    }
                                 }
                             },
                             "explicit": false

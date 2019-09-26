@@ -86,13 +86,10 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		$field = $builder->newHighlightField( 'my_field', 'my_target', 123 );
 		$builder->addHLField( $field );
 		$this->assertSame( $field, $builder->getHLField( 'my_field' ) );
-		$field2 = $builder->newHighlightField( 'my_field', 'my_target', 123 );
-		try {
-			$builder->addHLField( $field2 );
-			$this->fail( 'merge must be called when adding a new field' );
-		} catch ( \InvalidArgumentException $iae ) {
-			$this->assertContains( 'must have a query', $iae->getMessage() );
-		}
+		$field2 = $builder->newHighlightField( 'my_field', 'my_target', 122 );
+		$builder->addHLField( $field2 );
+		$this->assertSame( $field, $builder->getHLField( "my_field" ),
+			"Merge must be called (here keep the highest prio field" );
 	}
 
 	public function testNewRegexField() {

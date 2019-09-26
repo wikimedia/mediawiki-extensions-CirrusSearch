@@ -5,8 +5,8 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
-use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Search\Fetch\HighlightedField;
+use CirrusSearch\Search\Fetch\HighlightFieldGenerator;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
@@ -18,7 +18,7 @@ use Elastica\Query\MultiMatch;
  * uses the prefix field, very similar to the prefix except
  * that it enforces a trailing / and is not a greedy keyword
  */
-class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeature {
+class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeature, HighlightingFeature {
 	/**
 	 * @return string[]
 	 */
@@ -106,7 +106,12 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 		return null;
 	}
 
-	private function doGetHLFields( array $parsedValue, FetchPhaseConfigBuilder $fetchPhaseConfigBuilder ) {
+	/**
+	 * @param array $parsedValue
+	 * @param HighlightFieldGenerator $highlightFieldGenerator
+	 * @return HighlightedField[]
+	 */
+	private function doGetHLFields( array $parsedValue, HighlightFieldGenerator $highlightFieldGenerator ) {
 		$hlfields = [];
 		$definition = [
 			HighlightedField::TARGET_TITLE_SNIPPET => 'title.prefix',
@@ -114,7 +119,7 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 		];
 		$first = true;
 		foreach ( $definition as $target => $esfield ) {
-			$field = $fetchPhaseConfigBuilder->newHighlightField( $esfield, $target,
+			$field = $highlightFieldGenerator->newHighlightField( $esfield, $target,
 				 HighlightedField::EXPERT_SYNTAX_PRIORITY );
 			$field->setHighlightQuery( new Match( $esfield, $parsedValue['prefix'] ) );
 			$field->setNumberOfFragments( 1 );
@@ -127,5 +132,12 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 			$hlfields[] = $field;
 		}
 		return $hlfields;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function buildHighlightFields( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		return $this->doGetHLFields( $node->getParsedValue(), $context->getHighlightFieldGenerator() );
 	}
 }

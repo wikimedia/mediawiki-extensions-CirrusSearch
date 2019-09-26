@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query\Builder;
 
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Search\Fetch\HighlightFieldGenerator;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -22,4 +23,9 @@ interface QueryBuildingContext {
 	 * @return array
 	 */
 	public function getKeywordExpandedData( KeywordFeatureNode $node );
+
+	/**
+	 * @return HighlightFieldGenerator
+	 */
+	public function getHighlightFieldGenerator(): HighlightFieldGenerator;
 }

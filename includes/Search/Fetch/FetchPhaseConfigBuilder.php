@@ -5,6 +5,7 @@ namespace CirrusSearch\Search\Fetch;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use Elastica\Query\AbstractQuery;
+use Wikimedia\Assert\Assert;
 
 /**
  * Class holding the building state of the fetch phase elements of
@@ -12,9 +13,9 @@ use Elastica\Query\AbstractQuery;
  * Currently only supports the highlight section but can be extended to support
  * source filtering and stored field.
  */
-class FetchPhaseConfigBuilder {
+class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 
-	/** @var BaseHighlightedField[] */
+	/** @var HighlightedField[] */
 	private $highlightedFields = [];
 
 	/** @var SearchConfig $config */
@@ -36,10 +37,7 @@ class FetchPhaseConfigBuilder {
 	}
 
 	/**
-	 * @param string $name
-	 * @param string $target
-	 * @param int $priority
-	 * @return BaseHighlightedField
+	 * @inheritDoc
 	 */
 	public function newHighlightField(
 		$name,
@@ -76,17 +74,39 @@ class FetchPhaseConfigBuilder {
 		$caseInsensitive,
 		$priority = HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY
 	) {
-		if ( !$this->config->get( 'CirrusSearchUseExperimentalHighlighter' ) ) {
+		if ( !$this->supportsRegexFields() ) {
 			return;
 		}
-		$this->addHLField( ExperimentalHighlightedFieldBuilder::newRegexField(
-			$this->config, $name, $target, $pattern, $caseInsensitive, $priority ) );
+		$this->addHLField( $this->newRegexField( $name, $target, $pattern, $caseInsensitive, $priority ) );
 	}
 
 	/**
-	 * @param BaseHighlightedField $field
+	 * Whether this builder can generate regex fields
+	 * @return bool
 	 */
-	public function addHLField( BaseHighlightedField $field ) {
+	public function supportsRegexFields() {
+		return (bool)$this->config->get( 'CirrusSearchUseExperimentalHighlighter' );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function newRegexField(
+		$name,
+		$target,
+		$pattern,
+		$caseInsensitive,
+		$priority = HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY
+	): BaseHighlightedField {
+		Assert::precondition( $this->supportsRegexFields(), 'Regex fields not supported' );
+		return ExperimentalHighlightedFieldBuilder::newRegexField(
+			$this->config, $name, $target, $pattern, $caseInsensitive, $priority );
+	}
+
+	/**
+	 * @param HighlightedField $field
+	 */
+	public function addHLField( HighlightedField $field ) {
 		$prev = $this->highlightedFields[$field->getFieldName()] ?? null;
 		if ( $prev === null ) {
 			$this->highlightedFields[$field->getFieldName()] = $field;
@@ -97,7 +117,7 @@ class FetchPhaseConfigBuilder {
 
 	/**
 	 * @param string $field
-	 * @return BaseHighlightedField|null
+	 * @return HighlightedField|null
 	 */
 	public function getHLField( $field ) {
 		return $this->highlightedFields[$field] ?? null;

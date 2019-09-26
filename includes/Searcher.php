@@ -674,6 +674,14 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		/**
 		 * @var $response \Elastica\Multi\ResultSet
 		 */
+		if ( count( $response->getResultSets() ) !== count( $msearches->getRequests() ) ) {
+			// Temp hack to investigate T231023 (use php serialize just in case it has some invalid
+			// UTF8 sequences that would prevent this message from being sent to logstash
+			LoggerFactory::getInstance( 'CirrusSearch' )
+				->warning( "Incoherent response received (#searches != #responses) for {query}: {response}",
+					[ 'query' => $this->searchContext->getOriginalSearchTerm(), 'response' => serialize( $response->getResponse() ) ] );
+			return $msearches->failure( Status::newFatal( 'cirrussearch-backend-error' ) );
+		}
 		$mreponses = $msearches->toMSearchResponses( $response->getResultSets() );
 		if ( $mreponses->hasTimeout() ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(

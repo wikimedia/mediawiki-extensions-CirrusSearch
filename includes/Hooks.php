@@ -13,6 +13,7 @@ use Content;
 use DeferredUpdates;
 use JobQueueGroup;
 use LinksUpdate;
+use MediaWiki\Logger\LoggerFactory;
 use OutputPage;
 use MediaWiki\MediaWikiServices;
 use Revision;
@@ -426,8 +427,11 @@ class Hooks {
 		$params = [
 			'addedLinks' => self::prepareTitlesForLinksUpdate(
 				$linksUpdate->getAddedLinks(), $wgCirrusSearchLinkedArticlesToUpdate ),
+			// We exclude links that contains invalid UTF-8 sequences, reason is that page created
+			// before T13143 was fixed might sill have bad links the pagelinks table
+			// and thus will cause LinksUpdate to believe that these links are removed.
 			'removedLinks' => self::prepareTitlesForLinksUpdate(
-				$linksUpdate->getRemovedLinks(), $wgCirrusSearchUnlinkedArticlesToUpdate ),
+				$linksUpdate->getRemovedLinks(), $wgCirrusSearchUnlinkedArticlesToUpdate, true ),
 		];
 		// non recursive LinksUpdate can go to the non prioritized queue
 		if ( $linksUpdate->isRecursive() ) {
@@ -579,12 +583,23 @@ class Hooks {
 	 * This includes limiting them to $max titles.
 	 * @param Title[] $titles titles to prepare
 	 * @param int $max maximum number of titles to return
+	 * @param bool $excludeBadUTF exclude links that contains invalid UTF sequences
 	 * @return array
 	 */
-	private static function prepareTitlesForLinksUpdate( $titles, $max ) {
+	public static function prepareTitlesForLinksUpdate( $titles, $max, $excludeBadUTF = false ) {
 		$titles = self::pickFromArray( $titles, $max );
 		$dBKeys = [];
 		foreach ( $titles as $title ) {
+			$key = $title->getPrefixedDBkey();
+			if ( $excludeBadUTF ) {
+				$fixedKey = mb_convert_encoding( $key, 'UTF-8', 'UTF-8' );
+				if ( $fixedKey !== $key ) {
+					LoggerFactory::getInstance( 'CirrusSearch' )
+						->warning( "Ignoring title {title} with invalid UTF-8 sequences.",
+							[ 'title' => $fixedKey ] );
+					continue;
+				}
+			}
 			$dBKeys[] = $title->getPrefixedDBkey();
 		}
 		return $dBKeys;

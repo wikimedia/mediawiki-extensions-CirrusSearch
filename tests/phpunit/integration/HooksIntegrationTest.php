@@ -26,7 +26,7 @@ use CirrusSearch\Profile\SearchProfileServiceFactory;
  * @group CirrusSearch
  * @covers \CirrusSearch\Hooks
  */
-class HooksTest extends CirrusIntegrationTestCase {
+class HooksIntegrationTest extends CirrusIntegrationTestCase {
 	public function testHooksAreArrays() {
 		global $wgHooks;
 

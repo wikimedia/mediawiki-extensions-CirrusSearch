@@ -11,7 +11,8 @@
 			"Cosine02",
 			"EagerLin",
 			"A2093064",
-			"Kly"
+			"Kly",
+			"Xiplus"
 		]
 	},
 	"cirrussearch-desc": "以 Elasticsearch 為基礎的 MediaWiki 搜尋工具",

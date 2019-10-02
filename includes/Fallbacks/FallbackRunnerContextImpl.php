@@ -85,6 +85,13 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	}
 
 	/**
+	 * @inheritDoc
+	 */
+	public function hasMethodResponse() {
+		return $this->suggestResponse !== null;
+	}
+
+	/**
 	 * @return CirrusSearchResultSet
 	 */
 	public function getInitialResultSet(): CirrusSearchResultSet {

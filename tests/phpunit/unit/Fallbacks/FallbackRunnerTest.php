@@ -303,7 +303,10 @@ class FallbackRunnerTest extends BaseFallbackMethodTest {
 
 			public function successApproximation( FallbackRunnerContext $context ) {
 				if ( $this->approx > 0 ) {
+					Assert::assertTrue( $context->hasMethodResponse() );
 					Assert::assertSame( $this->expectedResponse, $context->getMethodResponse( $this ) );
+				} else {
+					Assert::assertFalse( $context->hasMethodResponse() );
 				}
 				return $this->approx;
 			}

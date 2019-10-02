@@ -62,4 +62,11 @@ interface FallbackRunnerContext {
 	 * @return NamespacePrefixParser
 	 */
 	public function getNamespacePrefixParser(): NamespacePrefixParser;
+
+	/**
+	 * Whether or not this fallback method has an ElasticSearch response
+	 * available.
+	 * @return bool
+	 */
+	public function hasMethodResponse();
 }

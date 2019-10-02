@@ -58,6 +58,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		$this->assertNotNull( $fallback->getSearchRequest( $this->getMockBuilder( Client::class )->disableOriginalConstructor()->getMock() ) );
 		$initialResults = DummySearchResultSet::fakeTotalHits( 0 );
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory, $this->namespacePrefixParser() );
+		$this->assertEquals( 0.0, $fallback->successApproximation( $context ), "No success without a response" );
 		$context->setSuggestResponse( $response );
 		$this->assertEquals( $expectedApproxScore, $fallback->successApproximation( $context ) );
 		if ( $expectedApproxScore > 0 ) {

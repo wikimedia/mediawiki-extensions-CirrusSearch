@@ -163,8 +163,8 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	 * @return float
 	 */
 	public function successApproximation( FallbackRunnerContext $context ) {
-		$rset = $context->getMethodResponse();
-		if ( $rset->getResults() === [] ) {
+		$rset = $this->extractMethodResponse( $context );
+		if ( $rset === null || $rset->getResults() === [] ) {
 			return 0.0;
 		}
 		$suggestion = $rset->getResults()[0]->getFields()[$this->suggestionField][0] ?? null;
@@ -172,6 +172,18 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 			return 0.0;
 		}
 		return 0.5;
+	}
+
+	/**
+	 * @param FallbackRunnerContext $context
+	 * @return \Elastica\ResultSet|null null if there are no response or no results
+	 */
+	private function extractMethodResponse( FallbackRunnerContext $context ) {
+		if ( !$context->hasMethodResponse() ) {
+			return null;
+		}
+
+		return $context->getMethodResponse();
 	}
 
 	/**

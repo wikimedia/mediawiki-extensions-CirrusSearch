@@ -37,7 +37,7 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 			'CirrusSearchWriteClusters' => null,
 			'CirrusSearchReplicaGroup' => 'default',
 		] ) );
-		$this->setExpectedException( \RuntimeException::class );
+		$this->expectException( \RuntimeException::class );
 		$clusters->getServerList( 'catapult' );
 	}
 
@@ -92,7 +92,7 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testMultipleGroupsRequiresReplicaGroupConfiguration() {
-		$this->setExpectedException( \RuntimeException::class );
+		$this->expectException( \RuntimeException::class );
 		$clusters = new MultiClusterAssignment( new HashSearchConfig( [
 			'CirrusSearchClusters' => [
 				'x.a' => [ 'replica' => 'a', 'group' => 'x', 'x.a:9200' ],
@@ -111,12 +111,12 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 			'CirrusSearchReplicaGroup' => 'x',
 		] ) );
 		// This isn't detected until we initialize the cluster config
-		$this->setExpectedException( \RuntimeException::class );
+		$this->expectException( \RuntimeException::class );
 		$clusters->getServerList();
 	}
 
 	public function testReplicaGroupTypeMustExist() {
-		$this->setExpectedException( \RuntimeException::class );
+		$this->expectException( \RuntimeException::class );
 		new MultiClusterAssignment( new HashSearchConfig( [
 			'CirrusSearchClusters' => [
 				'x.a' => [ 'replica' => 'a', 'group' => 'x', 'x.a:9200' ],
@@ -215,7 +215,7 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 			],
 			'CirrusSearchReplicaGroup' => 'b',
 		] ) );
-		$this->setExpectedException( \RuntimeException::class );
+		$this->expectException( \RuntimeException::class );
 		$clusters->getServerList();
 	}
 }

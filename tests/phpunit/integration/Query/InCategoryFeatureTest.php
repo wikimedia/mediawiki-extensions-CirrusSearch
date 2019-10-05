@@ -151,7 +151,7 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 	 * for use in test cases.
 	 */
 	private function mockDB() {
-		$db = $this->getMock( IDatabase::class );
+		$db = $this->createMock( IDatabase::class );
 		$db->expects( $this->any() )
 			->method( 'select' )
 			->with( 'page' )

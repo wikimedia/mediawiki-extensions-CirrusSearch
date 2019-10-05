@@ -161,14 +161,14 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 
 		$rset = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 10 );
 		$rset->setSuggestionQuery( "test", "test" );
-		$factory = $this->getMock( SearcherFactory::class );
+		$factory = $this->createMock( SearcherFactory::class );
 		$factory->expects( $this->never() )->method( 'makeSearcher' );
 		$context = new FallbackRunnerContextImpl( $rset, $factory, $this->namespacePrefixParser() );
 		$method->rewrite( $context );
 		$this->assertTrue( $context->costlyCallAllowed() );
 
 		$rset = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 10 );
-		$factory = $this->getMock( SearcherFactory::class );
+		$factory = $this->createMock( SearcherFactory::class );
 		$factory->expects( $this->never() )->method( 'makeSearcher' );
 		$context = new FallbackRunnerContextImpl( $rset, $factory, $this->namespacePrefixParser() );
 		$this->assertTrue( $context->costlyCallAllowed() );

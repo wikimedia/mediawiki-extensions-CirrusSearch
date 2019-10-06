@@ -73,7 +73,7 @@ class ElasticaErrorHandlerTest extends CirrusTestCase {
 	public function extractMessageAndStatusProvider() {
 		return [
 			'non-elasticsearch error' => [
-				'expected' => 'unknown: ' . ( wfIsHHVM() ? 'Status code 503' : 'Status code 503; 503 Bad Gateway' ),
+				'expected' => 'unknown: Status code 503; 503 Bad Gateway',
 				'exception' => new ResponseException(
 					new Request( 'dummy' ),
 					new Response( '503 Bad Gateway', 503 )
@@ -95,7 +95,7 @@ class ElasticaErrorHandlerTest extends CirrusTestCase {
 			'non-elasticsearch error' => [
 				'expected' => [
 					'type' => 'unknown',
-					'reason' => wfIsHHVM() ? 'Status code 503' : 'Status code 503; 503 Bad Gateway',
+					'reason' => 'Status code 503; 503 Bad Gateway',
 				],
 				'exception' => new ResponseException(
 					new Request( 'dummy' ),

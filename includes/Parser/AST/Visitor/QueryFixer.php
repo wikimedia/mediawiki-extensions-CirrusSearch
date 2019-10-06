@@ -81,12 +81,7 @@ class QueryFixer implements Visitor {
 			self::$cache = new \SplObjectStorage();
 		}
 
-		if ( defined( 'HHVM_VERSION' ) ) {
-			/** @phan-suppress-next-line PhanPluginDuplicateConditionalNullCoalescing HHVM does not support the ?? operator on SplObjectStorage */
-			$fixer = isset( self::$cache[$query] ) ? self::$cache[$query] : null;
-		} else {
-			$fixer = self::$cache[$query] ?? null;
-		}
+		$fixer = self::$cache[$query] ?? null;
 		if ( $fixer === null ) {
 			$fixer = new self( $query );
 			self::$cache[$query] = $fixer;

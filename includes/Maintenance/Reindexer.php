@@ -3,7 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
-use CirrusSearch\Elastica\PooledHttps;
 use CirrusSearch\Elastica\ReindexRequest;
 use CirrusSearch\Elastica\ReindexResponse;
 use CirrusSearch\Elastica\ReindexTask;
@@ -407,7 +406,7 @@ class Reindexer {
 			? $innerConnection->getConfig( 'url' )
 			: '';
 		if ( empty( $url ) ) {
-			$scheme = ( $transport instanceof Https || $transport instanceof PooledHttps )
+			$scheme = ( $transport instanceof Https )
 				? 'https'
 				: 'http';
 			$url = $scheme . '://' . $innerConnection->getHost() . ':' .

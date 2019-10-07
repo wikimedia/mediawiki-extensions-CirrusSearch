@@ -25,7 +25,7 @@
 			"minus-x fix ."
 		],
 		"test": [
-			"parallel-lint . --exclude vendor --exclude node_modules --exclude tests/phan/stubs/intl.php",
+			"parallel-lint . --exclude vendor --exclude node_modules",
 			"phpcs -p -s",
 			"minus-x check ."
 		]

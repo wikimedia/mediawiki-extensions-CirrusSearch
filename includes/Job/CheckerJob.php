@@ -4,7 +4,10 @@ namespace CirrusSearch\Job;
 
 use ArrayObject;
 use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Sanity\AllClustersQueueingRemediator;
+use CirrusSearch\Sanity\BufferedRemediator;
 use CirrusSearch\Sanity\CheckerException;
+use CirrusSearch\Sanity\MultiClusterRemediatorHelper;
 use CirrusSearch\Searcher;
 use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\QueueingRemediator;
@@ -188,12 +191,16 @@ class CheckerJob extends CirrusGenericJob {
 		 * @var Checker[] $checkers
 		 */
 		$checkers = [];
+		$perClusterRemediators = [];
+		$perClusterBufferedRemediators = [];
 		foreach ( $connections as $cluster => $connection ) {
 			$searcher = new Searcher( $connection, 0, 0, $this->searchConfig, [], null );
+			$remediator = new QueueingRemediator( $cluster );
+			$bufferedRemediator = new BufferedRemediator();
 			$checker = new Checker(
 				$this->searchConfig,
 				$connection,
-				new QueueingRemediator( $cluster ),
+				$bufferedRemediator,
 				$searcher,
 				false, // logSane
 				false, // fastRedirectCheck
@@ -201,7 +208,12 @@ class CheckerJob extends CirrusGenericJob {
 				$isOld
 			);
 			$checkers[$cluster] = $checker;
+			$perClusterRemediators[$cluster] = $remediator;
+			$perClusterBufferedRemediators[$cluster] = $bufferedRemediator;
 		}
+
+		$multiClusterRemediator = new MultiClusterRemediatorHelper( $perClusterRemediators, $perClusterBufferedRemediators,
+			new AllClustersQueueingRemediator( $this->getSearchConfig()->getClusterAssignment(), JobQueueGroup::singleton() ) );
 
 		$ranges = array_chunk( range( $from, $to ), $batchSize );
 		while ( $pageIds = array_shift( $ranges ) ) {
@@ -222,6 +234,7 @@ class CheckerJob extends CirrusGenericJob {
 					unset( $checkers[$cluster] );
 				}
 			}
+			$multiClusterRemediator->sendBatch();
 		}
 		return true;
 	}

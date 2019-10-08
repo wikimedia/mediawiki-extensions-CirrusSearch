@@ -34,27 +34,39 @@ class QueueingRemediator implements Remediator {
 	protected $cluster;
 
 	/**
+	 * @var JobQueueGroup $jobQueue
+	 */
+	private $jobQueue;
+
+	/**
 	 * @param string|null $cluster The name of the cluster to update,
 	 *  or null to update all clusters.
+	 * @param JobQueueGroup|null $jobQueueGroup
 	 */
-	public function __construct( $cluster ) {
+	public function __construct( $cluster, JobQueueGroup $jobQueueGroup = null ) {
 		$this->cluster = $cluster;
+		$this->jobQueue = $jobQueueGroup ?: JobQueueGroup::singleton();
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function redirectInIndex( WikiPage $page ) {
 		$this->pushLinksUpdateJob( $page );
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function pageNotInIndex( WikiPage $page ) {
 		$this->pushLinksUpdateJob( $page );
 	}
 
 	/**
-	 * @param string $docId
-	 * @param Title $title
+	 * @inheritDoc
 	 */
 	public function ghostPageInIndex( $docId, Title $title ) {
-		JobQueueGroup::singleton()->push(
+		$this->jobQueue->push(
 			new DeletePages( $title, [
 				'docId' => $docId,
 				'cluster' => $this->cluster,
@@ -63,12 +75,10 @@ class QueueingRemediator implements Remediator {
 	}
 
 	/**
-	 * @param string $docId
-	 * @param WikiPage $page
-	 * @param string $wrongIndex
+	 * @inheritDoc
 	 */
 	public function pageInWrongIndex( $docId, WikiPage $page, $wrongIndex ) {
-		JobQueueGroup::singleton()->push(
+		$this->jobQueue->push(
 			new DeletePages( $page->getTitle(), [
 				'indexType' => $wrongIndex,
 				'docId' => $docId,
@@ -79,23 +89,21 @@ class QueueingRemediator implements Remediator {
 	}
 
 	/**
-	 * @param string $docId
-	 * @param WikiPage $page
-	 * @param string $index
+	 * @inheritDoc
 	 */
 	public function oldVersionInIndex( $docId, WikiPage $page, $index ) {
 		$this->pushLinksUpdateJob( $page );
 	}
 
 	/**
-	 * @param WikiPage $page
+	 * @inheritDoc
 	 */
 	public function oldDocument( WikiPage $page ) {
 		$this->pushLinksUpdateJob( $page );
 	}
 
 	private function pushLinksUpdateJob( WikiPage $page ) {
-		JobQueueGroup::singleton()->push(
+		$this->jobQueue->push(
 			new LinksUpdate( $page->getTitle(), [
 				'addedLinks' => [],
 				'removedLinks' => [],

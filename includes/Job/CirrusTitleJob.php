@@ -29,9 +29,9 @@ abstract class CirrusTitleJob extends Job {
 	use JobTraits;
 
 	/**
-	 * @var SearchConfig
+	 * @var SearchConfig|null (lazy loaded by getSearchConfig())
 	 */
-	protected $searchConfig;
+	private $searchConfig;
 
 	/**
 	 * @param Title $title
@@ -49,16 +49,17 @@ abstract class CirrusTitleJob extends Job {
 		// it can't be deduplicated or else the search index will end up with out of date
 		// data.  Luckily, this is how the JobQueue implementations work.
 		$this->removeDuplicates = true;
-
-		$this->searchConfig = MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
 	}
 
 	/**
 	 * @return SearchConfig
 	 */
 	public function getSearchConfig(): SearchConfig {
+		if ( $this->searchConfig === null ) {
+			$this->searchConfig = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
+		}
 		return $this->searchConfig;
 	}
 }

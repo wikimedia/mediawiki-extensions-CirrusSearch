@@ -32,7 +32,7 @@ class IncomingLinkCount extends CirrusTitleJob {
 	 */
 	protected function doJob() {
 		// Load the titles and filter out any that no longer exist.
-		$updater = Updater::build( $this->searchConfig, $this->params['cluster'] ?? null );
+		$updater = Updater::build( $this->getSearchConfig(), $this->params['cluster'] ?? null );
 		// We're intentionally throwing out whether or not this job succeeds.
 		// We're logging it but we're not retrying.
 		$updater->updateLinkedArticles( [ $this->getTitle() ] );

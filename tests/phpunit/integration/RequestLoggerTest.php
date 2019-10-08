@@ -268,8 +268,8 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 				->getMock();
 			$transport->expects( $this->any() )
 				->method( 'exec' )
-				->will( new \PHPUnit_Framework_MockObject_Stub_ConsecutiveCalls(
-					array_map( function ( $response ) {
+				->will( $this->onConsecutiveCalls(
+					...array_map( function ( $response ) {
 						return new Response( $response, 200 );
 					}, $responses )
 				) );

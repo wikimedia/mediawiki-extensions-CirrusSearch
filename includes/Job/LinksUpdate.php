@@ -47,7 +47,7 @@ class LinksUpdate extends CirrusTitleJob {
 	 * @return bool
 	 */
 	protected function doJob() {
-		$updater = Updater::build( $this->searchConfig, $this->params['cluster'] ?? null );
+		$updater = Updater::build( $this->getSearchConfig(), $this->params['cluster'] ?? null );
 		$res = $updater->updateFromTitle( $this->title );
 		if ( $res === false ) {
 			// Couldn't update. Bail early and retry rather than adding an
@@ -58,7 +58,7 @@ class LinksUpdate extends CirrusTitleJob {
 		// Queue IncomingLinkCount jobs when pages are newly linked or unlinked
 		$titleKeys = array_merge( $this->params[ 'addedLinks' ],
 			$this->params[ 'removedLinks' ] );
-		$refreshInterval = $this->searchConfig->get( 'CirrusSearchRefreshInterval' );
+		$refreshInterval = $this->getSearchConfig()->get( 'CirrusSearchRefreshInterval' );
 		foreach ( $titleKeys as $titleKey ) {
 			$title = Title::newFromDBkey( $titleKey );
 			if ( !$title ) {

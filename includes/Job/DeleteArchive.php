@@ -36,7 +36,7 @@ class DeleteArchive extends CirrusTitleJob {
 			return true;
 		}
 
-		$updater = Updater::build( $this->searchConfig, $this->params['cluster'] ?? null );
+		$updater = Updater::build( $this->getSearchConfig(), $this->params['cluster'] ?? null );
 		$updater->deletePages(
 			[ $this->title ],
 			array_keys( $docs ),

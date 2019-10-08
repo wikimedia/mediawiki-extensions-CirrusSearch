@@ -37,11 +37,11 @@ class DeletePages extends CirrusTitleJob {
 	 * @return bool
 	 */
 	protected function doJob() {
-		$updater = Updater::build( $this->searchConfig, $this->params['cluster'] ?? null );
+		$updater = Updater::build( $this->getSearchConfig(), $this->params['cluster'] ?? null );
 		$indexType = $this->params[ 'indexType' ] ?? null;
 		$updater->deletePages( [ $this->title ], [ $this->params['docId'] ], $indexType );
 
-		if ( $this->searchConfig->get( 'CirrusSearchIndexDeletes' ) ) {
+		if ( $this->getSearchConfig()->get( 'CirrusSearchIndexDeletes' ) ) {
 			$updater->archivePages( [
 				[
 					'title' => $this->title,

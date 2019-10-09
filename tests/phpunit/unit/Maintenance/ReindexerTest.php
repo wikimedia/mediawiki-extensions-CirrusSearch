@@ -31,19 +31,6 @@ class ReindexerTest extends CirrusTestCase {
 				'dc-foo',
 				'dc-foo',
 			],
-			'handles advanced cluster definitions' => [
-				[ 'host' => 'https://search.svc.foo.local:9243/' ],
-				[
-					'dc-foo' => [
-						[
-							'transport' => 'CirrusSearch\\Elastica\\PooledHttps',
-							'port' => '9243',
-							'host' => 'search.svc.foo.local',
-						],
-					],
-					'dc-bar' => [ 'search.svc.bar.local' ],
-				],
-			],
 			'uses http when http transport is selected' => [
 				[ 'host' => 'http://search.svc.foo.local:9200/' ],
 				[
@@ -51,19 +38,6 @@ class ReindexerTest extends CirrusTestCase {
 						[
 							'transport' => 'Http',
 							'port' => '9200',
-							'host' => 'search.svc.foo.local',
-						],
-					],
-					'dc-bar' => [ 'search.svc.bar.local' ],
-				]
-			],
-			'uses http when pooled http transport is selected' => [
-				[ 'host' => 'http://search.svc.foo.local:9200/' ],
-				[
-					'dc-foo' => [
-						[
-							'transport' => 'CirrusSearch\\Elastica\\PooledHttp',
-							'port' => 9200,
 							'host' => 'search.svc.foo.local',
 						],
 					],

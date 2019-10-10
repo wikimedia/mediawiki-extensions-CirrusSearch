@@ -13,7 +13,7 @@
             "headers": {
                 "server": "squid\/3.4.8",
                 "mime-version": "1.0",
-                "date": "Fri, 31 May 2019 20:43:14 GMT",
+                "date": "Thu, 10 Oct 2019 13:37:22 GMT",
                 "content-type": "text\/html",
                 "content-length": "3391",
                 "x-squid-error": "ERR_DNS_FAIL 0",
@@ -27,7 +27,7 @@
             "2": {
                 "server": "squid\/3.4.8",
                 "mime-version": "1.0",
-                "date": "Fri, 31 May 2019 20:43:14 GMT",
+                "date": "Thu, 10 Oct 2019 13:37:22 GMT",
                 "content-type": "text\/html",
                 "content-length": "3391",
                 "x-squid-error": "ERR_DNS_FAIL 0",

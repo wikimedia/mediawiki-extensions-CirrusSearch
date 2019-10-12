@@ -96,19 +96,18 @@ class ParsedQuery {
 	 * @param string $query cleaned up query string
 	 * @param string $rawQuery original query as received by the search engine
 	 * @param bool[] $queryCleanups indexed by cleanup type (non-empty when $query !== $rawQuery)
-	 * @param NamespaceHeaderNode|null $namespaceHeader namespace found as a "header" of the query
+	 * @param ?NamespaceHeaderNode $namespaceHeader namespace found as a "header" of the query
 	 *        is a int when a namespace id is provided, string with 'all' or null if none specified
 	 * @param array|string $requiredNamespaces
 	 * @param ParseWarning[] $parseWarnings list of warnings detected during parsing
 	 * @param ParsedQueryClassifiersRepository $repository
-	 * @suppress PhanParamReqAfterOpt $namespaceHeader is not optional but nullable
 	 */
 	public function __construct(
 		ParsedNode $root,
 		$query,
 		$rawQuery,
 		$queryCleanups,
-		NamespaceHeaderNode $namespaceHeader = null,
+		?NamespaceHeaderNode $namespaceHeader,
 		$requiredNamespaces,
 		array $parseWarnings,
 		ParsedQueryClassifiersRepository $repository

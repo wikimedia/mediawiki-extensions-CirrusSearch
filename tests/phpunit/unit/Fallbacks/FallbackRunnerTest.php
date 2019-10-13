@@ -38,7 +38,7 @@ class FallbackRunnerTest extends BaseFallbackMethodTest {
 		$methods[] = $this->getFallbackMethod( 0.5, $this->trackingCb( 'C' ), [ 'C' => 'C' ] );
 		$methods[] = $this->getFallbackMethod( 0.6, $this->trackingCb( 'A' ), [ 'A' => 'A' ] );
 		$runner = new FallbackRunner( $methods );
-		$runner->run( $this->getMock( SearcherFactory::class ), $results, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
+		$runner->run( $this->createMock( SearcherFactory::class ), $results, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
 		$this->assertEquals( [ 'A', 'B', 'C', 'D', 'E' ], $this->execOrder );
 		$this->assertEquals( [
 			'A' => 'A',
@@ -60,7 +60,7 @@ class FallbackRunnerTest extends BaseFallbackMethodTest {
 		$methods[] = self::getFallbackMethod( -0.5 );
 		$methods[] = self::getFallbackMethod( -0.6 );
 		$runner = new FallbackRunner( $methods );
-		$runner->run( $this->getMock( SearcherFactory::class ), $results, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
+		$runner->run( $this->createMock( SearcherFactory::class ), $results, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
 		$this->assertEquals( [ 'A' ], $this->execOrder );
 	}
 
@@ -250,7 +250,7 @@ class FallbackRunnerTest extends BaseFallbackMethodTest {
 		$runner->attachSearchRequests( $requests, $client );
 		$this->assertNotEmpty( $requests->getRequests() );
 		$mresponses = $requests->toMSearchResponses( [ $resp ] );
-		$this->assertSame( $rewritten, $runner->run( $this->getMock( SearcherFactory::class ), $inital, $mresponses,
+		$this->assertSame( $rewritten, $runner->run( $this->createMock( SearcherFactory::class ), $inital, $mresponses,
 			$this->namespacePrefixParser() ) );
 
 		$runner = new FallbackRunner( [ $this->mockElasticSearchRequestFallbackMethod( $query, 0.0, $resp, null ) ] );
@@ -258,7 +258,7 @@ class FallbackRunnerTest extends BaseFallbackMethodTest {
 		$runner->attachSearchRequests( $requests, $client );
 		$this->assertEmpty( $requests->getRequests() );
 		$mresponses = $requests->failure( \Status::newFatal( 'error' ) );
-		$this->assertSame( $inital, $runner->run( $this->getMock( SearcherFactory::class ), $inital, $mresponses,
+		$this->assertSame( $inital, $runner->run( $this->createMock( SearcherFactory::class ), $inital, $mresponses,
 			$this->namespacePrefixParser() ) );
 
 		$runner = new FallbackRunner( [
@@ -270,7 +270,7 @@ class FallbackRunnerTest extends BaseFallbackMethodTest {
 		$mresponses = $requests->toMSearchResponses( [ $resp ] );
 		$this->assertFalse( $mresponses->hasResultsFor( 'fallback-1' ) );
 		$this->assertTrue( $mresponses->hasResultsFor( 'fallback-2' ) );
-		$this->assertSame( $rewritten, $runner->run( $this->getMock( SearcherFactory::class ), $inital, $mresponses,
+		$this->assertSame( $rewritten, $runner->run( $this->createMock( SearcherFactory::class ), $inital, $mresponses,
 			$this->namespacePrefixParser() ) );
 	}
 

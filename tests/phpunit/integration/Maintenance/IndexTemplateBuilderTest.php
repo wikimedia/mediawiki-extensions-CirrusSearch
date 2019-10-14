@@ -8,6 +8,7 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Profile\SearchProfileService;
 use Elastica\Client;
 use Elastica\Response;
+use RuntimeException;
 
 /**
  * @covers \CirrusSearch\Maintenance\IndexTemplateBuilder
@@ -49,9 +50,6 @@ class IndexTemplateBuilderTest extends CirrusIntegrationTestCase {
 		$tmplBuilder->execute();
 	}
 
-	/**
-	 * @expectedException \RuntimeException
-	 */
 	public function testFailure() {
 		$testProfile = 'glent';
 		$client = $this->createMock( Client::class );
@@ -69,7 +67,13 @@ class IndexTemplateBuilderTest extends CirrusIntegrationTestCase {
 		$profile = ( $config )->getProfileService()
 			->loadProfileByName( SearchProfileService::INDEX_LOOKUP_FALLBACK, $testProfile );
 		$this->assertArrayHasKey( 'index_template', $profile );
-		$tmplBuilder = IndexTemplateBuilder::build( $connection, $profile['index_template'], [ 'analysis-icu' ] );
+		/** @var Connection $connection */
+		$tmplBuilder = IndexTemplateBuilder::build(
+			$connection,
+			$profile['index_template'],
+			[ 'analysis-icu' ]
+		);
+		$this->expectException( RuntimeException::class );
 		$tmplBuilder->execute();
 	}
 }

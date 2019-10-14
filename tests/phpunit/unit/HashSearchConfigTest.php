@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use InvalidArgumentException;
+
 /**
  * @covers \CirrusSearch\HashSearchConfig
  */
@@ -26,9 +28,9 @@ class HashSearchConfigTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideUnknownFlags
-	 * @expectedException \InvalidArgumentException
 	 */
 	public function testUnknownFlags( $flags ) {
+		$this->expectException( InvalidArgumentException::class );
 		new HashSearchConfig( [], $flags );
 	}
 }

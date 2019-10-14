@@ -3,6 +3,7 @@
 namespace CirrusSearch\Sanity;
 
 use CirrusSearch\CirrusTestCase;
+use InvalidArgumentException;
 
 /**
  * @covers \CirrusSearch\Sanity\MultiClusterRemediatorHelper
@@ -85,9 +86,6 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 		$helper->sendBatch();
 	}
 
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
 	public function testBadCtorParams() {
 		$r1 = $this->createMock( Remediator::class );
 		$r2 = $this->createMock( Remediator::class );
@@ -95,6 +93,9 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 
 		$b1 = new BufferedRemediator();
 		$b2 = new BufferedRemediator();
+
+		$this->expectException( InvalidArgumentException::class );
+		/** @var AllClustersQueueingRemediator $allClustersRemediator */
 		new MultiClusterRemediatorHelper( [ 'c1' => $r1, 'c3' => $r2 ], [ 'c1' => $b1, 'c2' => $b2 ], $allClustersRemediator );
 	}
 }

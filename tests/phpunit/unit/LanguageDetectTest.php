@@ -119,7 +119,7 @@ class LanguageDetectTest extends CirrusTestCase {
 		];
 	}
 
-	public function setUp() {
+	public function setUp() : void {
 		parent::setUp();
 		$tc = new \ReflectionClass( 'TextCat' );
 		$classDir = dirname( $tc->getFileName() );

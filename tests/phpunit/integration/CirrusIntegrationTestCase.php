@@ -13,7 +13,7 @@ class CirrusIntegrationTestCase extends \MediaWikiIntegrationTestCase {
 		LoggerFactory::getInstance( 'CirrusSearchIntegTest' )->debug( 'Using seed ' . self::getSeed() );
 	}
 
-	protected function setUp() {
+	protected function setUp() : void {
 		parent::setUp();
 		$services = MediaWikiServices::getInstance();
 		$services->resetServiceForTesting( InterwikiResolver::SERVICE );

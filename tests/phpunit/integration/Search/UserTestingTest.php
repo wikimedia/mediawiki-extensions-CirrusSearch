@@ -24,7 +24,7 @@ namespace CirrusSearch;
  * @covers \CirrusSearch\UserTesting
  */
 class UserTestingTest extends CirrusIntegrationTestCase {
-	public function setUp() {
+	public function setUp() : void {
 		parent::setUp();
 		Util::resetExecutionId();
 		UserTesting::resetInstance();

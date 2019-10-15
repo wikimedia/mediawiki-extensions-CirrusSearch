@@ -18,7 +18,7 @@ use Title;
  */
 class SearcherTest extends CirrusIntegrationTestCase {
 
-	public function setUp() {
+	public function setUp() : void {
 		parent::setUp();
 		MediaWikiServices::getInstance()->getConfigFactory()->register( 'CirrusSearch',
 			function () {
@@ -27,7 +27,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		);
 	}
 
-	public function tearDown() {
+	public function tearDown() : void {
 		MediaWikiServices::getInstance()
 			->resetServiceForTesting( 'ConfigFactory' );
 		parent::tearDown();

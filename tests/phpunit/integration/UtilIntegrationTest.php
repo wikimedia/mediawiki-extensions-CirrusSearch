@@ -181,7 +181,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		$mcInstance->setValue( $value );
 	}
 
-	public function tearDown() {
+	public function tearDown() : void {
 		if ( method_exists( \MessageCache::class, 'destroyInstance' ) ) {
 			// reset cache so that our mock won't pollute other tests (in 1.33
 			// this is handled automatically by service reset)

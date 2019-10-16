@@ -5,8 +5,8 @@
             "tokenizer": "standard",
             "filter": [
                 "lowercase",
-                "asciifolding",
-                "slovak_stemmer"
+                "slovak_stemmer",
+                "asciifolding"
             ]
         },
         "text_search": {
@@ -14,8 +14,8 @@
             "tokenizer": "standard",
             "filter": [
                 "lowercase",
-                "asciifolding",
-                "slovak_stemmer"
+                "slovak_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {

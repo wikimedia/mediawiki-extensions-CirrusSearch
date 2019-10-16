@@ -2,9 +2,16 @@
 	"@metadata": {
 		"authors": [
 			"Mirzali",
-			"Kumkumuk"
+			"Kumkumuk",
+			"Orbot707"
 		]
 	},
 	"cirrussearch-pref-label": "Cıgeyrayışo newe",
+	"cirrussearch-explore-similar-related": "Eleqeyın",
+	"cirrussearch-explore-similar-categories": "Kategoriy",
+	"cirrussearch-explore-similar-languages": "Zıwani",
+	"cirrussearch-explore-similar-related-none": "Pela eleqeyın çıniya",
+	"cirrussearch-explore-similar-categories-none": "Kategori çıniya",
+	"cirrussearch-explore-similar-languages-none": "Zıwanê bınan de çıniya",
 	"cirrussearch-article-words": "Pelanê zerreki de amarê çekuyan pêro"
 }

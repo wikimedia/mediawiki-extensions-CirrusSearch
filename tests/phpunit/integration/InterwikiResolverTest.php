@@ -445,7 +445,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		return $resolver;
 	}
 
-	protected function tearDown() {
+	protected function tearDown() : void {
 		MediaWikiServices::getInstance()
 			->resetServiceForTesting( 'InterwikiLookup' );
 		parent::tearDown();

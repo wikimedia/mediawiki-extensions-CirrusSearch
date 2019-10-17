@@ -334,8 +334,13 @@ class RequestLogger {
 			$requestEvent['params'] = [];
 			// Make sure all params are string keys and values
 			foreach ( $webRequestValues as $k => $v ) {
-				if ( is_array( $v ) ) {
-					$v = implode( ',', $v );
+				if ( !is_scalar( $v ) ) {
+					// This is potentially a multi-dimensional array. JSON is
+					// perhaps not the best format, but this gives a good
+					// guarantee about always returning a string, and
+					// faithfully represents the variety of shapes request
+					// parameters can be parsed into.
+					$v = \FormatJson::encode( $v );
 				}
 				$k = $webrequest->normalizeUnicode( $k );
 				$requestEvent['params'][(string)$k] = (string)$v;

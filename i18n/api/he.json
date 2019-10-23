@@ -25,5 +25,7 @@
 	"apihelp-query+cirrusbuilddoc-example": "קבלת היטל של ערך אחד ב־CirrusSearch שנוצר מבסיס הנתונים.",
 	"apierror-cirrus-requesttoolong": "בקשת חיפוש עם תחילית הייתה ארוכה מהאורך המרבי המותר. ($1 &gt; $2)",
 	"apihelp-query+compsuggestbuilddoc+param-method": "באיזו שיטת הדירוג להשתמש",
-	"apierror-compsuggestbuilddoc-bad-method": "שיטת דירוג בלתי־ידועה"
+	"apierror-compsuggestbuilddoc-bad-method": "שיטת דירוג בלתי־ידועה",
+	"apihelp-query+cirruscompsuggestbuilddoc-summary": "היטל של המסמך שבשימוש מציע ההשלמות",
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "קבלת היטל של המסמך שבשימוש מציע ההשלמות"
 }

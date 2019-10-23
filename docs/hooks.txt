@@ -26,14 +26,6 @@ really been settled.
  $content - Content object for the page.
  $parserOutput - ParserOutput for the page, if exists, or null.
 
-'CirrusSearchBuildDocumentLinks': Allows extensions to process incoming and outgoing links for the document.
- $doc - \Elastica\Document object representing the page. Extensions can add links to it.
- $title - Title object for the page being parsed.
- $connection - \CirrusSearch\Connection object representing connection to ElasticSearch server.
-
-'CirrusSearchBuildDocumentFinishBatch': Called when a batch of pages has been indexed.
- $pages - list of WikiPage objects which have been indexed.
-
 'CirrusSearchAddQueryFeatures': Allows extensions to add query parser features
  &$config - SearchConfig object which holds current search configuration
  &$extraFeatures - array holding feature objects. This is where the extension should add its features.

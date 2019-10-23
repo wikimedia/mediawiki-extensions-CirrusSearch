@@ -123,8 +123,6 @@
 		"remoteExtPath": "CirrusSearch"
 	},
 	"Hooks": {
-		"CirrusSearchBuildDocumentFinishBatch": "CirrusSearch\\BuildDocument\\RedirectsAndIncomingLinks::finishBatch",
-		"CirrusSearchBuildDocumentLinks": "CirrusSearch\\BuildDocument\\RedirectsAndIncomingLinks::buildDocument",
 		"APIAfterExecute": "CirrusSearch\\Hooks::onAPIAfterExecute",
 		"ApiBeforeMain": "CirrusSearch\\Hooks::onApiBeforeMain",
 		"ArticleDelete": "CirrusSearch\\Hooks::onArticleDelete",

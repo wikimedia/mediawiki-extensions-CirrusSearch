@@ -234,9 +234,9 @@ trait CirrusTestCaseTrait {
 			CirrusDebugOptions::defaultOptions(), $this->namespacePrefixParser(), new EmptyInterwikiResolver() );
 	}
 
-	public function newTitleHelper( SearchConfig $config = null, InterwikiResolver $iwResolver = null ): TitleHelper {
+	public function newTitleHelper( $hostWikiID = null, InterwikiResolver $iwResolver = null ): TitleHelper {
 		return new class(
-			$config ?: $this->newHashSearchConfig( [] ),
+			$hostWikiID,
 			$iwResolver ?: new EmptyInterwikiResolver(),
 			function ( $v ) {
 				// legacy mode
@@ -250,10 +250,10 @@ trait CirrusTestCaseTrait {
 				return $id;
 			}
 		) extends TitleHelper {
-			public function __construct( SearchConfig $config = null,
+			public function __construct( $hostWikiId,
 				InterwikiResolver $interwikiResolver = null, callable $linkSanitizer = null
 			) {
-				parent::__construct( $config, $interwikiResolver, $linkSanitizer );
+				parent::__construct( $hostWikiId, $interwikiResolver, $linkSanitizer );
 			}
 
 			public function getNamespaceText( Title $title ) {

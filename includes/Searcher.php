@@ -150,6 +150,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @param CirrusDebugOptions|null $options the debugging options to use or null to use defaults
 	 * @param NamespacePrefixParser|null $namespacePrefixParser
 	 * @param InterwikiResolver|null $interwikiResolver
+	 * @param TitleHelper|null $titleHelper
 	 * @see CirrusDebugOptions::defaultOptions()
 	 */
 	public function __construct(
@@ -161,7 +162,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$index = false,
 		CirrusDebugOptions $options = null,
 		NamespacePrefixParser $namespacePrefixParser = null,
-		InterwikiResolver $interwikiResolver = null
+		InterwikiResolver $interwikiResolver = null,
+		TitleHelper $titleHelper = null
 	) {
 		parent::__construct(
 			$conn,
@@ -176,7 +178,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		// TODO: Make these params mandatory once WBCS stops extending this class
 		$this->namespacePrefixParser = $namespacePrefixParser;
 		$this->interwikiResolver = $interwikiResolver ?: MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
-		$this->titleHelper = new TitleHelper( $this->config, $this->interwikiResolver );
+		$this->titleHelper = $titleHelper ?: new TitleHelper( wfWikiID(), $this->interwikiResolver );
 	}
 
 	/**
@@ -979,7 +981,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	public function makeSearcher( SearchQuery $query ) {
 		return new self( $this->connection, $query->getOffset(), $query->getLimit(),
 			$query->getSearchConfig(), $query->getNamespaces(), $this->user,
-			null, $query->getDebugOptions(), $this->namespacePrefixParser );
+			null, $query->getDebugOptions(), $this->namespacePrefixParser, $this->interwikiResolver, $this->titleHelper );
 	}
 
 	/**

@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Search;
 
-use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use Title;
 use CirrusSearch\InterwikiResolver;
@@ -15,9 +14,9 @@ use MediaWiki\MediaWikiServices;
  */
 class TitleHelper {
 	/**
-	 * @var SearchConfig
+	 * @var string
 	 */
-	private $config;
+	private $hostWikiID;
 
 	/**
 	 * @var InterwikiResolver
@@ -30,12 +29,12 @@ class TitleHelper {
 	private $linkSanitizer;
 
 	/**
-	 * @param SearchConfig|null $config
+	 * @param string|null $hostWikiID
 	 * @param InterwikiResolver|null $interwikiResolver
 	 * @param callable|null $linkSanitizer
 	 */
-	public function __construct( SearchConfig $config = null, InterwikiResolver $interwikiResolver = null, callable $linkSanitizer = null ) {
-		$this->config = $config ?: MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
+	public function __construct( $hostWikiID = null, InterwikiResolver $interwikiResolver = null, callable $linkSanitizer = null ) {
+		$this->hostWikiID = $hostWikiID ?: wfWikiID();
 		$this->interwikiResolver = $interwikiResolver ?: MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
 		$this->linkSanitizer = $linkSanitizer ?: function ( $v ) {
 			return \Sanitizer::escapeIdForLink( $v );
@@ -99,7 +98,7 @@ class TitleHelper {
 	 * @return bool true if this result refers to an external Title
 	 */
 	public function isExternal( \Elastica\Result $r ) {
-		if ( isset( $r->wiki ) && $r->wiki !== $this->config->getWikiId() ) {
+		if ( isset( $r->wiki ) && $r->wiki !== $this->hostWikiID ) {
 			return true;
 		}
 		// no wiki is suspicious, should we log a warning?
@@ -112,7 +111,7 @@ class TitleHelper {
 	 * empty if local.
 	 */
 	private function identifyInterwikiPrefix( $r ) {
-		if ( isset( $r->wiki ) && $r->wiki !== $this->config->getWikiId() ) {
+		if ( isset( $r->wiki ) && $r->wiki !== $this->hostWikiID ) {
 			return $this->interwikiResolver->getInterwikiPrefix( $r->wiki );
 		}
 		// no wiki is suspicious, should we log something?

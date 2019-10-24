@@ -11,6 +11,7 @@ use CirrusSearch\Search\MSearchRequests;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
+use CirrusSearch\Search\TitleHelper;
 use MediaWiki\MediaWikiServices;
 use Status;
 use User;
@@ -43,6 +44,7 @@ class InterwikiSearcher extends Searcher {
 	 * @param CirrusDebugOptions|null $debugOptions
 	 * @param NamespacePrefixParser|null $namespacePrefixParser
 	 * @param InterwikiResolver|null $interwikiResolver
+	 * @param TitleHelper|null $titleHelper
 	 */
 	public function __construct(
 		Connection $connection,
@@ -51,11 +53,12 @@ class InterwikiSearcher extends Searcher {
 		User $user = null,
 		CirrusDebugOptions $debugOptions = null,
 		NamespacePrefixParser $namespacePrefixParser = null,
-		InterwikiResolver $interwikiResolver = null
+		InterwikiResolver $interwikiResolver = null,
+		TitleHelper $titleHelper = null
 	) {
 		$maxResults = $config->get( 'CirrusSearchNumCrossProjectSearchResults' );
 		parent::__construct( $connection, 0, $maxResults, $config, $namespaces, $user, false,
-			$debugOptions, $namespacePrefixParser, $interwikiResolver );
+			$debugOptions, $namespacePrefixParser, $interwikiResolver, $titleHelper );
 	}
 
 	/**

@@ -200,7 +200,8 @@ class Updater extends ElasticsearchIntermediary {
 		$builder = new BuildDocument(
 			$this->connection,
 			$services->getDBLoadBalancer()->getConnection( DB_REPLICA ),
-			$services->getParserCache()
+			$services->getParserCache(),
+			$services->getRevisionStore()
 		);
 		foreach ( $builder->initialize( $pages, $flags ) as $document ) {
 			// This isn't really a property of the connection, so it doesn't matter

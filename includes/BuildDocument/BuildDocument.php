@@ -4,18 +4,33 @@ namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Document;
 use IDatabase;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Revision\RevisionAccessException;
+use MediaWiki\Revision\RevisionStore;
 use ParserCache;
+use Wikimedia\Assert\Assert;
 use WikiPage;
 
 /**
  * Orchestrate the process of building an elasticsearch document out of a
- * WikiPage. All properties are provided by PagePropertyBuilder instances
- * chosen by a set of provided flags. Operates on batches of pages to
- * facilitate issuing singular requests to external resources, instead of
- * a request for each doc built.
+ * WikiPage. Document building is performed in two stages, and all properties
+ * are provided by PagePropertyBuilder instances chosen by a set of provided
+ * flags.
+ *
+ * The first stage, called initialize, sets up the basic document properties.
+ * This stage is executed one time per update and the results are shared
+ * between all retry attempts and clusters to be written to. The results of the
+ * initialize stage may be written to the job queue, so we try to keep the size
+ * of these documents reasonable small. The initialize stage supports batching
+ * initialization by the PagePropertyBuilder instances.
+ *
+ * The second stage of document building, finalize, is called on each attempt
+ * to send a document to an elasticsearch cluster. This stage loads the bulk
+ * content, potentially megabytes, from mediawiki ParserOutput into the
+ * documents.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +48,8 @@ use WikiPage;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class BuildDocument {
+	const HINT_FLAGS = 'BuildDocument_flags';
+
 	// Bit field parameters for constructor et al.
 	const INDEX_EVERYTHING = 0;
 	const INDEX_ON_SKIP = 1;
@@ -49,17 +66,26 @@ class BuildDocument {
 	private $db;
 	/** @var ParserCache */
 	private $parserCache;
+	/** @var RevisionStore */
+	private $revStore;
 
 	/**
 	 * @param Connection $connection Cirrus connection to read page properties from
 	 * @param IDatabase $db Wiki database connection to read page properties from
 	 * @param ParserCache $parserCache Cache to read parser output from
+	 * @param RevisionStore $revStore Store for retrieving revisions by id
 	 */
-	public function __construct( Connection $connection, IDatabase $db, ParserCache $parserCache ) {
+	public function __construct(
+		Connection $connection,
+		IDatabase $db,
+		ParserCache $parserCache,
+		RevisionStore $revStore
+	) {
 		$this->config = $connection->getConfig();
 		$this->connection = $connection;
 		$this->db = $db;
 		$this->parserCache = $parserCache;
+		$this->revStore = $revStore;
 	}
 
 	/**
@@ -90,6 +116,37 @@ class BuildDocument {
 		}
 
 		return $documents;
+	}
+
+	/**
+	 * Finalize building a page document.
+	 *
+	 * Called on every attempt to write the document to elasticsearch, meaning
+	 * every cluster and every retry. Any bulk data that needs to be loaded
+	 * should happen here.
+	 *
+	 * @param Document $doc
+	 * @return bool True when the document update can proceed
+	 */
+	public function finalize( Document $doc ): bool {
+		$flags = CirrusIndexField::getHint( $doc, self::HINT_FLAGS );
+		if ( $flags !== null ) {
+			try {
+				$title = $this->revStore->getTitle( null, $doc->get( 'version' ) );
+			} catch ( RevisionAccessException $e ) {
+				$title = null;
+			}
+			if ( $title === null || $title->getLatestRevID() !== $doc->get( 'version' ) ) {
+				// Something has changed since the job was enqueued, this is no longer
+				// a valid update.
+				return false;
+			}
+			$builders = $this->createBuilders( $flags );
+			foreach ( $builders as $builder ) {
+				$builder->finalize( $doc, $title );
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -149,7 +206,15 @@ class BuildDocument {
 	private function initializeDoc( WikiPage $page, array $builders, int $flags ): Document {
 		$docId = $this->config->makeId( $page->getId() );
 		$doc = new \Elastica\Document( $docId, [] );
+		// allow self::finalize to recreate the same set of builders
+		CirrusIndexField::setHint( $doc, self::HINT_FLAGS, $flags );
 		$doc->setDocAsUpsert( $this->canUpsert( $flags ) );
+		// While it would make plenty of sense for a builder to provide the version (revision id),
+		// we need to use it in self::finalize to ensure the revision is still the latest.
+		Assert::precondition( $page->getLatest(), "Must have a latest revision" );
+		$doc->set( 'version', $page->getLatest() );
+		CirrusIndexField::addNoopHandler(
+			$doc, 'version', 'documentVersion' );
 
 		foreach ( $builders as $builder ) {
 			$builder->initialize( $doc, $page );

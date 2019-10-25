@@ -6,6 +6,7 @@ use CirrusSearch;
 use CirrusSearch\Connection;
 use ContentHandler;
 use Elastica\Document;
+use ParserCache;
 use ParserOutput;
 use Revision;
 use Title;
@@ -96,11 +97,9 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 
 	private function buildDoc( WikiPage $page ) {
 		$doc = new Document( null, [] );
-		// Cache is never invoked, but we need to pass something
-		$cache = $this->mock( \ParserCache::class );
-		$props = new ParserOutputPageProperties( $cache, false );
-		$props->initialize( $doc, $page );
-		$props->finishInitializeBatch( [ $page ] );
+		$cache = $this->mock( ParserCache::class );
+		$builder = new ParserOutputPageProperties( $cache, false );
+		$builder->finalizeReal( $doc, $page, null, new CirrusSearch );
 		return $doc;
 	}
 

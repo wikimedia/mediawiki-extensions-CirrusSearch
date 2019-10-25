@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\BuildDocument;
 
+use CirrusSearch;
 use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Document;
 use MediaWiki\Logger\LoggerFactory;
@@ -37,11 +38,47 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 	 * @param WikiPage $page The page to scope operation to
 	 */
 	public function initialize( Document $doc, WikiPage $page ): void {
+		// NOOP
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function finishInitializeBatch(): void {
+		// NOOP
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param Document $doc
+	 * @param Title $title
+	 */
+	public function finalize( Document $doc, Title $title ): void {
+		$page = new \WikiPage( $title );
+		// TODO: If parserCache is null here then we will parse for every
+		// cluster and every retry.  Maybe instead of forcing a parse, we could
+		// force a parser cache update during self::initialize?
+		$cache = $this->forceParse ? null : $this->parserCache;
+		$this->finalizeReal( $doc, $page, $cache, new CirrusSearch );
+	}
+
+	/**
+	 * Visible for testing. Much simpler to test with all objects resolved.
+	 *
+	 * @param Document $doc Document to finalize
+	 * @param WikiPage $page WikiPage to scope operation to
+	 * @param ?ParserCache $parserCache Cache to fetch parser output from. When null the
+	 *  wikitext parser will be invoked.
+	 * @param CirrusSearch $engine SearchEngine implementation
+	 */
+	public function finalizeReal( Document $doc, WikiPage $page, ?ParserCache $parserCache, CirrusSearch $engine ): void {
 		$contentHandler = $page->getContentHandler();
-		$parserCache = $this->forceParse ? null : $this->parserCache;
+		// TODO: Should see if we can change content handler api to avoid
+		// the WikiPage god object, but currently parser cache is still
+		// tied to WikiPage as well.
 		$output = $contentHandler->getParserOutputForIndexing( $page, $parserCache );
 
-		$engine = new \CirrusSearch;
 		$fieldDefinitions = $contentHandler->getFieldsForSearchIndex( $engine );
 		$fieldContent = $contentHandler->getDataForSearchIndex( $page, $output, $engine );
 		$fieldContent = self::fixAndFlagInvalidUTF8InSource( $fieldContent, $page->getId() );
@@ -54,13 +91,6 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 		}
 
 		$doc->set( 'display_title', self::extractDisplayTitle( $page->getTitle(), $output ) );
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function finishInitializeBatch(): void {
-		// NOOP
 	}
 
 	/**

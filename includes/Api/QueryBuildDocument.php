@@ -33,8 +33,8 @@ class QueryBuildDocument extends \ApiQueryBase {
 
 	public function execute() {
 		$result = $this->getResult();
-		$engine = MediaWikiServices::getInstance()
-			->getSearchEngineFactory()
+		$services = MediaWikiServices::getInstance();
+		$engine = $services->getSearchEngineFactory()
 			->create( 'cirrus' );
 
 		if ( $engine instanceof \CirrusSearch ) {
@@ -46,15 +46,17 @@ class QueryBuildDocument extends \ApiQueryBase {
 			$builder = new BuildDocument(
 				$this->getCirrusConnection(),
 				$this->getDB(),
-				MediaWikiServices::getInstance()->getParserCache()
+				$services->getParserCache(),
+				$services->getRevisionStore()
 			);
 			$docs = $builder->initialize( $pages, BuildDocument::INDEX_EVERYTHING );
-
 			foreach ( $docs as $pageId => $doc ) {
-				$result->addValue(
-					[ 'query', 'pages', $pageId ],
-					'cirrusbuilddoc', $doc->getData()
-				);
+				if ( $builder->finalize( $doc ) ) {
+					$result->addValue(
+						[ 'query', 'pages', $pageId ],
+						'cirrusbuilddoc', $doc->getData()
+					);
+				}
 			}
 		} else {
 			throw new \RuntimeException( 'Could not create cirrus engine' );

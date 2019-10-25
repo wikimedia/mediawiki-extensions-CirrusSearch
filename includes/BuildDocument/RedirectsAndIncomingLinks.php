@@ -128,6 +128,8 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 			$foundNull = false;
 			for ( $index = 0; $index < $linkCountClosureCount; $index++ ) {
 				if ( $result[$index] === null ) {
+					// Finish updating other docs that have results before
+					// throwing the exception.
 					$foundNull = true;
 				} else {
 					$this->linkCountClosures[ $index ]( $result[ $index ]->getTotalHits() );
@@ -145,6 +147,16 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 			LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(
 				'Links for page ids: ' . implode( ',', $this->pageIds ) );
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param Document $doc
+	 * @param Title $title
+	 */
+	public function finalize( Document $doc, Title $title ): void {
+		// NOOP
 	}
 
 	private function raiseLinkCountException( $result ): void {

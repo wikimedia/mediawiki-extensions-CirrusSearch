@@ -2,11 +2,13 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Bulk\Action\AbstractDocument;
 use Elastica\Exception\Bulk\ResponseException;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use Status;
 use Title;
 use Wikimedia\Assert\Assert;
@@ -151,10 +153,31 @@ class DataSender extends ElasticsearchIntermediary {
 		}
 		$documents = $docsCopy;
 
+		// Perform final stage of document building. This only
+		// applies to `page` documents, docs built by something
+		// other than BuildDocument will pass through unchanged.
+		$services = MediaWikiServices::getInstance();
+		$builder = new BuildDocument(
+			$this->connection,
+			$services->getDBLoadBalancer()->getConnection( DB_REPLICA ),
+			$services->getParserCache(),
+			$services->getRevisionStore()
+		);
+		foreach ( $documents as $i => $doc ) {
+			if ( !$builder->finalize( $doc ) ) {
+				// Something has changed while this was hanging out in the job
+				// queue and should no longer be written to elastic.
+				unset( $documents[$i] );
+			}
+		}
+		if ( !$documents ) {
+			// All documents noop'd
+			return Status::newGood();
+		}
+
 		/**
-		 * Does this go here? Probably not. But we need job parameters
-		 * to serialize to json compatible types, and document is a
-		 * significantly simpler object to define a round trip with.
+		 * Transform the finalized documents into noop scripts if possible
+		 * to reduce update load.
 		 */
 		if ( $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop' ) ) {
 			foreach ( $documents as $i => $doc ) {
@@ -164,7 +187,7 @@ class DataSender extends ElasticsearchIntermediary {
 				}
 			}
 		}
-		// Hints need to be retained until after building noop script
+
 		foreach ( $documents as $doc ) {
 			$doc->setRetryOnConflict( $this->retryOnConflict() );
 			// Hints need to be retained until after finalizing
@@ -276,7 +299,7 @@ class DataSender extends ElasticsearchIntermediary {
 				$updateStats[$opRes] = 1;
 			}
 		}
-		$stats = \MediaWiki\MediaWikiServices::getInstance()->getStatsdDataFactory();
+		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 		$cluster = $this->connection->getClusterName();
 		$metricsPrefix = "CirrusSearch.$cluster.updates";
 		foreach ( $updateStats as $what => $num ) {

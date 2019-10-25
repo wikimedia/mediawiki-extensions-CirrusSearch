@@ -24,6 +24,7 @@ class DefaultPagePropertiesIntegrationTest extends \MediaWikiIntegrationTestCase
 		$props = new DefaultPageProperties( wfGetDB( DB_REPLICA ) );
 		$props->initialize( $doc, $page );
 		$props->finishInitializeBatch( [ $page ] );
+		$props->finalize( $doc, $page->getTitle() );
 		return $doc;
 	}
 

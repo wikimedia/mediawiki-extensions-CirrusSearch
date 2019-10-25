@@ -8,10 +8,10 @@ use CirrusSearch\Dispatch\DefaultSearchQueryDispatchService;
 use CirrusSearch\Dispatch\SearchQueryDispatchService;
 use CirrusSearch\Dispatch\SearchQueryRoute;
 use CirrusSearch\Search\SearchQuery;
-use \Config;
-use \RequestContext;
-use \User;
-use \WebRequest;
+use Config;
+use RequestContext;
+use User;
+use WebRequest;
 use Wikimedia\Assert\Assert;
 
 /**

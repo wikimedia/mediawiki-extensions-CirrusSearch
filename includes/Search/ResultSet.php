@@ -2,9 +2,11 @@
 
 namespace CirrusSearch\Search;
 
+use BaseSearchResultSet;
 use LinkBatch;
 use ISearchResultSet;
 use SearchResult;
+use SearchResultSetTrait;
 use Title;
 use Wikimedia\Assert\Assert;
 
@@ -28,8 +30,8 @@ use Wikimedia\Assert\Assert;
  * http://www.gnu.org/copyleft/gpl.html
  * @deprecated use a subclass of BaseCirrusSearchResultSet
  */
-class ResultSet extends \BaseSearchResultSet implements CirrusSearchResultSet {
-	use \SearchResultSetTrait;
+class ResultSet extends BaseSearchResultSet implements CirrusSearchResultSet {
+	use SearchResultSetTrait;
 
 	/**
 	 * @var \Elastica\ResultSet

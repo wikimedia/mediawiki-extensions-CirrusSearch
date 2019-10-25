@@ -9,6 +9,7 @@ use CirrusSearch\Parser\AST\PrefixNode;
 use CirrusSearch\Parser\AST\WildcardNode;
 use CirrusSearch\Parser\AST\WordsQueryNode;
 use CirrusSearch\Search\Escaper;
+use Wikimedia\Assert\Assert;
 
 /**
  * Parse non-phrase query parts.
@@ -18,19 +19,22 @@ use CirrusSearch\Search\Escaper;
 class NonPhraseParser {
 
 	/**
-	 * Consume non quoted chars (negated phrase queries as well)
-	 * allows:
-	 * - all escaped sequences
-	 * - !- only if they are not followed by " (accepts $ to consume !- at the end of the string)
-	 * - stops at first ", ! or -
-	 *
 	 * Detects prefixed negation but ignores negation if not followed by a letter, a number or _
 	 *   -word: properly negated
 	 *   --word: eaten as "--word"
 	 *
 	 * few markups are added
 	 */
-	const NON_QUOTE = '/\G(?<negated>[-!](?=[\w]))?(?<word>(?:\\\\.|[!-](?!")|[^"!\pZ\pC-])+)/u';
+	const NEGATION = '/\G[-!](?=[\w])/u';
+
+	/**
+	 * Consume non quoted chars (negated phrase queries as well)
+	 * allows:
+	 * - all escaped sequences
+	 * - !- only if they are not followed by " (accepts $ to consume !- at the end of the string)
+	 * - stops at first ", ! or -
+	 */
+	const NON_QUOTE = '/\\\\.|[!-](?!")|(?<stop>["!\pZ\pC-])/u';
 
 	/**
 	 * Detect simple prefix nodes
@@ -87,44 +91,66 @@ class NonPhraseParser {
 	 * @return ParsedNode|null
 	 */
 	public function parse( $query, $start ) {
-		if ( preg_match( self::NON_QUOTE, $query, $match, PREG_OFFSET_CAPTURE, $start ) === 1 ) {
-			$wholeStart = $match[0][1];
-			$wholeEnd = $wholeStart + strlen( $match[0][0] );
-			$wordLen = strlen( $match['word'][0] );
-			$wordStart = $match['word'][1];
-			$wordEnd = $wordStart + $wordLen;
-			$negationType = '';
-			if ( isset( $match['negated'] ) && $match['negated'][1] >= 0 ) {
-				$negationType = $match['negated'][0];
-			}
-			$word = substr( $query, $wordStart, $wordLen );
-			$match = [];
-			$node = null;
-			if ( strpos( $word, '~' ) !== -1 && preg_match( self::FUZZY_WORD, $word, $match ) === 1 ) {
-				$word = $match['word'];
-				if ( isset( $match['fuzzyness'] ) && strlen( $match['fuzzyness'] ) > 0 ) {
-					$fuzzyness = intval( $match['fuzzyness'] );
-				} else {
-					$fuzzyness = -1;
-				}
-				// No need to unescape here, we don't match any punctuation except_
-				$node = new FuzzyNode( $wordStart, $wordEnd, $word, $fuzzyness );
-			} elseif ( strpos( $word, '*' ) !== -1 || strpos( $word, '?' ) != -1 ) {
-				if ( preg_match( self::PREFIX_QUERY, $word, $match ) === 1 ) {
-					$node = new PrefixNode( $wordStart, $wordEnd, $match['prefix'] );
-				} elseif ( preg_match( $this->wildcardRegex, $word ) === 1 ) {
-					$node = new WildcardNode( $wordStart, $wordEnd, $word );
-				}
-			}
-
-			if ( $node === null ) {
-				$node = new WordsQueryNode( $wordStart, $wordEnd, $this->escaper->unescape( $word ) );
-			}
-			if ( $negationType !== '' ) {
-				$node = new NegatedNode( $wholeStart, $wholeEnd, $node, $negationType );
-			}
-			return $node;
+		$match = [];
+		$ret = preg_match( self::NEGATION, $query, $match, PREG_OFFSET_CAPTURE, $start );
+		Assert::postcondition( $ret !== false, 'Regex failed: ' . preg_last_error() );
+		$wholeStart = $start;
+		$wordStart = $start;
+		$negationType = '';
+		if ( $ret == 1 ) {
+			$wordStart = $start + strlen( $match[0][0] );
+			$negationType = $match[0][0];
+			$start = $match[0][1];
 		}
-		return null;
+		$wholeEnd = -1;
+
+		$end = strlen( $query );
+		while ( $start < $end ) {
+			$ret = preg_match( self::NON_QUOTE, $query, $match, PREG_OFFSET_CAPTURE, $start );
+			Assert::postcondition( $ret !== false, 'Regex failed: ' . preg_last_error() );
+			if ( $ret === 0 ) {
+				$wholeEnd = $end;
+				break;
+			}
+			if ( isset( $match['stop'] ) && $match['stop'][1] >= 0 ) {
+				$wholeEnd = $match['stop'][1];
+				break;
+			}
+			$start = $match[0][1] + strlen( $match[0][0] );
+			$wholeEnd = $start;
+		}
+
+		if ( $wholeEnd == $wordStart ) {
+			return null;
+		}
+
+		$wordLen = $wholeEnd - $wordStart;
+		$word = substr( $query, $wordStart, $wordLen );
+		$node = null;
+		$match = [];
+		if ( strpos( $word, '~' ) !== -1 && preg_match( self::FUZZY_WORD, $word, $match ) === 1 ) {
+			$word = $match['word'];
+			if ( isset( $match['fuzzyness'] ) && strlen( $match['fuzzyness'] ) > 0 ) {
+				$fuzzyness = intval( $match['fuzzyness'] );
+			} else {
+				$fuzzyness = -1;
+			}
+			// No need to unescape here, we don't match any punctuation except_
+			$node = new FuzzyNode( $wordStart, $wholeEnd, $word, $fuzzyness );
+		} elseif ( strpos( $word, '*' ) !== -1 || strpos( $word, '?' ) != -1 ) {
+			if ( preg_match( self::PREFIX_QUERY, $word, $match ) === 1 ) {
+				$node = new PrefixNode( $wordStart, $wholeEnd, $match['prefix'] );
+			} elseif ( preg_match( $this->wildcardRegex, $word ) === 1 ) {
+				$node = new WildcardNode( $wordStart, $wholeEnd, $word );
+			}
+		}
+
+		if ( $node === null ) {
+			$node = new WordsQueryNode( $wordStart, $wholeEnd, $this->escaper->unescape( $word ) );
+		}
+		if ( $negationType !== '' ) {
+			$node = new NegatedNode( $wholeStart, $wholeEnd, $node, $negationType );
+		}
+		return $node;
 	}
 }

@@ -1,9 +1,11 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch;
+use CirrusSearch\Connection;
 use ContentHandler;
+use Elastica\Document;
 use ParserOutput;
 use Revision;
 use Title;
@@ -11,9 +13,17 @@ use WikiPage;
 
 /**
  * @group Database
- * @covers \CirrusSearch\Updater
+ * @covers \CirrusSearch\BuildDocument\ParserOutputPageProperties
  */
-class UpdaterTest extends \MediaWikiIntegrationTestCase {
+class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
+	public function testFixAndFlagInvalidUTF8InSource() {
+		$this->assertNotContains( 'CirrusSearchInvalidUTF8',
+			ParserOutputPageProperties::fixAndFlagInvalidUTF8InSource(
+				[ 'source_text' => 'valid' ], 1 )['template'] ?? [], 1 );
+		$this->assertContains( 'Template:CirrusSearchInvalidUTF8',
+			ParserOutputPageProperties::fixAndFlagInvalidUTF8InSource(
+				[ 'source_text' => chr( 130 ) ], 1 )['template'] ?? [] );
+	}
 
 	public function displayTitleProvider() {
 		$mainTitle = Title::makeTitle( NS_MAIN, 'Phpunit' );
@@ -84,6 +94,16 @@ class UpdaterTest extends \MediaWikiIntegrationTestCase {
 		];
 	}
 
+	private function buildDoc( WikiPage $page ) {
+		$doc = new Document( null, [] );
+		// Cache is never invoked, but we need to pass something
+		$cache = $this->mock( \ParserCache::class );
+		$props = new ParserOutputPageProperties( $cache, false );
+		$props->initialize( $doc, $page );
+		$props->finishInitializeBatch( [ $page ] );
+		return $doc;
+	}
+
 	/**
 	 * @dataProvider displayTitleProvider
 	 */
@@ -96,52 +116,9 @@ class UpdaterTest extends \MediaWikiIntegrationTestCase {
 		$engine = new CirrusSearch();
 		$page = $this->pageWithMockParserOutput( $title, $parserOutput );
 		$conn = $this->mock( Connection::class );
-		$forceParse = false;
-		$skipParse = false;
-		$skipLinks = true; // otherwise it will query elasticsearch
-		$doc = Updater::buildDocument( $engine, $page, $forceParse, $skipParse );
-
-		$this->assertTrue( $doc->has( 'display_title' ), 'field must exist when page is parsed' );
+		$doc = $this->buildDoc( $page );
+		$this->assertTrue( $doc->has( 'display_title' ), 'field must exist' );
 		$this->assertSame( $expected, $doc->get( 'display_title' ) );
-
-		$skipParse = true;
-		$doc = Updater::buildDocument( $engine, $page, $forceParse, $skipParse );
-		$this->assertFalse( $doc->has( 'display_title' ), 'field must not be set when parsing is skipped' );
-	}
-
-	public function testCreateTimestamp() {
-		$pageName = 'testCreateTimestamp' . mt_rand();
-		$page = new WikiPage( Title::newFromText( $pageName ) );
-		$engine = new CirrusSearch();
-		$conn = $this->mock( Connection::class );
-		$forceParse = false;
-		$skipParse = true; // parsing is unnecessary
-		$skipLinks = true; // otherwise it will query elasticsearch
-
-		// Control time to ensure the revision timestamps differ
-		$currentTime = 12345;
-		\MWTimestamp::setFakeTime( function () use ( &$currentTime ) {
-			return $currentTime;
-		} );
-		try {
-			// first revision should match create timestamp with revision
-			$status = $this->editPage( $pageName, 'phpunit' );
-			$this->assertTrue( $status->isOk() );
-			$created = wfTimestamp( TS_ISO_8601, $status->getValue()['revision']->getTimestamp() );
-			// Double check we are actually controlling the clock
-			$this->assertEquals( wfTimestamp( TS_ISO_8601, $currentTime ), $created );
-			$doc = Updater::buildDocument( $engine, $page, $forceParse, $skipParse );
-			$this->assertEquals( $created, $doc->get( 'create_timestamp' ) );
-
-			// With a second revision the create timestamp should still be the old one.
-			$currentTime += 42;
-			$status = $this->editPage( $pageName, 'phpunit and maybe other things' );
-			$this->assertTrue( $status->isOk() );
-			$doc = Updater::buildDocument( $engine, $page, $forceParse, $skipParse );
-			$this->assertEquals( $created, $doc->get( 'create_timestamp' ) );
-		} finally {
-			\MWTimestamp::setFakeTime( null );
-		}
 	}
 
 	private function mock( $className ) {
@@ -172,6 +149,9 @@ class UpdaterTest extends \MediaWikiIntegrationTestCase {
 		$page->expects( $this->any() )
 			->method( 'getContent' )
 			->will( $this->returnValue( new \WikitextContent( 'TEST_CONTENT' ) ) );
+		$page->expects( $this->any() )
+			->method( 'getId' )
+			->will( $this->returnValue( 2 ) );
 
 		return $page;
 	}
@@ -181,12 +161,5 @@ class UpdaterTest extends \MediaWikiIntegrationTestCase {
 		$refl = new \ReflectionProperty( \Title::class, 'mPageLanguage' );
 		$refl->setAccessible( true );
 		$refl->setValue( $title, [ $langCode, $wgLanguageCode ] );
-	}
-
-	public function testFixAndFlagInvalidUTF8InSource() {
-		$this->assertNotContains( 'CirrusSearchInvalidUTF8',
-			Updater::fixAndFlagInvalidUTF8InSource( [ 'source_text' => 'valid' ], 1 )['template'] ?? [], 1 );
-		$this->assertContains( 'Template:CirrusSearchInvalidUTF8',
-			Updater::fixAndFlagInvalidUTF8InSource( [ 'source_text' => chr( 130 ) ], 1 )['template'] ?? [] );
 	}
 }

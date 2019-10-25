@@ -2,12 +2,12 @@
 
 namespace CirrusSearch\Api;
 
-use CirrusSearch\Updater;
+use CirrusSearch\BuildDocument\BuildDocument;
 use Mediawiki\MediaWikiServices;
 use WikiPage;
 
 /**
- * Dump stored CirrusSearch document for page.
+ * Generate CirrusSearch document for page.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,19 @@ class QueryBuildDocument extends \ApiQueryBase {
 			->create( 'cirrus' );
 
 		if ( $engine instanceof \CirrusSearch ) {
+			$pages = [];
 			foreach ( $this->getPageSet()->getGoodTitles() as $pageId => $title ) {
-				$page = new WikiPage( $title );
-				$doc = Updater::buildDocument( $engine, $page, false, false );
+				$pages[] = new WikiPage( $title );
+			}
+
+			$builder = new BuildDocument(
+				$this->getCirrusConnection(),
+				$this->getDB(),
+				MediaWikiServices::getInstance()->getParserCache()
+			);
+			$docs = $builder->initialize( $pages, BuildDocument::INDEX_EVERYTHING );
+
+			foreach ( $docs as $pageId => $doc ) {
 				$result->addValue(
 					[ 'query', 'pages', $pageId ],
 					'cirrusbuilddoc', $doc->getData()

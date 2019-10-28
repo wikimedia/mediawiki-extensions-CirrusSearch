@@ -2,8 +2,8 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\BuildDocument\RedirectsAndIncomingLinks;
 use CirrusSearch\Search\CirrusIndexField;
-use Hooks as MWHooks;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MWTimestamp;
@@ -388,21 +388,14 @@ class Updater extends ElasticsearchIntermediary {
 			}
 
 			$doc->set( 'display_title', self::extractDisplayTitle( $page->getTitle(), $output ) );
-
-			// Then let hooks have a go
-			MWHooks::run( 'CirrusSearchBuildDocumentParse', [
-				$doc,
-				$title,
-				$page->getContent(),
-				$output,
-				$connection
-			] );
 		}
 
 		if ( !$skipLinks ) {
-			// TODO: Does anything else use this? It's an awfully specific hook, maybe
-			// call out directly to appropriate code.
-			MWHooks::run( 'CirrusSearchBuildDocumentLinks', [ $doc, $title, $connection ] );
+			RedirectsAndIncomingLinks::buildDocument(
+				$doc,
+				$title,
+				$connection
+			);
 		}
 
 		return $doc;
@@ -472,7 +465,7 @@ class Updater extends ElasticsearchIntermediary {
 			$documents[] = $doc;
 		}
 
-		MWHooks::run( 'CirrusSearchBuildDocumentFinishBatch', [ $pages ] );
+		RedirectsAndIncomingLinks::finishBatch( $pages );
 
 		return $documents;
 	}

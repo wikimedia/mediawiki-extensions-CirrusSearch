@@ -126,7 +126,7 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider parseProvider
 	 */
-	public function testParse( array $expected = null, array $warnings, $term ) {
+	public function testParse( ?array $expected, array $warnings, $term ) {
 		$this->mockDB();
 		$feature = new InCategoryFeature( new \HashConfig( [
 			'CirrusSearchMaxIncategoryOptions' => 2,

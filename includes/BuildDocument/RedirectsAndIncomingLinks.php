@@ -12,8 +12,6 @@ use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Terms;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
-use SplObjectStorage;
 use Title;
 use WikiPage;
 
@@ -38,11 +36,6 @@ use WikiPage;
  */
 class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	/**
-	 * @var SplObjectStorage|null copy of this class kept during batches
-	 */
-	private static $externalLinks = null;
-
-	/**
 	 * @var SearchConfig
 	 */
 	private $config;
@@ -57,55 +50,13 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	 */
 	private $linkCountClosures = [];
 
-	/**
-	 * @param \Elastica\Document $doc
-	 * @param Title $title
-	 * @param Connection $conn
-	 * @return bool
-	 */
-	public static function buildDocument( \Elastica\Document $doc, Title $title, Connection $conn ) {
-		if ( self::$externalLinks === null ) {
-			self::$externalLinks = new SplObjectStorage;
-		}
-		if ( !isset( self::$externalLinks[$conn] ) ) {
-			$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
-			// @todo should there instead be a way to source $config from $conn?
-			/** @phan-suppress-next-line PhanTypeMismatchArgument $config is a SearchConfig instance */
-			self::$externalLinks[$conn] = new self( $config, $conn );
-		}
-		/** @var self $externalLink */
-		$externalLink = self::$externalLinks[$conn];
-		/** @phan-suppress-next-line PhanNonClassMethodCall */
-		$externalLink->realBuildDocument( $doc, $title );
-		return true;
-	}
-
-	/**
-	 * @param WikiPage[] $pages
-	 * @return bool
-	 */
-	public static function finishBatch( $pages ) {
-		if ( self::$externalLinks === null ) {
-			// Nothing to do as we haven't set up any actions during the buildDocument phase
-			return false;
-		}
-		foreach ( self::$externalLinks as $conn ) {
-			$instance = self::$externalLinks[$conn];
-			/** @var self $instance */
-			/* @phan-suppress-next-line PhanNonClassMethodCall */
-			$instance->realFinishBatch( $pages );
-		}
-		self::$externalLinks = null;
-		return true;
-	}
-
-	protected function __construct( SearchConfig $config, Connection $conn ) {
+	public function __construct( SearchConfig $config, Connection $conn ) {
 		parent::__construct( $conn, null, 0 );
 		$this->config = $config;
 		$this->linkCountMultiSearch = new MultiSearch( $conn->getClient() );
 	}
 
-	private function realBuildDocument( \Elastica\Document $doc, Title $title ) {
+	public function buildDocument( \Elastica\Document $doc, Title $title ) {
 		global $wgCirrusSearchIndexedRedirects;
 
 		$outgoingLinksToCount = [ $title->getPrefixedDBkey() ];
@@ -148,7 +99,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	/**
 	 * @param WikiPage[] $pages
 	 */
-	private function realFinishBatch( array $pages ) {
+	public function finishBatch( array $pages ) {
 		$linkCountClosureCount = count( $this->linkCountClosures );
 		if ( $linkCountClosureCount ) {
 			try {

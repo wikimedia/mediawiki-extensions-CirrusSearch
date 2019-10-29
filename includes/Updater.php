@@ -341,21 +341,16 @@ class Updater extends ElasticsearchIntermediary {
 	/**
 	 * @param \CirrusSearch $engine
 	 * @param WikiPage $page Page to build document for
-	 * @param Connection $connection Elasticsearch connection to calculate some
-	 *  derived properties.
 	 * @param bool $forceParse see self::updatePages $flags
 	 * @param bool $skipParse see self::updatePages $flags
-	 * @param bool $skipLinks see self::updatePages $flags
 	 * @return \Elastica\Document Partial elasticsearch document representing only
 	 *  the fields.
 	 */
 	public static function buildDocument(
 		\CirrusSearch $engine,
 		WikiPage $page,
-		Connection $connection,
 		$forceParse,
-		$skipParse,
-		$skipLinks
+		$skipParse
 	) {
 		$title = $page->getTitle();
 		$doc = new \Elastica\Document( null, [
@@ -388,14 +383,6 @@ class Updater extends ElasticsearchIntermediary {
 			}
 
 			$doc->set( 'display_title', self::extractDisplayTitle( $page->getTitle(), $output ) );
-		}
-
-		if ( !$skipLinks ) {
-			RedirectsAndIncomingLinks::buildDocument(
-				$doc,
-				$title,
-				$connection
-			);
 		}
 
 		return $doc;
@@ -436,6 +423,14 @@ class Updater extends ElasticsearchIntermediary {
 
 		$documents = [];
 		$engine = new \CirrusSearch();
+
+		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
+		$ril = null;
+		if ( !$skipLinks ) {
+			/** @phan-suppress-next-line PhanTypeMismatchArgument $config is a SearchConfig */
+			$ril = new RedirectsAndIncomingLinks( $config, $this->connection );
+		}
+
 		foreach ( $pages as $page ) {
 			$title = $page->getTitle();
 			if ( !$page->exists() ) {
@@ -448,8 +443,11 @@ class Updater extends ElasticsearchIntermediary {
 			}
 
 			$doc = self::buildDocument(
-				$engine, $page, $this->connection, $forceParse, $skipParse, $skipLinks );
+				$engine, $page, $forceParse, $skipParse );
 			$doc->setId( $this->connection->getConfig()->makeId( $page->getId() ) );
+			if ( $ril !== null ) {
+				$ril->buildDocument( $doc, $title );
+			}
 
 			// Everything as sent as an update to prevent overwriting fields maintained in other processes
 			// like OtherIndex::updateOtherIndex.
@@ -465,7 +463,9 @@ class Updater extends ElasticsearchIntermediary {
 			$documents[] = $doc;
 		}
 
-		RedirectsAndIncomingLinks::finishBatch( $pages );
+		if ( $ril !== null ) {
+			$ril->finishBatch( $pages );
+		}
 
 		return $documents;
 	}

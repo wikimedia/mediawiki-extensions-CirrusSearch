@@ -99,13 +99,13 @@ class UpdaterTest extends \MediaWikiIntegrationTestCase {
 		$forceParse = false;
 		$skipParse = false;
 		$skipLinks = true; // otherwise it will query elasticsearch
-		$doc = Updater::buildDocument( $engine, $page, $conn, $forceParse, $skipParse, $skipLinks );
+		$doc = Updater::buildDocument( $engine, $page, $forceParse, $skipParse );
 
 		$this->assertTrue( $doc->has( 'display_title' ), 'field must exist when page is parsed' );
 		$this->assertSame( $expected, $doc->get( 'display_title' ) );
 
 		$skipParse = true;
-		$doc = Updater::buildDocument( $engine, $page, $conn, $forceParse, $skipParse, $skipLinks );
+		$doc = Updater::buildDocument( $engine, $page, $forceParse, $skipParse );
 		$this->assertFalse( $doc->has( 'display_title' ), 'field must not be set when parsing is skipped' );
 	}
 
@@ -130,14 +130,14 @@ class UpdaterTest extends \MediaWikiIntegrationTestCase {
 			$created = wfTimestamp( TS_ISO_8601, $status->getValue()['revision']->getTimestamp() );
 			// Double check we are actually controlling the clock
 			$this->assertEquals( wfTimestamp( TS_ISO_8601, $currentTime ), $created );
-			$doc = Updater::buildDocument( $engine, $page, $conn, $forceParse, $skipParse, $skipLinks );
+			$doc = Updater::buildDocument( $engine, $page, $forceParse, $skipParse );
 			$this->assertEquals( $created, $doc->get( 'create_timestamp' ) );
 
 			// With a second revision the create timestamp should still be the old one.
 			$currentTime += 42;
 			$status = $this->editPage( $pageName, 'phpunit and maybe other things' );
 			$this->assertTrue( $status->isOk() );
-			$doc = Updater::buildDocument( $engine, $page, $conn, $forceParse, $skipParse, $skipLinks );
+			$doc = Updater::buildDocument( $engine, $page, $forceParse, $skipParse );
 			$this->assertEquals( $created, $doc->get( 'create_timestamp' ) );
 		} finally {
 			\MWTimestamp::setFakeTime( null );

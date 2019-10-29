@@ -32,7 +32,6 @@ class QueryBuildDocument extends \ApiQueryBase {
 	}
 
 	public function execute() {
-		$conn = $this->getCirrusConnection();
 		$result = $this->getResult();
 		$engine = MediaWikiServices::getInstance()
 			->getSearchEngineFactory()
@@ -41,7 +40,7 @@ class QueryBuildDocument extends \ApiQueryBase {
 		if ( $engine instanceof \CirrusSearch ) {
 			foreach ( $this->getPageSet()->getGoodTitles() as $pageId => $title ) {
 				$page = new WikiPage( $title );
-				$doc = Updater::buildDocument( $engine, $page, $conn, false, false, true );
+				$doc = Updater::buildDocument( $engine, $page, false, false );
 				$result->addValue(
 					[ 'query', 'pages', $pageId ],
 					'cirrusbuilddoc', $doc->getData()

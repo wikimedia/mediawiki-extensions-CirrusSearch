@@ -3,12 +3,14 @@
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\Parser\BasicQueryClassifier;
+use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
 use Elastica\ResultSet as ElasticaResultSet;
 use ISearchResultSet;
+use MediaWiki\Logger\LoggerFactory;
 
 trait FallbackMethodTrait {
 
@@ -90,8 +92,14 @@ trait FallbackMethodTrait {
 			return $previousSet;
 		}
 
-		$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $originalQuery,
-			$suggestedQuery, $context->getNamespacePrefixParser() )->build();
+		try {
+			$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $originalQuery, $suggestedQuery,
+					$context->getNamespacePrefixParser() )->build();
+		} catch ( SearchQueryParseException $e ) {
+			LoggerFactory::getInstance( 'CirrusSearch' )
+				->warning( "Cannot parse rewritten query", [ 'exception' => $e ] );
+			return $previousSet;
+		}
 		$searcher = $context->makeSearcher( $rewrittenQuery );
 		$status = $searcher->search( $rewrittenQuery );
 		if ( $status->isOK() && $status->getValue() instanceof CirrusSearchResultSet ) {

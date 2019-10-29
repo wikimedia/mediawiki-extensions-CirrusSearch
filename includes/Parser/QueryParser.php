@@ -3,6 +3,7 @@
 namespace CirrusSearch\Parser;
 
 use CirrusSearch\Parser\AST\ParsedQuery;
+use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
 
 /**
  * Query parser.
@@ -15,6 +16,7 @@ interface QueryParser {
 	 * Parse a user query.
 	 * @param string $query
 	 * @return ParsedQuery
+	 * @throws SearchQueryParseException
 	 */
-	public function parse( $query );
+	public function parse( string $query ): ParsedQuery;
 }

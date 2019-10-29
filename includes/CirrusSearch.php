@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use ApiUsageException;
 use CirrusSearch\Parser\NamespacePrefixParser;
+use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
 use CirrusSearch\Profile\ContextualProfileOverride;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
@@ -210,8 +211,14 @@ class CirrusSearch extends SearchEngine {
 	 * @return Status Value is either SearchResultSet, or null on error.
 	 */
 	protected function doSearchText( $term ) {
-		$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $this->config, $term, $this->namespacePrefixParser )
-			->setDebugOptions( $this->debugOptions )
+		try {
+			$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $this->config,
+				$term, $this->namespacePrefixParser );
+		} catch ( SearchQueryParseException $e ) {
+			return $e->asStatus();
+		}
+
+		$builder->setDebugOptions( $this->debugOptions )
 			->setInitialNamespaces( $this->namespaces )
 			->setLimit( $this->limit )
 			->setOffset( $this->offset )
@@ -220,7 +227,8 @@ class CirrusSearch extends SearchEngine {
 			->setCrossProjectSearch( $this->isFeatureEnabled( 'interwiki' ) )
 			->setWithDYMSuggestion( $this->showSuggestion )
 			->setAllowRewrite( $this->isFeatureEnabled( 'rewrite' ) )
-			->addProfileContextParameter( ContextualProfileOverride::LANGUAGE, $this->requestContext->getLanguage()->getCode() );
+			->addProfileContextParameter( ContextualProfileOverride::LANGUAGE,
+				$this->requestContext->getLanguage()->getCode() );
 
 		if ( $this->prefix !== '' ) {
 			$builder->addContextualFilter( 'prefix',

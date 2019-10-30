@@ -2,13 +2,9 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\BuildDocument\RedirectsAndIncomingLinks;
-use CirrusSearch\Search\CirrusIndexField;
+use CirrusSearch\BuildDocument\BuildDocument;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use MWTimestamp;
-use ParserOutput;
-use Sanitizer;
 use TextContent;
 use Title;
 use Wikimedia\Assert\Assert;
@@ -74,31 +70,6 @@ class Updater extends ElasticsearchIntermediary {
 		Assert::invariant( self::class === static::class, 'Must be invoked as Updater::build( ... )' );
 		$connection = Connection::getPool( $config, $cluster );
 		return new self( $connection, $cluster );
-	}
-
-	/**
-	 * Find invalid UTF-8 sequence in the source text.
-	 * Fix them and flag the doc with the CirrusSearchInvalidUTF8 template.
-	 *
-	 * Temporary solution to help investigate/fix T225200
-	 *
-	 * Visible for testing only
-	 * @param array $fieldDefinitions
-	 * @param int $pageId
-	 * @return array
-	 */
-	public static function fixAndFlagInvalidUTF8InSource( array $fieldDefinitions, $pageId ) {
-		if ( isset( $fieldDefinitions['source_text'] ) ) {
-			$fixedVersion = mb_convert_encoding( $fieldDefinitions['source_text'], 'UTF-8', 'UTF-8' );
-			if ( $fixedVersion !== $fieldDefinitions['source_text'] ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )
-					->warning( 'Fixing invalid UTF-8 sequences in source text for page id {page_id}',
-						[ 'page_id' => $pageId ] );
-				$fieldDefinitions['source_text'] = $fixedVersion;
-				$fieldDefinitions['template'][] = Title::makeTitle( NS_TEMPLATE, 'CirrusSearchInvalidUTF8' )->getPrefixedText();
-			}
-		}
-		return $fieldDefinitions;
 	}
 
 	/**
@@ -233,7 +204,15 @@ class Updater extends ElasticsearchIntermediary {
 		}
 
 		$allDocuments = array_fill_keys( $this->connection->getAllIndexTypes(), [] );
-		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
+		$services = MediaWikiServices::getInstance();
+		$builder = new BuildDocument(
+			$this->connection,
+			$services->getDBLoadBalancer()->getConnection( DB_REPLICA ),
+			$services->getParserCache()
+		);
+		foreach ( $builder->initialize( $pages, $flags ) as $document ) {
+			// This isn't really a property of the connection, so it doesn't matter
+			// this is the read cluster and not the write cluster.
 			$suffix = $this->connection->getIndexSuffixForNamespace( $document->get( 'namespace' ) );
 			$allDocuments[$suffix][] = $document;
 		}
@@ -339,138 +318,6 @@ class Updater extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param \CirrusSearch $engine
-	 * @param WikiPage $page Page to build document for
-	 * @param bool $forceParse see self::updatePages $flags
-	 * @param bool $skipParse see self::updatePages $flags
-	 * @return \Elastica\Document Partial elasticsearch document representing only
-	 *  the fields.
-	 */
-	public static function buildDocument(
-		\CirrusSearch $engine,
-		WikiPage $page,
-		$forceParse,
-		$skipParse
-	) {
-		$title = $page->getTitle();
-		$doc = new \Elastica\Document( null, [
-			'version' => $page->getLatest(),
-			'wiki' => wfWikiID(),
-			'namespace' => $title->getNamespace(),
-			'namespace_text' => Util::getNamespaceText( $title ),
-			'title' => $title->getText(),
-			'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
-		] );
-		$createTs = self::loadCreateTimestamp( $page->getId(), TS_ISO_8601 );
-		if ( $createTs !== false ) {
-			$doc->set( 'create_timestamp', $createTs );
-		}
-		CirrusIndexField::addNoopHandler( $doc, 'version', 'documentVersion' );
-		if ( !$skipParse ) {
-			$contentHandler = $page->getContentHandler();
-			$parserCache = $forceParse ? null : MediaWikiServices::getInstance()->getParserCache();
-			$output = $contentHandler->getParserOutputForIndexing( $page, $parserCache );
-
-			$fieldDefinitions = $contentHandler->getFieldsForSearchIndex( $engine );
-			$fieldContent = $contentHandler->getDataForSearchIndex( $page, $output, $engine );
-			$fieldContent = self::fixAndFlagInvalidUTF8InSource( $fieldContent, $page->getId() );
-			foreach ( $fieldContent as $field => $fieldData ) {
-				$doc->set( $field, $fieldData );
-				if ( isset( $fieldDefinitions[$field] ) ) {
-					$hints = $fieldDefinitions[$field]->getEngineHints( $engine );
-					CirrusIndexField::addIndexingHints( $doc, $field, $hints );
-				}
-			}
-
-			$doc->set( 'display_title', self::extractDisplayTitle( $page->getTitle(), $output ) );
-		}
-
-		return $doc;
-	}
-
-	/**
-	 * Timestamp the oldest revision of this page was created.
-	 * @param int $pageId
-	 * @param int $style TS_* output format constant
-	 * @return string|bool Formatted timestamp or false on failure
-	 */
-	private static function loadCreateTimestamp( $pageId, $style ) {
-		$db = wfGetDB( DB_REPLICA );
-		$row = $db->selectRow(
-			'revision',
-			'rev_timestamp',
-			[ 'rev_page' => $pageId ],
-			__METHOD__,
-			[ 'ORDER BY' => 'rev_timestamp ASC' ]
-		);
-		if ( !$row ) {
-			return false;
-		}
-		return MWTimestamp::convert( $style, $row->rev_timestamp );
-	}
-
-	/**
-	 * @param \WikiPage[] $pages
-	 * @param int $flags
-	 * @return \Elastica\Document[]
-	 */
-	private function buildDocumentsForPages( $pages, $flags ) {
-		$indexOnSkip = $flags & self::INDEX_ON_SKIP;
-		$skipParse = $flags & self::SKIP_PARSE;
-		$skipLinks = $flags & self::SKIP_LINKS;
-		$forceParse = $flags & self::FORCE_PARSE;
-		$fullDocument = !( $skipParse || $skipLinks );
-
-		$documents = [];
-		$engine = new \CirrusSearch();
-
-		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
-		$ril = null;
-		if ( !$skipLinks ) {
-			/** @phan-suppress-next-line PhanTypeMismatchArgument $config is a SearchConfig */
-			$ril = new RedirectsAndIncomingLinks( $config, $this->connection );
-		}
-
-		foreach ( $pages as $page ) {
-			$title = $page->getTitle();
-			if ( !$page->exists() ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
-					"earlier but wasn't.  Page: {title}",
-					[ 'title' => $title ]
-				);
-				continue;
-			}
-
-			$doc = self::buildDocument(
-				$engine, $page, $forceParse, $skipParse );
-			$doc->setId( $this->connection->getConfig()->makeId( $page->getId() ) );
-			if ( $ril !== null ) {
-				$ril->buildDocument( $doc, $title );
-			}
-
-			// Everything as sent as an update to prevent overwriting fields maintained in other processes
-			// like OtherIndex::updateOtherIndex.
-			// But we need a way to index documents that don't already exist.  We're willing to upsert any
-			// full documents or any documents that we've been explicitly told it is ok to index when they
-			// aren't full. This is typically just done during the first phase of the initial index build.
-			// A quick note about docAsUpsert's merging behavior:  It overwrites all fields provided by doc
-			// unless they are objects in both doc and the indexed source.  We're ok with this because all of
-			// our fields are either regular types or lists of objects and lists are overwritten.
-			$doc->setDocAsUpsert( $fullDocument || $indexOnSkip );
-			$doc->setRetryOnConflict( $this->connection->getConfig()->get( 'CirrusSearchUpdateConflictRetryCount' ) );
-
-			$documents[] = $doc;
-		}
-
-		if ( $ril !== null ) {
-			$ril->finishBatch( $pages );
-		}
-
-		return $documents;
-	}
-
-	/**
 	 * Update the search index for newly linked or unlinked articles.
 	 * @param Title[] $titles titles to update
 	 * @return bool were all pages updated?
@@ -529,70 +376,6 @@ class Updater extends ElasticsearchIntermediary {
 			$titles[] = $page->getTitle();
 		}
 		return $titles;
-	}
-
-	/**
-	 * @param Title $title
-	 * @param ParserOutput $output
-	 * @return string|null
-	 */
-	private static function extractDisplayTitle( Title $title, ParserOutput $output ) {
-		$titleText = $title->getText();
-		$titlePrefixedText = $title->getPrefixedText();
-
-		$raw = $output->getDisplayTitle();
-		if ( $raw === false ) {
-			return null;
-		}
-		$clean = Sanitizer::stripAllTags( $raw );
-		// Only index display titles that differ from the normal title
-		if ( self::isSameString( $clean, $titleText ) ||
-			self::isSameString( $clean, $titlePrefixedText )
-		) {
-			return null;
-		}
-		if ( $title->getNamespace() === 0 || false === strpos( $clean, ':' ) ) {
-			return $clean;
-		}
-		// There is no official way that namespaces work in display title, it
-		// is an arbitrary string. Even so some use cases, such as the
-		// Translate extension, will translate the namespace as well. Here
-		// `Help:foo` will have a display title of `Aide:bar`. If we were to
-		// simply index as is the autocomplete and near matcher would see
-		// Help:Aide:bar, which doesn't seem particularly useful.
-		// The strategy here is to see if the portion before the : is a valid namespace
-		// in either the language of the wiki or the language of the page. If it is
-		// then we strip it from the display title.
-		list( $maybeNs, $maybeDisplayTitle ) = explode( ':', $clean, 2 );
-		$cleanTitle = Title::newFromText( $clean );
-		if ( $cleanTitle === null ) {
-			// The title is invalid, we cannot extract the ns prefix
-			return $clean;
-		}
-		if ( $cleanTitle->getNamespace() == $title->getNamespace() ) {
-			// While it doesn't really matter, $cleanTitle->getText() may
-			// have had ucfirst() applied depending on settings so we
-			// return the unmodified $maybeDisplayTitle.
-			return $maybeDisplayTitle;
-		}
-
-		$docLang = $title->getPageLanguage();
-		$nsIndex = $docLang->getNsIndex( $maybeNs );
-		if ( $nsIndex !== $title->getNamespace() ) {
-			// Valid namespace but not the same as the actual page.
-			// Keep the namespace in the display title.
-			return $clean;
-		}
-
-		return self::isSameString( $maybeDisplayTitle, $titleText )
-			? null
-			: $maybeDisplayTitle;
-	}
-
-	private static function isSameString( $a, $b ) {
-		$a = mb_strtolower( strtr( $a, '_', ' ' ) );
-		$b = mb_strtolower( strtr( $b, '_', ' ' ) );
-		return $a === $b;
 	}
 
 	/**

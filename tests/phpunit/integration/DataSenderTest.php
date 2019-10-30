@@ -158,6 +158,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 				'default' => [ 'localhost' ]
 			],
 			'CirrusSearchReplicaGroup' => 'default',
+			'CirrusSearchUpdateConflictRetryCount' => 5,
 		];
 		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
 		$serde = new ElasticaDocumentsJsonSerde();

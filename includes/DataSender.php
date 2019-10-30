@@ -76,8 +76,6 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @param string $reason Why writes are being paused
 	 */
 	public function freezeIndexes( $reason ) {
-		global $wgCirrusSearchUpdateConflictRetryCount;
-
 		$this->log->info( "Freezing writes to all indices" );
 		$doc = new \Elastica\Document( self::ALL_INDEXES_FROZEN_NAME, [
 			'host' => gethostname(),
@@ -85,7 +83,7 @@ class DataSender extends ElasticsearchIntermediary {
 			'reason' => strval( $reason ),
 		] );
 		$doc->setDocAsUpsert( true );
-		$doc->setRetryOnConflict( $wgCirrusSearchUpdateConflictRetryCount );
+		$doc->setRetryOnConflict( $this->retryOnConflict() );
 
 		$type = MetaStoreIndex::getElasticaType( $this->connection );
 		$type->addDocument( $doc );
@@ -168,6 +166,9 @@ class DataSender extends ElasticsearchIntermediary {
 		}
 		// Hints need to be retained until after building noop script
 		foreach ( $documents as $doc ) {
+			$doc->setRetryOnConflict( $this->retryOnConflict() );
+			// Hints need to be retained until after finalizing
+			// the documents and building the noop scripts.
 			CirrusIndexField::resetHints( $doc );
 		}
 
@@ -528,5 +529,14 @@ class DataSender extends ElasticsearchIntermediary {
 		}
 
 		return $script;
+	}
+
+	/**
+	 * @return int Number of times to instruct Elasticsearch to retry updates that fail on
+	 *  version conflicts.
+	 */
+	private function retryOnConflict(): int {
+		return $this->searchConfig->get(
+			'CirrusSearchUpdateConflictRetryCount' );
 	}
 }

@@ -69,11 +69,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	const HIGHLIGHT_POST = '</span>';
 
 	/**
-	 * Maximum length, in characters, allowed in queries sent to searchText.
-	 */
-	const MAX_TEXT_SEARCH = 300;
-
-	/**
 	 * Maximum offset + limit depth allowed. As in the deepest possible result
 	 * to return. Too deep will cause very slow queries. 10,000 feels plenty
 	 * deep. This should be <= index.max_result_window in elasticsearch.
@@ -310,11 +305,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @return Status
 	 */
 	private function searchTextInternal( $term ) {
-		$checkLengthStatus = $this->checkTextSearchRequestLength( $term );
-		if ( !$checkLengthStatus->isOK() ) {
-			return $checkLengthStatus;
-		}
-
 		// Searcher needs to be cloned before any actual query building is done.
 		$interleaveSearcher = $this->buildInterleaveSearcher();
 
@@ -696,30 +686,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			);
 		}
 		return $mreponses;
-	}
-
-	/**
-	 * @param string $term
-	 * @return Status
-	 */
-	private function checkTextSearchRequestLength( $term ) {
-		$requestLength = mb_strlen( $term );
-		if (
-			$requestLength > self::MAX_TEXT_SEARCH &&
-			// allow category intersections longer than the maximum
-			strpos( $term, 'incategory:' ) === false
-		) {
-			/**
-			 * @var \Language $language
-			 */
-			$language = $this->config->get( 'ContLang' );
-			return Status::newFatal(
-				'cirrussearch-query-too-long',
-				$language->formatNum( $requestLength ),
-				$language->formatNum( self::MAX_TEXT_SEARCH )
-			);
-		}
-		return Status::newGood();
 	}
 
 	/**

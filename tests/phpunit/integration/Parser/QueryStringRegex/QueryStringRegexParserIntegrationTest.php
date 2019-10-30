@@ -4,9 +4,6 @@ namespace CirrusSearch\Parser\QueryStringRegex;
 
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
-use CirrusSearch\Parser\AST\EmptyQueryNode;
-use CirrusSearch\Parser\AST\ParsedBooleanNode;
-use CirrusSearch\Parser\AST\PhraseQueryNode;
 use CirrusSearch\Parser\QueryParser;
 use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\SearchConfig;
@@ -38,7 +35,7 @@ use CirrusSearch\SearchConfig;
  * @covers \CirrusSearch\Parser\BasicQueryClassifier
  * @group CirrusSearch
  */
-class QueryStringRegexParserTest extends CirrusIntegrationTestCase {
+class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideRefImplQueries
@@ -114,27 +111,6 @@ class QueryStringRegexParserTest extends CirrusIntegrationTestCase {
 		);
 
 		return $this->buildParser( $config )->parse( $query );
-	}
-
-	public function testEmpty() {
-		$config = new HashSearchConfig( [], [ HashSearchConfig::FLAG_INHERIT ] );
-
-		$parser = $this->buildParser( $config );
-		$this->assertEquals( new EmptyQueryNode( 0, 0 ), $parser->parse( '' )->getRoot() );
-	}
-
-	public function testLastUnbalanced() {
-		$config = new HashSearchConfig( [], [ HashSearchConfig::FLAG_INHERIT ] );
-
-		$parser = $this->buildParser( $config );
-		/** @var ParsedBooleanNode $parsedNode */
-		$parsedNode = $parser->parse( 'test "' )->getRoot();
-		$this->assertInstanceOf( ParsedBooleanNode::class, $parsedNode );
-		$this->assertEquals( 2, count( $parsedNode->getClauses() ) );
-		/** @var PhraseQueryNode $phraseNode */
-		$phraseNode = $parsedNode->getClauses()[1]->getNode();
-		$this->assertInstanceOf( PhraseQueryNode::class, $phraseNode );
-		$this->assertEquals( '', $phraseNode->getPhrase() );
 	}
 
 	/**

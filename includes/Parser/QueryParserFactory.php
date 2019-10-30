@@ -31,7 +31,8 @@ class QueryParserFactory {
 		$escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 		$repository = new FTQueryClassifiersRepository( $config );
 		return new QueryStringRegexParser( new FullTextKeywordRegistry( $config, $namespacePrefix, $client ),
-			$escaper, $config->get( 'CirrusSearchStripQuestionMarks' ), $repository, $namespacePrefix );
+			$escaper, $config->get( 'CirrusSearchStripQuestionMarks' ), $repository, $namespacePrefix,
+			$config->get( "CirrusSearchMaxFullTextQueryLength" ) );
 	}
 
 }

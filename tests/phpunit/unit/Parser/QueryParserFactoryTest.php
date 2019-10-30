@@ -2,14 +2,15 @@
 
 namespace CirrusSearch\Parser;
 
-use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser;
+use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
 
 /**
  * @covers \CirrusSearch\Parser\QueryParserFactory
  */
-class QueryParserFactoryTest extends CirrusIntegrationTestCase {
+class QueryParserFactoryTest extends CirrusTestCase {
 
 	public function provideConfig() {
 		return [
@@ -37,7 +38,12 @@ class QueryParserFactoryTest extends CirrusIntegrationTestCase {
 				[ 'CirrusSearchUpdateShardTimeout' => '20h' ],
 				"not sure what I'm looking for",
 				true
-			]
+			],
+			'CirrusSearchMaxFullTextQueryLength changes parsing behaviors' => [
+				[ 'CirrusSearchMaxFullTextQueryLength' => 10 ],
+				"not sure what I'm looking for",
+				false
+			],
 		];
 	}
 
@@ -53,15 +59,25 @@ class QueryParserFactoryTest extends CirrusIntegrationTestCase {
 			QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ), $this->namespacePrefixParser() ),
 			'Same config should build identical parser' );
 
-		$emptyConfigParsedQuery = $parser->parse( $query );
+		try {
+			$emptyConfigParsedQuery = $parser->parse( $query );
+			$emptyConfigParsedQuery = $emptyConfigParsedQuery->toArray();
+		} catch ( SearchQueryParseException $e ) {
+			$emptyConfigParsedQuery = $e;
+		}
 
-		$updatedConfigParsedQuery = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( $config ), $this->namespacePrefixParser() )
-			->parse( $query );
+		try {
+			$updatedConfigParsedQuery = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( $config ), $this->namespacePrefixParser() )
+				->parse( $query );
+			$updatedConfigParsedQuery = $updatedConfigParsedQuery->toArray();
+		} catch ( SearchQueryParseException $e ) {
+			$updatedConfigParsedQuery = $e;
+		}
 
 		if ( $equals ) {
-			$this->assertEquals( $emptyConfigParsedQuery->toArray(), $updatedConfigParsedQuery->toArray() );
+			$this->assertEquals( $emptyConfigParsedQuery, $updatedConfigParsedQuery );
 		} else {
-			$this->assertNotEquals( $emptyConfigParsedQuery->toArray(), $updatedConfigParsedQuery->toArray() );
+			$this->assertNotEquals( $emptyConfigParsedQuery, $updatedConfigParsedQuery );
 		}
 	}
 }

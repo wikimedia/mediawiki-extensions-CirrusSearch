@@ -466,6 +466,9 @@
 		"CirrusSearchLogElasticRequestsSecret": {
 			"value": false
 		},
+		"CirrusSearchMaxFullTextQueryLength": {
+			"value": 300
+		},
 		"CirrusSearchMaxIncategoryOptions": {
 			"value": 100
 		},

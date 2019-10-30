@@ -5,7 +5,7 @@ namespace CirrusSearch;
 /**
  * @group CirrusSearch
  */
-class CirrusSearchTest extends CirrusIntegrationTestCase {
+class CirrusSearchTest extends CirrusTestCase {
 
 	public function provideProfiles() {
 		return [
@@ -37,10 +37,10 @@ class CirrusSearchTest extends CirrusIntegrationTestCase {
 		if ( $default === null ) {
 			$this->assertNull( $profiles );
 		} else {
-			$this->assertType( 'array', $profiles );
+			$this->assertInternalType( 'array', $profiles );
 			$nameMap = [];
 			foreach ( $profiles as $p ) {
-				$this->assertType( 'array', $p );
+				$this->assertInternalType( 'array', $p );
 				$this->assertArrayHasKey( 'name', $p );
 				$nameMap[$p['name']] = $p;
 			}
@@ -109,6 +109,17 @@ class CirrusSearchTest extends CirrusIntegrationTestCase {
 	}
 
 	/**
+	 * @covers \CirrusSearch\CirrusSearch::doSearchText
+	 */
+	public function testFailureOnQueryLength() {
+		$engine = $this->getSearchEngine( [ 'CirrusSearchMaxFullTextQueryLength' => 10 ] );
+		$status = $engine->searchText( str_repeat( "a", 11 ) );
+		$this->assertEquals( $status,
+			\Status::newFatal( 'cirrussearch-query-too-long',
+				\Message::numParam( 11 ), \Message::numParam( 10 ) ) );
+	}
+
+	/**
 	 * @param array|null $config
 	 * @return \CirrusSearch
 	 * @throws \ConfigException
@@ -116,7 +127,9 @@ class CirrusSearchTest extends CirrusIntegrationTestCase {
 	private function getSearchEngine( array $config = null ) {
 		// use cirrus base profiles
 		// only set needed config for Connection
-		return new \CirrusSearch( new HashSearchConfig( $config + $this->getMinimalConfig() ) );
+		$config = $this->newHashSearchConfig( $config + $this->getMinimalConfig() );
+		return new \CirrusSearch( $config, CirrusDebugOptions::defaultOptions(),
+			$this->namespacePrefixParser(), $this->getInterWikiResolver( $config ), $this->newTitleHelper() );
 	}
 
 	/**

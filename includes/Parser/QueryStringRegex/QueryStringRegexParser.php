@@ -17,6 +17,7 @@ use CirrusSearch\Parser\AST\WordsQueryNode;
 use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Parser\ParsedQueryClassifiersRepository;
 use CirrusSearch\Parser\QueryParser;
+use CirrusSearch\Query\InCategoryFeature;
 use CirrusSearch\Query\KeywordFeature;
 use CirrusSearch\Query\PrefixFeature;
 use CirrusSearch\Search\Escaper;
@@ -56,6 +57,8 @@ class QueryStringRegexParser implements QueryParser {
 	 * Whitespace regex including unicode and some control chars
 	 */
 	const WHITESPACE_REGEX = '/\G[\pZ\pC]+/u';
+
+	const QUERY_LEN_HARD_LIMIT = 2048;
 
 	/**
 	 * see T66350
@@ -169,11 +172,17 @@ class QueryStringRegexParser implements QueryParser {
 	const DEFAULT_OCCUR = BooleanClause::MUST;
 
 	/**
+	 * @var int
+	 */
+	private $maxQueryLen;
+
+	/**
 	 * @param \CirrusSearch\Parser\KeywordRegistry $keywordRegistry
 	 * @param Escaper $escaper
 	 * @param string $qmarkStripLevel level of question mark stripping to apply
 	 * @param ParsedQueryClassifiersRepository $classifierRepository
 	 * @param NamespacePrefixParser|null $namespacePrefixParser
+	 * @param int|null $maxQueryLen maximum length of the query in chars
 	 * @see Util::stripQuestionMarks() for acceptable $qmarkStripLevel values
 	 */
 	public function __construct(
@@ -181,7 +190,8 @@ class QueryStringRegexParser implements QueryParser {
 		Escaper $escaper,
 		$qmarkStripLevel,
 		ParsedQueryClassifiersRepository $classifierRepository,
-		NamespacePrefixParser $namespacePrefixParser
+		NamespacePrefixParser $namespacePrefixParser,
+		?int $maxQueryLen
 	) {
 		$this->keywordRegistry = $keywordRegistry;
 		$this->escaper = $escaper;
@@ -191,6 +201,7 @@ class QueryStringRegexParser implements QueryParser {
 		$this->questionMarkStripLevel = $qmarkStripLevel;
 		$this->classifierRepository = $classifierRepository;
 		$this->namespacePrefixParser = $namespacePrefixParser;
+		$this->maxQueryLen = $maxQueryLen ?: 300;
 	}
 
 	/**
@@ -243,9 +254,15 @@ class QueryStringRegexParser implements QueryParser {
 	/**
 	 * @param string $query
 	 * @return \CirrusSearch\Parser\AST\ParsedQuery
+	 * @throws SearchQueryParseException
 	 */
-	public function parse( $query ) {
+	public function parse( string $query ): ParsedQuery {
 		$this->reInit( $query );
+		$queryLen = mb_strlen( $query );
+		if ( $queryLen > self::QUERY_LEN_HARD_LIMIT ) {
+			throw new SearchQueryParseException( 'cirrussearch-query-too-long',
+				\Message::numParam( $queryLen ), \Message::numParam( self::QUERY_LEN_HARD_LIMIT ) );
+		}
 		$this->cleanup();
 		$this->parseNsHeader();
 		$this->token = new Token( $this->query );
@@ -297,6 +314,8 @@ class QueryStringRegexParser implements QueryParser {
 			}
 		} );
 		reset( $this->preTaggedNodes );
+
+		$this->checkQueryLen();
 		$root = $this->expression();
 		$additionalNamespaces = $this->extractRequiredNamespaces( $root );
 		return new ParsedQuery( $root, $this->query, $this->rawQuery, $this->queryCleanups,
@@ -779,6 +798,29 @@ class QueryStringRegexParser implements QueryParser {
 				$this->namespaceHeader = new NamespaceHeaderNode( $this->offset, $queryOffset, 'all' );
 			}
 			$this->offset = $queryOffset;
+		}
+	}
+
+	/**
+	 * Check the length of the query and throws SearchQueryParseException
+	 * if it's more than what we allow.
+	 *
+	 * @throws SearchQueryParseException
+	 */
+	private function checkQueryLen(): void {
+		Assert::precondition( $this->query !== null, "Query must be set" );
+		$maxLen = $this->maxQueryLen;
+		// don't limit incategory
+		foreach ( $this->preTaggedNodes as $n ) {
+			if ( $n instanceof KeywordFeatureNode && $n->getKeyword() instanceof InCategoryFeature ) {
+				// we do not count incategory in the query length (T111694)
+				$maxLen += mb_strlen( substr( $this->query, $n->getStartOffset(), $n->getEndOffset() ) );
+			}
+		}
+		$queryLen = mb_strlen( $this->query );
+		if ( $queryLen > $maxLen ) {
+			throw new SearchQueryParseException( 'cirrussearch-query-too-long',
+				\Message::numParam( $queryLen ), \Message::numParam( $maxLen ) );
 		}
 	}
 }

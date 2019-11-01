@@ -21,7 +21,7 @@ describe( 'Smoke test for search', function () {
 		RandomPage.open();
 		ArticlePage.search_query_top_right = 'main p';
 		assert.ok( ArticlePage.has_search_suggestions() );
-		let expectedSuggestion = 'Main Page';
+		const expectedSuggestion = 'Main Page';
 		assert.equal( ArticlePage.get_search_suggestion_at( 1 ), expectedSuggestion,
 			`${expectedSuggestion} is the first suggestion` );
 	} );
@@ -36,7 +36,7 @@ describe( 'Smoke test for search', function () {
 		RandomPage.open();
 		ArticlePage.search_query_top_right = 'ma';
 		ArticlePage.click_search_top_right();
-		let expectedPage = 'Search results';
+		const expectedPage = 'Search results';
 		assert.equal( ArticlePage.articleTitle, expectedPage,
 			`I am on a page named ${expectedPage}` );
 	} );
@@ -50,7 +50,7 @@ describe( 'Smoke test for search', function () {
 		RandomPage.open();
 		ArticlePage.search_query_top_right = 'África';
 		ArticlePage.click_search_top_right();
-		let expectedPage = 'África';
+		const expectedPage = 'África';
 		assert.equal( ArticlePage.articleTitle, expectedPage,
 			`I am on a page named ${expectedPage}` );
 	} );

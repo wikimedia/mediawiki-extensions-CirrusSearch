@@ -474,14 +474,14 @@
 				 *                                on click event.
 				 **/
 				function triggerCustomEvent( $button, state, $eventTarget, $clickTarget ) {
-					var templateItems = $template.find(
+					var $templateItems = $template.find(
 							'.' + cssClasses.langLink +
 							', .' + cssClasses.relatedPage +
 							', .' + cssClasses.category ),
 						eventParams = {
 							hoverId: $button.data( 'hover-id' ),
 							section: $button.data( 'es-content' ),
-							results: templateItems.length,
+							results: $templateItems.length,
 							eventTarget: $eventTarget
 						};
 					if ( state === 'click' && $clickTarget.is( '.' + cssClasses.langLink ) ) {
@@ -489,7 +489,7 @@
 					}
 
 					if ( state === 'click' && !$clickTarget.is( '.' + cssClasses.langLink ) ) {
-						eventParams.result = templateItems.index( $clickTarget );
+						eventParams.result = $templateItems.index( $clickTarget );
 					}
 					mw.track( 'ext.CirrusSearch.exploreSimilar.' + state, eventParams );
 				}
@@ -549,6 +549,7 @@
 
 					clearExploreSimilarQueue();
 
+					// eslint-disable-next-line no-jquery/no-class-state
 					if ( $searchResult.hasClass( cssClasses.active ) ) {
 						triggerCustomEvent( $activeButton, 'close' );
 					}
@@ -589,6 +590,7 @@
 							// don't close the 'active' state when moving across sections,
 							// prevents css flickering of 'active' class
 							if (
+								// eslint-disable-next-line no-jquery/no-class-state
 								!$relatedTarget.hasClass( '.mw-search-result-data' ) &&
 								!$template.find( $relatedTarget )[ 0 ]
 							) {

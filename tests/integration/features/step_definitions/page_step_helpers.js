@@ -61,6 +61,7 @@ class StepHelpers {
 			}
 			let fetchedText = yield this.getWikitext( title );
 			if ( options.append ) {
+				// eslint-disable-next-line require-atomic-updates
 				text = fetchedText + text;
 			}
 			if ( text.trim() !== fetchedText.trim() ) {

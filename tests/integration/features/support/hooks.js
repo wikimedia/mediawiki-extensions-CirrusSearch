@@ -14,7 +14,7 @@ const BeforeOnce = function ( options, fn ) {
 			try {
 				yield fn.call( this );
 			} catch ( err ) {
-				console.log( `Failed initializing tag ${ options.tags }: `, err );
+				console.log( `Failed initializing tag ${options.tags}: `, err );
 				yield this.tags.reject( options.tags );
 				return;
 			}

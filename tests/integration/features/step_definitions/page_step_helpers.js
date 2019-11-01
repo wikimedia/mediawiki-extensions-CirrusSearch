@@ -28,7 +28,7 @@ class StepHelpers {
 
 	deletePage( title, options = {} ) {
 		return Promise.coroutine( function* () {
-			let client = yield this.apiPromise;
+			const client = yield this.apiPromise;
 			try {
 				yield client.delete( title, 'CirrusSearch integration test delete' );
 				if ( !options.skipWaitForOperatoin ) {
@@ -43,8 +43,8 @@ class StepHelpers {
 
 	uploadFile( title, fileName, description ) {
 		return Promise.coroutine( function* () {
-			let client = yield this.apiPromise;
-			let filePath = path.join( articlePath, fileName );
+			const client = yield this.apiPromise;
+			const filePath = path.join( articlePath, fileName );
 			yield client.batch( [
 				[ 'upload', fileName, filePath, '', { text: description } ]
 			] );
@@ -54,18 +54,18 @@ class StepHelpers {
 
 	editPage( title, text, options = {} ) {
 		return Promise.coroutine( function* () {
-			let client = yield this.apiPromise;
+			const client = yield this.apiPromise;
 
 			if ( text[ 0 ] === '@' ) {
 				text = fs.readFileSync( path.join( articlePath, text.substr( 1 ) ) ).toString();
 			}
-			let fetchedText = yield this.getWikitext( title );
+			const fetchedText = yield this.getWikitext( title );
 			if ( options.append ) {
 				// eslint-disable-next-line require-atomic-updates
 				text = fetchedText + text;
 			}
 			if ( text.trim() !== fetchedText.trim() ) {
-				let editResponse = yield client.edit( title, text );
+				const editResponse = yield client.edit( title, text );
 				if ( !options.skipWaitForOperation ) {
 					yield this.waitForOperation( 'edit', title, null, editResponse.edit.newrevid );
 				}
@@ -75,8 +75,8 @@ class StepHelpers {
 
 	getWikitext( title ) {
 		return Promise.coroutine( function* () {
-			let client = yield this.apiPromise;
-			let response = yield client.request( {
+			const client = yield this.apiPromise;
+			const response = yield client.request( {
 				action: 'query',
 				format: 'json',
 				formatversion: 2,
@@ -93,7 +93,7 @@ class StepHelpers {
 
 	movePage( from, to, noRedirect = true ) {
 		return Promise.coroutine( function* () {
-			let client = yield this.apiPromise;
+			const client = yield this.apiPromise;
 			yield client.request( {
 				action: 'move',
 				from: from,
@@ -116,10 +116,10 @@ class StepHelpers {
 
 	suggestionSearch( query, limit = 'max' ) {
 		return Promise.coroutine( function* () {
-			let client = yield this.apiPromise;
+			const client = yield this.apiPromise;
 
 			try {
-				let response = yield client.request( {
+				const response = yield client.request( {
 					action: 'opensearch',
 					search: query,
 					cirrusUseCompletionSuggester: 'yes',
@@ -134,8 +134,8 @@ class StepHelpers {
 
 	suggestionsWithProfile( query, profile, namespaces = undefined ) {
 		return Promise.coroutine( function* () {
-			let client = yield this.apiPromise;
-			let request = {
+			const client = yield this.apiPromise;
+			const request = {
 				action: 'opensearch',
 				search: query,
 				profile: profile
@@ -144,7 +144,7 @@ class StepHelpers {
 				request.namespace = namespaces.replace( /','/g, '|' );
 			}
 			try {
-				let response = yield client.request( request );
+				const response = yield client.request( request );
 				this.world.setApiResponse( response );
 			} catch ( err ) {
 				this.world.setApiError( err );
@@ -154,10 +154,10 @@ class StepHelpers {
 
 	searchFor( query, options = {} ) {
 		return Promise.coroutine( function* () {
-			let client = yield this.apiPromise;
+			const client = yield this.apiPromise;
 
 			try {
-				let response = yield client.request( Object.assign( options, {
+				const response = yield client.request( Object.assign( options, {
 					action: 'query',
 					list: 'search',
 					srsearch: query,
@@ -173,11 +173,11 @@ class StepHelpers {
 
 	waitForDocument( title, check ) {
 		return Promise.coroutine( function* () {
-			let timeoutMs = 20000;
-			let start = new Date();
+			const timeoutMs = 20000;
+			const start = new Date();
 			let lastError;
 			while ( true ) {
-				let doc = yield this.getCirrusIndexedContent( title );
+				const doc = yield this.getCirrusIndexedContent( title );
 				if ( doc.cirrusdoc && doc.cirrusdoc.length > 0 ) {
 					try {
 						check( doc.cirrusdoc[ 0 ] );
@@ -218,16 +218,16 @@ class StepHelpers {
 			if ( !timeoutMs ) {
 				timeoutMs = operations.reduce( ( total, v ) => total + ( v[ 0 ].match( /^upload/ ) ? 30000 : 10000 ), 0 );
 			}
-			let start = new Date();
+			const start = new Date();
 
-			let done = [];
-			let failedOps = ( ops, doneOps ) => ops.filter( ( v, idx ) => doneOps.indexOf( idx ) === -1 ).map( ( v ) => `[${v[ 0 ]}:${v[ 1 ]}]` ).join();
+			const done = [];
+			const failedOps = ( ops, doneOps ) => ops.filter( ( v, idx ) => doneOps.indexOf( idx ) === -1 ).map( ( v ) => `[${v[ 0 ]}:${v[ 1 ]}]` ).join();
 			while ( done.length !== operations.length ) {
 				let consecutiveFailures = 0;
 				for ( let i = 0; i < operations.length; i++ ) {
-					let operation = operations[ i ][ 0 ];
+					const operation = operations[ i ][ 0 ];
 					let title = operations[ i ][ 1 ];
-					let revisionId = operations[ i ][ 2 ];
+					const revisionId = operations[ i ][ 2 ];
 					if ( done.indexOf( i ) !== -1 ) {
 						continue;
 					}
@@ -241,8 +241,8 @@ class StepHelpers {
 					if ( ( operation === 'upload' || operation === 'uploadOverwrite' ) && title.substr( 0, 5 ) !== 'File:' ) {
 						title = 'File:' + title;
 					}
-					let expect = operation !== 'delete';
-					let exists = yield this.checkExists( title, revisionId );
+					const expect = operation !== 'delete';
+					const exists = yield this.checkExists( title, revisionId );
 					if ( exists === expect ) {
 						if ( log ) {
 							log( title, done.length + 1 );
@@ -259,7 +259,7 @@ class StepHelpers {
 				}
 
 				if ( new Date() - start >= timeoutMs ) {
-					let failed_ops = failedOps( operations, done );
+					const failed_ops = failedOps( operations, done );
 					throw new Error( `Timed out waiting for ${failed_ops}` );
 				}
 				yield this.waitForMs( 50 );
@@ -279,8 +279,8 @@ class StepHelpers {
 	 */
 	getCirrusIndexedContent( title ) {
 		return Promise.coroutine( function* () {
-			let client = yield this.apiPromise;
-			let response = yield client.request( {
+			const client = yield this.apiPromise;
+			const response = yield client.request( {
 				action: 'query',
 				prop: 'cirrusdoc',
 				titles: title,
@@ -288,14 +288,14 @@ class StepHelpers {
 				formatversion: 2
 			} );
 			if ( response.query.normalized ) {
-				for ( let norm of response.query.normalized ) {
+				for ( const norm of response.query.normalized ) {
 					if ( norm.from === title ) {
 						title = norm.to;
 						break;
 					}
 				}
 			}
-			for ( let page of response.query.pages ) {
+			for ( const page of response.query.pages ) {
 				if ( page.title === title ) {
 					return page;
 				}
@@ -312,8 +312,8 @@ class StepHelpers {
 	 */
 	checkExists( title, revisionId = null ) {
 		return Promise.coroutine( function* () {
-			let page = yield this.getCirrusIndexedContent( title );
-			let content = page.cirrusdoc;
+			const page = yield this.getCirrusIndexedContent( title );
+			const content = page.cirrusdoc;
 			// without boolean cast we could return undefined
 			let isOk = Boolean( content && content.length > 0 );
 			// Is the requested page and the returned document dont have the same
@@ -330,8 +330,8 @@ class StepHelpers {
 
 	pageIdOf( title ) {
 		return Promise.coroutine( function* () {
-			let client = yield this.apiPromise;
-			let response = yield client.request( { action: 'query', titles: title, formatversion: 2 } );
+			const client = yield this.apiPromise;
+			const response = yield client.request( { action: 'query', titles: title, formatversion: 2 } );
 			return response.query.pages[ 0 ].pageid;
 		} ).call( this );
 	}

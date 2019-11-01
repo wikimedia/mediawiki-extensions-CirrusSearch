@@ -24,22 +24,22 @@ When( /^I search for (.+)$/, function ( search ) {
 } );
 
 Then( /^there is (no|a) link to create a new page from the search result$/, function ( no_or_a ) {
-	let msg = `there is ${no_or_a} link to create a new page from the search result`;
+	const msg = `there is ${no_or_a} link to create a new page from the search result`;
 	expect( SearchResultsPage.has_create_page_link(), msg ).to.equal( no_or_a !== 'no' );
 } );
 
 Then( /^there is no warning$/, function () {
-	let msg = 'there is no warning';
+	const msg = 'there is no warning';
 	expect( SearchResultsPage.has_warnings(), msg ).to.equal( false );
 } );
 
 Then( /^there are no errors reported$/, function () {
-	let msg = 'there are no errors reported';
+	const msg = 'there are no errors reported';
 	expect( SearchResultsPage.has_errors(), msg ).to.equal( false );
 } );
 
 Then( /^(.+) is the first search result( and has an image link)?$/, function ( result, imagelink ) {
-	let msg = `${result} is the first search result`;
+	const msg = `${result} is the first search result`;
 	if ( result === 'none' ) {
 		expect( SearchResultsPage.has_search_results(), msg ).to.equal( false );
 	} else {
@@ -53,7 +53,7 @@ Then( /^(.+) is the first search result( and has an image link)?$/, function ( r
 } );
 
 Then( /^(.+) is( not)? in the search results$/, function ( result, not ) {
-	let msg = `${result} is${not === undefined ? '' : not} in the search results`;
+	const msg = `${result} is${not === undefined ? '' : not} in the search results`;
 	expect( SearchResultsPage.is_on_srp(), msg ).to.equal( true );
 	if ( not === undefined ) {
 		expect( SearchResultsPage.has_search_results(), msg ).to.equal( true );
@@ -70,25 +70,25 @@ When( /^I click the (.+) link$/, function ( filter ) {
 } );
 
 When( /^I click the (.+) labels?$/, function ( filter ) {
-	let and_labels = filter.split( /, /, 10 );
-	for ( let labels of and_labels ) {
-		let or_labels = labels.split( / or /, 10 );
+	const and_labels = filter.split( /, /, 10 );
+	for ( const labels of and_labels ) {
+		const or_labels = labels.split( / or /, 10 );
 		SearchResultsPage.select_namespaces( or_labels, true );
 	}
 } );
 
 Then( /^the title still exists$/, function () {
-	let msg = 'the title still exists';
+	const msg = 'the title still exists';
 	expect( ArticlePage.title_element().isExisting(), msg ).to.equal( true );
 } );
 
 Then( /^there is not alttitle on the first search result$/, function () {
-	let msg = 'there is not alttitle on the first search result';
+	const msg = 'there is not alttitle on the first search result';
 	expect( SearchResultsPage.get_search_alt_title_at( 1, msg ) ).to.equal( null );
 } );
 
 Then( /^there are search results with \((.+)\) in the data$/, function ( what ) {
-	let msg = `there are search results with ${what} in the data`;
+	const msg = `there are search results with ${what} in the data`;
 	expect( SearchResultsPage.is_on_srp() ).to.equal( true );
 	expect( SearchResultsPage.has_search_results(), msg ).to.equal( true );
 	expect( SearchResultsPage.has_search_data_in_results( what ), msg ).to.equal( true );

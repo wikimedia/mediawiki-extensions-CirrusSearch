@@ -20,9 +20,9 @@ function withApi( world, fn ) {
 	try {
 		return fn.call( world );
 	} catch ( e ) {
-		let request = world.apiResponse ? world.apiResponse.__request : world.apiError.request;
+		const request = world.apiResponse ? world.apiResponse.__request : world.apiError.request;
 		if ( request ) {
-			let qs = Object.assign( {}, request.qs, request.form ),
+			const qs = Object.assign( {}, request.qs, request.form ),
 				href = request.uri + '?' + querystring.stringify( qs );
 
 			e.message += `\nLast Api: ${href}\nExtra: ` + JSON.stringify( world.apiResponse || world.apiError );
@@ -43,8 +43,8 @@ const searchVars = {};
 // is intentional. Cucumber's matching of capture groups is broken so (?:foo (.+))
 // has to be matched as .+). That broken matching also means (?:foo (.+) bar)
 // would have to be matched as '.+) bar' but we don't bother.
-let expressions = [ '.+', '.+?', '.+)' ];
-let transformer = ( s ) => {
+const expressions = [ '.+', '.+?', '.+)' ];
+const transformer = ( s ) => {
 	if ( s === undefined ) {
 		return s;
 	}
@@ -60,7 +60,7 @@ let transformer = ( s ) => {
 	return s.replace( /%{exact:([^}]*)}/g, '$1' );
 };
 
-for ( let expression of expressions ) {
+for ( const expression of expressions ) {
 	defineParameterType( {
 		regexp: expression,
 		transformer: transformer,
@@ -119,7 +119,7 @@ When( /^I get api suggestions for (.+?)(?: using the (.+) profile)?(?: on namesp
 
 Then( /^(.+) is the (.+) api suggestion$/, function ( title, position ) {
 	return withApi( this, () => {
-		let pos = [ 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth', 'ninth', 'tenth' ].indexOf( position );
+		const pos = [ 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth', 'ninth', 'tenth' ].indexOf( position );
 		if ( title === 'none' ) {
 			if ( this.apiError && pos === 1 ) {
 				// TODO: Why 1? maybe 0?
@@ -171,7 +171,7 @@ function checkApiSearchResultStep( title, in_ok, indexes ) {
 	if ( title === 'none' ) {
 		expect( this.apiResponse.query.search ).to.have.lengthOf.below( 1 + Math.min.apply( null, indexes ) );
 	} else {
-		let found = indexes.map( ( pos ) => {
+		const found = indexes.map( ( pos ) => {
 			if ( this.apiResponse.query.search[ pos ] ) {
 				return this.apiResponse.query.search[ pos ].title;
 			} else {
@@ -183,7 +183,7 @@ function checkApiSearchResultStep( title, in_ok, indexes ) {
 			// ex: found = ['foo bar baz'], title = 'bar' should pass.
 			// Chai doesnt (yet) have a native assertion for this:
 			// https://github.com/chaijs/chai/issues/858
-			let ok = found.reduce( ( a, b ) => a || b.indexOf( title ) > -1, false );
+			const ok = found.reduce( ( a, b ) => a || b.indexOf( title ) > -1, false );
 			expect( ok, `expected ${JSON.stringify( found )} to include "${title}"` ).to.equal( true );
 		} else {
 			expect( found ).to.include( title );
@@ -201,9 +201,9 @@ Then( /^(.+) is( not)? part of the api search result$/, function ( title, not_se
 	return withApi( this, () => {
 		// Chai doesnt (yet) have a native assertion for this:
 		// https://github.com/chaijs/chai/issues/858
-		let found = this.apiResponse.query.search.map( ( result ) => result.title );
-		let ok = found.reduce( ( a, b ) => a || b.indexOf( title ) > -1, false );
-		let msg = `Expected ${JSON.stringify( found )} to${not_searching ? ' not' : ''} include ${title}`;
+		const found = this.apiResponse.query.search.map( ( result ) => result.title );
+		const ok = found.reduce( ( a, b ) => a || b.indexOf( title ) > -1, false );
+		const msg = `Expected ${JSON.stringify( found )} to${not_searching ? ' not' : ''} include ${title}`;
 
 		if ( not_searching ) {
 			expect( ok, msg ).to.equal( false );
@@ -214,7 +214,7 @@ Then( /^(.+) is( not)? part of the api search result$/, function ( title, not_se
 } );
 
 When( /^I api search( with rewrites enabled)?(?: with query independent profile ([^ ]+))?(?: with offset (\d+))?(?: in the (.+) language)?(?: in namespaces? (\d+(?: \d+)*))?(?: on ([a-z]+))? for (.+)$/, function ( enableRewrites, qiprofile, offset, lang, namespaces, wiki, search ) {
-	let options = {
+	const options = {
 		srnamespace: ( namespaces || '0' ).split( ' ' ).join( ',' ),
 		srenablerewrites: enableRewrites ? 1 : 0
 	};
@@ -261,7 +261,7 @@ Then( /^there are (\d+) api search results$/, function ( num_results ) {
 
 Then( /^(.+) is( not)? in the api search results$/, function ( title, not ) {
 	return withApi( this, () => {
-		let titles = this.apiResponse.query.search.map( ( res ) => res.title );
+		const titles = this.apiResponse.query.search.map( ( res ) => res.title );
 		if ( not ) {
 			expect( titles ).to.not.include( title );
 		} else {
@@ -300,14 +300,14 @@ Then( /^(.+?)(?: or (.+))? is the did you mean suggestion from the api$/, functi
 
 Then( /^(.+) is( in)? the highlighted (.+) of the (.+) api search result$/, function ( expected, in_ok, key, index ) {
 	withApi( this, () => {
-		let position = 'first second third fourth fifth sixth seventh eighth ninth tenth'.split( ' ' ).indexOf( index );
+		const position = 'first second third fourth fifth sixth seventh eighth ninth tenth'.split( ' ' ).indexOf( index );
 		expect( this.apiResponse.query.search ).to.have.lengthOf.gt( position );
 
 		if ( key === 'title' && expected.indexOf( '*' ) > -1 ) {
 			key = 'titlesnippet';
 		}
 		expect( this.apiResponse.query.search[ position ] ).to.include.keys( key );
-		let snippet = this.apiResponse.query.search[ position ][ key ].replace(
+		const snippet = this.apiResponse.query.search[ position ][ key ].replace(
 			/<span class="searchmatch">(.+?)<\/span>/g, '*$1*' );
 		if ( in_ok ) {
 			expect( snippet ).to.include( expected );
@@ -340,14 +340,14 @@ Then( /^I delete (.+)( without waiting)?$/, function ( title, withoutWaiting ) {
 } );
 
 Then( /^I globally freeze indexing$/, Promise.coroutine( function* () {
-	let client = yield this.onWiki();
+	const client = yield this.onWiki();
 	yield client.request( {
 		action: 'cirrus-freeze-writes'
 	} );
 } ) );
 
 Then( /^I globally thaw indexing$/, Promise.coroutine( function* () {
-	let client = yield this.onWiki();
+	const client = yield this.onWiki();
 	yield client.request( {
 		action: 'cirrus-freeze-writes',
 		thaw: true
@@ -371,7 +371,7 @@ Given( /^I am at a random page$/, function () {
 } );
 
 When( /^I set More Like This Options to ([^ ]+) field, word length to (\d+) and I api search for (.+)$/, function ( field, length, search ) {
-	let options = {
+	const options = {
 		cirrusMtlUseFields: 'yes',
 		cirrusMltFields: field,
 		cirrusMltMinTermFreq: 1,
@@ -383,7 +383,7 @@ When( /^I set More Like This Options to ([^ ]+) field, word length to (\d+) and 
 } );
 
 When( /^I set More Like This Options to ([^ ]+) field, percent terms to match to (-?\d+%) and I api search for (.+)$/, function ( field, percent, search ) {
-	let options = {
+	const options = {
 		cirrusMtlUseFields: 'yes',
 		cirrusMltFields: field,
 		cirrusMltMinTermFreq: 1,
@@ -396,7 +396,7 @@ When( /^I set More Like This Options to ([^ ]+) field, percent terms to match to
 } );
 
 When( /^I set More Like This Options to bad settings and I api search for (.+)$/, function ( search ) {
-	let options = {
+	const options = {
 		cirrusMtlUseFields: 'yes',
 		cirrusMltFields: 'title',
 		cirrusMltMinTermFreq: 100,
@@ -438,8 +438,8 @@ Then( /^the page text contains (.+)$/, function ( text ) {
 
 Then( /^there are( no)? api search results with (.+) in the data$/, function ( should_not, within ) {
 	return withApi( this, () => {
-		let snippets = this.apiResponse.query.search.map( ( result ) => result.snippet );
-		let found = snippets.reduce( ( a, b ) => a || b.indexOf( within ) > -1, false );
+		const snippets = this.apiResponse.query.search.map( ( result ) => result.snippet );
+		const found = snippets.reduce( ( a, b ) => a || b.indexOf( within ) > -1, false );
 		expect( found ).to.equal( !should_not );
 	} );
 } );
@@ -447,7 +447,7 @@ Then( /^there are( no)? api search results with (.+) in the data$/, function ( s
 Then( /^I wait for (.+) to not include (.+) in redirects$/, function ( title, source ) {
 	return withApi( this, () => {
 		return this.stepHelpers.waitForDocument( title, ( doc ) => {
-			let titles = doc.source.redirect.map( ( redirect ) => redirect.title );
+			const titles = doc.source.redirect.map( ( redirect ) => redirect.title );
 			expect( titles ).to.not.include( source );
 		} );
 	} );
@@ -474,9 +474,9 @@ Then( /^I wait for (.+) to have (.+) of (.+)$/, function ( title, field, value )
 } );
 
 When( /^I dump the cirrus config$/, Promise.coroutine( function* () {
-	let client = yield this.onWiki();
+	const client = yield this.onWiki();
 	try {
-		let response = yield client.request( {
+		const response = yield client.request( {
 			action: 'cirrus-config-dump'
 		} );
 		this.setApiResponse( response );
@@ -493,15 +493,15 @@ Then( /^the config dump contains (.+)$/, function ( key ) {
 
 Then( /^the config dump text does not contain (.+)$/, function ( key ) {
 	return withApi( this, () => {
-		let text = JSON.stringify( this.apiResponse );
+		const text = JSON.stringify( this.apiResponse );
 		expect( text ).to.not.include( key );
 	} );
 } );
 
 When( /^I dump the cirrus mapping$/, Promise.coroutine( function* () {
-	let client = yield this.onWiki();
+	const client = yield this.onWiki();
 	try {
-		let response = yield client.request( {
+		const response = yield client.request( {
 			action: 'cirrus-mapping-dump'
 		} );
 		this.setApiResponse( response );
@@ -525,9 +525,9 @@ Then( /^A valid mapping dump is produced$/, function () {
 } );
 
 When( /^I dump the cirrus settings$/, Promise.coroutine( function* () {
-	let client = yield this.onWiki();
+	const client = yield this.onWiki();
 	try {
-		let response = yield client.request( {
+		const response = yield client.request( {
 			action: 'cirrus-settings-dump'
 		} );
 		this.setApiResponse( response );
@@ -547,9 +547,9 @@ Then( /^A valid settings dump is produced$/, function () {
 
 Given( /^I request a query dump for (.+)$/, function ( query ) {
 	return Promise.coroutine( function* () {
-		let client = yield this.onWiki();
+		const client = yield this.onWiki();
 		try {
-			let response = yield client.request( {
+			const response = yield client.request( {
 				action: 'query',
 				list: 'search',
 				srsearch: query,

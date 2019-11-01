@@ -31,7 +31,7 @@ class TagClient {
 				return this.tags[ tag ];
 			}
 			log( `[D] TAG >> ${tag}`, this.silentLog );
-			let response = yield this.post( { check: tag } );
+			const response = yield this.post( { check: tag } );
 			log( `[D] TAG << ${tag}`, this.silentLog );
 			if ( response.status === 'complete' || response.status === 'reject' ) {
 				this.tags[ tag ] = response.status;
@@ -58,10 +58,10 @@ class TagClient {
 	}
 }
 
-let tagClient = new TagClient( browser.options );
+const tagClient = new TagClient( browser.options );
 // world gets re-created all the time. Try and save some time logging
 // in by sharing api clients
-let apiClients = {};
+const apiClients = {};
 
 function World( { attach, parameters } ) {
 	// default properties
@@ -97,8 +97,8 @@ function World( { attach, parameters } ) {
 			return apiClients[ wiki ];
 		}
 
-		let w = this.config.wikis[ wiki ];
-		let client = new Bot();
+		const w = this.config.wikis[ wiki ];
+		const client = new Bot();
 		client.setOptions( {
 			verbose: true,
 			silent: false,
@@ -109,7 +109,7 @@ function World( { attach, parameters } ) {
 
 		// Add a generic method to get access to the request that triggered a response, so we
 		// can add generic error reporting that includes the requested api url
-		let origRawRequest = client.rawRequest;
+		const origRawRequest = client.rawRequest;
 		client.rawRequest = function ( requestOptions ) {
 			return origRawRequest.call( client, requestOptions ).then( ( response ) => {
 				response.__request = requestOptions;

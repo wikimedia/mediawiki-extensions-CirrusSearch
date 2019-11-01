@@ -52,7 +52,7 @@ class SearchResultsPage extends Page {
 	}
 
 	get_result_element_at( nth ) {
-		let resultLink = this.results_block().element( `a[data-serp-pos="${nth - 1}"]` );
+		const resultLink = this.results_block().element( `a[data-serp-pos="${nth - 1}"]` );
 		if ( !resultLink.isExisting() ) {
 			return null;
 		}
@@ -60,7 +60,7 @@ class SearchResultsPage extends Page {
 	}
 
 	get_result_image_link_at( nth ) {
-		let resElem = this.get_result_element_at( nth );
+		const resElem = this.get_result_element_at( nth );
 		if ( resElem === null ) {
 			return null;
 		}
@@ -72,11 +72,11 @@ class SearchResultsPage extends Page {
 		//    <td>[RESULT ELEMENT BLOCK] position returned by get_result_element_at</td>
 		//  </tr>
 		// </tbody>
-		let tr = resElem.element( '..' );
+		const tr = resElem.element( '..' );
 		if ( tr.getTagName() !== 'tr' ) {
 			return null;
 		}
-		let imageTag = tr.element( 'td a.image img' );
+		const imageTag = tr.element( 'td a.image img' );
 		if ( imageTag.isExisting() ) {
 			return imageTag.getAttribute( 'src' );
 		}
@@ -88,11 +88,11 @@ class SearchResultsPage extends Page {
 	}
 
 	get_search_alt_title_at( nth ) {
-		let resultBlock = this.get_result_element_at( nth );
+		const resultBlock = this.get_result_element_at( nth );
 		if ( resultBlock === null ) {
 			return null;
 		}
-		let elt = resultBlock.element( 'span.searchalttitle' );
+		const elt = resultBlock.element( 'span.searchalttitle' );
 		if ( elt.isExisting() ) {
 			return elt.getText();
 		}
@@ -104,12 +104,12 @@ class SearchResultsPage extends Page {
 	}
 
 	in_search_results( title ) {
-		let elt = this.results_block().element( `a[title="${title}"]` );
+		const elt = this.results_block().element( `a[title="${title}"]` );
 		return elt.isExisting();
 	}
 
 	results_block() {
-		let elt = browser.elements( 'div.searchresults' );
+		const elt = browser.elements( 'div.searchresults' );
 
 		if ( !elt.value ) {
 			throw new Error( 'Cannot locate search results block, are you on the SRP?' );
@@ -118,9 +118,9 @@ class SearchResultsPage extends Page {
 	}
 
 	click_search() {
-		let forms = [ 'form#powersearch', 'form#search' ];
-		for ( let form of forms ) {
-			let elt = browser.element( form );
+		const forms = [ 'form#powersearch', 'form#search' ];
+		for ( const form of forms ) {
+			const elt = browser.element( form );
 			if ( elt.value ) {
 				elt.click( 'button[type="submit"]' );
 				return;
@@ -133,7 +133,7 @@ class SearchResultsPage extends Page {
 	 * @param {string} filter
 	 */
 	click_filter( filter ) {
-		let linkSel = `a=${filter}`;
+		const linkSel = `a=${filter}`;
 		browser.element( 'div.search-types' ).click( linkSel );
 	}
 
@@ -142,13 +142,13 @@ class SearchResultsPage extends Page {
 	 * @param {boolean} first true to select first, false to select all
 	 */
 	select_namespaces( namespaceLabels, first ) {
-		let elt = browser.element( 'form#powersearch fieldset#mw-searchoptions' );
+		const elt = browser.element( 'form#powersearch fieldset#mw-searchoptions' );
 		if ( !elt.value ) {
 			throw new Error( "Cannot find the namespace filters, did you click on 'Advanced' first?" );
 		}
-		for ( let nsLabel of namespaceLabels ) {
-			let labelSel = `label=${nsLabel}`;
-			let label = elt.element( labelSel );
+		for ( const nsLabel of namespaceLabels ) {
+			const labelSel = `label=${nsLabel}`;
+			const label = elt.element( labelSel );
 			if ( label.value ) {
 				label.click();
 				if ( first ) {

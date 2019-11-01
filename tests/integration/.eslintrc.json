@@ -1,7 +1,4 @@
 {
 	"root": true,
-	"extends": "../.eslintselenium.json",
-	"rules": {
-		"prefer-const": "off"
-	}
+	"extends": "../.eslintselenium.json"
 }

@@ -21,7 +21,7 @@ class Server {
 		};
 
 		this.server.post( '/tracker', function ( req, res, next ) {
-			let data = req.body;
+			const data = req.body;
 
 			if ( globals.resolvers[ data.complete ] ) {
 				// tag completed, resolve pending

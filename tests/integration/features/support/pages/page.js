@@ -46,28 +46,28 @@ class Page {
 			// when more that one element is returned.
 			// so "table.many-tables td=text" doesn't work!
 			this[ el ] = this[ alias ] = ( selector, text ) => {
-				let s = selector || '';
-				let t = ( text ) ? '=' + text : '';
-				let sel = el + s + t;
-				let elems = browser.elements( sel );
+				const s = selector || '';
+				const t = ( text ) ? '=' + text : '';
+				const sel = el + s + t;
+				const elems = browser.elements( sel );
 				return elems;
 			};
 		} );
 	}
 
 	collect_element_texts( selector ) {
-		let elements = browser.elements( selector ).value;
-		let texts = [];
-		for ( let text of elements ) {
+		const elements = browser.elements( selector ).value;
+		const texts = [];
+		for ( const text of elements ) {
 			texts.push( text.getText() );
 		}
 		return texts;
 	}
 
 	collect_element_attribute( attr, selector ) {
-		let elements = browser.elements( selector ).value;
-		let texts = [];
-		for ( let elt of elements ) {
+		const elements = browser.elements( selector ).value;
+		const texts = [];
+		for ( const elt of elements ) {
 			texts.push( elt.getAttribute( attr ) );
 		}
 		return texts;
@@ -81,7 +81,7 @@ class Page {
 	}
 
 	login( world, wiki = false ) {
-		let config = wiki ?
+		const config = wiki ?
 			world.config.wikis[ wiki ] :
 			world.config.wikis[ world.config.wikis.default ];
 		world.visit( '/wiki/Special:UserLogin' );

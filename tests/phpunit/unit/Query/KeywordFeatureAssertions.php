@@ -549,8 +549,10 @@ class KeywordFeatureAssertions {
 			->willReturn( $data );
 		$mock->method( 'getSearchConfig' )
 			->willReturn( $config );
-		$mock->method( 'getHighlightFieldGenerator' )
-			->willReturn( $fetchPhaseConfigBuilder );
+		if ( $fetchPhaseConfigBuilder ) {
+			$mock->method( 'getHighlightFieldGenerator' )
+				->willReturn( $fetchPhaseConfigBuilder );
+		}
 		return $mock;
 	}
 

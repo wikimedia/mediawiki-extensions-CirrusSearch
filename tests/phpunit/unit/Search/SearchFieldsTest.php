@@ -6,8 +6,8 @@ use CirrusSearch\CirrusTestCase;
 use SearchIndexField;
 
 /**
+ * @coversNothing
  * @group CirrusSearch
- * @covers \SearchIndexField
  */
 class SearchFieldsTest extends CirrusTestCase {
 

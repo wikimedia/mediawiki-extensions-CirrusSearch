@@ -11,7 +11,7 @@ use MediaWiki\Logger\LoggerFactory;
 abstract class CirrusTestCase extends \MediaWikiUnitTestCase {
 	use CirrusTestCaseTrait;
 
-	public static function setUpBeforeClass() {
+	public static function setUpBeforeClass() : void {
 		parent::setUpBeforeClass();
 		LoggerFactory::getInstance( 'CirrusSearchUnitTest' )->debug( 'Using seed ' . self::getSeed() );
 	}

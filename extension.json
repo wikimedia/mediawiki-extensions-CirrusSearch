@@ -270,7 +270,7 @@
 			"value": true
 		},
 		"CirrusSearchFallbackProfile": {
-			"value": "phrase_suggest_and_language_detection"
+			"value": "phrase_suggest"
 		},
 		"CirrusSearchFallbackProfiles": {
 			"value": []

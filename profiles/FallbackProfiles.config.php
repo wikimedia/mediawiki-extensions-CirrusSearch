@@ -34,6 +34,16 @@ return [
 			],
 		]
 	],
+	'phrase_suggest' => [
+		'methods' => [
+			[
+				'class' => \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod::class,
+				'params' => [
+					'profile' => 'default',
+				]
+			],
+		]
+	],
 	'phrase_suggest_strict' => [
 		'methods' => [
 			[

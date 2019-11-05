@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\BuildDocument\BuildDocument;
+use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use TextContent;
@@ -206,11 +207,11 @@ class Updater extends ElasticsearchIntermediary {
 
 		$count = 0;
 		foreach ( $allDocuments as $indexType => $documents ) {
-			$this->pushElasticaWriteJobs( $documents, function ( array $chunk ) use ( $indexType ) {
+			$this->pushElasticaWriteJobs( $documents, function ( array $chunk, string $cluster ) use ( $indexType ) {
 				return Job\ElasticaWrite::build(
+					$cluster,
 					'sendData',
-					[ $indexType, $chunk ],
-					[ 'cluster' => $this->writeToClusterName ]
+					[ $indexType, $chunk ]
 				);
 			} );
 			$count += count( $documents );
@@ -236,11 +237,11 @@ class Updater extends ElasticsearchIntermediary {
 		// Deletes are fairly cheap to send, they can be batched in larger
 		// chunks. Unlikely a batch this large ever comes through.
 		$batchSize = 50;
-		$this->pushElasticaWriteJobs( $docIds, function ( array $chunk ) use ( $indexType, $elasticType ) {
+		$this->pushElasticaWriteJobs( $docIds, function ( array $chunk, string $cluster ) use ( $indexType, $elasticType ) {
 			return Job\ElasticaWrite::build(
+				$cluster,
 				'sendDeletes',
-				[ $chunk, $indexType, $elasticType ],
-				[ 'cluster' => $this->writeToClusterName ]
+				[ $chunk, $indexType, $elasticType ]
 			);
 		}, $batchSize );
 
@@ -258,11 +259,12 @@ class Updater extends ElasticsearchIntermediary {
 			return true;
 		}
 		$docs = $this->buildArchiveDocuments( $archived );
-		$this->pushElasticaWriteJobs( $docs, function ( array $chunk ) {
+		$this->pushElasticaWriteJobs( $docs, function ( array $chunk, string $cluster ) {
 			return Job\ElasticaWrite::build(
+				$cluster,
 				'sendData',
 				[ Connection::ARCHIVE_INDEX_TYPE, $chunk, Connection::ARCHIVE_TYPE_NAME ],
-				[ 'cluster' => $this->writeToClusterName, 'private_data' => true ]
+				[ 'private_data' => true ]
 			);
 		} );
 
@@ -368,10 +370,24 @@ class Updater extends ElasticsearchIntermediary {
 		// Elasticsearch has a queue capacity of 50 so if $documents contains 50 pages it could bump up
 		// against the max.  So we chunk it and do them sequentially.
 		$jobs = [];
+		$clusters = $this->elasticaWriteClusters();
 		foreach ( array_chunk( $items, $batchSize ) as $chunked ) {
-			$job = $factory( $chunked );
-			// ElasticaWrite jobs will insert themselves in the job queue if necessary
-			$job->run();
+			foreach ( $clusters as $cluster ) {
+				$jobs[] = $factory( $chunked, $cluster );
+			}
+		}
+
+		JobQueueGroup::singleton()->push( $jobs );
+	}
+
+	private function elasticaWriteClusters(): array {
+		if ( $this->writeToClusterName !== null ) {
+			return [ $this->writeToClusterName ];
+		} else {
+			return $this->connection
+				->getConfig()
+				->getClusterAssignment()
+				->getWritableClusters();
 		}
 	}
 

@@ -162,16 +162,17 @@ class OtherIndexesUpdater extends Updater {
 		// may be configured to write to different clusters.
 		foreach ( $updates as $data ) {
 			list( $otherIndex, $actions ) = $data;
-			$this->pushElasticaWriteJobs( $actions, function ( array $chunk ) use ( $otherIndex ) {
+			$this->pushElasticaWriteJobs( $actions, function ( array $chunk, string $cluster ) use ( $otherIndex ) {
 				// Name of the index to write to on whatever cluster is connected to
 				$indexName = $otherIndex->getIndexName();
 				// Index name and, potentially, a replica group identifier. Needed to
 				// create an appropriate ExternalIndex instance in the job.
 				$externalIndex = $otherIndex->getGroupAndIndexName();
 				return Job\ElasticaWrite::build(
+					$cluster,
 					'sendOtherIndexUpdates',
 					[ $this->localSite, $indexName, $chunk ],
-					[ 'cluster' => $this->writeToClusterName, 'external-index' => $externalIndex ]
+					[ 'external-index' => $externalIndex ]
 				);
 			} );
 		}

@@ -39,16 +39,18 @@ class ElasticaWrite extends CirrusGenericJob {
 	];
 
 	/**
+	 * @param string $cluster
 	 * @param string $method
 	 * @param array $arguments
 	 * @param array $params
 	 * @return ElasticaWrite
 	 */
-	public static function build( $method, array $arguments, array $params ) {
+	public static function build( string $cluster, string $method, array $arguments, array $params = [] ) {
 		return new self( [
 			'method' => $method,
 			'arguments' => self::serde( $method, $arguments ),
 			'serialized' => true,
+			'cluster' => $cluster,
 		] + $params );
 	}
 

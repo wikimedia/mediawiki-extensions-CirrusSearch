@@ -169,9 +169,6 @@ class Updater extends ElasticsearchIntermediary {
 	 *     index.  Indexing with any portion of the document skipped is dangerous because it
 	 *     can put half created pages in the index.  This is only a good idea during the first
 	 *     half of the two phase index build.
-	 *   INSTANT_INDEX Do quick index of initial data, without waiting. Do not retry the job
-	 *     if it failed. This is useful for fast-index updates which can later be picked up by
-	 *     main update if they fail.
 	 *
 	 * @param WikiPage[] $pages pages to update
 	 * @param int $flags Bit field containing instructions about how the document should be built
@@ -188,12 +185,9 @@ class Updater extends ElasticsearchIntermediary {
 			}
 			return false;
 		} );
-		$isInstantIndex = ( $flags & BuildDocument::INSTANT_INDEX ) !== 0;
 
 		$titles = $this->pagesToTitles( $pages );
-		if ( !$isInstantIndex ) {
-			Job\OtherIndex::queueIfRequired( $this->connection->getConfig(), $titles, $this->writeToClusterName );
-		}
+		Job\OtherIndex::queueIfRequired( $this->connection->getConfig(), $titles, $this->writeToClusterName );
 
 		$allDocuments = array_fill_keys( $this->connection->getAllIndexTypes(), [] );
 		$services = MediaWikiServices::getInstance();
@@ -218,10 +212,7 @@ class Updater extends ElasticsearchIntermediary {
 				$job = Job\ElasticaWrite::build(
 					'sendData',
 					[ $indexType, $chunked ],
-					[
-						'cluster' => $this->writeToClusterName,
-						'doNotRetry' => $isInstantIndex,
-					]
+					[ 'cluster' => $this->writeToClusterName ]
 				);
 				// This job type will insert itself into the job queue
 				// with a delay if writes to ES are currently unavailable

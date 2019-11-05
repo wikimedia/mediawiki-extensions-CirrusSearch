@@ -1565,17 +1565,6 @@ Maximum overall category count for deep category query. Note that ElasticSearch
 has limit of 1024 boolean clauses by default, so this limit should be well under
 Elastic limits.
 
-; $wgCirrusSearchInstantIndexNew
-
-Default:
-    $wgCirrusSearchInstantIndexNew = false;
-
-Whether to try to index newly created article immediately. This is useful for wikis
-which use searches - e.g. completion search - a lot for main functionality, e.g. Wikidata,
-and thus want item to appear in the index as soon as possible, even at the cost of page data
-not being fully updated yet.
-Set to true to index all pages on wiki, or array of namespaces to index specific namespaces.
-
 ; $wgCirrusSearchNamespaceResolutionMethod
 
 Default:

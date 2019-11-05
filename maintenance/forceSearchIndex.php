@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use BatchRowIterator;
+use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\Iterator\CallbackIterator;
 use CirrusSearch\Maintenance\Maintenance;
 use JobQueueGroup;
@@ -270,20 +271,20 @@ class ForceSearchIndex extends Maintenance {
 	private function buildUpdateFlags() {
 		$updateFlags = 0;
 		if ( $this->getOption( 'indexOnSkip' ) ) {
-			$updateFlags |= Updater::INDEX_ON_SKIP;
+			$updateFlags |= BuildDocument::INDEX_ON_SKIP;
 		}
 		if ( $this->getOption( 'skipParse' ) ) {
-			$updateFlags |= Updater::SKIP_PARSE;
+			$updateFlags |= BuildDocument::SKIP_PARSE;
 			if ( !$this->getOption( 'batch-size' ) ) {
 				$this->setBatchSize( 50 );
 			}
 		}
 		if ( $this->getOption( 'skipLinks' ) ) {
-			$updateFlags |= Updater::SKIP_LINKS;
+			$updateFlags |= BuildDocument::SKIP_LINKS;
 		}
 
 		if ( $this->getOption( 'forceParse' ) ) {
-			$updateFlags |= Updater::FORCE_PARSE;
+			$updateFlags |= BuildDocument::FORCE_PARSE;
 		}
 
 		return $updateFlags;

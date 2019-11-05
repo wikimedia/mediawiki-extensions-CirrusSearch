@@ -206,18 +206,13 @@ class Updater extends ElasticsearchIntermediary {
 
 		$count = 0;
 		foreach ( $allDocuments as $indexType => $documents ) {
-			// Elasticsearch has a queue capacity of 50 so if $documents contains 50 pages it could bump up
-			// against the max.  So we chunk it and do them sequentially.
-			foreach ( array_chunk( $documents, 10 ) as $chunked ) {
-				$job = Job\ElasticaWrite::build(
+			$this->pushElasticaWriteJobs( $documents, function ( array $chunk ) use ( $indexType ) {
+				return Job\ElasticaWrite::build(
 					'sendData',
-					[ $indexType, $chunked ],
+					[ $indexType, $chunk ],
 					[ 'cluster' => $this->writeToClusterName ]
 				);
-				// This job type will insert itself into the job queue
-				// with a delay if writes to ES are currently unavailable
-				$job->run();
-			}
+			} );
 			$count += count( $documents );
 		}
 
@@ -237,14 +232,17 @@ class Updater extends ElasticsearchIntermediary {
 	 */
 	public function deletePages( $titles, $docIds, $indexType = null, $elasticType = null ) {
 		Job\OtherIndex::queueIfRequired( $this->connection->getConfig(), $titles, $this->writeToClusterName );
-		$job = Job\ElasticaWrite::build(
-			'sendDeletes',
-			[ $docIds, $indexType, $elasticType ],
-			[ 'cluster' => $this->writeToClusterName ]
-		);
-		// This job type will insert itself into the job queue
-		// with a delay if writes to ES are currently paused
-		$job->run();
+
+		// Deletes are fairly cheap to send, they can be batched in larger
+		// chunks. Unlikely a batch this large ever comes through.
+		$batchSize = 50;
+		$this->pushElasticaWriteJobs( $docIds, function ( array $chunk ) use ( $indexType, $elasticType ) {
+			return Job\ElasticaWrite::build(
+				'sendDeletes',
+				[ $chunk, $indexType, $elasticType ],
+				[ 'cluster' => $this->writeToClusterName ]
+			);
+		}, $batchSize );
 
 		return true;
 	}
@@ -260,14 +258,13 @@ class Updater extends ElasticsearchIntermediary {
 			return true;
 		}
 		$docs = $this->buildArchiveDocuments( $archived );
-		foreach ( array_chunk( $docs, 10 ) as $chunked ) {
-			$job = Job\ElasticaWrite::build(
+		$this->pushElasticaWriteJobs( $docs, function ( array $chunk ) {
+			return Job\ElasticaWrite::build(
 				'sendData',
-				[ Connection::ARCHIVE_INDEX_TYPE, $chunked, Connection::ARCHIVE_TYPE_NAME ],
+				[ Connection::ARCHIVE_INDEX_TYPE, $chunk, Connection::ARCHIVE_TYPE_NAME ],
 				[ 'cluster' => $this->writeToClusterName, 'private_data' => true ]
 			);
-			$job->run();
-		}
+		} );
 
 		return true;
 	}
@@ -360,6 +357,22 @@ class Updater extends ElasticsearchIntermediary {
 			$titles[] = $page->getTitle();
 		}
 		return $titles;
+	}
+
+	/**
+	 * @param mixed[] $items
+	 * @param callable $factory
+	 * @param int $batchSize
+	 */
+	protected function pushElasticaWriteJobs( array $items, $factory, int $batchSize = 10 ): void {
+		// Elasticsearch has a queue capacity of 50 so if $documents contains 50 pages it could bump up
+		// against the max.  So we chunk it and do them sequentially.
+		$jobs = [];
+		foreach ( array_chunk( $items, $batchSize ) as $chunked ) {
+			$job = $factory( $chunked );
+			// ElasticaWrite jobs will insert themselves in the job queue if necessary
+			$job->run();
+		}
 	}
 
 	/**

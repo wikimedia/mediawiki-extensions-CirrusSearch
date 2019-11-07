@@ -87,6 +87,7 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 
 		$extraFeatures = [];
 		\Hooks::run( 'CirrusSearchAddQueryFeatures', [ $config, &$extraFeatures ] );
+		// @phan-suppress-next-line PhanEmptyForeach May be set by hook
 		foreach ( $extraFeatures as $extra ) {
 			if ( $extra instanceof SimpleKeywordFeature ) {
 				$this->features[] = $extra;

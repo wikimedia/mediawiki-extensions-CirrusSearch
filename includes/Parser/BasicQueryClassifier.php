@@ -101,6 +101,7 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 
 		if ( $this->hasComplex ) {
 			$classes[] = self::COMPLEX_QUERY;
+			// @phan-suppress-next-line PhanSuspiciousValueComparison
 		} elseif ( $this->maxDepth === 0 && $this->hasWords && !$this->hasSimplePhrase ) {
 			$classes[] = self::SIMPLE_BAG_OF_WORDS;
 		} elseif ( $this->maxDepth === 0 && !$this->hasWords && $this->hasSimplePhrase ) {

@@ -121,6 +121,7 @@ class MultiSearchRequestLog extends SearchRequestLog {
 		$query = json_decode( $requestData[1], true );
 
 		return [
+			// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 			'index' => implode( ',', $meta['index'] ),
 		] + parent::extractRequestVariables( $query );
 	}

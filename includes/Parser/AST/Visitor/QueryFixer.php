@@ -114,6 +114,7 @@ class QueryFixer implements Visitor {
 			$this->node = null;
 		}
 
+		// @phan-suppress-next-line PhanSuspiciousValueComparison
 		if ( $this->node === null ) {
 			return null;
 		}

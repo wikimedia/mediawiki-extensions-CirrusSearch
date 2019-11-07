@@ -174,6 +174,7 @@ class FunctionScoreChain {
 			default:
 				$builder = null;
 				Hooks::run( 'CirrusSearchScoreBuilder', [ $func, $this->context, &$builder ] );
+				// @phan-suppress-next-line PhanRedundantCondition Must be set by hook
 				if ( !$builder ) {
 					throw new InvalidRescoreProfileException( "Unknown function score type {$func['type']}." );
 				}

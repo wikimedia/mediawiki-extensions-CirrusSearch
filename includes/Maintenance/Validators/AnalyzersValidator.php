@@ -36,6 +36,7 @@ class AnalyzersValidator extends Validator {
 	public function validate() {
 		$this->outputIndented( "Validating analyzers..." );
 		$settings = $this->index->getSettings()->get();
+		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 		if ( $this->checkConfig( $settings[ 'analysis' ], $this->analysisConfig ) ) {
 			$this->output( "ok\n" );
 		} else {

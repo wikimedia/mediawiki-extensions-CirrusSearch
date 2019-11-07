@@ -156,6 +156,7 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 
 		$profile = $query->getSearchConfig()->getProfileService()
 			->loadProfileByName( SearchProfileService::INDEX_LOOKUP_FALLBACK, $params['profile'] );
+		'@phan-var array $profile';
 
 		return new self( $query, $profile['index'], $profile['query'], $profile['suggestion_field'], $profile['params'], $profileParams );
 	}

@@ -36,6 +36,7 @@ class NumberOfShardsValidator extends Validator {
 	public function validate() {
 		$this->outputIndented( "\tValidating number of shards..." );
 		$settings = $this->index->getSettings()->get();
+		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 		$actualShardCount = $settings['number_of_shards'];
 		if ( $actualShardCount == $this->shardCount ) {
 			$this->output( "ok\n" );

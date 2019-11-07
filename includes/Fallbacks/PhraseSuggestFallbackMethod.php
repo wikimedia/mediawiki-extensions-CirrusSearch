@@ -138,7 +138,9 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		Assert::precondition( $toResultSet->getSuggestionQuery() === null, "must not have a suggestion yet" );
 		Assert::precondition( $toResultSet->getQueryAfterRewrite() === null, "must not have been rewritten" );
 		$toResultSet->setSuggestionQuery(
+			// @phan-suppress-next-line PhanTypeArraySuspiciousNullable Checked by Assert class
 			$this->queryFixer->fix( $suggestion['text'] ),
+			// @phan-suppress-next-line PhanTypeArraySuspiciousNullable Checked by Assert class
 			$this->queryFixer->fix( $this->escapeHighlightedSuggestion( $suggestion['highlighted'] ), true )
 		);
 	}

@@ -111,6 +111,7 @@ class UserTesting {
 		foreach ( $config as $testName => $testConfig ) {
 			if ( $trigger ) {
 				foreach ( $testConfig['buckets'] as $bucket => $bucketConfig ) {
+					'@phan-var array $bucketConfig';
 					if ( isset( $bucketConfig['trigger'] ) && $bucketConfig['trigger'] === $trigger ) {
 						$this->activateTest( $testName, $bucket, $testConfig );
 						break;

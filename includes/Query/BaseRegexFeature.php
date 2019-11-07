@@ -158,6 +158,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			if ( !$this->enabled ) {
 				return [ null, false ];
 			}
+			'@phan-var array $parsedValue';
 			$pattern = $parsedValue['pattern'];
 			$insensitive = $parsedValue['insensitive'];
 
@@ -180,6 +181,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			if ( !$this->enabled ) {
 				return null;
 			}
+			'@phan-var array $parsedValue';
 			$pattern = $parsedValue['pattern'];
 			$insensitive = $parsedValue['insensitive'];
 			return $this->buildRegexQuery( $pattern, $insensitive );
@@ -197,6 +199,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			if ( !$this->enabled ) {
 				return null;
 			}
+			'@phan-var array $parsedValue';
 			$pattern = $parsedValue['pattern'];
 			$insensitive = $parsedValue['insensitive'];
 			return $this->doGetRegexHLFields( $context->getHighlightFieldGenerator(), $pattern, $insensitive );

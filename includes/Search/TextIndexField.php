@@ -91,7 +91,8 @@ class TextIndexField extends CirrusIndexField {
 			return $this->textOptions;
 		}
 		$options = self::ENABLE_NORMS | self::SPEED_UP_HIGHLIGHTING;
-		if ( $mappingFlags & MappingConfigBuilder::PHRASE_SUGGEST_USE_TEXT &&
+		if ( $this->config->get( 'CirrusSearchEnablePhraseSuggest' ) &&
+			$mappingFlags & MappingConfigBuilder::PHRASE_SUGGEST_USE_TEXT &&
 			!$this->checkFlag( SearchIndexField::FLAG_SCORING )
 		) {
 			// SCORING fields are not copied since this info is already in other fields
@@ -118,7 +119,9 @@ class TextIndexField extends CirrusIndexField {
 		 */
 		$field = parent::getMapping( $engine );
 
-		if ( $this->checkFlag( self::COPY_TO_SUGGEST ) ) {
+		if ( $this->config->get( 'CirrusSearchEnablePhraseSuggest' ) &&
+			 $this->checkFlag( self::COPY_TO_SUGGEST )
+		) {
 			$field[ 'copy_to' ] = [ 'suggest' ];
 		}
 

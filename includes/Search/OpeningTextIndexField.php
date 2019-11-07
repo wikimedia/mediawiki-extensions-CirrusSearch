@@ -15,7 +15,9 @@ class OpeningTextIndexField extends TextIndexField {
 	 */
 	protected function getTextOptions( $mappingFlags ) {
 		$options = parent::getTextOptions( $mappingFlags );
-		if ( $this->config->get( 'CirrusSearchPhraseSuggestUseOpeningText' ) ) {
+		if ( $this->config->get( 'CirrusSearchEnablePhraseSuggest' ) &&
+			 $this->config->get( 'CirrusSearchPhraseSuggestUseOpeningText' )
+		) {
 			$options |= self::COPY_TO_SUGGEST;
 		}
 		return $options;

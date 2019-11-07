@@ -31,14 +31,6 @@ use WikiPage;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Updater extends ElasticsearchIntermediary {
-	// Bit field parameters for updatePages et al.
-	const INDEX_EVERYTHING = 0;
-	const INDEX_ON_SKIP = 1;
-	const SKIP_PARSE = 2;
-	const SKIP_LINKS = 4;
-	const FORCE_PARSE = 8;
-	const INSTANT_INDEX = 16;
-
 	/**
 	 * Full title text of pages updated in this process.  Used for deduplication
 	 * of updates.
@@ -82,7 +74,7 @@ class Updater extends ElasticsearchIntermediary {
 		if ( $page ) {
 			$updatedCount = $this->updatePages(
 				[ $page ],
-				self::INDEX_EVERYTHING
+				BuildDocument::INDEX_EVERYTHING
 			);
 			if ( $updatedCount < 0 ) {
 				return false;
@@ -196,7 +188,7 @@ class Updater extends ElasticsearchIntermediary {
 			}
 			return false;
 		} );
-		$isInstantIndex = ( $flags & self::INSTANT_INDEX ) !== 0;
+		$isInstantIndex = ( $flags & BuildDocument::INSTANT_INDEX ) !== 0;
 
 		$titles = $this->pagesToTitles( $pages );
 		if ( !$isInstantIndex ) {
@@ -360,7 +352,7 @@ class Updater extends ElasticsearchIntermediary {
 			// a full update (just link counts).
 			$pages[] = $page;
 		}
-		$updatedCount = $this->updatePages( $pages, self::SKIP_PARSE );
+		$updatedCount = $this->updatePages( $pages, BuildDocument::SKIP_PARSE );
 		return $updatedCount >= 0;
 	}
 

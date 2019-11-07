@@ -6,6 +6,7 @@ use ApiBase;
 use ApiMain;
 use ApiOpenSearch;
 use CirrusSearch;
+use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\Job\JobTraits;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
@@ -884,7 +885,7 @@ class Hooks {
 		DeferredUpdates::addCallableUpdate( function () use ( $wikiPage ) {
 			$updater = Updater::build( self::getConfig(), null );
 			$updater->updatePages( [ $wikiPage ],
-				Updater::SKIP_LINKS | Updater::INDEX_ON_SKIP | Updater::INSTANT_INDEX );
+				BuildDocument::SKIP_LINKS | BuildDocument::INDEX_ON_SKIP | BuildDocument::INSTANT_INDEX );
 		} );
 	}
 

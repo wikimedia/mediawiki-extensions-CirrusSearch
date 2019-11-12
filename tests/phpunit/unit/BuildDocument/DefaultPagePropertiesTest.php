@@ -21,7 +21,7 @@ class DefaultPagePropertiesTest extends \MediaWikiUnitTestCase {
 		$doc = $this->buildDoc( $page );
 
 		$expectFields = [
-			'version', 'wiki', 'namespace', 'namespace_text',
+			'wiki', 'namespace', 'namespace_text',
 			'title', 'timestamp'
 		];
 		$haveFields = array_keys( $doc->getData() );
@@ -32,10 +32,12 @@ class DefaultPagePropertiesTest extends \MediaWikiUnitTestCase {
 
 	private function buildDoc( WikiPage $page ): Document {
 		$db = $this->mock( IDatabase::class );
+		$title = $this->mock( Title::class );
 		$props = new DefaultPageProperties( $db );
 		$doc = new Document( null, [] );
 		$props->initialize( $doc, $page );
 		$props->finishInitializeBatch( [ $page ] );
+		$props->finalize( $doc, $title );
 		return $doc;
 	}
 

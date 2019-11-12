@@ -128,6 +128,22 @@ abstract class CirrusIndexField extends SearchIndexFieldDefinition {
 	}
 
 	/**
+	 * Set the hint named $hint
+	 *
+	 * @param \Elastica\Param $doc
+	 * @param string $hint name of the hint
+	 * @param mixed $value the hint value
+	 */
+	public static function setHint( \Elastica\Param $doc, $hint, $value ) {
+		$params = [];
+		if ( $doc->hasParam( self::DOC_HINT_PARAM ) ) {
+			$params = $doc->getParam( self::DOC_HINT_PARAM );
+		}
+		$params[$hint] = $value;
+		$doc->setParam( self::DOC_HINT_PARAM, $params );
+	}
+
+	/**
 	 * Clear all hints
 	 *
 	 * @param \Elastica\Param $doc

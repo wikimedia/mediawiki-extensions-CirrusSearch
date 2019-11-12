@@ -6,8 +6,8 @@ use CirrusSearch\CirrusTestCase;
 use SearchIndexField;
 
 /**
- * @coversNothing
  * @group CirrusSearch
+ * @covers \CirrusSearch\Search\CirrusIndexField
  */
 class SearchFieldsTest extends CirrusTestCase {
 
@@ -62,5 +62,22 @@ class SearchFieldsTest extends CirrusTestCase {
 		$hint = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
 		$this->assertNull( $hint );
 		$this->assertFalse( $doc->hasParam( CirrusIndexField::DOC_HINT_PARAM ) );
+	}
+
+	public function testHintsRoundTrip() {
+		$doc = new \Elastica\Document( 1, [] );
+		// Fetching unknown hint returns null
+		$hint = CirrusIndexField::getHint( $doc, 'unset-hint' );
+		$this->assertNull( $hint );
+
+		// Can set hint directly and fetch it back
+		CirrusIndexField::setHint( $doc, CirrusIndexField::NOOP_HINT, [ 'foo' => 'bar' ] );
+		$hint = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
+		$this->assertEquals( [ "foo" => "bar" ], $hint );
+
+		// Setting unrelated hints doesn't change previously set hint
+		CirrusIndexField::setHint( $doc, 'arbitrary', [ 'foo' => 'bar' ] );
+		$hint = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
+		$this->assertEquals( [ "foo" => "bar" ], $hint );
 	}
 }

@@ -2,11 +2,11 @@
 
 namespace CirrusSearch\BuildDocument;
 
-use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\Util;
 use Elastica\Document;
 use IDatabase;
 use MWTimestamp;
+use Title;
 use WikiPage;
 
 /**
@@ -31,9 +31,6 @@ class DefaultPageProperties implements PagePropertyBuilder {
 	 */
 	public function initialize( Document $doc, WikiPage $page ): void {
 		$title = $page->getTitle();
-		$doc->set( 'version', $page->getLatest() );
-		CirrusIndexField::addNoopHandler(
-			$doc, 'version', 'documentVersion' );
 		$doc->set( 'wiki', wfWikiID() );
 		$doc->set( 'namespace',
 			$title->getNamespace() );
@@ -53,6 +50,16 @@ class DefaultPageProperties implements PagePropertyBuilder {
 	 * {@inheritDoc}
 	 */
 	public function finishInitializeBatch(): void {
+		// NOOP
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param Document $doc
+	 * @param Title $title
+	 */
+	public function finalize( Document $doc, Title $title ): void {
 		// NOOP
 	}
 

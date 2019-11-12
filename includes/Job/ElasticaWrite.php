@@ -151,13 +151,11 @@ class ElasticaWrite extends CirrusGenericJob {
 			}
 		}
 
-		if ( empty( $this->params['doNotRetry'] ) ) {
-			foreach ( $retry as $conn ) {
-				$this->requeueRetry( $conn );
-			}
-			foreach ( $error as $conn ) {
-				$this->requeueError( $conn );
-			}
+		foreach ( $retry as $conn ) {
+			$this->requeueRetry( $conn );
+		}
+		foreach ( $error as $conn ) {
+			$this->requeueError( $conn );
 		}
 		if ( !empty( $error ) ) {
 			$this->setLastError( "ElasticaWrite job reported " . count( $error ) . " failure(s) and " . count( $retry ) . " frozen." );

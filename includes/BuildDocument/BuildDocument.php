@@ -56,7 +56,6 @@ class BuildDocument {
 	const SKIP_PARSE = 2;
 	const SKIP_LINKS = 4;
 	const FORCE_PARSE = 8;
-	const INSTANT_INDEX = 16;
 
 	/** @var SearchConfig */
 	private $config;

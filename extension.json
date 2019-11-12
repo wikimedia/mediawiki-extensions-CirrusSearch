@@ -141,8 +141,7 @@
 		"SpecialStatsAddExtra": "CirrusSearch\\Hooks::onSpecialStatsAddExtra",
 		"TitleMove": "CirrusSearch\\Hooks::onTitleMove",
 		"TitleMoveComplete": "CirrusSearch\\Hooks::onTitleMoveComplete",
-		"UserGetDefaultOptions": "CirrusSearch\\Hooks::onUserGetDefaultOptions",
-		"PageContentInsertComplete": "CirrusSearch\\Hooks::onPageContentInsertComplete"
+		"UserGetDefaultOptions": "CirrusSearch\\Hooks::onUserGetDefaultOptions"
 	},
 	"config": {
 		"CirrusSearchDefaultCluster": {
@@ -641,9 +640,6 @@
 		},
 		"CirrusSearchCategoryMax": {
 			"value": 256
-		},
-		"CirrusSearchInstantIndexNew": {
-			"value": false
 		},
 		"CirrusSearchNamespaceResolutionMethod": {
 			"value": "elastic"

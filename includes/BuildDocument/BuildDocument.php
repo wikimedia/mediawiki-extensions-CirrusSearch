@@ -5,9 +5,11 @@ namespace CirrusSearch\BuildDocument;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
+use Hooks;
 use IDatabase;
 use MediaWiki\Logger\LoggerFactory;
 use ParserCache;
+use ParserOutput;
 use WikiPage;
 
 /**
@@ -83,6 +85,19 @@ class BuildDocument {
 			}
 
 			$documents[$page->getId()] = $this->initializeDoc( $page, $builders, $flags );
+
+			// Use of this hook is deprecated, integration should happen through content handler
+			// interfaces.
+			Hooks::run( 'CirrusSearchBuildDocumentParse', [
+				$documents[$page->getId()],
+				$page->getTitle(),
+				$page->getContent(),
+				// Intentionally pass a bogus parser output, restoring this
+				// hook is a temporary hack for WikibaseMediaInfo, which does
+				// not use the parser output.
+				new ParserOutput( null ),
+				$this->connection
+			] );
 		}
 
 		foreach ( $builders as $builder ) {

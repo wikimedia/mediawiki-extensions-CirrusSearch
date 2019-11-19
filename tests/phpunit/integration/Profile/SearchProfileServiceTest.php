@@ -155,6 +155,6 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 			->setInitialNamespaces( [ 2 ] )
 			->build();
 		$route = $dispatch->bestRoute( $query );
-		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT, $route->getProfileContext(), $this->namespacePrefixParser() );
+		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT, $route->getProfileContext() );
 	}
 }

@@ -87,7 +87,6 @@ class KeywordNodeVisitorTest extends CirrusIntegrationTestCase {
 	/**
 	 * @covers \CirrusSearch\Parser\AST\Visitor\KeywordNodeVisitor
 	 * @covers \CirrusSearch\Parser\AST\Visitor\LeafVisitor
-	 * @covers \CirrusSearch\Parser\AST\Visitor\Visitor
 	 * @covers \CirrusSearch\Parser\AST\KeywordFeatureNode::accept()
 	 * @covers \CirrusSearch\Parser\AST\FuzzyNode::accept()
 	 * @covers \CirrusSearch\Parser\AST\WordsQueryNode::accept()

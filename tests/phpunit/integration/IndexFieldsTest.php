@@ -9,7 +9,8 @@ use MediaWiki\MediaWikiServices;
 
 /**
  * @group CirrusSearch
- * @covers \SearchIndexField
+ * FIXME: what is this class actually testing? Can't cover interfaces.
+ * @coversNothing
  */
 class IndexFieldsTest extends CirrusIntegrationTestCase {
 

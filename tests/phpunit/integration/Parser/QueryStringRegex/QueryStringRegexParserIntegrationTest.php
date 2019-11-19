@@ -24,7 +24,6 @@ use CirrusSearch\SearchConfig;
  * @covers \CirrusSearch\Parser\AST\WildcardNode
  * @covers \CirrusSearch\Parser\AST\FuzzyNode
  * @covers \CirrusSearch\Parser\AST\NamespaceHeaderNode
- * @covers \CirrusSearch\Parser\QueryParser
  * @covers \CirrusSearch\Parser\QueryStringRegex\PhraseQueryParser
  * @covers \CirrusSearch\Parser\QueryStringRegex\NonPhraseParser
  * @covers \CirrusSearch\Parser\QueryStringRegex\OffsetTracker

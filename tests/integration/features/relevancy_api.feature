@@ -20,7 +20,8 @@ Feature: Results are ordered from most relevant to least.
     Then Relevancylanguagetest/en is the first api search result
 
   Scenario: Redirects count as incoming links
-     When I api search for Relevancyredirecttest
+     When I wait for Relevancyredirecttest Larger to have incoming_links of 4
+      And I api search for Relevancyredirecttest
      Then Relevancyredirecttest Larger is the first api search result
       And Relevancyredirecttest Smaller is the second api search result
     # Note that this test can fail spuriously in two ways:

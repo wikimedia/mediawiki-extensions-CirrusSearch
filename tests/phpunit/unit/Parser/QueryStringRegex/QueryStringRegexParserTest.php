@@ -47,8 +47,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 			$this->fail( "Expected exception" );
 		} catch ( SearchQueryParseException $e ) {
 			$this->assertEquals( $e->asStatus(),
-				\Status::newFatal( 'cirrussearch-query-too-long',
-					\Message::numParam( 11 ), \Message::numParam( 10 ) ) );
+				\Status::newFatal( 'cirrussearch-query-too-long', 11, 10 ) );
 		}
 
 		$q = "incategory:test " . str_repeat( "a", 10 );
@@ -59,8 +58,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 			// The allowed query length is what is the configured limit + the size occupied by incategory keywords
 			$this->assertEquals( $e->asStatus(),
 				\Status::newFatal( 'cirrussearch-query-too-long',
-					\Message::numParam( mb_strlen( $q ) ),
-					\Message::numParam( 10 + mb_strlen( "incategory:test" ) ) ) );
+					mb_strlen( $q ), 10 + mb_strlen( "incategory:test" ) ) );
 		}
 
 		// the use of the incategory keyword inhibits the size check
@@ -79,8 +77,8 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 		} catch ( SearchQueryParseException $e ) {
 			$this->assertEquals( $e->asStatus(),
 				\Status::newFatal( 'cirrussearch-query-too-long',
-					\Message::numParam( QueryStringRegexParser::QUERY_LEN_HARD_LIMIT + 1 ),
-					\Message::numParam( QueryStringRegexParser::QUERY_LEN_HARD_LIMIT ) ) );
+					QueryStringRegexParser::QUERY_LEN_HARD_LIMIT + 1,
+					QueryStringRegexParser::QUERY_LEN_HARD_LIMIT ) );
 		}
 	}
 

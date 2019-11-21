@@ -36,7 +36,7 @@ class AnalysisFilter {
 	}
 
 	/**
-	 * @param array $mappings Elasticsearch mapping configuration
+	 * @param array[] $mappings Elasticsearch mapping configuration
 	 * @return Set The set of analyzer names referenced in $mappings
 	 */
 	public function findUsedAnalyzersInMappings( array $mappings ) {
@@ -74,7 +74,7 @@ class AnalysisFilter {
 	}
 
 	/**
-	 * @param array $mappings Elasticsearch index mapping configuration
+	 * @param array[] $mappings Elasticsearch index mapping configuration
 	 * @param string[] $aliases Mapping from old name to new name for analyzers
 	 * @return array Updated index mapping configuration
 	 */

@@ -100,7 +100,7 @@ class UserTesting {
 	}
 
 	/**
-	 * @param array $config
+	 * @param array[] $config
 	 * @param callable|null $callback
 	 * @param string|null $trigger Value to manually trigger a test.
 	 */

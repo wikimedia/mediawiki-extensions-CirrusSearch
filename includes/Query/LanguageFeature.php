@@ -80,7 +80,7 @@ class LanguageFeature extends SimpleKeywordFeature implements FilterQueryFeature
 	}
 
 	/**
-	 * @param $parsedValue
+	 * @param array[] $parsedValue
 	 * @return \Elastica\Query\AbstractQuery|\Elastica\Query\Match|null
 	 */
 	private function doGetFilterQuery( $parsedValue ) {

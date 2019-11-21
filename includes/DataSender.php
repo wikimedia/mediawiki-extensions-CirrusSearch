@@ -369,7 +369,7 @@ class DataSender extends ElasticsearchIntermediary {
 	/**
 	 * @param string $localSite The wikiId to add/remove from local_sites_with_dupe
 	 * @param string $indexName The name of the index to perform updates to
-	 * @param array $otherActions A list of arrays each containing the id within elasticsearch
+	 * @param array[] $otherActions A list of arrays each containing the id within elasticsearch
 	 *   ('docId') and the article namespace ('ns') and DB key ('dbKey') at the within $localSite
 	 * @param int $batchSize number of docs to update in a single bulk
 	 * @return Status

@@ -48,7 +48,7 @@ class CheckIndexes extends Maintenance {
 	 */
 	private $clusterState;
 	/**
-	 * @var array Version info stored in elasticsearch /mw_cirrus_versions/version
+	 * @var array[] Version info stored in elasticsearch /mw_cirrus_versions/version
 	 */
 	private $cirrusInfo;
 

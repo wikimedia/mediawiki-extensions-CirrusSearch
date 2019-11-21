@@ -15,7 +15,7 @@ use Elastica\Document;
 class ElasticaDocumentsJsonSerde {
 	/**
 	 * @param Document[] $docs
-	 * @return array Document represented with json compatible types
+	 * @return array[] Document represented with json compatible types
 	 */
 	public function serialize( array $docs ) {
 		$res = [];
@@ -30,7 +30,7 @@ class ElasticaDocumentsJsonSerde {
 	}
 
 	/**
-	 * @param array $serialized Data returned by self::serialize
+	 * @param array[] $serialized Data returned by self::serialize
 	 * @return Document[]
 	 */
 	public function deserialize( array $serialized ) {

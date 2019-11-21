@@ -38,7 +38,7 @@ class ExplainPrinter {
 	}
 
 	/**
-	 * @param array $queryResult Elasticsearch result
+	 * @param array[] $queryResult Elasticsearch result
 	 * @return string
 	 */
 	public function format( array $queryResult ) {

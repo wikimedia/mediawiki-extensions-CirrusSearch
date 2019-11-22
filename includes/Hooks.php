@@ -98,27 +98,25 @@ class Hooks {
 
 		self::overrideMoreLikeThisOptionsFromMessage();
 
-		if ( $request ) {
-			self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize,
-				$request, 'cirrusPhraseWindow', 10000 );
-			self::overrideNumeric( $wgCirrusSearchPhraseRescoreBoost,
-				$request, 'cirrusPhraseBoost' );
-			self::overrideNumeric( $wgCirrusSearchPhraseSlop[ 'boost' ],
-				$request, 'cirrusPhraseSlop', 10 );
-			self::overrideNumeric( $wgCirrusSearchFunctionRescoreWindowSize,
-				$request, 'cirrusFunctionWindow', 10000 );
-			self::overrideNumeric( $wgCirrusSearchFragmentSize,
-				$request, 'cirrusFragmentSize', 1000 );
-			self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ],
-				$request, 'cirrusUseAllFields' );
-			self::overrideYesNo( $wgCirrusSearchUseCompletionSuggester,
-				$request, 'cirrusUseCompletionSuggester' );
-			self::overrideMoreLikeThisOptions( $request );
-			self::overrideSecret( $wgCirrusSearchLogElasticRequests,
-				$wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );
-			self::overrideYesNo( $wgCirrusSearchEnableAltLanguage,
-				$request, 'cirrusAltLanguage' );
-		}
+		self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize,
+			$request, 'cirrusPhraseWindow', 10000 );
+		self::overrideNumeric( $wgCirrusSearchPhraseRescoreBoost,
+			$request, 'cirrusPhraseBoost' );
+		self::overrideNumeric( $wgCirrusSearchPhraseSlop[ 'boost' ],
+			$request, 'cirrusPhraseSlop', 10 );
+		self::overrideNumeric( $wgCirrusSearchFunctionRescoreWindowSize,
+			$request, 'cirrusFunctionWindow', 10000 );
+		self::overrideNumeric( $wgCirrusSearchFragmentSize,
+			$request, 'cirrusFragmentSize', 1000 );
+		self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ],
+			$request, 'cirrusUseAllFields' );
+		self::overrideYesNo( $wgCirrusSearchUseCompletionSuggester,
+			$request, 'cirrusUseCompletionSuggester' );
+		self::overrideMoreLikeThisOptions( $request );
+		self::overrideSecret( $wgCirrusSearchLogElasticRequests,
+			$wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );
+		self::overrideYesNo( $wgCirrusSearchEnableAltLanguage,
+			$request, 'cirrusAltLanguage' );
 	}
 
 	/**

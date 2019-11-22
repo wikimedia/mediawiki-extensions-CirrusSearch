@@ -24,7 +24,7 @@ class FullTextCirrusSearchResultBuilder {
 	 * @param HighlightedField[][] $hlFieldsPerTarget list of highlighted field indexed per target and sorted by priority
 	 */
 	public function __construct( TitleHelper $titleHelper, array $hlFieldsPerTarget ) {
-		$this->titleHelper = $titleHelper ?: new TitleHelper();
+		$this->titleHelper = $titleHelper;
 		$this->highligtedFields = $hlFieldsPerTarget;
 	}
 

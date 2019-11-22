@@ -58,6 +58,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint tendría de configurase como un puntu de salida SPARQL válidu pa usar la gueta fonda en categoríes.",
 	"cirrussearch-feature-deepcat-exception": "Falló la consulta SPARQL de gueta fonda en categoríes.",
 	"cirrussearch-feature-deepcat-toomany": "La consulta fonda de categoríes devolvió demasiaes categoríes",
+	"cirrussearch-feature-deepcat-invalid-title": "La categoría proporcionada ye inválida.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nun se dieron categoríes válides a '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nun se dieron títulos válidos a '$1'.",
 	"cirrussearch-mlt-not-configured": "La carauterística '$1' ta mal configurada. Pide a un alministrador qu'igüe $wgCirrusSearchMoreLikeThisFields",
@@ -70,5 +71,6 @@
 	"cirrussearch-article-words": "Palabres en toles páxines de conteníu",
 	"cirrussearch-keyword-prefix-ns-mismatch": "L'espaciu de nomes que s'alcontró nel términu buscáu <code>prefix:</code> nun ye compatible colos espacios de nomes solicitaos. Puedes igualo poniendo a la consulta el prefixu <code>all:</code>.",
 	"cirrussearch-autoselect-profile": "Dexar que'l motor de gueta decida'l meyor perfil a usar.",
-	"cirrussearch-offset-too-large": "Nun pudo llograse nengún resultáu. Hai encontu hasta $1 resultaos na gueta, pero solicitáronse resultaos que principien nel $2."
+	"cirrussearch-offset-too-large": "Nun pudo llograse nengún resultáu. Hai encontu hasta $1 resultaos na gueta, pero solicitáronse resultaos que principien nel $2.",
+	"cirrussearch-offset-not-allowed-with-random-sort": "Inorando'l pidimientu de paxinar resultaos ordenaos al debalu."
 }

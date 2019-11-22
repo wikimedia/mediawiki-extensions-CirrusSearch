@@ -261,7 +261,7 @@ class QueryStringRegexParser implements QueryParser {
 		$queryLen = mb_strlen( $query );
 		if ( $queryLen > self::QUERY_LEN_HARD_LIMIT ) {
 			throw new SearchQueryParseException( 'cirrussearch-query-too-long',
-				\Message::numParam( $queryLen ), \Message::numParam( self::QUERY_LEN_HARD_LIMIT ) );
+				$queryLen, self::QUERY_LEN_HARD_LIMIT );
 		}
 		$this->cleanup();
 		$this->parseNsHeader();
@@ -820,7 +820,7 @@ class QueryStringRegexParser implements QueryParser {
 		$queryLen = mb_strlen( $this->query );
 		if ( $queryLen > $maxLen ) {
 			throw new SearchQueryParseException( 'cirrussearch-query-too-long',
-				\Message::numParam( $queryLen ), \Message::numParam( $maxLen ) );
+				$queryLen, $maxLen );
 		}
 	}
 }

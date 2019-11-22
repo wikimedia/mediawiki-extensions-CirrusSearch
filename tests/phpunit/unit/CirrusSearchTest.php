@@ -115,8 +115,7 @@ class CirrusSearchTest extends CirrusTestCase {
 		$engine = $this->getSearchEngine( [ 'CirrusSearchMaxFullTextQueryLength' => 10 ] );
 		$status = $engine->searchText( str_repeat( "a", 11 ) );
 		$this->assertEquals( $status,
-			\Status::newFatal( 'cirrussearch-query-too-long',
-				\Message::numParam( 11 ), \Message::numParam( 10 ) ) );
+			\Status::newFatal( 'cirrussearch-query-too-long', 11, 10 ) );
 	}
 
 	/**

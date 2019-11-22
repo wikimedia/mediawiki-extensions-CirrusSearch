@@ -680,7 +680,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				$log->getDescription() . " timed out and only returned partial results!",
 				$log->getLogVariables()
 			);
-			$status->warning( $this->searchContext->isSyntaxUsed( 'regex' )
+			$this->searchContext->addWarning( $this->searchContext->isSyntaxUsed( 'regex' )
 				? 'cirrussearch-regex-timed-out'
 				: 'cirrussearch-timed-out'
 			);

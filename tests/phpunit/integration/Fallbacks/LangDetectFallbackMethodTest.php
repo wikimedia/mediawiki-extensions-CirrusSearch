@@ -2,20 +2,41 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\EmptyInterwikiResolver;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\LanguageDetector\Detector;
+use CirrusSearch\Search\CirrusSearchResultSet;
+use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Searcher;
 use CirrusSearch\Test\DummySearchResultSet;
 use ISearchResultSet;
 
 /**
  * @covers \CirrusSearch\Fallbacks\LangDetectFallbackMethod
  */
-class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
+class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
+
+	public function getSearcherFactoryMock( SearchQuery $query = null, CirrusSearchResultSet $resultSet = null ) {
+		$searcherMock = $this->createMock( Searcher::class );
+		$searcherMock->expects( $query != null ? $this->once() : $this->never() )
+			->method( 'search' )
+			->with( $query )
+			->willReturn( $resultSet === null ? \Status::newFatal( 'Error' ) : \Status::newGood( $resultSet ) );
+		$searcherMock->expects( $query != null ? $this->atMost( 1 ) : $this->never() )
+			->method( 'getSearchMetrics' )
+			->willReturn( [ 'searcherMetrics' => 'called' ] );
+
+		$mock = $this->createMock( SearcherFactory::class );
+		$mock->expects( $this->any() )
+			->method( 'makeSearcher' )
+			->willReturn( $searcherMock );
+		return $mock;
+	}
 
 	public function provideTest() {
 		return [

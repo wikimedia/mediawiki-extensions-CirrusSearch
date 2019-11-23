@@ -2,19 +2,24 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\InterwikiResolver;
+use CirrusSearch\Search\BaseCirrusSearchResultSet;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\MSearchRequests;
 use CirrusSearch\Search\MSearchResponses;
 use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
+use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Searcher;
 use CirrusSearch\Test\DummySearchResultSet;
 use CirrusSearch\Test\MockLanguageDetector;
 use Elastica\Client;
 use Elastica\Query;
 use Elastica\Response;
+use Elastica\ResultSet;
+use Elastica\ResultSet\DefaultBuilder;
 use Elastica\Search;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
@@ -24,8 +29,62 @@ use PHPUnit\Framework\AssertionFailedError;
  * @covers \CirrusSearch\Fallbacks\LangDetectFallbackMethod
  * @covers \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod
  */
-class FallbackRunnerTest extends BaseFallbackMethodTest {
+class FallbackRunnerTest extends CirrusIntegrationTestCase {
 	private $execOrder = [];
+
+	/**
+	 * @param array $response
+	 * @param bool $containedSyntax
+	 * @param TitleHelper|null $titleHelper
+	 * @return CirrusSearchResultSet
+	 */
+	protected function newResultSet(
+		array $response,
+		$containedSyntax = false,
+		TitleHelper $titleHelper = null
+	): CirrusSearchResultSet {
+		$titleHelper = $titleHelper ?: $this->newTitleHelper();
+		$resultSet = ( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() );
+		return new class( $resultSet, $titleHelper, $containedSyntax ) extends BaseCirrusSearchResultSet {
+			/** @var ResultSet */
+			private $resultSet;
+			/** @var TitleHelper */
+			private $titleHelper;
+			/** @var bool */
+			private $containedSyntax;
+
+			public function __construct( ResultSet $resultSet, TitleHelper $titleHelper, $containedSyntax ) {
+				$this->resultSet = $resultSet;
+				$this->titleHelper = $titleHelper;
+				$this->containedSyntax = $containedSyntax;
+			}
+
+			/**
+			 * @inheritDoc
+			 */
+			protected function transformOneResult( \Elastica\Result $result ) {
+				return new \CirrusSearch\Search\Result( $result );
+			}
+
+			/**
+			 * @inheritDoc
+			 */
+			public function getElasticaResultSet() {
+				return $this->resultSet;
+			}
+
+			/**
+			 * @return bool
+			 */
+			public function searchContainedSyntax() {
+				return $this->containedSyntax;
+			}
+
+			protected function getTitleHelper(): TitleHelper {
+				return $this->titleHelper;
+			}
+		};
+	}
 
 	public function testOrdering() {
 		$results = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );

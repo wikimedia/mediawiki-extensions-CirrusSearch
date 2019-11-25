@@ -2,14 +2,14 @@
 
 namespace CirrusSearch\Parser;
 
-use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 
 /**
  * @covers \CirrusSearch\Parser\BasicQueryClassifier
  * @group CirrusSearch
  */
-class BasicQueryClassifierTest extends CirrusIntegrationTestCase {
+class BasicQueryClassifierTest extends CirrusTestCase {
 
 	public function provideQueries() {
 		return [

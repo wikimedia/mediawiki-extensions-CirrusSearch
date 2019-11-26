@@ -760,6 +760,7 @@ class QueryStringRegexParser implements QueryParser {
 				}
 
 				Assert::parameter( $node->getKeyword() instanceof PrefixFeature, '$node', 'must be parsed from PrefixFeature' );
+				// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 				$additional = $node->getParsedValue()[PrefixFeature::PARSED_NAMESPACES];
 				if ( $additional === 'all' ) {
 					$this->total = 'all';

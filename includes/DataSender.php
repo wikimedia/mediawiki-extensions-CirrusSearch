@@ -382,6 +382,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$client = $this->connection->getClient();
 		$status = Status::newGood();
 		foreach ( array_chunk( $otherActions, $batchSize ) as $updates ) {
+			'@phan-var array[] $updates';
 			$bulk = new \Elastica\Bulk( $client );
 			$titles = [];
 			foreach ( $updates as $update ) {
@@ -481,7 +482,7 @@ class DataSender extends ElasticsearchIntermediary {
 				}
 			} else {
 				// es 2.x cluster
-				if ( $error['type'] !== 'document_missing_exception' ) {
+				if ( $error !== null && $error['type'] !== 'document_missing_exception' ) {
 					$justDocumentMissing = false;
 					continue;
 				}

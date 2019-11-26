@@ -100,6 +100,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
+		'@phan-var array $parsedValue';
 		$namespace = $parsedValue['namespace'] ?? null;
 		self::alterSearchContextNamespace( $context, $namespace );
 		$prefixQuery = $this->buildQuery( $parsedValue['value'], $namespace );
@@ -193,6 +194,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	 * @return AbstractQuery|null
 	 */
 	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 		return $this->buildQuery( $node->getParsedValue()['value'],
 			$node->getParsedValue()['namespace'] ?? null );
 	}
@@ -242,6 +244,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		$feature = new self( $namespacePrefixParser );
 		$parsedValue = $feature->internalParseValue( $prefix );
 		$namespace = $parsedValue['namespace'] ?? null;
+		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 		$query = $feature->buildQuery( $parsedValue['value'], $namespace );
 		return new class( $query, $namespace !== null ? [ $namespace ] : [] ) implements ContextualFilter {
 			/**

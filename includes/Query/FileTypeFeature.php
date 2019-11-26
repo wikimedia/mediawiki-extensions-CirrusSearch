@@ -59,6 +59,7 @@ class FileTypeFeature extends SimpleKeywordFeature implements FilterQueryFeature
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$parsed = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
+		'@phan-var array $parsed';
 		$query = $this->matchFileType( array_merge( $parsed['aliased'], $parsed['user_types'] ) );
 
 		return [ $query, false ];
@@ -123,6 +124,7 @@ class FileTypeFeature extends SimpleKeywordFeature implements FilterQueryFeature
 	 */
 	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
 		$parsed = $node->getParsedValue();
+		'@phan-var array $parsed';
 		return $this->matchFileType( array_merge( $parsed['aliased'], $parsed['user_types'] ) );
 	}
 }

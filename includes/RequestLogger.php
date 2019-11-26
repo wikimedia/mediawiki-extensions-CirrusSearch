@@ -287,6 +287,7 @@ class RequestLogger {
 		// set came from. maybe :(
 		$allHitsByTitle = [];
 		foreach ( $allHits as $hit ) {
+			'@phan-var array $hit';
 			$allHitsByTitle[$hit['page_title']] = $hit;
 		}
 		$resultHits = [];

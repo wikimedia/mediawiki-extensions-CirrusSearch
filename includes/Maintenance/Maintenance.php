@@ -203,9 +203,7 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		$wgCirrusSearchLogElasticRequests = false;
 		// Disable statsd data collection.
 		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
-		if ( $stats ) {
-			$stats->setEnabled( false );
-		}
+		$stats->setEnabled( false );
 	}
 
 	/**

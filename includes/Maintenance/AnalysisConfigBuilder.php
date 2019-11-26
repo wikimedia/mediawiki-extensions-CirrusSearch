@@ -654,7 +654,6 @@ class AnalysisConfigBuilder {
 				'stopwords' => [ "," ],
 			];
 
-			/* @phan-suppress-next-line PhanUndeclaredVariable $filters may be declared, phan can't see it */
 			$filters = $filters ?? [];
 			$filters[] = 'smartcn_stop';
 			$filters[] = 'lowercase';

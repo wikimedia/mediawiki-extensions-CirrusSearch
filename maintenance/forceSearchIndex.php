@@ -42,7 +42,9 @@ require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class ForceSearchIndex extends Maintenance {
 	const SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS = 3;
+	/** @var MWTimestamp|null */
 	public $fromDate = null;
+	/** @var MWTimestamp|null */
 	public $toDate = null;
 	public $toId = null;
 	public $indexUpdates;
@@ -197,6 +199,7 @@ class ForceSearchIndex extends Maintenance {
 
 		if ( $this->runWithIds ) {
 			$it = $this->getIdsIterator();
+			// @phan-suppress-next-line PhanImpossibleTypeComparison
 		} elseif ( $this->indexUpdates && $this->fromDate === null ) {
 			$it = $this->getUpdatesByIdIterator();
 		} elseif ( $this->indexUpdates ) {
@@ -495,7 +498,7 @@ class ForceSearchIndex extends Maintenance {
 	) {
 		// When initializing we guarantee that if either fromDate or toDate are provided
 		// the other has a sane default value.
-		if ( $this->fromDate ) {
+		if ( $this->fromDate !== null ) {
 			$it->addConditions( [
 				"{$columnPrefix}_timestamp >= " .
 					$dbr->addQuotes( $dbr->timestamp( $this->fromDate ) ),

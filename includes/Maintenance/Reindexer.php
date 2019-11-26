@@ -482,6 +482,7 @@ class Reindexer {
 
 	private static function monitorSleepSeconds( $base, $ratio, $max ) {
 		$val = $base;
+		// @phan-suppress-next-line PhanInfiniteLoop https://github.com/phan/phan/issues/3545
 		while ( true ) {
 			yield $val;
 			$val = min( $max, $val * $ratio );

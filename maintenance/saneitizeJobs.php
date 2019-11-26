@@ -126,6 +126,7 @@ class SaneitizeJobs extends Maintenance {
 		$profile = $this->getSearchConfig()
 			->getProfileService()
 			->loadProfileByName( SearchProfileService::SANEITIZER, $this->profileName );
+		'@phan-var array $profile';
 		$minLoopDuration = $profile['min_loop_duration'];
 		$maxJobs = $profile['max_checker_jobs'];
 		$maxUpdates = $profile['update_jobs_max_pressure'];
@@ -208,6 +209,7 @@ EOD
 		$profile = $this->getSearchConfig()
 			->getProfileService()
 			->loadProfileByName( SearchProfileService::SANEITIZER, $this->profileName );
+		'@phan-var array $profile';
 		$maxJobs = $profile['max_checker_jobs'];
 		if ( !$maxJobs || $maxJobs <= 0 ) {
 			$this->fatalError( "max_checker_jobs invalid abandonning.\n" );
@@ -306,6 +308,7 @@ EOD
 		} );
 		$wikiSize = $this->maxId - $this->minId;
 		foreach ( $profiles as $name => $settings ) {
+			'@phan-var array $settings';
 			if ( $settings['max_wiki_size'] > $wikiSize ) {
 				$this->profileName = $name;
 				$this->log( "Detected $wikiSize ids to check, selecting profile $name\n" );

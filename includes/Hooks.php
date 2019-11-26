@@ -735,6 +735,10 @@ class Hooks {
 		];
 	}
 
+	/**
+	 * @param array[] $profiles
+	 * @return string[]
+	 */
 	private static function autoCompleteOptionsForPreferences( array $profiles ): array {
 		$available = [];
 		foreach ( $profiles as $profile ) {

@@ -131,7 +131,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 			 $this->getFieldName() === $other->getFieldName()
 		) {
 			$this->options['regex'] = array_merge( $this->options['regex'], $other->options['regex'] );
-			$mergedInsensitivity = (bool)( $this->options['regex_case_insensitive'] || $other->options['regex_case_insensitive'] );
+			$mergedInsensitivity = $this->options['regex_case_insensitive'] || $other->options['regex_case_insensitive'];
 			$this->options['regex_case_insensitive'] = $mergedInsensitivity;
 			return $this;
 		} else {

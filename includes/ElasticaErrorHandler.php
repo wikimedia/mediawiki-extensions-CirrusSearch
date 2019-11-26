@@ -210,7 +210,6 @@ class ElasticaErrorHandler {
 				if ( !empty( $shardFailure['reason']['caused_by'] ) ) {
 					$message = $shardFailure['reason']['caused_by']['reason'];
 				} else {
-					/** @phan-suppress-next-line PhanTypeInvalidDimOffset */
 					$message = $shardFailure['reason']['reason'];
 				}
 			} else {

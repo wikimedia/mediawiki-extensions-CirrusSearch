@@ -56,15 +56,15 @@ class AnalysisFilter {
 	 * @return array $properties with analyzer aliases applied
 	 */
 	private function pushAnalyzerAliasesIntoField( array $properties, array $aliases ) {
-		foreach ( $properties as $name => $config ) {
+		foreach ( $properties as &$config ) {
 			foreach ( self::$ANALYZER_FIELDS as $key ) {
 				if ( isset( $config[$key] ) && isset( $aliases[$config[$key]] ) ) {
-					$properties[$name][$key] = $aliases[$config[$key]];
+					$config[$key] = $aliases[$config[$key]];
 				}
 			}
 			foreach ( self::$SUBFIELD_FIELDS as $key ) {
 				if ( isset( $config[$key] ) ) {
-					$properties[$name][$key] = $this->pushAnalyzerAliasesIntoField(
+					$config[$key] = $this->pushAnalyzerAliasesIntoField(
 						$config[$key], $aliases
 					);
 				}

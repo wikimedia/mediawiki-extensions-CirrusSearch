@@ -3,6 +3,7 @@
 namespace CirrusSearch\Job;
 
 use CirrusSearch\Updater;
+use Title;
 
 /**
  * Updates link counts to page when it is newly linked or unlinked.
@@ -23,7 +24,7 @@ use CirrusSearch\Updater;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class IncomingLinkCount extends CirrusTitleJob {
-	public function __construct( $title, $params ) {
+	public function __construct( Title $title, array $params ) {
 		parent::__construct( $title, $params );
 	}
 

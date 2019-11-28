@@ -3,6 +3,7 @@
 namespace CirrusSearch\Job;
 
 use CirrusSearch\Updater;
+use Title;
 
 /**
  * Job wrapper around Updater::deletePages.  If indexType parameter is
@@ -24,7 +25,7 @@ use CirrusSearch\Updater;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class DeletePages extends CirrusTitleJob {
-	public function __construct( $title, $params ) {
+	public function __construct( Title $title, array $params ) {
 		parent::__construct( $title, $params );
 
 		// This is one of the cheapest jobs we have. Plus I'm reasonably

@@ -32,7 +32,7 @@ use Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class LinksUpdate extends CirrusTitleJob {
-	public function __construct( $title, $params ) {
+	public function __construct( Title $title, array $params ) {
 		parent::__construct( $title, $params );
 
 		if ( $this->isPrioritized() ) {

@@ -4,12 +4,13 @@ namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
 use CirrusSearch\Updater;
+use Title;
 
 /**
  * Job wrapper for deleting pages from archive.
  */
 class DeleteArchive extends CirrusTitleJob {
-	public function __construct( $title, $params ) {
+	public function __construct( Title $title, array $params ) {
 		// While the delete is not itself private, it can only fail on clusters
 		// without private data as the index does not exist.
 		parent::__construct( $title, [ 'private_data' => true ] + $params );

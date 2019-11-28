@@ -446,7 +446,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	protected function decideRequiredSetAction( Title $title ) {
 		$page = new WikiPage( $title );
-		$page->loadPageData( 'fromdbmaster' );
+		$page->loadPageData( WikiPage::READ_LATEST );
 		if ( $page->exists() ) {
 			return 'add';
 		} else {

@@ -10,23 +10,23 @@ use CirrusSearch\CirrusTestCase;
 class SetTest extends CirrusTestCase {
 	public function testAdd() {
 		$set = new Set();
-		$this->assertEquals( 0, count( $set ) );
+		$this->assertCount( 0, $set );
 		$this->assertFalse( $set->contains( 'foo' ) );
 		$set->add( 'foo' );
 		$this->assertEquals( [ 'foo' ], $set->values() );
-		$this->assertEquals( 1, count( $set ) );
+		$this->assertCount( 1, $set );
 		$this->assertTrue( $set->contains( 'foo' ) );
 		$set->add( 'foo' );
 		$this->assertEquals( [ 'foo' ], $set->values() );
-		$this->assertEquals( 1, count( $set ) );
+		$this->assertCount( 1, $set );
 		$this->assertTrue( $set->contains( 'foo' ) );
 	}
 
 	public function testAddAll() {
 		$set = new Set();
 		$set->addAll( [ 1, 2, 3 ] );
-		$this->assertEquals( [ 1, 2, 3 ], $set->values() );
-		$this->assertEquals( 3, count( $set ) );
+		$this->assertSame( [ 1, 2, 3 ], $set->values() );
+		$this->assertCount( 3, $set );
 		$this->assertFalse( $set->contains( 0 ) );
 		$this->assertTrue( $set->contains( 1 ) );
 		$this->assertTrue( $set->contains( 2 ) );
@@ -40,10 +40,10 @@ class SetTest extends CirrusTestCase {
 		$b = new Set();
 		$b->addAll( [ 3, 4, 5 ] );
 
-		$this->assertEquals( 3, count( $a ) );
+		$this->assertCount( 3, $a );
 		$a->union( $b );
-		$this->assertEquals( 5, count( $a ) );
-		$this->assertEquals( 3, count( $b ) );
+		$this->assertCount( 5, $a );
+		$this->assertCount( 3, $b );
 	}
 
 }

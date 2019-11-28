@@ -15,21 +15,21 @@ class CompletionResultsCollectorTest extends CirrusTestCase {
 			"prof", "index1" );
 		$this->assertTrue( $collected );
 		$this->assertFalse( $collector->isFull() );
-		$this->assertEquals( 1, $collector->size() );
+		$this->assertSame( 1, $collector->size() );
 
 		// same title but lower score
 		$collected = $collector->collect( new SearchSuggestion( 1, "test", null, 1 ),
 			"prof", "index1" );
 		$this->assertFalse( $collected );
 		$this->assertFalse( $collector->isFull() );
-		$this->assertEquals( 1, $collector->size() );
+		$this->assertSame( 1, $collector->size() );
 
 		// same title but better score
 		$collected = $collector->collect( new SearchSuggestion( 11, "test", null, 1 ),
 			"prof", "index1" );
 		$this->assertTrue( $collected );
 		$this->assertFalse( $collector->isFull() );
-		$this->assertEquals( 1, $collector->size() );
+		$this->assertSame( 1, $collector->size() );
 
 		// another title but lower score
 		$collected = $collector->collect( new SearchSuggestion( 9, "test", null, 2 ),
@@ -77,7 +77,7 @@ class CompletionResultsCollectorTest extends CirrusTestCase {
 				return [ 'id' => $s->getSuggestedTitleID(), 'score' => $s->getScore() ];
 			}, $set->getSuggestions() ) );
 		$requests = $log->getRequests();
-		$this->assertEquals( 1, count( $requests ) );
+		$this->assertCount( 1, $requests );
 		$hits = reset( $requests )['hits'];
 		$this->assertEquals( [
 			[

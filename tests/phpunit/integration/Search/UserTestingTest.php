@@ -33,9 +33,9 @@ class UserTestingTest extends CirrusIntegrationTestCase {
 	public function testParticipationInTest() {
 		$config = $this->config( 'test' );
 		$ut = $this->ut( $config, true );
-		$this->assertEquals( true, $ut->isParticipatingIn( 'test' ) );
+		$this->assertTrue( $ut->isParticipatingIn( 'test' ) );
 		$ut = $this->ut( $config, false );
-		$this->assertEquals( false, $ut->isParticipatingIn( 'test' ) );
+		$this->assertFalse( $ut->isParticipatingIn( 'test' ) );
 	}
 
 	// There is no way to run this test correctly...random values mean

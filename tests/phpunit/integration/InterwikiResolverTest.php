@@ -31,8 +31,8 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( 'fr', $resolver->getInterwikiPrefix( 'frwiki' ) );
 		$this->assertEquals( 'no', $resolver->getInterwikiPrefix( 'nowiki' ) );
 		$this->assertEquals( 'b', $resolver->getInterwikiPrefix( 'enwikibooks' ) );
-		$this->assertEquals( null, $resolver->getInterwikiPrefix( 'simplewiki' ) );
-		$this->assertEquals( null, $resolver->getInterwikiPrefix( 'enwiki' ) );
+		$this->assertNull( $resolver->getInterwikiPrefix( 'simplewiki' ) );
+		$this->assertNull( $resolver->getInterwikiPrefix( 'enwiki' ) );
 
 		// Test sister projects
 		$this->assertArrayHasKey( 'voy', $resolver->getSisterProjectPrefixes() );

@@ -16,14 +16,14 @@ class SearchConfigTest extends CirrusTestCase {
 			'test' => 1,
 			'one' => [ 'two' => 3 ]
 		] );
-		$this->assertEquals( wfWikiID(), $config->getWikiId() );
-		$this->assertEquals( 1, $config->get( 'test' ) );
+		$this->assertSame( wfWikiID(), $config->getWikiId() );
+		$this->assertSame( 1, $config->get( 'test' ) );
 		$this->assertTrue( $config->has( 'test' ) );
 		$this->assertNull( $config->get( 'unknown' ) );
 		$this->assertFalse( $config->has( 'unknown' ) );
-		$this->assertEquals( [ 'two' => 3 ], $config->getElement( 'one' ) );
-		$this->assertEquals( 3, $config->getElement( 'one', 'two' ) );
-		$this->assertEquals( wfWikiID(), $config->getWikiId() );
+		$this->assertSame( [ 'two' => 3 ], $config->getElement( 'one' ) );
+		$this->assertSame( 3, $config->getElement( 'one', 'two' ) );
+		$this->assertSame( wfWikiID(), $config->getWikiId() );
 	}
 
 	public function testMakeId() {
@@ -32,14 +32,14 @@ class SearchConfigTest extends CirrusTestCase {
 			'_wikiID' => 'mywiki',
 		] );
 
-		$this->assertEquals( 'mywiki|123', $config->makeId( 123 ) );
-		$this->assertEquals( 123, $config->makePageId( 'mywiki|123' ) );
-		$this->assertEquals( 123, $config->makePageId( '123' ) );
+		$this->assertSame( 'mywiki|123', $config->makeId( 123 ) );
+		$this->assertSame( 123, $config->makePageId( 'mywiki|123' ) );
+		$this->assertSame( 123, $config->makePageId( '123' ) );
 		try {
-			$this->assertEquals( 123, $config->makePageId( 'mywiki|hop|123' ) );
+			$this->assertSame( 123, $config->makePageId( 'mywiki|hop|123' ) );
 			$this->fail();
 		} catch ( \Exception $e ) {
-			$this->assertEquals( $e->getMessage(), "Invalid document id: mywiki|hop|123" );
+			$this->assertSame( $e->getMessage(), "Invalid document id: mywiki|hop|123" );
 		}
 
 		$config = new HashSearchConfig( [
@@ -47,10 +47,10 @@ class SearchConfigTest extends CirrusTestCase {
 			'_wikiID' => 'mywiki',
 		] );
 
-		$this->assertEquals( '123', $config->makeId( 123 ) );
-		$this->assertEquals( 123, $config->makePageId( '123' ) );
+		$this->assertSame( '123', $config->makeId( 123 ) );
+		$this->assertSame( 123, $config->makePageId( '123' ) );
 		// should this fail instead?
-		$this->assertEquals( 0, $config->makePageId( 'mywiki|123' ) );
+		$this->assertSame( 0, $config->makePageId( 'mywiki|123' ) );
 	}
 
 	public function testInherit() {
@@ -59,19 +59,19 @@ class SearchConfigTest extends CirrusTestCase {
 			'Overridden' => 'test'
 		] );
 		$config = new HashSearchConfig( [ 'foo' => 'bar' ] );
-		$this->assertEquals( 'bar', $config->get( 'foo' ) );
+		$this->assertSame( 'bar', $config->get( 'foo' ) );
 		$this->assertFalse( $config->has( 'TestVar' ) );
 
 		$config = new HashSearchConfig( [ 'foo' => 'bar', 'Overridden' => 'hop' ], [ HashSearchConfig::FLAG_INHERIT ], $parentConfig );
-		$this->assertEquals( 'bar', $config->get( 'foo' ) );
+		$this->assertSame( 'bar', $config->get( 'foo' ) );
 		$this->assertTrue( $config->has( 'TestVar' ) );
-		$this->assertEquals( 'hop', $config->get( 'Overridden' ) );
+		$this->assertSame( 'hop', $config->get( 'Overridden' ) );
 
 		$config = new HashSearchConfig( [ 'baz' => 'qux' ], [ HashSearchConfig::FLAG_INHERIT ], $config );
-		$this->assertEquals( 'bar', $config->get( 'foo' ) );
+		$this->assertSame( 'bar', $config->get( 'foo' ) );
 		$this->assertTrue( $config->has( 'TestVar' ) );
-		$this->assertEquals( 'qux', $config->get( 'baz' ) );
-		$this->assertEquals( 'hop', $config->get( 'Overridden' ) );
+		$this->assertSame( 'qux', $config->get( 'baz' ) );
+		$this->assertSame( 'hop', $config->get( 'Overridden' ) );
 	}
 
 	public function testCrossSearchAccessors() {
@@ -93,9 +93,9 @@ class SearchConfigTest extends CirrusTestCase {
 
 	public function testWikiIDOverride() {
 		$config = new HashSearchConfig( [] );
-		$this->assertEquals( wfWikiID(), $config->getWikiId() );
+		$this->assertSame( wfWikiID(), $config->getWikiId() );
 		$config = new HashSearchConfig( [ '_wikiID' => 'myverycustomwiki' ] );
-		$this->assertEquals( 'myverycustomwiki', $config->getWikiId() );
+		$this->assertSame( 'myverycustomwiki', $config->getWikiId() );
 	}
 
 	public function testProfileService() {
@@ -116,9 +116,9 @@ class SearchConfigTest extends CirrusTestCase {
 			'CirrusSearchIndexBaseName' => SearchConfig::WIKI_ID_MAGIC_WORD,
 			'_wikiID' => 'mywiki'
 		] );
-		$this->assertEquals( 'mywiki', $config->get( 'CirrusSearchIndexBaseName' ) );
+		$this->assertSame( 'mywiki', $config->get( 'CirrusSearchIndexBaseName' ) );
 		$config = new HashSearchConfig( [ 'CirrusSearchIndexBaseName' => 'foobar' ] );
-		$this->assertEquals( 'foobar', $config->get( 'CirrusSearchIndexBaseName' ) );
+		$this->assertSame( 'foobar', $config->get( 'CirrusSearchIndexBaseName' ) );
 	}
 
 	public function getHostWikiConfigProvider() {
@@ -161,12 +161,12 @@ class SearchConfigTest extends CirrusTestCase {
 			],
 		];
 		$config = new HashSearchConfig( $common );
-		$this->assertEquals( [ '127.0.0.1:9200' ], $config->getClusterAssignment()->getServerList() );
+		$this->assertSame( [ '127.0.0.1:9200' ], $config->getClusterAssignment()->getServerList() );
 
 		$config = new HashSearchConfig( $common + [
 			'CirrusSearchServers' => [ '10.9.8.7:9200' ],
 		] );
-		$this->assertEquals( [ '10.9.8.7:9200' ], $config->getClusterAssignment()->getServerList() );
+		$this->assertSame( [ '10.9.8.7:9200' ], $config->getClusterAssignment()->getServerList() );
 	}
 
 	public function provideCompletionSuggesterEnabled() {
@@ -194,6 +194,6 @@ class SearchConfigTest extends CirrusTestCase {
 	 */
 	public function testIsUseCompletionSuggester( $confValue, $expected ) {
 		$conf = [ 'CirrusSearchUseCompletionSuggester' => $confValue ];
-		$this->assertEquals( $expected, ( new HashSearchConfig( $conf ) )->isCompletionSuggesterEnabled() );
+		$this->assertSame( $expected, ( new HashSearchConfig( $conf ) )->isCompletionSuggesterEnabled() );
 	}
 }

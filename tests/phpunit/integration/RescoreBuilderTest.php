@@ -32,7 +32,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 
 		$array = $func->toArray();
 		$this->assertTrue( isset( $array['function_score'] ) );
-		$this->assertEquals( 1, count( $array['function_score']['functions'] ) );
+		$this->assertCount( 1, $array['function_score']['functions'] );
 
 		$func = new FunctionScoreDecorator();
 		$this->assertTrue( $func->isEmptyFunction() );
@@ -40,14 +40,14 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		$func->addFunction( 'foo_function', [] );
 		$this->assertFalse( $func->isEmptyFunction() );
 		$array = $func->toArray();
-		$this->assertEquals( 2, count( $array['function_score']['functions'] ) );
+		$this->assertCount( 2, $array['function_score']['functions'] );
 
 		$func = new FunctionScoreDecorator();
 		$this->assertTrue( $func->isEmptyFunction() );
 		$func->addScriptScoreFunction( new \Elastica\Script\Script( "foo+2" ) );
 		$this->assertFalse( $func->isEmptyFunction() );
 		$array = $func->toArray();
-		$this->assertEquals( 1, count( $array['function_score']['functions'] ) );
+		$this->assertCount( 1, $array['function_score']['functions'] );
 	}
 
 	/**
@@ -84,7 +84,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
 		$array = $fScore->toArray();
-		$this->assertEquals( count( $array['function_score']['functions'] ), 2 );
+		$this->assertCount( 2, $array['function_score']['functions'] );
 
 		// Set cont lang as en to we generate only 1 filter
 		$config = new HashSearchConfig( [
@@ -100,7 +100,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
 		$array = $fScore->toArray();
-		$this->assertEquals( count( $array['function_score']['functions'] ), 1 );
+		$this->assertCount( 1, $array['function_score']['functions'] );
 
 		// Test that we do not generate any filter is weight are not set.
 		$config = new HashSearchConfig( [
@@ -230,7 +230,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
 		$array = $fScore->toArray();
-		$this->assertEquals( 5, count( $array['function_score']['functions'] ) );
+		$this->assertCount( 5, $array['function_score']['functions'] );
 
 		// With a single namespace the function score is empty
 		$builder = new NamespacesFunctionScoreBuilder( $config, [ 0 ], 1 );
@@ -244,7 +244,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
 		$array = $fScore->toArray();
-		$this->assertEquals( 2, count( $array['function_score']['functions'] ) );
+		$this->assertCount( 2, $array['function_score']['functions'] );
 
 		// Test that 2 similar boosts are flattened into the same filter
 		$settings = [
@@ -260,7 +260,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
 		$array = $fScore->toArray();
-		$this->assertEquals( 2, count( $array['function_score']['functions'] ) );
+		$this->assertCount( 2, $array['function_score']['functions'] );
 
 		// Test that a weigth to 1 is ignored
 		$settings = [
@@ -276,7 +276,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
 		$array = $fScore->toArray();
-		$this->assertEquals( 1, count( $array['function_score']['functions'] ) );
+		$this->assertCount( 1, $array['function_score']['functions'] );
 	}
 
 	/**
@@ -291,7 +291,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		$rescore = $builder->build();
 		$array = $rescore[0]['query']['rescore_query'];
 		$array = $array->toArray();
-		$this->assertEquals( $expectedFunctionCount, count( $array['function_score']['functions'] ) );
+		$this->assertCount( $expectedFunctionCount, $array['function_score']['functions'] );
 	}
 
 	public static function provideRescoreProfilesWithFallback() {

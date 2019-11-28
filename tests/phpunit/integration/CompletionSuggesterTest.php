@@ -212,16 +212,16 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 		$suggest = $completion->build( $query, [] )->toArray()['suggest'];
 		$profiles = $completion->getMergedProfiles();
 		// Unused profiles are kept
-		$this->assertEquals( count( $config->getProfileService()
-			->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' )['fst'] ), count( $profiles ) );
+		$this->assertCount( count( $config->getProfileService()
+			->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' )['fst'] ), $profiles );
 		// Never run more than 4 suggest query (without variants)
-		$this->assertTrue( count( $suggest ) <= 4 );
+		$this->assertLessThanOrEqual( 4, count( $suggest ) );
 		// small queries
-		$this->assertTrue( count( $suggest ) >= 2 );
+		$this->assertGreaterThanOrEqual( 2, count( $suggest ) );
 
 		if ( $len < 3 ) {
 			// We do not run fuzzy for small queries
-			$this->assertEquals( 2, count( $suggest ) );
+			$this->assertCount( 2, $suggest );
 			foreach ( $suggest as $key => $value ) {
 				$this->assertArrayNotHasKey( 'fuzzy', $value );
 			}

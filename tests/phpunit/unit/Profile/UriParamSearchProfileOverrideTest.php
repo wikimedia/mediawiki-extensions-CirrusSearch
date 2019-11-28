@@ -13,8 +13,8 @@ class UriParamSearchProfileOverrideTest extends CirrusTestCase {
 	public function testNormalUseCase() {
 		$request = new \FauxRequest( [ 'paramOverride' => 'overridden' ] );
 		$override = new UriParamSearchProfileOverride( $request, 'paramOverride' );
-		$this->assertEquals( SearchProfileOverride::URI_PARAM_PRIO, $override->priority() );
-		$this->assertEquals( 'overridden', $override->getOverriddenName( [] ) );
+		$this->assertSame( SearchProfileOverride::URI_PARAM_PRIO, $override->priority() );
+		$this->assertSame( 'overridden', $override->getOverriddenName( [] ) );
 		$this->assertEquals(
 			[
 				'type' => 'uriParam',
@@ -34,6 +34,6 @@ class UriParamSearchProfileOverrideTest extends CirrusTestCase {
 	public function testCustomPrio() {
 		$request = new \FauxRequest( [ 'paramOverride' => 'overridden' ] );
 		$override = new UriParamSearchProfileOverride( $request, 'paramOverride2', 123 );
-		$this->assertEquals( 123, $override->priority() );
+		$this->assertSame( 123, $override->priority() );
 	}
 }

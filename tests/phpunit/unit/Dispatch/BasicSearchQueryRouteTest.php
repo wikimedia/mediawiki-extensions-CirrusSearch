@@ -19,7 +19,7 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 	public function testGetProfileContext() {
 		$context = 'a not so random but weird context';
 		$route = new BasicSearchQueryRoute( 'foo', [], [], $context, 1.0 );
-		$this->assertEquals( $context, $route->getProfileContext() );
+		$this->assertSame( $context, $route->getProfileContext() );
 	}
 
 	/**
@@ -28,7 +28,7 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 	public function testGetSearchEngineEntryPoint() {
 		$searchEngineEntryPoint = 'a not so random but weird search engine entry point';
 		$route = new BasicSearchQueryRoute( $searchEngineEntryPoint, [], [], 'foo', 1.0 );
-		$this->assertEquals( $searchEngineEntryPoint, $route->getSearchEngineEntryPoint() );
+		$this->assertSame( $searchEngineEntryPoint, $route->getSearchEngineEntryPoint() );
 	}
 
 	/**
@@ -38,7 +38,7 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 		$route = new BasicSearchQueryRoute( SearchQuery::SEARCH_TEXT, [], [], 'foo', 0.4 );
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo', $this->namespacePrefixParser() )
 			->build();
-		$this->assertEquals( 0.4, $route->score( $query ) );
+		$this->assertSame( 0.4, $route->score( $query ) );
 	}
 
 	/**
@@ -95,7 +95,7 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 			->setInitialNamespaces( $queryNs )
 			->build();
 		$expectedScore = $acceptRoute ? 1.0 : 0.0;
-		$this->assertEquals( $expectedScore, $route->score( $query ) );
+		$this->assertSame( $expectedScore, $route->score( $query ) );
 	}
 
 	public function provideTestQueryClassRouting() {
@@ -142,7 +142,7 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), $query, $this->namespacePrefixParser() )
 			->build();
 		$expectedScore = $acceptRoute ? 1.0 : 0.0;
-		$this->assertEquals( $expectedScore, $route->score( $query ) );
+		$this->assertSame( $expectedScore, $route->score( $query ) );
 	}
 
 	public function provideTestNamespacesAndQueryClassRouting() {
@@ -172,6 +172,6 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 			->setInitialNamespaces( $queryNs )
 			->build();
 		$expectedScore = $acceptRoute ? 1.0 : 0.0;
-		$this->assertEquals( $expectedScore, $route->score( $query ) );
+		$this->assertSame( $expectedScore, $route->score( $query ) );
 	}
 }

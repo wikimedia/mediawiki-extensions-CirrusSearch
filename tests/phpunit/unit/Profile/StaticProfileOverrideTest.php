@@ -11,8 +11,8 @@ class StaticProfileOverrideTest extends CirrusTestCase {
 
 	public function test() {
 		$profile = new StaticProfileOverride( 'name', 123 );
-		$this->assertEquals( 'name', $profile->getOverriddenName( [] ) );
-		$this->assertEquals( 123, $profile->priority() );
+		$this->assertSame( 'name', $profile->getOverriddenName( [] ) );
+		$this->assertSame( 123, $profile->priority() );
 		$this->assertEquals(
 			[
 				'type' => 'static',

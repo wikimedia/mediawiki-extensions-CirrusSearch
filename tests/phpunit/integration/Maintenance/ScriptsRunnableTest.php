@@ -35,6 +35,6 @@ class ScriptsRunnableTest extends CirrusIntegrationTestCase {
 		// return code isn't useful, getting the help message returns 1
 		// just like an error. Instead look for a message we know should
 		// be in the help text.
-		$this->assertEquals( 0, $retCode );
+		$this->assertSame( 0, $retCode );
 	}
 }

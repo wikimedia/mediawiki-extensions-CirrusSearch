@@ -108,10 +108,8 @@ class ClusterSettings {
 		$timeout = $this->config->get( 'CirrusSearchClientSideConnectTimeout' );
 		if ( is_int( $timeout ) ) {
 			return $timeout;
-		} elseif ( isset( $timeout[$this->cluster] ) ) {
-			return $timeout[$this->cluster];
 		}
 		// 0 means no timeout (defaults to 300 sec)
-		return 0;
+		return $timeout[$this->cluster] ?? 0;
 	}
 }

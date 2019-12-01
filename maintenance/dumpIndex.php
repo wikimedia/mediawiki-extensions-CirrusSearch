@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Maintenance\Exception\IndexDumperException;
 use Elastica;
 use Elastica\JSON;
 use Elastica\Query;
@@ -256,12 +257,6 @@ class DumpIndex extends Maintenance {
 		return $this->getConnection()->getClient();
 	}
 
-}
-
-/**
- * An error that occurred while writing to the dump
- */
-class IndexDumperException extends \Exception {
 }
 
 $maintClass = DumpIndex::class;

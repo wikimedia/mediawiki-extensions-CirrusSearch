@@ -63,7 +63,7 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 	public function testFactories( $expectedFile, $factories, $factoryGroup, $fieldName, SearchConfig $config ) {
 		$this->assertArrayHasKey( $factoryGroup, $factories );
 		$this->assertArrayHasKey( $fieldName, $factories[$factoryGroup] );
-		$this->assertTrue( is_callable( $factories[$factoryGroup][$fieldName] ) );
+		$this->assertIsCallable( $factories[$factoryGroup][$fieldName] );
 		/** @var BaseHighlightedField $actualField */
 		$actualField = ( $factories[$factoryGroup][$fieldName] ) ( $config, $fieldName, 'dummyTarget', 1234 );
 		$this->assertFileContains( $expectedFile, CirrusIntegrationTestCase::encodeFixture( $actualField->toArray() ),

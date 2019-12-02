@@ -11,7 +11,7 @@ use CirrusSearch\Query\KeywordFeature;
 class KeywordFeatureNode extends ParsedNode {
 
 	/**
-	 * @var KeywordFeature $keyword
+	 * @var KeywordFeature
 	 */
 	private $keyword;
 

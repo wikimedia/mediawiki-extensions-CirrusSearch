@@ -91,7 +91,7 @@ class SuggestBuilder {
 	 * NOTE: Currently a fixed value because the completion suggester does not support
 	 * multi namespace suggestion.
 	 *
-	 * @var int $targetNamespace
+	 * @var int
 	 */
 	private $targetNamespace = NS_MAIN; // @phan-suppress-current-line PhanUndeclaredConstant NS_MAIN is defined
 

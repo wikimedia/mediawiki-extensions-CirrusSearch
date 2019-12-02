@@ -24,19 +24,19 @@ class CompSuggestQueryBuilder {
 
 	const VARIANT_EXTRA_DISCOUNT = 0.0001;
 
-	/** @var SearchContext $searchContext (final) */
+	/** @var SearchContext (final) */
 	private $searchContext;
 
-	/** @var array $profile (final) */
+	/** @var array (final) */
 	private $profile;
 
-	/** @var int $limit (final) */
+	/** @var int (final) */
 	private $limit;
 
-	/** @var int $hardLimit (final) */
+	/** @var int (final) */
 	private $hardLimit;
 
-	/** @var int $offset (final) */
+	/** @var int (final) */
 	private $offset;
 
 	/** @var array $mergedProfiles (mutable) state built after calling self::build */

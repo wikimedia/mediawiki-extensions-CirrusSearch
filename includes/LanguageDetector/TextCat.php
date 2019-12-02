@@ -11,7 +11,7 @@ use MediaWiki\Logger\LoggerFactory;
 class TextCat implements Detector {
 
 	/**
-	 * @var SearchConfig $config
+	 * @var SearchConfig
 	 */
 	private $config;
 

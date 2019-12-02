@@ -98,7 +98,7 @@ class CirrusSearch extends SearchEngine {
 	private $request;
 
 	/**
-	 * @var RequestContext $requestContext
+	 * @var RequestContext
 	 */
 	private $requestContext;
 

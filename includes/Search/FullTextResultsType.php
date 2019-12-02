@@ -15,7 +15,7 @@ final class FullTextResultsType extends BaseResultsType {
 	private $searchContainedSyntax;
 
 	/**
-	 * @var FetchPhaseConfigBuilder $fetchPhaseBuilder
+	 * @var FetchPhaseConfigBuilder
 	 */
 	private $fetchPhaseBuilder;
 	/**

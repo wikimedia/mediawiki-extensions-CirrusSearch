@@ -18,13 +18,13 @@ class BaseHighlightedField extends HighlightedField {
 	/** @var string */
 	private $highlighterType;
 
-	/** @var string|null $fragmenter */
+	/** @var string|null */
 	private $fragmenter;
 
 	/** @var int|null fragmentSize */
 	private $fragmentSize;
 
-	/** @var int|null $noMatchSize */
+	/** @var int|null */
 	private $noMatchSize;
 
 	/** @var string[] */

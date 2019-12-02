@@ -145,7 +145,7 @@ class SearchProfileService {
 	private $user;
 
 	/**
-	 * @var WebRequest $request
+	 * @var WebRequest
 	 */
 	private $request;
 

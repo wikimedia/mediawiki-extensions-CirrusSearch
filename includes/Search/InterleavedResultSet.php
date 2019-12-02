@@ -17,7 +17,7 @@ class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchRe
 	private $teamB;
 	/** @var int Offset to calculate next unused result in team A */
 	private $offset;
-	/** @var CirrusSearchResultSet $delegate */
+	/** @var CirrusSearchResultSet */
 	private $delegate;
 	/** @var CirrusSearchResult[] */
 	private $results;

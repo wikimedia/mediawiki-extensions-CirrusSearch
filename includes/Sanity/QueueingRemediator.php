@@ -34,7 +34,7 @@ class QueueingRemediator implements Remediator {
 	protected $cluster;
 
 	/**
-	 * @var JobQueueGroup $jobQueue
+	 * @var JobQueueGroup
 	 */
 	private $jobQueue;
 

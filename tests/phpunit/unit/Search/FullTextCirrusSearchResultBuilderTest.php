@@ -29,7 +29,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 	 */
 	private $fulltextResultBuilder;
 	/**
-	 * @var TitleHelper $titleHelper
+	 * @var TitleHelper
 	 */
 	private $titleHelper;
 

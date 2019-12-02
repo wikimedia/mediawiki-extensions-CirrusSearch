@@ -16,7 +16,7 @@ class FTQueryClassifiersRepository implements ParsedQueryClassifiersRepository {
 	private $classifiers = [];
 
 	/**
-	 * @var SearchConfig $config
+	 * @var SearchConfig
 	 */
 	private $config;
 

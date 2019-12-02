@@ -64,7 +64,7 @@ class NonPhraseParser {
 	const FUZZY_WORD = '/^(?<word>\w+)~(?<fuzzyness>[0-2])?$/u';
 
 	/**
-	 * @var Escaper $escaper
+	 * @var Escaper
 	 */
 	private $escaper;
 

@@ -142,7 +142,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $cleanedSearchTerm;
 
 	/**
-	 * @var Escaper $escaper
+	 * @var Escaper
 	 */
 	private $escaper;
 
@@ -192,7 +192,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $aggs = [];
 
 	/**
-	 * @var CirrusDebugOptions $debugOptions
+	 * @var CirrusDebugOptions
 	 */
 	private $debugOptions;
 

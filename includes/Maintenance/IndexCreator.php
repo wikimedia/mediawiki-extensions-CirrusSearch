@@ -23,7 +23,7 @@ class IndexCreator {
 	private $similarityConfig;
 
 	/**
-	 * @var array $mapping
+	 * @var array
 	 */
 	private $mapping;
 

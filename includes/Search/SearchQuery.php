@@ -36,7 +36,7 @@ class SearchQuery {
 	private $parsedQuery;
 
 	/**
-	 * @var int[] $initialNamespaces
+	 * @var int[]
 	 */
 	private $initialNamespaces;
 

@@ -27,7 +27,7 @@ use CirrusSearch\Profile\SearchProfileService;
 class ProfilesDump extends \ApiBase {
 	use ApiTrait;
 
-	/** @var SearchProfileService $service */
+	/** @var SearchProfileService */
 	private $service;
 
 	/**

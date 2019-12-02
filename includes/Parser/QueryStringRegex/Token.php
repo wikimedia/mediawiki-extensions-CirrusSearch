@@ -70,7 +70,7 @@ class Token {
 	private $image;
 
 	/**
-	 * @var ParsedNode|null $node
+	 * @var ParsedNode|null
 	 */
 	private $node;
 

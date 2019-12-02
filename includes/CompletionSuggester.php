@@ -118,12 +118,12 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	private $searchContext;
 
 	/**
-	 * @var CompSuggestQueryBuilder $compSuggestBuilder (final)
+	 * @var CompSuggestQueryBuilder (final)
 	 */
 	private $compSuggestBuilder;
 
 	/**
-	 * @var PrefixSearchQueryBuilder $prefixSearchQueryBuilder (final)
+	 * @var PrefixSearchQueryBuilder (final)
 	 */
 	private $prefixSearchQueryBuilder;
 

@@ -109,7 +109,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	 */
 	final public static function emptyResultSet( $searchContainedSyntax = false ) {
 		return new class( $searchContainedSyntax ) extends BaseCirrusSearchResultSet {
-			/** @var bool $searchContainedSyntax */
+			/** @var bool */
 			private $searchContainedSyntax;
 
 			/**

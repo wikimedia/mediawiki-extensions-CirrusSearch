@@ -18,11 +18,11 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 	/** @var HighlightedField[] */
 	private $highlightedFields = [];
 
-	/** @var SearchConfig $config */
+	/** @var SearchConfig */
 	private $config;
 
 	/**
-	 * @var string $factoryGroup
+	 * @var string
 	 */
 	private $factoryGroup;
 

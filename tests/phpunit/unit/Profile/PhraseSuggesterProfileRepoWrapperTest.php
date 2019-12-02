@@ -38,7 +38,7 @@ class PhraseSuggesterProfileRepoWrapperTest extends CirrusTestCase {
 		$this->assertEquals( 'my_name', $repo->repositoryName() );
 		$this->assertTrue( $repo->hasProfile( 'default' ) );
 		$this->assertFalse( $repo->hasProfile( 'not_found' ) );
-		$this->assertTrue( is_array( $repo->getProfile( 'default' ) ) );
+		$this->assertIsArray( $repo->getProfile( 'default' ) );
 		$this->assertNull( $repo->getProfile( 'not_found' ) );
 	}
 }

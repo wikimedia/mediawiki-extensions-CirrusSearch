@@ -397,7 +397,7 @@ class KeywordFeatureAssertions {
 			$feature->apply( $context, $term );
 			if ( $highlightField !== null && $highlightField !== [] &&
 				 !$this->isNegated( $feature, $term ) ) {
-				$this->testCase->assertTrue( is_array( $highlightField ) );
+				$this->testCase->assertIsArray( $highlightField );
 				$this->testCase->assertCount( count( $highlightField ), $highlightQuery,
 					'must have the same number of highlightFields than $higlightQueries' );
 

@@ -363,11 +363,11 @@ class SuggestScoringTest extends CirrusTestCase {
 				$score = $scorer->score( $page );
 				$pagedebug = print_r( $page, true );
 
-				$this->assertTrue( is_int( $score ), "Score is always an integer for " .
+				$this->assertIsInt( $score, 'Score is always an integer for ' .
 					get_class( $scorer ) . " with these values $pagedebug" );
-				$this->assertTrue( $score >= 0, "Score is always positive " .
+				$this->assertGreaterThanOrEqual( 0, $score, 'Score is always positive ' .
 					get_class( $scorer ) . " with these values $pagedebug" );
-				$this->assertTrue( $score <= QualityScore::SCORE_RANGE,
+				$this->assertLessThanOrEqual( QualityScore::SCORE_RANGE, $score,
 					"Score is always lower than QualityScore::SCORE_RANGE " . get_class( $scorer ) .
 					" with these values $pagedebug" );
 				$this->assertEquals( $scorer->explain( $page )['value'], $scorer->score( $page ),

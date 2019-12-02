@@ -58,13 +58,13 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		$this->assertNotNull( $fallback->getSearchRequest( $this->getMockBuilder( Client::class )->disableOriginalConstructor()->getMock() ) );
 		$initialResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory, $this->namespacePrefixParser() );
-		$this->assertEquals( 0.0, $fallback->successApproximation( $context ), "No success without a response" );
+		$this->assertSame( 0.0, $fallback->successApproximation( $context ), "No success without a response" );
 		$context->setSuggestResponse( $response );
-		$this->assertEquals( $expectedApproxScore, $fallback->successApproximation( $context ) );
+		$this->assertSame( $expectedApproxScore, $fallback->successApproximation( $context ) );
 		if ( $expectedApproxScore > 0 ) {
 			$actualNewResults = $fallback->rewrite( $context );
-			$this->assertEquals( $suggestion, $rewrittenResults->getQueryAfterRewrite() );
-			$this->assertEquals( $suggestionSnippet,
+			$this->assertSame( $suggestion, $rewrittenResults->getQueryAfterRewrite() );
+			$this->assertSame( $suggestionSnippet,
 				$rewrittenResults->getQueryAfterRewriteSnippet() );
 			$this->assertSame( $rewrittenResults, $actualNewResults );
 		}
@@ -216,7 +216,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 			$lookup->getSearchRequest( $this->createMock( Client::class ) );
 			$this->fail( "Expected " . SearchProfileException::class . " to be thrown" );
 		} catch ( SearchProfileException $e ) {
-			$this->assertEquals( $excMessage, $e->getMessage() );
+			$this->assertSame( $excMessage, $e->getMessage() );
 		}
 	}
 }

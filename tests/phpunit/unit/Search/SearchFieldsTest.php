@@ -37,14 +37,14 @@ class SearchFieldsTest extends CirrusTestCase {
 
 		$field->setFlag( SearchIndexField::FLAG_NO_INDEX );
 		$mapping = $field->getMapping( $engine );
-		$this->assertEquals( false, $mapping['index'] );
+		$this->assertFalse( $mapping['index'] );
 	}
 
 	public function testBadField() {
 		$engine = $this->newEngine();
 		$field = $engine->makeSearchFieldMapping( 'testBadField', 42 );
 		$this->assertInstanceOf( \NullIndexField::class, $field );
-		$this->assertEquals( null, $field->getMapping( $engine ) );
+		$this->assertNull( $field->getMapping( $engine ) );
 	}
 
 	public function testHints() {

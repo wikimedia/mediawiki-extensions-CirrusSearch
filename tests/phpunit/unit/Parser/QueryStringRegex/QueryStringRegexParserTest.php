@@ -31,11 +31,11 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 		/** @var ParsedBooleanNode $parsedNode */
 		$parsedNode = $parser->parse( 'test "' )->getRoot();
 		$this->assertInstanceOf( ParsedBooleanNode::class, $parsedNode );
-		$this->assertEquals( 2, count( $parsedNode->getClauses() ) );
+		$this->assertCount( 2, $parsedNode->getClauses() );
 		/** @var PhraseQueryNode $phraseNode */
 		$phraseNode = $parsedNode->getClauses()[1]->getNode();
 		$this->assertInstanceOf( PhraseQueryNode::class, $phraseNode );
-		$this->assertEquals( '', $phraseNode->getPhrase() );
+		$this->assertSame( '', $phraseNode->getPhrase() );
 	}
 
 	public function testMaxLength() {

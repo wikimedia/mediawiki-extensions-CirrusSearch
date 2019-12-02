@@ -119,12 +119,12 @@ class ReindexTaskTest extends CirrusTestCase {
 			), 200 ) ) );
 
 		$task = new ReindexTask( $client, 'abc:123' );
-		$this->assertEquals( 'abc:123', $task->getId() );
+		$this->assertSame( 'abc:123', $task->getId() );
 		$status = $task->getStatus();
 		$this->assertInstanceOf( ReindexStatus::class, $status );
 		$this->assertFalse( $status->isComplete() );
-		$this->assertEquals( 6154, $status->getTotal() );
-		$this->assertEquals( 3500, $status->getUpdated() );
+		$this->assertSame( 6154, $status->getTotal() );
+		$this->assertSame( 3500, $status->getUpdated() );
 	}
 
 	public function testSlicedTaskBasicStatus() {
@@ -161,11 +161,11 @@ class ReindexTaskTest extends CirrusTestCase {
 		$status = $task->getStatus();
 		$this->assertInstanceOf( ReindexStatus::class, $status );
 		// Per-task values should have been merged in
-		$this->assertEquals( 12000, $status->getTotal() );
-		$this->assertEquals( 6, $status->getBatches() );
-		$this->assertEquals( 0, $status->getSearchRetries() );
+		$this->assertSame( 12000, $status->getTotal() );
+		$this->assertSame( 6, $status->getBatches() );
+		$this->assertSame( 0, $status->getSearchRetries() );
 		// requests per second should keep -1, which is a stand in for infinity
-		$this->assertEquals( -1, $status->getRequestsPerSecond() );
+		$this->assertSame( -1, $status->getRequestsPerSecond() );
 	}
 
 	private function sliceResponse( $num ) {

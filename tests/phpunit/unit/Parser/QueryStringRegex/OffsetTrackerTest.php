@@ -22,10 +22,10 @@ class OffsetTrackerTest extends CirrusTestCase {
 		$this->assertTrue( $tracker->overlap( 3, 6 ) );
 		$this->assertFalse( $tracker->overlap( 1, 2 ) );
 		$this->assertFalse( $tracker->overlap( 5, 6 ) );
-		$this->assertEquals( 0, $tracker->getMinimalUnconsumedOffset() );
-		$this->assertEquals( 4, $tracker->getMinimalUnconsumedOffset( 2 ) );
-		$this->assertEquals( 4, $tracker->getMinimalUnconsumedOffset( 3 ) );
-		$this->assertEquals( 5, $tracker->getMinimalUnconsumedOffset( 5 ) );
+		$this->assertSame( 0, $tracker->getMinimalUnconsumedOffset() );
+		$this->assertSame( 4, $tracker->getMinimalUnconsumedOffset( 2 ) );
+		$this->assertSame( 4, $tracker->getMinimalUnconsumedOffset( 3 ) );
+		$this->assertSame( 5, $tracker->getMinimalUnconsumedOffset( 5 ) );
 	}
 
 	public function testWithParsedNodeArray() {

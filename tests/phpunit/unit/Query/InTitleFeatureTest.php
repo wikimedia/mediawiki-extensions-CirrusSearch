@@ -99,7 +99,7 @@ class InTitleFeatureTest extends CirrusTestCase {
 			$filterCallback = function ( BoolQuery $x ) use ( $filterValue, $insensitive ) {
 				$this->assertTrue( $x->hasParam( 'should' ) );
 				$this->assertTrue( is_array( $x->getParam( 'should' ) ) );
-				$this->assertEquals( 2, count( $x->getParam( 'should' ) ) );
+				$this->assertCount( 2, $x->getParam( 'should' ) );
 				$regex = $x->getParam( 'should' )[0];
 				$this->assertInstanceOf( SourceRegex::class, $regex );
 				$this->assertEquals( $filterValue, $regex->getParam( 'regex' ) );

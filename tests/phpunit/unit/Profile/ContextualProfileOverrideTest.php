@@ -14,10 +14,10 @@ class ContextualProfileOverrideTest extends CirrusTestCase {
 			'my-profile-{lang}',
 			[ '{lang}' => 'language' ] );
 
-		$this->assertEquals( null, $override->getOverriddenName( [] ) );
-		$this->assertEquals( null, $override->getOverriddenName( [ 'zork' => 'slay kobold' ] ) );
-		$this->assertEquals( 'my-profile-es', $override->getOverriddenName( [ 'language' => 'es' ] ) );
-		$this->assertEquals( 'my-profile-es', $override->getOverriddenName( [
+		$this->assertNull( $override->getOverriddenName( [] ) );
+		$this->assertNull( $override->getOverriddenName( [ 'zork' => 'slay kobold' ] ) );
+		$this->assertSame( 'my-profile-es', $override->getOverriddenName( [ 'language' => 'es' ] ) );
+		$this->assertSame( 'my-profile-es', $override->getOverriddenName( [
 			'language' => 'es',
 			'zork' => 'slay kobold',
 		] ) );
@@ -34,6 +34,6 @@ class ContextualProfileOverrideTest extends CirrusTestCase {
 	public function testCustomPrio() {
 		$priority = 123;
 		$override = new ContextualProfileOverride( 'foo', [ 'bar' => 'baz' ], $priority );
-		$this->assertEquals( $priority, $override->priority() );
+		$this->assertSame( $priority, $override->priority() );
 	}
 }

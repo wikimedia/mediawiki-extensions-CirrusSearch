@@ -26,35 +26,35 @@ class KeywordParserTest extends CirrusTestCase {
 		// .      0123456789012345678901234567890123456789
 		$query = 'intitle:test foo bar -intitle:"hop\"foo" ';
 		$nodes = $parser->parse( $query, new InTitleFeature( new SearchConfig() ), new OffsetTracker() );
-		$this->assertEquals( 2, count( $nodes ) );
+		$this->assertCount( 2, $nodes );
 
 		/** @var KeywordFeatureNode $kw */
 		$kw = $nodes[0];
 		$this->assertInstanceOf( KeywordFeatureNode::class, $kw );
-		$this->assertEquals( 0, $kw->getStartOffset() );
-		$this->assertEquals( 12, $kw->getEndOffset() );
-		$this->assertEquals( '', $kw->getDelimiter() );
-		$this->assertEquals( '', $kw->getSuffix() );
-		$this->assertEquals( 'intitle', $kw->getKey() );
-		$this->assertEquals( 'test', $kw->getValue() );
-		$this->assertEquals( 'test', $kw->getQuotedValue() );
+		$this->assertSame( 0, $kw->getStartOffset() );
+		$this->assertSame( 12, $kw->getEndOffset() );
+		$this->assertSame( '', $kw->getDelimiter() );
+		$this->assertSame( '', $kw->getSuffix() );
+		$this->assertSame( 'intitle', $kw->getKey() );
+		$this->assertSame( 'test', $kw->getValue() );
+		$this->assertSame( 'test', $kw->getQuotedValue() );
 
 		/** @var NegatedNode $kw */
 		$kw = $nodes[1];
 		$this->assertInstanceOf( NegatedNode::class, $kw );
-		$this->assertEquals( 21, $kw->getStartOffset() );
-		$this->assertEquals( 40, $kw->getEndOffset() );
+		$this->assertSame( 21, $kw->getStartOffset() );
+		$this->assertSame( 40, $kw->getEndOffset() );
 
 		$kw = $kw->getChild();
 		/** @var KeywordFeatureNode $kw */
 		$this->assertInstanceOf( KeywordFeatureNode::class, $kw );
-		$this->assertEquals( 22, $kw->getStartOffset() );
-		$this->assertEquals( 40, $kw->getEndOffset() );
-		$this->assertEquals( '"', $kw->getDelimiter() );
-		$this->assertEquals( '', $kw->getSuffix() );
-		$this->assertEquals( 'intitle', $kw->getKey() );
-		$this->assertEquals( 'hop"foo', $kw->getValue() );
-		$this->assertEquals( '"hop\"foo"', $kw->getQuotedValue() );
+		$this->assertSame( 22, $kw->getStartOffset() );
+		$this->assertSame( 40, $kw->getEndOffset() );
+		$this->assertSame( '"', $kw->getDelimiter() );
+		$this->assertSame( '', $kw->getSuffix() );
+		$this->assertSame( 'intitle', $kw->getKey() );
+		$this->assertSame( 'hop"foo', $kw->getValue() );
+		$this->assertSame( '"hop\"foo"', $kw->getQuotedValue() );
 	}
 
 	public function testWithAlias() {
@@ -63,35 +63,35 @@ class KeywordParserTest extends CirrusTestCase {
 		// .      0123456789012345678901234567890123456789
 		$query = 'mock2:test foo bar -mock2:"hop\"foo" ';
 		$nodes = $parser->parse( $query, new MockKeyword(), new OffsetTracker() );
-		$this->assertEquals( 2, count( $nodes ) );
+		$this->assertCount( 2, $nodes );
 
 		/** @var KeywordFeatureNode $kw */
 		$kw = $nodes[0];
 		$this->assertInstanceOf( KeywordFeatureNode::class, $kw );
-		$this->assertEquals( 0, $kw->getStartOffset() );
-		$this->assertEquals( 10, $kw->getEndOffset() );
-		$this->assertEquals( '', $kw->getDelimiter() );
-		$this->assertEquals( '', $kw->getSuffix() );
-		$this->assertEquals( 'mock2', $kw->getKey() );
-		$this->assertEquals( 'test', $kw->getValue() );
-		$this->assertEquals( 'test', $kw->getQuotedValue() );
+		$this->assertSame( 0, $kw->getStartOffset() );
+		$this->assertSame( 10, $kw->getEndOffset() );
+		$this->assertSame( '', $kw->getDelimiter() );
+		$this->assertSame( '', $kw->getSuffix() );
+		$this->assertSame( 'mock2', $kw->getKey() );
+		$this->assertSame( 'test', $kw->getValue() );
+		$this->assertSame( 'test', $kw->getQuotedValue() );
 
 		/** @var NegatedNode $kw */
 		$kw = $nodes[1];
 		$this->assertInstanceOf( NegatedNode::class, $kw );
-		$this->assertEquals( 19, $kw->getStartOffset() );
-		$this->assertEquals( 36, $kw->getEndOffset() );
+		$this->assertSame( 19, $kw->getStartOffset() );
+		$this->assertSame( 36, $kw->getEndOffset() );
 
 		$kw = $kw->getChild();
 		/** @var KeywordFeatureNode $kw */
 		$this->assertInstanceOf( KeywordFeatureNode::class, $kw );
-		$this->assertEquals( 20, $kw->getStartOffset() );
-		$this->assertEquals( 36, $kw->getEndOffset() );
-		$this->assertEquals( '"', $kw->getDelimiter() );
-		$this->assertEquals( '', $kw->getSuffix() );
-		$this->assertEquals( 'mock2', $kw->getKey() );
-		$this->assertEquals( 'hop"foo', $kw->getValue() );
-		$this->assertEquals( '"hop\"foo"', $kw->getQuotedValue() );
+		$this->assertSame( 20, $kw->getStartOffset() );
+		$this->assertSame( 36, $kw->getEndOffset() );
+		$this->assertSame( '"', $kw->getDelimiter() );
+		$this->assertSame( '', $kw->getSuffix() );
+		$this->assertSame( 'mock2', $kw->getKey() );
+		$this->assertSame( 'hop"foo', $kw->getValue() );
+		$this->assertSame( '"hop\"foo"', $kw->getQuotedValue() );
 	}
 
 	public function testGreedyHeader() {
@@ -100,16 +100,16 @@ class KeywordParserTest extends CirrusTestCase {
 		// .      0123456789012345678901234567890123456789
 		$query = ' morelike:"test foo " bar ';
 		$nodes = $parser->parse( $query, new MoreLikeFeature( new SearchConfig() ), new OffsetTracker() );
-		$this->assertEquals( 1, count( $nodes ) );
+		$this->assertCount( 1, $nodes );
 
 		$kw = $nodes[0];
-		$this->assertEquals( 1, $kw->getStartOffset() );
-		$this->assertEquals( 26, $kw->getEndOffset() );
-		$this->assertEquals( '', $kw->getDelimiter() );
-		$this->assertEquals( '', $kw->getSuffix() );
-		$this->assertEquals( 'morelike', $kw->getKey() );
-		$this->assertEquals( '"test foo " bar ', $kw->getValue() );
-		$this->assertEquals( '"test foo " bar ', $kw->getQuotedValue() );
+		$this->assertSame( 1, $kw->getStartOffset() );
+		$this->assertSame( 26, $kw->getEndOffset() );
+		$this->assertSame( '', $kw->getDelimiter() );
+		$this->assertSame( '', $kw->getSuffix() );
+		$this->assertSame( 'morelike', $kw->getKey() );
+		$this->assertSame( '"test foo " bar ', $kw->getValue() );
+		$this->assertSame( '"test foo " bar ', $kw->getQuotedValue() );
 	}
 
 	public function testGreedy() {
@@ -118,16 +118,16 @@ class KeywordParserTest extends CirrusTestCase {
 		// .      0123456789012345678901234567890123456789
 		$query = ' prefix:"test foo " bar ';
 		$nodes = $parser->parse( $query, new PrefixFeature(), new OffsetTracker() );
-		$this->assertEquals( 1, count( $nodes ) );
+		$this->assertCount( 1, $nodes );
 
 		$kw = $nodes[0];
-		$this->assertEquals( 1, $kw->getStartOffset() );
-		$this->assertEquals( 24, $kw->getEndOffset() );
-		$this->assertEquals( '', $kw->getDelimiter() );
-		$this->assertEquals( '', $kw->getSuffix() );
-		$this->assertEquals( 'prefix', $kw->getKey() );
-		$this->assertEquals( '"test foo " bar ', $kw->getValue() );
-		$this->assertEquals( '"test foo " bar ', $kw->getQuotedValue() );
+		$this->assertSame( 1, $kw->getStartOffset() );
+		$this->assertSame( 24, $kw->getEndOffset() );
+		$this->assertSame( '', $kw->getDelimiter() );
+		$this->assertSame( '', $kw->getSuffix() );
+		$this->assertSame( 'prefix', $kw->getKey() );
+		$this->assertSame( '"test foo " bar ', $kw->getValue() );
+		$this->assertSame( '"test foo " bar ', $kw->getQuotedValue() );
 	}
 
 	public function testHeader() {
@@ -136,25 +136,25 @@ class KeywordParserTest extends CirrusTestCase {
 		// .      0123456789012345678901234567890123456789
 		$query = ' local:local:"test foo " bar ';
 		$nodes = $parser->parse( $query, new LocalFeature(), new OffsetTracker() );
-		$this->assertEquals( 2, count( $nodes ) );
+		$this->assertCount( 2, $nodes );
 
 		$kw = $nodes[0];
-		$this->assertEquals( 1, $kw->getStartOffset() );
-		$this->assertEquals( 7, $kw->getEndOffset() );
-		$this->assertEquals( '', $kw->getDelimiter() );
-		$this->assertEquals( '', $kw->getSuffix() );
-		$this->assertEquals( 'local', $kw->getKey() );
-		$this->assertEquals( '', $kw->getValue() );
-		$this->assertEquals( '', $kw->getQuotedValue() );
+		$this->assertSame( 1, $kw->getStartOffset() );
+		$this->assertSame( 7, $kw->getEndOffset() );
+		$this->assertSame( '', $kw->getDelimiter() );
+		$this->assertSame( '', $kw->getSuffix() );
+		$this->assertSame( 'local', $kw->getKey() );
+		$this->assertSame( '', $kw->getValue() );
+		$this->assertSame( '', $kw->getQuotedValue() );
 		// FIXME: figure out if this is the right behavior
 		$kw = $nodes[1];
-		$this->assertEquals( 7, $kw->getStartOffset() );
-		$this->assertEquals( 13, $kw->getEndOffset() );
-		$this->assertEquals( '', $kw->getDelimiter() );
-		$this->assertEquals( '', $kw->getSuffix() );
-		$this->assertEquals( 'local', $kw->getKey() );
-		$this->assertEquals( '', $kw->getValue() );
-		$this->assertEquals( '', $kw->getQuotedValue() );
+		$this->assertSame( 7, $kw->getStartOffset() );
+		$this->assertSame( 13, $kw->getEndOffset() );
+		$this->assertSame( '', $kw->getDelimiter() );
+		$this->assertSame( '', $kw->getSuffix() );
+		$this->assertSame( 'local', $kw->getKey() );
+		$this->assertSame( '', $kw->getValue() );
+		$this->assertSame( '', $kw->getQuotedValue() );
 	}
 
 	public function testRegex() {
@@ -167,16 +167,16 @@ class KeywordParserTest extends CirrusTestCase {
 		], [ HashSearchConfig::FLAG_INHERIT ] );
 
 		$nodes = $parser->parse( $query, new InSourceFeature( $config ), new OffsetTracker() );
-		$this->assertEquals( 1, count( $nodes ) );
+		$this->assertCount( 1, $nodes );
 
 		$kw = $nodes[0];
-		$this->assertEquals( 11, $kw->getStartOffset() );
-		$this->assertEquals( 30, $kw->getEndOffset() );
-		$this->assertEquals( '/', $kw->getDelimiter() );
-		$this->assertEquals( 'i', $kw->getSuffix() );
-		$this->assertEquals( 'insource', $kw->getKey() );
-		$this->assertEquals( 'test/"', $kw->getValue() );
-		$this->assertEquals( '/test\\/"/', $kw->getQuotedValue() );
+		$this->assertSame( 11, $kw->getStartOffset() );
+		$this->assertSame( 30, $kw->getEndOffset() );
+		$this->assertSame( '/', $kw->getDelimiter() );
+		$this->assertSame( 'i', $kw->getSuffix() );
+		$this->assertSame( 'insource', $kw->getKey() );
+		$this->assertSame( 'test/"', $kw->getValue() );
+		$this->assertSame( '/test\\/"/', $kw->getQuotedValue() );
 	}
 
 	public function testOptionalValue() {
@@ -190,30 +190,30 @@ class KeywordParserTest extends CirrusTestCase {
 			uasort( $nodes, function ( KeywordFeatureNode $a, KeywordFeatureNode $b ) {
 				return $a->getStartOffset() - $b->getStartOffset();
 			} );
-			$this->assertEquals( 2, count( $nodes ) );
+			$this->assertCount( 2, $nodes );
 
 			/**
 			 * @var KeywordFeatureNode $kw
 			 */
 			$kw = $nodes[0];
-			$this->assertEquals( 0, $kw->getStartOffset() );
-			$this->assertEquals( 14, $kw->getEndOffset() );
-			$this->assertEquals( '', $kw->getDelimiter() );
-			$this->assertEquals( '', $kw->getSuffix() );
-			$this->assertEquals( 'prefer-recent', $kw->getKey() );
-			$this->assertEquals( '', $kw->getValue() );
-			$this->assertEquals( '', $kw->getQuotedValue() );
-			$this->assertEquals( null, $kw->getParsedValue() );
+			$this->assertSame( 0, $kw->getStartOffset() );
+			$this->assertSame( 14, $kw->getEndOffset() );
+			$this->assertSame( '', $kw->getDelimiter() );
+			$this->assertSame( '', $kw->getSuffix() );
+			$this->assertSame( 'prefer-recent', $kw->getKey() );
+			$this->assertSame( '', $kw->getValue() );
+			$this->assertSame( '', $kw->getQuotedValue() );
+			$this->assertNull( $kw->getParsedValue() );
 
 			$kw = $nodes[1];
-			$this->assertEquals( 14, $kw->getStartOffset() );
-			$this->assertEquals( 26, $kw->getEndOffset() );
-			$this->assertEquals( '', $kw->getDelimiter() );
-			$this->assertEquals( '', $kw->getSuffix() );
-			$this->assertEquals( 'intitle', $kw->getKey() );
-			$this->assertEquals( 'test', $kw->getValue() );
-			$this->assertEquals( 'test', $kw->getQuotedValue() );
-			$this->assertEquals( null, $kw->getParsedValue() );
+			$this->assertSame( 14, $kw->getStartOffset() );
+			$this->assertSame( 26, $kw->getEndOffset() );
+			$this->assertSame( '', $kw->getDelimiter() );
+			$this->assertSame( '', $kw->getSuffix() );
+			$this->assertSame( 'intitle', $kw->getKey() );
+			$this->assertSame( 'test', $kw->getValue() );
+			$this->assertSame( 'test', $kw->getQuotedValue() );
+			$this->assertNull( $kw->getParsedValue() );
 		};
 
 		$ot = new OffsetTracker();

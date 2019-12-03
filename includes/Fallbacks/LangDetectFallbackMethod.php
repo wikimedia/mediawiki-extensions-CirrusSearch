@@ -124,7 +124,6 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 				$prefix = key( $iwPrefixAndConfig );
 				$config = $iwPrefixAndConfig[$prefix];
 				$metric = [ $config->getWikiId(), $prefix ];
-				$this->searchMetrics['wgCirrusSearchAltLanguage'] = $metric;
 				$this->detectedLangWikiConfig = $config;
 				return 0.5;
 			}
@@ -162,7 +161,6 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 			// NOTE: Can/should this happen?
 			return $previousSet;
 		}
-		$this->searchMetrics['wgCirrusSearchAltLanguageNumResults'] = $crossLangResults->numRows();
 		if ( $crossLangResults->numRows() > 0 ) {
 			$previousSet->addInterwikiResults( $crossLangResults,
 				\ISearchResultSet::INLINE_RESULTS, $this->detectedLangWikiConfig->getWikiId() );

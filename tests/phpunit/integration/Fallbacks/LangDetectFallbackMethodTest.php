@@ -146,14 +146,17 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory, $this->namespacePrefixParser() );
 		$this->assertEquals( $expectedScoreApprox, $fallback->successApproximation( $context ) );
 		if ( $expectedScoreApprox > 0 ) {
-			$rewrittenResults = $fallback->rewrite( $context );
+			$status = $fallback->rewrite( $context );
+			$rewrittenResults = $status->apply( $initialResults );
 			$this->assertSame( $initialResults, $rewrittenResults );
 			if ( $expectedRewrittenResults !== null ) {
+				$this->assertSame( FallbackStatus::ACTION_ADD_INTERWIKI_RESULTS, $status->getAction() );
 				$crossRes = $rewrittenResults->getInterwikiResults( ISearchResultSet::INLINE_RESULTS );
 				$this->assertNotNull( $crossRes );
 				$this->assertArrayHasKey( $targetWikiConfig->getWikiId(), $crossRes );
 				$this->assertSame( $expectedRewrittenResults, $crossRes[$targetWikiConfig->getWikiId()] );
 			} else {
+				$this->assertSame( FallbackStatus::NO_ACTION, $status->getAction() );
 				$this->assertEmpty( $rewrittenResults->getInterwikiResults( ISearchResultSet::INLINE_RESULTS ) );
 			}
 		}

@@ -99,30 +99,33 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 
 	/**
 	 * @param FallbackRunnerContext $context
-	 * @return CirrusSearchResultSet
+	 * @return FallbackStatus
 	 */
-	public function rewrite( FallbackRunnerContext $context ): CirrusSearchResultSet {
+	public function rewrite( FallbackRunnerContext $context ): FallbackStatus {
 		$firstPassResults = $context->getInitialResultSet();
 		$previousSet = $context->getPreviousResultSet();
 		if ( $previousSet->getQueryAfterRewrite() !== null ) {
 			// a method rewrote the query before us.
-			return $previousSet;
+			return FallbackStatus::noSuggestion();
 		}
 		if ( $previousSet->getSuggestionQuery() !== null ) {
 			// a method suggested something before us
-			return $previousSet;
+			return FallbackStatus::noSuggestion();
 		}
-		$this->showDYMSuggestion( $firstPassResults, $previousSet );
+
+		list( $suggestion, $highlight ) = $this->fixDYMSuggestion( $firstPassResults );
+
 		if ( !$context->costlyCallAllowed()
 			|| !$this->query->isAllowRewrite()
 			|| $this->resultsThreshold( $previousSet )
 			|| !$this->query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::SIMPLE_BAG_OF_WORDS )
 		) {
-			return $previousSet;
+			// Can't perform a full rewrite currently, simply suggest the query.
+			return FallbackStatus::suggestQuery( $suggestion, $highlight );
 		}
 
 		return $this->maybeSearchAndRewrite( $context, $this->query,
-			$previousSet->getSuggestionQuery(), $previousSet->getSuggestionSnippet() );
+			$suggestion, $highlight );
 	}
 
 	/**
@@ -133,17 +136,15 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		return $this->findSuggestion( $resultSet ) !== null;
 	}
 
-	private function showDYMSuggestion( CirrusSearchResultSet $fromResultSet, CirrusSearchResultSet $toResultSet ) {
+	private function fixDYMSuggestion( CirrusSearchResultSet $fromResultSet ) {
 		$suggestion = $this->findSuggestion( $fromResultSet );
-		Assert::precondition( $suggestion !== null, "showDYMSuggestion called with no suggestions available" );
-		Assert::precondition( $toResultSet->getSuggestionQuery() === null, "must not have a suggestion yet" );
-		Assert::precondition( $toResultSet->getQueryAfterRewrite() === null, "must not have been rewritten" );
-		$toResultSet->setSuggestionQuery(
+		Assert::precondition( $suggestion !== null, "fixDYMSuggestion called with no suggestions available" );
+		return [
 			// @phan-suppress-next-line PhanTypeArraySuspiciousNullable Checked by Assert class
 			$this->queryFixer->fix( $suggestion['text'] ),
 			// @phan-suppress-next-line PhanTypeArraySuspiciousNullable Checked by Assert class
 			$this->queryFixer->fix( $this->escapeHighlightedSuggestion( $suggestion['highlighted'] ) )
-		);
+		];
 	}
 
 	/**

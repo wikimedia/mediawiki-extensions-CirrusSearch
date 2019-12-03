@@ -186,7 +186,8 @@ class FallbackMethodTraitTest extends BaseFallbackMethodTest {
 			$context->makeSearcher( $dummyQuery );
 		}
 
-		$actuallyRewritten = $mock->maybeSearchAndRewrite( $context, $query, $rewrittenQueryString, $rewrittenQueryString, $threshold );
+		$status = $mock->maybeSearchAndRewrite( $context, $query, $rewrittenQueryString, $rewrittenQueryString, $threshold );
+		$actuallyRewritten = $status->apply( $initialResult );
 		if ( $isRewritten ) {
 			$this->assertSame( $actuallyRewritten, $rewrittenResults );
 		} else {

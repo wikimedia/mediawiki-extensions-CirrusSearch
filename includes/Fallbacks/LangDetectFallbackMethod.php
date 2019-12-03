@@ -134,19 +134,19 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 
 	/**
 	 * @param FallbackRunnerContext $context
-	 * @return CirrusSearchResultSet
+	 * @return FallbackStatus
 	 */
-	public function rewrite( FallbackRunnerContext $context ): CirrusSearchResultSet {
+	public function rewrite( FallbackRunnerContext $context ): FallbackStatus {
 		$previousSet = $context->getPreviousResultSet();
 		Assert::precondition( $this->detectedLangWikiConfig !== null,
 			'nothing has been detected, this should not even be tried.' );
 
 		if ( $this->resultsThreshold( $previousSet, $this->threshold ) ) {
-			return $previousSet;
+			return FallbackStatus::noSuggestion();
 		}
 
 		if ( !$context->costlyCallAllowed() ) {
-			return $previousSet;
+			return FallbackStatus::noSuggestion();
 		}
 
 		$crossLangQuery = SearchQueryBuilder::forCrossLanguageSearch( $this->detectedLangWikiConfig,
@@ -154,18 +154,18 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 		$searcher = $context->makeSearcher( $crossLangQuery );
 		$status = $searcher->search( $crossLangQuery );
 		if ( !$status->isOK() ) {
-			return $previousSet;
+			return FallbackStatus::noSuggestion();
 		}
 		$crossLangResults = $status->getValue();
 		if ( !$crossLangResults instanceof CirrusSearchResultSet ) {
 			// NOTE: Can/should this happen?
-			return $previousSet;
+			return FallbackStatus::noSuggestion();
 		}
 		if ( $crossLangResults->numRows() > 0 ) {
-			$previousSet->addInterwikiResults( $crossLangResults,
-				\ISearchResultSet::INLINE_RESULTS, $this->detectedLangWikiConfig->getWikiId() );
+			return FallbackStatus::addInterwikiResults( $crossLangResults,
+				$this->detectedLangWikiConfig->getWikiId() );
 		}
-		return $previousSet;
+		return FallbackStatus::noSuggestion();
 	}
 
 	public function getMetrics() {

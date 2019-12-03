@@ -18,17 +18,19 @@ class FallbackRunner implements SearchMetricsProvider {
 	private static $NOOP_RUNNER = null;
 
 	/**
-	 * @var FallbackMethod[]
+	 * @var FallbackMethod[] List of fallbacks to apply in order, keyed by
+	 *  name of the fallback configuration.
 	 */
 	private $fallbackMethods;
 
 	/**
-	 * @var array
+	 * @var array[] Execution trace of fallback methods run and their result.
 	 */
 	private $searchMetrics = [];
 
 	/**
-	 * @param FallbackMethod[] $fallbackMethods
+	 * @param FallbackMethod[] $fallbackMethods List of fallbacks to apply in order,
+	 *  keyed by name of the fallback configuration.
 	 */
 	public function __construct( array $fallbackMethods ) {
 		$this->fallbackMethods = $fallbackMethods;
@@ -78,7 +80,7 @@ class FallbackRunner implements SearchMetricsProvider {
 	private static function createFromProfile( SearchQuery $query, array $profile, InterwikiResolver $interwikiResolver ): FallbackRunner {
 		$fallbackMethods = [];
 		$methodDefs = $profile['methods'] ?? [];
-		foreach ( $methodDefs as $methodDef ) {
+		foreach ( $methodDefs as $name => $methodDef ) {
 			if ( !isset( $methodDef['class'] ) ) {
 				throw new SearchProfileException( "Invalid FallbackMethod: missing 'class' definition in profile" );
 			}
@@ -92,7 +94,7 @@ class FallbackRunner implements SearchMetricsProvider {
 			}
 			$method = call_user_func( [ $clazz, 'build' ], $query, $params, $interwikiResolver );
 			if ( $method !== null ) {
-				$fallbackMethods[] = $method;
+				$fallbackMethods[$name] = $method;
 			}
 		}
 		return new self( $fallbackMethods );
@@ -114,7 +116,7 @@ class FallbackRunner implements SearchMetricsProvider {
 		$methods = [];
 		$position = 0;
 		$context = new FallbackRunnerContextImpl( $initialResult, $factory, $namespacePrefixParser );
-		foreach ( $this->fallbackMethods as $fallback ) {
+		foreach ( $this->fallbackMethods as $name => $fallback ) {
 			$position++;
 			$context->resetSuggestResponse();
 			if ( $fallback instanceof ElasticSearchRequestFallbackMethod ) {
@@ -125,12 +127,14 @@ class FallbackRunner implements SearchMetricsProvider {
 			}
 			$score = $fallback->successApproximation( $context );
 			if ( $score >= 1.0 ) {
-				return $this->execute( $fallback, $context );
+				$status = $this->execute( $name, $fallback, $context );
+				return $status->apply( $context->getPreviousResultSet() );
 			}
 			if ( $score <= 0 ) {
 				continue;
 			}
 			$methods[] = [
+				'name' => $name,
 				'method' => $fallback,
 				'score' => $score,
 				'position' => $position
@@ -141,12 +145,14 @@ class FallbackRunner implements SearchMetricsProvider {
 			return $b['score'] <=> $a['score'] ?: $a['position'] <=> $b['position'];
 		} );
 		foreach ( $methods as $fallbackArray ) {
+			$name = $fallbackArray['name'];
 			$fallback = $fallbackArray['method'];
 			$context->resetSuggestResponse();
 			if ( $fallback instanceof ElasticSearchRequestFallbackMethod ) {
 				$context->setSuggestResponse( $responses->getResultSet( $this->msearchKey( $fallbackArray['position'] ) ) );
 			}
-			$context->setPreviousResultSet( $this->execute( $fallback, $context ) );
+			$status = $this->execute( $name, $fallback, $context );
+			$context->setPreviousResultSet( $status->apply( $context->getPreviousResultSet() ) );
 		}
 		return $context->getPreviousResultSet();
 	}
@@ -196,22 +202,52 @@ class FallbackRunner implements SearchMetricsProvider {
 	}
 
 	/**
+	 * @param string $name
 	 * @param FallbackMethod $fallbackMethod
 	 * @param FallbackRunnerContext $context
-	 * @return CirrusSearchResultSet
+	 * @return FallbackStatus
 	 */
-	private function execute( FallbackMethod $fallbackMethod, FallbackRunnerContext $context ): CirrusSearchResultSet {
-		$newResults = $fallbackMethod->rewrite( $context );
+	private function execute( string $name, FallbackMethod $fallbackMethod, FallbackRunnerContext $context ): FallbackStatus {
+		$status = $fallbackMethod->rewrite( $context );
+		// Collecting metrics here isn't particularly simple, as methods have
+		// the ability to not only change the suggestion, but to replace the
+		// entire result set. Instead of figuring out what happened we only
+		// record that a method was run, depending on implementations to
+		// report what happened themselves.
+		$metrics = [ 'name' => $name, 'action' => $status->getAction() ];
 		if ( $fallbackMethod instanceof SearchMetricsProvider ) {
-			$this->searchMetrics += $fallbackMethod->getMetrics() ?? [];
+			$metrics += $fallbackMethod->getMetrics() ?? [];
 		}
-		return $newResults;
+		$this->searchMetrics[] = $metrics;
+		return $status;
 	}
 
 	/**
 	 * @return array
 	 */
 	public function getMetrics() {
-		return $this->searchMetrics;
+		// The metrics we have currently are useful for debugging or
+		// tracing, but are too detailed for passing on to the frontend
+		// to use as part of event reporting.  Generate a simplified
+		// version for that purpose.
+		$mainResults = [ 'name' => '__main__', 'action' => null ];
+		$querySuggestion = null;
+		foreach ( $this->searchMetrics as $metrics ) {
+			if ( $metrics['action'] == FallbackStatus::ACTION_SUGGEST_QUERY ) {
+				$querySuggestion = $metrics;
+			} elseif ( $metrics['action'] == FallbackStatus::ACTION_REPLACE_LOCAL_RESULTS ) {
+				$mainResults = $metrics;
+				$querySuggestion = $metrics;
+			}
+		}
+
+		return [
+			'wgCirrusSearchFallback' => [
+				// action that provided main search results
+				'mainResults' => $mainResults,
+				// action that made final query suggestion
+				'querySuggestion' => $querySuggestion,
+			],
+		];
 	}
 }

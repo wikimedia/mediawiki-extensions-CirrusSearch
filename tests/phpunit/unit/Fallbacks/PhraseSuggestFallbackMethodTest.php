@@ -7,6 +7,7 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummySearchResultSet;
+use HtmlArmor;
 
 /**
  * @covers \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod
@@ -60,14 +61,24 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory, $this->namespacePrefixParser() );
 		$this->assertEquals( $expectedApproxScore, $fallback->successApproximation( $context ) );
 		if ( $expectedApproxScore > 0 ) {
-			$actualNewResults = $fallback->rewrite( $context );
+			$status = $fallback->rewrite( $context );
+			$actualNewResults = $status->apply( $initialResults );
 			if ( $rewrittenResults === null ) {
+				$this->assertEquals(
+					$suggestion === null ? FallbackStatus::NO_ACTION : FallbackStatus::ACTION_SUGGEST_QUERY,
+					$status->getAction() );
 				$this->assertSame( $initialResults, $actualNewResults );
 				$this->assertNull( $actualNewResults->getQueryAfterRewrite() );
 				$this->assertNull( $actualNewResults->getQueryAfterRewriteSnippet() );
+				$this->assertSame( $suggestion, $actualNewResults->getSuggestionQuery() );
+				$this->assertEquals( new HtmlArmor( $suggestionSnippet ),
+					$actualNewResults->getSuggestionSnippet() );
 			} else {
-				$this->assertEquals( $initialResults->getSuggestionQuery(), $rewrittenResults->getQueryAfterRewrite() );
-				$this->assertEquals( $initialResults->getSuggestionSnippet(), $rewrittenResults->getQueryAfterRewriteSnippet() );
+				$this->assertSame( FallbackStatus::ACTION_REPLACE_LOCAL_RESULTS, $status->getAction
+				() );
+				$this->assertSame( $suggestion, $rewrittenResults->getQueryAfterRewrite() );
+				$this->assertEquals( new HtmlArmor( $suggestionSnippet ),
+					$rewrittenResults->getQueryAfterRewriteSnippet() );
 				$this->assertSame( $rewrittenResults, $actualNewResults );
 			}
 		}
@@ -173,6 +184,6 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		$context = new FallbackRunnerContextImpl( $rset, $factory, $this->namespacePrefixParser() );
 		$this->assertTrue( $context->costlyCallAllowed() );
 		$rset->setRewrittenQuery( "test", "test" );
-		$this->assertSame( $rset, $method->rewrite( $context ) );
+		$this->assertEquals( FallbackStatus::NO_ACTION, $method->rewrite( $context )->getAction() );
 	}
 }

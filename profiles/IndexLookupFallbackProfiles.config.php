@@ -3,6 +3,7 @@
 return [
 	'glent' => [
 		'suggestion_field' => 'dym',
+		'metric_fields' => [ 'method' ],
 		'index' => 'glent_production',
 		'params' => [
 			'function_score.query.bool.filter.0.match.query' => 'query',
@@ -67,6 +68,7 @@ return [
 						],
 						'method' => [
 							'type' => 'keyword',
+							'store' => true,
 						],
 						'dym' => [
 							'type' => 'text',

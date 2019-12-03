@@ -28,7 +28,9 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	private $previousResultSet;
 
 	/**
-	 * @var ElasticaResultSet|null
+	 * @var ElasticaResultSet|null Response to elasticsearch request
+	 *  issued by either ElasticSearchRequestFallbackMethod or
+	 *  ElasticSearchSuggestFallbackMethod.
 	 */
 	private $suggestResponse;
 

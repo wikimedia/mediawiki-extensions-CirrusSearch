@@ -217,7 +217,7 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 			return $previousSet;
 		}
 		// Show the suggestion
-		$previousSet->setRewrittenQuery( $suggestedQuery );
+		$previousSet->setSuggestionQuery( $suggestedQuery, $suggestedQuery );
 		// Maybe rewrite
 		return $this->maybeSearchAndRewrite( $context, $this->query, $suggestedQuery );
 	}

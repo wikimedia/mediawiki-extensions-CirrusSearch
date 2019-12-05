@@ -6,6 +6,7 @@
 			"Luky001"
 		]
 	},
+	"cirrussearch-desc": "Vyhľadávanie v MediaWiki bežiace na Elasticsearch",
 	"cirrussearch-backend-error": "Kvôli dočasnému problému sme nemohli dokončiť požadované vyhľadávanie. Skúste to znovu neskôr.",
 	"cirrussearch-pref-label": "Nové vyhľadávanie",
 	"cirrussearch-pref-desc": "Vyskúšajte nový vyhľadávač, ktorý podporuje viac jazykov, zobrazuje novšie výsledky a dokonca hľadá text vo vnútri šablón.",

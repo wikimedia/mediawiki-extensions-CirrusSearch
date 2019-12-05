@@ -16,6 +16,7 @@ use CirrusSearch\Parser\AST\PhraseQueryNode;
 use CirrusSearch\Parser\AST\PrefixNode;
 use CirrusSearch\Parser\AST\WildcardNode;
 use CirrusSearch\Parser\AST\WordsQueryNode;
+use HtmlArmor;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -130,44 +131,46 @@ class QueryFixer implements Visitor {
 	}
 
 	/**
-	 * Return a fixed query using $fixedQuery
-	 * @param string $fixedQuery
-	 * @param bool $escapeBoundaries escape boundaries using htmlspecialchars when true, $fixedQuery
-	 * is supposed to be already escaped.
-	 * @return string|null
+	 * Replace the fixable part of the visited query with the provided replacement
+	 *
+	 * @param HtmlArmor|string $replacement If HtmlArmor is provided all modifications will be
+	 *  html safe and HtmlArmor will be returned. If a string is provided no escaping will occur.
+	 * @return HtmlArmor|string|null
 	 */
-	public function fix( $fixedQuery, $escapeBoundaries = false ) {
+	public function fix( $replacement ) {
 		Assert::precondition( $this->visited, "getFixablePart must be called before trying to fix the query" );
 		if ( $this->node === null ) {
 			return null;
 		}
-		$fixedQuery = preg_replace( '/([~?*"\\\\])/', '\\\\$1', $fixedQuery );
-		$res = "";
+
+		$escapeBoundaries = false;
+		if ( $replacement instanceof HtmlArmor ) {
+			$escapeBoundaries = true;
+			/** @phan-suppress-next-line SecurityCheck-DoubleEscaped */
+			$replacement = HtmlArmor::getHtml( $replacement );
+		}
+		$replacement = preg_replace( '/([~?*"\\\\])/', '\\\\$1', $replacement );
+
+		$prefix = "";
 		if ( $this->parsedQuery->hasCleanup( ParsedQuery::TILDE_HEADER ) ) {
-			$res .= "~";
+			$prefix .= "~";
 		}
-		$res .= substr( $this->parsedQuery->getQuery(), 0, $this->node->getStartOffset() );
+		$prefix .= substr( $this->parsedQuery->getQuery(), 0, $this->node->getStartOffset() );
 		if ( $this->node instanceof KeywordFeatureNode ) {
-			$res .= $this->node->getKey() . ':';
+			$prefix .= $this->node->getKey() . ':';
 		}
+
+		$suffix = substr( $this->parsedQuery->getQuery(), $this->node->getEndOffset() );
 
 		if ( $escapeBoundaries ) {
-			$safeRes = htmlspecialchars( $res );
-		} else {
-			$safeRes = $res;
-		}
-		$safeRes .= $fixedQuery;
-
-		if ( $escapeBoundaries ) {
-			$suffix = htmlspecialchars(
-				substr( $this->parsedQuery->getQuery(), $this->node->getEndOffset() )
-			);
-		} else {
-			$suffix = substr( $this->parsedQuery->getQuery(), $this->node->getEndOffset() );
+			/** @phan-suppress-next-line SecurityCheck-DoubleEscaped */
+			$prefix = htmlspecialchars( $prefix );
+			$suffix = htmlspecialchars( $suffix );
+			$fixed = $prefix . $replacement . $suffix;
+			return new HtmlArmor( $fixed );
 		}
 
-		$safeRes .= $suffix;
-		return $safeRes;
+		return $prefix . $replacement . $suffix;
 	}
 
 	/**

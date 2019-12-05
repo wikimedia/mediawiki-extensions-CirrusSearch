@@ -9,6 +9,7 @@ use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummyConnection;
 use Elastica\Query;
 use Elastica\Response;
+use HtmlArmor;
 use MediaWiki\MediaWikiServices;
 use Title;
 
@@ -473,12 +474,14 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			if ( $resultSet->getTotalHits() === 123456 ) {
 				$this->assertEquals( $suggestion, $resultSet->getQueryAfterRewrite() );
 
-				$this->assertEquals( $suggestionSnippet, $resultSet->getQueryAfterRewriteSnippet() );
+				$this->assertEquals( $suggestionSnippet,
+					HtmlArmor::getHtml( $resultSet->getQueryAfterRewriteSnippet() ) );
 			} else {
 				$this->assertNull( $resultSet->getQueryAfterRewrite() );
 				$this->assertNull( $resultSet->getQueryAfterRewriteSnippet() );
 				$this->assertEquals( $suggestion, $resultSet->getSuggestionQuery() );
-				$this->assertEquals( $suggestionSnippet, $resultSet->getSuggestionSnippet() );
+				$this->assertEquals( $suggestionSnippet,
+					HtmlArmor::getHtml( $resultSet->getSuggestionSnippet() ) );
 			}
 		} else {
 			$this->assertArrayNotHasKey( 'suggest', $query[Searcher::MAINSEARCH_MSEARCH_KEY] );

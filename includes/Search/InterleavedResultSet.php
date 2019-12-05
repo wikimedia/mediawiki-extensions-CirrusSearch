@@ -4,6 +4,7 @@ namespace CirrusSearch\Search;
 
 use BaseSearchResultSet;
 use Elastica\Response;
+use HtmlArmor;
 use ISearchResultSet;
 use SearchResultSetTrait;
 use Title;
@@ -91,9 +92,9 @@ class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchRe
 
 	/**
 	 * @param string $newQuery
-	 * @param string|null $newQuerySnippet
+	 * @param HtmlArmor|string|null $newQuerySnippet
 	 */
-	public function setRewrittenQuery( $newQuery, $newQuerySnippet = null ) {
+	public function setRewrittenQuery( string $newQuery, $newQuerySnippet = null ) {
 		$this->delegate->setRewrittenQuery( $newQuery, $newQuerySnippet );
 	}
 
@@ -240,9 +241,9 @@ class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchRe
 
 	/**
 	 * @param string $suggestionQuery
-	 * @param string $suggestionSnippet
+	 * @param HtmlArmor|string|null $suggestionSnippet
 	 */
-	public function setSuggestionQuery( $suggestionQuery, $suggestionSnippet ) {
+	public function setSuggestionQuery( string $suggestionQuery, $suggestionSnippet = null ) {
 		$this->delegate->setSuggestionQuery( $suggestionQuery, $suggestionSnippet );
 	}
 }

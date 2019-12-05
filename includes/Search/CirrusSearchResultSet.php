@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Search;
 
+use HtmlArmor;
+
 interface CirrusSearchResultSet extends \ISearchResultSet {
 	/**
 	 * @return \Elastica\Response|null
@@ -22,14 +24,14 @@ interface CirrusSearchResultSet extends \ISearchResultSet {
 
 	/**
 	 * @param string $newQuery
-	 * @param string|null $newQuerySnippet
+	 * @param HtmlArmor|string|null $newQuerySnippet
 	 */
-	public function setRewrittenQuery( $newQuery, $newQuerySnippet = null );
+	public function setRewrittenQuery( string $newQuery, $newQuerySnippet = null );
 
 	/**
 	 * @param string $suggestionQuery
-	 * @param string $suggestionSnippet
+	 * @param HtmlArmor|string|null $suggestionSnippet
 	 */
-	public function setSuggestionQuery( $suggestionQuery, $suggestionSnippet );
+	public function setSuggestionQuery( string $suggestionQuery, $suggestionSnippet = null );
 
 }

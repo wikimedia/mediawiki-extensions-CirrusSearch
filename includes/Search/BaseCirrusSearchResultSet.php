@@ -4,6 +4,7 @@ namespace CirrusSearch\Search;
 
 use BaseSearchResultSet;
 use Exception;
+use HtmlArmor;
 use LinkBatch;
 use SearchResult;
 use SearchResultSetTrait;
@@ -31,7 +32,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	private $suggestionQuery;
 
 	/**
-	 * @var string|null
+	 * @var HtmlArmor|string|null
 	 */
 	private $suggestionSnippet;
 
@@ -46,7 +47,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	private $rewrittenQuery;
 
 	/**
-	 * @var string|null
+	 * @var HtmlArmor|string|null
 	 */
 	private $rewrittenQuerySnippet;
 
@@ -71,11 +72,11 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 
 	/**
 	 * @param string $suggestionQuery
-	 * @param string $suggestionSnippet
+	 * @param HtmlArmor|string|null $suggestionSnippet
 	 */
-	final public function setSuggestionQuery( $suggestionQuery, $suggestionSnippet ) {
+	final public function setSuggestionQuery( string $suggestionQuery, $suggestionSnippet = null ) {
 		$this->suggestionQuery = $suggestionQuery;
-		$this->suggestionSnippet = $suggestionSnippet;
+		$this->suggestionSnippet = $suggestionSnippet ?? $suggestionQuery;
 	}
 
 	/**
@@ -214,11 +215,11 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 
 	/**
 	 * @param string $newQuery
-	 * @param string|null $newQuerySnippet
+	 * @param HtmlArmor|string|null $newQuerySnippet
 	 */
-	final public function setRewrittenQuery( $newQuery, $newQuerySnippet = null ) {
+	final public function setRewrittenQuery( string $newQuery, $newQuerySnippet = null ) {
 		$this->rewrittenQuery = $newQuery;
-		$this->rewrittenQuerySnippet = $newQuerySnippet ?: htmlspecialchars( $newQuery );
+		$this->rewrittenQuerySnippet = $newQuerySnippet ?? $newQuery;
 	}
 
 	/**
@@ -236,7 +237,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	}
 
 	/**
-	 * @return string|null
+	 * @return HtmlArmor|string|null
 	 */
 	final public function getQueryAfterRewriteSnippet() {
 		return $this->rewrittenQuerySnippet;
@@ -257,7 +258,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	}
 
 	/**
-	 * @return string
+	 * @return string|null
 	 */
 	final public function getSuggestionSnippet() {
 		return $this->suggestionSnippet;

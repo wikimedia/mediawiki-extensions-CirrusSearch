@@ -54,7 +54,7 @@
 		"CirrusSearch": "includes/CirrusSearch.php",
 		"CirrusSearch\\CirrusSearch": "includes/CirrusSearch.php",
 		"CirrusSearch\\CheckIndexes": "maintenance/checkIndexes.php",
-		"CirrusSearch\\CirrusIsSetup": "maintenance/cirrusNeedsToBeBuilt.php",
+		"CirrusSearch\\CirrusNeedsToBeBuilt": "maintenance/cirrusNeedsToBeBuilt.php",
 		"CirrusSearch\\CirrusIntegrationTestCase": "tests/phpunit/integration/CirrusIntegrationTestCase.php",
 		"CirrusSearch\\CirrusTestCase": "tests/phpunit/unit/CirrusTestCase.php",
 		"CirrusSearch\\CirrusTestCaseTrait": "tests/phpunit/unit/CirrusTestCaseTrait.php",

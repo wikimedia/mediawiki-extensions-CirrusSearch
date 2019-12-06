@@ -31,7 +31,7 @@ if ( $IP === false ) {
 require_once "$IP/maintenance/Maintenance.php";
 require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
-class CirrusIsSetup extends Maintenance {
+class CirrusNeedsToBeBuilt extends Maintenance {
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Update the configuration or contents of all search indices. Always operates on a single cluster." );
@@ -83,5 +83,5 @@ class CirrusIsSetup extends Maintenance {
 	}
 }
 
-$maintClass = CirrusIsSetup::class;
+$maintClass = CirrusNeedsToBeBuilt::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

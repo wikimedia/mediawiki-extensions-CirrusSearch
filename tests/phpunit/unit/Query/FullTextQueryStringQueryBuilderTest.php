@@ -133,7 +133,24 @@ class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 		// mark stripping which is normally done in Searcher::searchText()
 		$term = Util::stripQuestionMarks( $term, 'all' );
 
-		$config = new HashSearchConfig( [ 'wgLanguageCode' => 'en' ] );
+		$config = new HashSearchConfig( [
+			'wgLanguageCode' => 'en',
+			'CirrusSearchWeights' => [
+				'title' => 20,
+				'redirect' => 15,
+				'category' => 8,
+				'heading' => 5,
+				'opening_text' => 3,
+				'text' => 1,
+				'auxiliary_text' => 0.5,
+				'file_text' => 0.5
+			],
+			'CirrusSearchPhraseSlop' => [
+				'precise' => 0,
+				'default' => 0,
+				'boost' => 1
+			],
+		] );
 		$builder = new FullTextQueryStringQueryBuilder( $config, [] );
 		$searchContext = new SearchContext( $config );
 		$builder->build( $searchContext, $term );

@@ -5,6 +5,7 @@ namespace CirrusSearch\Parser\AST\Visitor;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\QueryParserFactory;
+use HtmlArmor;
 
 /**
  * @covers \CirrusSearch\Parser\AST\Visitor\QueryFixer
@@ -118,7 +119,8 @@ class QueryFixerTest extends CirrusIntegrationTestCase {
 		$parsed = $parser->parse( 'intitle:< hello world intitle:>' );
 		$fixer = new QueryFixer( $parsed );
 		$this->assertNotNull( $fixer->getFixablePart() );
-		$this->assertEquals( 'intitle:&lt; hello <em>world</em> intitle:&gt;', $fixer->fix( 'hello <em>world</em>', true ) );
+		$this->assertEquals( 'intitle:&lt; hello <em>world</em> intitle:&gt;',
+			HtmlArmor::getHtml( $fixer->fix( new HtmlArmor( 'hello <em>world</em>' ) ) ) );
 	}
 
 	public function testBuild() {

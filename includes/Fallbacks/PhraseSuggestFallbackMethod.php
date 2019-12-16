@@ -11,6 +11,7 @@ use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Searcher;
+use HtmlArmor;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -141,7 +142,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 			// @phan-suppress-next-line PhanTypeArraySuspiciousNullable Checked by Assert class
 			$this->queryFixer->fix( $suggestion['text'] ),
 			// @phan-suppress-next-line PhanTypeArraySuspiciousNullable Checked by Assert class
-			$this->queryFixer->fix( $this->escapeHighlightedSuggestion( $suggestion['highlighted'] ), true )
+			$this->queryFixer->fix( $this->escapeHighlightedSuggestion( $suggestion['highlighted'] ) )
 		);
 	}
 
@@ -149,13 +150,13 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	 * Escape a highlighted suggestion coming back from Elasticsearch.
 	 *
 	 * @param string $suggestion suggestion from elasticsearch
-	 * @return string $suggestion with html escaped _except_ highlighting pre and post tags
+	 * @return HtmlArmor $suggestion with html escaped _except_ highlighting pre and post tags
 	 */
-	private function escapeHighlightedSuggestion( $suggestion ) {
-		return strtr( htmlspecialchars( $suggestion ), [
+	private function escapeHighlightedSuggestion( string $suggestion ): HtmlArmor {
+		return new HtmlArmor( strtr( htmlspecialchars( $suggestion ), [
 			Searcher::HIGHLIGHT_PRE_MARKER => Searcher::SUGGESTION_HIGHLIGHT_PRE,
 			Searcher::HIGHLIGHT_POST_MARKER => Searcher::SUGGESTION_HIGHLIGHT_POST,
-		] );
+		] ) );
 	}
 
 	/**

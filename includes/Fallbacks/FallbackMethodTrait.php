@@ -9,6 +9,7 @@ use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
 use Elastica\ResultSet as ElasticaResultSet;
+use HtmlArmor;
 use ISearchResultSet;
 use MediaWiki\Logger\LoggerFactory;
 
@@ -68,7 +69,7 @@ trait FallbackMethodTrait {
 	 * @param FallbackRunnerContext $context
 	 * @param SearchQuery $originalQuery
 	 * @param string $suggestedQuery
-	 * @param string|null $suggestedQuerySnippet
+	 * @param HtmlArmor|string|null $suggestedQuerySnippet
 	 * @param int $resultsThreshold
 	 * @return CirrusSearchResultSet the new resultSet or the previous set found in the FallbackRunnerContext
 	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException

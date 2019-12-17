@@ -11,6 +11,7 @@ use Elastica\Client;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet\DefaultBuilder;
+use HtmlArmor;
 
 /**
  * @covers \CirrusSearch\Fallbacks\IndexLookupFallbackMethod
@@ -31,6 +32,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 				$fixture['approxScore'],
 				$fixture['suggestion'],
 				$fixture['suggestionSnippet'],
+				$fixture['rewritten'] ?? false,
 			];
 		}
 
@@ -40,15 +42,18 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 	/**
 	 * @dataProvider provideTest
 	 */
-	public function test( $queryString, \Elastica\ResultSet $response, $expectedApproxScore, $suggestion, $suggestionSnippet ) {
+	public function test( $queryString, \Elastica\ResultSet $response, $expectedApproxScore, $suggestion, $suggestionSnippet, $rewritten ) {
 		$config = new HashSearchConfig( [] );
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, $queryString, $this->namespacePrefixParser() )
 			->setAllowRewrite( true )
 			->build();
 
 		$rewrittenResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 1 );
-		$rewrittenQuery = $suggestion != null ? SearchQueryBuilder::forRewrittenQuery( $query, $suggestion, $this->namespacePrefixParser() )
-			->build() : null;
+		$rewrittenQuery = null;
+		if ( $suggestion != null && $rewritten ) {
+			$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $query, $suggestion, $this->namespacePrefixParser() )
+				->build();
+		}
 		$searcherFactory = $this->getSearcherFactoryMock( $rewrittenQuery, $rewrittenResults );
 		/**
 		 * @var IndexLookupFallbackMethod $fallback
@@ -56,17 +61,23 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		$fallback = new IndexLookupFallbackMethod( $query, 'lookup_index', [],
 			'lookup_suggestion_field', [], [] );
 		$this->assertNotNull( $fallback->getSearchRequest( $this->getMockBuilder( Client::class )->disableOriginalConstructor()->getMock() ) );
-		$initialResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
+		$initialResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), $rewritten ? 0 : 1 );
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory, $this->namespacePrefixParser() );
 		$this->assertSame( 0.0, $fallback->successApproximation( $context ), "No success without a response" );
 		$context->setSuggestResponse( $response );
 		$this->assertSame( $expectedApproxScore, $fallback->successApproximation( $context ) );
 		if ( $expectedApproxScore > 0 ) {
 			$actualNewResults = $fallback->rewrite( $context );
-			$this->assertSame( $suggestion, $rewrittenResults->getQueryAfterRewrite() );
-			$this->assertSame( $suggestionSnippet,
-				$rewrittenResults->getQueryAfterRewriteSnippet() );
-			$this->assertSame( $rewrittenResults, $actualNewResults );
+			if ( $rewritten ) {
+				$this->assertSame( $rewrittenResults, $actualNewResults );
+				$this->assertSame( $suggestion, $rewrittenResults->getQueryAfterRewrite() );
+				$this->assertSame( $suggestionSnippet,
+					HtmlArmor::getHtml( $rewrittenResults->getQueryAfterRewriteSnippet() ) );
+			} else {
+				$this->assertSame( $initialResults, $actualNewResults );
+				$this->assertSame( $suggestion, $actualNewResults->getSuggestionQuery() );
+				$this->assertSame( $suggestionSnippet, HtmlArmor::getHtml( $actualNewResults->getSuggestionSnippet() ) );
+			}
 		}
 	}
 

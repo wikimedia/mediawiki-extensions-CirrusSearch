@@ -47,10 +47,6 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 				3,
 				2,
 				10,
-				[
-					'wgCirrusSearchAltLanguage' => [ 'targetwiki', 'fr' ],
-					'wgCirrusSearchAltLanguageNumResults' => 10,
-				]
 			],
 			'fallback not triggered because the initial set has enough results' => [
 				'foobar',
@@ -59,7 +55,6 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 				2,
 				3,
 				0,
-				[]
 			],
 			'fallback triggered but it encountered an error during search' => [
 				'foobar',
@@ -68,9 +63,6 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 				3,
 				2,
 				-1,
-				[
-					'wgCirrusSearchAltLanguage' => [ 'targetwiki', 'fr' ],
-				]
 			],
 			'fallback not triggered because the query is complex' => [
 				'foo NOT bar',
@@ -79,7 +71,6 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 				3,
 				0,
 				0,
-				[]
 			],
 			'fallback not triggered because lang detection failed' => [
 				'foo',
@@ -88,7 +79,6 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 				3,
 				0,
 				0,
-				[]
 			],
 			'fallback not triggered because an unsupported language was detected' => [
 				'foo',
@@ -97,7 +87,6 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 				3,
 				0,
 				0,
-				[]
 			],
 			'fallback not triggered because same lang was detected' => [
 				'foo',
@@ -106,7 +95,6 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 				3,
 				0,
 				0,
-				[]
 			]
 		];
 	}
@@ -121,8 +109,7 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 		$returnedLang,
 		$threshold,
 		$initialNumResults,
-		$secondTryNumResults,
-		$expectedMetrics
+		$secondTryNumResults
 	) {
 		$config = $this->newHashSearchConfig( [
 			'CirrusSearchInterwikiThreshold' => $threshold,
@@ -170,7 +157,6 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 				$this->assertEmpty( $rewrittenResults->getInterwikiResults( ISearchResultSet::INLINE_RESULTS ) );
 			}
 		}
-		$this->assertEquals( $expectedMetrics, $fallback->getMetrics() );
 	}
 
 	public function provideTestNotRunWhenRewriteDisabled() {

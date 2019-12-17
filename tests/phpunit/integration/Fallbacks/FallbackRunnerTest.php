@@ -270,17 +270,6 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$this->assertNotEmpty( $iwResults );
 		$this->assertArrayHasKey( 'frwiki', $iwResults );
 		$this->assertEquals( 3, $iwResults['frwiki']->getTotalHits() );
-		$this->assertEquals(
-			[
-				'wgCirrusSearchAltLanguageNumResults' => 3,
-				'wgCirrusSearchAltLanguage' => [ 'frwiki', 'fr' ],
-			],
-			$runner->getMetrics(),
-			"metrics must be set",
-			0.0,
-			10,
-			true
-		);
 	}
 
 	public function mockSearcher( CirrusSearchResultSet $resultSet ) {

@@ -94,7 +94,12 @@ class AnalysisConfigBuilder {
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );
 		}
-		$this->similarity = $config->getProfileService()->loadProfile( SearchProfileService::SIMILARITY );
+		$similarity = $config->getProfileService()->loadProfile( SearchProfileService::SIMILARITY );
+		if ( !array_key_exists( 'similarity', $similarity ) ) {
+			$similarity['similarity'] = [];
+		}
+		Hooks::run( 'CirrusSearchSimilarityConfig', [ &$similarity['similarity'] ] );
+		$this->similarity = $similarity;
 
 		$this->config = $config;
 	}

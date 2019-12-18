@@ -13,6 +13,9 @@ really been settled.
  &$config - multi-dimensional configuration array for analysis of various languages and fields
  $builder - AnalysisConfigBuilder object handling the building (since 1.31)
 
+'CirrusSearchSimilarityConfig': Allows to customize and add new similarities to the index settings.
+ &$similarity - multi-dimensional configuration array for the similarities.
+
 'CirrusSearchMappingConfig': Allows configuration of the mapping of fields
  &$config - multi-dimensional configuration array that contains Elasticsearch document configuration.
    The 'page' index contains configuration for Elasticsearch documents representing pages.

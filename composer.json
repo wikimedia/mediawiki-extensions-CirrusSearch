@@ -15,7 +15,8 @@
 		"mediawiki/minus-x": "0.3.2",
 		"mediawiki/mediawiki-phan-config": "0.8.0",
 		"justinrainbow/json-schema": "~5.2",
-		"symfony/yaml": "4.3.4"
+		"symfony/yaml": "4.3.4",
+		"ext-intl": "*"
 	},
 	"scripts": {
 		"fix": [

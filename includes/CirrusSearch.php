@@ -329,7 +329,7 @@ class CirrusSearch extends SearchEngine {
 		}
 		$suggester = new CompletionSuggester( $connection, $this->limit,
 				$this->offset, $config, $this->namespaces, null,
-				null, $profile );
+				false, $profile );
 
 		$response = $suggester->suggest( $search, $variants );
 		if ( $response->isOK() ) {
@@ -591,7 +591,7 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private function makeSearcher( SearchConfig $config = null ) {
 		return new Searcher( $this->connection, $this->offset, $this->limit, $config ?? $this->config, $this->namespaces,
-				null, null, $this->debugOptions, $this->namespacePrefixParser, $this->interwikiResolver, $this->titleHelper );
+				null, false, $this->debugOptions, $this->namespacePrefixParser, $this->interwikiResolver, $this->titleHelper );
 	}
 }
 

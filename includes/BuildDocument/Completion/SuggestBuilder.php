@@ -207,7 +207,7 @@ class SuggestBuilder {
 					'text' => $data['text'],
 					'variants' => []
 				];
-				$docs[] = $this->buildTitleSuggestion( $data['title']->getArticleID(), $suggestion,
+				$docs[] = $this->buildTitleSuggestion( (string)$data['title']->getArticleID(), $suggestion,
 					$data['score'], $data['inputDoc'], $data['explain'] );
 			}
 		}

@@ -212,6 +212,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		Assert::postcondition( $namespaces !== null && count( $namespaces ) <= 1,
 			'PrefixFeature must extract one or all namespaces' );
 		self::alterSearchContextNamespace( $context,
+			// @phan-suppress-next-line PhanTypeMismatchArgumentNullableInternal Assertion done
 			count( $namespaces ) === 1 ? reset( $namespaces ) : null );
 	}
 

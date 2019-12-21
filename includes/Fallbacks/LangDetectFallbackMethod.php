@@ -75,7 +75,7 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 	 * @param SearchQuery $query
 	 * @param array $params
 	 * @param InterwikiResolver $interwikiResolver
-	 * @return FallbackMethod
+	 * @return FallbackMethod|null
 	 */
 	public static function build( SearchQuery $query, array $params, InterwikiResolver $interwikiResolver ) {
 		if ( !$query->getCrossSearchStrategy()->isCrossLanguageSearchSupported() ) {

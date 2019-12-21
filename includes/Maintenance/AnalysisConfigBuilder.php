@@ -231,6 +231,7 @@ class AnalysisConfigBuilder {
 
 		$newfilters = [];
 		foreach ( $config[ 'analyzer' ] as $name => $value ) {
+			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 			if ( isset( $value[ 'type' ] ) && $value[ 'type' ] != 'custom' ) {
 				continue;
 			}
@@ -259,6 +260,7 @@ class AnalysisConfigBuilder {
 			}
 			$config[ 'analyzer' ][ $analyzer ][ 'filter' ] =
 				$this->switchFiltersToICUFoldingPreserve(
+					// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 					$config[ 'analyzer' ][ $analyzer ][ 'filter' ], true );
 		}
 
@@ -1214,6 +1216,7 @@ STEMMER_RULES
 
 		// replace lowercase filters with icu_normalizer filter
 		if ( $this->icu ) {
+			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 			foreach ( $config[ 'analyzer' ] as &$analyzer ) {
 				if ( !isset( $analyzer[ 'filter'  ] ) ) {
 					continue;

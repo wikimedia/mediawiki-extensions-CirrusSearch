@@ -369,7 +369,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	/**
 	 * @param string $description
 	 * @param string $queryType
-	 * @param string[] $extra
+	 * @param array $extra
 	 * @return CompletionRequestLog
 	 */
 	protected function newLog( $description, $queryType, array $extra = [] ) {

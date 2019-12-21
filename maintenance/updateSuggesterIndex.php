@@ -431,6 +431,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$scroll = new \Elastica\Scroll( $search, '15m' );
 
 		$totalDocsToDump = -1;
+		$docsDumped = 0;
 
 		$this->log( "Deleting remaining docs from previous batch\n" );
 		foreach ( $scroll as $results ) {

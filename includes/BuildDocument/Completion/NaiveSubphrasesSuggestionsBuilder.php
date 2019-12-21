@@ -168,7 +168,7 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 		array_shift( $matches );
 		$subphrases = [];
 		foreach ( $matches as $m ) {
-			$subphrases[] = substr( $title, $m[1] ) . $langSubPage;
+			$subphrases[] = substr( $title, (int)$m[1] ) . $langSubPage;
 		}
 		return $subphrases;
 	}

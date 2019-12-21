@@ -221,7 +221,7 @@ class Hooks {
 				// @deprecated Use minimum_should_match now
 				$k = 'minimum_should_match';
 				if ( is_numeric( $v ) && $v > 0 && $v <= 1 ) {
-					$v = ( (int)( $v * 100 ) ) . '%';
+					$v = ( (int)( (float)$v * 100 ) ) . '%';
 				} else {
 					break;
 				}

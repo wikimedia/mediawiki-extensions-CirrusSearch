@@ -147,7 +147,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	 * @param string $key
 	 * @param string $value
 	 * @param string $quotedValue
-	 * @param string $negated
+	 * @param bool $negated
 	 * @param string $delimiter
 	 * @param string $suffix
 	 * @return array
@@ -197,7 +197,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 		$parsedValue = $node->getParsedValue();
 		if ( $this->isRegexQuery( $parsedValue ) ) {
 			if ( !$this->enabled ) {
-				return null;
+				return [];
 			}
 			'@phan-var array $parsedValue';
 			$pattern = $parsedValue['pattern'];
@@ -272,8 +272,8 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			$filter = new SourceRegex( $pattern, $field, $field . '.trigram' );
 			// set some defaults
 			$filter->setMaxDeterminizedStates( $this->maxDeterminizedStates );
-			if ( isset( $this->regexPlugin['max_ngrams_extracted'] ) ) {
-				$filter->setMaxNgramsExtracted( $this->regexPlugin['max_ngrams_extracted'] );
+			if ( isset( $this->regexPlugin['max_ngrams_extracted'] ) && is_numeric( $this->regexPlugin['max_ngrams_extracted'] ) ) {
+				$filter->setMaxNgramsExtracted( (int)$this->regexPlugin['max_ngrams_extracted'] );
 			}
 			if ( isset( $this->regexPlugin['max_ngram_clauses'] ) && is_numeric( $this->regexPlugin['max_ngram_clauses'] ) ) {
 				$filter->setMaxNgramClauses( (int)$this->regexPlugin['max_ngram_clauses'] );

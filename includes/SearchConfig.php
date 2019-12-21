@@ -263,7 +263,7 @@ class SearchConfig implements \Config {
 	}
 
 	/**
-	 * @return true if cross project (same language) is enabled
+	 * @return bool if cross project (same language) is enabled
 	 */
 	public function isCrossProjectSearchEnabled() {
 		if ( $this->get( 'CirrusSearchEnableCrossProjectSearch' ) ) {
@@ -273,7 +273,7 @@ class SearchConfig implements \Config {
 	}
 
 	/**
-	 * @return true if cross language (same project) is enabled
+	 * @return bool if cross language (same project) is enabled
 	 */
 	public function isCrossLanguageSearchEnabled() {
 		if ( $this->get( 'CirrusSearchEnableAltLanguage' ) ) {

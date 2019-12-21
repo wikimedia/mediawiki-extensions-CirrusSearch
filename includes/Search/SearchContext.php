@@ -77,8 +77,8 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $resultsPossible = true;
 
 	/**
-	 * @var string[] List of features in the user suplied query string. Features are
-	 *  held in the array key, value is always true.
+	 * @var int[] List of features in the user suplied query string. Features are
+	 *  held in the array key, value is how "complex" the feature is.
 	 */
 	private $syntaxUsed = [];
 

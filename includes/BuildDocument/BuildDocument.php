@@ -177,7 +177,7 @@ class BuildDocument {
 		$forceParse = $flags & self::FORCE_PARSE;
 		$builders = [ new DefaultPageProperties( $this->db ) ];
 		if ( !$skipParse ) {
-			$builders[] = new ParserOutputPageProperties( $this->parserCache, $forceParse );
+			$builders[] = new ParserOutputPageProperties( $this->parserCache, (bool)$forceParse );
 		}
 		if ( !$skipLinks ) {
 			$builders[] = new RedirectsAndIncomingLinks( $this->connection );
@@ -225,7 +225,7 @@ class BuildDocument {
 		$doc->setDocAsUpsert( $this->canUpsert( $flags ) );
 		// While it would make plenty of sense for a builder to provide the version (revision id),
 		// we need to use it in self::finalize to ensure the revision is still the latest.
-		Assert::precondition( $page->getLatest(), "Must have a latest revision" );
+		Assert::precondition( (bool)$page->getLatest(), "Must have a latest revision" );
 		$doc->set( 'version', $page->getLatest() );
 		CirrusIndexField::addNoopHandler(
 			$doc, 'version', 'documentVersion' );

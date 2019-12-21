@@ -16,7 +16,7 @@ class QueryParserFactory {
 	/**
 	 * Get the default fulltext parser.
 	 * @param SearchConfig $config the host wiki config
-	 * @param NamespacePrefixParser|null $namespacePrefix
+	 * @param NamespacePrefixParser $namespacePrefix
 	 * @param SparqlClient|null $client
 	 * @return QueryParser
 	 * @throws ParsedQueryClassifierException

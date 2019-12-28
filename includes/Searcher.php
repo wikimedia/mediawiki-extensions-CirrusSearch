@@ -380,7 +380,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * Get the page with $docId.  Note that the result is a status containing _all_ pages found.
 	 * It is possible to find more then one page if the page is in multiple indexes.
 	 * @param string[] $docIds array of document ids
-	 * @param string[]|true|false $sourceFiltering source filtering to apply
+	 * @param string[]|bool $sourceFiltering source filtering to apply
 	 * @param bool $usePoolCounter false to disable the pool counter
 	 * @return Status containing pages found, containing an empty array if not found,
 	 *    or an error if there was an error

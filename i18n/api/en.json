@@ -21,7 +21,7 @@
 	"apihelp-query+cirrusbuilddoc-summary": "Dump of a CirrusSearch article document from the database servers",
 	"apihelp-query+cirrusbuilddoc-example": "Get a dump of a single CirrusSearch article generated from the database.",
 	"apierror-cirrus-requesttoolong": "Prefix search request was longer than the maximum allowed length. ($1 &gt; $2)",
-	"apihelp-query+compsuggestbuilddoc+param-method": "The scoring method to use",
+	"apihelp-query+compsuggestbuilddoc-param-method": "The scoring method to use",
 	"apierror-compsuggestbuilddoc-bad-method": "Unknown scoring method",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Dump of the document used by the completion suggester",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "Get a dump of the document used by the completion suggester"

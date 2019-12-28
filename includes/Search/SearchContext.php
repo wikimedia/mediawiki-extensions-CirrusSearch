@@ -664,11 +664,9 @@ class SearchContext implements WarningCollector, FilterBuilder {
 
 	/**
 	 * @param string $message i18n message key
-	 * @param string|null $param1
-	 * @param string|null $param2
-	 * @param string|null $param3
+	 * @param mixed ...$params
 	 */
-	public function addWarning( $message, $param1 = null, $param2 = null, $param3 = null ) {
+	public function addWarning( $message, ...$params ) {
 		$this->isDirty = true;
 		$this->warnings[] = array_filter( func_get_args(), function ( $v ) {
 			return $v !== null;

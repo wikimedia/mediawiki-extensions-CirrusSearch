@@ -35,7 +35,7 @@ class ParseWarning {
 	 * @param int $start
 	 * @param string[] $expectedTokens
 	 * @param string|null $actualToken
-	 * @param string[] $messageParams
+	 * @param mixed[] $messageParams
 	 */
 	public function __construct( $message, $start, array $expectedTokens = [], $actualToken = null, array $messageParams = [] ) {
 		$this->message = $message;
@@ -81,7 +81,7 @@ class ParseWarning {
 	}
 
 	/**
-	 * @return string[]
+	 * @return mixed[]
 	 */
 	public function getMessageParams() {
 		return $this->messageParams;

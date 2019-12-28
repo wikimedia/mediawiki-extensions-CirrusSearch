@@ -63,7 +63,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			 * @inheritDoc
 			 */
 			protected function transformOneResult( \Elastica\Result $result ) {
-				return new \CirrusSearch\Search\Result( $result );
+				return new \CirrusSearch\Search\Result( null, $result );
 			}
 
 			/**

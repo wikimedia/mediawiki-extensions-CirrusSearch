@@ -63,7 +63,7 @@ abstract class BaseFallbackMethodTest extends CirrusTestCase {
 			 * @inheritDoc
 			 */
 			protected function transformOneResult( \Elastica\Result $result ) {
-				return new \CirrusSearch\Search\Result( $result );
+				return new \CirrusSearch\Search\Result( null, $result );
 			}
 
 			/**

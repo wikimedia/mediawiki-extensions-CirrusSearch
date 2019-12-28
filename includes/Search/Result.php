@@ -63,7 +63,7 @@ class Result extends CirrusSearchResult {
 	/**
 	 * Build the result.
 	 *
-	 * @param \Elastica\ResultSet $results containing all search results
+	 * @param mixed $results Unused
 	 * @param \Elastica\Result $result containing the given search result
 	 * @param TitleHelper|null $titleHelper
 	 */

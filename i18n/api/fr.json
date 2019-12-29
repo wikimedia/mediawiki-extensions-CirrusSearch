@@ -27,7 +27,7 @@
 	"apihelp-query+cirrusbuilddoc-summary": "Vidage du document d’un article de CirrusSearch depuis les serveurs de base de données",
 	"apihelp-query+cirrusbuilddoc-example": "Obtenir le vidage d’un unique article de CirrusSearch généré depuis la base de données.",
 	"apierror-cirrus-requesttoolong": "La requête de recherche de préfixe a dépassé la longueur maximale autorisée ($1 &gt; $2).",
-	"apihelp-query+compsuggestbuilddoc+param-method": "La méthode de notation à utiliser",
+	"apihelp-query+compsuggestbuilddoc-param-method": "La méthode de notation à utiliser",
 	"apierror-compsuggestbuilddoc-bad-method": "Méthode de notation inconnue",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Vidage du document utilisé par l’outil de suggestion de complétude",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "Obtenir un vidage du document utilisé par l’outil de suggestion de complétude"

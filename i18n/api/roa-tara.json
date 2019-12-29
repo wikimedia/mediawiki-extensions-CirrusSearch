@@ -23,7 +23,7 @@
 	"apihelp-query+cirrusbuilddoc-summary": "Dump d'u documende d'a vôsce de CirrusSearch da le server de recerche",
 	"apihelp-query+cirrusbuilddoc-example": "Pigghie 'nu dump de 'na vôsce singole de CirrusSearch generate da 'u database.",
 	"apierror-cirrus-requesttoolong": "'U prefisse d'a recerche ave 'na lunghezze troppe longhe respette a quedde permesse. ($1 &gt; $2)",
-	"apihelp-query+compsuggestbuilddoc+param-method": "'U metode de pundegge da ausà",
+	"apihelp-query+compsuggestbuilddoc-param-method": "'U metode de pundegge da ausà",
 	"apierror-compsuggestbuilddoc-bad-method": "Metode de pundegge scanusciute",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Ammuzze d'u documende ausate da 'u suggeritore de completamende",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "Pigghie 'n'ammuzze d'u documende ausate da 'u suggeritore de completamende"

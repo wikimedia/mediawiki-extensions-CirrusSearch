@@ -26,6 +26,6 @@
 	"apihelp-query+cirrusbuilddoc-summary": "Kopia av ett CirrusSearch-artikeldokument från databasservrarna",
 	"apihelp-query+cirrusbuilddoc-example": "Hämta en kopia av en CirrusSearch-artikel som den är genererad från databasen.",
 	"apierror-cirrus-requesttoolong": "Prefixsökfrågan var längre än maximal tillåten längd. ($1 &gt; $2)",
-	"apihelp-query+compsuggestbuilddoc+param-method": "Poängmetoden att använda.",
+	"apihelp-query+compsuggestbuilddoc-param-method": "Poängmetoden att använda.",
 	"apierror-compsuggestbuilddoc-bad-method": "Okänd poängmetod"
 }

@@ -55,9 +55,6 @@
 		"CirrusSearch\\CirrusSearch": "includes/CirrusSearch.php",
 		"CirrusSearch\\CheckIndexes": "maintenance/checkIndexes.php",
 		"CirrusSearch\\CirrusNeedsToBeBuilt": "maintenance/cirrusNeedsToBeBuilt.php",
-		"CirrusSearch\\CirrusIntegrationTestCase": "tests/phpunit/integration/CirrusIntegrationTestCase.php",
-		"CirrusSearch\\CirrusTestCase": "tests/phpunit/unit/CirrusTestCase.php",
-		"CirrusSearch\\CirrusTestCaseTrait": "tests/phpunit/unit/CirrusTestCaseTrait.php",
 		"CirrusSearch\\Maintenance\\Metastore": "maintenance/metastore.php",
 		"CirrusSearch\\Maintenance\\RunSearch": "maintenance/runSearch.php",
 		"CirrusSearch\\Maintenance\\SaneitizeJobs": "maintenance/saneitizeJobs.php",
@@ -65,16 +62,23 @@
 		"CirrusSearch\\Maintenance\\UpdateSearchIndexConfig": "maintenance/updateSearchIndexConfig.php",
 		"CirrusSearch\\ForceSearchIndex": "maintenance/forceSearchIndex.php",
 		"CirrusSearch\\Saneitize": "maintenance/saneitize.php",
-		"CirrusSearch\\Query\\SimpleKeywordFeatureTestTrait": "tests/phpunit/unit/Query/SimpleKeywordFeatureTestTrait.php",
-		"CirrusSearch\\Query\\KeywordFeatureAssertions": "tests/phpunit/unit/Query/KeywordFeatureAssertions.php",
-		"CirrusSearch\\Fallbacks\\BaseFallbackMethodTest": "tests/phpunit/unit/Fallbacks/BaseFallbackMethodTest.php",
 		"CirrusSearch\\Search\\TermBoostScoreBuilder": "includes/Search/Rescore/TermBoostScoreBuilder.php",
 		"CirrusSearch\\Search\\FunctionScoreBuilder": "includes/Search/Rescore/FunctionScoreBuilder.php",
 		"CirrusSearch\\Search\\Rescore\\TermBoostScoreBuilder": "includes/Search/Rescore/TermBoostScoreBuilder.php",
 		"CirrusSearch\\Search\\Rescore\\FunctionScoreBuilder": "includes/Search/Rescore/FunctionScoreBuilder.php"
 	},
+	"TestAutoloadClasses": {
+		"CirrusSearch\\CirrusIntegrationTestCase": "tests/phpunit/integration/CirrusIntegrationTestCase.php",
+		"CirrusSearch\\CirrusTestCase": "tests/phpunit/unit/CirrusTestCase.php",
+		"CirrusSearch\\CirrusTestCaseTrait": "tests/phpunit/unit/CirrusTestCaseTrait.php",
+		"CirrusSearch\\Query\\SimpleKeywordFeatureTestTrait": "tests/phpunit/unit/Query/SimpleKeywordFeatureTestTrait.php",
+		"CirrusSearch\\Query\\KeywordFeatureAssertions": "tests/phpunit/unit/Query/KeywordFeatureAssertions.php",
+		"CirrusSearch\\Fallbacks\\BaseFallbackMethodTest": "tests/phpunit/unit/Fallbacks/BaseFallbackMethodTest.php"
+	},
 	"AutoloadNamespaces": {
-		"CirrusSearch\\": "includes/",
+		"CirrusSearch\\": "includes/"
+	},
+	"TestAutoloadNamespaces": {
 		"CirrusSearch\\Test\\": "tests/phpunit/unit/mocks/"
 	},
 	"ResourceModules": {

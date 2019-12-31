@@ -215,7 +215,7 @@ class Checker {
 			foreach ( $fromIndex as $r ) {
 				$title = Title::makeTitleSafe( $r->namespace, $r->title );
 				if ( $title === null ) {
-					$title = Title::makeTitleSafe( NS_SPECIAL, 'Badtitle/InvalidInDBOrElastic' );
+					$title = Title::makeTitle( NS_SPECIAL, 'Badtitle/InvalidInDBOrElastic' );
 				}
 				$this->remediator->ghostPageInIndex( $docId, $title );
 			}

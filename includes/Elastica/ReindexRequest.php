@@ -156,7 +156,7 @@ class ReindexRequest {
 			return [ 'index' => $input->getName() ];
 		}
 		throw new InvalidArgumentException( 'Expected Type|Index, got '
-			. is_object( $input ) ? get_class( $input ) : gettype( $input )
+			. ( is_object( $input ) ? get_class( $input ) : gettype( $input ) )
 		);
 	}
 

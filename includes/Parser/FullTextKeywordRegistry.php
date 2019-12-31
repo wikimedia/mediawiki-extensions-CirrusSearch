@@ -13,6 +13,7 @@ use CirrusSearch\Query\InSourceFeature;
 use CirrusSearch\Query\InTitleFeature;
 use CirrusSearch\Query\KeywordFeature;
 use CirrusSearch\Query\LanguageFeature;
+use CirrusSearch\Query\LegacyKeywordFeature;
 use CirrusSearch\Query\LinksToFeature;
 use CirrusSearch\Query\LocalFeature;
 use CirrusSearch\Query\MoreLikeFeature;
@@ -31,7 +32,7 @@ use MediaWiki\Sparql\SparqlClient;
  */
 class FullTextKeywordRegistry implements KeywordRegistry {
 	/**
-	 * @var KeywordFeature[]
+	 * @var (LegacyKeywordFeature|KeywordFeature)[]
 	 */
 	private $features;
 

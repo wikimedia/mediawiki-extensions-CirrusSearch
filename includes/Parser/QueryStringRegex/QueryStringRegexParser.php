@@ -128,13 +128,13 @@ class QueryStringRegexParser implements QueryParser {
 
 	/**
 	 * Token set after calling nextToken
-	 * @var Token
+	 * @var Token|null
 	 */
 	private $token;
 
 	/**
 	 * Last token seen (set within nextToken)
-	 * @var Token
+	 * @var Token|null
 	 */
 	private $lookBehind;
 
@@ -181,7 +181,7 @@ class QueryStringRegexParser implements QueryParser {
 	 * @param Escaper $escaper
 	 * @param string $qmarkStripLevel level of question mark stripping to apply
 	 * @param ParsedQueryClassifiersRepository $classifierRepository
-	 * @param NamespacePrefixParser|null $namespacePrefixParser
+	 * @param NamespacePrefixParser $namespacePrefixParser
 	 * @param int|null $maxQueryLen maximum length of the query in chars
 	 * @see Util::stripQuestionMarks() for acceptable $qmarkStripLevel values
 	 */
@@ -565,6 +565,7 @@ class QueryStringRegexParser implements QueryParser {
 				$node = $node->getChild();
 			} else {
 				$node = new NegatedNode( $this->lookBehind->getStart(), $node->getEndOffset(),
+					// @phan-suppress-next-line PhanTypeMismatchArgumentNullable $node not null after getType
 					$node, $this->lookBehind->getImage() );
 			}
 		} else {

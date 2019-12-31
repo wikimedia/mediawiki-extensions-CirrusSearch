@@ -23,7 +23,7 @@ final class SearchQueryBuilder {
 	private $parsedQuery;
 
 	/**
-	 * @var int[]
+	 * @var int[]|null
 	 */
 	private $initialNamespaces;
 
@@ -107,7 +107,7 @@ final class SearchQueryBuilder {
 	 *
 	 * @param SearchConfig $config
 	 * @param string $queryString
-	 * @param NamespacePrefixParser|null $namespacePrefixParser
+	 * @param NamespacePrefixParser $namespacePrefixParser
 	 * @return SearchQueryBuilder
 	 * @throws \CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException
 	 */

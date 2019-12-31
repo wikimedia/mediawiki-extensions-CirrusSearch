@@ -138,7 +138,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @param Connection $conn
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
-	 * @param SearchConfig|null $config Configuration settings
+	 * @param SearchConfig $config Configuration settings
 	 * @param int[]|null $namespaces Array of namespace numbers to search or null to search all namespaces.
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string|bool $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
@@ -947,7 +947,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	public function makeSearcher( SearchQuery $query ) {
 		return new self( $this->connection, $query->getOffset(), $query->getLimit(),
 			$query->getSearchConfig(), $query->getNamespaces(), $this->user,
-			null, $query->getDebugOptions(), $this->namespacePrefixParser, $this->interwikiResolver, $this->titleHelper );
+			false, $query->getDebugOptions(), $this->namespacePrefixParser, $this->interwikiResolver, $this->titleHelper );
 	}
 
 	/**

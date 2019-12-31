@@ -6,6 +6,7 @@ use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
+use Wikimedia\Assert\Assert;
 
 class BaseHighlightedField extends HighlightedField {
 	const TYPE = 'highlighting';
@@ -151,7 +152,9 @@ class BaseHighlightedField extends HighlightedField {
 			} else {
 				$thisQuery = $this->highlightQuery;
 				$otherQuery = $other->highlightQuery;
+				Assert::precondition( $thisQuery !== null && $otherQuery !== null, 'highlightQuery not null' );
 				$this->highlightQuery = new BoolQuery();
+				// @phan-suppress-next-line PhanTypeMismatchArgumentNullable
 				$this->highlightQuery->addShould( $thisQuery );
 				$this->highlightQuery->addShould( $otherQuery );
 			}
@@ -165,7 +168,7 @@ class BaseHighlightedField extends HighlightedField {
 
 	/**
 	 * @param BaseHighlightedField $other
-	 * @return true
+	 * @return bool
 	 */
 	private function canMerge( BaseHighlightedField $other ) {
 		if ( $this->highlighterType !== $other->highlighterType ) {

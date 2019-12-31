@@ -654,14 +654,14 @@ class ForceSearchIndex extends Maintenance {
 		if ( $this->toId === null ) {
 			$this->toId = $dbr->selectField( 'page', 'MAX(page_id)' );
 			if ( $this->toId === false ) {
-				$this->fatalError( "Couldn't find any pages to index.  toId = $this->toId." );
+				$this->fatalError( "Couldn't find any pages to index." );
 			}
 		}
 		$fromId = $this->getOption( 'fromId' );
 		if ( $fromId === null ) {
 			$fromId = $dbr->selectField( 'page', 'MIN(page_id) - 1' );
 			if ( $fromId === false ) {
-				$this->fatalError( "Couldn't find any pages to index.  fromId = $fromId." );
+				$this->fatalError( "Couldn't find any pages to index." );
 			}
 		}
 		if ( $fromId === $this->toId ) {

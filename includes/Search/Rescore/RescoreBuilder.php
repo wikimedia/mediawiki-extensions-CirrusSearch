@@ -227,7 +227,7 @@ class RescoreBuilder {
 				}
 				$profileName = $profile['fallback_profile'];
 				if ( isset( $seen[$profileName] ) ) {
-					$chain = implode( '->', $seen ) . "->$profileName";
+					$chain = implode( '->', array_keys( $seen ) ) . "->$profileName";
 					throw new InvalidRescoreProfileException( "Cycle in rescore fallbacks: $chain" );
 				}
 

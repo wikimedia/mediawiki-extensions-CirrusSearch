@@ -40,7 +40,7 @@ class QueryFixer implements Visitor {
 	private $visited = false;
 
 	/**
-	 * @var ParsedNode
+	 * @var ParsedNode|null
 	 */
 	private $node;
 
@@ -148,6 +148,9 @@ class QueryFixer implements Visitor {
 			$escapeBoundaries = true;
 			/** @phan-suppress-next-line SecurityCheck-DoubleEscaped */
 			$replacement = HtmlArmor::getHtml( $replacement );
+			if ( $replacement === null ) {
+				throw new \InvalidArgumentException( '$replacement cannot be null nor wrap a null value' );
+			}
 		}
 		$replacement = preg_replace( '/([~?*"\\\\])/', '\\\\$1', $replacement );
 

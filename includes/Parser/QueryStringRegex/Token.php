@@ -60,7 +60,7 @@ class Token {
 	private $query;
 
 	/**
-	 * @var int token type
+	 * @var int|null token type
 	 */
 	private $type;
 

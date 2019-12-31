@@ -114,6 +114,7 @@ class ConfigUtils {
 			$this->fatalError( "Cannot fetch index names for $typeName: "
 				. $response->getError() );
 		}
+		// @phan-suppress-next-line PhanTypeMismatchReturnNullable T240141
 		return $found;
 	}
 

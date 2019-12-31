@@ -21,7 +21,7 @@ class BooleanClause implements Visitable {
 
 	/**
 	 * Specifies how this clause is to occur in matching documents
-	 * @var int
+	 * @var string
 	 */
 	private $occur;
 
@@ -52,7 +52,7 @@ class BooleanClause implements Visitable {
 
 	/**
 	 * Check if $occur is valid
-	 * @param int $occur
+	 * @param string $occur
 	 */
 	public static function validateOccur( $occur ) {
 		Assert::parameter( $occur === self::MUST || $occur === self::SHOULD || $occur === self::MUST_NOT,

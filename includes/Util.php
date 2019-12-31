@@ -41,7 +41,7 @@ class Util {
 	private static $defaultBoostTemplates = null;
 
 	/**
-	 * @var string Id identifying this php execution
+	 * @var string|null Id identifying this php execution
 	 */
 	private static $executionId;
 
@@ -475,7 +475,7 @@ class Util {
 		} elseif ( $method === 'utr30' ) {
 			if ( $utr30 === null ) {
 				$utr30 =
-				$normalizer = \Transliterator::createFromRules( file_get_contents( __DIR__ . '/../data/utr30.txt', "r" ) );
+				$normalizer = \Transliterator::createFromRules( file_get_contents( __DIR__ . '/../data/utr30.txt' ) );
 			}
 			$normalizer = $utr30;
 		}

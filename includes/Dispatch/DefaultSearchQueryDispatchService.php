@@ -43,6 +43,7 @@ class DefaultSearchQueryDispatchService implements SearchQueryDispatchService {
 			if ( $score === 1.0 ) {
 				if ( $bestScore === 1.0 ) {
 					throw new SearchProfileException( "Two competing contexts " .
+						// @phan-suppress-next-line PhanNonClassMethodCall $best always set when reaching this line
 						"{$route->getProfileContext()} and {$best->getProfileContext()} " .
 						" produced the max score" );
 				}
@@ -55,6 +56,7 @@ class DefaultSearchQueryDispatchService implements SearchQueryDispatchService {
 		}
 		Assert::postcondition( $best !== null,
 			"No route to backend, make sure a default SearchQueryRoute is added for {$query->getSearchEngineEntryPoint()}" );
+		// @phan-suppress-next-line PhanTypeMismatchReturnNullable needed assertion is done
 		return $best;
 	}
 }

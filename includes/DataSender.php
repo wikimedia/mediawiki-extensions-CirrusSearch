@@ -252,6 +252,7 @@ class DataSender extends ElasticsearchIntermediary {
 		if ( $exception === null && ( $justDocumentMissing || $validResponse ) ) {
 			$this->success();
 			if ( $validResponse ) {
+				// @phan-suppress-next-line PhanTypeMismatchArgumentNullable responseset is not null
 				$this->reportUpdateMetrics( $responseSet, $indexType, count( $documents ) );
 			}
 			return Status::newGood();
@@ -537,9 +538,11 @@ class DataSender extends ElasticsearchIntermediary {
 		}
 		$extraHandlers = $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop_handlers' );
 		if ( is_array( $extraHandlers ) ) {
+			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset array assertion above
 			$params['handlers'] += $extraHandlers;
 		}
 
+		// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset array assertion above
 		if ( $params['handlers'] === [] ) {
 			// The noop script only supports Map but an empty array
 			// may be transformed to [] instead of {} when serialized to json

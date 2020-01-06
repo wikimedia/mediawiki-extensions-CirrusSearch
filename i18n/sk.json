@@ -3,7 +3,8 @@
 		"authors": [
 			"Sudo77(new)",
 			"Teslaton",
-			"Luky001"
+			"Luky001",
+			"TomášPolonec"
 		]
 	},
 	"cirrussearch-desc": "Vyhľadávanie v MediaWiki bežiace na Elasticsearch",
@@ -12,9 +13,9 @@
 	"cirrussearch-pref-desc": "Vyskúšajte nový vyhľadávač, ktorý podporuje viac jazykov, zobrazuje novšie výsledky a dokonca hľadá text vo vnútri šablón.",
 	"prefs-completion": "Automatické dokončovanie",
 	"cirrussearch-pref-completion-section-desc": "Dokončovací našepkávač",
-	"cirrussearch-pref-completion-profile-help": "Nastaví správanie pre návrhy automatického dokončovania (hľadanie v priebehu písania).",
+	"cirrussearch-pref-completion-profile-help": "Nastaví správanie pre návrhy automatického dokončovania (hľadanie v priebehu písania).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Navrhovanie dokončovania] ja algoritmus na návrhy pri vyhľadávaní s lepšou opravou chýb a relevanciou vyhľadávania. Vyhľadávanie s prefixmi je pôvodný algoritmus vyhľadávania v priebehu písania.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Štandardný režim (odporúčané)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Opravuje až dva preklepy. Rieši blízke presmerovania.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Opravuje až dva preklepy. Vynecháva presmerovania veľmi podobné hlavnému názvu.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Opravuje až dva preklepy. Rieši blízke presmerovania. Vyhľadáva podreťazce v názvoch.",
 	"cirrussearch-completion-profile-strict-pref-name": "Striktný režim (pokročilé)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Bez opravy preklepov. Bez ignorovania diakritiky. Striktné porovnávanie.",

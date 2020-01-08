@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Tests\Maintenance;
 
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
-use CirrusSearch\HashSearchConfig;
 use CirrusSearch\CirrusIntegrationTestCase;
 use Normalizer;
 
@@ -11,7 +11,7 @@ use Normalizer;
  * @group CirrusSearch
  * @covers \CirrusSearch\Maintenance\AnalysisConfigBuilder
  */
-class AnalysisConfigBuilderTest extends CirrusIntegrationTestCase {
+class AnalysisConfigBuilderTest extends CirrusTestCase {
 	/** @dataProvider provideASCIIFoldingFilters */
 	public function testASCIIFoldingFix( array $input, array $expected ) {
 		$config = $this->buildConfig( [] );
@@ -461,7 +461,6 @@ class AnalysisConfigBuilderTest extends CirrusIntegrationTestCase {
 	 * @param array $extraConfig
 	 */
 	public function testLanguageAnalysis( $expected, $langCode, array $extraConfig ) {
-		$this->mergeMwGlobalArrayValue( 'wgHooks', [ 'CirrusSearchAnalysisConfig' => [] ] );
 		$config = $this->buildConfig( $extraConfig );
 		$plugins = [
 			'analysis-stempel', 'analysis-kuromoji',
@@ -627,6 +626,6 @@ class AnalysisConfigBuilderTest extends CirrusIntegrationTestCase {
 	}
 
 	private function buildConfig( array $configs ) {
-		return new HashSearchConfig( $configs + [ 'CirrusSearchSimilarityProfile' => 'default' ] );
+		return $this->newHashSearchConfig( $configs + [ 'CirrusSearchSimilarityProfile' => 'default' ] );
 	}
 }

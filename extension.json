@@ -145,7 +145,10 @@
 		"SpecialStatsAddExtra": "CirrusSearch\\Hooks::onSpecialStatsAddExtra",
 		"TitleMove": "CirrusSearch\\Hooks::onTitleMove",
 		"TitleMoveComplete": "CirrusSearch\\Hooks::onTitleMoveComplete",
-		"UserGetDefaultOptions": "CirrusSearch\\Hooks::onUserGetDefaultOptions"
+		"UserGetDefaultOptions": "CirrusSearch\\Hooks::onUserGetDefaultOptions",
+		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\ORESDraftTopicsHooks::onCirrusSearchSimilarityConfig",
+		"SearchIndexFields": "CirrusSearch\\Wikimedia\\ORESDraftTopicsHooks::onSearchIndexFields",
+		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\ORESDraftTopicsHooks::onCirrusSearchAnalysisConfig"
 	},
 	"config": {
 		"CirrusSearchDefaultCluster": {
@@ -647,6 +650,13 @@
 		},
 		"CirrusSearchNamespaceResolutionMethod": {
 			"value": "elastic"
+		},
+		"CirrusSearchWMFExtraFeatures": {
+			"value": {
+				"ores_drafttopics": {
+					"build": false
+				}
+			}
 		}
 	},
 	"ServiceWiringFiles": [

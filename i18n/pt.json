@@ -65,6 +65,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint deve ser definido com um ponto final SPARQL válido, para utilizar a pesquisa de categoria em profundidade.",
 	"cirrussearch-feature-deepcat-exception": "A consulta SPARQL de pesquisa de categoria em profundidade falhou",
 	"cirrussearch-feature-deepcat-toomany": "A consulta de categoria em profundidade devolveu demasiadas categorias",
+	"cirrussearch-feature-deepcat-invalid-title": "A categoria fornecida é inválida.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Não foram fornecidas categorias válidas a '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Não foram fornecidos títulos válidos a '$1'.",
 	"cirrussearch-mlt-not-configured": "A funcionalidade '$1' está mal configurada. Peça a um administrador para corrigir $wgCirrusSearchMoreLikeThisFields",
@@ -77,5 +78,6 @@
 	"cirrussearch-article-words": "Palavras em todas as páginas de conteúdo",
 	"cirrussearch-keyword-prefix-ns-mismatch": "O espaço nominal encontrado no termo a pesquisar <code>prefix:</code> não é compatível com os espaços nominais pedidos. Pode corrigi-lo dando à sua consulta o prefixo <code>all:</code>.",
 	"cirrussearch-autoselect-profile": "Deixar o motor de pesquisa decidir qual o melhor perfil a usar.",
-	"cirrussearch-offset-too-large": "Não foi possível obter os resultados. São suportados até $1 resultados de pesquisa, mas foram pedidos os resultados que começam em $2."
+	"cirrussearch-offset-too-large": "Não foi possível obter os resultados. São suportados até $1 resultados de pesquisa, mas foram pedidos os resultados que começam em $2.",
+	"cirrussearch-offset-not-allowed-with-random-sort": "A ignorar o pedido para paginar resultados com ordenação aleatória."
 }

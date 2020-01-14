@@ -2,9 +2,9 @@
 
 namespace CirrusSearch\Test;
 
-use CirrusSearch\Search\SearchContext;
-use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Query\LegacyKeywordFeature;
+use CirrusSearch\Query\SimpleKeywordFeature;
+use CirrusSearch\Search\SearchContext;
 
 class MockSimpleKeywordFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	private $calls = [];

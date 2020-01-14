@@ -128,7 +128,7 @@ trait ApiTrait {
 				return [ $rev->getPage(), $hasRedirects ];
 			}
 			$content = $handler->unserializeContent(
-				/** @todo move to new API  */
+				/** @todo move to new API */
 				$rev->getSerializedData(),
 				$rev->getContentFormat()
 			);

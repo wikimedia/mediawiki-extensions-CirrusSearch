@@ -2,9 +2,9 @@
 
 namespace CirrusSearch\Query;
 
-use Elastica\Aggregation\Sum;
-use CirrusSearch\Search\SingleAggResultsType;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Search\SingleAggResultsType;
+use Elastica\Aggregation\Sum;
 
 /**
  * Build a query to sum up the word count of all articles

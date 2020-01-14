@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\SearchConfig;
 use CirrusSearch\Maintenance\Exception\IndexDumperException;
+use CirrusSearch\SearchConfig;
 use Elastica;
 use Elastica\JSON;
 use Elastica\Query;

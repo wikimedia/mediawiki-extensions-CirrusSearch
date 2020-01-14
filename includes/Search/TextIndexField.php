@@ -4,9 +4,9 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\Maintenance\MappingConfigBuilder;
 use CirrusSearch\Profile\SearchProfileService;
-use SearchIndexField;
 use CirrusSearch\SearchConfig;
 use SearchEngine;
+use SearchIndexField;
 
 /**
  * Index field representing keyword.
@@ -87,7 +87,7 @@ class TextIndexField extends CirrusIndexField {
 	 * @return int
 	 */
 	protected function getTextOptions( $mappingFlags ) {
-		if ( !is_null( $this->textOptions ) ) {
+		if ( $this->textOptions !== null ) {
 			return $this->textOptions;
 		}
 		$options = self::ENABLE_NORMS | self::SPEED_UP_HIGHLIGHTING;
@@ -257,7 +257,7 @@ class TextIndexField extends CirrusIndexField {
 				$fieldSimilarity = $similarity['fields']["$field.$analyzer"];
 			}
 		}
-		if ( is_null( $fieldSimilarity ) ) {
+		if ( $fieldSimilarity === null ) {
 			throw new \RuntimeException( "Invalid similarity profile, unable to infer the similarity for " .
 				"the field $field, (defining a __default__ field might solve the issue" );
 		}

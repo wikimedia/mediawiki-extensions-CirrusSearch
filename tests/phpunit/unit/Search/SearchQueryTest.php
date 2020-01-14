@@ -229,7 +229,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( [ NS_MAIN ], $defaults->getNamespaces() );
 		$this->assertEquals( [ NS_MAIN ], $defaults->getInitialNamespaces() );
 		$this->assertEquals( 'relevance', $defaults->getSort() );
-		$this->assertEquals( 0, $defaults->getOffset() );
+		$this->assertSame( 0, $defaults->getOffset() );
 		$this->assertEquals( 10, $defaults->getLimit() );
 		$this->assertEquals( CirrusDebugOptions::defaultOptions(), $defaults->getDebugOptions() );
 		$this->assertEquals( $config, $defaults->getSearchConfig() );

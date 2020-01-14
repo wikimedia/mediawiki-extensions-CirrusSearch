@@ -5,10 +5,10 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
+use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Config;
-use CirrusSearch\Search\SearchContext;
 use Elastica\Query\AbstractQuery;
 use Title;
 

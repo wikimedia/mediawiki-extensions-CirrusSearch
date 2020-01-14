@@ -2,8 +2,8 @@
 
 namespace CirrusSearch;
 
-use MediaWiki\MediaWikiServices;
 use FormlessAction;
+use MediaWiki\MediaWikiServices;
 
 /**
  * action=cirrusDump handler.  Dumps contents of Elasticsearch indexes for the

@@ -2,11 +2,11 @@
 
 namespace CirrusSearch;
 
-use MediaWiki\Extension\SiteMatrix\SiteMatrix;
-use WANObjectCache;
 use BagOStuff;
 use ExtensionRegistry;
+use MediaWiki\Extension\SiteMatrix\SiteMatrix;
 use MediaWiki\MediaWikiServices;
+use WANObjectCache;
 
 /**
  * InterwikiResolver suited for WMF context and uses SiteMatrix.

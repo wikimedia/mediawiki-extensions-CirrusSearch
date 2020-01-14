@@ -196,7 +196,7 @@ class QueryFixer implements Visitor {
 	/**
 	 * Determine if this substring of the query is suitable for being fixed.
 	 * Excludes string with chars that may require escaping (*, ?, " and \)
-	 * @param $str
+	 * @param string $str
 	 * @return bool
 	 */
 	private function acceptableString( $str ) {

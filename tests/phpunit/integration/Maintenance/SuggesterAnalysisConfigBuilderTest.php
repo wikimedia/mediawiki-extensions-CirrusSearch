@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Tests\Maintenance;
 
-use CirrusSearch\HashSearchConfig;
 use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
 
 /**

@@ -57,7 +57,7 @@ class ContentModelFeature extends SimpleKeywordFeature implements FilterQueryFea
 	}
 
 	/**
-	 * @param $value
+	 * @param string $value
 	 * @return Query\Match
 	 */
 	private function doGetFilterQuery( $value ) {

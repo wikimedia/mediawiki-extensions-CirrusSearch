@@ -5,26 +5,26 @@ namespace CirrusSearch;
 use ApiBase;
 use ApiMain;
 use ApiOpenSearch;
+use ApiUsageException;
 use CirrusSearch;
 use CirrusSearch\Job\JobTraits;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
 use DeferredUpdates;
+use Html;
+use ISearchResultSet;
 use JobQueueGroup;
 use LinksUpdate;
 use MediaWiki\Logger\LoggerFactory;
-use OutputPage;
 use MediaWiki\MediaWikiServices;
-use ISearchResultSet;
+use OutputPage;
+use RequestContext;
 use SpecialSearch;
 use Title;
-use RequestContext;
-use ApiUsageException;
 use User;
 use WebRequest;
 use WikiPage;
 use Xml;
-use Html;
 
 /**
  * All CirrusSearch's external hooks.

@@ -3,11 +3,11 @@
 namespace CirrusSearch;
 
 use DeferredUpdates;
-use MediaWiki\Logger\LoggerFactory;
 use ISearchResultSet;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\User\UserIdentity;
-use User;
 use UIDGenerator;
+use User;
 
 /**
  * Handles logging information about requests made to various destinations,

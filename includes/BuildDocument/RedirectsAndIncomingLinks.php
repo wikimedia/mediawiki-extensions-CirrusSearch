@@ -2,12 +2,12 @@
 
 namespace CirrusSearch\BuildDocument;
 
-use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\Connection;
 use CirrusSearch\ElasticaErrorHandler;
+use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\SearchRequestLog;
-use CirrusSearch\Connection;
-use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Document;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query\BoolQuery;

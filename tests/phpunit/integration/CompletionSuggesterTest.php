@@ -2,11 +2,11 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\CompSuggestQueryBuilder;
 use CirrusSearch\Search\CompletionResultsCollector;
 use CirrusSearch\Search\SearchContext;
-use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet;

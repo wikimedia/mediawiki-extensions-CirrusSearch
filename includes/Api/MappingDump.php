@@ -39,7 +39,7 @@ class MappingDump extends \ApiBase {
 				$mapping = $index->getMapping();
 				$this->getResult()->addValue( null, Connection::TITLE_SUGGEST_TYPE, $mapping );
 			}
-		};
+		}
 	}
 
 	public function getAllowedParams() {

@@ -26,15 +26,15 @@ class CirrusConfigInterwikiResolver extends BaseInterwikiResolver {
 
 	protected function loadMatrix() {
 		$sisterProjects = $this->config->get( 'CirrusSearchInterwikiSources' );
-		if ( is_null( $sisterProjects ) ) {
+		if ( $sisterProjects === null ) {
 			$sisterProjects = [];
 		}
 		$languageMap = $this->config->get( 'CirrusSearchLanguageToWikiMap' );
-		if ( is_null( $languageMap ) ) {
+		if ( $languageMap === null ) {
 			$languageMap = [];
 		}
 		$crossLanguage = $this->config->get( 'CirrusSearchWikiToNameMap' );
-		if ( is_null( $crossLanguage ) ) {
+		if ( $crossLanguage === null ) {
 			$crossLanguage = [];
 		}
 		$crossLanguage = array_filter( $crossLanguage, function ( $entry ) {

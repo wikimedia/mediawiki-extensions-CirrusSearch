@@ -2,10 +2,10 @@
 
 namespace CirrusSearch\Tests\Maintenance;
 
-use CirrusSearch\Maintenance\IndexCreator;
 use CirrusSearch\CirrusTestCase;
-use Elastica\Response;
+use CirrusSearch\Maintenance\IndexCreator;
 use Elastica\Index;
+use Elastica\Response;
 
 /**
  * This program is free software; you can redistribute it and/or modify

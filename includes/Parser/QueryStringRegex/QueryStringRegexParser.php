@@ -350,6 +350,7 @@ class QueryStringRegexParser implements QueryParser {
 	 * - NOT NOT: MUST_NOT:NOT
 	 * - NOT AND FOO: MUST_NOT:AND MUST:FOO
 	 * - NOT !FOO: MUST:FOO
+	 * @return ParsedNode
 	 */
 	private function expression() {
 		$clauses = [];

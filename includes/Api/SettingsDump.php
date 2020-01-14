@@ -42,7 +42,7 @@ class SettingsDump extends \ApiBase {
 				$mapping = $index->getSettings()->get();
 				$this->getResult()->addValue( [ Connection::TITLE_SUGGEST_TYPE, Connection::TITLE_SUGGEST_TYPE ], 'index', $mapping );
 			}
-		};
+		}
 	}
 
 	public function getAllowedParams() {

@@ -8,11 +8,11 @@ use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Query\Builder\ContextualFilter;
 use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
+use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Term;
-use CirrusSearch\Search\SearchContext;
 use Wikimedia\Assert\Assert;
 
 /**

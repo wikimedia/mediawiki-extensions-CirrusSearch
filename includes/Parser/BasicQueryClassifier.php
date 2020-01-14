@@ -2,18 +2,18 @@
 
 namespace CirrusSearch\Parser;
 
-use CirrusSearch\Parser\AST\NamespaceHeaderNode;
-use CirrusSearch\Parser\AST\Visitor\Visitor;
 use CirrusSearch\Parser\AST\BooleanClause;
 use CirrusSearch\Parser\AST\EmptyQueryNode;
 use CirrusSearch\Parser\AST\FuzzyNode;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Parser\AST\NamespaceHeaderNode;
 use CirrusSearch\Parser\AST\NegatedNode;
 use CirrusSearch\Parser\AST\ParsedBooleanNode;
 use CirrusSearch\Parser\AST\ParsedQuery;
 use CirrusSearch\Parser\AST\PhrasePrefixNode;
 use CirrusSearch\Parser\AST\PhraseQueryNode;
 use CirrusSearch\Parser\AST\PrefixNode;
+use CirrusSearch\Parser\AST\Visitor\Visitor;
 use CirrusSearch\Parser\AST\WildcardNode;
 use CirrusSearch\Parser\AST\WordsQueryNode;
 

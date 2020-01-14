@@ -2,9 +2,9 @@
 
 namespace CirrusSearch\Tests\Maintenance;
 
+use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
-use CirrusSearch\CirrusIntegrationTestCase;
 use Normalizer;
 
 /**

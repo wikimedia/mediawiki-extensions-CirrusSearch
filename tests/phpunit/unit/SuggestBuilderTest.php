@@ -2,9 +2,9 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\BuildDocument\Completion\DefaultSortSuggestionsBuilder;
 use CirrusSearch\BuildDocument\Completion\NaiveSubphrasesSuggestionsBuilder;
+use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\BuildDocument\Completion\SuggestScoringMethodFactory;
 
 /**

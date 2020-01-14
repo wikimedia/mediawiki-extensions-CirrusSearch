@@ -140,7 +140,7 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 				$this->assertCount( 1, $updates );
 				foreach ( $updates as $data ) {
 					list( $otherIndex, $actions ) = $data;
-					$this->assertInternalType( 'array', $actions );
+					$this->assertIsArray( $actions );
 					$this->assertCount( 1, $actions );
 					$action = $actions[0];
 					$this->assertArrayHasKey( 'docId', $action );

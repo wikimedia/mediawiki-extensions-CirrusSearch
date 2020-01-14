@@ -2,10 +2,10 @@
 
 namespace CirrusSearch\Search;
 
-use SearchEngine;
-use SearchIndexFieldDefinition;
-use SearchIndexField;
 use CirrusSearch\SearchConfig;
+use SearchEngine;
+use SearchIndexField;
+use SearchIndexFieldDefinition;
 
 /**
  * Basic ElasticSearch index field

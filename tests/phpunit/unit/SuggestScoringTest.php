@@ -3,8 +3,8 @@
 namespace CirrusSearch;
 
 use CirrusSearch\BuildDocument\Completion\IncomingLinksScoringMethod;
-use CirrusSearch\BuildDocument\Completion\QualityScore;
 use CirrusSearch\BuildDocument\Completion\PQScore;
+use CirrusSearch\BuildDocument\Completion\QualityScore;
 
 /**
  * test suggest scoring functions.
@@ -289,12 +289,12 @@ class SuggestScoringTest extends CirrusTestCase {
 			'redirect' => [],
 			'template' => []
 		];
-		$this->assertEquals( 0, $qs->score( $page ), "Lowest score is 0" );
+		$this->assertSame( 0, $qs->score( $page ), "Lowest score is 0" );
 		$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
 			"Explanation matches", 2 );
 
 		$page = [];
-		$this->assertEquals( 0, $qs->score( $page ), "Score of a broken article is 0" );
+		$this->assertSame( 0, $qs->score( $page ), "Score of a broken article is 0" );
 		$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
 			"Explanation matches", 2 );
 

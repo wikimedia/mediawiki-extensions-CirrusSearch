@@ -161,7 +161,7 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 			$context = new SearchContext( $config, [], null, null, $fetchPhaseBuilder );
 			foreach ( ( new FullTextKeywordRegistry( $config, $this->namespacePrefixParser() ) )->getKeywords() as $kw ) {
 				$kw->apply( $context, $query );
-			};
+			}
 		}
 		$this->assertEquals( $expected, $type->getHighlightingConfiguration( [] ) );
 	}

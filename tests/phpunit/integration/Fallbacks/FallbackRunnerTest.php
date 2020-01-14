@@ -265,7 +265,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$this->assertNotEmpty( $runner->getElasticSuggesters() );
 		$initialResults = $this->newResultSet( $response );
 		$newResults = $runner->run( $searcherFactory, $initialResults, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
-		$this->assertEquals( 0, $newResults->getTotalHits() );
+		$this->assertSame( 0, $newResults->getTotalHits() );
 		$iwResults = $newResults->getInterwikiResults( \ISearchResultSet::INLINE_RESULTS );
 		$this->assertNotEmpty( $iwResults );
 		$this->assertArrayHasKey( 'frwiki', $iwResults );

@@ -4,8 +4,8 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use CirrusSearch\Job\CheckerJob;
-use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\MetaStore\MetaSaneitizeJobStore;
+use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\Profile\SearchProfileService;
 use JobQueueGroup;
 

@@ -17,20 +17,21 @@ class SearchRequestBuilder {
 	/** @var Connection */
 	private $connection;
 
-	/** @var string  */
+	/** @var string */
 	private $indexBaseName;
 
-	/** @var  int  */
+	/** @var  int */
 	private $offset = 0;
 
-	/** @var  int  */
+	/** @var  int */
 	private $limit = 20;
 
-	/** @var string search timeout, string with time and unit, e.g. 20s for 20 seconds*/
+	/** @var string search timeout, string with time and unit, e.g. 20s for 20 seconds */
 	private $timeout;
 
 	/** @var Type|null Force the type when set, use {@link Connection::pickIndexTypeForNamespaces}
-	 * otherwise */
+	 * otherwise
+	 */
 	private $pageType;
 
 	/** @var string set the sort option, controls the use of rescore functions or elastic sort */

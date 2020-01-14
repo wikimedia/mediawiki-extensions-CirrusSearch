@@ -392,7 +392,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 */
 	public function addSyntaxUsed( $feature, $weight = null ) {
 		$this->isDirty = true;
-		if ( is_null( $weight ) ) {
+		if ( $weight === null ) {
 			if ( isset( self::$syntaxWeights[$feature] ) ) {
 				$weight = self::$syntaxWeights[$feature];
 			} else {

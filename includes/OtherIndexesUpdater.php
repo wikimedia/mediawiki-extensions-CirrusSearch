@@ -2,8 +2,8 @@
 
 namespace CirrusSearch;
 
-use MediaWiki\Logger\LoggerFactory;
 use Elastica\Multi\Search as MultiSearch;
+use MediaWiki\Logger\LoggerFactory;
 use Title;
 
 /**

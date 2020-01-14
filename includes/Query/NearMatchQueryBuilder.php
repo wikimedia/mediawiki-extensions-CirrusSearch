@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Query;
 
-use Elastica\Query\MultiMatch;
 use CirrusSearch\Search\SearchContext;
+use Elastica\Query\MultiMatch;
 
 /**
  * Build a query suited for exact title/redirect match.

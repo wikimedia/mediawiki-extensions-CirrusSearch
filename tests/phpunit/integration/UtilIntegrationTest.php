@@ -233,7 +233,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		];
 	}
 
-		/**
+	/**
 	 * Create test hash config for a wiki.
 	 * @param string $wiki
 	 * @param mixed[] $moreData additional config

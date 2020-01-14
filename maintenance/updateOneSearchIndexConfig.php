@@ -476,7 +476,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
-	/*
+	/**
 	 * @return \CirrusSearch\Maintenance\Validators\Validator
 	 */
 	private function getShardAllocationValidator() {

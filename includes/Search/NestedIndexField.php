@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Search;
 
-use SearchIndexField;
 use SearchEngine;
+use SearchIndexField;
 
 class NestedIndexField extends CirrusIndexField {
 	protected $typeName = "nested";

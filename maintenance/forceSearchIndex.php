@@ -11,8 +11,8 @@ use MediaWiki\Logger\LoggerFactory;
 use MWException;
 use MWTimestamp;
 use Title;
-use WikiPage;
 use Wikimedia\Rdbms\IDatabase;
+use WikiPage;
 
 /**
  * Force reindexing change to the wiki.
@@ -150,7 +150,7 @@ class ForceSearchIndex extends Maintenance {
 			$this->pageIds = $this->buildPageIdBatches();
 		}
 
-		if ( !is_null( $this->getOption( 'from' ) ) || !is_null( $this->getOption( 'to' ) ) ) {
+		if ( $this->getOption( 'from' ) !== null || $this->getOption( 'to' ) !== null ) {
 			// 0 is falsy so MWTimestamp makes that `now`.  '00' is epoch 0.
 			$this->fromDate = new MWTimestamp( $this->getOption( 'from', '00' ) );
 			$this->toDate = new MWTimestamp( $this->getOption( 'to', false ) );
@@ -237,7 +237,7 @@ class ForceSearchIndex extends Maintenance {
 			$this->output(
 				"$wiki $operationName $size pages ending at {$batch['endingAt']} at $rate/second\n"
 			);
-			if ( !is_null( $this->limit ) && $completed > $this->limit ) {
+			if ( $this->limit !== null && $completed > $this->limit ) {
 				break;
 			}
 		}
@@ -512,6 +512,7 @@ class ForceSearchIndex extends Maintenance {
 	 * Back-compat for WikiPage::getQueryInfo()
 	 * @todo Remove this in favor of calling WikiPage::getQueryInfo() directly
 	 *  when support for MediaWiki before 1.31 is dropped.
+	 * @return array
 	 */
 	private static function getPageQueryInfo() {
 		if ( is_callable( [ WikiPage::class, 'getQueryInfo' ] ) ) {

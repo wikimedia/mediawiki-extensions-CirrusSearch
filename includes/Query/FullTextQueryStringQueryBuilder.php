@@ -2,9 +2,9 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\SearchConfig;
-use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Extra\Query\TokenCountRouter;
+use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 use Elastica\Query\MatchAll;
 use MediaWiki\Logger\LoggerFactory;
 
@@ -310,7 +310,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 *
 	 * @param string[] $fields
 	 * @param string $queryString
-	 * @param integer $phraseSlop phrase slop
+	 * @param int $phraseSlop phrase slop
 	 * @return \Elastica\Query\QueryString
 	 */
 	private function buildQueryString( array $fields, $queryString, $phraseSlop ) {
@@ -343,7 +343,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * costly wildcard queries too many times.
 	 *
 	 * @param SearchContext $context
-	 * @param string        $term
+	 * @param string $term
 	 * @return string
 	 */
 	private static function switchSearchToExactForWildcards( SearchContext $context, $term ) {
@@ -370,7 +370,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 *
 	 * @param SearchContext $context
 	 * @param string $term
-	 * @param boolean $allFieldAllowed
+	 * @param bool $allFieldAllowed
 	 * @return string
 	 */
 	private static function switchSearchToExact( SearchContext $context, $term, $allFieldAllowed ) {
@@ -383,9 +383,9 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * Build fields searched by full text search.
 	 *
 	 * @param SearchContext $context
-	 * @param float         $weight weight to multiply by all fields
-	 * @param string        $fieldSuffix suffix to add to field names
-	 * @param boolean       $allFieldAllowed can we use the all field?  False for
+	 * @param float $weight weight to multiply by all fields
+	 * @param string $fieldSuffix suffix to add to field names
+	 * @param bool $allFieldAllowed can we use the all field?  False for
 	 *  collecting phrases for the highlighter.
 	 * @return string[] array of fields to query
 	 */

@@ -400,7 +400,7 @@ class SuggestBuilder {
 	 *
 	 * @param string $groupHead string the group "head"
 	 * @param string[] $candidates array of string the candidates
-	 * @param boolean $checkVariants if the candidate does not match the groupHead try to match a variant
+	 * @param bool $checkVariants if the candidate does not match the groupHead try to match a variant
 	 * @return array 'group' key contains the group with the
 	 *         head and its variants and 'candidates' contains the remaining
 	 *         candidates that were not close enough to $groupHead.
@@ -440,7 +440,7 @@ class SuggestBuilder {
 	 *
 	 * @param string $a
 	 * @param string $b
-	 * @return integer the edit distance between a and b
+	 * @return int the edit distance between a and b
 	 */
 	private function distance( $a, $b ) {
 		$a = $this->trimForDistanceCheck( $a );
@@ -509,7 +509,7 @@ class SuggestBuilder {
 
 	/**
 	 * @param Connection $connection
-	 * @param $indexBaseName
+	 * @param string|null $indexBaseName
 	 * @return int
 	 */
 	private static function fetchMaxDoc( Connection $connection, $indexBaseName = null ) {

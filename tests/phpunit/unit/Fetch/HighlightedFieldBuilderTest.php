@@ -259,8 +259,8 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 		];
 
 		foreach ( $fieldCouples as $couple ) {
-			/** @var BaseHighlightedField $f1 */
-			/** @var BaseHighlightedField $f2 */
+			/** @var BaseHighlightedField $f1 */
+			/** @var BaseHighlightedField $f2 */
 			list( $f1, $f2 ) = $couple;
 			$this->assertMergeOnPrio( $f1, $f2, 'query' );
 			$f1->setHighlightQuery( new MatchAll() );

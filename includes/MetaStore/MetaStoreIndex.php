@@ -77,7 +77,7 @@ class MetaStoreIndex {
 
 	/**
 	 * @var Printer|null output handler
-	*/
+	 */
 	private $out;
 
 	/**

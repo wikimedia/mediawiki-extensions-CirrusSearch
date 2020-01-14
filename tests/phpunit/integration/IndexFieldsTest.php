@@ -2,10 +2,9 @@
 
 namespace CirrusSearch;
 
-use SearchIndexField;
 use CirrusSearch;
-
 use MediaWiki\MediaWikiServices;
+use SearchIndexField;
 
 /**
  * @group CirrusSearch

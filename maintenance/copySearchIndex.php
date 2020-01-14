@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\Connection;
 use CirrusSearch\ClusterSettings;
+use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 
 /**

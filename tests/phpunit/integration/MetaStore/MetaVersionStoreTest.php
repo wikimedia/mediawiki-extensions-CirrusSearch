@@ -52,7 +52,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 		// TODO: Would be nice to have some sort of check that these
 		// are valid to elasticsearch. But thats more on integration
 		// testing again
-		$this->assertInternalType( 'array', $properties );
+		$this->assertIsArray( $properties );
 	}
 
 	public function testFind() {

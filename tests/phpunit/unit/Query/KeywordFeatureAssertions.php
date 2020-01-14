@@ -58,7 +58,6 @@ class KeywordFeatureAssertions {
 
 	/**
 	 * @param null $expectedQuery
-	 * @param array|callback|null $warnings
 	 * @param bool $negated
 	 * @return SearchContext
 	 */
@@ -106,8 +105,7 @@ class KeywordFeatureAssertions {
 	}
 
 	/**
-	 * @param BoostFunctionBuilder|callback|null $expectedQuery
-	 * @param array|null $warnings
+	 * @param BoostFunctionBuilder|callback|null $expectedBoost
 	 * @return SearchContext
 	 */
 	private function mockContextExpectingBoost( $expectedBoost = null, SearchConfig $config = null ) {
@@ -497,7 +495,7 @@ class KeywordFeatureAssertions {
 	/**
 	 * @param string $term
 	 * @param KeywordFeature $feature
-	 * @param KeywordParser $parser
+	 * @param KeywordParser|null $parser
 	 * @param bool $ignoreNegatedNodes returns null if the keyword is negated
 	 * @return KeywordFeatureNode|null
 	 */
@@ -534,7 +532,7 @@ class KeywordFeatureAssertions {
 	}
 
 	/**
-	 * @param $data
+	 * @param array $data
 	 * @param SearchConfig $config
 	 * @param HighlightFieldGenerator|null $fetchPhaseConfigBuilder
 	 * @return \PHPUnit\Framework\MockObject\MockObject
@@ -566,9 +564,9 @@ class KeywordFeatureAssertions {
 	}
 
 	/**
-	 * @param $highlightField
+	 * @param string $highlightField
 	 * @param array $highlightQuery
-	 * @param $useExp
+	 * @param bool $useExp
 	 * @param BaseHighlightedField $hlField
 	 */
 	private function assertHighlightField( $highlightField, array $highlightQuery, $useExp, BaseHighlightedField $hlField ) {

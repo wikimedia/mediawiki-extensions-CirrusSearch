@@ -4,9 +4,9 @@ namespace CirrusSearch;
 
 use CirrusSearch\Query\FullTextQueryStringQueryBuilder;
 use CirrusSearch\Search\CirrusSearchResultSet;
-use CirrusSearch\Test\SearchConfigUsageDecorator;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummyConnection;
+use CirrusSearch\Test\SearchConfigUsageDecorator;
 use Elastica\Query;
 use Elastica\Response;
 use HtmlArmor;
@@ -301,7 +301,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$this->assertTrue( $status->isOK(), 'search didnt fail' );
 		$this->assertFalse( $status->isGood(), 'but it has warnings' );
 		$this->assertTrue( $status->getValue()->searchContainedSyntax(), 'it used special syntax' );
-		$this->assertEquals( 0, $status->getValue()->numRows(), 'and returned no results' );
+		$this->assertSame( 0, $status->getValue()->numRows(), 'and returned no results' );
 	}
 
 	public function testApplyDebugOptions() {

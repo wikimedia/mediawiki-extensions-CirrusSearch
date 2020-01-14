@@ -2,12 +2,12 @@
 
 namespace CirrusSearch;
 
-use WANObjectCache;
 use BagOStuff;
 use MediaWiki\Interwiki\InterwikiLookup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MultiHttpClient;
+use WANObjectCache;
 
 /**
  * Base InterwikiResolver class.

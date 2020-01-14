@@ -2,8 +2,8 @@
 
 namespace CirrusSearch;
 
-use WANObjectCache;
 use BagOStuff;
+use WANObjectCache;
 
 /**
  * Factory class used to create InterwikiResolver

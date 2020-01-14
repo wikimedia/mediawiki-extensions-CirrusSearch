@@ -39,7 +39,7 @@ class SuggesterMappingConfigBuilder {
 	 * @param SearchConfig|null $config
 	 */
 	public function __construct( SearchConfig $config = null ) {
-		if ( is_null( $config ) ) {
+		if ( $config === null ) {
 			$config =
 				MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
 		}

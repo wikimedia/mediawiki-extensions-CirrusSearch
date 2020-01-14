@@ -3,9 +3,9 @@
 namespace CirrusSearch\Search;
 
 use BaseSearchResultSet;
-use LinkBatch;
 use HtmlArmor;
 use ISearchResultSet;
+use LinkBatch;
 use SearchResult;
 use SearchResultSetTrait;
 use Title;

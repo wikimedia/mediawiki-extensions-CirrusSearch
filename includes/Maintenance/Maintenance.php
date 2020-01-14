@@ -5,8 +5,8 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\SearchConfig;
-use MediaWiki\MediaWikiServices;
 use CirrusSearch\UserTesting;
+use MediaWiki\MediaWikiServices;
 
 // Maintenance class is loaded before autoload, so we need to pull the interface
 require_once __DIR__ . '/Printer.php';

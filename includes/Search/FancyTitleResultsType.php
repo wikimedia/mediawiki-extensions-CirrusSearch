@@ -181,6 +181,7 @@ class FancyTitleResultsType extends TitleResultsType {
 	 * @param string $redirectTitleString Highlighted string returned from elasticsearch
 	 * @param array $docRedirects Map from title string to list of redirects from elasticsearch source document
 	 * @param int[] $namespaces Prefered namespaces to source redirects from
+	 * @return \Title
 	 */
 	private function resolveRedirectHighlight( \Elastica\Result $r, $redirectTitleString, array $docRedirects, $namespaces ) {
 		// The match was against a redirect so we should replace the $title with one that

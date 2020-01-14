@@ -2,15 +2,15 @@
 
 namespace CirrusSearch\Test;
 
+use CirrusSearch\CirrusConfigInterwikiResolver;
+use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\EmptyInterwikiResolver;
+use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolver;
+use CirrusSearch\InterwikiResolverFactory;
+use CirrusSearch\SiteMatrixInterwikiResolver;
 use ExtensionRegistry;
 use MediaWiki\MediaWikiServices;
-use CirrusSearch\CirrusIntegrationTestCase;
-use CirrusSearch\CirrusConfigInterwikiResolver;
-use CirrusSearch\HashSearchConfig;
-use CirrusSearch\SiteMatrixInterwikiResolver;
-use CirrusSearch\InterwikiResolverFactory;
 
 /**
  * @group CirrusSearch

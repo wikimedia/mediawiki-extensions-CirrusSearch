@@ -7,10 +7,10 @@ use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
 use CirrusSearch\Search\Rescore\PreferRecentFunctionScoreBuilder;
+use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Config;
-use CirrusSearch\Search\SearchContext;
 
 /**
  * Matches "prefer-recent:" and then an optional floating point number <= 1 but

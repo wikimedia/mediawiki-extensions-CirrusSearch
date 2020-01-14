@@ -89,7 +89,7 @@ class AnalysisConfigBuilder {
 			}
 		}
 		$this->icu = in_array( 'analysis-icu', $plugins );
-		if ( is_null( $config ) ) {
+		if ( $config === null ) {
 			$config = MediaWikiServices::getInstance()
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );
@@ -1305,7 +1305,7 @@ STEMMER_RULES
 	/**
 	 * Get list of filters that are mentioned in analyzers but not defined
 	 * explicitly.
-	 * @param array[] $config Full configuration array
+	 * @param array[] &$config Full configuration array
 	 * @param string[] $analyzers List of analyzers to consider.
 	 * @return array List of default filters, each containing only filter type
 	 */
@@ -1330,7 +1330,7 @@ STEMMER_RULES
 	 * ignore it. If it has the same name, but different content - create new filter
 	 * with different name by prefixing it with language code.
 	 *
-	 * @param array[] $config Configuration being processed
+	 * @param array[] &$config Configuration being processed
 	 * @param array[] $standardFilters Existing filters list
 	 * @param array[] $defaultFilters List of default filters already mentioned in the config
 	 * @param string $prefix Prefix for disambiguation
@@ -1363,7 +1363,7 @@ STEMMER_RULES
 
 	/**
 	 * Replace certain filter name in all configs with different name.
-	 * @param array[] $config Configuration being processed
+	 * @param array[] &$config Configuration being processed
 	 * @param string $oldName
 	 * @param string $newName
 	 */
@@ -1384,7 +1384,7 @@ STEMMER_RULES
 	/**
 	 * Merge per-language config into the main config.
 	 * It will copy specific analyzer and all dependant filters and char_filters.
-	 * @param array $config Main config
+	 * @param array &$config Main config
 	 * @param array $langConfig Per-language config
 	 * @param string $name Name for analyzer whose config we're merging
 	 * @param string $prefix Prefix for this configuration

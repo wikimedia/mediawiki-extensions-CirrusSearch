@@ -37,10 +37,10 @@ class CirrusSearchTest extends CirrusTestCase {
 		if ( $default === null ) {
 			$this->assertNull( $profiles );
 		} else {
-			$this->assertInternalType( 'array', $profiles );
+			$this->assertIsArray( $profiles );
 			$nameMap = [];
 			foreach ( $profiles as $p ) {
-				$this->assertInternalType( 'array', $p );
+				$this->assertIsArray( $p );
 				$this->assertArrayHasKey( 'name', $p );
 				$nameMap[$p['name']] = $p;
 			}

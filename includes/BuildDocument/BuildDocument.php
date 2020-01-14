@@ -3,14 +3,14 @@
 namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\Connection;
-use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\CirrusIndexField;
+use CirrusSearch\SearchConfig;
 use Elastica\Document;
+use Hooks;
 use IDatabase;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Revision\RevisionAccessException;
 use MediaWiki\Revision\RevisionStore;
-use Hooks;
 use ParserCache;
 use ParserOutput;
 use Wikimedia\Assert\Assert;

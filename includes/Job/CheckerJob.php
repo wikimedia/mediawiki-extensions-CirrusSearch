@@ -6,13 +6,13 @@ use ArrayObject;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Sanity\AllClustersQueueingRemediator;
 use CirrusSearch\Sanity\BufferedRemediator;
+use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\CheckerException;
 use CirrusSearch\Sanity\MultiClusterRemediatorHelper;
-use CirrusSearch\Searcher;
-use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\QueueingRemediator;
-use MediaWiki\Logger\LoggerFactory;
+use CirrusSearch\Searcher;
 use JobQueueGroup;
+use MediaWiki\Logger\LoggerFactory;
 
 /**
  * Job wrapper around Sanity\Checker

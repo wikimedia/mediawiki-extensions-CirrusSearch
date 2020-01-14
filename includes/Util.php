@@ -267,7 +267,7 @@ class Util {
 	 * @return float[]
 	 */
 	public static function getDefaultBoostTemplates( SearchConfig $config = null ) {
-		if ( is_null( $config ) ) {
+		if ( $config === null ) {
 			$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
 		}
 

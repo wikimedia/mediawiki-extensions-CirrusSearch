@@ -89,8 +89,8 @@ class ExternalIndex {
 	 */
 	public function getBoosts() {
 		$boosts = $this->config->getElement( 'CirrusSearchExtraIndexBoostTemplates', $this->indexName );
-		if ( isset( $boosts['wiki'], $boosts['boosts'] ) ) {
-			return [ $boosts['wiki'], $boosts['boosts'] ];
+		if ( isset( $boosts['wiki'] ) ) {
+			return [ $boosts['wiki'], $boosts['boosts'] ?? [] ];
 		} else {
 			return [ '', [] ];
 		}

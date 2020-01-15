@@ -38,6 +38,8 @@ class KeywordFeatureAssertions {
 	}
 
 	/**
+	 * @param SearchConfig|null $config
+	 * @param FetchPhaseConfigBuilder|null $fetchPhaseConfigBuilder
 	 * @return SearchContext
 	 */
 	private function mockContext( SearchConfig $config = null, FetchPhaseConfigBuilder $fetchPhaseConfigBuilder = null ) {
@@ -57,8 +59,9 @@ class KeywordFeatureAssertions {
 	}
 
 	/**
-	 * @param null $expectedQuery
+	 * @param array|AbstractQuery|callable|null $expectedQuery
 	 * @param bool $negated
+	 * @param SearchConfig $config
 	 * @return SearchContext
 	 */
 	private function mockContextExpectingAddFilter(
@@ -106,6 +109,7 @@ class KeywordFeatureAssertions {
 
 	/**
 	 * @param BoostFunctionBuilder|callback|null $expectedBoost
+	 * @param SearchConfig|null $config
 	 * @return SearchContext
 	 */
 	private function mockContextExpectingBoost( $expectedBoost = null, SearchConfig $config = null ) {
@@ -232,7 +236,7 @@ class KeywordFeatureAssertions {
 	/**
 	 * @param KeywordFeature $feature
 	 * @param string $term
-	 * @param array|callable|null $filter
+	 * @param array|AbstractQuery|callable|null $filter
 	 * @param array|null $warnings
 	 * @param SearchConfig|null $config
 	 */
@@ -396,8 +400,8 @@ class KeywordFeatureAssertions {
 			if ( $highlightField !== null && $highlightField !== [] &&
 				 !$this->isNegated( $feature, $term ) ) {
 				$this->testCase->assertIsArray( $highlightField );
-				$this->testCase->assertCount( count( $highlightField ), $highlightQuery,
-					'must have the same number of highlightFields than $higlightQueries' );
+				$this->testCase->assertCount( count( $highlightQuery ), $highlightField,
+					'must have the same number of $highlightField than $highlightQuery' );
 
 				$mi = new \MultipleIterator();
 				$mi->attachIterator( new \ArrayIterator( $highlightField ) );

@@ -197,6 +197,7 @@ class FallbackRunner implements SearchMetricsProvider {
 
 	/**
 	 * @param FallbackMethod $fallbackMethod
+	 * @param FallbackRunnerContext $context
 	 * @return CirrusSearchResultSet
 	 */
 	private function execute( FallbackMethod $fallbackMethod, FallbackRunnerContext $context ): CirrusSearchResultSet {

@@ -215,6 +215,7 @@ class BuildDocument {
 	 *
 	 * @param WikiPage $page
 	 * @param PagePropertyBuilder[] $builders
+	 * @param int $flags
 	 * @return Document
 	 */
 	private function initializeDoc( WikiPage $page, array $builders, int $flags ): Document {

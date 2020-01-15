@@ -186,6 +186,7 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	/**
 	 * Get child categories using SPARQL service.
 	 * @param string $rootCategory Category to start looking from
+	 * @param WarningCollector $warningCollector
 	 * @return string[] List of subcategories.
 	 * Note that the list may be incomplete due to limitations of the service.
 	 * @throws SparqlException

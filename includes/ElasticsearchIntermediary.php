@@ -273,6 +273,7 @@ abstract class ElasticsearchIntermediary {
 	/**
 	 * Log the completion of a request to Elasticsearch.
 	 *
+	 * @param Connection $connection
 	 * @return RequestLog|null The log for the finished request, or null if no
 	 * request was started.
 	 */

@@ -20,7 +20,7 @@ class QueryHelperTest extends CirrusIntegrationTestCase {
 	public function testMatchPage( $expected, $field, $title, $underscores ) {
 		$match = QueryHelper::matchPage( $field, $title, $underscores );
 
-		$this->assertType( \Elastica\Query\Match::class, $match );
+		$this->assertInstanceOf( \Elastica\Query\Match::class, $match );
 
 		$expectedArray = [ $field => [ 'query' => $expected ] ];
 

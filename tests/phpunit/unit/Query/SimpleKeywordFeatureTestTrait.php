@@ -5,6 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
 use CirrusSearch\SearchConfig;
+use Elastica\Query\AbstractQuery;
 
 /**
  * Helper for writing tests of classes extending from
@@ -80,7 +81,7 @@ trait SimpleKeywordFeatureTestTrait {
 	/**
 	 * @param KeywordFeature $feature
 	 * @param string $term
-	 * @param array|callable|null $filter
+	 * @param array|AbstractQuery|callable|null $filter
 	 * @param array|null $warnings
 	 * @param SearchConfig|null $config
 	 */

@@ -49,6 +49,8 @@ class CirrusSearchIndexFieldFactory {
 		switch ( $name ) {
 			case 'opening_text':
 				return new OpeningTextIndexField( $name, $type, $this->searchConfig );
+			case 'template':
+				return new KeywordIndexField( $name, $type, $this->searchConfig, true );
 		}
 
 		switch ( $type ) {

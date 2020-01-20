@@ -59,9 +59,8 @@ class SubPageOfFeatureTest extends CirrusTestCase {
 		if ( $filterValue !== null ) {
 			$this->assertParsedValue( $feature, $query, [ 'prefix' => $filterValue ], [] );
 			$filterCallback = function ( MultiMatch $match ) use ( $filterValue ) {
-				$this->assertEquals( [ 'title.prefix', 'redirect.title.prefix' ],
-					$match->getParam( 'fields' ), "fields of the multimatch query should match",
-					0.0, 10, true );
+				$this->assertEqualsCanonicalizing( [ 'title.prefix', 'redirect.title.prefix' ],
+					$match->getParam( 'fields' ), "fields of the multimatch query should match" );
 				$this->assertEquals( $filterValue, $match->getParam( 'query' ) );
 				return true;
 			};

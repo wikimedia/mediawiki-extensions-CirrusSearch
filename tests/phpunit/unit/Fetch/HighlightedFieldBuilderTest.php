@@ -296,7 +296,7 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 			$f1->merge( $f2 );
 			$this->fail( "Expected InvalidArumentException with message $msg" );
 		} catch ( \InvalidArgumentException $iae ) {
-			$this->assertContains( $msg, $iae->getMessage() );
+			$this->assertStringContainsString( $msg, $iae->getMessage() );
 		}
 	}
 

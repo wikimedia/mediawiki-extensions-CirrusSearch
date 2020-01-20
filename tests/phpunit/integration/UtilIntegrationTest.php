@@ -145,7 +145,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		// seem to be trivial.
 		$cur = Util::getDefaultBoostTemplates( $config );
 		reset( $cur );
-		$this->assertContains(
+		$this->assertStringContainsString(
 			' in ' . $services->getContentLanguage()->getCode(), key( $cur )
 		);
 

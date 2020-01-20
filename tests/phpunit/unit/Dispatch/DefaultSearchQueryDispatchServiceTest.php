@@ -69,8 +69,8 @@ class DefaultSearchQueryDispatchServiceTest extends CirrusTestCase {
 			$service->bestRoute( $query );
 			$this->fail( "Invalid configuration must produce a SearchProfileException" );
 		} catch ( SearchProfileException $e ) {
-			$this->assertContains( 'firstFor0', $e->getMessage() );
-			$this->assertContains( 'bestFor0', $e->getMessage() );
+			$this->assertStringContainsString( 'firstFor0', $e->getMessage() );
+			$this->assertStringContainsString( 'bestFor0', $e->getMessage() );
 		}
 	}
 }

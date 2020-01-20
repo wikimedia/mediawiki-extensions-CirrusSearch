@@ -263,8 +263,8 @@ class SuggestScoringTest extends CirrusTestCase {
 			$this->assertGreaterThan( 0, $qs->score( $page ), "Score is always greater than 0" );
 			$this->assertLessThan( QualityScore::SCORE_RANGE, $qs->score( $page ),
 				"Score is always lower than " . QualityScore::SCORE_RANGE );
-			$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
-			"Explanation matches", 2 );
+			$this->assertEqualsWithDelta( $qs->explain( $page )['value'], $qs->score( $page ),
+			2, "Explanation matches" );
 		}
 
 		// Edges
@@ -370,8 +370,8 @@ class SuggestScoringTest extends CirrusTestCase {
 				$this->assertLessThanOrEqual( QualityScore::SCORE_RANGE, $score,
 					"Score is always lower than QualityScore::SCORE_RANGE " . get_class( $scorer ) .
 					" with these values $pagedebug" );
-				$this->assertEquals( $scorer->explain( $page )['value'], $scorer->score( $page ),
-					get_class( $scorer ) . " : explain gives same score with these values $pagedebug", 2 );
+				$this->assertEqualsWithDelta( $scorer->explain( $page )['value'], $scorer->score( $page ),
+					2, get_class( $scorer ) . " : explain gives same score with these values $pagedebug" );
 			}
 		}
 	}

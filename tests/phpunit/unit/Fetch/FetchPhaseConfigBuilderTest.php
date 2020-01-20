@@ -444,7 +444,10 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 			HighlightedField::TARGET_SECTION_SNIPPET
 		];
 		$targets = array_keys( $fetchPhaseConfig->getHLFieldsPerTargetAndPriority() );
-		$this->assertEquals( $targets, $expectedTargets, "All the expected targets must be set",
-			0.0, 10, true );
+		$this->assertEqualsCanonicalizing(
+			$targets,
+			$expectedTargets,
+			"All the expected targets must be set"
+		);
 	}
 }

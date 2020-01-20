@@ -30,7 +30,7 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 		$client->expects( $this->atMost( 2 ) )->method( 'query' )->willReturnCallback(
 			function ( $sparql ) use ( $expectInQuery, $result ) {
 				foreach ( $expectInQuery as $expect ) {
-					$this->assertContains( $expect, $sparql );
+					$this->assertStringContainsString( $expect, $sparql );
 				}
 				foreach ( $result as &$row ) {
 					$row['out'] = $this->categoryToUrl( $row['out'] );

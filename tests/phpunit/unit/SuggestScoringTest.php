@@ -278,8 +278,8 @@ class SuggestScoringTest extends CirrusTestCase {
 		];
 		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ),
 			"Highest score is " . QualityScore::SCORE_RANGE );
-		$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
-			"Explanation matches", 2 );
+		$this->assertEqualsWithDelta( $qs->explain( $page )['value'], $qs->score( $page ),
+			2, "Explanation matches" );
 
 		$page = [
 			'incoming_links' => 0,
@@ -290,13 +290,13 @@ class SuggestScoringTest extends CirrusTestCase {
 			'template' => []
 		];
 		$this->assertSame( 0, $qs->score( $page ), "Lowest score is 0" );
-		$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
-			"Explanation matches", 2 );
+		$this->assertEqualsWithDelta( $qs->explain( $page )['value'], $qs->score( $page ),
+			2, "Explanation matches" );
 
 		$page = [];
 		$this->assertSame( 0, $qs->score( $page ), "Score of a broken article is 0" );
-		$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
-			"Explanation matches", 2 );
+		$this->assertEqualsWithDelta( $qs->explain( $page )['value'], $qs->score( $page ),
+			2, "Explanation matches" );
 
 		// A very small wiki
 		$qs = new QualityScore( [] );
@@ -311,8 +311,8 @@ class SuggestScoringTest extends CirrusTestCase {
 		];
 		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ),
 			"With very small wiki the highest score is also " . QualityScore::SCORE_RANGE );
-		$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
-			"Explanation matches", 2 );
+		$this->assertEqualsWithDelta( $qs->explain( $page )['value'], $qs->score( $page ),
+			2, "Explanation matches" );
 
 		// The scoring function should not fail with 0 page
 		$qs = new QualityScore( [] );
@@ -326,8 +326,8 @@ class SuggestScoringTest extends CirrusTestCase {
 		];
 		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ),
 			"With a zero page wiki the highest score is also " . QualityScore::SCORE_RANGE );
-		$this->assertEquals( $qs->explain( $page )['value'], $qs->score( $page ),
-			"Explanation matches", 2 );
+		$this->assertEqualsWithDelta( $qs->explain( $page )['value'], $qs->score( $page ),
+			2, "Explanation matches" );
 	}
 
 	/**

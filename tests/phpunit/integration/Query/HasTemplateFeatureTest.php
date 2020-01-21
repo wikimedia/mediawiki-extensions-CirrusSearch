@@ -20,7 +20,7 @@ class HasTemplateFeatureTest extends CirrusIntegrationTestCase {
 						'query' => 'Template:Coord',
 					],
 				] ],
-				[ 'templates' => [ 'Template:Coord' ] ],
+				[ 'templates' => [ 'Template:Coord' ],  'case_sensitive' => false ],
 				'hastemplate:Coord',
 			],
 			'calling out Template NS directly' => [
@@ -29,7 +29,7 @@ class HasTemplateFeatureTest extends CirrusIntegrationTestCase {
 						'query' => 'Template:Coord',
 					],
 				] ],
-				[ 'templates' => [ 'Template:Coord' ] ],
+				[ 'templates' => [ 'Template:Coord' ], 'case_sensitive' => false ],
 				'hastemplate:Template:Coord',
 			],
 			'with namespace' => [
@@ -38,7 +38,7 @@ class HasTemplateFeatureTest extends CirrusIntegrationTestCase {
 						'query' => 'User talk:Zomg',
 					],
 				] ],
-				[ 'templates' => [ 'User_talk:Zomg' ] ],
+				[ 'templates' => [ 'User_talk:Zomg' ], 'case_sensitive' => false ],
 				'hastemplate:User_talk:Zomg',
 			],
 			'using colon prefix to indicate NS_MAIN' => [
@@ -47,7 +47,7 @@ class HasTemplateFeatureTest extends CirrusIntegrationTestCase {
 						'query' => 'Main page',
 					],
 				] ],
-				[ 'templates' => [ 'Main_page' ] ],
+				[ 'templates' => [ 'Main_page' ], 'case_sensitive' => false ],
 				'hastemplate::Main_page',
 			],
 			'multiple templates' => [
@@ -56,14 +56,14 @@ class HasTemplateFeatureTest extends CirrusIntegrationTestCase {
 						'should' => [
 							[
 								'match' => [
-									'template' => [
+									'template.keyword' => [
 										'query' => 'Template:Coord',
 									],
 								],
 							],
 							[
 								'match' => [
-									'template' => [
+									'template.keyword' => [
 										'query' => 'Template:Main Page',
 									],
 								],
@@ -71,7 +71,7 @@ class HasTemplateFeatureTest extends CirrusIntegrationTestCase {
 						]
 					]
 				],
-				[ 'templates' => [ 'Template:Coord', 'Template:Main Page' ] ],
+				[ 'templates' => [ 'Template:Coord', 'Template:Main Page' ], 'case_sensitive' => true ],
 				'hastemplate:"Coord|Main Page"',
 			],
 		];
@@ -97,7 +97,7 @@ class HasTemplateFeatureTest extends CirrusIntegrationTestCase {
 			},
 			range( 1, HasTemplateFeature::MAX_CONDITIONS )
 		);
-		$this->assertParsedValue( $feature, 'hastemplate:' . $q, [ 'templates' => $parsedValue ],
+		$this->assertParsedValue( $feature, 'hastemplate:' . $q, [ 'templates' => $parsedValue, 'case_sensitive' => false ],
 			[ [
 				'cirrussearch-feature-too-many-conditions',
 				'hastemplate',

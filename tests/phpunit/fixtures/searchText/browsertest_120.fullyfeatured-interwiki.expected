@@ -152,7 +152,7 @@
                                 "must": [
                                     {
                                         "match": {
-                                            "template": {
+                                            "template.keyword": {
                                                 "query": "Talk:TalkTemplate"
                                             }
                                         }
@@ -396,7 +396,7 @@
                                 "must": [
                                     {
                                         "match": {
-                                            "template": {
+                                            "template.keyword": {
                                                 "query": "Talk:TalkTemplate"
                                             }
                                         }
@@ -640,7 +640,7 @@
                                 "must": [
                                     {
                                         "match": {
-                                            "template": {
+                                            "template.keyword": {
                                                 "query": "Talk:TalkTemplate"
                                             }
                                         }
@@ -884,7 +884,7 @@
                                 "must": [
                                     {
                                         "match": {
-                                            "template": {
+                                            "template.keyword": {
                                                 "query": "Talk:TalkTemplate"
                                             }
                                         }

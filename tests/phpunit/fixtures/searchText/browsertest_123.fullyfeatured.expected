@@ -188,7 +188,7 @@
                                 "must_not": [
                                     {
                                         "match": {
-                                            "template": {
+                                            "template.keyword": {
                                                 "query": "Template:Template Test"
                                             }
                                         }

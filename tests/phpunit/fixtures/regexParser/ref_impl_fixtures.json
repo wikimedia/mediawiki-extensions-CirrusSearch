@@ -2877,7 +2877,8 @@
                                     "parsedValue": {
                                         "templates": [
                                             "Template:Hello"
-                                        ]
+                                        ],
+                                        "case_sensitive": false
                                     }
                                 }
                             },
@@ -2918,7 +2919,8 @@
                                     "parsedValue": {
                                         "templates": [
                                             "foo"
-                                        ]
+                                        ],
+                                        "case_sensitive": false
                                     }
                                 }
                             },
@@ -2938,7 +2940,8 @@
                                     "parsedValue": {
                                         "templates": [
                                             "Template:Test"
-                                        ]
+                                        ],
+                                        "case_sensitive": false
                                     }
                                 }
                             },
@@ -2958,7 +2961,8 @@
                                     "parsedValue": {
                                         "templates": [
                                             "Help:Test"
-                                        ]
+                                        ],
+                                        "case_sensitive": false
                                     }
                                 }
                             },
@@ -2980,7 +2984,8 @@
                                             "test",
                                             "Template:Test",
                                             "Help:Test"
-                                        ]
+                                        ],
+                                        "case_sensitive": true
                                     }
                                 }
                             },

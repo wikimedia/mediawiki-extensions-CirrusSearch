@@ -414,6 +414,10 @@ BeforeOnce( { tags: '@hastemplate' }, runBatchFn( {
 	edit: {
 		MainNamespaceTemplate: 'MainNamespaceTemplate',
 		HasMainNSTemplate: '{{:MainNamespaceTemplate}}',
+		CaseCheckTemplate: 'CaseCheckTemplate',
+		HasCaseCheckTemplate: '{{Template:CaseCheckTemplate}}',
+		casechecktemplate: 'casechecktemplate',
+		Hascasechecktemplate: '{{Template:casechecktemplate}}',
 		'Talk:TalkTemplate': 'Talk:TalkTemplate',
 		HasTTemplate: '{{Talk:TalkTemplate}}'
 	}

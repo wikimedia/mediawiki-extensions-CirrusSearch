@@ -23,3 +23,7 @@ Feature: Searches with the hastemplate filter
   Scenario: hastemplate: finds pages with matching templates (when you don't specify a namespace, Template is assumed)
     When I api search for hastemplate:"Template Test"
     Then Two Words is the first api search result
+
+  Scenario: hastemplate: with quotes find templates that match with the exact case
+    When I api search for hastemplate:"casechecktemplate"
+    Then CaseCheckTemplate is not in the api search results

@@ -152,7 +152,7 @@
                                 "must": [
                                     {
                                         "match": {
-                                            "template": {
+                                            "template.keyword": {
                                                 "query": "Template:Template Test"
                                             }
                                         }

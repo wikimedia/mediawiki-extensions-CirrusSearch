@@ -28,18 +28,19 @@ class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeat
 
 	/**
 	 * @param SearchContext $context
-	 * @param string $key The keyword
-	 * @param string $value The value attached to the keyword with quotes stripped
-	 * @param string $quotedValue The original value in the search string, including quotes if used
-	 * @param bool $negated Is the search negated? Not used to generate the returned AbstractQuery,
-	 *  that will be negated as necessary. Used for any other building/context necessary.
-	 * @return array Two element array, first an AbstractQuery or null to apply to the
-	 *  query. Second a boolean indicating if the quotedValue should be kept in the search
-	 *  string.
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param bool $negated
+	 * @param string $delimiter
+	 * @param string $suffix
+	 * @return array
 	 */
-	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
+	public function doApplyExtended( SearchContext $context, $key, $value, $quotedValue, $negated,
+		$delimiter, $suffix
+	) {
 		$filter = $this->doGetFilterQuery(
-			$this->parseValue( $key, $value, $quotedValue, '', '', $context ) );
+			$this->parseValue( $key, $value, $quotedValue, $delimiter, $suffix, $context ) );
 		return [ $filter, false ];
 	}
 
@@ -79,7 +80,7 @@ class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeat
 			}
 			$templates[] = $template;
 		}
-		return [ 'templates' => $templates ];
+		return [ 'templates' => $templates, 'case_sensitive' => $valueDelimiter == '"' ];
 	}
 
 	/**
@@ -95,9 +96,11 @@ class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeat
 	 * @return AbstractQuery
 	 */
 	protected function doGetFilterQuery( array $parsedValue ) {
+		$caseSensitive = $parsedValue['case_sensitive'];
+
 		return Filters::booleanOr( array_map(
-			function ( $v ) {
-				return QueryHelper::matchPage( 'template', $v );
+			function ( $v ) use ( $caseSensitive ) {
+				return QueryHelper::matchPage( $caseSensitive ? 'template.keyword' : 'template', $v );
 			},
 			$parsedValue['templates']
 		) );
@@ -110,5 +113,27 @@ class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeat
 	 */
 	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
 		return $this->doGetFilterQuery( $node->getParsedValue() );
+	}
+
+	/**
+	 * Applies the detected keyword from the search term. May apply changes
+	 * either to $context directly, or return a filter to be added.
+	 *
+	 * @param SearchContext $context
+	 * @param string $key The keyword
+	 * @param string $value The value attached to the keyword with quotes stripped and escaped
+	 *  quotes un-escaped.
+	 * @param string $quotedValue The original value in the search string, including quotes if used
+	 * @param bool $negated Is the search negated? Not used to generate the returned AbstractQuery,
+	 *  that will be negated as necessary. Used for any other building/context necessary.
+	 * @return array Two element array, first an AbstractQuery or null to apply to the
+	 *  query. Second a boolean indicating if the quotedValue should be kept in the search
+	 *  string.
+	 */
+	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
+		// not used
+		$filter = $this->doGetFilterQuery(
+			$this->parseValue( $key, $value, $quotedValue, '', '', $context ) );
+		return [ $filter, false ];
 	}
 }

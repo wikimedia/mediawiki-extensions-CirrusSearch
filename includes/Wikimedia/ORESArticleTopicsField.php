@@ -5,7 +5,7 @@ namespace CirrusSearch\Wikimedia;
 use SearchEngine;
 use SearchIndexFieldDefinition;
 
-class ORESDraftTopicsField extends SearchIndexFieldDefinition {
+class ORESArticleTopicsField extends SearchIndexFieldDefinition {
 	/**
 	 * @var string
 	 */

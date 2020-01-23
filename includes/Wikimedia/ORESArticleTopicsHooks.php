@@ -8,22 +8,22 @@ use Config;
 use MediaWiki\MediaWikiServices;
 use SearchEngine;
 
-class ORESDraftTopicsHooks {
-	const FIELD_NAME = 'ores_drafttopics';
-	const FIELD_SIMILARITY = 'ores_drafttopics_similarity';
-	const FIELD_INDEX_ANALYZER = 'ores_drafttopics';
+class ORESArticleTopicsHooks {
+	const FIELD_NAME = 'ores_articletopics';
+	const FIELD_SIMILARITY = 'ores_articletopics_similarity';
+	const FIELD_INDEX_ANALYZER = 'ores_articletopics';
 	const FIELD_SEARCH_ANALYZER = 'keyword';
 	const WMF_EXTRA_FEATURES = 'CirrusSearchWMFExtraFeatures';
-	const CONFIG_OPTIONS = 'ores_drafttopics';
+	const CONFIG_OPTIONS = 'ores_articletopics';
 	const BUILD_OPTION = 'build';
 	const MAX_SCORE_OPTION = 'max_score';
 
 	/**
-	 * Configure the similarity needed for the draft topics field
+	 * Configure the similarity needed for the article topics field
 	 * @param array &$similarity similarity settings to update
 	 */
 	public static function onCirrusSearchSimilarityConfig( array &$similarity ) {
-		self::configureOresDraftTopicsSimilarity( $similarity,
+		self::configureOresArticleTopicsSimilarity( $similarity,
 			MediaWikiServices::getInstance()->getMainConfig() );
 	}
 
@@ -32,7 +32,7 @@ class ORESDraftTopicsHooks {
 	 * @param array &$similarity similarity settings to update
 	 * @param Config $config current configuration
 	 */
-	public static function configureOresDraftTopicsSimilarity(
+	public static function configureOresArticleTopicsSimilarity(
 		array &$similarity,
 		Config $config
 	) {
@@ -58,7 +58,7 @@ class ORESDraftTopicsHooks {
 		if ( !( $engine instanceof CirrusSearch ) ) {
 			return;
 		}
-		self::configureOresDraftTopicsFieldMapping( $fields,
+		self::configureOresArticleTopicsFieldMapping( $fields,
 			MediaWikiServices::getInstance()->getMainConfig() );
 	}
 
@@ -67,7 +67,7 @@ class ORESDraftTopicsHooks {
 	 * @param \SearchIndexField[] &$fields array of field definitions to update
 	 * @param Config $config the wiki configuration
 	 */
-	public static function configureOresDraftTopicsFieldMapping(
+	public static function configureOresArticleTopicsFieldMapping(
 		array &$fields,
 		Config $config
 	) {
@@ -75,7 +75,7 @@ class ORESDraftTopicsHooks {
 			return;
 		}
 
-		$fields[self::FIELD_NAME] = new ORESDraftTopicsField(
+		$fields[self::FIELD_NAME] = new ORESArticleTopicsField(
 			self::FIELD_NAME,
 			self::FIELD_NAME,
 			self::FIELD_INDEX_ANALYZER,
@@ -89,7 +89,7 @@ class ORESDraftTopicsHooks {
 	 * @param AnalysisConfigBuilder $analysisConfigBuilder unneeded
 	 */
 	public static function onCirrusSearchAnalysisConfig( array &$config, AnalysisConfigBuilder $analysisConfigBuilder ) {
-		self::configureOresDraftTopicsFieldAnalysis( $config,
+		self::configureOresArticleTopicsFieldAnalysis( $config,
 			MediaWikiServices::getInstance()->getMainConfig() );
 	}
 
@@ -98,7 +98,7 @@ class ORESDraftTopicsHooks {
 	 * @param array &$analysisConfig panalysis settings to update
 	 * @param Config $config the wiki configuration
 	 */
-	public static function configureOresDraftTopicsFieldAnalysis(
+	public static function configureOresArticleTopicsFieldAnalysis(
 		array &$analysisConfig,
 		Config $config
 	) {
@@ -110,10 +110,10 @@ class ORESDraftTopicsHooks {
 			'type' => 'custom',
 			'tokenizer' => 'keyword',
 			'filter' => [
-				'ores_drafttopics_term_freq',
+				'ores_articletopics_term_freq',
 			]
 		];
-		$analysisConfig['filter']['ores_drafttopics_term_freq'] = [
+		$analysisConfig['filter']['ores_articletopics_term_freq'] = [
 			'type' => 'term_freq',
 			// must be a char that never appears in the topic names/ids
 			'split_char' => '|',
@@ -124,13 +124,13 @@ class ORESDraftTopicsHooks {
 
 	private static function canBuild( Config $config ): bool {
 		$extraFeatures = $config->get( self::WMF_EXTRA_FEATURES );
-		$oresDraftTopicsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
-		return (bool)( $oresDraftTopicsOptions[self::BUILD_OPTION] ?? false );
+		$oresArticleTopicsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
+		return (bool)( $oresArticleTopicsOptions[self::BUILD_OPTION] ?? false );
 	}
 
 	private static function maxScore( Config $config ): int {
 		$extraFeatures = $config->get( self::WMF_EXTRA_FEATURES );
-		$oresDraftTopicsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
-		return (int)( $oresDraftTopicsOptions[self::MAX_SCORE_OPTION] ?? 1000 );
+		$oresArticleTopicsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
+		return (int)( $oresArticleTopicsOptions[self::MAX_SCORE_OPTION] ?? 1000 );
 	}
 }

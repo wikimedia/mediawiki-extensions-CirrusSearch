@@ -3,9 +3,9 @@
 namespace CirrusSearch\Wikimedia;
 
 /**
- * @covers \CirrusSearch\Wikimedia\ORESDraftTopicsField
+ * @covers \CirrusSearch\Wikimedia\ORESArticleTopicsField
  */
-class ORESDraftTopicsFieldTest extends \MediaWikiUnitTestCase {
+class ORESArticleTopicsFieldTest extends \MediaWikiUnitTestCase {
 	public function testField() {
 		$searchEngine = $this->createMock( \SearchEngine::class );
 		$indexAnalyzer = 'indexAnalyzer';
@@ -13,7 +13,7 @@ class ORESDraftTopicsFieldTest extends \MediaWikiUnitTestCase {
 		$similarity = 'sim';
 		$fieldName = 'test';
 		$typeName = 'unused';
-		$field = new ORESDraftTopicsField( 'test', 'unused', $indexAnalyzer,
+		$field = new ORESArticleTopicsField( 'test', 'unused', $indexAnalyzer,
 			$searchAnalyzer, $similarity );
 		$mapping = $field->getMapping( $searchEngine );
 		$this->assertSame( [

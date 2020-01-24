@@ -466,11 +466,6 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			$this->assertEquals( $response['suggest']['suggest'][0]['text'],
 				$query[Searcher::MAINSEARCH_MSEARCH_KEY]['query']['suggest']['text'] );
 
-			$suggestionSnippet = strtr( htmlspecialchars( $suggestionSnippet ), [
-				Searcher::HIGHLIGHT_PRE_MARKER => Searcher::SUGGESTION_HIGHLIGHT_PRE,
-				Searcher::HIGHLIGHT_POST_MARKER => Searcher::SUGGESTION_HIGHLIGHT_POST,
-			] );
-
 			if ( $resultSet->getTotalHits() === 123456 ) {
 				$this->assertEquals( $suggestion, $resultSet->getQueryAfterRewrite() );
 

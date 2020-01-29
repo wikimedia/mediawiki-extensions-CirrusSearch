@@ -365,6 +365,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			$response = $mainSet;
 		}
 
+		$status = Status::newGood();
 		if ( $this->namespacePrefixParser !== null ) {
 			$status = Status::newGood( $fallbackRunner->run( $this, $response, $responses, $this->namespacePrefixParser ) );
 			$this->appendMetrics( $fallbackRunner );

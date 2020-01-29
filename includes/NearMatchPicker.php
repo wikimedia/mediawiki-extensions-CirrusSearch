@@ -89,7 +89,7 @@ class NearMatchPicker {
 			foreach ( $this->titles as $title ) {
 				$match = $this->checkAllMatches( $transformer, $transformedTerm, $title );
 				if ( $match ) {
-					if ( !$found ) {
+					if ( $found !== null ) {
 						$found = $match;
 					} else {
 						// Found more than one result so we try another transformer

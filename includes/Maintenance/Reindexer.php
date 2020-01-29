@@ -370,7 +370,6 @@ class Reindexer {
 				$script['source'] .= "ctx._source.remove('$field');";
 			}
 		}
-		// @phan-suppress-next-line PhanSuspiciousValueComparison May be changed to non-empty string
 		if ( $script['source'] === '' ) {
 			return null;
 		}

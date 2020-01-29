@@ -63,7 +63,7 @@ class AnalysisFilter {
 				}
 			}
 			foreach ( self::$SUBFIELD_FIELDS as $key ) {
-				if ( isset( $config[$key] ) ) {
+				if ( isset( $config[$key] ) && is_array( $config[$key] ) ) {
 					$config[$key] = $this->pushAnalyzerAliasesIntoField(
 						$config[$key], $aliases
 					);

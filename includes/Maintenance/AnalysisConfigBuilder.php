@@ -236,7 +236,6 @@ class AnalysisConfigBuilder {
 
 		$newfilters = [];
 		foreach ( $config[ 'analyzer' ] as $name => $value ) {
-			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 			if ( isset( $value[ 'type' ] ) && $value[ 'type' ] != 'custom' ) {
 				continue;
 			}

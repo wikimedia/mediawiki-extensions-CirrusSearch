@@ -36,7 +36,7 @@
 	"cirrussearch-completion-profile-normal": "少量標點符號、一些變音符號與停用詞被移除。",
 	"cirrussearch-completion-profile-normal-subphrases": "少量標點符號、一些變音符號與停用詞被移除。這將會符合字詞組（可以是字詞組或取決於內部 wiki 設置的子頁面）",
 	"cirrussearch-completion-profile-fuzzy": "與帶有錯別字糾正的正常模式相似（支援兩個錯別字）。",
-	"cirrussearch-completion-profile-fast-fuzzy": "實驗性模糊個人設置（可隨時移除）",
+	"cirrussearch-completion-profile-fast-fuzzy": "實驗性模糊個人設置（可能隨時移除）",
 	"cirrussearch-completion-profile-fuzzy-subphrases": "與帶有錯別字糾正的正常模式相似（支援兩個錯別字）。這將會符合字詞組（可以是字詞組或取決於內部 wiki 設置的子頁面）",
 	"cirrussearch-qi-profile-classic": "基於反向連結數量、一些模板、頁面語言，以及新近的排名（模板/語言/新近等項目可能在此 wiki 上無效）。",
 	"cirrussearch-qi-profile-classic-noboostlinks": "基於當一些模板、頁面語言，以及新近在此 wiki 上有效時的排名。",

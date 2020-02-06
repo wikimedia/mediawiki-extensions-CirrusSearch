@@ -30,8 +30,10 @@ class FreezeWritesToCluster extends \ApiBase {
 		$sender = new DataSender( $this->getCirrusConnection(), $this->getSearchConfig() );
 
 		if ( $this->getParameter( 'thaw' ) ) {
+			// Allow writes to the elasticsearch cluster.
 			$sender->thawIndexes();
 		} else {
+			// When thaw param not provided writes will be frozen.
 			$sender->freezeIndexes( 'frozen via api' );
 		}
 	}
@@ -39,12 +41,6 @@ class FreezeWritesToCluster extends \ApiBase {
 	public function getAllowedParams() {
 		return [
 			'thaw' => []
-		];
-	}
-
-	public function getParamDescription() {
-		return [
-			'thaw' => 'Allow writes to the elasticsearch cluster. When not provided writes will be frozen.',
 		];
 	}
 }

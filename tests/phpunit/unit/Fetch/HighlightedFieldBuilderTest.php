@@ -151,7 +151,7 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 		$this->assertEquals( [ '(foo|bar)' ], $options['regex'] );
 		$this->assertEquals( 'lucene', $options['regex_flavor'] );
 		$this->assertEquals( 'testLangCode', $options['locale'] );
-		$this->assertSame( true, $options['skip_query'] );
+		$this->assertTrue( $options['skip_query'] );
 		$this->assertSame( false, $options['regex_case_insensitive'] );
 		$this->assertEquals( 233, $options['max_determinized_states'] );
 		$this->assertNull( $field->getNoMatchSize() );
@@ -167,7 +167,7 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 		$field = $field->merge( $field2 );
 		$options = $field->getOptions();
 		$this->assertEquals( [ '(foo|bar)', '(baz|bat)' ], $options['regex'] );
-		$this->assertSame( true, $options['regex_case_insensitive'] );
+		$this->assertTrue( $options['regex_case_insensitive'] );
 
 		$field3 = ExperimentalHighlightedFieldBuilder::newRegexField(
 			$config,

@@ -23,7 +23,7 @@ Feature: Searches that prompt, or not, for new page creation
   Scenario Outline: boolean operators in bad positions in the query are ignored so you get the option to create a new page
     When I search for <query>
     Then there is no warning
-      And <page> is the first search result
+      And <page> is in the search results
       And there is a link to create a new page from the search result
   Examples:
   |         query          |     page         |
@@ -61,7 +61,7 @@ Feature: Searches that prompt, or not, for new page creation
   Scenario Outline: boolean operators in bad positions in the query are ignored but if there are other valid operators then you don't get the option to create a new page
     When I search for <query>
     Then there is no warning
-      And <page> is the first search result
+      And <page> is in the search results
       And there is no link to create a new page from the search result
   Examples:
   |         query          |     page         |
@@ -80,7 +80,7 @@ Feature: Searches that prompt, or not, for new page creation
   Scenario Outline: boolean operators in bad positions in the query are ignored and if the title isn't a valid article title then you don't get the option to create a new page
     When I search for <query>
     Then there is no warning
-      And Catapult is the first search result
+      And Catapult is in the search results
       And there is no link to create a new page from the search result
   Examples:
   |         query          |

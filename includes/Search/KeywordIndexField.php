@@ -2,6 +2,9 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\SearchConfig;
+use SearchIndexField;
+
 /**
  * Index field representing keyword.
  * Keywords use special analyzer.
@@ -14,6 +17,18 @@ class KeywordIndexField extends CirrusIndexField {
 	 * @var string
 	 */
 	protected $typeName = 'text';
+	/**
+	 * @var bool
+	 */
+	private $caseSensitiveSubfield;
+
+	public function __construct( $name, $type, SearchConfig $config, bool $caseSensitiveSubfield = false ) {
+		parent::__construct( $name, $type, $config );
+		if ( $caseSensitiveSubfield ) {
+			$this->setFlag( SearchIndexField::FLAG_CASEFOLD );
+		}
+		$this->caseSensitiveSubfield = $caseSensitiveSubfield;
+	}
 
 	/**
 	 * Maximum number of characters allowed in keyword terms.
@@ -29,6 +44,14 @@ class KeywordIndexField extends CirrusIndexField {
 			// Omit the length norm because there is only even one token
 			'index_options' => 'docs',
 		];
+		if ( $this->caseSensitiveSubfield ) {
+			$config['fields']['keyword'] = [
+				'type' => 'text',
+				'analyzer' => 'keyword',
+				'index_options' => 'docs',
+				'norms' => false,
+			];
+		}
 		return $config;
 	}
 }

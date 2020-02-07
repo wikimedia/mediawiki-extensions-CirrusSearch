@@ -356,7 +356,15 @@
                 "type": "text",
                 "analyzer": "lowercase_keyword",
                 "norms": false,
-                "index_options": "docs"
+                "index_options": "docs",
+                "fields": {
+                    "keyword": {
+                        "type": "text",
+                        "analyzer": "keyword",
+                        "index_options": "docs",
+                        "norms": false
+                    }
+                }
             },
             "content_model": {
                 "type": "text",

@@ -5,6 +5,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\SearchConfig;
+use SearchIndexField;
 
 /**
  * @group CirrusSearch
@@ -71,6 +72,20 @@ class CirrusSearchIndexFieldFactoryTest extends CirrusTestCase {
 
 		$this->assertInstanceOf( KeywordIndexField::class, $keywordField );
 		$this->assertSame( 'id', $keywordField->getName(), 'field name is `id`' );
+	}
+
+	public function testTemplateIsKeywordWithCaseSensitiveSubfield() {
+		$searchConfig = $this->getSearchConfig();
+
+		$factory = new CirrusSearchIndexFieldFactory( $searchConfig );
+		$keywordField = $factory->makeSearchFieldMapping( 'template', SearchIndexField::INDEX_TYPE_KEYWORD );
+
+		$this->assertInstanceOf( KeywordIndexField::class, $keywordField );
+		$this->assertSame( 'template', $keywordField->getName(), 'field name is `template`' );
+		$mapping = $keywordField->getMapping( $this->newEngine() );
+		$this->assertArrayHasKey( 'fields', $mapping );
+		$this->assertArrayHasKey( 'keyword', $mapping['fields'] );
+		$this->assertNotSame( 0, $keywordField->checkFlag( SearchIndexField::FLAG_CASEFOLD ) );
 	}
 
 	private function getSearchConfig(): SearchConfig {

@@ -38,10 +38,11 @@ class CirrusNeedsToBeBuilt extends Maintenance {
 	}
 
 	public function execute() {
+		$indexPattern = $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) . '_*';
 		$end = microtime( true ) + 60;
 		while ( true ) {
 			try {
-				$health = new \Elastica\Cluster\Health( $this->getConnection()->getClient() );
+				$health = new \CirrusSearch\Elastica\Health( $this->getConnection()->getClient(), $indexPattern );
 				$status = $health->getStatus();
 				$this->output( "Elasticsearch status:  $status\n" );
 				if ( $status === 'green' ) {

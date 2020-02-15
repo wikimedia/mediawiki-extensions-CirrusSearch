@@ -234,20 +234,16 @@ trait CirrusTestCaseTrait {
 			CirrusDebugOptions::defaultOptions(), $this->namespacePrefixParser(), new EmptyInterwikiResolver() );
 	}
 
+	public function sanitizeLinkFragment( string $id ): string {
+		return str_replace( ' ', '_', $id );
+	}
+
 	public function newTitleHelper( $hostWikiID = null, InterwikiResolver $iwResolver = null ): TitleHelper {
 		return new class(
 			$hostWikiID,
 			$iwResolver ?: new EmptyInterwikiResolver(),
 			function ( $v ) {
-				// legacy mode
-				static $replace = [
-					'%3A' => ':',
-					'%' => '.'
-				];
-
-				$id = urlencode( str_replace( ' ', '_', $v ) );
-				$id = strtr( $id, $replace );
-				return $id;
+				return $this->sanitizeLinkFragment( $v );
 			}
 		) extends TitleHelper {
 			public function __construct( $hostWikiId,

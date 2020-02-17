@@ -1,9 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"JinJian"
+			"JinJian",
+			"Harvzsf"
 		]
 	},
 	"cirrussearch-pref-label": "Bag-o nga pagbiling",
+	"cirrussearch-explore-similar-categories": "Mga kaarangay",
+	"cirrussearch-explore-similar-languages": "Mga yinaknan",
 	"cirrussearch-article-words": "Mga pulong han tanan nga may sulod nga pakli"
 }

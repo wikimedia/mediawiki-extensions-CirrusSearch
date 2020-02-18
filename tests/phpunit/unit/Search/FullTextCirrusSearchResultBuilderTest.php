@@ -336,7 +336,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 				[
 					'sectionSnippet' => 'The ' . Searcher::HIGHLIGHT_PRE . 'matched' . Searcher::HIGHLIGHT_POST . ' &lt;section',
 					'sectionTitle' => Title::makeTitle( NS_TEMPLATE, 'Main Page' )
-						->createFragmentTarget( \Sanitizer::escapeIdForLink( 'The matched <section' ) )
+						->createFragmentTarget( $this->sanitizeLinkFragment( 'The matched <section' ) )
 				]
 			],
 			'categorySnippet' => [

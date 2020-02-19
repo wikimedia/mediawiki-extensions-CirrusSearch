@@ -367,7 +367,7 @@ EOD
 			$job = $store->create( $jobName, $this->minId, $scriptCluster );
 		}
 		if ( $job === null ) {
-			$this->fatalError( "Could not create job $jobName" );
+			$this->fatalError( "No job created, metastores failed to create?" );
 		}
 		// @phan-suppress-next-line PhanTypeMismatchReturnNullable T240141
 		return $job;

@@ -1,13 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Robby"
+			"Robby",
+			"Soued031"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-Sichfonctioun fir MediaWiki",
-	"cirrussearch-backend-error": "Mir konnten Är Sich wéint engem temporäre Problem net maachen. Probéiert w.e.g. méi spéit nach eng Kéier.",
-	"cirrussearch-parse-error": "D'Ufro gouf net verstanen. Maacht se w.e.g. méi einfach. D'Ufro gouf geloggt fir de Sichsystem ze verbesseren.",
-	"cirrussearch-too-busy-error": "Sichen ass elo iwwerlaascht. Probéiert w.e.g. méi spéit nach emol.",
+	"cirrussearch-backend-error": "Mir konnten Är Sich wéint engem temporäre Problem net maachen. Probéiert wgl. méi spéit nach eng Kéier.",
+	"cirrussearch-parse-error": "D'Ufro gouf net verstanen. Maacht se wgl. méi einfach. D'Ufro gouf geloggt fir de Sichsystem ze verbesseren.",
+	"cirrussearch-too-busy-error": "Sichen ass elo iwwerlaascht. Probéiert wgl. méi spéit nach emol.",
 	"cirrussearch-now-using": "Dës Wiki benotzt eng nei Sichmaschinn.([[mw:Special:MyLanguage/Help:CirrusSearch|Fir méi ze wëssen]])",
 	"cirrussearch-ignored-headings": " #<!-- dës Zeil net änneren --> <pre>\n# Iwwerschrëften, déi vun der Sich ignoréiert ginn.\n# Dës Ännerunge gi wirksam, soubal déi Säit mat der Iwwerschrëft indexéiert gouf.\n# Dir kënnt déi Säitenindexéierung erzwéngen, andeem dir eng Nullännerung maacht.\n# Syntax:\n# * Alles, wat no enger Raut („#“) bis zum Ënn vun der Zeil steet, ass eng Bemierkung.\n# * All net-eidel Zeil ass de geneeën Titel fir z'ignoréieren.\nReferenzen\nWeblinken\nKuckt och\n #</pre> <!-- dës Zeil net änneren -->",
 	"cirrussearch-pref-label": "Nei sichen",

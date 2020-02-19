@@ -70,5 +70,6 @@
 	"cirrussearch-keyword-prefix-ns-mismatch": "The namespace found in the search term <code>prefix:</code> is not compatible with the namespaces requested. You can fix it by prefixing your query with <code>all:</code>.",
 	"cirrussearch-autoselect-profile": "Let the search engine decide on the best profile to use.",
 	"cirrussearch-offset-too-large": "Could not retrieve results. Up to $1 search results are supported, but results starting at $2 were requested.",
-	"cirrussearch-offset-not-allowed-with-random-sort": "Ignoring request to paginate randomly sorted results."
+	"cirrussearch-offset-not-allowed-with-random-sort": "Ignoring request to paginate randomly sorted results.",
+	"cirrussearch-articletopic-invalid-topic": "Unrecognized topic {{PLURAL:$2|name|names}} for the <kbd>articletopic:</kbd> keyword: $1"
 }

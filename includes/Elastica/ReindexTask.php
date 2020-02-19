@@ -162,7 +162,6 @@ class ReindexTask {
 			$status['throttled_until_millis'] += min( $status['throttled_until_millis'], $slice['throttled_until_millis'] );
 		}
 
-		// @phan-suppress-next-line PhanImpossibleTypeComparison May not INF
 		if ( $status['requests_per_second'] === INF ) {
 			$status['requests_per_second'] = -1;
 		}

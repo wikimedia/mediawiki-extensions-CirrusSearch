@@ -358,6 +358,7 @@ EOD
 	 * @return \Elastica\Document
 	 */
 	private function createNewJob( $jobName ) {
+		$job = null;
 		$scriptCluster = $this->getOption( 'cluster' );
 		foreach ( $this->metaStores as $store ) {
 			// TODO: It's a little awkward to let each cluster make
@@ -365,6 +366,10 @@ EOD
 			// the doc building in the store?
 			$job = $store->create( $jobName, $this->minId, $scriptCluster );
 		}
+		if ( $job === null ) {
+			$this->fatalError( "Could not create job $jobName" );
+		}
+		// @phan-suppress-next-line PhanTypeMismatchReturnNullable T240141
 		return $job;
 	}
 

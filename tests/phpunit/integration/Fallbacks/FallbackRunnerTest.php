@@ -90,43 +90,101 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$results = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
 		$methods = [];
 
-		$methods[] = $this->getFallbackMethod( 0.1, $this->trackingCb( 'E' ), [ 'E' => 'E' ] );
-		$methods[] = $this->getFallbackMethod( 0.5, $this->trackingCb( 'B' ), [ 'B' => 'B' ] );
-		$methods[] = $this->getFallbackMethod( 0.0 );
-		$methods[] = $this->getFallbackMethod( 0.4, $this->trackingCb( 'D' ), [ 'D' => 'D' ] );
-		$methods[] = $this->getFallbackMethod( 0.5, $this->trackingCb( 'C' ), [ 'C' => 'C' ] );
-		$methods[] = $this->getFallbackMethod( 0.6, $this->trackingCb( 'A' ), [ 'A' => 'A' ] );
+		$methods['E'] = $this->getFallbackMethod( 0.1, $this->trackingCb( 'E' ), [ 'E' => 'E' ] );
+		$methods['B'] = $this->getFallbackMethod( 0.5, $this->trackingCb( 'B' ), [ 'B' => 'B' ] );
+		$methods['unused'] = $this->getFallbackMethod( 0.0 );
+		$methods['D'] = $this->getFallbackMethod( 0.4, $this->trackingCb( 'D' ), [ 'D' => 'D' ] );
+		$methods['C'] = $this->getFallbackMethod( 0.5, $this->trackingCb( 'C' ), [ 'C' => 'C' ] );
+		$methods['A'] = $this->getFallbackMethod( 0.6, $this->trackingCb( 'A' ), [ 'A' => 'A' ] );
 		$runner = new FallbackRunner( $methods );
 		$runner->run( $this->createMock( SearcherFactory::class ), $results, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
 		$this->assertEquals( [ 'A', 'B', 'C', 'D', 'E' ], $this->execOrder );
-		$this->assertEquals( [
-			'A' => 'A',
-			'B' => 'B',
-			'C' => 'C',
-			'D' => 'D',
-			'E' => 'E',
-		], $runner->getMetrics() );
 	}
 
 	public function testEarlyStop() {
 		$results = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
 		$methods = [];
 
-		$methods[] = self::getFallbackMethod( 0.1 );
-		$methods[] = self::getFallbackMethod( 0.5 );
-		$methods[] = self::getFallbackMethod( 1, $this->trackingCb( 'A' ) );
-		$methods[] = self::getFallbackMethod( -0.4 );
-		$methods[] = self::getFallbackMethod( -0.5 );
-		$methods[] = self::getFallbackMethod( -0.6 );
+		$methods['q'] = self::getFallbackMethod( 0.1 );
+		$methods['w'] = self::getFallbackMethod( 0.5 );
+		$methods['A'] = self::getFallbackMethod( 1, $this->trackingCb( 'A' ) );
+		$methods['r'] = self::getFallbackMethod( -0.4 );
+		$methods['t'] = self::getFallbackMethod( -0.5 );
+		$methods['y'] = self::getFallbackMethod( -0.6 );
 		$runner = new FallbackRunner( $methods );
 		$runner->run( $this->createMock( SearcherFactory::class ), $results, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
 		$this->assertEquals( [ 'A' ], $this->execOrder );
 	}
 
+	public static function metricsProvider() {
+		return [
+			'no fallbacks applied' => [
+				'expectedMainResults' => [ 'name' => '__main__', 'action' => null ],
+				'expectedQuerySuggestion' => null,
+				'methods' => [],
+			],
+			'typical query suggestion' => [
+				'expectedMainResults' => [ 'name' => '__main__', 'action' => null ],
+				'expectedQuerySuggestion' => [ 'name' => 'profile-name', 'action' => FallbackStatus::ACTION_SUGGEST_QUERY ],
+				'methods' => [
+					'profile-name' => self::getFallbackMethod( 1, self::fallbackStatusCb( FallbackStatus::suggestQuery( 'phpunit' ) ) ),
+				],
+			],
+			'rewritten search results' => [
+				'expectedMainResults' => [ 'name' => 'fallback', 'action' => FallbackStatus::ACTION_REPLACE_LOCAL_RESULTS ],
+				'expectedQuerySuggestion' => [ 'name' => 'fallback', 'action' => FallbackStatus::ACTION_REPLACE_LOCAL_RESULTS ],
+				'methods' => function ( $test ) {
+					$results = DummySearchResultSet::fakeTotalHits( $test->newTitleHelper(), 0 );
+					return [
+						'fallback' => self::getFallbackMethod( 0.5, self::fallbackStatusCb(
+							FallbackStatus::replaceLocalResults( $results, 'phpunit' ) ) ),
+					];
+				},
+			],
+			// This isn't expected to happen, later fallbacks are supposed to see a suggestion was already provided
+			// and not provide a suggestion, but assert what we expect to happen anyways.
+			'multiple overriding query suggestion' => [
+				'expectedMainResults' => [ 'name' => '__main__', 'action' => null ],
+				'expectedQuerySuggestion' => [ 'name' => 'profile-name', 'action' => FallbackStatus::ACTION_SUGGEST_QUERY ],
+				'methods' => [
+					'override' => self::getFallbackMethod( 0.8, self::fallbackStatusCb( FallbackStatus::suggestQuery( 'phpunit' ) ) ),
+					'profile-name' => self::getFallbackMethod( 0.5, self::fallbackStatusCb( FallbackStatus::suggestQuery( 'phpunit' ) ) ),
+				],
+			]
+		];
+	}
+
+	/**
+	 * @dataProvider metricsProvider
+	 */
+	public function testMetrics( array $expectedMainResults, ?array $expectedQuerySuggestion, $methods ) {
+		$results = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
+		if ( $methods instanceof \Closure ) {
+			// The dummy result set requires $this to initialize. Support
+			// defining methods as a closure that returns the methods.
+			$methods = $methods( $this );
+		}
+		$runner = new FallbackRunner( $methods );
+		$runner->run( $this->createMock( SearcherFactory::class ), $results, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
+		$expected = [
+			'wgCirrusSearchFallback' => [
+				'mainResults' => $expectedMainResults,
+				'querySuggestion' => $expectedQuerySuggestion
+			]
+		];
+		$this->assertEquals( $expected, $runner->getMetrics() );
+	}
+
 	public function trackingCb( $name ): callable {
 		return function ( FallbackRunnerContext $context ) use ( $name ) {
 			$this->execOrder[] = $name;
-			return $context->getPreviousResultSet();
+			return FallbackStatus::noSuggestion();
+		};
+	}
+
+	public static function fallbackStatusCb( FallbackStatus $status ): callable {
+		return function ( FallbackRunnerContext $context ) use ( $status ) {
+			return $status;
 		};
 	}
 
@@ -176,9 +234,9 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			/**
 			 * @param CirrusSearchResultSet $firstPassResults results of the initial query
 			 * @param CirrusSearchResultSet $previousSet results returned by previous fallback method
-			 * @return CirrusSearchResultSet
+			 * @return FallbackStatus
 			 */
-			public function rewrite( FallbackRunnerContext $context ): CirrusSearchResultSet {
+			public function rewrite( FallbackRunnerContext $context ): FallbackStatus {
 				Assert::assertNotNull( $this->rewritteCallback );
 				return ( $this->rewritteCallback )( $context );
 			}
@@ -359,9 +417,9 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 				return $this->approx;
 			}
 
-			public function rewrite( FallbackRunnerContext $context ): CirrusSearchResultSet {
+			public function rewrite( FallbackRunnerContext $context ): FallbackStatus {
 				Assert::assertSame( $this->expectedResponse, $context->getMethodResponse( $this ) );
-				return $this->rewritten;
+				return FallbackStatus::replaceLocalResults( $this->rewritten, 'phpunit rewritten' );
 			}
 		};
 	}

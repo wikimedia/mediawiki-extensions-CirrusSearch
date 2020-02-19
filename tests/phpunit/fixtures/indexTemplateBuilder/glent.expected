@@ -61,7 +61,8 @@
                         "type": "keyword"
                     },
                     "method": {
-                        "type": "keyword"
+                        "type": "keyword",
+                        "store": true
                     },
                     "dym": {
                         "type": "text",

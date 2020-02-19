@@ -3,7 +3,6 @@
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\InterwikiResolver;
-use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 
 /**
@@ -47,12 +46,13 @@ interface FallbackMethod {
 	public function successApproximation( FallbackRunnerContext $context );
 
 	/**
-	 * Rewrite the results,
-	 * A costly call is allowed here, if nothing is to be done $previousSet
-	 * must be returned.
+	 * Rewrite the results.
+	 *
+	 * A costly call is allowed here. Result sets must not be changed directly,
+	 * rather a FallbackStatus that applies the desired change must be returned.
 	 *
 	 * @param FallbackRunnerContext $context
-	 * @return CirrusSearchResultSet
+	 * @return FallbackStatus
 	 */
-	public function rewrite( FallbackRunnerContext $context ): CirrusSearchResultSet;
+	public function rewrite( FallbackRunnerContext $context ): FallbackStatus;
 }

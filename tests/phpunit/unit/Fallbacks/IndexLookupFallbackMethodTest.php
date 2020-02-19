@@ -59,7 +59,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		 * @var IndexLookupFallbackMethod $fallback
 		 */
 		$fallback = new IndexLookupFallbackMethod( $query, 'lookup_index', [],
-			'lookup_suggestion_field', [], [] );
+			'lookup_suggestion_field', [], [], [] );
 		$this->assertNotNull( $fallback->getSearchRequest( $this->getMockBuilder( Client::class )->disableOriginalConstructor()->getMock() ) );
 		$initialResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), $rewritten ? 0 : 1 );
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory, $this->namespacePrefixParser() );
@@ -67,13 +67,16 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		$context->setSuggestResponse( $response );
 		$this->assertSame( $expectedApproxScore, $fallback->successApproximation( $context ) );
 		if ( $expectedApproxScore > 0 ) {
-			$actualNewResults = $fallback->rewrite( $context );
+			$status = $fallback->rewrite( $context );
+			$actualNewResults = $status->apply( $initialResults );
 			if ( $rewritten ) {
+				$this->assertSame( FallbackStatus::ACTION_REPLACE_LOCAL_RESULTS, $status->getAction() );
 				$this->assertSame( $rewrittenResults, $actualNewResults );
 				$this->assertSame( $suggestion, $rewrittenResults->getQueryAfterRewrite() );
 				$this->assertSame( $suggestionSnippet,
 					HtmlArmor::getHtml( $rewrittenResults->getQueryAfterRewriteSnippet() ) );
 			} else {
+				$this->assertSame( FallbackStatus::ACTION_SUGGEST_QUERY, $status->getAction() );
 				$this->assertSame( $initialResults, $actualNewResults );
 				$this->assertSame( $suggestion, $actualNewResults->getSuggestionQuery() );
 				$this->assertSame( $suggestionSnippet, HtmlArmor::getHtml( $actualNewResults->getSuggestionSnippet() ) );
@@ -164,7 +167,8 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 							'lookup_query_field' => '{{query}}',
 						]
 					],
-					'suggestion_field' => 'lookup_suggestion_field'
+					'suggestion_field' => 'lookup_suggestion_field',
+					'metric_fields' => []
 				]
 			]
 		];
@@ -222,7 +226,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 			->setWithDYMSuggestion( true )
 			->build();
 		$lookup = new IndexLookupFallbackMethod( $query, 'index', [ 'query' => 'test' ],
-			'field', $queryParams, [] );
+			'field', $queryParams, [], [] );
 		try {
 			$lookup->getSearchRequest( $this->createMock( Client::class ) );
 			$this->fail( "Expected " . SearchProfileException::class . " to be thrown" );

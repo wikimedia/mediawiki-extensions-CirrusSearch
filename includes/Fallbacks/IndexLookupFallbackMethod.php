@@ -7,13 +7,13 @@ use CirrusSearch\Parser\AST\Visitor\QueryFixer;
 use CirrusSearch\Profile\ArrayPathSetter;
 use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Profile\SearchProfileService;
-use CirrusSearch\Search\CirrusSearchResultSet;
+use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use Elastica\Client;
 use Elastica\Query;
 use Elastica\Search;
 
-class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestFallbackMethod {
+class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestFallbackMethod, SearchMetricsProvider {
 	use FallbackMethodTrait;
 
 	/**
@@ -52,6 +52,20 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	private $queryFixer;
 
 	/**
+	 * @var array
+	 */
+	private $searchMetrics = [];
+
+	/**
+	 * @var string[] Stored fields to request from elasticsearch
+	 */
+	private $storedFields;
+
+	public function getMetrics(): array {
+		return $this->searchMetrics;
+	}
+
+	/**
 	 * @param Client $client
 	 * @return Search|null null if no additional request is to be executed for this method.
 	 * @see FallbackRunnerContext::getMethodResponse()
@@ -80,7 +94,7 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 		$query->setFrom( 0 )
 			->setSize( 1 )
 			->setSource( false )
-			->setStoredFields( [ $this->suggestionField ] );
+			->setStoredFields( $this->storedFields );
 		$search = new Search( $client );
 		$search->setQuery( $query )
 			->addIndex( $this->index );
@@ -115,6 +129,8 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	 * @param array $queryTemplate
 	 * @param string $suggestionField
 	 * @param string[] $queryParams
+	 * @param string[] $metricFields Additional stored fields to request and
+	 *  report with metrics.
 	 * @param array $profileParams
 	 */
 	public function __construct(
@@ -123,6 +139,7 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 		$queryTemplate,
 		$suggestionField,
 		array $queryParams,
+		array $metricFields,
 		array $profileParams
 	) {
 		$this->query = $query;
@@ -132,6 +149,8 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 		$this->queryParams = $queryParams;
 		$this->profileParams = $profileParams;
 		$this->queryFixer = QueryFixer::build( $this->query->getParsedQuery() );
+		$this->storedFields = $metricFields;
+		$this->storedFields[] = $suggestionField;
 	}
 
 	/**
@@ -158,7 +177,15 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 			->loadProfileByName( SearchProfileService::INDEX_LOOKUP_FALLBACK, $params['profile'] );
 		'@phan-var array $profile';
 
-		return new self( $query, $profile['index'], $profile['query'], $profile['suggestion_field'], $profile['params'], $profileParams );
+		return new self(
+			$query,
+			$profile['index'],
+			$profile['query'],
+			$profile['suggestion_field'],
+			$profile['params'],
+			$profile['metric_fields'],
+			$profileParams
+		);
 	}
 
 	/**
@@ -170,9 +197,15 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 		if ( $rset === null || $rset->getResults() === [] ) {
 			return 0.0;
 		}
-		$suggestion = $rset->getResults()[0]->getFields()[$this->suggestionField][0] ?? null;
+		$fields = $rset->getResults()[0]->getFields();
+		$suggestion = $fields[$this->suggestionField][0] ?? null;
 		if ( $suggestion === null ) {
 			return 0.0;
+		}
+		// Metrics fields are everything except the suggestion field
+		unset( $fields[$this->suggestionField] );
+		if ( $fields ) {
+			$this->searchMetrics += $fields;
 		}
 		return 0.5;
 	}
@@ -195,29 +228,27 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	 * must be returned.
 	 *
 	 * @param FallbackRunnerContext $context
-	 * @return CirrusSearchResultSet
+	 * @return FallbackStatus
 	 */
-	public function rewrite( FallbackRunnerContext $context ): CirrusSearchResultSet {
+	public function rewrite( FallbackRunnerContext $context ): FallbackStatus {
 		$previousSet = $context->getPreviousResultSet();
 		if ( !$context->costlyCallAllowed() ) {
 			// a method rewrote the query before us.
-			return $previousSet;
+			return FallbackStatus::noSuggestion();
 		}
 		if ( $previousSet->getSuggestionQuery() !== null ) {
 			// a method suggested something before us
-			return $previousSet;
+			return FallbackStatus::noSuggestion();
 		}
 		$resultSet = $context->getMethodResponse();
 		if ( empty( $resultSet->getResults() ) ) {
-			return $previousSet;
+			return FallbackStatus::noSuggestion();
 		}
 		$res = $resultSet->getResults()[0];
 		$suggestedQuery = $res->getFields()[$this->suggestionField][0] ?? null;
 		if ( $suggestedQuery === null ) {
-			return $previousSet;
+			return FallbackStatus::noSuggestion();
 		}
-		// Show the suggestion
-		$previousSet->setSuggestionQuery( $suggestedQuery, $suggestedQuery );
 		// Maybe rewrite
 		return $this->maybeSearchAndRewrite( $context, $this->query, $suggestedQuery );
 	}

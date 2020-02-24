@@ -148,7 +148,8 @@
 		"UserGetDefaultOptions": "CirrusSearch\\Hooks::onUserGetDefaultOptions",
 		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchSimilarityConfig",
 		"SearchIndexFields": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onSearchIndexFields",
-		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchAnalysisConfig"
+		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchAnalysisConfig",
+		"CirrusSearchAddQueryFeatures": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchAddQueryFeatures"
 	},
 	"config": {
 		"CirrusSearchDefaultCluster": {
@@ -652,9 +653,11 @@
 			"value": "elastic"
 		},
 		"CirrusSearchWMFExtraFeatures": {
+			"description": "Configuration for Wikimedia-spexific extra features.\n\n* ores_articletopics: search articles by topic.\n** build: include in the index definition",
 			"value": {
 				"ores_articletopics": {
-					"build": false
+					"build": false,
+					"use": false
 				}
 			}
 		}

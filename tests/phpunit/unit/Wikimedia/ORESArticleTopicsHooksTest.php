@@ -2,6 +2,9 @@
 
 namespace CirrusSearch\Wikimedia;
 
+use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Query\ArticleTopicFeature;
+
 /**
  * @covers \CirrusSearch\Wikimedia\ORESArticleTopicsHooks
  */
@@ -105,5 +108,29 @@ class ORESArticleTopicsHooksTest extends \MediaWikiUnitTestCase {
 		$analysisConfig = [];
 		ORESArticleTopicsHooks::configureOresArticleTopicsFieldAnalysis( $analysisConfig, $config );
 		$this->assertSame( [], $analysisConfig );
+	}
+
+	public function testOnCirrusSearchAddQueryFeatures() {
+		$config = new HashSearchConfig( [
+			ORESArticleTopicsHooks::WMF_EXTRA_FEATURES => [
+				ORESArticleTopicsHooks::CONFIG_OPTIONS => [
+					ORESArticleTopicsHooks::USE_OPTION => false,
+				],
+			],
+		] );
+		$extraFeatures = [];
+		ORESArticleTopicsHooks::onCirrusSearchAddQueryFeatures( $config, $extraFeatures );
+		$this->assertEmpty( $extraFeatures );
+
+		$config = new HashSearchConfig( [
+			ORESArticleTopicsHooks::WMF_EXTRA_FEATURES => [
+				ORESArticleTopicsHooks::CONFIG_OPTIONS => [
+					ORESArticleTopicsHooks::USE_OPTION => true,
+				],
+			],
+		] );
+		ORESArticleTopicsHooks::onCirrusSearchAddQueryFeatures( $config, $extraFeatures );
+		$this->assertNotEmpty( $extraFeatures );
+		$this->assertInstanceOf( ArticleTopicFeature::class, $extraFeatures[0] );
 	}
 }

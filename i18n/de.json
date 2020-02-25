@@ -75,5 +75,6 @@
 	"cirrussearch-keyword-prefix-ns-mismatch": "Der im Suchbegriff gefundene Namensraum <code>prefix:</code> ist nicht mit den angeforderten Namensräumen kompatibel. Du kannst diesen Fehler beheben, indem du deiner Anfrage das Präfix <code>all:</code> hinzufügst.",
 	"cirrussearch-autoselect-profile": "Lass die Suchmaschine über das beste zu verwendende Profil entscheiden.",
 	"cirrussearch-offset-too-large": "Die Ergebnisse konnten nicht abgerufen werden. Es werden bis zu $1 Ergebnisse unterstützt, es wurden jedoch Ergebnisse beginnend ab $2 angefordert.",
-	"cirrussearch-offset-not-allowed-with-random-sort": "Die Anfrage nach Folgeseiten wird bei zufallsgesteuerten Ergebnisausgabe ignoriert."
+	"cirrussearch-offset-not-allowed-with-random-sort": "Die Anfrage nach Folgeseiten wird bei zufallsgesteuerten Ergebnisausgabe ignoriert.",
+	"cirrussearch-articletopic-invalid-topic": "Nicht {{PLURAL:$2|erkannter Topic-Name|erkannte Topic-Namen}}für das <kbd>articletopic:</kbd>-Stichwort: $1"
 }

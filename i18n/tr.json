@@ -84,5 +84,6 @@
 	"cirrussearch-keyword-prefix-ns-mismatch": "<code>prefix:</code> arama teriminde bulunan ad alanı, istenen ad alanlarıyla uyumlu değil. Sorgunuzu <code>all:</code> ile ön ekleyerek düzeltebilirsiniz.",
 	"cirrussearch-autoselect-profile": "Kullanılacak en iyi profile arama motorunun karar vermesine izin verin.",
 	"cirrussearch-offset-too-large": "Sonuçlar alınamadı. $1 arama sonucu desteklenir, ancak $2 başlayan sonuçlar istenir.",
-	"cirrussearch-offset-not-allowed-with-random-sort": "Rastgele sıralanan sonuçları sayfalandırma isteği yoksayılıyor."
+	"cirrussearch-offset-not-allowed-with-random-sort": "Rastgele sıralanan sonuçları sayfalandırma isteği yoksayılıyor.",
+	"cirrussearch-articletopic-invalid-topic": "<kbd>articletopic:</kbd> anahtar kelimesi için tanınmayan konu {{PLURAL:$2|adı}}: $1"
 }

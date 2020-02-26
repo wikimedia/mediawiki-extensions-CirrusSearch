@@ -73,5 +73,6 @@
 	"cirrussearch-keyword-prefix-ns-mismatch": "Именскиот простор пронајден во пребраното <code>prefix:</code> не е складен со побараните именски простори. Можете да го поправите ставајќи <code>all:</code> пред барањето.",
 	"cirrussearch-autoselect-profile": "Пребарувачот нека го одреди најпогодниот профил.",
 	"cirrussearch-offset-too-large": "Не можев да го добијам исходот. Поддржани се до $1 ставки, но побарани се ставки почнувајќи од $2.",
-	"cirrussearch-offset-not-allowed-with-random-sort": "Го занемарувам барањетп за страничење на произволно подредени исходни ставки."
+	"cirrussearch-offset-not-allowed-with-random-sort": "Го занемарувам барањетп за страничење на произволно подредени исходни ставки.",
+	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Непрепознаен назив на темата|Непрепознаени називи на темите}} за клучниот збор <kbd>articletopic:</kbd>: $1"
 }

@@ -15,7 +15,8 @@
 			"Urhixidur",
 			"Od1n",
 			"Thibaut120094",
-			"Verdy p"
+			"Verdy p",
+			"Eneelk"
 		]
 	},
 	"cirrussearch-desc": "Moteur de recherche Elasticsearch pour MediaWiki",
@@ -86,5 +87,6 @@
 	"cirrussearch-keyword-prefix-ns-mismatch": "L’espace de noms trouvé dans la condition de recherche <code>prefix:</code> n’est pas compatible avec les espaces de noms demandés. Vous pouvez corriger cela en préfixant votre requête par <code>all:</code>.",
 	"cirrussearch-autoselect-profile": "Laisser le moteur de recherche décider du meilleur profil à utiliser.",
 	"cirrussearch-offset-too-large": "Impossible de récupérer les résultats. Jusqu’à $1 résultats de recherche sont pris en charge, mais des résultats à partir du nº $2 ont été demandés.",
-	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorer la requête pour paginer aléatoirement les résultats triés."
+	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorer la requête pour paginer aléatoirement les résultats triés.",
+	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Nom|Noms}} de sujet inconnus pour le mot-clé <kbd>articletopic:</kbd> : $1"
 }

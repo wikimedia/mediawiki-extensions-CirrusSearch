@@ -187,7 +187,7 @@ class SearchRequestLog extends BaseRequestLog {
 
 		// in case of failures from Elastica
 		if ( isset( $responseData['message'] ) ) {
-			$vars['message'] = $responseData['message'];
+			$vars['error_message'] = $responseData['message'];
 		}
 
 		return $vars;

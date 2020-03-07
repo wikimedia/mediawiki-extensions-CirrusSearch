@@ -70,7 +70,7 @@ return [
 	'__global:ecoreality' => '0 http://www.EcoReality.org/wiki/$1',
 	'__global:ecxei' => '0 http://www.ikso.net/cgi-bin/wiki.pl?$1',
 	'__global:elibre' => '0 http://enciclopedia.us.es/index.php/$1',
-	'__global:emacswiki' => '0 http://www.emacswiki.org/cgi-bin/wiki.pl?$1',
+	'__global:emacswiki' => '0 https://www.emacswiki.org/emacs/$1',
 	'__global:encyc' => '0 http://encyc.org/wiki/$1',
 	'__global:energiewiki' => '0 http://www.netzwerk-energieberater.de/wiki/index.php/$1',
 	'__global:englyphwiki' => '0 http://en.glyphwiki.org/wiki/$1',

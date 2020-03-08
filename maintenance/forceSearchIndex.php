@@ -437,7 +437,7 @@ class ForceSearchIndex extends Maintenance {
 
 	protected function getIdsIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
-		$pageQuery = self::getPageQueryInfo();
+		$pageQuery = WikiPage::getQueryInfo();
 		$it = new BatchRowIterator( $dbr, $pageQuery['tables'], 'page_id', $this->getBatchSize() );
 		$it->setFetchColumns( $pageQuery['fields'] );
 		$it->addJoinConditions( $pageQuery['joins'] );
@@ -451,7 +451,7 @@ class ForceSearchIndex extends Maintenance {
 
 	protected function getUpdatesByDateIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
-		$pageQuery = self::getPageQueryInfo();
+		$pageQuery = WikiPage::getQueryInfo();
 		$it = new BatchRowIterator(
 			$dbr,
 			array_merge( $pageQuery['tables'], [ 'revision' ] ),
@@ -472,7 +472,7 @@ class ForceSearchIndex extends Maintenance {
 
 	protected function getUpdatesByIdIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
-		$pageQuery = self::getPageQueryInfo();
+		$pageQuery = WikiPage::getQueryInfo();
 		$it = new BatchRowIterator( $dbr,  $pageQuery['tables'], 'page_id', $this->getBatchSize() );
 		$it->setFetchColumns( $pageQuery['fields'] );
 		$it->addJoinConditions( $pageQuery['joins'] );
@@ -506,24 +506,6 @@ class ForceSearchIndex extends Maintenance {
 					$dbr->addQuotes( $dbr->timestamp( $this->toDate ) ),
 			] );
 		}
-	}
-
-	/**
-	 * Back-compat for WikiPage::getQueryInfo()
-	 * @todo Remove this in favor of calling WikiPage::getQueryInfo() directly
-	 *  when support for MediaWiki before 1.31 is dropped.
-	 * @return array
-	 */
-	private static function getPageQueryInfo() {
-		if ( is_callable( [ WikiPage::class, 'getQueryInfo' ] ) ) {
-			return WikiPage::getQueryInfo();
-		}
-
-		return [
-			'tables' => [ 'page' ],
-			'fields' => WikiPage::selectFields(),
-			'joins' => [],
-		];
 	}
 
 	private function attachPageConditions( IDatabase $dbr, BatchRowIterator $it, $columnPrefix ) {

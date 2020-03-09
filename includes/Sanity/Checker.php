@@ -323,15 +323,7 @@ class Checker {
 		}
 		$dbr = $this->getDB();
 		$where = 'page_id IN (' . $dbr->makeList( $pageIds ) . ')';
-		if ( is_callable( [ WikiPage::class, 'getQueryInfo' ] ) ) {
-			$pageQuery = WikiPage::getQueryInfo();
-		} else {
-			$pageQuery = [
-				'tables' => [ 'page' ],
-				'fields' => WikiPage::selectFields(),
-				'joins' => [],
-			];
-		}
+		$pageQuery = WikiPage::getQueryInfo();
 		$res = $dbr->select(
 			$pageQuery['tables'],
 			$pageQuery['fields'],

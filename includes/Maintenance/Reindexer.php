@@ -199,6 +199,10 @@ class Reindexer {
 		// into the old index while reindexing the new one.
 		$oldCount = (float)$this->oldType->count();
 		$this->index->refresh();
+		// While elasticsearch should be ready immediately after a refresh, we have seen this return
+		// exceptionally low values in 2% of reindex attempts. Wait around a bit and hope the refresh
+		// becomes available
+		sleep( 30 );
 		$newCount = (float)$this->type->count();
 		$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
 		if ( $difference > $acceptableCountDeviation ) {

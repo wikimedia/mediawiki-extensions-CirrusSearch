@@ -74,5 +74,6 @@
 	"cirrussearch-keyword-prefix-ns-mismatch": "Navnerommet funnet i søketermen <code>prefix:</code> er ikke kompatibelt med det forespurte navnerommet. Du kan fikse det ved å legge til <code>all:</code> først i spørringen.",
 	"cirrussearch-autoselect-profile": "La søkemotoren bestemme den beste profilen å bruke.",
 	"cirrussearch-offset-too-large": "Kunne ikke hente resultater. Opptil $1 {{PLURAL:$1|søkeresultat|søkeresultater}} støttes, men resultater fra og med $2 ble etterspurt.",
-	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorerer forespørsel om å dele inn tilfeldig sorterte resultater i sider."
+	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorerer forespørsel om å dele inn tilfeldig sorterte resultater i sider.",
+	"cirrussearch-articletopic-invalid-topic": "Ikke-gjenkjent {{PLURAL:$2|emnenavn}} for nøkkelordet <kbd>articletopic</kbd>: $1"
 }

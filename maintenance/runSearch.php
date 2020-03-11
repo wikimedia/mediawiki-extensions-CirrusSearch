@@ -6,6 +6,7 @@ use CirrusSearch;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\SearchConfig;
+use MediaWiki\MediaWikiServices;
 use OrderedStreamingForkController;
 use PageArchive;
 use SearchSuggestionSet;
@@ -175,7 +176,8 @@ class RunSearch extends Maintenance {
 				'explanation' => $result->getExplanation(),
 				'extra' => $result->getExtensionData(),
 			];
-			$img = $result->getFile() ?: wfFindFile( $result->getTitle() );
+			$img = $result->getFile() ?: MediaWikiServices::getInstance()->getRepoGroup()
+				->findFile( $result->getTitle() );
 			if ( $img ) {
 				$thumb = $img->transform( [ 'width' => 120, 'height' => 120 ] );
 				if ( $thumb ) {

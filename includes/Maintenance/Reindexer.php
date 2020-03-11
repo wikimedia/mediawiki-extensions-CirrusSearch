@@ -33,6 +33,7 @@ use Elastica\Type;
 class Reindexer {
 	const MAX_CONSECUTIVE_ERRORS = 5;
 	const MONITOR_SLEEP_SECONDS = 30;
+	const MAX_WAIT_FOR_COUNT_SEC = 600;
 
 	/**
 	 * @var SearchConfig
@@ -197,22 +198,7 @@ class Reindexer {
 		$this->outputIndented( "Verifying counts..." );
 		// We can't verify counts are exactly equal because they won't be - we still push updates
 		// into the old index while reindexing the new one.
-		$oldCount = (float)$this->oldType->count();
-		$this->index->refresh();
-		// While elasticsearch should be ready immediately after a refresh, we have seen this return
-		// exceptionally low values in 2% of reindex attempts. Wait around a bit and hope the refresh
-		// becomes available
-		sleep( 30 );
-		$newCount = (float)$this->type->count();
-		$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
-		if ( $difference > $acceptableCountDeviation ) {
-			$this->output(
-				"Not close enough!  old=$oldCount new=$newCount difference=$difference\n"
-			);
-			$this->fatalError( 'Failed to load index - counts not close enough.  ' .
-				"old=$oldCount new=$newCount difference=$difference.  " .
-				'Check for warnings above.' );
-		}
+		$this->waitForCounts( $acceptableCountDeviation );
 		$this->output( "done\n" );
 
 		// Revert settings changed just for reindexing
@@ -221,6 +207,37 @@ class Reindexer {
 			$newSettings['merge.policy'] = $this->mergeSettings;
 		}
 		$settings->set( $newSettings );
+	}
+
+	/**
+	 * @param float $acceptableCountDeviation
+	 */
+	private function waitForCounts( float $acceptableCountDeviation ) {
+		$oldCount = (float)$this->oldType->count();
+		$this->index->refresh();
+		// While elasticsearch should be ready immediately after a refresh, we have seen this return
+		// exceptionally low values in 2% of reindex attempts. Wait around a bit and hope the refresh
+		// becomes available
+		$start = microtime( true );
+		$timeoutAfter = $start + self::MAX_WAIT_FOR_COUNT_SEC;
+		while ( true ) {
+			$newCount = (float)$this->type->count();
+			$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
+			if ( $difference <= $acceptableCountDeviation ) {
+				break;
+			}
+			$this->output(
+				"Not close enough!  old=$oldCount new=$newCount difference=$difference\n"
+			);
+			if ( microtime( true ) > $timeoutAfter ) {
+				$this->fatalError( 'Failed to load index - counts not close enough.  ' .
+					"old=$oldCount new=$newCount difference=$difference.  " .
+					'Check for warnings above.' );
+			} else {
+				$this->output( "Waiting to re-check counts" );
+				sleep( 30 );
+			}
+		}
 	}
 
 	public function waitForShards() {

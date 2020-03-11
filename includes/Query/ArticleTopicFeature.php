@@ -84,6 +84,23 @@ class ArticleTopicFeature extends SimpleKeywordFeature {
 	];
 
 	/**
+	 * Helper method for turning raw ORES score data (as stored in the Cirrus document) into
+	 * search terms, for analytics/debugging.
+	 * @param array $rawTopicData The contents of the document's ores_articletopics field
+	 * @return array corresponding search term => ORES score (rounded to three decimals)
+	 */
+	public static function getTopicScores( array $rawTopicData ): array {
+		$labelsToTerms = array_flip( self::TERMS_TO_LABELS );
+		$topicScores = [];
+		foreach ( $rawTopicData as $rawTopic ) {
+			list( $oresLabel, $scaledScore ) = explode( '|', $rawTopic );
+			$topicId = $labelsToTerms[$oresLabel];
+			$topicScores[$topicId] = (int)$scaledScore / 1000;
+		}
+		return $topicScores;
+	}
+
+	/**
 	 * @inheritDoc
 	 * @phan-return array{topics:string[]}
 	 */

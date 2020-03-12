@@ -13,6 +13,12 @@ use CirrusSearch\Search\SearchContext;
 class ArticleTopicFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
+	public function testGetTopicScores() {
+		$rawTopicData = [ 'Culture.Visual arts.Visual arts*|123', 'History and Society.History|456' ];
+		$topics = ArticleTopicFeature::getTopicScores( $rawTopicData );
+		$this->assertSame( [ 'visual-arts' => 0.123, 'history' => 0.456 ], $topics );
+	}
+
 	public function parseProvider() {
 		$term = function ( string $topic ) {
 			return [

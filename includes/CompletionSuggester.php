@@ -293,7 +293,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$namespaces = $this->prefixSearchRequestBuilder->getSearchContext()->getNamespaces();
 		foreach ( $prefixResults->getResults() as $res ) {
 			$pageId = $this->config->makePageId( $res->getId() );
-			/** @phan-suppress-next-line PhanUndeclaredMethod transformOneElasticResult exists (FancyTitleResultsType asserted) */
 			$title = FancyTitleResultsType::chooseBestTitleOrRedirect( $rType->transformOneElasticResult( $res, $namespaces ) );
 			if ( $title === false ) {
 				continue;

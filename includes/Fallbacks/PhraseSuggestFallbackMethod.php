@@ -140,9 +140,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		$suggestion = $this->findSuggestion( $fromResultSet );
 		Assert::precondition( $suggestion !== null, "fixDYMSuggestion called with no suggestions available" );
 		return [
-			// @phan-suppress-next-line PhanTypeArraySuspiciousNullable Checked by Assert class
 			$this->queryFixer->fix( $suggestion['text'] ),
-			// @phan-suppress-next-line PhanTypeArraySuspiciousNullable Checked by Assert class
 			$this->queryFixer->fix( $this->escapeHighlightedSuggestion( $suggestion['highlighted'] ) )
 		];
 	}

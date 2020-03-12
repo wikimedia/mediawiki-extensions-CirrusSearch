@@ -154,7 +154,6 @@ class BaseHighlightedField extends HighlightedField {
 				$otherQuery = $other->highlightQuery;
 				Assert::precondition( $thisQuery !== null && $otherQuery !== null, 'highlightQuery not null' );
 				$this->highlightQuery = new BoolQuery();
-				// @phan-suppress-next-line PhanTypeMismatchArgumentNullable
 				$this->highlightQuery->addShould( $thisQuery );
 				$this->highlightQuery->addShould( $otherQuery );
 			}

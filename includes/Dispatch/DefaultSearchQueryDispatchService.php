@@ -56,7 +56,6 @@ class DefaultSearchQueryDispatchService implements SearchQueryDispatchService {
 		}
 		Assert::postcondition( $best !== null,
 			"No route to backend, make sure a default SearchQueryRoute is added for {$query->getSearchEngineEntryPoint()}" );
-		// @phan-suppress-next-line PhanTypeMismatchReturnNullable needed assertion is done
 		return $best;
 	}
 }

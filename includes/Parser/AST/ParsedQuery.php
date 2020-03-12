@@ -241,7 +241,6 @@ class ParsedQuery {
 			'at this point we must have a list of specific namespaces' );
 
 		return array_values( array_unique(
-			// @phan-suppress-next-line PhanTypeMismatchArgumentNullableInternal Assert for $ns is done
 			array_merge( $ns, $this->requiredNamespaces, $additionalRequiredNamespaces ?? [] ),
 			SORT_REGULAR
 		) );

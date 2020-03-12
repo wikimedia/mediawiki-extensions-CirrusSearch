@@ -125,6 +125,7 @@ class QueryFixer implements Visitor {
 		} elseif ( $this->node instanceof WordsQueryNode ) {
 			return $this->node->getWords();
 		} else {
+		/** @phan-suppress-next-line PhanImpossibleCondition I agree, this is impossible. */
 			Assert::invariant( false, "Unsupported node type " . get_class( $this->node ) );
 			return null;
 		}
@@ -301,6 +302,7 @@ class QueryFixer implements Visitor {
 	 * @param NegatedNode $node
 	 */
 	final public function visitNegatedNode( NegatedNode $node ) {
+		/** @phan-suppress-next-line PhanImpossibleCondition I agree, this is impossible. */
 		Assert::invariant( false, 'NegatedNode should be optimized at parse time' );
 	}
 
@@ -308,6 +310,7 @@ class QueryFixer implements Visitor {
 	 * @param NamespaceHeaderNode $node
 	 */
 	final public function visitNamespaceHeader( NamespaceHeaderNode $node ) {
+		/** @phan-suppress-next-line PhanImpossibleCondition I agree, this is impossible. */
 		Assert::invariant( false, 'Not yet part of the AST, should not be visited.' );
 	}
 }

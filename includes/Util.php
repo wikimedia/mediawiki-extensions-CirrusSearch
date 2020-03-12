@@ -439,15 +439,17 @@ class Util {
 	}
 
 	/**
-	 * @return string The context the request is in. Either cli, api or web.
+	 * @return string The context the request is in. Either cli, api, web or misc.
 	 */
 	public static function getExecutionContext() {
-		if ( PHP_SAPI === 'cli' || defined( 'MEDIAWIKI_JOB_RUNNER' ) ) {
+		if ( PHP_SAPI === 'cli' ) {
 			return 'cli';
-		} elseif ( defined( 'MW_API' ) ) {
+		} elseif ( MW_ENTRY_POINT == 'api' ) {
 			return 'api';
-		} else {
+		} elseif ( MW_ENTRY_POINT == 'index' ) {
 			return 'web';
+		} else {
+			return 'misc';
 		}
 	}
 

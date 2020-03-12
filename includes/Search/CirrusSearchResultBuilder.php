@@ -161,6 +161,14 @@ class CirrusSearchResultBuilder {
 	}
 
 	/**
+	 * @param string $name
+	 * @param mixed $value
+	 */
+	public function addExtraField( string $name, $value ) {
+		$this->data[ArrayCirrusSearchResult::EXTRA_FIELDS][$name] = $value;
+	}
+
+	/**
 	 * @param string $key
 	 * @param mixed $value
 	 * @param bool $failIfExisting

@@ -19,13 +19,18 @@ class FullTextCirrusSearchResultBuilder {
 	/** @var HighlightedField[][] indexed per target and ordered by priority */
 	private $highligtedFields;
 
+	/** @var string[] */
+	private $extraFields;
+
 	/**
 	 * @param TitleHelper $titleHelper
 	 * @param HighlightedField[][] $hlFieldsPerTarget list of highlighted field indexed per target and sorted by priority
+	 * @param string[] $extraFields list of extra fields to extract from the source doc
 	 */
-	public function __construct( TitleHelper $titleHelper, array $hlFieldsPerTarget ) {
+	public function __construct( TitleHelper $titleHelper, array $hlFieldsPerTarget, array $extraFields = [] ) {
 		$this->titleHelper = $titleHelper;
 		$this->highligtedFields = $hlFieldsPerTarget;
+		$this->extraFields = $extraFields;
 	}
 
 	/**
@@ -65,6 +70,13 @@ class FullTextCirrusSearchResultBuilder {
 		$this->doMainSnippet( $highlights );
 		$this->doHeadings( $title, $highlights );
 		$this->doCategory( $highlights );
+		$source = $result->getData();
+
+		foreach ( $this->extraFields as $field ) {
+			if ( isset( $source[$field] ) ) {
+				$builder->addExtraField( $field, $source[$field] );
+			}
+		}
 
 		return $builder->build();
 	}

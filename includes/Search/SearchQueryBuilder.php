@@ -100,6 +100,11 @@ final class SearchQueryBuilder {
 	private $profileContextParameters = [];
 
 	/**
+	 * @var string[] list of extra fields to extract
+	 */
+	private $extraFieldsToExtract = [];
+
+	/**
 	 * Construct a new FT (FullText) SearchQueryBuilder using the config
 	 * and query string provided.
 	 *
@@ -193,6 +198,9 @@ final class SearchQueryBuilder {
 				$forcedProfiles[$type] = $name;
 			}
 		}
+		// we do not copy extraFieldsToExtract as we have no way to know if they are available on a
+		// target wiki
+		$builder->extraFieldsToExtract = [];
 
 		$builder->forcedProfiles = $forcedProfiles;
 		// We force to false, during cross project/lang searches
@@ -255,6 +263,7 @@ final class SearchQueryBuilder {
 		$builder->extraIndicesSearch = $original->getInitialCrossSearchStrategy()->isExtraIndicesSearchSupported();
 		$builder->withDYMSuggestion = false;
 		$builder->allowRewrite = false;
+		$builder->extraFieldsToExtract = $original->getExtraFieldsToExtract();
 		return $builder;
 	}
 
@@ -280,7 +289,8 @@ final class SearchQueryBuilder {
 			$this->searchConfig,
 			$this->withDYMSuggestion,
 			$this->allowRewrite,
-			$this->profileContextParameters
+			$this->profileContextParameters,
+			$this->extraFieldsToExtract
 		);
 	}
 
@@ -424,6 +434,15 @@ final class SearchQueryBuilder {
 	 */
 	public function addProfileContextParameter( $key, $value ): SearchQueryBuilder {
 		$this->profileContextParameters[$key] = $value;
+		return $this;
+	}
+
+	/**
+	 * @param string[] $fields
+	 * @return SearchQueryBuilder
+	 */
+	public function setExtraFieldsToExtract( array $fields ): SearchQueryBuilder {
+		$this->extraFieldsToExtract = $fields;
 		return $this;
 	}
 }

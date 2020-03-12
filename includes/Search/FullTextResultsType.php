@@ -24,18 +24,26 @@ final class FullTextResultsType extends BaseResultsType {
 	private $titleHelper;
 
 	/**
+	 * @var string[] list of extra fields to extract
+	 */
+	private $extraFieldsToExtract = [];
+
+	/**
 	 * @param FetchPhaseConfigBuilder $fetchPhaseBuilder
 	 * @param bool $searchContainedSyntax
 	 * @param TitleHelper $titleHelper
+	 * @param string[] $extraFieldsToExtract
 	 */
 	public function __construct(
 		FetchPhaseConfigBuilder $fetchPhaseBuilder,
 		$searchContainedSyntax,
-		TitleHelper $titleHelper
+		TitleHelper $titleHelper,
+		array $extraFieldsToExtract = []
 	) {
 		$this->fetchPhaseBuilder = $fetchPhaseBuilder;
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->titleHelper = $titleHelper;
+		$this->extraFieldsToExtract = $extraFieldsToExtract;
 	}
 
 	/**
@@ -44,7 +52,8 @@ final class FullTextResultsType extends BaseResultsType {
 	public function getSourceFiltering() {
 		return array_merge(
 			parent::getSourceFiltering(),
-			[ 'redirect.*', 'timestamp', 'text_bytes' ]
+			[ 'redirect.*', 'timestamp', 'text_bytes' ],
+			$this->extraFieldsToExtract
 		);
 	}
 
@@ -76,7 +85,7 @@ final class FullTextResultsType extends BaseResultsType {
 	 */
 	public function transformElasticsearchResult( ElasticaResultSet $result ) {
 		// Should we make this a concrete class?
-		return new class( $this->titleHelper, $this->fetchPhaseBuilder, $result, $this->searchContainedSyntax )
+		return new class( $this->titleHelper, $this->fetchPhaseBuilder, $result, $this->searchContainedSyntax, $this->extraFieldsToExtract )
 				extends BaseCirrusSearchResultSet {
 			/** @var TitleHelper */
 			private $titleHelper;
@@ -91,11 +100,12 @@ final class FullTextResultsType extends BaseResultsType {
 				TitleHelper $titleHelper,
 				FetchPhaseConfigBuilder $builder,
 				ElasticaResultSet $results,
-				$searchContainedSyntax
+				$searchContainedSyntax,
+				array $extraFieldsToExtract
 			) {
 				$this->titleHelper = $titleHelper;
 				$this->resultBuilder = new FullTextCirrusSearchResultBuilder( $this->titleHelper,
-					$builder->getHLFieldsPerTargetAndPriority() );
+					$builder->getHLFieldsPerTargetAndPriority(), $extraFieldsToExtract );
 				$this->results = $results;
 				$this->searchContainedSyntax = $searchContainedSyntax;
 			}

@@ -207,7 +207,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				new FullTextResultsType(
 					$this->searchContext->getFetchPhaseBuilder(),
 					$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ),
-					$this->titleHelper
+					$this->titleHelper,
+					$query->getExtraFieldsToExtract()
 				)
 			);
 			return $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );

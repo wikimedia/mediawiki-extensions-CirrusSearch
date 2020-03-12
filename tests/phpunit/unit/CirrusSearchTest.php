@@ -126,7 +126,7 @@ class CirrusSearchTest extends CirrusTestCase {
 	private function getSearchEngine( array $config = null ) {
 		// use cirrus base profiles
 		// only set needed config for Connection
-		$config = $this->newHashSearchConfig( $config + $this->getMinimalConfig() );
+		$config = $this->newHashSearchConfig( ( $config ?: [] ) + $this->getMinimalConfig() );
 		return new CirrusSearch( $config, CirrusDebugOptions::defaultOptions(),
 			$this->namespacePrefixParser(), $this->getInterWikiResolver( $config ), $this->newTitleHelper() );
 	}
@@ -142,5 +142,16 @@ class CirrusSearchTest extends CirrusTestCase {
 			'CirrusSearchDefaultCluster' => 'default',
 			'CirrusSearchReplicaGroup' => 'default',
 		];
+	}
+
+	/**
+	 * @covers \CirrusSearch\CirrusSearch::supports
+	 */
+	public function testSupports() {
+		$engine = $this->getSearchEngine();
+		$this->assertFalse( $engine->supports( 'search-update' ) );
+		$this->assertFalse( $engine->supports( 'list-redirects' ) );
+		$this->assertTrue( $engine->supports( \SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE ) );
+		$this->assertTrue( $engine->supports( CirrusSearch::EXTRA_FIELDS_TO_EXTRACT ) );
 	}
 }

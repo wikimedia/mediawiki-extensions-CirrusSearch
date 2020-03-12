@@ -7,6 +7,7 @@ use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
 use CirrusSearch\Profile\ContextualProfileOverride;
 use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Search\ArrayCirrusSearchResult;
 use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\FancyTitleResultsType;
@@ -68,6 +69,21 @@ class CirrusSearch extends SearchEngine {
 	 * characters.
 	 */
 	const MAX_TITLE_SEARCH = 255;
+
+	/**
+	 * Name of the feature to extract more fields during a fulltext search request.
+	 * Expected value is a list of strings identifying the fields to extract out
+	 * of the source document.
+	 * @see SearchEngine::supports() anf SearchEngine::setFeatureData()
+	 */
+	const EXTRA_FIELDS_TO_EXTRACT = 'extra-fields-to-extract';
+
+	/**
+	 * Name of the entry in the extension data array holding the extracted field
+	 * requested using the EXTRA_FIELDS_TO_EXTRACT feature.
+	 * @see \SearchResult::getExtensionData()
+	 */
+	const EXTRA_FIELDS = ArrayCirrusSearchResult::EXTRA_FIELDS;
 
 	/**
 	 * @var array metrics about the last thing we searched sourced from the
@@ -203,6 +219,9 @@ class CirrusSearch extends SearchEngine {
 		case 'search-update':
 		case 'list-redirects':
 			return false;
+		case self::FT_QUERY_INDEP_PROFILE_TYPE:
+		case self::EXTRA_FIELDS_TO_EXTRACT:
+			return true;
 		default:
 			return parent::supports( $feature );
 		}
@@ -231,7 +250,8 @@ class CirrusSearch extends SearchEngine {
 			->setWithDYMSuggestion( $this->showSuggestion )
 			->setAllowRewrite( $this->isFeatureEnabled( 'rewrite' ) )
 			->addProfileContextParameter( ContextualProfileOverride::LANGUAGE,
-				$this->requestContext->getLanguage()->getCode() );
+				$this->requestContext->getLanguage()->getCode() )
+			->setExtraFieldsToExtract( $this->features[self::EXTRA_FIELDS_TO_EXTRACT] ?? [] );
 
 		if ( $this->prefix !== '' ) {
 			$builder->addContextualFilter( 'prefix',

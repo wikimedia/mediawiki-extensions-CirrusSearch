@@ -9,6 +9,7 @@ use CirrusSearch\Searcher;
 use Title;
 
 /**
+ * @covers \CirrusSearch\Search\ArrayCirrusSearchResult
  * @covers \CirrusSearch\Search\FullTextCirrusSearchResultBuilder
  * @covers \CirrusSearch\Search\Fetch\HighlightingTrait
  * @covers \CirrusSearch\Search\TitleHelper
@@ -54,7 +55,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 			'/unused/', true, HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY );
 		$fetchPhaseConfigBuilder->configureDefaultFullTextFields();
 		$this->fulltextResultBuilder = new FullTextCirrusSearchResultBuilder( $this->titleHelper,
-			$fetchPhaseConfigBuilder->getHLFieldsPerTargetAndPriority() );
+			$fetchPhaseConfigBuilder->getHLFieldsPerTargetAndPriority(), [ 'extra_field1', 'extra_field2' ] );
 	}
 
 	public function provideTest() {
@@ -70,6 +71,10 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 			'timestamp' => [
 				array_merge_recursive( [ '_source' => [ 'timestamp' => '2019-08-25T14:28:11Z' ] ], self::$MINIMAL_HIT ),
 				[ 'timestamp' => '20190825142811' ]
+			],
+			'extra_fields' => [
+				array_merge_recursive( [ '_source' => [ 'extra_field1' => [ 'foo' ], 'extra_field2' => 2 ] ], self::$MINIMAL_HIT ),
+				[ 'extensionData' => [ 'extra_fields' => [ 'extra_field1' => [ 'foo' ], 'extra_field2' => 2 ] ] ]
 			],
 			'score' => [
 				array_merge_recursive( [ '_score' => 3.424 ], self::$MINIMAL_HIT ),

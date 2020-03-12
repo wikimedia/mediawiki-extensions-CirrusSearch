@@ -99,6 +99,11 @@ class SearchQuery {
 	private $profileContextParameters;
 
 	/**
+	 * @var string[] list of extra fields to extract
+	 */
+	private $extraFieldsToExtract;
+
+	/**
 	 * @param ParsedQuery $parsedQuery
 	 * @param int[] $initialNamespaces
 	 * @param CrossSearchStrategy $initialCrosswikiStrategy
@@ -113,6 +118,7 @@ class SearchQuery {
 	 * @param bool $withDYMSuggestion
 	 * @param bool $allowRewrite
 	 * @param string[] $profileContextParameters
+	 * @param string[] $extraFieldsToExtract
 	 * @see SearchQueryBuilder
 	 */
 	public function __construct(
@@ -129,7 +135,8 @@ class SearchQuery {
 		SearchConfig $searchConfig,
 		$withDYMSuggestion,
 		$allowRewrite,
-		array $profileContextParameters
+		array $profileContextParameters,
+		array $extraFieldsToExtract
 	) {
 		$this->parsedQuery = $parsedQuery;
 		$this->initialNamespaces = $initialNamespaces;
@@ -145,6 +152,7 @@ class SearchQuery {
 		$this->withDYMSuggestion = $withDYMSuggestion;
 		$this->allowRewrite = $allowRewrite;
 		$this->profileContextParameters = $profileContextParameters;
+		$this->extraFieldsToExtract = $extraFieldsToExtract;
 	}
 
 	/**
@@ -308,5 +316,13 @@ class SearchQuery {
 	 */
 	public function getProfileContextParameters() {
 		return $this->profileContextParameters;
+	}
+
+	/**
+	 * @return string[]
+	 * @see \CirrusSearch\Search\FullTextResultsType
+	 */
+	public function getExtraFieldsToExtract(): array {
+		return $this->extraFieldsToExtract;
 	}
 }

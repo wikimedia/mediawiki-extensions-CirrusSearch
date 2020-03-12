@@ -20,6 +20,7 @@ class ArrayCirrusSearchResult extends CirrusSearchResult {
 	const BYTE_SIZE = 'byte_size';
 	const INTERWIKI_NAMESPACE_TEXT = 'interwiki_namespace_text';
 	const IS_FILE_MATCH = 'is_file_match';
+	const EXTRA_FIELDS = 'extra_fields';
 
 	/**
 	 * @var array
@@ -142,5 +143,16 @@ class ArrayCirrusSearchResult extends CirrusSearchResult {
 	 */
 	public function isFileMatch() {
 		return $this->data[self::IS_FILE_MATCH] ?? false;
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function getExtensionData() {
+		$extensionData = parent::getExtensionData();
+		if ( isset( $this->data[self::EXTRA_FIELDS] ) ) {
+			$extensionData[self::EXTRA_FIELDS] = $this->data[self::EXTRA_FIELDS];
+		}
+		return $extensionData;
 	}
 }

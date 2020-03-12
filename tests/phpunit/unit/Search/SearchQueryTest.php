@@ -237,6 +237,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertTrue( $defaults->isWithDYMSuggestion() );
 		$this->assertFalse( $defaults->isAllowRewrite() );
 		$this->assertEmpty( $defaults->getProfileContextParameters() );
+		$this->assertEmpty( $defaults->getExtraFieldsToExtract() );
 	}
 
 	public function testBuilder() {
@@ -256,7 +257,8 @@ class SearchQueryTest extends CirrusTestCase {
 			->setSort( 'size' )
 			->setWithDYMSuggestion( false )
 			->setAllowRewrite( true )
-			->addProfileContextParameter( "foo", "bar" );
+			->addProfileContextParameter( "foo", "bar" )
+			->setExtraFieldsToExtract( [ 'field1', 'field2' ] );
 		$custom = $builder->build();
 		$expectedParsedQuery = $this->createNewFullTextQueryParser( $config )
 			->parse( 'test' );
@@ -287,6 +289,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( CrossSearchStrategy::hostWikiOnlyStrategy(), $custom->getCrossSearchStrategy() );
 		$this->assertNotEmpty( $custom->getContextualFilters() );
 		$this->assertInstanceOf( ContextualFilter::class, $custom->getContextualFilters()['prefix'] );
+		$this->assertSame( [ 'field1', 'field2' ], $custom->getExtraFieldsToExtract() );
 	}
 
 	public function testSearchContextFromDefaults() {
@@ -368,7 +371,8 @@ class SearchQueryTest extends CirrusTestCase {
 		// Keep the $builder around so that we can reuse it for multiple queries & assertions.
 		$builder = $this->getNewFTSearchQueryBuilder( $hostWikiConfig, 'myquery' )
 			->addForcedProfile( SearchProfileService::RESCORE, 'foo' )
-			->addProfileContextParameter( 'foo', 'bar' );
+			->addProfileContextParameter( 'foo', 'bar' )
+			->setExtraFieldsToExtract( [ 'field1', 'field2' ] ); // these should not be propagated to the target wiki
 
 		$hostWikiQuery = $builder->build();
 		$crossSearchQuery = SearchQueryBuilder::forCrossProjectSearch( $targetWikiConfig,
@@ -481,6 +485,7 @@ class SearchQueryTest extends CirrusTestCase {
 		} else {
 			$this->assertFalse( $crossSearchQuery->hasForcedProfile() );
 		}
+		$this->assertEmpty( $crossSearchQuery->getExtraFieldsToExtract() );
 	}
 
 	public function testforRewrittenQuery() {

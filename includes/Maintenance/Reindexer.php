@@ -234,7 +234,7 @@ class Reindexer {
 					"old=$oldCount new=$newCount difference=$difference.  " .
 					'Check for warnings above.' );
 			} else {
-				$this->output( "Waiting to re-check counts" );
+				$this->output( "Waiting to re-check counts..." );
 				sleep( 30 );
 			}
 		}

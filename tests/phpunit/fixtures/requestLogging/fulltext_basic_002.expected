@@ -2,27 +2,8 @@
     {
         "channel": "cirrussearch-request",
         "context": {
-            "$schema": "/mediawiki/cirrussearch/request/0.0.1",
+            "$schema": "\/mediawiki\/cirrussearch\/request\/0.0.1",
             "all_elasticsearch_requests_cached": false,
-            "hits": [
-                {
-                    "index": "wiki_content_first",
-                    "page_id": 1,
-                    "page_title": "Main Page",
-                    "score": 3.6430994999999999
-                },
-                {
-                    "index": "wiki_general_first",
-                    "page_id": 2,
-                    "page_title": "Template:Main Page",
-                    "score": 0.011918611000000001
-                }
-            ],
-            "http": {
-                "client_ip": "127.0.0.1",
-                "has_cookies": false,
-                "method": "GET"
-            },
             "elasticsearch_requests": [
                 {
                     "cached": false,
@@ -31,13 +12,13 @@
                             "index": "wiki_content_first",
                             "page_id": 1,
                             "page_title": "Main Page",
-                            "score": 3.6430994999999999
+                            "score": 3.6430995
                         },
                         {
                             "index": "wiki_general_first",
                             "page_id": 2,
                             "page_title": "Template:Main Page",
-                            "score": 0.011918611000000001
+                            "score": 0.011918611
                         }
                     ],
                     "hits_offset": 0,
@@ -47,17 +28,37 @@
                         "wiki"
                     ],
                     "limit": 21,
-                    "max_score": 7.9185534000000004,
+                    "max_score": 7.9185534,
                     "query": "main",
                     "query_type": "full_text",
                     "search_time_ms": 13,
                     "suggestion_requested": true,
                     "syntax": [
                         "full_text",
-                        "full_text_querystring"
+                        "full_text_querystring",
+                        "simple_bag_of_words"
                     ]
                 }
             ],
+            "hits": [
+                {
+                    "index": "wiki_content_first",
+                    "page_id": 1,
+                    "page_title": "Main Page",
+                    "score": 3.6430995
+                },
+                {
+                    "index": "wiki_general_first",
+                    "page_id": 2,
+                    "page_title": "Template:Main Page",
+                    "score": 0.011918611
+                }
+            ],
+            "http": {
+                "client_ip": "127.0.0.1",
+                "has_cookies": false,
+                "method": "GET"
+            },
             "source": "cli"
         },
         "level": "debug",
@@ -81,7 +82,8 @@
             "suggestionRequested": true,
             "syntax": [
                 "full_text",
-                "full_text_querystring"
+                "full_text_querystring",
+                "simple_bag_of_words"
             ],
             "tookMs": 0
         },

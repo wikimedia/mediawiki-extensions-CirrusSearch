@@ -266,6 +266,7 @@
             ],
             "size": 21,
             "stats": [
+                "bag_of_words_with_phrase_query",
                 "full_text",
                 "full_text_querystring",
                 "query_string"
@@ -542,6 +543,7 @@
             ],
             "size": 5,
             "stats": [
+                "bag_of_words_with_phrase_query",
                 "full_text",
                 "full_text_querystring",
                 "query_string"
@@ -818,6 +820,7 @@
             ],
             "size": 5,
             "stats": [
+                "bag_of_words_with_phrase_query",
                 "full_text",
                 "full_text_querystring",
                 "query_string"
@@ -1110,6 +1113,7 @@
             ],
             "size": 5,
             "stats": [
+                "bag_of_words_with_phrase_query",
                 "full_text",
                 "full_text_querystring",
                 "query_string"

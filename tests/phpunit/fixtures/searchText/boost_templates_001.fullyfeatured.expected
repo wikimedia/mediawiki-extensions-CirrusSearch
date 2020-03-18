@@ -221,6 +221,7 @@
             "size": 21,
             "stats": [
                 "boost-templates",
+                "complex_query",
                 "filter_only",
                 "full_text"
             ],

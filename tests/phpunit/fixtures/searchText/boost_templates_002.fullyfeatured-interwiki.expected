@@ -402,6 +402,7 @@
             "size": 21,
             "stats": [
                 "boost-templates",
+                "complex_query",
                 "full_text",
                 "full_text_simple_match",
                 "suggest"
@@ -853,6 +854,7 @@
             "size": 5,
             "stats": [
                 "boost-templates",
+                "complex_query",
                 "full_text",
                 "full_text_simple_match"
             ],
@@ -1264,6 +1266,7 @@
             "size": 5,
             "stats": [
                 "boost-templates",
+                "complex_query",
                 "full_text",
                 "full_text_simple_match"
             ],
@@ -1718,6 +1721,7 @@
             "size": 5,
             "stats": [
                 "boost-templates",
+                "complex_query",
                 "full_text",
                 "full_text_simple_match"
             ],

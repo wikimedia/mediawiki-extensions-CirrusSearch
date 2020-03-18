@@ -233,6 +233,7 @@
             ],
             "size": 21,
             "stats": [
+                "complex_query",
                 "filesize",
                 "filter_only",
                 "full_text"

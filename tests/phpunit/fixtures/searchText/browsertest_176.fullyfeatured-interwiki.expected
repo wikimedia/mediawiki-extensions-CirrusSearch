@@ -300,6 +300,7 @@
             ],
             "size": 21,
             "stats": [
+                "complex_query",
                 "full_text",
                 "full_text_querystring",
                 "intitle",
@@ -611,6 +612,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "full_text",
                 "full_text_querystring",
                 "intitle",
@@ -922,6 +924,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "full_text",
                 "full_text_querystring",
                 "intitle",
@@ -1249,6 +1252,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "full_text",
                 "full_text_querystring",
                 "intitle",

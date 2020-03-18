@@ -221,6 +221,7 @@
             "size": 21,
             "stats": [
                 "boost-templates",
+                "complex_query",
                 "filter_only",
                 "full_text"
             ],
@@ -451,6 +452,7 @@
             "size": 5,
             "stats": [
                 "boost-templates",
+                "complex_query",
                 "filter_only",
                 "full_text"
             ],
@@ -681,6 +683,7 @@
             "size": 5,
             "stats": [
                 "boost-templates",
+                "complex_query",
                 "filter_only",
                 "full_text"
             ],
@@ -927,6 +930,7 @@
             "size": 5,
             "stats": [
                 "boost-templates",
+                "complex_query",
                 "filter_only",
                 "full_text"
             ],

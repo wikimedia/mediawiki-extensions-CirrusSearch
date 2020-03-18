@@ -2,13 +2,8 @@
     {
         "channel": "cirrussearch-request",
         "context": {
-            "$schema": "/mediawiki/cirrussearch/request/0.0.1",
+            "$schema": "\/mediawiki\/cirrussearch\/request\/0.0.1",
             "all_elasticsearch_requests_cached": false,
-            "http": {
-                "client_ip": "127.0.0.1",
-                "has_cookies": false,
-                "method": "GET"
-            },
             "elasticsearch_requests": [
                 {
                     "cached": false,
@@ -26,10 +21,16 @@
                     "suggestion_requested": true,
                     "syntax": [
                         "full_text",
-                        "full_text_querystring"
+                        "full_text_querystring",
+                        "simple_bag_of_words"
                     ]
                 }
             ],
+            "http": {
+                "client_ip": "127.0.0.1",
+                "has_cookies": false,
+                "method": "GET"
+            },
             "source": "cli"
         },
         "level": "debug",
@@ -53,7 +54,8 @@
             "suggestionRequested": true,
             "syntax": [
                 "full_text",
-                "full_text_querystring"
+                "full_text_querystring",
+                "simple_bag_of_words"
             ],
             "tookMs": 0
         },

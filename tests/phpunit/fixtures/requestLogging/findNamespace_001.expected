@@ -2,13 +2,8 @@
     {
         "channel": "cirrussearch-request",
         "context": {
-            "$schema": "/mediawiki/cirrussearch/request/0.0.1",
+            "$schema": "\/mediawiki\/cirrussearch\/request\/0.0.1",
             "all_elasticsearch_requests_cached": false,
-            "http": {
-                "client_ip": "127.0.0.1",
-                "has_cookies": false,
-                "method": "GET"
-            },
             "elasticsearch_requests": [
                 {
                     "cached": false,
@@ -18,13 +13,18 @@
                     "indices": [
                         "mw_cirrus_metastore"
                     ],
-                    "max_score": 1.6931472000000001,
+                    "max_score": 1.6931472,
                     "query": "file",
                     "query_type": "namespace",
                     "search_time_ms": 2,
                     "suggestion_requested": false
                 }
             ],
+            "http": {
+                "client_ip": "127.0.0.1",
+                "has_cookies": false,
+                "method": "GET"
+            },
             "source": "cli"
         },
         "level": "debug",

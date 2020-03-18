@@ -238,6 +238,7 @@
             ],
             "size": 21,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "phrase_match_prefix"
@@ -486,6 +487,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "phrase_match_prefix"
@@ -734,6 +736,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "phrase_match_prefix"
@@ -998,6 +1001,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "phrase_match_prefix"

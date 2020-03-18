@@ -414,6 +414,7 @@
             ],
             "size": 21,
             "stats": [
+                "complex_query",
                 "filetype",
                 "full_text",
                 "full_text_simple_match",
@@ -878,6 +879,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filetype",
                 "full_text",
                 "full_text_simple_match"
@@ -1302,6 +1304,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filetype",
                 "full_text",
                 "full_text_simple_match"
@@ -1769,6 +1772,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filetype",
                 "full_text",
                 "full_text_simple_match"

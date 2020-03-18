@@ -258,7 +258,8 @@
             "stats": [
                 "full_text",
                 "full_text_querystring",
-                "query_string"
+                "query_string",
+                "simple_phrase_query"
             ],
             "stored_fields": [
                 "text.word_count"

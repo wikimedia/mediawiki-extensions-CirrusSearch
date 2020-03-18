@@ -7,6 +7,7 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\Parser\AST\ParsedQuery;
+use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\Builder\ContextualFilter;
@@ -307,6 +308,8 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( 'test', $context->getOriginalSearchTerm() );
 		$this->assertEmpty( $context->getProfileContextParams() );
 		$this->assertSame( FallbackRunner::noopRunner(), $context->getFallbackRunner() );
+		$this->assertFalse( $context->isSpecialKeywordUsed() );
+		$this->assertTrue( $context->isSyntaxUsed( BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ) );
 	}
 
 	public function testSearchContextFromBuilder() {
@@ -342,6 +345,9 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( [ 'foo' => 'bar' ], $context->getProfileContextParams() );
 		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT, $context->getProfileContext() );
 		$this->assertSame( $myFallbackRunner, $context->getFallbackRunner() );
+		$this->assertTrue( $context->isSpecialKeywordUsed() );
+		$this->assertFalse( $context->isSyntaxUsed( BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ) );
+		$this->assertTrue( $context->isSyntaxUsed( BasicQueryClassifier::COMPLEX_QUERY ) );
 	}
 
 	public function testForCrossProjectSearch() {

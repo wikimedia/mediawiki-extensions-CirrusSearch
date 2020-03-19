@@ -110,8 +110,12 @@ class Hooks {
 			$request, 'cirrusFragmentSize', 1000 );
 		self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ],
 			$request, 'cirrusUseAllFields' );
-		self::overrideYesNo( $wgCirrusSearchUseCompletionSuggester,
-			$request, 'cirrusUseCompletionSuggester' );
+		if ( $wgCirrusSearchUseCompletionSuggester === 'yes' || $wgCirrusSearchUseCompletionSuggester === true ) {
+			// Only allow disabling the completion suggester, enabling it from request params might cause failures
+			// as the index might not be present.
+			self::overrideYesNo( $wgCirrusSearchUseCompletionSuggester,
+				$request, 'cirrusUseCompletionSuggester' );
+		}
 		self::overrideMoreLikeThisOptions( $request );
 		self::overrideSecret( $wgCirrusSearchLogElasticRequests,
 			$wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );

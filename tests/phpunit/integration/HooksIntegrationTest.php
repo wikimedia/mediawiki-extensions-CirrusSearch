@@ -187,12 +187,12 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 				'no',
 				false
 			],
-			'wgCirrusSearchUseCompletionSuggester activate' => [
+			'wgCirrusSearchUseCompletionSuggester cannot be activated' => [
 				'wgCirrusSearchUseCompletionSuggester',
 				'no',
 				'cirrusUseCompletionSuggester',
 				'yes',
-				true
+				'no'
 			],
 		];
 	}

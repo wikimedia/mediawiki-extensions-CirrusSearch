@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Giromin Cangiaxo"
+		]
+	},
+	"cirrussearch-desc": "Serchia realizâ con Elasticsearch pe MediaWiki",
+	"cirrussearch-backend-error": "No semmo ariescii a completâ a to rserchia a caoza de 'n problema tempoannio. Proeuva torna ciù tardi.",
+	"cirrussearch-parse-error": "N'emmo acapio a domanda. Falla ciu fassile. A recesta a l'è stæta registrâ pi amegioâ o scistema de serchia.",
+	"cirrussearch-too-busy-error": "O motô de serchia o l'è sorvecarrego. Proeuva torna ciu tardi.",
+	"cirrussearch-regex-syntax-error": "Errô de scintasci inte l'esprescion regolâ a $2: $1",
+	"cirrussearch-regex-too-busy-error": "Troppe serchie in corso con esprescion regolâ. Proeuva torna ciu tardi.",
+	"cirrussearch-regex-too-complex-error": "L'esprescion regolâ a l'è troppo complessa. Aprofondisci [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|chie]] comme semprificâla.",
+	"cirrussearch-now-using": "Sta wiki a l'adoeuvia 'n noeuvo motô de serchia.([[mw:Special:MyLanguage/Help:CirrusSearch|Pe saveine de ciu]]).",
+	"cirrussearch-pref-label": "Noeuva serchia",
+	"cirrussearch-pref-desc": "Proeuva a nostra noeuva serchia, chi suporta un ciu gran nummero de lengoe, a fornisce di rizultæ ciù agiornæ e a poeu a-adreitua trovâ do scrito inti modelli."
+}

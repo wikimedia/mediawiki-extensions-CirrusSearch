@@ -13,5 +13,14 @@
 	"cirrussearch-regex-too-complex-error": "L'esprescion regolâ a l'è troppo complessa. Aprofondisci [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|chie]] comme semprificâla.",
 	"cirrussearch-now-using": "Sta wiki a l'adoeuvia 'n noeuvo motô de serchia.([[mw:Special:MyLanguage/Help:CirrusSearch|Pe saveine de ciu]]).",
 	"cirrussearch-pref-label": "Noeuva serchia",
-	"cirrussearch-pref-desc": "Proeuva a nostra noeuva serchia, chi suporta un ciu gran nummero de lengoe, a fornisce di rizultæ ciù agiornæ e a poeu a-adreitua trovâ do scrito inti modelli."
+	"cirrussearch-pref-desc": "Proeuva a nostra noeuva serchia, chi suporta un ciu gran nummero de lengoe, a fornisce di rizultæ ciù agiornæ e a poeu a-adreitua trovâ do scrito inti modelli.",
+	"cirrussearch-give-feedback": "Danne a to opignon",
+	"cirrussearch-explore-similar-related": "Corelæ",
+	"cirrussearch-explore-similar-categories": "Categorie",
+	"cirrussearch-explore-similar-languages": "Lengoe",
+	"cirrussearch-explore-similar-related-none": "Nisciun-a paggina corelâ disponibbile",
+	"cirrussearch-explore-similar-categories-none": "Nisciun-a categoria disponibbile",
+	"cirrussearch-explore-similar-languages-none": "Non disponibbile in atre lengoe",
+	"cirrussearch-article-words": "Paole in tutte e paggine de contegnuo",
+	"cirrussearch-keyword-prefix-ns-mismatch": "O namespace trovou into terme de serchia <code>prefix:</code> o no l'è compatibbile co-o namespace recesto. Ti poeu remediâ mettendo <code>all:</code> comme prefisso da recesta."
 }

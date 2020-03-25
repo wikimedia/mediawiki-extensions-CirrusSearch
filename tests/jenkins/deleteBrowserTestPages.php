@@ -62,6 +62,8 @@ class DeleteBrowserTestPages extends Maintenance {
 		$it = new \BatchRowIterator( $dbw, 'page', 'page_id', 500 );
 		$it->setFetchColumns( [ '*' ] );
 		$it = new \RecursiveIteratorIterator( $it );
+
+		$user = \User::newSystemUser( 'Maintenance script', [ 'steal' => true ] );
 		foreach ( $it as $row ) {
 			if ( preg_match( $pattern, $row->page_title ) !== 1 ) {
 				continue;
@@ -69,7 +71,7 @@ class DeleteBrowserTestPages extends Maintenance {
 			$title = \Title::newFromRow( $row );
 			$pageObj = \WikiPage::factory( $title );
 			echo "Deleting page $title\n";
-			$pageObj->doDeleteArticleReal( 'cirrussearch maint task' );
+			$pageObj->doDeleteArticleReal( 'cirrussearch maint task', $user );
 		}
 	}
 }

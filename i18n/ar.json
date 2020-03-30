@@ -81,5 +81,6 @@
 	"cirrussearch-keyword-prefix-ns-mismatch": "النطاق الموجود في مصطلح البحث <code>prefix:</code> غير متوافق مع النطاقات المطلوبيمكنك إصلاحه عن طريق بدء استعلامك بـ<code>all:</code>.",
 	"cirrussearch-autoselect-profile": "دع محرك البحث يقرر أفضل ملف شخصي لاستخدامه.",
 	"cirrussearch-offset-too-large": "لا يمكن استرجاع النتائج، يتم دعم ما يصل إلى $1 نتائج بحث، ولكن تم طلب النتائج بدءا من $2.",
-	"cirrussearch-offset-not-allowed-with-random-sort": "تجاهل طلب نتائج ترقيم الصفحات بالفرز العشوائي."
+	"cirrussearch-offset-not-allowed-with-random-sort": "تجاهل طلب نتائج ترقيم الصفحات بالفرز العشوائي.",
+	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|اسم موضوع غير معروف|أسماء مواضيع غير معروفة}} لكلمة <kbd>articletopic:</kbd> المفتاحية: $1"
 }

@@ -7,6 +7,8 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Revision\SlotRecord;
 use PageArchive;
 use Title;
 use User;
@@ -127,11 +129,9 @@ trait ApiTrait {
 			if ( !$handler->supportsRedirects() ) {
 				return [ $rev->getPage(), $hasRedirects ];
 			}
-			$content = $handler->unserializeContent(
-				/** @todo move to new API */
-				$rev->getSerializedData(),
-				$rev->getContentFormat()
-			);
+			$content = $rev->getRevisionRecord()
+				->getSlot( SlotRecord::MAIN, RevisionRecord::RAW )
+				->getContent();
 			// getUltimateRedirectTarget() would be prefered, but it wont find
 			// archive pages...
 			if ( !$content->isRedirect() ) {

@@ -55,6 +55,13 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "O terme de serchia '$1' o no tollera che se ghe dagghe di argumenti murtipli e un segno con '$2'.",
 	"cirrussearch-feature-not-available": "A paola ciave de serchia '$1' a no l'è abilitâ insce questa wiki.",
 	"cirrussearch-feature-too-many-conditions": "Troppe condissioin fornie pe '$1', troncatua a $2.",
+	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint o dev'ese impostou con un ponto finâ SPARQL vallido pe doeuviâ a serchia de categoria in profonditæ.",
+	"cirrussearch-feature-deepcat-exception": "A recesta SPARQL serchia de categoria in profonditæ a l'ha fæto sciacca.",
+	"cirrussearch-feature-deepcat-toomany": "A recesta de categoria in profonditæ a l'ha restitoio troppe categorie",
+	"cirrussearch-feature-deepcat-invalid-title": "A categoria fornia a no l'è vallida.",
+	"cirrussearch-incategory-feature-no-valid-categories": "Nisciun-a categoria vallida associâ a '$1'.",
+	"cirrussearch-mlt-feature-no-valid-titles": "Nisciun tittolo vallido associou à '$1'.",
+	"cirrussearch-mlt-not-configured": "A fonsionalitæ '$1' a l'è mâ configuâ. Domanda a 'n amimistratô de dâ recatto a $wgCirrusSearchMoreLikeThisFields",
 	"cirrussearch-explore-similar-related": "Corelæ",
 	"cirrussearch-explore-similar-categories": "Categorie",
 	"cirrussearch-explore-similar-languages": "Lengoe",
@@ -62,5 +69,9 @@
 	"cirrussearch-explore-similar-categories-none": "Nisciun-a categoria disponibbile",
 	"cirrussearch-explore-similar-languages-none": "Non disponibbile in atre lengoe",
 	"cirrussearch-article-words": "Paole in tutte e paggine de contegnuo",
-	"cirrussearch-keyword-prefix-ns-mismatch": "O namespace trovou into terme de serchia <code>prefix:</code> o no l'è compatibbile co-o namespace recesto. Ti poeu remediâ mettendo <code>all:</code> comme prefisso da recesta."
+	"cirrussearch-keyword-prefix-ns-mismatch": "O namespace trovou into terme de serchia <code>prefix:</code> o no l'è compatibbile co-o namespace recesto. Ti poeu remediâ mettendo <code>all:</code> comme prefisso da recesta.",
+	"cirrussearch-autoselect-profile": "Lascia che segge o motô de serchia a decidde o megio profî da doeuviâ.",
+	"cirrussearch-offset-too-large": "Imposcibbile ricuperâ di rizultæ. L'è suportou scin a $1 rizultæ de serchia, ma l'è stæto recesto di rizultæ a partî de $2.",
+	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorâ a recesta pe 'npaginâ di rizultæ amersæ a brettio.",
+	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Nomme|Nommi}} de argomento {{PLURAL:$2|sconosciuo|sconosciui}} pe a poula ciave <kbd>articletopic:</kbd>: $1"
 }

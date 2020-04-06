@@ -5,7 +5,7 @@
 		]
 	},
 	"cirrussearch-desc": "Serchia realizâ con Elasticsearch pe MediaWiki",
-	"cirrussearch-backend-error": "No semmo ariescii a completâ a to rserchia a caoza de 'n problema tempoannio. Proeuva torna ciù tardi.",
+	"cirrussearch-backend-error": "No semmo ariescii a completâ a to serchia a caoza de 'n problema tempoannio. Proeuva torna ciù tardi.",
 	"cirrussearch-parse-error": "N'emmo acapio a domanda. Falla ciu fassile. A recesta a l'è stæta registrâ pi amegioâ o scistema de serchia.",
 	"cirrussearch-too-busy-error": "O motô de serchia o l'è sorvecarrego. Proeuva torna ciu tardi.",
 	"cirrussearch-regex-syntax-error": "Errô de scintasci inte l'esprescion regolâ a $2: $1",

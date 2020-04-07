@@ -3,8 +3,8 @@
 		"authors": [
 			"Jopparn",
 			"Lokal Profil",
-			"WikiPhoenix",
-			"Skalman"
+			"Skalman",
+			"WikiPhoenix"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "Dumpa av CirrusSearch-konfiguration.",

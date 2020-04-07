@@ -1,10 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Protnet",
-			"Twopix",
 			"KATRINE1992",
-			"Nikosgranturismogt"
+			"Nikosgranturismogt",
+			"Protnet",
+			"Twopix"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch- αναζήτηση για το MediaWiki",

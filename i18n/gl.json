@@ -1,13 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Elisardojm",
-			"Toliño",
-			"Vivaelcelta",
 			"Banjo",
+			"Elisardojm",
+			"Iváns",
 			"Matma Rex",
-			"Navhy",
-			"Iváns"
+			"Toliño",
+			"Vivaelcelta"
 		]
 	},
 	"cirrussearch-desc": "Procura baseada en Elasticsearch para MediaWiki",

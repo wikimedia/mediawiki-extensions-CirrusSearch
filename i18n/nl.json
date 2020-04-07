@@ -1,24 +1,24 @@
 {
 	"@metadata": {
 		"authors": [
+			"Akoopal",
 			"Arent",
+			"Bdijkstra",
 			"Bluyten",
 			"Breghtje",
+			"Dinosaur918",
+			"Esketti",
+			"Hex",
+			"Huhbakker",
+			"Mainframe98",
+			"Mar(c)",
+			"Mbch331",
+			"Ooswesthoesbes",
+			"Optilete",
 			"Romaine",
 			"Siebrand",
 			"Sjoerddebruin",
-			"Esketti",
-			"Hex",
-			"Akoopal",
-			"Dinosaur918",
-			"Huhbakker",
-			"Mainframe98",
-			"Mbch331",
-			"Ooswesthoesbes",
-			"Mar(c)",
-			"Optilete",
-			"Woodcutterty",
-			"Bdijkstra"
+			"Woodcutterty"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch gebaseerde zoekfunctie voor MediaWiki",

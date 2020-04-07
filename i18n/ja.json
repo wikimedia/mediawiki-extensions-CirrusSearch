@@ -1,17 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
+			"Aefgh39622",
 			"Fryed-peach",
+			"Iwai.masaharu",
+			"Mirinano",
+			"Omotecho",
+			"Otokoume",
 			"Shirayuki",
 			"SkyDaisy9",
 			"Sujiniku",
 			"Takot",
-			"Mirinano",
-			"Iwai.masaharu",
-			"Yusuke1109",
-			"Omotecho",
-			"Aefgh39622",
-			"Otokoume"
+			"Yusuke1109"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki 用の Elasticsearch 検索",

@@ -1,9 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Wizardist",
 			"Red Winged Duck",
-			"Renessaince"
+			"Renessaince",
+			"Wizardist"
 		]
 	},
 	"cirrussearch-desc": "Пошук у MediaWiki з дапамогай ElasticSearch",

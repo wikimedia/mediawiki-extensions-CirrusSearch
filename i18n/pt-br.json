@@ -1,14 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Jaideraf",
-			"Dianakc",
-			"Jefersonmoraes",
-			"HenriqueCrang",
 			"Cainamarques",
-			"Hamilton Abreu",
+			"Dianakc",
+			"Eduardo Addad de Oliveira",
 			"Felipe L. Ewald",
-			"Eduardo Addad de Oliveira"
+			"Hamilton Abreu",
+			"HenriqueCrang",
+			"Jaideraf",
+			"Jefersonmoraes"
 		]
 	},
 	"cirrussearch-desc": "Mecanismo de busca ''Elasticsearch'' para MediaWiki",

@@ -1,16 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
-			"Matěj Grabovský",
-			"Mormegil",
-			"Paxt",
-			"Utar",
-			"Walter Klosse",
-			"Nixtonin",
-			"Matěj Suchánek",
+			"Danny B.",
 			"Dvorapa",
 			"Ilimanaq29",
-			"Danny B."
+			"Matěj Grabovský",
+			"Matěj Suchánek",
+			"Mormegil",
+			"Nixtonin",
+			"Paxt",
+			"Utar",
+			"Walter Klosse"
 		]
 	},
 	"cirrussearch-desc": "Vyhledávání v MediaWiki běžící na Elasticsearch",

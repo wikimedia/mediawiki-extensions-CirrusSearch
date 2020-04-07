@@ -1,22 +1,22 @@
 {
 	"@metadata": {
 		"authors": [
+			"0x010C",
+			"Dcausse",
+			"Eneelk",
 			"Gomoko",
 			"Jean-Frédéric",
 			"Linedwell",
-			"Robby",
-			"0x010C",
 			"Mattho69",
-			"Dcausse",
-			"Wladek92",
-			"Trizek",
-			"Orlodrim",
-			"Trial",
-			"Urhixidur",
 			"Od1n",
+			"Orlodrim",
+			"Robby",
 			"Thibaut120094",
+			"Trial",
+			"Trizek",
+			"Urhixidur",
 			"Verdy p",
-			"Eneelk"
+			"Wladek92"
 		]
 	},
 	"cirrussearch-desc": "Moteur de recherche Elasticsearch pour MediaWiki",

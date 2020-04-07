@@ -1,16 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
+			"Amire80",
+			"Dcausse",
+			"Kghbln",
 			"Kunal Mehta",
+			"Mar(c)",
+			"Robby",
 			"Shirayuki",
 			"Siebrand",
 			"Srolanh",
-			"Umherirrender",
-			"Dcausse",
-			"Amire80",
-			"Kghbln",
-			"Robby",
-			"Mar(c)"
+			"Umherirrender"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "{{doc-apihelp-description|cirrus-config-dump}}",

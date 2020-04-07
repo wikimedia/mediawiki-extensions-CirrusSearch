@@ -1,18 +1,18 @@
 {
 	"@metadata": {
 		"authors": [
-			"Justincheng12345",
-			"Liuxinyu970226",
-			"Cwlin0416",
-			"Cwek",
-			"Waihorace",
-			"LNDDYL",
-			"Zhxy 519",
-			"Cosine02",
-			"EagerLin",
 			"A2093064",
+			"Cosine02",
+			"Cwek",
+			"Cwlin0416",
+			"EagerLin",
+			"Justincheng12345",
 			"Kly",
-			"Xiplus"
+			"LNDDYL",
+			"Liuxinyu970226",
+			"Waihorace",
+			"Xiplus",
+			"Zhxy 519"
 		]
 	},
 	"cirrussearch-desc": "以 Elasticsearch 為基礎的 MediaWiki 搜尋工具",

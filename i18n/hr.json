@@ -1,9 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"MaGa",
+			"Bugoslav",
 			"Ivi104",
-			"Bugoslav"
+			"MaGa"
 		]
 	},
 	"cirrussearch-desc": "Pretraga za MediaWiki pomoću Elasticsearcha",

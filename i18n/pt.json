@@ -1,14 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hamilton Abreu",
-			"Vitorvicentevalente",
-			"Fúlvio",
-			"He7d3r",
-			"MokaAkashiyaPT",
 			"Athena in Wonderland",
 			"Eduardo Addad de Oliveira",
-			"Ldacosta"
+			"Fúlvio",
+			"Hamilton Abreu",
+			"He7d3r",
+			"Ldacosta",
+			"MokaAkashiyaPT",
+			"Vitorvicentevalente"
 		]
 	},
 	"cirrussearch-desc": "Mecanismo de pesquisa \"Elasticsearch\" para o MediaWiki",

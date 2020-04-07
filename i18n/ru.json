@@ -1,23 +1,23 @@
 {
 	"@metadata": {
 		"authors": [
-			"Okras",
-			"Kaganer",
-			"Sunpriat",
-			"Jackie",
-			"Putnik",
-			"Туллук",
-			"Gamliel Fishkin",
-			"Kareyac",
 			"Alex Great",
-			"Ole Yves",
 			"Facenapalm",
-			"Jack who built the house",
-			"Mouse21",
+			"Gamliel Fishkin",
 			"Happy13241",
+			"Jack who built the house",
+			"Jackie",
+			"Kaganer",
+			"Kareyac",
+			"Mouse21",
 			"Movses",
+			"Okras",
+			"Ole Yves",
+			"Putnik",
 			"Stjn",
-			"Vlad5250"
+			"Sunpriat",
+			"Vlad5250",
+			"Туллук"
 		]
 	},
 	"cirrussearch-desc": "Поиск для MediaWiki на базе Elasticsearch",

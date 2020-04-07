@@ -2,10 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Borislav",
-			"Vodnokon4e",
-			"Termininja",
+			"ShockD",
 			"StanProg",
-			"ShockD"
+			"Termininja",
+			"Vodnokon4e"
 		]
 	},
 	"cirrussearch-desc": "Търсене за МедияУики на базата на Elasticsearch",

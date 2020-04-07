@@ -1,13 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"Ainali",
 			"Bengt B",
+			"Bengtsson96",
 			"Jopparn",
 			"Lokal Profil",
-			"WikiPhoenix",
-			"Ainali",
-			"Bengtsson96",
-			"Skalman"
+			"Skalman",
+			"WikiPhoenix"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-driven sökning för MediaWiki",

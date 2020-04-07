@@ -1,11 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Otogi",
 			"BRUTE",
+			"David1010",
 			"Dawid Deutschland",
 			"OpusDEI",
-			"David1010"
+			"Otogi"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki-ს საძიებელი Elasticsearch-ის ბაზაზე",

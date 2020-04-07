@@ -3,10 +3,10 @@
 		"authors": [
 			"Facenapalm",
 			"Kareyac",
-			"Okras",
-			"Putnik",
+			"Katunchik",
 			"Movses",
-			"Katunchik"
+			"Okras",
+			"Putnik"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "Дамп конфигурации CirrusSearch.",

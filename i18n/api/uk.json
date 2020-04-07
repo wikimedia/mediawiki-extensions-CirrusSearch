@@ -2,8 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Piramidion",
-			"Ата",
-			"Vlad5250"
+			"Vlad5250",
+			"Ата"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "Дамп конфігурації CirrusSearch.",

@@ -3,8 +3,8 @@
 		"authors": [
 			"Fitoschido",
 			"QuimGil",
-			"Vriullop",
-			"Toniher"
+			"Toniher",
+			"Vriullop"
 		]
 	},
 	"cirrussearch-desc": "Cerca realitzada amb Elasticsearch per a MediaWiki",

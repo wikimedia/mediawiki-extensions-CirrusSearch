@@ -2,10 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Gomoko",
-			"Urhixidur",
-			"Wladek92",
 			"Orlodrim",
-			"Verdy p"
+			"Urhixidur",
+			"Verdy p",
+			"Wladek92"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "Vidage de la configuration CirrusSearch.",

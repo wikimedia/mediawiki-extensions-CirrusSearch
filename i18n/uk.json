@@ -2,14 +2,14 @@
 	"@metadata": {
 		"authors": [
 			"Andriykopanytsia",
-			"Ата",
-			"Olion",
 			"Base",
 			"Dars",
+			"Movses",
+			"Olion",
 			"Piramidion",
 			"Similartothissimilartothat",
 			"SimondR",
-			"Movses"
+			"Ата"
 		]
 	},
 	"cirrussearch-desc": "Пошук для MediaWiki на базі Elasticsearch",

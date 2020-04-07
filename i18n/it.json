@@ -1,17 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
-			"Beta16",
-			"Rosh",
-			"Lucas2",
-			"Mpiva",
 			"Alexmar983",
 			"AndreaBaitelli",
 			"Anto",
+			"Beta16",
 			"Candalua",
-			"Redredsonia",
+			"Daimona Eaytoy",
 			"Kaspo",
-			"Daimona Eaytoy"
+			"Lucas2",
+			"Mpiva",
+			"Redredsonia",
+			"Rosh"
 		]
 	},
 	"cirrussearch-desc": "Ricerca realizzata con Elasticsearch per MediaWiki",

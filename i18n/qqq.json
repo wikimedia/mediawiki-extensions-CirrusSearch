@@ -1,16 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
+			"Amire80",
+			"Dcausse",
+			"Kghbln",
 			"Kunal Mehta",
+			"Mar(c)",
+			"Robby",
 			"Shirayuki",
 			"Siebrand",
 			"Srolanh",
-			"Umherirrender",
-			"Dcausse",
-			"Amire80",
-			"Kghbln",
-			"Robby",
-			"Mar(c)"
+			"Umherirrender"
 		]
 	},
 	"cirrussearch-desc": "{{desc|name=Cirrus Search|url=https://www.mediawiki.org/wiki/Extension:CirrusSearch}}\n\"Elasticsearch\" is a full-text search engine. See http://www.elasticsearch.org/",

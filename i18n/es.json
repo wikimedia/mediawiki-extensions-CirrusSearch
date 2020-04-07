@@ -3,18 +3,18 @@
 		"authors": [
 			"Ciencia Al Poder",
 			"Csbotero",
+			"Dgstranz",
 			"Fitoschido",
 			"Ihojose",
-			"Luis Felipe Schenone",
-			"Jonathan rrr",
-			"Ryo567",
-			"Macofe",
-			"Mgpena",
-			"Rubentl134",
-			"Dgstranz",
-			"Peter Bowman",
 			"Jelou",
-			"MarcoAurelio"
+			"Jonathan rrr",
+			"Luis Felipe Schenone",
+			"Macofe",
+			"MarcoAurelio",
+			"Mgpena",
+			"Peter Bowman",
+			"Rubentl134",
+			"Ryo567"
 		]
 	},
 	"cirrussearch-desc": "Búsqueda con Elasticsearch para MediaWiki",

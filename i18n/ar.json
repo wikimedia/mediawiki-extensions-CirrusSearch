@@ -1,16 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
-			"Asaifm",
-			"زكريا",
 			"Abanima",
+			"Asaifm",
 			"Manhal",
-			"Shbib Al-Subaie",
-			"محمد أحمد عبد الفتاح",
 			"Maroen1990",
 			"Meno25",
 			"Moud hosny",
-			"ديفيد"
+			"Shbib Al-Subaie",
+			"ديفيد",
+			"زكريا",
+			"محمد أحمد عبد الفتاح"
 		]
 	},
 	"cirrussearch-desc": "عملية البحث مدعومة من قبل Elasticsearch لميدياويكي",

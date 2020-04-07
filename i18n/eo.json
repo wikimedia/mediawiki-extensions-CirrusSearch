@@ -1,10 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"KuboF",
 			"Gamliel Fishkin",
-			"NMaia",
-			"Mirin"
+			"KuboF",
+			"Mirin",
+			"NMaia"
 		]
 	},
 	"cirrussearch-desc": "Serĉo por MediaWiki bazita sur Elasticsearch",

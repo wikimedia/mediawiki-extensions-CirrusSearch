@@ -1,25 +1,25 @@
 {
 	"@metadata": {
 		"authors": [
+			"A2093064",
+			"Apflu",
+			"Cosine02",
 			"Cwek",
+			"Deathkon",
+			"EagerLin",
+			"Impersonator 1",
 			"Linxue9786",
 			"Liuxinyu970226",
+			"Mywood",
 			"Qiyue2001",
 			"Shizhao",
 			"TianyinLee",
 			"Xiaomingyan",
+			"Xiplus",
 			"Yfdyh000",
-			"Mywood",
-			"Impersonator 1",
-			"御坂美琴",
-			"Cosine02",
-			"Apflu",
-			"EagerLin",
-			"A2093064",
-			"Deathkon",
-			"夢蝶葬花",
 			"佛壁灯",
-			"Xiplus"
+			"夢蝶葬花",
+			"御坂美琴"
 		]
 	},
 	"cirrussearch-desc": "以Elasticsearch为基础的MediaWiki搜索工具",

@@ -1,14 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hym411",
-			"Priviet",
-			"아라",
-			"Revi",
-			"IRTC1015",
 			"Alex00728",
+			"Hym411",
+			"IRTC1015",
+			"Jonghaya",
+			"Priviet",
+			"Revi",
 			"Ykhwong",
-			"Jonghaya"
+			"아라"
 		]
 	},
 	"cirrussearch-desc": "미디어위키용 Elasticsearch 검색",

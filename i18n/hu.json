@@ -1,11 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Tgr",
-			"Csega",
-			"Tacsipacsi",
 			"Bencemac",
-			"Csigabi"
+			"Csega",
+			"Csigabi",
+			"Tacsipacsi",
+			"Tgr"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch alapú MediaWiki kereső",

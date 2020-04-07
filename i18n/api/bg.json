@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Vlad5250",
-			"StanProg"
+			"StanProg",
+			"Vlad5250"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "Връща настройките на CirrusSearch.",

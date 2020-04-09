@@ -25,6 +25,7 @@ use CirrusSearch\BuildDocument\Completion\QualityScore;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @group CirrusSearch
+ * @group Standalone
  */
 class SuggestScoringTest extends CirrusTestCase {
 	/**

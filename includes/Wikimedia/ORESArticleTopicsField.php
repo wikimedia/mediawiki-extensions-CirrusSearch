@@ -5,6 +5,11 @@ namespace CirrusSearch\Wikimedia;
 use SearchEngine;
 use SearchIndexFieldDefinition;
 
+/**
+ * Field definitions for the (Wikimedia-specific) articletopic search feature.
+ * @package CirrusSearch\Wikimedia
+ * @see ORESArticleTopicsHooks
+ */
 class ORESArticleTopicsField extends SearchIndexFieldDefinition {
 	/**
 	 * @var string

@@ -11,8 +11,10 @@ use Message;
 
 /**
  * Finds pages based on how well they match a given topic, based on scores provided by the
- * articletopic ORES model.
- *
+ * (Wikimedia-specific) articletopic ORES model.
+ * @package CirrusSearch\Wikimedia
+ * @see ORESArticleTopicsHooks
+ * @see https://www.mediawiki.org/wiki/Help:CirrusSearch#Articletopic
  */
 class ArticleTopicFeature extends SimpleKeywordFeature {
 

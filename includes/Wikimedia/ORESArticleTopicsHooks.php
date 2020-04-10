@@ -12,7 +12,8 @@ use SearchEngine;
 
 /**
  * Functionality related to the (Wikimedia-specific) articletopic search feature.
- *
+ * @package CirrusSearch\Wikimedia
+ * @see ArticleTopicFeature
  */
 class ORESArticleTopicsHooks {
 	const FIELD_NAME = 'ores_articletopics';

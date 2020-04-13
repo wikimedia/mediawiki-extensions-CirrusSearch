@@ -220,6 +220,7 @@
             ],
             "size": 21,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "inlanguage"
@@ -450,6 +451,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "inlanguage"
@@ -680,6 +682,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "inlanguage"
@@ -926,6 +929,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "inlanguage"

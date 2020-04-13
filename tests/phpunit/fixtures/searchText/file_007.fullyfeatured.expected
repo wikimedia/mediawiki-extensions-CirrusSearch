@@ -231,6 +231,7 @@
             ],
             "size": 21,
             "stats": [
+                "complex_query",
                 "filemime",
                 "filter_only",
                 "full_text"

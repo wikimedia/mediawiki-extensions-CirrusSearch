@@ -280,6 +280,7 @@
             ],
             "size": 21,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "incategory",
@@ -571,6 +572,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "incategory",
@@ -862,6 +864,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "incategory",
@@ -1169,6 +1172,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "incategory",

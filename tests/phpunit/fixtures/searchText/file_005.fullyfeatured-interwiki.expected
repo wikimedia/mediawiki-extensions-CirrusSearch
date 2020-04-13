@@ -241,6 +241,7 @@
             ],
             "size": 21,
             "stats": [
+                "complex_query",
                 "filemime",
                 "filesize",
                 "filter_only",
@@ -493,6 +494,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filemime",
                 "filesize",
                 "filter_only",
@@ -745,6 +747,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filemime",
                 "filesize",
                 "filter_only",
@@ -1013,6 +1016,7 @@
             ],
             "size": 5,
             "stats": [
+                "complex_query",
                 "filemime",
                 "filesize",
                 "filter_only",

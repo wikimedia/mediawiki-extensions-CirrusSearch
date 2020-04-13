@@ -279,6 +279,7 @@
             ],
             "size": 21,
             "stats": [
+                "complex_query",
                 "filetype",
                 "full_text",
                 "full_text_querystring",

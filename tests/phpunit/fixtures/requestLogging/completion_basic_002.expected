@@ -2,13 +2,7 @@
     {
         "channel": "cirrussearch-request",
         "context": {
-            "$schema": "/mediawiki/cirrussearch/request/0.0.1",
-            "http": {
-                "method": "GET",
-                "client_ip": "127.0.0.1",
-                "has_cookies": false
-            },
-            "source": "cli",
+            "$schema": "\/mediawiki\/cirrussearch\/request\/0.0.1",
             "all_elasticsearch_requests_cached": false,
             "elasticsearch_requests": [
                 {
@@ -19,13 +13,19 @@
                     "indices": [
                         "wiki_titlesuggest"
                     ],
-                    "max_score": 0.0,
+                    "max_score": 0,
                     "query": "does not exist or at least i hope not",
                     "query_type": "comp_suggest",
                     "search_time_ms": 0,
                     "suggestion_requested": false
                 }
-            ]
+            ],
+            "http": {
+                "client_ip": "127.0.0.1",
+                "has_cookies": false,
+                "method": "GET"
+            },
+            "source": "cli"
         },
         "level": "debug",
         "message": ""

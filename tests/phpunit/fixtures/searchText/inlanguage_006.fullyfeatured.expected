@@ -220,6 +220,7 @@
             ],
             "size": 21,
             "stats": [
+                "complex_query",
                 "filter_only",
                 "full_text",
                 "inlanguage"

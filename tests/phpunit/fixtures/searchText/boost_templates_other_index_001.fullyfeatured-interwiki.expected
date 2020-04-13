@@ -462,6 +462,7 @@
             "stats": [
                 "full_text",
                 "full_text_simple_match",
+                "simple_bag_of_words",
                 "suggest"
             ],
             "stored_fields": [
@@ -902,7 +903,8 @@
             "size": 5,
             "stats": [
                 "full_text",
-                "full_text_simple_match"
+                "full_text_simple_match",
+                "simple_bag_of_words"
             ],
             "stored_fields": [
                 "text.word_count"
@@ -1312,7 +1314,8 @@
             "size": 5,
             "stats": [
                 "full_text",
-                "full_text_simple_match"
+                "full_text_simple_match",
+                "simple_bag_of_words"
             ],
             "stored_fields": [
                 "text.word_count"
@@ -1765,7 +1768,8 @@
             "size": 5,
             "stats": [
                 "full_text",
-                "full_text_simple_match"
+                "full_text_simple_match",
+                "simple_bag_of_words"
             ],
             "stored_fields": [
                 "text.word_count"

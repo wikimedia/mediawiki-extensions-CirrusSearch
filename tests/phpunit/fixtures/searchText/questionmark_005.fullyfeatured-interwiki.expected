@@ -268,7 +268,8 @@
             "stats": [
                 "full_text",
                 "full_text_querystring",
-                "query_string"
+                "query_string",
+                "simple_bag_of_words"
             ],
             "stored_fields": [
                 "text.word_count"
@@ -544,7 +545,8 @@
             "stats": [
                 "full_text",
                 "full_text_querystring",
-                "query_string"
+                "query_string",
+                "simple_bag_of_words"
             ],
             "stored_fields": [
                 "text.word_count"
@@ -820,7 +822,8 @@
             "stats": [
                 "full_text",
                 "full_text_querystring",
-                "query_string"
+                "query_string",
+                "simple_bag_of_words"
             ],
             "stored_fields": [
                 "text.word_count"
@@ -1112,7 +1115,8 @@
             "stats": [
                 "full_text",
                 "full_text_querystring",
-                "query_string"
+                "query_string",
+                "simple_bag_of_words"
             ],
             "stored_fields": [
                 "text.word_count"

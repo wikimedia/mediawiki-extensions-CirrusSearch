@@ -16,6 +16,7 @@ use Title;
 /**
  * @covers \CirrusSearch\Searcher
  * @group CirrusSearch
+ * @group Standalone
  */
 class SearcherTest extends CirrusIntegrationTestCase {
 

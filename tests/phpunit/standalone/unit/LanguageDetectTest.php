@@ -25,6 +25,7 @@ use CirrusSearch\Test\MockLanguageDetector;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @group CirrusSearch
+ * @group Standalone
  * @covers \CirrusSearch\LanguageDetector\LanguageDetectorFactory
  * @covers \CirrusSearch\LanguageDetector\TextCat
  */

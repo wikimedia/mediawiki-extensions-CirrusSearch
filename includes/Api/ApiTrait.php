@@ -110,6 +110,7 @@ trait ApiTrait {
 		$hasRedirects = false;
 		$seen = [];
 		$now = wfTimestamp( TS_MW );
+		$contentHandlerFactory = MediaWikiServices::getInstance()->getContentHandlerFactory();
 		while ( true ) {
 			if ( isset( $seen[$title->getPrefixedText()] ) || count( $seen ) > 10 ) {
 				return [ null, $hasRedirects ];
@@ -118,29 +119,30 @@ trait ApiTrait {
 
 			// To help the integration tests figure out when a deleted page has
 			// been removed from the elasticsearch index we lookup the page in
-			// the archive to get it's page id. getPreviousRevision will check
-			// both the archive and live content to return the most recent.
-			$rev = ( new PageArchive( $title, $this->getConfig() ) )
-				->getPreviousRevision( $now );
-			if ( !$rev ) {
+			// the archive to get it's page id. getPreviousRevisionRecord will
+			// check both the archive and live content to return the most recent.
+			$revRecord = ( new PageArchive( $title, $this->getConfig() ) )
+				->getPreviousRevisionRecord( $now );
+			if ( !$revRecord ) {
 				return [ null, $hasRedirects ];
 			}
-			$handler = $rev->getContentHandler();
+
+			$pageId = $revRecord->getPageId();
+			$mainSlot = $revRecord->getSlot( SlotRecord::MAIN, RevisionRecord::RAW );
+			$handler = $contentHandlerFactory->getContentHandler( $mainSlot->getModel() );
 			if ( !$handler->supportsRedirects() ) {
-				return [ $rev->getPage(), $hasRedirects ];
+				return [ $pageId, $hasRedirects ];
 			}
-			$content = $rev->getRevisionRecord()
-				->getSlot( SlotRecord::MAIN, RevisionRecord::RAW )
-				->getContent();
+			$content = $mainSlot->getContent();
 			// getUltimateRedirectTarget() would be prefered, but it wont find
 			// archive pages...
 			if ( !$content->isRedirect() ) {
-				return [ $this->getSearchConfig()->makeId( $rev->getPage() ), $hasRedirects ];
+				return [ $this->getSearchConfig()->makeId( $pageId ), $hasRedirects ];
 			}
 			$redirect = $content->getRedirectTarget();
 			if ( !$redirect ) {
 				// TODO: Can this happen?
-				return [ $rev->getPage(), $hasRedirects ];
+				return [ $pageId, $hasRedirects ];
 			}
 
 			$hasRedirects = true;

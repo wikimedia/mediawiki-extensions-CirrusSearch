@@ -5,6 +5,7 @@ namespace CirrusSearch\Elastica;
 use Elastica\Client;
 use Elastica\Exception\ResponseException;
 use Elastica\Request;
+use MediaWiki\Logger\LoggerFactory;
 
 class ReindexTask {
 	/** @var Client */
@@ -13,6 +14,8 @@ class ReindexTask {
 	private $taskId;
 	/** @var ReindexResponse|null */
 	private $response;
+	/** @var \Psr\Log\LoggerInterface */
+	private $log;
 
 	/**
 	 * @param Client $client
@@ -21,6 +24,7 @@ class ReindexTask {
 	public function __construct( Client $client, $taskId ) {
 		$this->client = $client;
 		$this->taskId = $taskId;
+		$this->log = LoggerFactory::getInstance( 'CirrusSearch' );
 	}
 
 	/**
@@ -50,6 +54,7 @@ class ReindexTask {
 		}
 
 		$response = $this->client->request( "_tasks/{$this->taskId}/_cancel", Request::POST );
+
 		return $response->isOK();
 	}
 
@@ -63,8 +68,9 @@ class ReindexTask {
 		if ( !$this->response ) {
 			throw new \Exception( 'Cannot delete in-progress task' );
 		}
-		$response = $this->client->getIndex( '.tasks' )->getType( 'task' )
-			->deleteById( $this->taskId );
+		$response =
+			$this->client->getIndex( '.tasks' )->getType( 'task' )->deleteById( $this->taskId );
+
 		return $response->isOK();
 	}
 
@@ -100,6 +106,7 @@ class ReindexTask {
 		if ( isset( $data['response'] ) ) {
 			// task complete
 			$this->response = new ReindexResponse( $data['response'] );
+
 			return $this->response;
 		}
 
@@ -142,9 +149,32 @@ class ReindexTask {
 		$status['throttled_millis'] = 0;
 		$status['requests_per_second'] = 0;
 		$status['throttled_until_millis'] = PHP_INT_MAX;
+		$sliceFields = [
+			'total',
+			'updated',
+			'created',
+			'deleted',
+			'batches',
+			'version_conflicts',
+			'noops',
+			'retries',
+			'throttled_millis',
+			'requests_per_second',
+			'throttled_until_millis',
+		];
 		foreach ( $status['slices'] as $slice ) {
 			if ( $slice === null ) {
 				// slice has failed catastrophically
+				continue;
+			}
+			$missing_status_fields = array_diff_key( array_flip( $sliceFields ), $slice );
+			if ( $missing_status_fields !== [] ) {
+				// slice has missing key fields
+				$slice_to_json = json_encode( $slice );
+				$this->log->warning( 'Missing key field(s) for reindex task status', [
+					'cirrus_reindex_task_slice' => $slice_to_json,
+					'exact_missing_fields' => $missing_status_fields,
+				] );
 				continue;
 			}
 			$status['total'] += $slice['total'];
@@ -157,13 +187,14 @@ class ReindexTask {
 			$status['retries']['bulk'] += $slice['retries']['bulk'];
 			$status['retries']['search'] += $slice['retries']['search'];
 			$status['throttled_millis'] += $slice['throttled_millis'];
-			$status['requests_per_second'] += $slice['requests_per_second'] === -1
-				? INF : $slice['requests_per_second'];
-			$status['throttled_until_millis'] += min( $status['throttled_until_millis'], $slice['throttled_until_millis'] );
+			$status['requests_per_second'] += $slice['requests_per_second'] === - 1 ? INF
+				: $slice['requests_per_second'];
+			$status['throttled_until_millis'] += min( $status['throttled_until_millis'],
+				$slice['throttled_until_millis'] );
 		}
 
 		if ( $status['requests_per_second'] === INF ) {
-			$status['requests_per_second'] = -1;
+			$status['requests_per_second'] = - 1;
 		}
 
 		return $status;

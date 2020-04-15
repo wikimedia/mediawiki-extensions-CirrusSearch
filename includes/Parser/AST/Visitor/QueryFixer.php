@@ -147,7 +147,6 @@ class QueryFixer implements Visitor {
 		$escapeBoundaries = false;
 		if ( $replacement instanceof HtmlArmor ) {
 			$escapeBoundaries = true;
-			/** @phan-suppress-next-line SecurityCheck-DoubleEscaped */
 			$replacement = HtmlArmor::getHtml( $replacement );
 			if ( $replacement === null ) {
 				throw new \InvalidArgumentException( '$replacement cannot be null nor wrap a null value' );
@@ -167,7 +166,6 @@ class QueryFixer implements Visitor {
 		$suffix = substr( $this->parsedQuery->getQuery(), $this->node->getEndOffset() );
 
 		if ( $escapeBoundaries ) {
-			/** @phan-suppress-next-line SecurityCheck-DoubleEscaped */
 			$prefix = htmlspecialchars( $prefix );
 			$suffix = htmlspecialchars( $suffix );
 			$fixed = $prefix . $replacement . $suffix;

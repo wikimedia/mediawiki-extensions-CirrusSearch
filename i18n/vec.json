@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Candalua"
+			"Candalua",
+			"Fierodelveneto"
 		]
 	},
 	"cirrussearch-parse-error": "No gavemo capìo la domanda. Par piaser fala pi fàsile. Se la gavemo segnà par mejorar el sistema de riserca.",
@@ -14,5 +15,6 @@
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "El corèje fin a do erori de batidura. El risolve i rimandi vissini.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Corespondensa de tochi de frase (racomandà par i titoli pi longhi)",
 	"cirrussearch-completion-profile-classic-pref-name": "Riserca clàsega par prime létare",
-	"cirrussearch-completion-profile-classic-pref-desc": "Nissuna coression dei erori de batidura. El cata i scominzi dei titoli."
+	"cirrussearch-completion-profile-classic-pref-desc": "Nissuna coression dei erori de batidura. El cata i scominzi dei titoli.",
+	"cirrussearch-article-words": "Conto de łe parołe in tute łe pàjine de contegnuo"
 }

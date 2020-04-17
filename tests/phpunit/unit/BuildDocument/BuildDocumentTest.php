@@ -5,7 +5,6 @@ namespace CirrusSearch\BuildDocument;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
-use EmptyBagOStuff;
 use IDatabase;
 use MediaWiki\Revision\RevisionStore;
 use ParserCache;
@@ -23,7 +22,7 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 		$connection->method( 'getConfig' )
 			->will( $this->returnValue( $config ) );
 		$db = $this->mock( IDatabase::class );
-		$parserCache = new ParserCache( new EmptyBagOStuff );
+		$parserCache = $this->mock( ParserCache::class );
 		$revStore = $this->mock( RevisionStore::class );
 		$revStore->method( 'getTitle' )
 			->will( $this->returnValue( $title ) );

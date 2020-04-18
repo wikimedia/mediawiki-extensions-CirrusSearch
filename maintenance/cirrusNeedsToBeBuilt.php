@@ -1,8 +1,8 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\SearchConfig;
 
 /**
  * Returns zero status if a Cirrus index needs to be built for this wiki.  If

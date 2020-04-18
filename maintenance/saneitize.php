@@ -1,12 +1,12 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\Maintenance\Maintenance;
 use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\NoopRemediator;
 use CirrusSearch\Sanity\PrintingRemediator;
 use CirrusSearch\Sanity\QueueingRemediator;
+use CirrusSearch\Searcher;
 
 /**
  * Make sure the index for the wiki is sane.

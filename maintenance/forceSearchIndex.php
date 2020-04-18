@@ -1,11 +1,13 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Maintenance;
 
 use BatchRowIterator;
 use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\Iterator\CallbackIterator;
-use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\Job;
+use CirrusSearch\SearchConfig;
+use CirrusSearch\Updater;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MWException;

@@ -53,15 +53,15 @@
 	"AutoloadClasses": {
 		"CirrusSearch": "includes/CirrusSearch.php",
 		"CirrusSearch\\CirrusSearch": "includes/CirrusSearch.php",
-		"CirrusSearch\\CheckIndexes": "maintenance/checkIndexes.php",
-		"CirrusSearch\\CirrusNeedsToBeBuilt": "maintenance/cirrusNeedsToBeBuilt.php",
+		"CirrusSearch\\Maintenance\\CheckIndexes": "maintenance/checkIndexes.php",
+		"CirrusSearch\\Maintenance\\CirrusNeedsToBeBuilt": "maintenance/cirrusNeedsToBeBuilt.php",
 		"CirrusSearch\\Maintenance\\Metastore": "maintenance/metastore.php",
 		"CirrusSearch\\Maintenance\\RunSearch": "maintenance/runSearch.php",
 		"CirrusSearch\\Maintenance\\SaneitizeJobs": "maintenance/saneitizeJobs.php",
 		"CirrusSearch\\Maintenance\\IndexNamespaces": "maintenance/indexNamespaces.php",
 		"CirrusSearch\\Maintenance\\UpdateSearchIndexConfig": "maintenance/updateSearchIndexConfig.php",
-		"CirrusSearch\\ForceSearchIndex": "maintenance/forceSearchIndex.php",
-		"CirrusSearch\\Saneitize": "maintenance/saneitize.php"
+		"CirrusSearch\\Maintenance\\ForceSearchIndex": "maintenance/forceSearchIndex.php",
+		"CirrusSearch\\Maintenance\\Saneitize": "maintenance/saneitize.php"
 	},
 	"TestAutoloadClasses": {
 		"CirrusSearch\\CirrusIntegrationTestCase": "tests/phpunit/integration/CirrusIntegrationTestCase.php",

@@ -1,8 +1,7 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\Maintenance\Maintenance;
 use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\MetaStore\MetaVersionStore;
 

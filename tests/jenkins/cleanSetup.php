@@ -39,11 +39,11 @@ class CleanSetup extends Maintenance {
 		$child = $this->runChild( \CirrusSearch\Maintenance\UpdateSearchIndexConfig::class );
 		$child->mOptions[ 'startOver' ] = true;
 		$child->execute();
-		$child = $this->runChild( \CirrusSearch\ForceSearchIndex::class );
+		$child = $this->runChild( \CirrusSearch\Maintenance\ForceSearchIndex::class );
 		$child->mOptions[ 'skipLinks' ] = true;
 		$child->mOptions[ 'indexOnSkip' ] = true;
 		$child->execute();
-		$child = $this->runChild( \CirrusSearch\ForceSearchIndex::class );
+		$child = $this->runChild( \CirrusSearch\Maintenance\ForceSearchIndex::class );
 		$child->mOptions[ 'skipParse' ] = true;
 		$child->execute();
 	}

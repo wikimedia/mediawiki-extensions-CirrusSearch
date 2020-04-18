@@ -507,7 +507,6 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 	}
 
 	/**
-	 * @covers \CirrusSearch\Search\TermBoostScoreBuilder
 	 * @covers \CirrusSearch\Search\Rescore\TermBoostScoreBuilder
 	 * @covers \CirrusSearch\Search\Rescore\BoostedQueriesFunction
 	 * @dataProvider termBoostProvider

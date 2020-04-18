@@ -3,6 +3,7 @@
 namespace CirrusSearch\Api;
 
 use CirrusSearch\BuildDocument\BuildDocument;
+use CirrusSearch\CirrusSearch;
 use Mediawiki\MediaWikiServices;
 use WikiPage;
 
@@ -37,7 +38,7 @@ class QueryBuildDocument extends \ApiQueryBase {
 		$engine = $services->getSearchEngineFactory()
 			->create( 'cirrus' );
 
-		if ( $engine instanceof \CirrusSearch ) {
+		if ( $engine instanceof CirrusSearch ) {
 			$pages = [];
 			foreach ( $this->getPageSet()->getGoodTitles() as $pageId => $title ) {
 				$pages[] = new WikiPage( $title );

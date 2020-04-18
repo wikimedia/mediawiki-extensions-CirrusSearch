@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\SearchConfig;
 use SearchEngine;
 use SearchIndexField;
@@ -66,7 +67,7 @@ abstract class CirrusIndexField extends SearchIndexFieldDefinition {
 	 * @return array
 	 */
 	public function getMapping( SearchEngine $engine ) {
-		if ( !( $engine instanceof \CirrusSearch ) ) {
+		if ( !( $engine instanceof CirrusSearch ) ) {
 			throw new \LogicException( "Cannot map CirrusSearch fields for another engine." );
 		}
 

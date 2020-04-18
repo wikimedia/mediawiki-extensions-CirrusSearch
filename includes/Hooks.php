@@ -6,7 +6,6 @@ use ApiBase;
 use ApiMain;
 use ApiOpenSearch;
 use ApiUsageException;
-use CirrusSearch;
 use CirrusSearch\Job\JobTraits;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Search\FancyTitleResultsType;

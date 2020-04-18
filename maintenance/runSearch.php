@@ -2,7 +2,8 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch;
+use CirrusSearch\CirrusDebugOptions;
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\SearchConfig;
@@ -291,7 +292,7 @@ class RunSearch extends Maintenance {
 		}
 
 		$limit = $this->getOption( 'limit', 10 );
-		$options = CirrusSearch\CirrusDebugOptions::forRelevanceTesting(
+		$options = CirrusDebugOptions::forRelevanceTesting(
 			$this->getOption( 'explain', false ) ? 'raw' : null
 		);
 

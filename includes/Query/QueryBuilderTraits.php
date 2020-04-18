@@ -3,7 +3,7 @@
 namespace CirrusSearch\Query;
 
 use ApiUsageException;
-use CirrusSearch;
+use CirrusSearch\CirrusSearch;
 
 /**
  * Various utility functions that can be shared across cirrus query builders

@@ -37,5 +37,3 @@ class TermBoostScoreBuilder extends FunctionScoreBuilder {
 		$this->boostedQueries->append( $functionScore );
 	}
 }
-
-class_alias( TermBoostScoreBuilder::class, 'CirrusSearch\Search\TermBoostScoreBuilder' );

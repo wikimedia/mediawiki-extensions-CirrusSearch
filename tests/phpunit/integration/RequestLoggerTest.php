@@ -2,12 +2,13 @@
 
 namespace CirrusSearch\Test;
 
-use CirrusSearch;
 use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\CompletionSuggester;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Hooks;
 use CirrusSearch\RequestLog;
 use CirrusSearch\RequestLogger;
 use CirrusSearch\SearchConfig;
@@ -160,7 +161,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 				$limit = isset( $query['limit'] ) ? $query['limit'] : 20;
 				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;
 				$config = new HashSearchConfig(
-					[ CirrusSearch\SearchConfig::INDEX_BASE_NAME => 'wiki' ],
+					[ SearchConfig::INDEX_BASE_NAME => 'wiki' ],
 					[ HashSearchConfig::FLAG_INHERIT ] );
 				$searchEngine = new CirrusSearch( $config );
 				$searchEngine->setConnection( $connection );
@@ -281,7 +282,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		$connection = new Connection( $config, 'default' );
 		$this->setTemporaryHook( 'PrefixSearchExtractNamespace',
 			function ( &$namespace, &$query ) use ( $connection ) {
-				return CirrusSearch\Hooks::prefixSearchExtractNamespaceWithConnection( $connection,
+				return Hooks::prefixSearchExtractNamespaceWithConnection( $connection,
 					$namespace, $query );
 			}
 		);

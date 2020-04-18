@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\Maintenance\MappingConfigBuilder;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
@@ -110,12 +111,12 @@ class TextIndexField extends CirrusIndexField {
 	 * @return array
 	 */
 	public function getMapping( SearchEngine $engine ) {
-		if ( !( $engine instanceof \CirrusSearch ) ) {
+		if ( !( $engine instanceof CirrusSearch ) ) {
 			throw new \LogicException( "Cannot map CirrusSearch fields for another engine." );
 		}
 		$this->initFlags();
 		/**
-		 * @var \CirrusSearch $engine
+		 * @var CirrusSearch $engine
 		 */
 		$field = parent::getMapping( $engine );
 

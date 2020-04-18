@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch;
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
 use Hooks;

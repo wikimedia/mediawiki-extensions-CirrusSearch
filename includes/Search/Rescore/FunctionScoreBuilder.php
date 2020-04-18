@@ -77,5 +77,3 @@ abstract class FunctionScoreBuilder implements BoostFunctionBuilder {
 		}
 	}
 }
-
-class_alias( FunctionScoreBuilder::class, 'CirrusSearch\Search\FunctionScoreBuilder' );

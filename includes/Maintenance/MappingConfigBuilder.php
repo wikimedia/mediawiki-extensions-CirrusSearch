@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\Connection;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
@@ -55,7 +56,7 @@ class MappingConfigBuilder {
 	private $config;
 
 	/**
-	 * @var \CirrusSearch
+	 * @var CirrusSearch
 	 */
 	protected $engine;
 
@@ -81,7 +82,7 @@ class MappingConfigBuilder {
 			$flags |= self::OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER;
 		}
 		$this->flags = $flags;
-		$this->engine = new \CirrusSearch( $config );
+		$this->engine = new CirrusSearch( $config );
 		$this->config = $this->engine->getConfig();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
 	}

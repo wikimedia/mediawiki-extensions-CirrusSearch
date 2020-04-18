@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\BuildDocument;
 
-use CirrusSearch;
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Document;
 use MediaWiki\Logger\LoggerFactory;

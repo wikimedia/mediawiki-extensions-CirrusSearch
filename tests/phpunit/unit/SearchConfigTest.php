@@ -104,7 +104,7 @@ class SearchConfigTest extends CirrusTestCase {
 		$this->assertSame( $service, $config->getProfileService() );
 
 		$this->assertNotNull( $service->loadProfileByName( SearchProfileService::COMPLETION,
-			\CirrusSearch::COMPLETION_PREFIX_FALLBACK_PROFILE, false ) );
+			CirrusSearch::COMPLETION_PREFIX_FALLBACK_PROFILE, false ) );
 		$this->assertNotNull( $service->loadProfileByName( SearchProfileService::RESCORE,
 			'foo', false ) );
 		$this->assertNull( $service->loadProfileByName( SearchProfileService::RESCORE,

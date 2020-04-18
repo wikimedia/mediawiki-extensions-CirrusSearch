@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\BuildDocument;
 
-use CirrusSearch;
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\Connection;
 use ContentHandler;
 use Elastica\Document;

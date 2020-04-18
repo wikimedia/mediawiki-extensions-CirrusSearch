@@ -61,11 +61,7 @@
 		"CirrusSearch\\Maintenance\\IndexNamespaces": "maintenance/indexNamespaces.php",
 		"CirrusSearch\\Maintenance\\UpdateSearchIndexConfig": "maintenance/updateSearchIndexConfig.php",
 		"CirrusSearch\\ForceSearchIndex": "maintenance/forceSearchIndex.php",
-		"CirrusSearch\\Saneitize": "maintenance/saneitize.php",
-		"CirrusSearch\\Search\\TermBoostScoreBuilder": "includes/Search/Rescore/TermBoostScoreBuilder.php",
-		"CirrusSearch\\Search\\FunctionScoreBuilder": "includes/Search/Rescore/FunctionScoreBuilder.php",
-		"CirrusSearch\\Search\\Rescore\\TermBoostScoreBuilder": "includes/Search/Rescore/TermBoostScoreBuilder.php",
-		"CirrusSearch\\Search\\Rescore\\FunctionScoreBuilder": "includes/Search/Rescore/FunctionScoreBuilder.php"
+		"CirrusSearch\\Saneitize": "maintenance/saneitize.php"
 	},
 	"TestAutoloadClasses": {
 		"CirrusSearch\\CirrusIntegrationTestCase": "tests/phpunit/integration/CirrusIntegrationTestCase.php",

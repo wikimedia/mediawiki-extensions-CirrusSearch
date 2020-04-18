@@ -11,13 +11,13 @@ class CirrusSearchTest extends CirrusTestCase {
 		return [
 			'completion' => [
 				\SearchEngine::COMPLETION_PROFILE_TYPE,
-				\CirrusSearch::AUTOSELECT_PROFILE,
-				[ \CirrusSearch::AUTOSELECT_PROFILE, \CirrusSearch::COMPLETION_PREFIX_FALLBACK_PROFILE ],
+				CirrusSearch::AUTOSELECT_PROFILE,
+				[ CirrusSearch::AUTOSELECT_PROFILE, CirrusSearch::COMPLETION_PREFIX_FALLBACK_PROFILE ],
 			],
 			'fulltext query independent' => [
 				\SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE,
-				\CirrusSearch::AUTOSELECT_PROFILE,
-				[ \CirrusSearch::AUTOSELECT_PROFILE, 'classic' ],
+				CirrusSearch::AUTOSELECT_PROFILE,
+				[ CirrusSearch::AUTOSELECT_PROFILE, 'classic' ],
 			],
 			'unknown' => [
 				'unknown',
@@ -29,7 +29,7 @@ class CirrusSearchTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideProfiles
-	 * @covers \CirrusSearch::getProfiles()
+	 * @covers \CirrusSearch\CirrusSearch::getProfiles()
 	 */
 	public function testGetProfiles( $profileType, $default, array $expectedProfiles ) {
 		$profiles = $this->getSearchEngine( [ 'CirrusSearchUseCompletionSuggester' => 'yes' ] )
@@ -56,12 +56,12 @@ class CirrusSearchTest extends CirrusTestCase {
 		return [
 			'engine defaults (completion)' => [
 				\SearchEngine::COMPLETION_PROFILE_TYPE,
-				\CirrusSearch::AUTOSELECT_PROFILE,
+				CirrusSearch::AUTOSELECT_PROFILE,
 				null,
 			],
 			'engine defaults (fulltext qi)' => [
 				\SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE,
-				\CirrusSearch::AUTOSELECT_PROFILE,
+				CirrusSearch::AUTOSELECT_PROFILE,
 				null,
 			],
 			'profile set (completion)' => [
@@ -79,7 +79,7 @@ class CirrusSearchTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideExtractProfileFromFeatureData
-	 * @covers \CirrusSearch::extractProfileFromFeatureData
+	 * @covers \CirrusSearch\CirrusSearch::extractProfileFromFeatureData
 	 * @throws \ConfigException
 	 */
 	public function testExtractProfileFromFeatureData( $type, $setValue, $expected ) {
@@ -120,14 +120,14 @@ class CirrusSearchTest extends CirrusTestCase {
 
 	/**
 	 * @param array|null $config
-	 * @return \CirrusSearch
+	 * @return CirrusSearch
 	 * @throws \ConfigException
 	 */
 	private function getSearchEngine( array $config = null ) {
 		// use cirrus base profiles
 		// only set needed config for Connection
 		$config = $this->newHashSearchConfig( $config + $this->getMinimalConfig() );
-		return new \CirrusSearch( $config, CirrusDebugOptions::defaultOptions(),
+		return new CirrusSearch( $config, CirrusDebugOptions::defaultOptions(),
 			$this->namespacePrefixParser(), $this->getInterWikiResolver( $config ), $this->newTitleHelper() );
 	}
 

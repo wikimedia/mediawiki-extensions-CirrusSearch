@@ -34,7 +34,7 @@ class CirrusSearchIndexFieldFactoryTest extends CirrusTestCase {
 	 * @param string $type
 	 * @param string $expectedClass
 	 * @throws \ConfigException
-	 * @covers \CirrusSearch::makeSearchFieldMapping()
+	 * @covers \CirrusSearch\CirrusSearch::makeSearchFieldMapping()
 	 * @covers \CirrusSearch\Search\CirrusSearchIndexFieldFactory::makeSearchFieldMapping()
 	 */
 	public function testFactory( $name, $type, $expectedClass ) {

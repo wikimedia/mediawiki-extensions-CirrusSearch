@@ -1,12 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
+			"1917 Ekim Devrimi",
 			"Kumkumuk",
 			"Mirzali",
 			"Orbot707"
 		]
 	},
 	"cirrussearch-pref-label": "Cıgeyrayışo newe",
+	"cirrussearch-completion-profile-classic-pref-name": "Klasik cıgeyrayışe prefiksi",
 	"cirrussearch-feature-deepcat-invalid-title": "Deyaye kategoriye ravêrdi niya",
 	"cirrussearch-explore-similar-related": "Eleqeyın",
 	"cirrussearch-explore-similar-categories": "Kategoriy",

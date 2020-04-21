@@ -1,1 +1,0 @@
-UpdateSearchIndexConfig.php

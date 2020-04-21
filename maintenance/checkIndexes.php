@@ -1,1 +1,0 @@
-CheckIndexes.php

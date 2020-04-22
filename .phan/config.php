@@ -20,6 +20,29 @@ $cfg['exclude_analysis_directory_list'] = array_merge(
 		'../../extensions/SiteMatrix',
 	]
 );
+
+// Temporary for migration. T250806
+$cfg['exclude_file_list'] = array_merge(
+	$cfg['exclude_file_list'],
+	[
+		'maintenance/checkIndexes.php',
+		'maintenance/cirrusNeedsToBeBuilt.php',
+		'maintenance/copySearchIndex.php',
+		'maintenance/dumpIndex.php',
+		'maintenance/forceSearchIndex.php',
+		'maintenance/freezeWritesToCluster.php',
+		'maintenance/indexNamespaces.php',
+		'maintenance/metastore.php',
+		'maintenance/runSearch.php',
+		'maintenance/saneitize.php',
+		'maintenance/saneitizeJobs.php',
+		'maintenance/updateDYMIndexTemplates.php',
+		'maintenance/updateOneSearchIndexConfig.php',
+		'maintenance/updateSearchIndexConfig.php',
+		'maintenance/updateSuggesterIndex.php',
+	]
+);
+
 $cfg['enable_class_alias_support'] = true;
 
 return $cfg;

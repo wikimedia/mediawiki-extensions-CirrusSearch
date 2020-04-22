@@ -52,16 +52,7 @@
 	},
 	"AutoloadClasses": {
 		"CirrusSearch": "includes/CirrusSearch.php",
-		"CirrusSearch\\CirrusSearch": "includes/CirrusSearch.php",
-		"CirrusSearch\\Maintenance\\CheckIndexes": "maintenance/checkIndexes.php",
-		"CirrusSearch\\Maintenance\\CirrusNeedsToBeBuilt": "maintenance/cirrusNeedsToBeBuilt.php",
-		"CirrusSearch\\Maintenance\\Metastore": "maintenance/metastore.php",
-		"CirrusSearch\\Maintenance\\RunSearch": "maintenance/runSearch.php",
-		"CirrusSearch\\Maintenance\\SaneitizeJobs": "maintenance/saneitizeJobs.php",
-		"CirrusSearch\\Maintenance\\IndexNamespaces": "maintenance/indexNamespaces.php",
-		"CirrusSearch\\Maintenance\\UpdateSearchIndexConfig": "maintenance/updateSearchIndexConfig.php",
-		"CirrusSearch\\Maintenance\\ForceSearchIndex": "maintenance/forceSearchIndex.php",
-		"CirrusSearch\\Maintenance\\Saneitize": "maintenance/saneitize.php"
+		"CirrusSearch\\CirrusSearch": "includes/CirrusSearch.php"
 	},
 	"TestAutoloadClasses": {
 		"CirrusSearch\\CirrusIntegrationTestCase": "tests/phpunit/integration/CirrusIntegrationTestCase.php",
@@ -72,7 +63,8 @@
 		"CirrusSearch\\Fallbacks\\BaseFallbackMethodTest": "tests/phpunit/unit/Fallbacks/BaseFallbackMethodTest.php"
 	},
 	"AutoloadNamespaces": {
-		"CirrusSearch\\": "includes/"
+		"CirrusSearch\\": "includes/",
+		"CirrusSearch\\Maintenance\\": "maintenance/"
 	},
 	"TestAutoloadNamespaces": {
 		"CirrusSearch\\Test\\": "tests/phpunit/unit/mocks/"

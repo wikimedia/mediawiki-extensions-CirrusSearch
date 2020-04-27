@@ -77,8 +77,7 @@ class Hooks {
 	 * @param WebRequest $request
 	 */
 	public static function initializeForRequest( WebRequest $request ) {
-		global $wgSearchType, $wgHooks,
-			$wgCirrusSearchPhraseRescoreWindowSize,
+		global $wgCirrusSearchPhraseRescoreWindowSize,
 			$wgCirrusSearchFunctionRescoreWindowSize,
 			$wgCirrusSearchFragmentSize,
 			$wgCirrusSearchAllFields,
@@ -88,12 +87,6 @@ class Hooks {
 			$wgCirrusSearchLogElasticRequestsSecret,
 			$wgCirrusSearchEnableAltLanguage,
 			$wgCirrusSearchUseCompletionSuggester;
-
-		// Install our prefix search hook only if we're enabled.
-		if ( $wgSearchType === 'CirrusSearch' ) {
-			$wgHooks[ 'PrefixSearchExtractNamespace' ][] = 'CirrusSearch\Hooks::prefixSearchExtractNamespace';
-			$wgHooks[ 'SearchGetNearMatch' ][] = 'CirrusSearch\Hooks::onSearchGetNearMatch';
-		}
 
 		self::overrideMoreLikeThisOptionsFromMessage();
 
@@ -451,7 +444,11 @@ class Hooks {
 	 * @param string &$search
 	 * @return bool
 	 */
-	public static function prefixSearchExtractNamespace( &$namespaces, &$search ) {
+	public static function onPrefixSearchExtractNamespace( &$namespaces, &$search ) {
+		global $wgSearchType;
+		if ( $wgSearchType !== 'CirrusSearch' ) {
+			return true;
+		}
 		return self::prefixSearchExtractNamespaceWithConnection( self::getConnection(), $namespaces, $search );
 	}
 
@@ -496,6 +493,11 @@ class Hooks {
 	 * @throws ApiUsageException
 	 */
 	public static function onSearchGetNearMatch( $term, &$titleResult ) {
+		global $wgSearchType;
+		if ( $wgSearchType !== 'CirrusSearch' ) {
+			return true;
+		}
+
 		$title = Title::newFromText( $term );
 		if ( $title === null ) {
 			return false;

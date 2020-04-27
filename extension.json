@@ -122,10 +122,14 @@
 		"ArticleRevisionVisibilitySet": "CirrusSearch\\Hooks::onRevisionDelete",
 		"ArticleUndelete": "CirrusSearch\\Hooks::onArticleUndelete",
 		"BeforeInitialize": "CirrusSearch\\Hooks::onBeforeInitialize",
+		"CirrusSearchAddQueryFeatures": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchAddQueryFeatures",
+		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchAnalysisConfig",
+		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchSimilarityConfig",
 		"GetPreferences": "CirrusSearch\\Hooks::onGetPreferences",
 		"LinksUpdateComplete": "CirrusSearch\\Hooks::onLinksUpdateCompleted",
 		"MediaWikiServices": "CirrusSearch\\Hooks::onMediaWikiServices",
 		"ResourceLoaderGetConfigVars": "CirrusSearch\\Hooks::onResourceLoaderGetConfigVars",
+		"SearchIndexFields": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onSearchIndexFields",
 		"ShowSearchHitTitle": "CirrusSearch\\Hooks::onShowSearchHitTitle",
 		"SoftwareInfo": "CirrusSearch\\Hooks::onSoftwareInfo",
 		"SpecialSearchResults": "CirrusSearch\\Hooks::onSpecialSearchResults",
@@ -133,11 +137,7 @@
 		"SpecialStatsAddExtra": "CirrusSearch\\Hooks::onSpecialStatsAddExtra",
 		"TitleMove": "CirrusSearch\\Hooks::onTitleMove",
 		"TitleMoveComplete": "CirrusSearch\\Hooks::onTitleMoveComplete",
-		"UserGetDefaultOptions": "CirrusSearch\\Hooks::onUserGetDefaultOptions",
-		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchSimilarityConfig",
-		"SearchIndexFields": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onSearchIndexFields",
-		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchAnalysisConfig",
-		"CirrusSearchAddQueryFeatures": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchAddQueryFeatures"
+		"UserGetDefaultOptions": "CirrusSearch\\Hooks::onUserGetDefaultOptions"
 	},
 	"config": {
 		"CirrusSearchDefaultCluster": {

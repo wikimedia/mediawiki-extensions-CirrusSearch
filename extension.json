@@ -652,6 +652,11 @@
 			}
 		}
 	},
+	"SearchMappings": {
+		"CirrusSearch": {
+			"class": "CirrusSearch\\CirrusSearch"
+		}
+	},
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
 	],

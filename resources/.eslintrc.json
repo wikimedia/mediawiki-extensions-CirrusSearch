@@ -5,6 +5,7 @@
 		"wikimedia/mediawiki"
 	],
 	"rules": {
-		"max-len": "off"
+		"max-len": "off",
+		"mediawiki/class-doc": "off"
 	}
 }

@@ -57,11 +57,11 @@ module.exports = function ( grunt ) {
 					tagExpression: ( () => grunt.option( 'tags' ) )()
 				},
 				maxInstances: ( () => {
-					let max = grunt.option( 'maxInstances' );
+					const max = grunt.option( 'maxInstances' );
 					return max ? parseInt( max, 10 ) : 1;
 				} )(),
 				spec: ( () => {
-					let spec = grunt.option( 'spec' );
+					const spec = grunt.option( 'spec' );
 					if ( !spec ) {
 						return undefined;
 					}

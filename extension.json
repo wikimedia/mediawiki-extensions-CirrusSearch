@@ -50,10 +50,6 @@
 			"i18n/api"
 		]
 	},
-	"AutoloadClasses": {
-		"CirrusSearch": "includes/CirrusSearch.php",
-		"CirrusSearch\\CirrusSearch": "includes/CirrusSearch.php"
-	},
 	"TestAutoloadClasses": {
 		"CirrusSearch\\CirrusIntegrationTestCase": "tests/phpunit/integration/CirrusIntegrationTestCase.php",
 		"CirrusSearch\\CirrusTestCase": "tests/phpunit/unit/CirrusTestCase.php",

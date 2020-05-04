@@ -594,5 +594,3 @@ class CirrusSearch extends SearchEngine {
 				null, false, $this->debugOptions, $this->namespacePrefixParser, $this->interwikiResolver, $this->titleHelper );
 	}
 }
-
-class_alias( CirrusSearch::class, 'CirrusSearch' );

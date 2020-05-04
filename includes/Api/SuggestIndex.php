@@ -26,7 +26,7 @@ class SuggestIndex extends \ApiBase {
 	public function execute() {
 		// FIXME: This is horrible, no good, very bad hack. Only for testing,
 		// and probably should be eventually replaced with something more sane.
-		$updaterScript = "extensions/CirrusSearch/maintenance/updateSuggesterIndex.php";
+		$updaterScript = "extensions/CirrusSearch/maintenance/UpdateSuggesterIndex.php";
 		$this->getResult()->addValue( null, 'result',
 			wfShellExecWithStderr( "unset REQUEST_METHOD; /usr/local/bin/mwscript $updaterScript --wiki " . wfWikiID() )
 		);

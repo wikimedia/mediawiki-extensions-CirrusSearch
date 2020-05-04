@@ -18,13 +18,13 @@ Configure your search servers in LocalSettings.php if you aren't running Elastic
 There are other $wgCirrusSearch variables that you might want to change from their defaults.
 
 Now run this script to generate your elasticsearch index:
- php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/updateSearchIndexConfig.php
+ php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php
 
 Now remove $wgDisableSearchUpdate = true from LocalSettings.php.  Updates should start heading to Elasticsearch.
 
 Next bootstrap the search index by running:
- php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/forceSearchIndex.php --skipLinks --indexOnSkip
- php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/forceSearchIndex.php --skipParse
+ php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipLinks --indexOnSkip
+ php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipParse
 Note that this can take some time.  For large wikis read "Bootstrapping large wikis" below.
 
 Once that is complete add this to LocalSettings.php to funnel queries to ElasticSearch:
@@ -51,7 +51,7 @@ In bash I do this:
  mkdir cirrus_scripts
  mkdir cirrus_log
  pushd cirrus_scripts
- php extensions/CirrusSearch/maintenance/forceSearchIndex.php --queue --maxJobs 10000 --pauseForJobs 1000 \
+ php extensions/CirrusSearch/maintenance/ForceSearchIndex.php --queue --maxJobs 10000 --pauseForJobs 1000 \
     --skipLinks --indexOnSkip --buildChunks 250000 |
     sed -e 's/$/ | tee -a cirrus_log\/'$wiki'.parse.log/' |
     split -n r/$PROCS
@@ -67,7 +67,7 @@ Step 3:
 In bash I do this:
  pushd cirrus_scripts
  rm *.sh
- php extensions/CirrusSearch/maintenance/forceSearchIndex.php --queue --maxJobs 10000 --pauseForJobs 1000 \
+ php extensions/CirrusSearch/maintenance/ForceSearchIndex.php --queue --maxJobs 10000 --pauseForJobs 1000 \
     --skipParse --buildChunks 250000 |
     sed -e 's/$/ | tee -a cirrus_log\/'$wiki'.parse.log/' |
     split -n r/$PROCS
@@ -88,8 +88,8 @@ If for some reason in process updates to elasticsearch begin failing you can imm
 set "$wgDisableSearchUpdate = true;" in your LocalSettings.php file to
 stop trying to update elasticsearch.  Once you figure out what is wrong with elasticsearch you
 should turn those updates back on and then run the following:
-php ./maintenance/forceSearchIndex.php --from <whenever the outage started in ISO 8601 format> --deletes
-php ./maintenance/forceSearchIndex.php --from <whenever the outage started in ISO 8601 format>
+php ./maintenance/ForceSearchIndex.php --from <whenever the outage started in ISO 8601 format> --deletes
+php ./maintenance/ForceSearchIndex.php --from <whenever the outage started in ISO 8601 format>
 
 The first command picks up all the deletes that occurred during the outage and
 should complete quite quickly.  The second command picks up all the updates

@@ -25,5 +25,5 @@ for wiki in $wikis; do
 	mwscript edit.php --wiki=$wiki --summary="Vagrant import" --no-rc Main_Page < /vagrant/puppet/modules/mediawiki/files/main_page.wiki
 	# Re-create cirrus indices
 	mwscript extensions/CirrusSearch/tests/jenkins/cleanSetup.php --wiki=$wiki
-	mwscript extensions/CirrusSearch/maintenance/updateSuggesterIndex.php --wiki=$wiki
+	mwscript extensions/CirrusSearch/maintenance/UpdateSuggesterIndex.php --wiki=$wiki
 done

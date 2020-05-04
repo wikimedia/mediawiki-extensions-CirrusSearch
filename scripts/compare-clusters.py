@@ -67,7 +67,7 @@ def run(wiki, start, end, q):
 
 
 def listen(wiki, q):
-    line_format = ("mwscript extensions/CirrusSearch/maintenance/saneitize.php"
+    line_format = ("mwscript extensions/CirrusSearch/maintenance/Saneitize.php"
                    " --wiki %s --cluster %s --fromId %s --toId %s")
     while True:
         try:

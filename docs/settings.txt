@@ -1100,7 +1100,7 @@ NOTE: Experimental.
 Default:
     $wgCirrusSearchCompletionDefaultScore = 'quality';
 
-Set the default scoring function to be used by maintenance/updateSuggesterIndex.php.
+Set the default scoring function to be used by maintenance/UpdateSuggesterIndex.php.
 See: includes/BuildDocument/SuggestScoring.php for more details about scoring functions.
 
 NOTE: if you change the scoring method you'll have to rebuild the suggester index.
@@ -1118,7 +1118,7 @@ namespace. PrefixSearch will be used in all other cases.
 Valid values, all unknown values map to 'no':
 * yes   - Use completion suggester as the default
 * no    - Don't use completion suggester
-* build - Allow building the index from updateSuggesterIndex.php
+* build - Allow building the index from UpdateSuggesterIndex.php
 
 ; $wgCirrusSearchCompletionSuggesterSubphrases
 

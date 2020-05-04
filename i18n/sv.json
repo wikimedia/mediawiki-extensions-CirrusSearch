@@ -53,7 +53,7 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Ingen korrigering av stavfel. Löser stängda omdirigeringar.",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Omdirigeringsläge med matchade underfraser (avancerat)",
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Ingen korrigering av stavfel. Löser stängda omdirigeringar. Matchande underfraser i titlar.",
-	"cirrussearch-completion-profile-classic-pref-name": "Klassisk prefixsök",
+	"cirrussearch-completion-profile-classic-pref-name": "Klassisk prefixsökning",
 	"cirrussearch-completion-profile-classic-pref-desc": "Ingen korrigering av stavfel. Matchar början av titlar.",
 	"cirrussearch-timed-out": "Sökningen överskred tidsgränsen, endast delvisa resultat finns tillgängliga.",
 	"cirrussearch-regex-timed-out": "Sökningen med reguljära uttryck överskred tidsgränsen, alla resultat kan inte visas. Försök förenkla ditt reguljära uttryck för att få samtliga resultat.",

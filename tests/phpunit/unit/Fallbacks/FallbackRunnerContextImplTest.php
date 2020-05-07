@@ -1,6 +1,5 @@
 <?php
 
-
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\CirrusTestCase;

@@ -111,7 +111,7 @@ class MetaVersionStore implements MetaStore {
 	 * @return \Elastica\Document
 	 */
 	public static function buildDocument( Connection $connection, $baseName, $typeName ) {
-		global $IP, $wgVersion;
+		global $IP;
 		if ( $typeName == Connection::TITLE_SUGGEST_TYPE ) {
 			list( $aMaj, $aMin ) = explode( '.', SuggesterAnalysisConfigBuilder::VERSION, 3 );
 			list( $mMaj, $mMin ) = explode( '.', SuggesterMappingConfigBuilder::VERSION, 3 );
@@ -134,7 +134,7 @@ class MetaVersionStore implements MetaStore {
 			'mapping_maj' => $mMaj,
 			'mapping_min' => $mMin,
 			'shard_count' => $connection->getSettings()->getShardCount( $typeName ),
-			'mediawiki_version' => $wgVersion,
+			'mediawiki_version' => MW_VERSION,
 			'mediawiki_commit' => $mwInfo->getHeadSHA1(),
 			'cirrus_commit' => $cirrusInfo->getHeadSHA1(),
 		];

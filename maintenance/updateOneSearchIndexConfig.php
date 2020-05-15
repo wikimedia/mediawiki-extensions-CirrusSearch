@@ -1,1 +1,0 @@
-UpdateOneSearchIndexConfig.php

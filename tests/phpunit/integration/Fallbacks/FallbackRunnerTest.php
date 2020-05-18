@@ -403,7 +403,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 				return $search;
 			}
 
-			public static function build( SearchQuery $query, array $params = [], InterwikiResolver $interwikiResolver ) {
+			public static function build( SearchQuery $query, array $params, InterwikiResolver $interwikiResolver ) {
 				throw new \AssertionError();
 			}
 

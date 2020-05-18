@@ -112,7 +112,7 @@ class KeywordNodeVisitorTest extends CirrusIntegrationTestCase {
 			 */
 			private $states;
 
-			public function __construct( array $excludeOccurs = [], array $keywordClasses = [], array $states ) {
+			public function __construct( array $excludeOccurs, array $keywordClasses, array $states ) {
 				parent::__construct( $excludeOccurs, $keywordClasses );
 				$this->states = $states;
 			}

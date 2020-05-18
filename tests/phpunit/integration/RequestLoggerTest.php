@@ -142,7 +142,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider requestLoggingProvider
 	 */
-	public function testRequestLogging( array $query, $responses = null, $expectedLogs ) {
+	public function testRequestLogging( array $query, $responses, $expectedLogs ) {
 		$globals = [
 			'wgCirrusSearchFullTextQueryBuilderProfile' => 'default',
 			'wgCirrusSearchInterwikiSources' => [],

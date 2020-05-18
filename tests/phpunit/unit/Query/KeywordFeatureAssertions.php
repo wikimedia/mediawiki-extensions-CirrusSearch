@@ -65,8 +65,8 @@ class KeywordFeatureAssertions {
 	 * @return SearchContext
 	 */
 	private function mockContextExpectingAddFilter(
-		$expectedQuery = null,
-		$negated = false,
+		$expectedQuery,
+		$negated,
 		SearchConfig $config
 	) {
 		$context = $this->mockContext( $config );

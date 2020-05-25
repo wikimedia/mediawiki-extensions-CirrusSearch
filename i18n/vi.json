@@ -5,6 +5,7 @@
 			"Nhatminh01",
 			"Prenn",
 			"Quenhitran",
+			"Trần Nguyễn Minh Huy",
 			"Vinhtantran"
 		]
 	},
@@ -26,7 +27,7 @@
 	"cirrussearch-pref-completion-section-desc": "Gợi ý hoàn tất tìm kiếm",
 	"cirrussearch-pref-completion-profile-help": "Đặt hành vi cho các gợi ý tìm kiếm (tìm kiếm ngay khi nhập).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester completion suggester] là một thuật toán cho các đề xuất tìm kiếm với sửa lỗi chính tả tốt hơn và mức độ liên quan của tìm kiếm. Tìm kiếm tiền tố là thuật toán gợi ý kiểu tìm kiếm-bạn-kiểu cũ.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Mặc định (khuyên dùng)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Sửa tối đa hai lỗi sai. Chuyển hướng các trang có tên gần giống nhau.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Sửa tối đa hai lỗi sai. Xóa đổi hướng các trang có tên quá giống với tên trang chính.",
 	"cirrussearch-completion-profile-strict-pref-name": "Chế độ chính xác (nâng cao)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Không sửa lỗi sai. Tìm kiếm chính xác những gì được nhập vào.",
 	"cirrussearch-completion-profile-normal-pref-name": "Chế độ đổi hướng (nâng cao)",

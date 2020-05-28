@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Ahdan",
+			"Diki Ananta",
 			"Iwan Novirion",
 			"Kenrick95",
 			"Rachmat.Wahidi",
@@ -13,7 +14,7 @@
 	"cirrussearch-pref-label": "Pencarian baru",
 	"cirrussearch-completion-profile-classic": "Awalan klasik, beberapa karakter pemisah dan diakritik dihapus.",
 	"cirrussearch-completion-profile-normal": "Beberapa karakter pemisah, diakritik dan kata henti dihapus.",
-	"cirrussearch-qi-profile-classic-noboostlinks": "Peringkat menurut beberapa templat, bahasa artikel dan kebaruan ketika diaktifkan di wiki ini.",
+	"cirrussearch-qi-profile-classic-noboostlinks": "Peringkat menurut beberapa templat, bahasa halaman dan kebaruan ketika diaktifkan di wiki ini.",
 	"prefs-completion": "Penyempurnaan penelusuran",
 	"cirrussearch-pref-completion-section-desc": "Saranan penyempurnaan",
 	"cirrussearch-pref-completion-profile-help": "Tetapkan perilaku untuk saran lengkap otomatis (cari-saat-Anda-ketik).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Saran lanjutan] adalah algoritma untuk saran pencarian dengan koreksi kesalahan ketik yang lebih baik dengan relevansi pencarian. Pencarian awalan adalah cara lama algoritma saran cari-saat-Anda-ketik.",

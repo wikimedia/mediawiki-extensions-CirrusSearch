@@ -15,6 +15,7 @@ use Title;
  */
 class MoreLikeFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	use MoreLikeTrait;
+
 	const MORE_LIKE_THIS = 'morelike';
 
 	/**

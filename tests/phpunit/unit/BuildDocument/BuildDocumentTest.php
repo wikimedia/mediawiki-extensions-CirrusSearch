@@ -73,7 +73,7 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 		// doc has expected index of $pageId
 		$this->assertArrayHasKey( 1, $docs );
 		$doc = $docs[$pageId];
-		$this->assertEquals( 1, $doc->get( 'phpunit_page_id' ) );
+		$this->assertSame( 1, $doc->get( 'phpunit_page_id' ) );
 		$this->assertTrue( $doc->get( 'phpunit_finish_batch' ) );
 
 		$builder->finalize( $doc );

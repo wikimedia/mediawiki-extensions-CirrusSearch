@@ -13,6 +13,7 @@ use Title;
  */
 abstract class CirrusSearchResult extends SearchResult {
 	use SearchResultTrait;
+
 	/**
 	 * @var Title
 	 */

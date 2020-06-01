@@ -1,11 +1,19 @@
 import json
+import math
+import multiprocessing
+import traceback
 import sys
 
+from collections import OrderedDict
+
+import requests
+
+
 batch_size = 2000
-clusters = {
-    'eqiad': "search.svc.eqiad.wmnet",
-    'codfw': "search.svc.codfw.wmnet",
-}
+clusters = OrderedDict(
+    eqiad='search.svc.eqiad.wmnet',
+    codfw='search.svc.codfw.wmnet',
+)
 
 
 def do_request(session, cluster, wiki, type, ids):
@@ -27,20 +35,21 @@ def request(session, cluster, wiki, type, ids):
     while attempt < 3:
         try:
             return do_request(session, cluster, wiki, type, ids)
-        except:
+        except Exception:
             attempt += 1
     raise Exception('failed requesting data...')
 
 
 def compare(wiki, q, lists):
-    head = lists.keys()[0]
-    other = lists.keys()[1:]
+    keys = list(lists.keys())
+    head = keys[0]
+    other = keys[1:]
     expected_len = len(lists[head])
     for cluster in other:
-        if not len(lists[cluster]) == expected_len:
+        if len(lists[cluster]) != expected_len:
             raise Exception("Counts dont match: %d != %d" %
                             (len(lists[cluster]), expected_len))
-    for id, found in lists[head].iteritems():
+    for id, found in lists[head].items():
         error = False
         for cluster in other:
             if not error and not found == lists[cluster][id]:
@@ -48,22 +57,20 @@ def compare(wiki, q, lists):
                 q.put_nowait(id)
             del lists[cluster][id]
     for cluster in other:
-        if len(lists[cluster]) > 0:
-            raise Exception("Doc(s) returned from %s but not %s: %s" %
-                            (head, cluster, ",".join(lists[cluster].keys())))
+        if lists[cluster]:
+            raise Exception('Doc(s) returned from {} but not {}: {}'
+                            .format(head, cluster, ','.join(lists[cluster])))
 
 
 def run(wiki, start, end, q):
-    import requests
-
     session = requests.Session()
-    for next in xrange(start, end, batch_size):
-        ids = range(next, next + batch_size)
+    for value in range(start, end, batch_size):
+        ids = list(range(value, value + batch_size))
         for type in ['content', 'general']:
-                lists = {}
-                for cluster in clusters.keys():
-                    lists[cluster] = request(session, cluster, wiki, type, ids)
-                compare(wiki, q, lists)
+            lists = OrderedDict()
+            for cluster in clusters:
+                lists[cluster] = request(session, cluster, wiki, type, ids)
+            compare(wiki, q, lists)
 
 
 def listen(wiki, q):
@@ -74,13 +81,12 @@ def listen(wiki, q):
             id = q.get()
             if id is None:
                 break
-	    for cluster in clusters.keys():
+            for cluster in clusters:
                 print(line_format % (wiki, cluster, id, id))
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
-            import traceback
-            print >> sys.stderr, 'Whoops! Problem:'
+        except Exception:
+            print('Whoops! Problem:', file=sys.stderr)
             traceback.print_exc(file=sys.stderr)
 
 
@@ -94,11 +100,9 @@ def get_max_id(wiki):
 
 
 if __name__ == "__main__":
-    import math
-    import multiprocessing
 
     if not len(sys.argv) == 2:
-        print("Usage: %s <wiki>\n" % (sys.argv[0]))
+        print('Usage: {} <wiki>\n'-format(sys.argv[0]))
         sys.exit(1)
 
     wiki = sys.argv[1]

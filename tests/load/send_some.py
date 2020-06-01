@@ -1,14 +1,14 @@
  #!/usr/bin/env python
 
-
+import calendar
+import time
 import sys
 import random
-import urllib
-import urllib2
+
 from multiprocessing import Process, Queue
-from Queue import Full
-import time
-import calendar
+from queue import Full
+from urllib.parse import unquote
+from urllib.request import urlopen
 
 
 def send_line(search, destination):
@@ -18,8 +18,8 @@ def send_line(search, destination):
     start = time.time()
     params = "fulltext=Search&srbackend=CirrusSearch"
     url = "%s/%s?%s" % (destination, search, params)
-    urllib2.urlopen(url)
-    print "Fetched ({:07.3f}) {}".format(time.time() - start, url)
+    urlopen(url)
+    print('Fetched ({:07.3f}) {}'.format(time.time() - start, url))
 
 
 def hostname(wiki):
@@ -75,13 +75,13 @@ def send_lines(percent, jobs, destination):
             target_lag = time.time() - target_time
         wait_time = target_lag - lag
         if wait_time >= 0:
-            print "Sleeping %s to stay %s ahead of the logged time." % \
-                (wait_time, target_lag)
+            print('Sleeping {} to stay {} ahead of the logged time.'
+                  .format(wait_time, target_lag))
             time.sleep(wait_time)
         try:
-            queue.put((hostname(s[2]), urllib.unquote(s[3])), False)
+            queue.put((hostname(s[2]), unquote(s[3])), False)
         except Full:
-            print "Couldn't keep up so dropping the request"
+            print("Couldn't keep up so dropping the request")
         line = sys.stdin.readline()
 
 

@@ -102,7 +102,7 @@ def get_max_id(wiki):
 if __name__ == "__main__":
 
     if not len(sys.argv) == 2:
-        print('Usage: {} <wiki>\n'-format(sys.argv[0]))
+        print('Usage: {} <wiki>\n'.format(sys.argv[0]))
         sys.exit(1)
 
     wiki = sys.argv[1]

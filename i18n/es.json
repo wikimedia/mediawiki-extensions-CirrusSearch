@@ -60,5 +60,6 @@
 	"cirrussearch-explore-similar-related-none": "No hay páginas reacionadas disponibles",
 	"cirrussearch-explore-similar-categories-none": "Ninguna categoría disponible",
 	"cirrussearch-explore-similar-languages-none": "No disponible en otros idiomas",
-	"cirrussearch-article-words": "Palabras en todas las páginas de contenido"
+	"cirrussearch-article-words": "Palabras en todas las páginas de contenido",
+	"cirrussearch-offset-too-large": "No se han podido obtener los resultados. Se pueden obtener hasta $1 resultados de búsqueda, pero se solicitaron a partir de la posición n.º $2."
 }

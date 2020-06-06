@@ -134,7 +134,7 @@ class Saneitize extends Maintenance {
 		}
 		$this->toPageId = $this->getOption( 'toId' );
 		if ( $this->toPageId === null ) {
-			$this->toPageId = $dbr->selectField( 'page', 'MAX(page_id)' );
+			$this->toPageId = $dbr->selectField( 'page', 'MAX(page_id)', [], __METHOD__ );
 			if ( $this->toPageId === false ) {
 				$this->toPageId = 0;
 			} else {

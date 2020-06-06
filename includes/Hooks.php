@@ -575,7 +575,7 @@ class Hooks {
 			// Push the job after DB commit but cancel on rollback
 			wfGetDB( DB_MASTER )->onTransactionIdle( function () use ( $job ) {
 				JobQueueGroup::singleton()->lazyPush( $job );
-			} );
+			}, __METHOD__ );
 		}
 	}
 

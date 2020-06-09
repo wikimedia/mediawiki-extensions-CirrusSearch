@@ -7,6 +7,7 @@ use CirrusSearch\DataSender;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use Status;
+use Wikimedia\Assert\Assert;
 
 /**
  * Performs writes to elasticsearch indexes with requeuing and an
@@ -49,7 +50,6 @@ class ElasticaWrite extends CirrusGenericJob {
 		return new self( [
 			'method' => $method,
 			'arguments' => self::serde( $method, $arguments ),
-			'serialized' => true,
 			'cluster' => $cluster,
 		] + $params );
 	}
@@ -106,65 +106,58 @@ class ElasticaWrite extends CirrusGenericJob {
 	 * @return bool
 	 */
 	protected function doJob() {
+		// While we can only have a single connection per job, we still
+		// use decideClusters() which includes a variety of safeguards.
 		$connections = $this->decideClusters();
 		if ( empty( $connections ) ) {
+			// Chosen cluster no longer exists in configuration.
 			return true;
 		}
-		$clusterNames = implode( ', ', array_keys( $connections ) );
+		Assert::precondition( count( $connections ) == 1,
+			'per self::build() we must have a single connection' );
 
-		$arguments = $this->params['arguments'];
-		if ( !empty( $this->params['serialized'] ) ) {
-			$arguments = $this->serde( $this->params['method'], $arguments, false );
-		}
+		$conn = reset( $connections );
+		$arguments = self::serde( $this->params['method'], $this->params['arguments'], false );
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->debug(
-			"Running {method} on cluster $clusterNames {diff}s after insertion",
+			"Running {method} on cluster {cluster} {diff}s after insertion",
 			[
 				'method' => $this->params['method'],
 				'arguments' => $arguments,
 				'diff' => time() - $this->params['createdAt'],
-				'clusters' => array_keys( $connections ),
+				'cluster' => $conn->getClusterName(),
 			]
 		);
 
 		$retry = [];
 		$error = [];
-		foreach ( $connections as $clusterName => $conn ) {
-			$sender = new DataSender( $conn, $this->searchConfig );
-			try {
-				$status = $sender->{$this->params['method']}( ...$arguments );
-			} catch ( \Exception $e ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					"Exception thrown while running DataSender::{method} in cluster {cluster}: {errorMessage}",
-					[
-						'method' => $this->params['method'],
-						'cluster' => $clusterName,
-						'errorMessage' => $e->getMessage(),
-						'exception' => $e,
-					]
-				);
-				$status = Status::newFatal( 'cirrussearch-send-failure' );
-			}
-
-			if ( $status->hasMessage( 'cirrussearch-indexes-frozen' ) ) {
-				$retry[] = $conn;
-			} elseif ( !$status->isOK() ) {
-				$error[] = $conn;
-			}
+		$sender = new DataSender( $conn, $this->searchConfig );
+		try {
+			$status = $sender->{$this->params['method']}( ...$arguments );
+		} catch ( \Exception $e ) {
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				"Exception thrown while running DataSender::{method} in cluster {cluster}: {errorMessage}",
+				[
+					'method' => $this->params['method'],
+					'cluster' => $conn->getClusterName(),
+					'errorMessage' => $e->getMessage(),
+					'exception' => $e,
+				]
+			);
+			$status = Status::newFatal( 'cirrussearch-send-failure' );
 		}
 
-		foreach ( $retry as $conn ) {
-			$this->requeueRetry( $conn );
-		}
-		foreach ( $error as $conn ) {
-			$this->requeueError( $conn );
-		}
-		if ( !empty( $error ) ) {
-			$this->setLastError( "ElasticaWrite job reported " . count( $error ) . " failure(s) and " . count( $retry ) . " frozen." );
-			return false;
+		$ok = true;
+		if ( $status->hasMessage( 'cirrussearch-indexes-frozen' ) ) {
+			$action = $this->requeueRetry( $conn ) ? "Requeued" : "Dropped";
+			$this->setLastError( "ElasticaWrite job delayed, cluster frozen: ${action}" );
+		} elseif ( !$status->isOK() ) {
+			$action = $this->requeueError( $conn ) ? "Requeued" : "Dropped";
+			$this->setLastError( "ElasticaWrite job failed: ${action}" );
+			$ok = false;
 		}
 
-		return true;
+		return $ok;
 	}
 
 	/**
@@ -172,6 +165,7 @@ class ElasticaWrite extends CirrusGenericJob {
 	 * been frozen for too long.
 	 *
 	 * @param Connection $conn
+	 * @return bool True when the job has been queued
 	 */
 	private function requeueRetry( Connection $conn ) {
 		$diff = time() - $this->params['createdAt'];
@@ -185,11 +179,11 @@ class ElasticaWrite extends CirrusGenericJob {
 					'diff' => $diff,
 				]
 			);
+			return false;
 		} else {
 			$delay = $this->backoffDelay( $this->params['retryCount'] );
 			$params = $this->params;
 			$params['retryCount']++;
-			$params['cluster'] = $conn->getClusterName();
 			unset( $params['jobReleaseTimestamp'] );
 			$params += self::buildJobDelayOptions( self::class, $delay );
 			$job = new self( $params );
@@ -201,6 +195,7 @@ class ElasticaWrite extends CirrusGenericJob {
 				]
 			);
 			JobQueueGroup::singleton()->push( $job );
+			return true;
 		}
 	}
 
@@ -209,6 +204,7 @@ class ElasticaWrite extends CirrusGenericJob {
 	 * too many times
 	 *
 	 * @param Connection $conn
+	 * @return bool True when the job has been queued
 	 */
 	private function requeueError( Connection $conn ) {
 		if ( $this->params['errorCount'] >= self::MAX_ERROR_RETRY ) {
@@ -219,11 +215,11 @@ class ElasticaWrite extends CirrusGenericJob {
 					'cluster' => $conn->getClusterName(),
 				]
 			);
+			return false;
 		} else {
 			$delay = $this->backoffDelay( $this->params['retryCount'] );
 			$params = $this->params;
 			$params['errorCount']++;
-			$params['cluster'] = $conn->getClusterName();
 			unset( $params['jobReleaseTimestamp'] );
 			$params += self::buildJobDelayOptions( self::class, $delay );
 			$job = new self( $params );
@@ -236,6 +232,7 @@ class ElasticaWrite extends CirrusGenericJob {
 				]
 			);
 			JobQueueGroup::singleton()->push( $job );
+			return true;
 		}
 	}
 }

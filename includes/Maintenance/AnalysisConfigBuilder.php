@@ -804,6 +804,9 @@ STEMMER_RULES
 			];
 
 			$filters = [];
+			if ( in_array( 'extra-analysis-homoglyph', $this->plugins ) ) {
+				$filters[] = 'homoglyph_norm';
+			}
 			$filters[] = 'french_elision';
 			$filters[] = 'lowercase';
 			$filters[] = 'french_stop';

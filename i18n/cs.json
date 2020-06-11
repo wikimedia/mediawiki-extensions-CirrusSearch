@@ -38,9 +38,9 @@
 	"cirrussearch-qi-profile-empty": "Řazení závislé výhradně na vlastnostech závislých na dotazu (jen pro ladění).",
 	"prefs-completion": "Dokončování hledání",
 	"cirrussearch-pref-completion-section-desc": "Dokončovací našeptávač",
-	"cirrussearch-pref-completion-profile-help": "Nastaví chování pro návrhy automatického dokončování (hledání v průběhu psaní).",
+	"cirrussearch-pref-completion-profile-help": "Nastaví chování pro návrhy automatického dokončování (hledání v průběhu psaní).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Našeptávač] je algoritmus pro návrhy hledání s lepší opravou překlepů a přesnějšími výsledky. Prefixové hledání je původní algoritmus hledání v průběhu psaní.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Výchozí (doporučeno)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Opravuje až dva překlepy. Používá blízká přesměrování.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Opravuje až dva překlepy. Odebírá přesměrování, která jsou velmi podobná hlavnímu názvu.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Vyhledávání podřetězce (doporučeno pro delší názvy stránek)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Opravuje až dva překlepy. Používá blízká přesměrování. Vyhledává podřetězce v názvech.",
 	"cirrussearch-completion-profile-strict-pref-name": "Přísný režim (pokročilé)",
@@ -59,6 +59,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint by měl být nastaven na platném konečném bodu SPARQL k použití hlubokého prohledání kategorií.",
 	"cirrussearch-feature-deepcat-exception": "Hluboké prohledávání kategorií pomocí SPARQL se nezdařilo",
 	"cirrussearch-feature-deepcat-toomany": "Rekurzivní prohledávání kategorií vrátilo příliš mnoho kategorií",
+	"cirrussearch-feature-deepcat-invalid-title": "Uvedená kategorie není platná.",
 	"cirrussearch-incategory-feature-no-valid-categories": "U „$1“ nebyly uvedeny žádné platné kategorie.",
 	"cirrussearch-mlt-feature-no-valid-titles": "U „$1“ nebyly uvedeny žádné platné názvy.",
 	"cirrussearch-mlt-not-configured": "Funkce „$1“ je nakonfigurována chybně. Požádejte administrátora, aby opravil $wgCirrusSearchMoreLikeThisFields.",
@@ -70,5 +71,7 @@
 	"cirrussearch-explore-similar-languages-none": "Není dostupné v jiných jazycích",
 	"cirrussearch-article-words": "Slova ve všech obsahových stránkách",
 	"cirrussearch-keyword-prefix-ns-mismatch": "Jmenný prostor nalezený u klíčového slova <code>prefix:</code> nesouhlasí s požadovanými jmennými prostory. Můžete to opravit přidáním <code>all:</code> na začátek dotazu.",
-	"cirrussearch-offset-too-large": "Nepodařilo se načíst výsledky. Je podporováno nejvýše $1 výsledků hledání, ale byly vyžádány výsledky počínaje $2."
+	"cirrussearch-offset-too-large": "Nepodařilo se načíst výsledky. Je podporováno nejvýše $1 výsledků hledání, ale byly vyžádány výsledky počínaje $2.",
+	"cirrussearch-offset-not-allowed-with-random-sort": "Ignoruje se požadavek na stránkování náhodně řazených výsledků.",
+	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Neznámý název tématu|Neznámé názvy témat}} pro klíčové slovo <kbd>articletopic:</kbd> $1"
 }

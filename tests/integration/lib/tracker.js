@@ -1,3 +1,5 @@
+'use strict';
+
 const restify = require( 'restify' ),
 	Promise = require( 'bluebird' );
 
@@ -72,7 +74,7 @@ class Server {
 }
 
 ( () => {
-	var server;
+	let server;
 	process.on( 'message', ( msg ) => {
 		if ( msg.config ) {
 			if ( server ) {

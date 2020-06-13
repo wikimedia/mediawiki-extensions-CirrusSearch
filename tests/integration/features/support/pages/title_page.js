@@ -2,6 +2,8 @@
  * Base page denoting a Title (can be article or special pages).
  */
 
+'use strict';
+
 const Page = require( './page' );
 
 class TitlePage extends Page {

@@ -1,4 +1,11 @@
 {
 	"root": true,
-	"extends": "../.eslintselenium.json"
+	"extends": [
+		"wikimedia/selenium"
+	],
+	"rules": {
+		"max-len": "off",
+		"camelcase": "off",
+		"no-underscore-dangle": "off"
+	}
 }

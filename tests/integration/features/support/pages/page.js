@@ -2,6 +2,8 @@
  * The Page object contains shortcuts and properties
  */
 
+'use strict';
+
 class Page {
 	constructor() {
 		// tag selector shortcut.
@@ -21,7 +23,7 @@ class Page {
 			'input[type=text]',
 			'input[type=submit]'
 		].forEach( ( el ) => {
-			var alias = el;
+			let alias = el;
 			switch ( el ) {
 				case 'a':
 					alias = 'link';

@@ -2,6 +2,8 @@
 // Page showing the article with some actions.  This is the page that everyone
 // is used to reading on wikipedia.  My mom would recognize this page.
 
+'use strict';
+
 const TitlePage = require( './title_page' );
 
 class ArticlePage extends TitlePage {

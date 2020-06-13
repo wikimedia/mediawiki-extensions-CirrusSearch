@@ -7,6 +7,8 @@
  * bind `this` to the parent function instead, which is not what we want.
  */
 
+'use strict';
+
 const { defineParameterType, Given, When, Then } = require( 'cucumber' ),
 	SpecialUndelete = require( '../support/pages/special_undelete' ),
 	ArticlePage = require( '../support/pages/article_page' ),

@@ -25,6 +25,7 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Ne ispravlja pogreške. Vodi na preusmjeravanja bliska upisanome.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klasična prefiksna pretraga",
 	"cirrussearch-completion-profile-classic-pref-desc": "Ne ispravlja pogreške. Traži početke naziva.",
+	"cirrussearch-feature-deepcat-invalid-title": "navedena kategorija nije valjana.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nisu pruženi valjani naslovi za '$1'.",
 	"cirrussearch-mlt-not-configured": "Mogućnost '$1' pogrješno je postavljena. Obratite se administratoru da popravi $wgCirrusSearchMoreLikeThisFields",
 	"cirrussearch-explore-similar-related": "Povezano",

@@ -27,6 +27,19 @@ use Elastica\Query\AbstractQuery;
 
 class SourceRegex extends AbstractQuery {
 	/**
+	 * List of language code that may be used by WMF wikis which are not valid java locales.
+	 * Use of the empty string falls back to the ROOT locale.
+	 * Note that the locale here is only used for transforming strings to lowercase
+	 */
+	const MW_LANG_CODE_TO_JAVA_LOCALE = [
+		'be-tarask' => 'be',
+		'map-bms' => '',
+		'roa-tara' => '',
+		'sh' => 'hbs',
+		'shy-latn' => '',
+	];
+
+	/**
 	 * @param null|string $regex optional regex to match against field
 	 * @param null|string $field optional field who's source to check with the regex
 	 * @param null|string $ngramField optional field that is indexed with ngrams to
@@ -137,6 +150,7 @@ class SourceRegex extends AbstractQuery {
 	 * @return self
 	 */
 	public function setLocale( $locale ) {
+		$locale = self::MW_LANG_CODE_TO_JAVA_LOCALE[$locale] ?? $locale;
 		return $this->setParam( 'locale', $locale );
 	}
 

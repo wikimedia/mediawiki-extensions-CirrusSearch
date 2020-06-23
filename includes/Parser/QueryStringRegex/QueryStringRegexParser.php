@@ -17,7 +17,6 @@ use CirrusSearch\Parser\AST\WordsQueryNode;
 use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Parser\ParsedQueryClassifiersRepository;
 use CirrusSearch\Parser\QueryParser;
-use CirrusSearch\Query\InCategoryFeature;
 use CirrusSearch\Query\KeywordFeature;
 use CirrusSearch\Query\PrefixFeature;
 use CirrusSearch\Search\Escaper;
@@ -70,6 +69,14 @@ class QueryStringRegexParser implements QueryParser {
 	 *
 	 */
 	const EXPLICIT_BOOLEAN_OPERATOR = '/\G(?:(?<AND>AND|&&)|(?<OR>OR|\|\|)|(?<NOT>NOT))(?![^\pZ\pC"])/u';
+
+	/**
+	 * Keywords which do not count when measuring the length of the the query
+	 */
+	const UNLIMITED_KEYWORDS = [
+		'incategory' => true, // T111694
+		'articletopic' => true // T242560
+	];
 
 	/**
 	 * @var \CirrusSearch\Parser\KeywordRegistry
@@ -815,8 +822,7 @@ class QueryStringRegexParser implements QueryParser {
 		$maxLen = $this->maxQueryLen;
 		// don't limit incategory
 		foreach ( $this->preTaggedNodes as $n ) {
-			if ( $n instanceof KeywordFeatureNode && $n->getKeyword() instanceof InCategoryFeature ) {
-				// we do not count incategory in the query length (T111694)
+			if ( $n instanceof KeywordFeatureNode && $this->unlimitedKeywords( $n->getKey() ) ) {
 				$maxLen += mb_strlen( substr( $this->query, $n->getStartOffset(), $n->getEndOffset() ) );
 			}
 		}
@@ -825,5 +831,14 @@ class QueryStringRegexParser implements QueryParser {
 			throw new SearchQueryParseException( 'cirrussearch-query-too-long',
 				$queryLen, $maxLen );
 		}
+	}
+
+	/**
+	 * @param string $keyword
+	 * @return bool true if this keyword name should not be taken into account
+	 * when calculating the query length
+	 */
+	private function unlimitedKeywords( string $keyword ): bool {
+		return self::UNLIMITED_KEYWORDS[$keyword] ?? false;
 	}
 }

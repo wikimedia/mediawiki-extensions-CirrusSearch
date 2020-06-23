@@ -7,8 +7,13 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\AST\EmptyQueryNode;
 use CirrusSearch\Parser\AST\ParsedBooleanNode;
 use CirrusSearch\Parser\AST\PhraseQueryNode;
+use CirrusSearch\Parser\FTQueryClassifiersRepository;
+use CirrusSearch\Parser\KeywordRegistry;
 use CirrusSearch\Parser\QueryParser;
 use CirrusSearch\Parser\QueryParserFactory;
+use CirrusSearch\Query\ArticleTopicFeature;
+use CirrusSearch\Query\InCategoryFeature;
+use CirrusSearch\Search\Escaper;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -39,9 +44,25 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 	}
 
 	public function testMaxLength() {
-		$config = new HashSearchConfig( [ 'CirrusSearchMaxFullTextQueryLength' => 10 ] );
+		$config = new HashSearchConfig( [] );
 
-		$parser = $this->buildParser( $config );
+		$registry = new class( $config ) implements KeywordRegistry {
+			private $config;
+
+			public function __construct( SearchConfig $config ) {
+				$this->config = $config;
+			}
+
+			public function getKeywords() {
+				return [
+					new InCategoryFeature( $this->config ),
+					new ArticleTopicFeature(),
+				];
+			}
+		};
+		$parser = new QueryStringRegexParser( $registry, new Escaper( 'en', false ), 'all',
+			new FTQueryClassifiersRepository( $config ), $this->namespacePrefixParser(), 10 );
+
 		try {
 			$parser->parse( str_repeat( "a", 11 ) );
 			$this->fail( "Expected exception" );
@@ -50,19 +71,23 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 				\Status::newFatal( 'cirrussearch-query-too-long', 11, 10 ) );
 		}
 
-		$q = "incategory:test " . str_repeat( "a", 10 );
-		try {
-			$parser->parse( "incategory:test " . str_repeat( "a", 10 ) );
-			$this->fail( "Expected exception" );
-		} catch ( SearchQueryParseException $e ) {
-			// The allowed query length is what is the configured limit + the size occupied by incategory keywords
-			$this->assertEquals( $e->asStatus(),
-				\Status::newFatal( 'cirrussearch-query-too-long',
-					mb_strlen( $q ), 10 + mb_strlen( "incategory:test" ) ) );
-		}
+		$exemptedKeywords = [ 'incategory', 'articletopic' ];
+		foreach ( $exemptedKeywords as $exemptedKeyword ) {
+			$q = "$exemptedKeyword:test " . str_repeat( "a", 10 );
+			try {
+				$parser->parse( "$exemptedKeyword:test " . str_repeat( "a", 10 ) );
+				$this->fail( "Expected exception" );
+			}
+			catch ( SearchQueryParseException $e ) {
+				// The allowed query length is what is the configured limit + the size occupied by incategory keywords
+				$this->assertEquals( $e->asStatus(),
+					\Status::newFatal( 'cirrussearch-query-too-long', mb_strlen( $q ),
+						10 + mb_strlen( "$exemptedKeyword:test" ) ) );
+			}
 
-		// the use of the incategory keyword inhibits the size check
-		$parser->parse( "incategory:test " . str_repeat( "a", 9 ) );
+			// the use of an exempted keyword keyword inhibits the size check
+			$parser->parse( "$exemptedKeyword:test " . str_repeat( "a", 9 ) );
+		}
 	}
 
 	public function testHardLimitOnQueryLength() {

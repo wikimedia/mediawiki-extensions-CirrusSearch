@@ -1,3 +1,5 @@
+'use strict';
+
 const Page = require( './page' );
 
 class SearchResultsPage extends Page {

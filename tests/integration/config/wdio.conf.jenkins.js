@@ -1,5 +1,6 @@
 'use strict';
-var merge = require( 'deepmerge' ),
+
+const merge = require( 'deepmerge' ),
 	wdioConf = require( './wdio.conf.js' );
 
 // Overwrite default settings

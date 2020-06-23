@@ -8,6 +8,7 @@
  * it is available in the Ruby implementation.
  * https://github.com/cucumber/cucumber-js/issues/634
  */
+'use strict';
 
 const expect = require( 'chai' ).expect,
 	fs = require( 'fs' ),
@@ -207,7 +208,7 @@ class StepHelpers {
 	 *
 	 * @param {Array[]} operations List of operations to wait for.
 	 *  Array elements are [ operation, title, revisionId (optional) ]
-	 * @param {callback} log Log callback when an operation is done
+	 * @param {Function} log Log callback when an operation is done
 	 * @param {number} timeoutMs Max time to wait, default to Xsec*number of operations.
 	 *  Where X is 10 for simple operations and 30s for uploads.
 	 * @return {Promise} that resolves when everything is done or fails otherwise.
@@ -305,6 +306,7 @@ class StepHelpers {
 
 	/**
 	 * Check if title is indexed
+	 *
 	 * @param {string} title
 	 * @param {string} revisionId
 	 * @return {Promise.<boolean>} resolves to a boolean

@@ -1,5 +1,4 @@
 ( function () {
-	'use strict';
 
 	// eslint-disable-next-line no-jquery/no-global-selector
 	var $searchResultEls = $( '.mw-search-results > li' );
@@ -82,12 +81,13 @@
 			 *     $('...').append( templateEl );
 			 * })
 			 * ```
+			 *
 			 * @param {Object} userConf
 			 * @param {Object} userConf.apiConfig - An object containing a url and params property to fetch.
-			 * @param {function} userConf.template - A mustache template string.
-			 * @param {function} userConf.filterApiResponse - function that manipulates AJAX return data and returns data suitable
+			 * @param {Function} userConf.template - A mustache template string.
+			 * @param {Function} userConf.filterApiResponse - function that manipulates AJAX return data and returns data suitable
 			 *  for usage in template.
-			 * @returns {Object} - Returns an object with a single method: getData(). This function returns a promise object
+			 * @return {Object} - Returns an object with a single method: getData(). This function returns a promise object
 			 *  suitable for chaining. ex: getData().then()...
 			 */
 
@@ -155,8 +155,8 @@
 			/**
 			 * Extends the DeferredContentWidget function with params
 			 * for getting page categories.
-			 * @param {String} articleTitle
 			 *
+			 * @param {string} articleTitle
 			 * @return {Object} - extended DeferredContentWidget object.
 			 */
 			/*
@@ -280,8 +280,8 @@
 			/**
 			 * Extends the DeferredContentWidget function with params
 			 * for getting related pages based on the 'morelike' API.
-			 * @param {String} articleTitle
 			 *
+			 * @param {string} articleTitle
 			 * @return {Object} - extended DeferredContentWidget object.
 			 */
 			/*
@@ -392,6 +392,7 @@
 
 				/**
 				 * Sets the template content
+				 *
 				 * @param {Element} content
 				 */
 				function replaceTemplateContent( content ) {

@@ -1,3 +1,5 @@
+'use strict';
+
 const { Given, When, Then } = require( 'cucumber' ),
 	SearchResultsPage = require( '../support/pages/search_results_page' ),
 	ArticlePage = require( '../support/pages/article_page' ),

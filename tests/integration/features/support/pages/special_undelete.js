@@ -1,4 +1,6 @@
-var TitlePage = require( './title_page' );
+'use strict';
+
+const TitlePage = require( './title_page' );
 
 class SpecialUndelete extends TitlePage {
 	constructor() {

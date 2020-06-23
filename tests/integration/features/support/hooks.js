@@ -1,3 +1,5 @@
+'use strict';
+
 const { After, Before } = require( 'cucumber' );
 const Promise = require( 'bluebird' );
 const MWBot = require( 'mwbot' );

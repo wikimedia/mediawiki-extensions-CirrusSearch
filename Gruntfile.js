@@ -6,10 +6,12 @@
 
 /* eslint-env node, es6 */
 
+'use strict';
+
 const path = require( 'path' );
 
 module.exports = function ( grunt ) {
-	var WebdriverIOconfigFile;
+	let WebdriverIOconfigFile;
 
 	grunt.loadNpmTasks( 'grunt-banana-checker' );
 	grunt.loadNpmTasks( 'grunt-eslint' );

@@ -7,6 +7,9 @@
  * to the same apiClient instance as `World` (useful because the apiClient
  * keeps a user/login state).
  */
+
+'use strict';
+
 const { setWorldConstructor } = require( 'cucumber' ),
 	request = require( 'request-promise-native' ),
 	log = require( 'semlog' ).log,

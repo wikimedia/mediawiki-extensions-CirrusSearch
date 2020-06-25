@@ -134,7 +134,7 @@
 		"SpecialSearchResultsAppend": "CirrusSearch\\Hooks::onSpecialSearchResultsAppend",
 		"SpecialStatsAddExtra": "CirrusSearch\\Hooks::onSpecialStatsAddExtra",
 		"TitleMove": "CirrusSearch\\Hooks::onTitleMove",
-		"TitleMoveComplete": "CirrusSearch\\Hooks::onTitleMoveComplete",
+		"PageMoveComplete": "CirrusSearch\\Hooks::onPageMoveComplete",
 		"UserGetDefaultOptions": "CirrusSearch\\Hooks::onUserGetDefaultOptions"
 	},
 	"config": {

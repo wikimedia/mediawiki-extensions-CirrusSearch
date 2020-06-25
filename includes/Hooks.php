@@ -14,8 +14,11 @@ use Html;
 use ISearchResultSet;
 use JobQueueGroup;
 use LinksUpdate;
+use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\User\UserIdentity;
 use OutputPage;
 use RequestContext;
 use SpecialSearch;
@@ -551,12 +554,23 @@ class Hooks {
 
 	/**
 	 * When we've moved a Title from A to B.
-	 * @param Title $title The old title
-	 * @param Title $newTitle The new title
-	 * @param User $user User who made the move
+	 * @param LinkTarget $title The old title
+	 * @param LinkTarget $newTitle The new title
+	 * @param UserIdentity $user User who made the move
 	 * @param int $oldId The page id of the old page.
+	 * @param int $redirId
+	 * @param string $reason
+	 * @param RevisionRecord $revisionRecord
 	 */
-	public static function onTitleMoveComplete( Title $title, Title $newTitle, $user, $oldId ) {
+	public static function onPageMoveComplete(
+		LinkTarget $title,
+		LinkTarget $newTitle,
+		UserIdentity $user,
+		int $oldId,
+		int $redirId,
+		string $reason,
+		RevisionRecord $revisionRecord
+	) {
 		// When a page is moved the update and delete hooks are good enough to catch
 		// almost everything.  The only thing they miss is if a page moves from one
 		// index to another.  That only happens if it switches namespace.
@@ -568,6 +582,7 @@ class Hooks {
 		$oldIndexType = $conn->getIndexSuffixForNamespace( $title->getNamespace() );
 		$newIndexType = $conn->getIndexSuffixForNamespace( $newTitle->getNamespace() );
 		if ( $oldIndexType !== $newIndexType ) {
+			$title = Title::newFromLinkTarget( $title );
 			$job = new Job\DeletePages( $title, [
 				'indexType' => $oldIndexType,
 				'docId' => self::getConfig()->makeId( $oldId )

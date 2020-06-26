@@ -5,6 +5,7 @@ namespace CirrusSearch\Api;
 use ApiResult;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Dumps CirrusSearch configuration for easy viewing.
@@ -141,13 +142,37 @@ class ConfigDump extends \ApiBase {
 	];
 
 	public function execute() {
+		$result = $this->getResult();
+		$this->addGlobals( $result );
+		$this->addConcreteNamespaceMap( $result );
+		$this->addProfiles( $result );
+	}
+
+	protected function addGlobals( ApiResult $result ) {
 		$config = $this->getConfig();
 		foreach ( self::$WHITE_LIST as $key ) {
 			if ( $config->has( $key ) ) {
-				$this->getResult()->addValue( null, $key, $config->get( $key ) );
+				$result->addValue( null, $key, $config->get( $key ) );
 			}
 		}
-		$this->addProfiles( $this->getResult() );
+	}
+
+	/**
+	 * Include a complete mapping from namespace id to index containing pages.
+	 *
+	 * Intended for external services/users that need to interact
+	 * with elasticsearch directly.
+	 * @param ApiResult $result Impl to write results to
+	 */
+	private function addConcreteNamespaceMap( ApiResult $result ) {
+		$nsInfo = MediaWikiServices::getInstance()->getNamespaceInfo();
+		$conn = $this->getCirrusConnection();
+		$indexBaseName = $conn->getConfig()->get( SearchConfig::INDEX_BASE_NAME );
+		foreach ( $nsInfo->getValidNamespaces() as $ns ) {
+			$indexType = $conn->getIndexSuffixForNamespace( $ns );
+			$indexName = $conn->getIndexName( $indexBaseName, $indexType );
+			$result->addValue( 'CirrusSearchConcreteNamespaceMap', $ns, $indexName );
+		}
 	}
 
 	/**

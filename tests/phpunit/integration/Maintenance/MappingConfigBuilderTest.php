@@ -14,7 +14,9 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'mapping/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
-			$buildClass = preg_match( '/\Q-archive.config\E$/', $testFile ) ? ArchiveMappingConfigBuilder::class : MappingConfigBuilder::class;
+			$buildClass = preg_match( '/\Q-archive.config\E$/', $testFile )
+				? ArchiveMappingConfigBuilder::class
+				: MappingConfigBuilder::class;
 			$extraConfig = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
 			$tests[$testName] = [ $expectedFile, $extraConfig, $buildClass ];

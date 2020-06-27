@@ -178,7 +178,10 @@ class SearchProfileRepositoryTransformerTest extends CirrusIntegrationTestCase {
 		} else {
 			$transformer = new ArrayPathSetter( $replacements );
 		}
-		$repo = new SearchProfileRepositoryTransformer( ArrayProfileRepository::fromArray( 'my_type', 'my_name', $profiles ), $transformer );
+		$repo = new SearchProfileRepositoryTransformer(
+			ArrayProfileRepository::fromArray( 'my_type', 'my_name', $profiles ),
+			$transformer
+		);
 		$this->assertEquals( 'my_type', $repo->repositoryType() );
 		$this->assertEquals( 'my_name', $repo->repositoryName() );
 		$this->assertArrayEquals( $expectedProfiles, $repo->listExposedProfiles() );
@@ -203,8 +206,10 @@ class SearchProfileRepositoryTransformerTest extends CirrusIntegrationTestCase {
 	 */
 	public function testBadSyntax( $badRepl ) {
 		$transformer = new ArrayPathSetter( [ $badRepl => '' ] );
-		$repo = new SearchProfileRepositoryTransformer( ArrayProfileRepository::fromArray( 'my_type', 'my_name', [ 'hop' => [] ] ),
-			$transformer );
+		$repo = new SearchProfileRepositoryTransformer(
+			ArrayProfileRepository::fromArray( 'my_type', 'my_name', [ 'hop' => [] ] ),
+			$transformer
+		);
 		$this->expectException( SearchProfileException::class );
 		$repo->getProfile( 'hop' );
 	}

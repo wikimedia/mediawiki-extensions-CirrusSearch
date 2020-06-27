@@ -97,7 +97,12 @@ class MappingConfigBuilder {
 		// and is inferred anyway.
 		$titleExtraAnalyzers = [
 			[ 'analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => false ],
-			[ 'analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => false ],
+			[
+				'analyzer' => 'prefix_asciifolding',
+				'search_analyzer' => 'near_match_asciifolding',
+				'index_options' => 'docs',
+				'norms' => false
+			],
 			[ 'analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => false ],
 			[ 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => false ],
 			[ 'analyzer' => 'keyword', 'index_options' => 'docs', 'norms' => false ],

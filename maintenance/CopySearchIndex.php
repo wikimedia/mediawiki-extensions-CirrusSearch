@@ -53,7 +53,8 @@ class CopySearchIndex extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
-		$this->addDescription( "Copy index from one cluster to another.\nThe index name and index type should be the same on both clusters." );
+		$this->addDescription( "Copy index from one cluster to another.\n" .
+			"The index name and index type should be the same on both clusters." );
 		$this->addOption( 'indexType', 'Source index.  Either content or general.', true, true );
 		$this->addOption( 'targetCluster', 'Target Cluster.', true, true );
 		$this->addOption( 'reindexChunkSize', 'Documents per shard to reindex in a batch.   ' .
@@ -66,7 +67,8 @@ class CopySearchIndex extends Maintenance {
 
 	public function execute() {
 		$this->indexType = $this->getOption( 'indexType' );
-		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
+		$this->indexBaseName = $this->getOption( 'baseName',
+			$this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 
 		$reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
 		$targetCluster = $this->getOption( 'targetCluster' );

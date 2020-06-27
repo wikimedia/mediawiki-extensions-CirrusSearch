@@ -215,19 +215,29 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testBuild() {
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar', $this->namespacePrefixParser() )
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+				new HashSearchConfig( [] ),
+				'foo bar',
+				$this->namespacePrefixParser()
+			)
 			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
 			->build();
 		$this->assertNull( LangDetectFallbackMethod::build( $query, [], new EmptyInterwikiResolver() ) );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnableAltLanguage' => false ] ), 'foo bar',
-				$this->namespacePrefixParser() )
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+				new HashSearchConfig( [ 'CirrusSearchEnableAltLanguage' => false ] ),
+				'foo bar',
+				$this->namespacePrefixParser()
+			)
 			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
 			->build();
 		$this->assertNull( LangDetectFallbackMethod::build( $query, [], new EmptyInterwikiResolver() ) );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnableAltLanguage' => false ] ), 'foo bar',
-				$this->namespacePrefixParser() )
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+				new HashSearchConfig( [ 'CirrusSearchEnableAltLanguage' => false ] ),
+				'foo bar',
+				$this->namespacePrefixParser()
+			)
 			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
 			->build();
 		$this->assertNull( LangDetectFallbackMethod::build( $query, [], new EmptyInterwikiResolver() ) );

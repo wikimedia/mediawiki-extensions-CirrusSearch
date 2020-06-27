@@ -97,7 +97,12 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$methods['C'] = $this->getFallbackMethod( 0.5, $this->trackingCb( 'C' ), [ 'C' => 'C' ] );
 		$methods['A'] = $this->getFallbackMethod( 0.6, $this->trackingCb( 'A' ), [ 'A' => 'A' ] );
 		$runner = new FallbackRunner( $methods );
-		$runner->run( $this->createMock( SearcherFactory::class ), $results, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
+		$runner->run(
+			$this->createMock( SearcherFactory::class ),
+			$results,
+			new MSearchResponses( [], [] ),
+			$this->namespacePrefixParser()
+		);
 		$this->assertEquals( [ 'A', 'B', 'C', 'D', 'E' ], $this->execOrder );
 	}
 
@@ -112,7 +117,12 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$methods['t'] = self::getFallbackMethod( -0.5 );
 		$methods['y'] = self::getFallbackMethod( -0.6 );
 		$runner = new FallbackRunner( $methods );
-		$runner->run( $this->createMock( SearcherFactory::class ), $results, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
+		$runner->run(
+			$this->createMock( SearcherFactory::class ),
+			$results,
+			new MSearchResponses( [], [] ),
+			$this->namespacePrefixParser()
+		);
 		$this->assertEquals( [ 'A' ], $this->execOrder );
 	}
 
@@ -125,14 +135,24 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			],
 			'typical query suggestion' => [
 				'expectedMainResults' => [ 'name' => '__main__', 'action' => null ],
-				'expectedQuerySuggestion' => [ 'name' => 'profile-name', 'action' => FallbackStatus::ACTION_SUGGEST_QUERY ],
+				'expectedQuerySuggestion' => [
+					'name' => 'profile-name',
+					'action' => FallbackStatus::ACTION_SUGGEST_QUERY
+				],
 				'methods' => [
-					'profile-name' => self::getFallbackMethod( 1, self::fallbackStatusCb( FallbackStatus::suggestQuery( 'phpunit' ) ) ),
+					'profile-name' => self::getFallbackMethod( 1,
+						self::fallbackStatusCb( FallbackStatus::suggestQuery( 'phpunit' ) ) ),
 				],
 			],
 			'rewritten search results' => [
-				'expectedMainResults' => [ 'name' => 'fallback', 'action' => FallbackStatus::ACTION_REPLACE_LOCAL_RESULTS ],
-				'expectedQuerySuggestion' => [ 'name' => 'fallback', 'action' => FallbackStatus::ACTION_REPLACE_LOCAL_RESULTS ],
+				'expectedMainResults' => [
+					'name' => 'fallback',
+					'action' => FallbackStatus::ACTION_REPLACE_LOCAL_RESULTS
+				],
+				'expectedQuerySuggestion' => [
+					'name' => 'fallback',
+					'action' => FallbackStatus::ACTION_REPLACE_LOCAL_RESULTS
+				],
 				'methods' => function ( $test ) {
 					$results = DummySearchResultSet::fakeTotalHits( $test->newTitleHelper(), 0 );
 					return [
@@ -145,10 +165,15 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			// and not provide a suggestion, but assert what we expect to happen anyways.
 			'multiple overriding query suggestion' => [
 				'expectedMainResults' => [ 'name' => '__main__', 'action' => null ],
-				'expectedQuerySuggestion' => [ 'name' => 'profile-name', 'action' => FallbackStatus::ACTION_SUGGEST_QUERY ],
+				'expectedQuerySuggestion' => [
+					'name' => 'profile-name',
+					'action' => FallbackStatus::ACTION_SUGGEST_QUERY
+				],
 				'methods' => [
-					'override' => self::getFallbackMethod( 0.8, self::fallbackStatusCb( FallbackStatus::suggestQuery( 'phpunit' ) ) ),
-					'profile-name' => self::getFallbackMethod( 0.5, self::fallbackStatusCb( FallbackStatus::suggestQuery( 'phpunit' ) ) ),
+					'override' => self::getFallbackMethod( 0.8,
+						self::fallbackStatusCb( FallbackStatus::suggestQuery( 'phpunit' ) ) ),
+					'profile-name' => self::getFallbackMethod( 0.5,
+						self::fallbackStatusCb( FallbackStatus::suggestQuery( 'phpunit' ) ) ),
 				],
 			]
 		];
@@ -165,7 +190,12 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			$methods = $methods( $this );
 		}
 		$runner = new FallbackRunner( $methods );
-		$runner->run( $this->createMock( SearcherFactory::class ), $results, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
+		$runner->run(
+			$this->createMock( SearcherFactory::class ),
+			$results,
+			new MSearchResponses( [], [] ),
+			$this->namespacePrefixParser()
+		);
 		$expected = [
 			'wgCirrusSearchFallback' => [
 				'mainResults' => $expectedMainResults,
@@ -293,7 +323,8 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 						"options" => [
 							[
 								"text" => "foobar",
-								"highlighted" => Searcher::HIGHLIGHT_PRE_MARKER . "foobar" . Searcher::HIGHLIGHT_POST_MARKER,
+								"highlighted" => Searcher::HIGHLIGHT_PRE_MARKER . "foobar" .
+									Searcher::HIGHLIGHT_POST_MARKER,
 								"score" => 0.0026376657,
 							]
 						]
@@ -303,7 +334,12 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		];
 		$this->assertNotEmpty( $runner->getElasticSuggesters() );
 		$initialResults = $this->newResultSet( $response );
-		$newResults = $runner->run( $searcherFactory, $initialResults, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
+		$newResults = $runner->run(
+			$searcherFactory,
+			$initialResults,
+			new MSearchResponses( [], [] ),
+			$this->namespacePrefixParser()
+		);
 		$this->assertEquals( 2, $newResults->getTotalHits() );
 		$iwResults = $newResults->getInterwikiResults( \ISearchResultSet::INLINE_RESULTS );
 		$this->assertEmpty( $iwResults );
@@ -322,7 +358,12 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 
 		$this->assertNotEmpty( $runner->getElasticSuggesters() );
 		$initialResults = $this->newResultSet( $response );
-		$newResults = $runner->run( $searcherFactory, $initialResults, new MSearchResponses( [], [] ), $this->namespacePrefixParser() );
+		$newResults = $runner->run(
+			$searcherFactory,
+			$initialResults,
+			new MSearchResponses( [], [] ),
+			$this->namespacePrefixParser()
+		);
 		$this->assertSame( 0, $newResults->getTotalHits() );
 		$iwResults = $newResults->getInterwikiResults( \ISearchResultSet::INLINE_RESULTS );
 		$this->assertNotEmpty( $iwResults );
@@ -381,7 +422,12 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 	}
 
 	public function mockElasticSearchRequestFallbackMethod( $query, $approx, $expectedResponse, $rewritten ) {
-		return new class( $query, $approx, $expectedResponse, $rewritten ) implements FallbackMethod, ElasticSearchRequestFallbackMethod {
+		return new class(
+			$query,
+			$approx,
+			$expectedResponse,
+			$rewritten
+		) implements FallbackMethod, ElasticSearchRequestFallbackMethod {
 			private $query;
 			private $approx;
 			private $expectedResponse;

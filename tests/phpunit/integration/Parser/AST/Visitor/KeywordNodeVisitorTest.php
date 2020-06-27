@@ -100,7 +100,10 @@ class KeywordNodeVisitorTest extends CirrusIntegrationTestCase {
 	 * @dataProvider provideQueries
 	 */
 	public function test( $term, array $states, $classFilter, $exlusionFilter ) {
-		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ), $this->namespacePrefixParser() );
+		$parser = QueryParserFactory::newFullTextQueryParser(
+			new HashSearchConfig( [] ),
+			$this->namespacePrefixParser()
+		);
 		$visitor = new class( $exlusionFilter, $classFilter, $states ) extends KeywordNodeVisitor {
 			/**
 			 * @var int
@@ -121,7 +124,10 @@ class KeywordNodeVisitorTest extends CirrusIntegrationTestCase {
 				TestCase::assertThat( $this->nbCall, TestCase::lessThan( count( $this->states ) ) );
 				$assertionStates = $this->states[$this->nbCall++];
 				TestCase::assertEquals( $assertionStates['negated'], $this->negated() );
-				TestCase::assertEquals( $assertionStates['feature'], $node->getKeyword()->getFeatureName( $node->getKey(), $node->getDelimiter() ) );
+				TestCase::assertEquals(
+					$assertionStates['feature'],
+					$node->getKeyword()->getFeatureName( $node->getKey(), $node->getDelimiter() )
+				);
 			}
 		};
 		$parser->parse( $term )->getRoot()

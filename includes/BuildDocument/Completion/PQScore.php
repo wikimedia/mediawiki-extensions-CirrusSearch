@@ -49,14 +49,18 @@ class PQScore extends QualityScore {
 		$pop = $doc['popularity_score'] ?? 0;
 		$popLogBaseExplain = [
 			'value' => 1 + self::POPULARITY_MAX * $this->maxDocs,
-			'description' => '1+popularity_max*max_docs; popularity_max = ' . self::POPULARITY_MAX . ', max_docs = ' . $this->maxDocs,
+			'description' => '1+popularity_max*max_docs; popularity_max = ' . self::POPULARITY_MAX .
+				', max_docs = ' . $this->maxDocs,
 		];
 
 		if ( $popLogBaseExplain['value'] > 1 ) {
 			$popExplain = [
-				'value' => log( 1 + ( min( $pop, self::POPULARITY_MAX ) * $this->maxDocs ), $popLogBaseExplain['value'] ),
+				'value' => log(
+					1 + ( min( $pop, self::POPULARITY_MAX ) * $this->maxDocs ), $popLogBaseExplain['value']
+				),
 				'description' => "log(1+(min(popularity,popularity_max)*max_docs), pop_logbase); popularity = $pop, " .
-					 "popularity_max = " . self::POPULARITY_MAX . ", max_docs = {$this->maxDocs}, pop_logbase = {$popLogBaseExplain['value']}",
+					 "popularity_max = " . self::POPULARITY_MAX . ", max_docs = {$this->maxDocs}, " .
+					 "pop_logbase = {$popLogBaseExplain['value']}",
 				'details' => [ 'pop_logbase' => $popLogBaseExplain ]
 			];
 		} else {

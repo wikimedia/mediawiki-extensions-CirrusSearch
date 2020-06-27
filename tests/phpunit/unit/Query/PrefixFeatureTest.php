@@ -336,7 +336,12 @@ class PrefixFeatureTest extends CirrusTestCase {
 		PrefixFeature::prepareSearchContext( $context, $prefix, $this->namespacePrefixParser() );
 		$this->assertEquals( $expectedNs, $context->getNamespaces() );
 		$this->assertCount( 1, $context->getFilters() );
-		$this->assertFilter( new PrefixFeature( $this->namespacePrefixParser() ), 'prefix:' . $prefix, $context->getFilters()[0], [], $config );
+		$this->assertFilter(
+			new PrefixFeature( $this->namespacePrefixParser() ),
+			'prefix:' . $prefix, $context->getFilters()[0],
+			[],
+			$config
+		);
 	}
 
 	public function provideTestContextualFilter() {

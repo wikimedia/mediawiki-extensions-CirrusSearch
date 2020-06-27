@@ -53,7 +53,10 @@ class QueryParserFactoryTest extends CirrusTestCase {
 	 * @dataProvider provideConfig
 	 */
 	public function test( $config, $query, $equals ) {
-		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ), $this->namespacePrefixParser() );
+		$parser = QueryParserFactory::newFullTextQueryParser(
+			new HashSearchConfig( [] ),
+			$this->namespacePrefixParser()
+		);
 		$this->assertInstanceOf( QueryStringRegexParser::class, $parser );
 		$this->assertEquals( $parser,
 			QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ), $this->namespacePrefixParser() ),
@@ -67,8 +70,10 @@ class QueryParserFactoryTest extends CirrusTestCase {
 		}
 
 		try {
-			$updatedConfigParsedQuery = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( $config ), $this->namespacePrefixParser() )
-				->parse( $query );
+			$updatedConfigParsedQuery = QueryParserFactory::newFullTextQueryParser(
+				new HashSearchConfig( $config ),
+				$this->namespacePrefixParser()
+			)->parse( $query );
 			$updatedConfigParsedQuery = $updatedConfigParsedQuery->toArray();
 		} catch ( SearchQueryParseException $e ) {
 			$updatedConfigParsedQuery = $e;

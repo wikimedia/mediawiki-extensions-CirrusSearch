@@ -82,7 +82,13 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	 * @param string $nearMatchQuery
 	 * @return \Elastica\Query\AbstractQuery
 	 */
-	protected function buildSearchTextQuery( SearchContext $context, array $fields, array $nearMatchFields, $queryString, $nearMatchQuery ) {
+	protected function buildSearchTextQuery(
+		SearchContext $context,
+		array $fields,
+		array $nearMatchFields,
+		$queryString,
+		$nearMatchQuery
+	) {
 		if ( $context->isSyntaxUsed( 'query_string' ) ) {
 			return parent::buildSearchTextQuery( $context, $fields,
 				$nearMatchFields, $queryString, $nearMatchQuery );

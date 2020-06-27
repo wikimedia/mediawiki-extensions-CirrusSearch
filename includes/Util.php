@@ -471,7 +471,9 @@ class Util {
 		$normalizer = null;
 		if ( $method === 'naive' ) {
 			if ( $naive === null ) {
-				$naive = \Transliterator::createFromRules( '::NFD;::Upper;::Lower;::[:Nonspacing Mark:] Remove;::NFC;[\_\-\'\u2019\u02BC]>\u0020;' );
+				$naive = \Transliterator::createFromRules(
+					'::NFD;::Upper;::Lower;::[:Nonspacing Mark:] Remove;::NFC;[\_\-\'\u2019\u02BC]>\u0020;'
+				);
 			}
 			$normalizer = $naive;
 		} elseif ( $method === 'utr30' ) {

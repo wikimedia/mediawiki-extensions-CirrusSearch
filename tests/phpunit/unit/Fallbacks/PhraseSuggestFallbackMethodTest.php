@@ -51,8 +51,9 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 			->build();
 
 		$rewrittenResults = $rewritten ? DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 1 ) : null;
-		$rewrittenQuery = $rewritten ? SearchQueryBuilder::forRewrittenQuery( $query, $suggestion, $this->namespacePrefixParser() )
-			->build() : null;
+		$rewrittenQuery = $rewritten
+			? SearchQueryBuilder::forRewrittenQuery( $query, $suggestion, $this->namespacePrefixParser() )->build()
+			: null;
 		$searcherFactory = $this->getSearcherFactoryMock( $rewrittenQuery, $rewrittenResults );
 		$fallback = PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] );
 		if ( $expectedApproxScore > 0.0 ) {
@@ -106,8 +107,20 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 	/**
 	 * @dataProvider provideTestSuggestQueries
 	 */
-	public function testSuggestQuery( $expectedFile, $query, $namespaces, $offset, $withDYMSuggestion, $profile, $config ) {
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $this->newHashSearchConfig( $config ), $query, $this->namespacePrefixParser() )
+	public function testSuggestQuery(
+		$expectedFile,
+		$query,
+		$namespaces,
+		$offset,
+		$withDYMSuggestion,
+		$profile,
+		$config
+	) {
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+				$this->newHashSearchConfig( $config ),
+				$query,
+				$this->namespacePrefixParser()
+			)
 			->setInitialNamespaces( $namespaces )
 			->setOffset( $offset )
 			->setWithDYMSuggestion( $withDYMSuggestion )
@@ -126,30 +139,47 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 	}
 
 	public function testBuild() {
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar', $this->namespacePrefixParser() )
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+				new HashSearchConfig( [] ),
+				'foo bar',
+				$this->namespacePrefixParser()
+			)
 			->setWithDYMSuggestion( false )
 			->build();
 		$this->assertNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo bar', $this->namespacePrefixParser() )
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+				new HashSearchConfig( [] ),
+				'foo bar',
+				$this->namespacePrefixParser()
+			)
 			->setWithDYMSuggestion( true )
 			->build();
 		$this->assertNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => false ] ), 'foo bar',
-				$this->namespacePrefixParser() )
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+				new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => false ] ),
+				'foo bar',
+				$this->namespacePrefixParser()
+			)
 			->setWithDYMSuggestion( true )
 			->build();
 		$this->assertNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ), 'foo bar',
-				$this->namespacePrefixParser() )
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+				new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ),
+				'foo bar',
+				$this->namespacePrefixParser()
+			)
 			->setWithDYMSuggestion( true )
 			->build();
 		$this->assertNotNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ), 'foo bar',
-				$this->namespacePrefixParser() )
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+				new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ),
+				'foo bar',
+				$this->namespacePrefixParser()
+			)
 			->setWithDYMSuggestion( false )
 			->build();
 		$this->assertNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );

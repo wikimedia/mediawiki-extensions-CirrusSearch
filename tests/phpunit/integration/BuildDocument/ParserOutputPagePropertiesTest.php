@@ -8,7 +8,6 @@ use ContentHandler;
 use Elastica\Document;
 use ParserCache;
 use ParserOutput;
-use Revision;
 use Title;
 use WikiPage;
 
@@ -139,9 +138,6 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 		$page->expects( $this->any() )
 			->method( 'getTitle' )
 			->will( $this->returnValue( $title ) );
-		$page->expects( $this->any() )
-			->method( 'getOldestRevision' )
-			->will( $this->returnValue( $this->mock( Revision::class ) ) );
 		$page->expects( $this->any() )
 			->method( 'getContentHandler' )
 			->will( $this->returnValue( $contentHandler ) );

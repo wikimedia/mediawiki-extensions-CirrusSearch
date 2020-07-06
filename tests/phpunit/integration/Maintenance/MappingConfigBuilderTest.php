@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
+use ExtensionRegistry;
 
 /**
  * @covers \CirrusSearch\Maintenance\MappingConfigBuilder
@@ -39,6 +40,7 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 			'GetContentModels' => [],
 			'SearchIndexFields' => [],
 		] );
+		$scopedCallback = ExtensionRegistry::getInstance()->setAttributeForTest( 'Hooks', [] );
 
 		$defaultConfig = [
 			'CirrusSearchSimilarityProfile' => 'bm25_with_defaults',

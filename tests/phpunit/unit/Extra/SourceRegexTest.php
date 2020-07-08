@@ -6,7 +6,7 @@ use CirrusSearch\CirrusTestCase;
 
 class SourceRegexTest extends CirrusTestCase {
 	/**
-	 * @dataProvider provideTestValidLocale
+	 * @dataProvider provideTestSetLocale
 	 * @covers \CirrusSearch\Extra\Query\SourceRegex::setLocale
 	 */
 	public function testSetLocale( string $languageCode, string $expectedLocale ) {

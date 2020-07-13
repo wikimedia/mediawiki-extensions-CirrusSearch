@@ -29,6 +29,7 @@ class ConfigDump extends \ApiBase {
 	use ApiTrait;
 
 	public static $WHITE_LIST = [
+		'CirrusSearchDisableUpdate',
 		'CirrusSearchServers',
 		'CirrusSearchConnectionAttempts',
 		'CirrusSearchSlowSearch',

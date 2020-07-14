@@ -141,6 +141,9 @@
 		"CirrusSearchDefaultCluster": {
 			"value": "default"
 		},
+		"CirrusSearchDisableUpdate": {
+			"value": false
+		},
 		"CirrusSearchClusters": {
 			"value": {
 				"default": [

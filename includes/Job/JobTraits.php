@@ -130,7 +130,9 @@ trait JobTraits {
 	 * @return bool
 	 */
 	public function run() {
-		if ( $this->getSearchConfig()->get( 'DisableSearchUpdate' ) ) {
+		if ( $this->getSearchConfig()->get( 'DisableSearchUpdate' ) ||
+			$this->getSearchConfig()->get( 'CirrusSearchDisableUpdate' )
+		) {
 			return true;
 		}
 

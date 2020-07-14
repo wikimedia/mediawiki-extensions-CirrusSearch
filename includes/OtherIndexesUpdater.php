@@ -60,10 +60,7 @@ class OtherIndexesUpdater extends Updater {
 		$namespace = $title->getNamespace();
 		$indices = [];
 		foreach ( $config->get( 'CirrusSearchExtraIndexes' )[$namespace] ?? [] as $indexName ) {
-			$ei = new ExternalIndex( $config, $indexName );
-			if ( $cluster === null || !$ei->isClusterBlacklisted( $cluster ) ) {
-				$indices[] = $ei;
-			}
+			$indices[] = new ExternalIndex( $config, $indexName );
 		}
 		return $indices;
 	}

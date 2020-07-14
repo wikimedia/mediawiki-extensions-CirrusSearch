@@ -22,33 +22,6 @@ class ExternalIndexTest extends CirrusTestCase {
 		$this->assertEquals( 'foo', $idx->getSearchIndex( 'default' ) );
 	}
 
-	public function testIsClusterBlacklisted() {
-		$config = new HashSearchConfig( [
-			'CirrusSearchReplicaGroup' => 'default',
-			'CirrusSearchExtraIndexClusterBlacklist' => [
-				'test' => [ 'foo' => true ]
-			]
-		] );
-		$idx = new ExternalIndex( $config, 'test' );
-		$this->assertTrue( $idx->isClusterBlacklisted( 'foo' ) );
-		$this->assertFalse( $idx->isClusterBlacklisted( 'bar' ) );
-
-		$config = new HashSearchConfig( [
-			'CirrusSearchReplicaGroup' => 'custom_group',
-			'CirrusSearchExtraIndexClusterBlacklist' => [
-				'test' => [ 'foo' => true ]
-			]
-		] );
-
-		$idx = new ExternalIndex( $config, 'test' );
-		$this->assertTrue( $idx->isClusterBlacklisted( 'foo' ) );
-		$this->assertFalse( $idx->isClusterBlacklisted( 'bar' ) );
-
-		$idx = new ExternalIndex( $config, 'custom_group:test' );
-		$this->assertTrue( $idx->isClusterBlacklisted( 'foo' ) );
-		$this->assertFalse( $idx->isClusterBlacklisted( 'bar' ) );
-	}
-
 	public function getWriteClustersProvider() {
 		$tests = [];
 

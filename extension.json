@@ -209,9 +209,6 @@
 			"value": [],
 			"merge_strategy": "array_plus"
 		},
-		"CirrusSearchExtraIndexClusterBlacklist": {
-			"value": []
-		},
 		"CirrusSearchExtraIndexBoostTemplates": {
 			"value": []
 		},

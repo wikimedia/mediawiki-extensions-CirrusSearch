@@ -95,12 +95,4 @@ class ExternalIndex {
 			return [ '', [] ];
 		}
 	}
-
-	/**
-	 * @param string $cluster cluster
-	 * @return bool true if writes must be avoided to this cluster replica (cluster as in DC).
-	 */
-	public function isClusterBlacklisted( $cluster ) {
-		return (bool)$this->config->getElement( 'CirrusSearchExtraIndexClusterBlacklist', $this->indexName, $cluster );
-	}
 }

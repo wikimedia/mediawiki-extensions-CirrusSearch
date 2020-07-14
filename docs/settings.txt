@@ -331,22 +331,6 @@ Example:
         NS_FILE => [ 'other_index' ]
     ]
 
-; $wgCirrusSearchExtraIndexClusterBlacklist
-
-Default:
-    $wgCirrusSearchExtraIndexClusterBlacklist = [];
-
-Define a blacklist of clusters (as seen in $wgCirrusSearchWriteClusters) to not
-write to. When an update triggers an Extra index update it is sometime useful
-to not write to a particular cluster.
-
-Example:
-  $wgCirrusSearchExtraIndexClusterBlacklist = [
-      'other_index' => [
-          'wmsc-temp-replica' => true,
-      ]
- ];
-
 ; $wgCirrusSearchExtraIndexBoostTemplates
 
 Default:

@@ -80,10 +80,10 @@ Default:
     $wgCirrusSearchPrivateClusters = null
 
 List of cluster names that are allowed to contain private indices. This
-provides an additional whitelist on top of $wgCirrusSearchWriteClusters
-for the archive index which should not be written to clusters that will
-be publicly readable. When set to the default value of null all clusters
-are allowed to contain private data.
+provides an additional list on top of $wgCirrusSearchWriteClusters for the
+archive index which should not be written to clusters that will be publicly
+readable. When set to the default value of null all clusters are allowed to
+contain private data.
 
 ; $wgCirrusSearchReplicaGroup
 
@@ -1204,10 +1204,10 @@ Crossproject works by seaching on so-called sister wikis: same language, sister
 project.
 NOTE: Experimental
 
-; $wgCirrusSearchCrossProjectSearchBlackList
+; $wgCirrusSearchCrossProjectSearchBlockList
 
 Default:
-    $wgCirrusSearchCrossProjectSearchBlackList = [];
+    $wgCirrusSearchCrossProjectSearchBlockList = [];
 
 List of crossproject interwiki prefix to ignore when running crossproject
 search.
@@ -1215,7 +1215,7 @@ search.
 extension)
 
 Example :
-    $wgCirrusSearchCrossProjectSearchBlackList = [ 'n', 'v' ];
+    $wgCirrusSearchCrossProjectSearchBlockList = [ 'n', 'v' ];
 
 In WMF context this would remove wikinews and wikiversity from the list of
 crossproject displayed in the sidebar
@@ -1230,7 +1230,7 @@ SiteMatrix. In some cases a specific wiki may want to override the convention us
 by SiteMatrix. E.g. on WMF infrastructure this is used to override the
 interwiki prefix 's' to 'src' on swedish wikipedia.
 
-NOTE: overrides are applied before reading $wgCirrusSearchCrossProjectSearchBlackList
+NOTE: overrides are applied before reading $wgCirrusSearchCrossProjectSearchBlockList
 and $wgCirrusSearchCrossProjectProfiles.
 
 Example:

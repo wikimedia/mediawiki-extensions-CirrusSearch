@@ -527,7 +527,7 @@
 		"CirrusSearchEnableCrossProjectSearch": {
 			"value": false
 		},
-		"CirrusSearchCrossProjectSearchBlackList": {
+		"CirrusSearchCrossProjectSearchBlockList": {
 			"value": []
 		},
 		"CirrusSearchInterwikiPrefixOverrides": {

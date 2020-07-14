@@ -28,7 +28,7 @@ use MediaWiki\MediaWikiServices;
 class ConfigDump extends \ApiBase {
 	use ApiTrait;
 
-	public static $WHITE_LIST = [
+	public static $PUBLICLY_SHAREABLE_CONFIG_VARS = [
 		'CirrusSearchDisableUpdate',
 		'CirrusSearchServers',
 		'CirrusSearchConnectionAttempts',
@@ -78,7 +78,8 @@ class ConfigDump extends \ApiBase {
 		'CirrusSearchSimilarityProfile',
 		'CirrusSearchCrossProjectProfiles',
 		'CirrusSearchCrossProjectOrder',
-		'CirrusSearchCrossProjectSearchBlackList',
+		'CirrusSearchCrossProjectSearchBlackList', // TODO: remove
+		'CirrusSearchCrossProjectSearchBlockList',
 		'CirrusSearchExtraIndexBoostTemplates',
 		'CirrusSearchEnableCrossProjectSearch',
 		'CirrusSearchEnableAltLanguage',
@@ -151,7 +152,7 @@ class ConfigDump extends \ApiBase {
 
 	protected function addGlobals( ApiResult $result ) {
 		$config = $this->getConfig();
-		foreach ( self::$WHITE_LIST as $key ) {
+		foreach ( self::$PUBLICLY_SHAREABLE_CONFIG_VARS as $key ) {
 			if ( $config->has( $key ) ) {
 				$result->addValue( null, $key, $config->get( $key ) );
 			}

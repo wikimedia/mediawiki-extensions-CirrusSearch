@@ -20,6 +20,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "La clasifega ła se basa prinçipalmente so el nùmaro de cołigamenti che vien drento",
 	"prefs-completion": "Conpletamento de la riserca",
 	"cirrussearch-pref-completion-section-desc": "Sugeridor de conpletamento",
+	"cirrussearch-pref-completion-profile-help": "Inposta el conportamento par i sujeriminti del conpletamento automàtego (serca-cofà-te-scrivi).\n\nEl [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sujeridor de comnletamento] el xe on algoritmo par sujerimenti de riserca co na mejo coresion dei erori de batidura e riłevansa de ła reserca. Ła reserca par prefiso ła xe ła version presedente del algoritmo de sujerimento serca-cofà-te-scrivi.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predefinìo (consejà)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "El corexe finmente a do erori de sbatitura. El cava i rimandi che i xé tanto renti al titoło prençipałe",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Corispondensa soto-fraxe (consejà par i titołi de łe pàjine pì longhi)",

@@ -176,7 +176,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 				if ( in_array( $k, self::$CONFIG_VARS_FALSE_POSITIVES ) ) {
 					continue;
 				}
-				if ( !in_array( $k, \CirrusSearch\Api\ConfigDump::$WHITE_LIST ) ) {
+				if ( !in_array( $k, \CirrusSearch\Api\ConfigDump::$PUBLICLY_SHAREABLE_CONFIG_VARS ) ) {
 					$notInApi[] = $k;
 				}
 				if ( preg_match( '/^CirrusSearch/', $k ) == 0 ) {

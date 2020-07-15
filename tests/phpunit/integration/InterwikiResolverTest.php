@@ -70,16 +70,16 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	 * @param string $what method to test
 	 * @param mixed $arg arg to $what
 	 * @param mixed $expected expected result of $what($arg)
-	 * @param string[]|null $blacklist
+	 * @param string[]|null $blockList
 	 * @param string[]|null $overrides
 	 */
 	public function testSiteMatrixResolver( $wiki, $what, $arg, $expected,
-			$blacklist = [], $overrides = [] ) {
+			$blockList = [], $overrides = [] ) {
 		if ( !ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
 			$this->markTestSkipped( 'SiteMatrix not available.' );
 		}
 
-		$resolver = $this->getSiteMatrixInterwikiResolver( $wiki, $blacklist, $overrides );
+		$resolver = $this->getSiteMatrixInterwikiResolver( $wiki, $blockList, $overrides );
 		switch ( $what ) {
 		case 'sisters':
 			asort( $expected );
@@ -138,7 +138,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 				[],
 				[ 's' => 'src' ]
 			],
-			'enwiki sisters with blacklist and overrides' => [
+			'enwiki sisters with block list and overrides' => [
 				'enwiki',
 				'sisters', null,
 				[
@@ -393,7 +393,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	/**
 	 * @return InterwikiResolver
 	 */
-	private function getSiteMatrixInterwikiResolver( $wikiId, array $blacklist,
+	private function getSiteMatrixInterwikiResolver( $wikiId, array $blockList,
 		array $overrides, \MultiHttpClient $client = null ) {
 		$conf = new \SiteConfiguration;
 		$conf->settings = include __DIR__ . '/../resources/wmf/SiteMatrix_SiteConf_IS.php';
@@ -428,7 +428,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			'wgCirrusSearchInterwikiSources' => [],
 			'wgCirrusSearchLanguageToWikiMap' => [],
 			'wgCirrusSearchWikiToNameMap' => [],
-			'wgCirrusSearchCrossProjectSearchBlackList' => $blacklist,
+			'wgCirrusSearchCrossProjectSearchBlockList' => $blockList,
 			'wgCirrusSearchInterwikiPrefixOverrides' => $overrides,
 		];
 		$this->setMwGlobals( $myGlobals );

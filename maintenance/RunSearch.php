@@ -90,17 +90,18 @@ class RunSearch extends Maintenance {
 	 * @return array Changeable global variables represented as the keys for an array, for
 	 *  use with isset().
 	 */
-	private function loadGlobalsWhitelist(): array {
+	private function loadChangeableConfigVars(): array {
 		// WARNING: The autoloader isn't available yet, you can't use any mw/cirrus classes
 		$config = json_decode( file_get_contents( __DIR__ . '/../extension.json' ), true );
 		if ( !is_array( $config ) ) {
-			throw new \RuntimeException( 'Could not load extension.json for whitelist' );
+			throw new \RuntimeException( 'Could not load extension.json for gathering the '
+				. 'list of changeable config vars' );
 		}
-		$whitelist = [];
+		$changeable = [];
 		foreach ( array_keys( $config['config'] ) as $key ) {
-			$whitelist['wg' . $key] = true;
+			$changeable['wg' . $key] = true;
 		}
-		return $whitelist;
+		return $changeable;
 	}
 
 	/**
@@ -113,15 +114,15 @@ class RunSearch extends Maintenance {
 			$optionsData = base64_decode( substr( $optionsData, strlen( 'B64://' ) ) );
 		}
 		$options = json_decode( $optionsData, true );
-		$whitelist = $this->loadGlobalsWhitelist();
+		$changeable = $this->loadChangeableConfigVars();
 
 		if ( $options ) {
 			foreach ( $options as $key => $value ) {
 				if ( strpos( $key, '.' ) !== false ) {
 					// key path
 					$path = explode( '.', $key );
-					if ( !isset( $whitelist[$path[0]] ) ) {
-						$this->error( "\nERROR: $key is not a whitelisted global variable\n" );
+					if ( !isset( $changeable[$path[0]] ) ) {
+						$this->error( "\nERROR: $key is not a globally changeable variable\n" );
 					}
 
 					$cur =& $GLOBALS;
@@ -133,7 +134,7 @@ class RunSearch extends Maintenance {
 						$cur =& $cur[$pathel];
 					}
 					$cur = $value;
-				} elseif ( isset( $whitelist[$key] ) ) {
+				} elseif ( isset( $changeable[$key] ) ) {
 					// This is different from the keypath case above in that this can set
 					// variables that haven't been loaded yet. In particular at this point
 					// in the MW load process explicitly configured variables are
@@ -141,7 +142,7 @@ class RunSearch extends Maintenance {
 					// loaded.
 					$GLOBALS[$key] = $value;
 				} else {
-					$this->error( "\nERROR: $key is not a whitelisted global variable\n" );
+					$this->error( "\nERROR: $key is not a globally changeable variable\n" );
 					exit();
 				}
 			}

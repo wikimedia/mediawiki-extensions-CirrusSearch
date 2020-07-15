@@ -119,7 +119,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 					$prefix = $prefixOverrides[$prefix];
 				}
 
-				if ( !in_array( $prefix, $this->config->get( 'CirrusSearchCrossProjectSearchBlackList' ) ) ) {
+				if ( !in_array( $prefix, $this->config->get( 'CirrusSearchCrossProjectSearchBlockList' ) ) ) {
 					$sisterProjects[$prefix] = $dbName;
 				}
 				$prefixesByWiki[$dbName] = $prefix;

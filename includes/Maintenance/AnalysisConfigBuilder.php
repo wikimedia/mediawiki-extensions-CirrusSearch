@@ -169,6 +169,7 @@ class AnalysisConfigBuilder {
 		}
 		$config = $this->customize( $this->defaults( $language ), $language );
 		Hooks::run( 'CirrusSearchAnalysisConfig', [ &$config, $this ] );
+		$config = $this->enableHomoglyphPlugin( $config, $language );
 		if ( $this->shouldActivateIcuTokenization( $language ) ) {
 			$config = $this->enableICUTokenizer( $config );
 		}
@@ -176,6 +177,7 @@ class AnalysisConfigBuilder {
 			$config = $this->enableICUFolding( $config, $language );
 		}
 		$config = $this->fixAsciiFolding( $config );
+
 		return $config;
 	}
 
@@ -804,9 +806,6 @@ STEMMER_RULES
 			];
 
 			$filters = [];
-			if ( in_array( 'extra-analysis-homoglyph', $this->plugins ) ) {
-				$filters[] = 'homoglyph_norm';
-			}
 			$filters[] = 'french_elision';
 			$filters[] = 'lowercase';
 			$filters[] = 'french_stop';
@@ -1461,6 +1460,24 @@ STEMMER_RULES
 	}
 
 	/**
+	 * update languages with homoglyph plugin
+	 * @param mixed[] $config
+	 * @param string $language language to add plugin to
+	 * @return mixed[] update config
+	 */
+	public function enableHomoglyphPlugin( array $config, string $language ) {
+		$inDenyList = $this->homoglyphPluginDenyList[$language] ?? false;
+		if ( $config['analyzer']['text']['type'] == 'custom' && !$inDenyList ) {
+			if ( in_array( 'extra-analysis-homoglyph', $this->plugins ) ) {
+				$filters = $config['analyzer']['text']['filter'] ?? [];
+				array_unshift( $filters, 'homoglyph_norm' );
+				$config['analyzer']['text']['filter'] = $filters;
+			}
+		}
+		return $config;
+	}
+
+	/**
 	 * Languages for which elasticsearch provides a built in analyzer.  All
 	 * other languages default to the default analyzer which isn't too good.  Note
 	 * that this array is sorted alphabetically by value and sourced from
@@ -1593,4 +1610,10 @@ STEMMER_RULES
 		'extra-analysis-slovak' => [ 'sk' => 'slovak' ],
 		'analysis-nori' => [ 'ko' => 'korean' ],
 	];
+
+	/**
+	 * @var bool[] indexed by language code, languages that will not have the homoglyph
+	 * plugin included in the analysis chain
+	 */
+	private $homoglyphPluginDenyList = [];
 }

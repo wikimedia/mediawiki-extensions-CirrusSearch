@@ -7,6 +7,7 @@
             ],
             "tokenizer": "kuromoji_tokenizer",
             "filter": [
+                "homoglyph_norm",
                 "kuromoji_baseform",
                 "cjk_width",
                 "ja_stop",

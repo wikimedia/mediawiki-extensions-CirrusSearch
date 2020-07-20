@@ -4,6 +4,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
+                "homoglyph_norm",
                 "lowercase",
                 "mirandese_elision",
                 "mirandese_stop"

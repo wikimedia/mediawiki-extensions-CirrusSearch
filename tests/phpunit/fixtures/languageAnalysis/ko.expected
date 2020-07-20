@@ -8,6 +8,7 @@
                 "nori_combo_filter"
             ],
             "filter": [
+                "homoglyph_norm",
                 "nori_posfilter",
                 "nori_readingform",
                 "lowercase",

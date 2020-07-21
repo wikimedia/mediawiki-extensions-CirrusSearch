@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Srdjan m"
+			"Srdjan m",
+			"Srđan"
 		]
 	},
 	"cirrussearch-desc": "Pretraga za MediaWiki pomoću Elasticsearcha",

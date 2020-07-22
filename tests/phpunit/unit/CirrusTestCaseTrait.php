@@ -3,11 +3,14 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Parser\NamespacePrefixParser;
+use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\Profile\PhraseSuggesterProfileRepoWrapper;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
+use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Search\TitleHelper;
 use Config;
+use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Interwiki\InterwikiLookup;
 use Title;
 
@@ -170,22 +173,27 @@ trait CirrusTestCaseTrait {
 	}
 
 	/**
+	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
 	 * @return SearchProfileServiceFactoryFactory
 	 */
-	public function hostWikiSearchProfileServiceFactory(): SearchProfileServiceFactoryFactory {
-		return new class( $this ) implements SearchProfileServiceFactoryFactory {
-			/**
-			 * @var CirrusTestCaseTrait
-			 */
+	public function hostWikiSearchProfileServiceFactory(
+		CirrusSearchHookRunner $cirrusSearchHookRunner = null
+	): SearchProfileServiceFactoryFactory {
+		$cirrusSearchHookRunner = $cirrusSearchHookRunner ?: $this->createCirrusSearchHookRunner( [] );
+		return new class( $this, $cirrusSearchHookRunner ) implements SearchProfileServiceFactoryFactory {
+			/** @var CirrusTestCaseTrait */
 			private $testCase;
+			/** @var CirrusSearchHookRunner */
+			private $cirrusHookRunner;
 
-			public function __construct( $testCase ) {
+			public function __construct( $testCase, $cirrusHookRunner ) {
 				$this->testCase = $testCase;
+				$this->cirrusHookRunner = $cirrusHookRunner;
 			}
 
 			public function getFactory( SearchConfig $config ): SearchProfileServiceFactory {
 				return new SearchProfileServiceFactory( $this->testCase->getInterWikiResolver( $config ),
-					$config, $this->testCase->localServerCacheForProfileService() );
+					$config, $this->testCase->localServerCacheForProfileService(), $this->cirrusHookRunner );
 			}
 		};
 	}
@@ -293,4 +301,33 @@ trait CirrusTestCaseTrait {
 		);
 		return $bagOSTuff;
 	}
+
+	/**
+	 * @param SearchConfig $searchConfig
+	 * @param string $query
+	 * @return SearchQueryBuilder
+	 */
+	public function getNewFTSearchQueryBuilder( SearchConfig $searchConfig, string $query ): SearchQueryBuilder {
+		return SearchQueryBuilder::newFTSearchQueryBuilder( $searchConfig, $query,
+			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() );
+	}
+
+	/**
+	 * @param SearchConfig $config
+	 * @return \CirrusSearch\Parser\QueryParser|\CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser
+	 */
+	public function createNewFullTextQueryParser( SearchConfig $config ) {
+		return QueryParserFactory::newFullTextQueryParser( $config,
+			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() );
+	}
+
+	public function createCirrusSearchHookRunner( $hooks = [] ): CirrusSearchHookRunner {
+		return new CirrusSearchHookRunner( $this->createHookContainer( $hooks ) );
+	}
+
+	/**
+	 * @param callable[] $hooks
+	 * @return HookContainer
+	 */
+	abstract protected function createHookContainer( $hooks = [] );
 }

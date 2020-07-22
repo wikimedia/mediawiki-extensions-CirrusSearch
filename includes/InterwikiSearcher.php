@@ -45,6 +45,7 @@ class InterwikiSearcher extends Searcher {
 	 * @param NamespacePrefixParser|null $namespacePrefixParser
 	 * @param InterwikiResolver|null $interwikiResolver
 	 * @param TitleHelper|null $titleHelper
+	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
 	 */
 	public function __construct(
 		Connection $connection,
@@ -54,11 +55,12 @@ class InterwikiSearcher extends Searcher {
 		CirrusDebugOptions $debugOptions = null,
 		NamespacePrefixParser $namespacePrefixParser = null,
 		InterwikiResolver $interwikiResolver = null,
-		TitleHelper $titleHelper = null
+		TitleHelper $titleHelper = null,
+		CirrusSearchHookRunner $cirrusSearchHookRunner = null
 	) {
 		$maxResults = $config->get( 'CirrusSearchNumCrossProjectSearchResults' );
 		parent::__construct( $connection, 0, $maxResults, $config, $namespaces, $user, false,
-			$debugOptions, $namespacePrefixParser, $interwikiResolver, $titleHelper );
+			$debugOptions, $namespacePrefixParser, $interwikiResolver, $titleHelper, $cirrusSearchHookRunner );
 	}
 
 	/**
@@ -85,7 +87,7 @@ class InterwikiSearcher extends Searcher {
 		$msearches = new MSearchRequests();
 		foreach ( $iwQueries as $interwiki => $iwQuery ) {
 			$context = SearchContext::fromSearchQuery( $iwQuery,
-				FallbackRunner::create( $iwQuery, $this->interwikiResolver ) );
+				FallbackRunner::create( $iwQuery, $this->interwikiResolver ), $this->cirrusSearchHookRunner );
 			$this->searchContext = $context;
 			$this->setResultsType( new FullTextResultsType( $this->searchContext->getFetchPhaseBuilder(),
 				$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ), $this->titleHelper ) );

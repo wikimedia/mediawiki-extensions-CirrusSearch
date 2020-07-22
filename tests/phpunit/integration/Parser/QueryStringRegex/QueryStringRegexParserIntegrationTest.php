@@ -5,7 +5,6 @@ namespace CirrusSearch\Parser\QueryStringRegex;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\QueryParser;
-use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -117,7 +116,7 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 	 * @return QueryParser
 	 */
 	public function buildParser( $config ) {
-		$parser = QueryParserFactory::newFullTextQueryParser( $config, $this->namespacePrefixParser() );
+		$parser = $this->createNewFullTextQueryParser( $config );
 		$this->assertInstanceOf( QueryStringRegexParser::class, $parser );
 		return $parser;
 	}

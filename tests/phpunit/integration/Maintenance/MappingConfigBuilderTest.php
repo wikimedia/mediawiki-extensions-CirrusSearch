@@ -52,7 +52,7 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 			],
 		];
 		$config = new HashSearchConfig( $defaultConfig + $extraConfig, [ HashSearchConfig::FLAG_INHERIT ] );
-		$builder = new $buildClass( true, 0, $config );
+		$builder = new $buildClass( true, 0, $config, $this->createCirrusSearchHookRunner() );
 		$flags = 0;
 		$mapping = $builder->buildConfig( $flags );
 		$mappingJson = \FormatJson::encode( $mapping, true );

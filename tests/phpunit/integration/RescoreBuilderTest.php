@@ -287,7 +287,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		$config = new HashSearchConfig( $settings + [ 'CirrusSearchBoostTemplates' => [ 'Good' => 1.3 ] ] );
 
 		$context = new SearchContext( $config, $namespaces );
-		$builder = new RescoreBuilder( $context, $config->get( 'CirrusSearchRescoreProfile' ) );
+		$builder = new RescoreBuilder( $context, $this->createCirrusSearchHookRunner(), $config->get( 'CirrusSearchRescoreProfile' ) );
 		$rescore = $builder->build();
 		$array = $rescore[0]['query']['rescore_query'];
 		$array = $array->toArray();
@@ -390,7 +390,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		$config = new HashSearchConfig( $settings + [ 'CirrusSearchRescoreProfile' => 'default' ] );
 
 		$context = new SearchContext( $config, null );
-		$builder = new RescoreBuilder( $context, 'default' );
+		$builder = new RescoreBuilder( $context, $this->createCirrusSearchHookRunner(), 'default' );
 		$rescore = $builder->build();
 		$this->assertEquals( $expected, $rescore[0]['window_size'] );
 	}
@@ -535,7 +535,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 
 		$context = new SearchContext( $config, null );
 		try {
-			$builder = new RescoreBuilder( $context, 'default' );
+			$builder = new RescoreBuilder( $context, $this->createCirrusSearchHookRunner(), 'default' );
 			$builder->build();
 			$this->fail( "Expected exception of type: $expectedException" );
 		} catch ( \Exception $e ) {
@@ -710,7 +710,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		] );
 
 		$context = new SearchContext( $config, [ NS_MAIN, NS_USER ] );
-		$builder = new RescoreBuilder( $context, 'default' );
+		$builder = new RescoreBuilder( $context, $this->createCirrusSearchHookRunner(), 'default' );
 		$rescores = $builder->build();
 		$this->assertCount( 1, $rescores );
 		$query = $rescores[0]['query']['rescore_query']->toArray();

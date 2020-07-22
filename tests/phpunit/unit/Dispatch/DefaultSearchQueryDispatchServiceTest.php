@@ -6,7 +6,6 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Search\SearchQuery;
-use CirrusSearch\Search\SearchQueryBuilder;
 
 /**
  * @covers \CirrusSearch\Dispatch\DefaultSearchQueryDispatchService
@@ -18,8 +17,7 @@ class DefaultSearchQueryDispatchServiceTest extends CirrusTestCase {
 		$service = new DefaultSearchQueryDispatchService(
 			[ SearchQuery::SEARCH_TEXT => [ CirrusDefaultSearchQueryRoute::searchTextDefaultRoute() ] ]
 		);
-		$actual = $service->bestRoute( SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo',
-			$this->namespacePrefixParser() )->build() );
+		$actual = $service->bestRoute( $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )->build() );
 		$this->assertSame( $expected, $actual );
 	}
 
@@ -32,7 +30,7 @@ class DefaultSearchQueryDispatchServiceTest extends CirrusTestCase {
 			new BasicSearchQueryRoute( SearchQuery::SEARCH_TEXT, [ 0 ], [], 'tooLate', 0.3 )
 		] ];
 		$service = new DefaultSearchQueryDispatchService( $routes );
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo', $this->namespacePrefixParser() )
+		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
 			->setInitialNamespaces( [ 0 ] )
 			->build();
 		$this->assertEquals( 'bestFor0', $service->bestRoute( $query )->getProfileContext() );
@@ -47,7 +45,7 @@ class DefaultSearchQueryDispatchServiceTest extends CirrusTestCase {
 			new BasicSearchQueryRoute( SearchQuery::SEARCH_TEXT, [ 0 ], [], 'bestFor0', 1.0 )
 		] ];
 		$service = new DefaultSearchQueryDispatchService( $routes );
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo', $this->namespacePrefixParser() )
+		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
 			->setInitialNamespaces( [ 0 ] )
 			->build();
 		$this->assertEquals( 'bestFor0', $service->bestRoute( $query )->getProfileContext() );
@@ -62,7 +60,7 @@ class DefaultSearchQueryDispatchServiceTest extends CirrusTestCase {
 			new BasicSearchQueryRoute( SearchQuery::SEARCH_TEXT, [ 0 ], [], 'bestFor0', 1.0 )
 		] ];
 		$service = new DefaultSearchQueryDispatchService( $routes );
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo', $this->namespacePrefixParser() )
+		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
 			->setInitialNamespaces( [ 0 ] )
 			->build();
 		try {

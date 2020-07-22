@@ -96,7 +96,7 @@ trait FallbackMethodTrait {
 
 		try {
 			$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $originalQuery, $suggestedQuery,
-					$context->getNamespacePrefixParser() )->build();
+					$context->getNamespacePrefixParser(), $context->getCirrusSearchHookRunner() )->build();
 		} catch ( SearchQueryParseException $e ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )
 				->warning( "Cannot parse rewritten query", [ 'exception' => $e ] );

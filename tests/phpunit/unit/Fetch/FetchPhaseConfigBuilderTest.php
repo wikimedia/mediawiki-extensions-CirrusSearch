@@ -159,7 +159,9 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		if ( $query ) {
 			// TODO: switch to new parser.
 			$context = new SearchContext( $config, [], null, null, $fetchPhaseBuilder );
-			foreach ( ( new FullTextKeywordRegistry( $config, $this->namespacePrefixParser() ) )->getKeywords() as $kw ) {
+			$fullTextKeywordRegistry = new FullTextKeywordRegistry( $config, $this->createCirrusSearchHookRunner(),
+					$this->namespacePrefixParser() );
+			foreach ( $fullTextKeywordRegistry->getKeywords() as $kw ) {
 				$kw->apply( $context, $query );
 			}
 		}

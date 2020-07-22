@@ -18,7 +18,7 @@ use CirrusSearch\Query\PrefixFeature;
 class FullTextKeywordRegistryTest extends CirrusTestCase {
 
 	public function test() {
-		$registry = new FullTextKeywordRegistry( new HashSearchConfig( [] ) );
+		$registry = new FullTextKeywordRegistry( new HashSearchConfig( [] ), $this->createCirrusSearchHookRunner() );
 		// Just verify that some important keywords are provided
 		$missingKw = [
 			InTitleFeature::class => true,

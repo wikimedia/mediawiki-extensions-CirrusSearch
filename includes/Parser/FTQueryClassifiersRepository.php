@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Parser;
 
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Parser\AST\ParsedQuery;
 use CirrusSearch\SearchConfig;
 use Wikimedia\Assert\Assert;
@@ -27,12 +28,13 @@ class FTQueryClassifiersRepository implements ParsedQueryClassifiersRepository {
 
 	/**
 	 * @param SearchConfig $config
+	 * @param CirrusSearchHookRunner $cirrusSearchHookRunner
 	 * @throws ParsedQueryClassifierException
 	 */
-	public function __construct( SearchConfig $config ) {
+	public function __construct( SearchConfig $config, CirrusSearchHookRunner $cirrusSearchHookRunner ) {
 		$this->config = $config;
 		$this->registerClassifier( new BasicQueryClassifier() );
-		\Hooks::run( 'CirrusSearchRegisterFullTextQueryClassifiers', [ $this ] );
+		$cirrusSearchHookRunner->onCirrusSearchRegisterFullTextQueryClassifiers( $this );
 		$this->frozen = true;
 	}
 

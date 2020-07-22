@@ -101,7 +101,8 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			$this->createMock( SearcherFactory::class ),
 			$results,
 			new MSearchResponses( [], [] ),
-			$this->namespacePrefixParser()
+			$this->namespacePrefixParser(),
+			$this->createCirrusSearchHookRunner()
 		);
 		$this->assertEquals( [ 'A', 'B', 'C', 'D', 'E' ], $this->execOrder );
 	}
@@ -121,7 +122,8 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			$this->createMock( SearcherFactory::class ),
 			$results,
 			new MSearchResponses( [], [] ),
-			$this->namespacePrefixParser()
+			$this->namespacePrefixParser(),
+			$this->createCirrusSearchHookRunner()
 		);
 		$this->assertEquals( [ 'A' ], $this->execOrder );
 	}
@@ -194,7 +196,8 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			$this->createMock( SearcherFactory::class ),
 			$results,
 			new MSearchResponses( [], [] ),
-			$this->namespacePrefixParser()
+			$this->namespacePrefixParser(),
+			$this->createCirrusSearchHookRunner()
 		);
 		$expected = [
 			'wgCirrusSearchFallback' => [
@@ -297,7 +300,8 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			'CirrusSearchFallbackProfile' => 'phrase_suggest_and_language_detection',
 		] );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, 'foobars', $this->namespacePrefixParser() )
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, 'foobars',
+			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() )
 			->setAllowRewrite( true )
 			->setWithDYMSuggestion( true )
 			->build();
@@ -338,7 +342,8 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			$searcherFactory,
 			$initialResults,
 			new MSearchResponses( [], [] ),
-			$this->namespacePrefixParser()
+			$this->namespacePrefixParser(),
+			$this->createCirrusSearchHookRunner()
 		);
 		$this->assertEquals( 2, $newResults->getTotalHits() );
 		$iwResults = $newResults->getInterwikiResults( \ISearchResultSet::INLINE_RESULTS );
@@ -362,7 +367,8 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			$searcherFactory,
 			$initialResults,
 			new MSearchResponses( [], [] ),
-			$this->namespacePrefixParser()
+			$this->namespacePrefixParser(),
+			$this->createCirrusSearchHookRunner()
 		);
 		$this->assertSame( 0, $newResults->getTotalHits() );
 		$iwResults = $newResults->getInterwikiResults( \ISearchResultSet::INLINE_RESULTS );
@@ -398,7 +404,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$this->assertNotEmpty( $requests->getRequests() );
 		$mresponses = $requests->toMSearchResponses( [ $resp ] );
 		$this->assertSame( $rewritten, $runner->run( $this->createMock( SearcherFactory::class ), $inital, $mresponses,
-			$this->namespacePrefixParser() ) );
+			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() ) );
 
 		$runner = new FallbackRunner( [ $this->mockElasticSearchRequestFallbackMethod( $query, 0.0, $resp, null ) ] );
 		$requests = new MSearchRequests();
@@ -406,7 +412,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$this->assertEmpty( $requests->getRequests() );
 		$mresponses = $requests->failure( \Status::newFatal( 'error' ) );
 		$this->assertSame( $inital, $runner->run( $this->createMock( SearcherFactory::class ), $inital, $mresponses,
-			$this->namespacePrefixParser() ) );
+			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() ) );
 
 		$runner = new FallbackRunner( [
 			$this->mockElasticSearchRequestFallbackMethod( $query, 0.0, $resp, null ),
@@ -418,7 +424,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$this->assertFalse( $mresponses->hasResultsFor( 'fallback-1' ) );
 		$this->assertTrue( $mresponses->hasResultsFor( 'fallback-2' ) );
 		$this->assertSame( $rewritten, $runner->run( $this->createMock( SearcherFactory::class ), $inital, $mresponses,
-			$this->namespacePrefixParser() ) );
+			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() ) );
 	}
 
 	public function mockElasticSearchRequestFallbackMethod( $query, $approx, $expectedResponse, $rewritten ) {

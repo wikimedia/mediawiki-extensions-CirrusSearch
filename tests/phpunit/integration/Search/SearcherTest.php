@@ -4,7 +4,6 @@ namespace CirrusSearch;
 
 use CirrusSearch\Query\FullTextQueryStringQueryBuilder;
 use CirrusSearch\Search\CirrusSearchResultSet;
-use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummyConnection;
 use CirrusSearch\Test\SearchConfigUsageDecorator;
 use Elastica\Query;
@@ -351,7 +350,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$searcher = new Searcher( new DummyConnection( $conf ), $offset, $limit, $conf );
 		$this->assertEquals( $expected, $searcher->getOffsetLimit() );
 		$searcher = new Searcher( new DummyConnection( $conf ), 0, 20, $conf );
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $conf, 'test', $this->namespacePrefixParser() )
+		$query = $this->getNewFTSearchQueryBuilder( $conf, 'test' )
 			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
 			->setOffset( $offset )
 			->setLimit( $limit );

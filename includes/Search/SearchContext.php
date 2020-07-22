@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusDebugOptions;
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\ExternalIndex;
 use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\OtherIndexesUpdater;
@@ -16,6 +17,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Elastica\Aggregation\AbstractAggregation;
 use Elastica\Query\AbstractQuery;
+use MediaWiki\MediaWikiServices;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -201,6 +203,10 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @var FallbackRunner|null
 	 */
 	private $fallbackRunner;
+	/**
+	 * @var CirrusSearchHookRunner|null
+	 */
+	private $cirrusSearchHookRunner;
 
 	/**
 	 * @param SearchConfig $config
@@ -208,13 +214,15 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @param CirrusDebugOptions|null $options
 	 * @param FallbackRunner|null $fallbackRunner
 	 * @param FetchPhaseConfigBuilder|null $fetchPhaseConfigBuilder
+	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
 	 */
 	public function __construct(
 		SearchConfig $config,
 		array $namespaces = null,
 		CirrusDebugOptions $options = null,
 		FallbackRunner $fallbackRunner = null,
-		FetchPhaseConfigBuilder $fetchPhaseConfigBuilder = null
+		FetchPhaseConfigBuilder $fetchPhaseConfigBuilder = null,
+		CirrusSearchHookRunner $cirrusSearchHookRunner = null
 	) {
 		$this->config = $config;
 		$this->namespaces = $namespaces;
@@ -222,6 +230,8 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		$this->fallbackRunner = $fallbackRunner ?? FallbackRunner::noopRunner();
 		$this->fetchPhaseBuilder = $fetchPhaseConfigBuilder ?? new FetchPhaseConfigBuilder( $config );
 		$this->loadConfig();
+		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner ?? new CirrusSearchHookRunner(
+			MediaWikiServices::getInstance()->getHookContainer() );
 	}
 
 	/**
@@ -513,7 +523,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @return array[] Rescore configurations as used by elasticsearch.
 	 */
 	public function getRescore() {
-		$rescores = ( new RescoreBuilder( $this ) )->build();
+		$rescores = ( new RescoreBuilder( $this, $this->cirrusSearchHookRunner ) )->build();
 		$result = [];
 		foreach ( $rescores as $rescore ) {
 			$rescore['query']['rescore_query'] = $rescore['query']['rescore_query']->toArray();
@@ -816,15 +826,22 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 *
 	 * @param SearchQuery $query
 	 * @param FallbackRunner|null $fallbackRunner
+	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
 	 * @return SearchContext
+	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
 	 */
-	public static function fromSearchQuery( SearchQuery $query, FallbackRunner $fallbackRunner = null ): SearchContext {
+	public static function fromSearchQuery(
+		SearchQuery $query,
+		FallbackRunner $fallbackRunner = null,
+		CirrusSearchHookRunner $cirrusSearchHookRunner = null
+	): SearchContext {
 		$searchContext = new SearchContext(
 			$query->getSearchConfig(),
 			$query->getNamespaces(),
 			$query->getDebugOptions(),
 			$fallbackRunner,
-			new FetchPhaseConfigBuilder( $query->getSearchConfig(), $query->getSearchEngineEntryPoint() )
+			new FetchPhaseConfigBuilder( $query->getSearchConfig(), $query->getSearchEngineEntryPoint() ),
+			$cirrusSearchHookRunner
 		);
 		$searchContext->limitSearchToLocalWiki = !$query->getCrossSearchStrategy()->isExtraIndicesSearchSupported();
 

@@ -3,7 +3,6 @@
 namespace CirrusSearch\Parser;
 
 use CirrusSearch\CirrusTestCase;
-use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser;
 use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
 
@@ -53,13 +52,10 @@ class QueryParserFactoryTest extends CirrusTestCase {
 	 * @dataProvider provideConfig
 	 */
 	public function test( $config, $query, $equals ) {
-		$parser = QueryParserFactory::newFullTextQueryParser(
-			new HashSearchConfig( [] ),
-			$this->namespacePrefixParser()
-		);
+		$parser = $this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) );
 		$this->assertInstanceOf( QueryStringRegexParser::class, $parser );
 		$this->assertEquals( $parser,
-			QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ), $this->namespacePrefixParser() ),
+			$this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) ),
 			'Same config should build identical parser' );
 
 		try {
@@ -70,10 +66,8 @@ class QueryParserFactoryTest extends CirrusTestCase {
 		}
 
 		try {
-			$updatedConfigParsedQuery = QueryParserFactory::newFullTextQueryParser(
-				new HashSearchConfig( $config ),
-				$this->namespacePrefixParser()
-			)->parse( $query );
+			$updatedConfigParsedQuery = $this->createNewFullTextQueryParser( $this->newHashSearchConfig( $config ) )
+				->parse( $query );
 			$updatedConfigParsedQuery = $updatedConfigParsedQuery->toArray();
 		} catch ( SearchQueryParseException $e ) {
 			$updatedConfigParsedQuery = $e;

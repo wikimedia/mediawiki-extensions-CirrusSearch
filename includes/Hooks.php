@@ -822,7 +822,8 @@ class Hooks {
 					$serviceContainer->getService( InterwikiResolver::SERVICE ),
 					/** @phan-suppress-next-line PhanTypeMismatchArgument $config is actually a SearchConfig */
 					$config,
-					$serviceContainer->getLocalServerObjectCache()
+					$serviceContainer->getLocalServerObjectCache(),
+					new CirrusSearchHookRunner( $serviceContainer->getHookContainer() )
 				);
 			}
 		);

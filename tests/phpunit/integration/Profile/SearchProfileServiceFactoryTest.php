@@ -3,6 +3,7 @@
 namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolverFactory;
 use EmptyBagOStuff;
@@ -55,12 +56,12 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 	 * @throws \MWException
 	 */
 	public function testOverrides( $type, $context, $overrideType, $overrideKey, $profiles ) {
-		$factory = $this->getFactory();
-		$this::setTemporaryHook( 'CirrusSearchProfileService',
-			function ( SearchProfileService $service ) use ( $type, $profiles ) {
+		$cirrusSearchHookRunner = $this->createCirrusSearchHookRunner( [
+			'CirrusSearchProfileService' => function ( SearchProfileService $service ) use ( $type, $profiles ) {
 				$service->registerArrayRepository( $type, 'unit_test', $profiles );
 			}
-		);
+		] );
+		$factory = $this->getFactory( [], $cirrusSearchHookRunner );
 
 		$profileName = key( $profiles );
 
@@ -244,9 +245,10 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( [ 'INTERWIKI' ], $service->loadProfile( $profileType ) );
 	}
 
-	private function getFactory( array $hostWikiConfig = [] ) {
+	private function getFactory( array $hostWikiConfig = [], CirrusSearchHookRunner $cirrusSearchHookRunner = null ) {
 		$config = new HashSearchConfig( $hostWikiConfig );
 		$resolver = ( new InterwikiResolverFactory() )->getResolver( $config );
-		return new SearchProfileServiceFactory( $resolver, $config, new EmptyBagOStuff() );
+		return new SearchProfileServiceFactory( $resolver, $config, new EmptyBagOStuff(),
+			$cirrusSearchHookRunner ?: $this->createCirrusSearchHookRunner() );
 	}
 }

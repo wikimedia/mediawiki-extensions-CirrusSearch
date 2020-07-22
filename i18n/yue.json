@@ -2,10 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"Hello903hello",
-			"Moon0319"
+			"Moon0319",
+			"Roy17"
 		]
 	},
-	"cirrussearch-too-busy-error": "搵嘢引擎而家太忙。請遲啲再試過。",
+	"cirrussearch-too-busy-error": "搜索引擎而家太忙。請遲啲再試過。",
 	"cirrussearch-give-feedback": "畀意見我哋",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "預設（推薦）",
 	"cirrussearch-completion-profile-strict-pref-name": "嚴謹模式（高級）",

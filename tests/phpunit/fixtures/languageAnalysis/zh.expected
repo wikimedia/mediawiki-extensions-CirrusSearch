@@ -8,6 +8,7 @@
                 "tsconvert"
             ],
             "filter": [
+                "homoglyph_norm",
                 "smartcn_stop",
                 "lowercase"
             ]

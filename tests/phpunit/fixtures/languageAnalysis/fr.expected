@@ -23,7 +23,6 @@
                 "french_charfilter"
             ],
             "filter": [
-                "homoglyph_norm",
                 "french_elision",
                 "lowercase",
                 "french_stop",

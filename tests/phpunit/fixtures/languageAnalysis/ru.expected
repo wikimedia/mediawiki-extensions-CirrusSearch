@@ -7,6 +7,7 @@
                 "russian_charfilter"
             ],
             "filter": [
+                "homoglyph_norm",
                 "lowercase",
                 "russian_stop",
                 "russian_stemmer"

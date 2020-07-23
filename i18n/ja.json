@@ -11,6 +11,7 @@
 			"SkyDaisy9",
 			"Sujiniku",
 			"Takot",
+			"Tmv",
 			"Yusuke1109"
 		]
 	},
@@ -30,6 +31,7 @@
 	"cirrussearch-qi-profile-popular-pv": "ページ閲覧数による順位",
 	"cirrussearch-qi-profile-popular-inclinks": "リンク元の件数による順位",
 	"prefs-completion": "検索の補完",
+	"cirrussearch-pref-completion-section-desc": "完成予想図",
 	"cirrussearch-pref-completion-profile-help": "自動補完（文字入力と同時に検索を始める）の提案時の挙動を設定します。\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester 自動補完]機能は検索語を推薦するアルゴリズムで、誤入力の修正に優れ、表記のゆれがあっても検索できます。既定の自動補完検索のアルゴリズムは接頭語検索です。",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "既定（推奨）",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "最大2個までのタイプミスを修正します。メインの題名とよく似たリダイレクトを除去します。",

@@ -78,7 +78,6 @@ class ConfigDump extends \ApiBase {
 		'CirrusSearchSimilarityProfile',
 		'CirrusSearchCrossProjectProfiles',
 		'CirrusSearchCrossProjectOrder',
-		'CirrusSearchCrossProjectSearchBlackList', // TODO: remove
 		'CirrusSearchCrossProjectSearchBlockList',
 		'CirrusSearchExtraIndexBoostTemplates',
 		'CirrusSearchEnableCrossProjectSearch',

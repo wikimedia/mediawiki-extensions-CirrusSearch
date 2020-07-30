@@ -26,21 +26,6 @@ class SearchConfigTest extends CirrusTestCase {
 		$this->assertSame( wfWikiID(), $config->getWikiId() );
 	}
 
-	public function testDeprecatedSettings() {
-		$config = new HashSearchConfig( [
-			'CirrusSearchCrossProjectSearchBlackList' => [ 'bar' ],
-			'CirrusSearchCrossProjectSearchBlockList' => [],
-		] );
-
-		$this->assertSame( [ 'bar' ], $config->get( 'CirrusSearchCrossProjectSearchBlockList' ) );
-
-		$config = new HashSearchConfig( [
-			'CirrusSearchCrossProjectSearchBlackList' => [ 'bar' ],
-		] );
-
-		$this->assertTrue( $config->has( 'CirrusSearchCrossProjectSearchBlockList' ) );
-	}
-
 	public function testMakeId() {
 		$config = new HashSearchConfig( [
 			'CirrusSearchPrefixIds' => true,

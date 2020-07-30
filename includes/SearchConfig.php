@@ -23,12 +23,6 @@ class SearchConfig implements \Config {
 	// Magic word to tell the SearchConfig to translate INDEX_BASE_NAME into wfWikiID()
 	const WIKI_ID_MAGIC_WORD = '__wikiid__';
 
-	// List of settings that are deprecated
-	// key is the new setting name, value is the old setting (used if set)
-	const DEPRECATED_SETTINGS = [
-		'CirrusSearchCrossProjectSearchBlockList' => 'CirrusSearchCrossProjectSearchBlackList',
-	];
-
 	/** @static string[] non cirrus vars to load when loading external wiki config */
 	private static $nonCirrusVars = [
 		'wgLanguageCode',
@@ -136,10 +130,6 @@ class SearchConfig implements \Config {
 	 * @return bool
 	 */
 	public function has( $name ) {
-		$deprecatedSettingName = self::DEPRECATED_SETTINGS[$name] ?? null;
-		if ( $deprecatedSettingName !== null && $this->source->has( $deprecatedSettingName ) ) {
-			return true;
-		}
 		return $this->source->has( $name );
 	}
 
@@ -148,10 +138,7 @@ class SearchConfig implements \Config {
 	 * @return mixed
 	 */
 	public function get( $name ) {
-		$deprecatedSettingName = self::DEPRECATED_SETTINGS[$name] ?? null;
-		if ( $deprecatedSettingName !== null && $this->source->has( $deprecatedSettingName ) ) {
-			$name = $deprecatedSettingName;
-		} elseif ( !$this->source->has( $name ) ) {
+		if ( !$this->source->has( $name ) ) {
 			return null;
 		}
 		$value = $this->source->get( $name );

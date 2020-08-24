@@ -39,6 +39,7 @@ class UpdateSearchIndexConfig extends Maintenance {
 		// in __construct.  Lame.
 		require_once __DIR__ . '/UpdateOneSearchIndexConfig.php';
 		UpdateOneSearchIndexConfig::addSharedOptions( $this );
+		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	/**

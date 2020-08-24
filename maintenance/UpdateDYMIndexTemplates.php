@@ -39,6 +39,7 @@ class UpdateDYMIndexTemplates extends Maintenance {
 		$this->addDescription( "Update the template for index lookup DYM fallback profiles." .
 							   "operates on a single cluster." );
 		$this->addOption( 'profile', 'Extract the template from this profile.', false, true );
+		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function execute() {

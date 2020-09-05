@@ -412,6 +412,8 @@ class ForceSearchIndex extends Maintenance {
 
 		$it->setFetchColumns( [ 'log_timestamp', 'log_namespace', 'log_title', 'log_page' ] );
 
+		$it->setCaller( __METHOD__ );
+
 		return new CallbackIterator( $it, function ( $batch ) {
 			$titlesToDelete = [];
 			$docIdsToDelete = [];
@@ -447,6 +449,7 @@ class ForceSearchIndex extends Maintenance {
 		$it->addConditions( [
 			'page_id in (' . $dbr->makeList( $this->pageIds, LIST_COMMA ) . ')',
 		] );
+		$it->setCaller( __METHOD__ );
 		$this->attachPageConditions( $dbr, $it, 'page' );
 
 		return $this->wrapDecodeResults( $it, 'page_id' );
@@ -466,6 +469,7 @@ class ForceSearchIndex extends Maintenance {
 		$it->addJoinConditions( [
 			'revision' => [ 'JOIN', [ 'rev_page = page_id', 'rev_id = page_latest' ] ]
 		] );
+		$it->setCaller( __METHOD__ );
 
 		$this->attachTimestampConditions( $dbr, $it, 'rev' );
 		$this->attachPageConditions( $dbr, $it, 'page' );
@@ -479,6 +483,7 @@ class ForceSearchIndex extends Maintenance {
 		$it = new BatchRowIterator( $dbr,  $pageQuery['tables'], 'page_id', $this->getBatchSize() );
 		$it->setFetchColumns( $pageQuery['fields'] );
 		$it->addJoinConditions( $pageQuery['joins'] );
+		$it->setCaller( __METHOD__ );
 		$fromId = $this->getOption( 'fromId', 0 );
 		if ( $fromId > 0 ) {
 			$it->addConditions( [

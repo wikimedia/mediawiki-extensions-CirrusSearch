@@ -11,6 +11,7 @@
 			"JackUKElliott",
 			"McAang",
 			"Meelo",
+			"MuratTheTurkish",
 			"Rapsar",
 			"Sayginer",
 			"Violetanka"
@@ -74,7 +75,7 @@
 	"cirrussearch-incategory-feature-no-valid-categories": "'$1' için geçerli bir kategori sağlanmadı.",
 	"cirrussearch-mlt-feature-no-valid-titles": "'$1' için geçerli başlık yok.",
 	"cirrussearch-mlt-not-configured": "'$1' özelliği yanlış yapılandırılmış. Bir yöneticiden $wgCirrusSearchMoreLikeThisFields düzeltmesini isteyin",
-	"cirrussearch-explore-similar-related": "ilgili",
+	"cirrussearch-explore-similar-related": "İlgili",
 	"cirrussearch-explore-similar-categories": "Kategoriler",
 	"cirrussearch-explore-similar-languages": "Diller",
 	"cirrussearch-explore-similar-related-none": "İlgili sayfa yok",
@@ -85,5 +86,5 @@
 	"cirrussearch-autoselect-profile": "Kullanılacak en iyi profile arama motorunun karar vermesine izin verin.",
 	"cirrussearch-offset-too-large": "Sonuçlar alınamadı. $1 arama sonucu desteklenir, ancak $2 başlayan sonuçlar istenir.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Rastgele sıralanan sonuçları sayfalandırma isteği yoksayılıyor.",
-	"cirrussearch-articletopic-invalid-topic": "<kbd>articletopic:</kbd> anahtar kelimesi için tanınmayan konu {{PLURAL:$2|adı}}: $1"
+	"cirrussearch-articletopic-invalid-topic": "<kbd>articletopic:</kbd> anahtar kelimesi için tanınmayan konu {{PLURAL:$2|adı|adları}}: $1"
 }

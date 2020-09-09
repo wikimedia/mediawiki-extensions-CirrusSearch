@@ -9,7 +9,7 @@ use ISearchResultSet;
 use SearchResultSetTrait;
 use Title;
 
-class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchResultSet {
+class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchResultSet, SearchMetricsProvider {
 	use SearchResultSetTrait;
 
 	/** @var string[] Doc ID's belonging to team A */

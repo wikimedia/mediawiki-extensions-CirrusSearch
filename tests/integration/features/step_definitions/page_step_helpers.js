@@ -241,9 +241,9 @@ class StepHelpers {
 					if ( ( operation === 'upload' || operation === 'uploadOverwrite' ) && title.substr( 0, 5 ) !== 'File:' ) {
 						title = 'File:' + title;
 					}
-					const expect = operation !== 'delete';
+					const expectExists = operation !== 'delete';
 					const exists = yield this.checkExists( title, revisionId );
-					if ( exists === expect ) {
+					if ( exists === expectExists ) {
 						if ( log ) {
 							log( title, done.length + 1 );
 						}

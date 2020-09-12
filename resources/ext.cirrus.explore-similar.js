@@ -541,11 +541,11 @@
 				 * as well as all other Explore Similar items on the page.
 				 * Also Triggers the custom Explore Similar event.
 				 *
-				 * @param {Object} $template - Explore Similar template wrapped in jQuery object.
+				 * @param {Object} $exploreTemplate - Explore Similar template wrapped in jQuery object.
 				 */
-				function closeExploreSimilarItem( $template ) {
+				function closeExploreSimilarItem( $exploreTemplate ) {
 
-					var $activeButton = $template.find( '.' + cssClasses.activeButton + ', .' + cssClasses.activeSlowButton ),
+					var $activeButton = $exploreTemplate.find( '.' + cssClasses.activeButton + ', .' + cssClasses.activeSlowButton ),
 						$contentWrappers = $( '.' + cssClasses.contentWrapper );
 
 					clearExploreSimilarQueue();

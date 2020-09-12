@@ -45,8 +45,8 @@ class Server {
 			}
 
 			if ( globals.pending[ data.check ] ) {
-				globals.pending[ data.check ].then( function ( data ) {
-					res.send( data );
+				globals.pending[ data.check ].then( function ( sendData ) {
+					res.send( sendData );
 					next();
 				} );
 			} else if ( data.check ) {

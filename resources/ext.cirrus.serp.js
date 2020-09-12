@@ -9,11 +9,11 @@ $( function () {
 	}
 
 	$( document ).on( 'click', 'a', function () {
-		var uri = new mw.Uri( location.href ),
+		var clickUri = new mw.Uri( location.href ),
 			token = mw.config.get( 'wgCirrusSearchRequestSetToken' );
 		if ( token ) {
-			uri.query.searchToken = token;
-			history.replaceState( {}, '', uri.toString() );
+			clickUri.query.searchToken = token;
+			history.replaceState( {}, '', clickUri.toString() );
 		}
 	} );
 } );

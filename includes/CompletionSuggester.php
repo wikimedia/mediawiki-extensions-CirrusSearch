@@ -341,7 +341,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 		foreach ( $namespaces as $k => $v ) {
 			// non-strict comparison, it can be strings
-			if ( $v == NS_MAIN ) {
+			if ( $v === NS_MAIN ) {
 				unset( $namespaces[$k] );
 			}
 		}

@@ -30,7 +30,7 @@ abstract class CirrusSearchResult extends SearchResult {
 	 */
 	public function __construct( Title $title ) {
 		$this->title = $title;
-		if ( $this->getTitle()->getNamespace() == NS_FILE ) {
+		if ( $this->getTitle()->getNamespace() === NS_FILE ) {
 			$this->file = MediaWikiServices::getInstance()->getRepoGroup()
 				->findFile( $this->title );
 		}

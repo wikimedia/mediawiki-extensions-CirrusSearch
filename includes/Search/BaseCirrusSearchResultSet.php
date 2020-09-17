@@ -87,7 +87,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	 *
 	 * @param \Elastica\ResultSet $resultSet Result set from which the titles come
 	 */
-	final private function preCacheContainedTitles( \Elastica\ResultSet $resultSet ) {
+	private function preCacheContainedTitles( \Elastica\ResultSet $resultSet ) {
 		// We can only pull in information about the local wiki
 		$lb = new LinkBatch;
 		foreach ( $resultSet->getResults() as $result ) {

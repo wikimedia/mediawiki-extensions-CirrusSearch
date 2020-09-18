@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Minisarm",
+			"NGC 54",
 			"Strainu"
 		]
 	},
@@ -16,5 +17,6 @@
 	"cirrussearch-pref-label": "Noua funcție de căutare",
 	"cirrussearch-pref-desc": "Încercați noua noastră funcție de căutare, care suportă un număr mai mare de limbi, furnizează rezultate actualizate și poate găsi text chiar și în interiorul formatelor.",
 	"cirrussearch-give-feedback": "Oferiți-ne părerea dumneavoastră.",
-	"prefs-completion": "Completarea căutării"
+	"prefs-completion": "Completarea căutării",
+	"cirrussearch-article-words": "Cuvinte în toate paginile cu conținut"
 }

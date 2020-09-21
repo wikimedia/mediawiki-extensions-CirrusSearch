@@ -233,7 +233,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @return SearchSuggestionSet
 	 */
 	private function processMSearchResponse( array $results, CompletionRequestLog $log ) {
-		$collector = new CompletionResultsCollector( $this->limit, $this->offset );
+		$collector = new CompletionResultsCollector(
+			$this->limit, $this->offset, $this->config->get( 'CirrusSearchCompletionBannedPageIds' ) );
 		$totalHits = $this->collectCompSuggestResults( $collector, $results, $log );
 		$totalHits += $this->collectPrefixSearchResults( $collector, $results, $log );
 		$log->setTotalHits( $totalHits );

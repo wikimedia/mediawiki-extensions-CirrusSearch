@@ -646,6 +646,10 @@
 					"use": false
 				}
 			}
+		},
+		"CirrusSearchCompletionBannedPageIds": {
+			"description": "Set of page ids to never return in completion search",
+			"value": []
 		}
 	},
 	"SearchMappings": {

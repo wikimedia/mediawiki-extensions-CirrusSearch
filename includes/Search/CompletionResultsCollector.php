@@ -41,15 +41,26 @@ class CompletionResultsCollector {
 	private $offset;
 
 	/**
+	 * Allows immediate removal of unwanted results while appropriate
+	 * processes are worked out for communities to influence ranking
+	 * as desired.
+	 *
+	 * @var int[] Set of id's to never return as results
+	 */
+	private $bannedIds;
+
+	/**
 	 * @param int $limit number of results we want to display
 	 * @param int $offset
+	 * @param int[] $bannedIds Set of id's to never return
 	 */
-	public function __construct( $limit, $offset = 0 ) {
+	public function __construct( $limit, $offset = 0, $bannedIds = [] ) {
 		if ( $limit <= 0 ) {
 			throw new \RuntimeException( "limit must be strictly positive" );
 		}
 		$this->limit = $limit;
 		$this->offset = $offset;
+		$this->bannedIds = $bannedIds;
 	}
 
 	/**
@@ -59,6 +70,10 @@ class CompletionResultsCollector {
 	 * @internal param int $docId
 	 */
 	private function canCollect( $pageId, $score ) {
+		if ( in_array( $pageId, $this->bannedIds ) ) {
+			return false;
+		}
+
 		// First element
 		if ( $this->minScore === null && $this->limit > 0 ) {
 			return true;

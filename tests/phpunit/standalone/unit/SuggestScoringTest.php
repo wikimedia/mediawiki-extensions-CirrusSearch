@@ -340,7 +340,7 @@ class SuggestScoringTest extends CirrusTestCase {
 		$templates = [ 'Good' => 2, 'Bad' => 0.5 ];
 		$all_templates = array_keys( $templates );
 		$all_templates += [ 'Foo', 'Bar' ];
-		for ( $i = 0; $i < 5000; $i++ ) {
+		for ( $i = 0; $i < 50; $i++ ) {
 			$scorers = [];
 			$scorers[] = new PQScore( [ 'Good' => 2, 'Bad' => 0.5 ] );
 			$scorers[] = new QualityScore( [ 'Good' => 2, 'Bad' => 0.5 ] );

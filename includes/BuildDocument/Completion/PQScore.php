@@ -47,30 +47,37 @@ class PQScore extends QualityScore {
 	public function explain( array $doc ) {
 		$qualityExplain = $this->intermediateExplain( $doc );
 		$pop = $doc['popularity_score'] ?? 0;
-		$popLogBaseExplain = [
-			'value' => 1 + self::POPULARITY_MAX * $this->maxDocs,
-			'description' => '1+popularity_max*max_docs; popularity_max = ' . self::POPULARITY_MAX .
-				', max_docs = ' . $this->maxDocs,
-		];
-
-		if ( $popLogBaseExplain['value'] > 1 ) {
+		if ( $pop > self::POPULARITY_MAX ) {
 			$popExplain = [
-				'value' => log(
-					1 + ( min( $pop, self::POPULARITY_MAX ) * $this->maxDocs ), $popLogBaseExplain['value']
-				),
-				'description' => "log(1+(min(popularity,popularity_max)*max_docs), pop_logbase); popularity = $pop, " .
-					 "popularity_max = " . self::POPULARITY_MAX . ", max_docs = {$this->maxDocs}, " .
-					 "pop_logbase = {$popLogBaseExplain['value']}",
-				'details' => [ 'pop_logbase' => $popLogBaseExplain ]
+				'value' => 1,
+				'description' => 'pop > max_popularity, pop = ' . $pop .
+								 ', max_popularity' . self::POPULARITY_MAX,
 			];
 		} else {
-			$popExplain = [
-				'value' => 0,
-				'description' => 'log base 1 is undefined',
-				'details' => [ 'pop_logbase' => $popLogBaseExplain ]
+			$popLogBaseExplain = [
+				'value' => 1 + self::POPULARITY_MAX * $this->maxDocs,
+				'description' => '1+popularity_max*max_docs; popularity_max = ' . self::POPULARITY_MAX .
+								 ', max_docs = ' . $this->maxDocs,
 			];
-		}
 
+			if ( $popLogBaseExplain['value'] > 1 ) {
+				$popExplain = [
+					'value' => log(
+						1 + ( min( $pop, self::POPULARITY_MAX ) * $this->maxDocs ), $popLogBaseExplain['value']
+					),
+					'description' => "log(1+(min(popularity,popularity_max)*max_docs), pop_logbase); popularity = $pop, " .
+									 "popularity_max = " . self::POPULARITY_MAX . ", max_docs = {$this->maxDocs}, " .
+									 "pop_logbase = {$popLogBaseExplain['value']}",
+					'details' => [ 'pop_logbase' => $popLogBaseExplain ]
+				];
+			} else {
+				$popExplain = [
+					'value' => 0,
+					'description' => 'log base 1 is undefined',
+					'details' => [ 'pop_logbase' => $popLogBaseExplain ]
+				];
+			}
+		}
 		$totalW = self::QSCORE_WEIGHT + self::POPULARITY_WEIGHT;
 		$wPop = $this->explainWeight( $popExplain, self::POPULARITY_WEIGHT, $totalW, 'popularity' );
 		$wQua = $this->explainWeight( $qualityExplain, self::QSCORE_WEIGHT, $totalW, 'quality' );

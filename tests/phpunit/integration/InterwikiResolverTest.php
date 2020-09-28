@@ -11,6 +11,7 @@ use CirrusSearch\InterwikiResolverFactory;
 use CirrusSearch\SiteMatrixInterwikiResolver;
 use ExtensionRegistry;
 use MediaWiki\MediaWikiServices;
+use MockHttpTrait;
 
 /**
  * @group CirrusSearch
@@ -21,6 +22,8 @@ use MediaWiki\MediaWikiServices;
  * @covers \CirrusSearch\EmptyInterwikiResolver
  */
 class InterwikiResolverTest extends CirrusIntegrationTestCase {
+	use MockHttpTrait;
+
 	/**
 	 * @return bool
 	 */
@@ -259,13 +262,8 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			}
 		}
 		$apiResponse = CirrusIntegrationTestCase::loadFixture( $fixtureFile );
+		$client = $this->makeFakeHttpMultiClient( $apiResponse );
 
-		$client = $this->getMockBuilder( \MultiHttpClient::class )
-			->disableOriginalConstructor()
-			->getMock();
-		$client->expects( $this->any() )
-			->method( 'runMulti' )
-			->will( $this->returnValue( $apiResponse ) );
 		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [], [], $client );
 		$configs = $resolver->getSisterProjectConfigs();
 

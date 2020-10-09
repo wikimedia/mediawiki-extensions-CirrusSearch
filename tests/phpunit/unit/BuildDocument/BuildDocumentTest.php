@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\BuildDocument;
 
+use CirrusSearch\CirrusTestCaseTrait;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
@@ -15,6 +16,8 @@ use WikiPage;
  * @covers \CirrusSearch\BuildDocument\BuildDocument
  */
 class BuildDocumentTest extends \MediaWikiUnitTestCase {
+	use CirrusTestCaseTrait;
+
 	private function mockBuilder( Title $title ) {
 		// Would be nice if we could pass the makeId function instead of a whole SearchConfig
 		$config = new SearchConfig;
@@ -27,7 +30,7 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 		$revStore->method( 'getTitle' )
 			->will( $this->returnValue( $title ) );
 
-		return new class( $connection, $db, $parserCache, $revStore ) extends BuildDocument {
+		return new class( $connection, $db, $parserCache, $revStore, $this->createCirrusSearchHookRunner() ) extends BuildDocument {
 			// Override create builders to avoid testing those implementations
 			protected function createBuilders( int $flags ): array {
 				return [ new class() implements PagePropertyBuilder {

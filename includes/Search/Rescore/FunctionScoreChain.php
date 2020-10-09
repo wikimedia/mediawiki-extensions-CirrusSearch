@@ -2,11 +2,11 @@
 
 namespace CirrusSearch\Search\Rescore;
 
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Profile\ArrayPathSetter;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\FunctionScore;
-use Hooks;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -61,6 +61,10 @@ class FunctionScoreChain {
 	 * @var string the name of the chain
 	 */
 	private $chainName;
+	/**
+	 * @var CirrusSearchHookRunner
+	 */
+	private $cirrusSearchHookRunner;
 
 	/**
 	 * Builds a new function score chain.
@@ -69,8 +73,9 @@ class FunctionScoreChain {
 	 * @param string $chainName the name of the chain (must be a valid
 	 *  chain in wgCirrusSearchRescoreFunctionScoreChains)
 	 * @param array $overrides Parameter overrides
+	 * @param CirrusSearchHookRunner $cirrusSearchHookRunner
 	 */
-	public function __construct( SearchContext $context, $chainName, $overrides ) {
+	public function __construct( SearchContext $context, $chainName, $overrides, CirrusSearchHookRunner $cirrusSearchHookRunner ) {
 		$this->chainName = $chainName;
 		$this->context = $context;
 		$this->functionScore = new FunctionScoreDecorator();
@@ -83,6 +88,7 @@ class FunctionScoreChain {
 		foreach ( $params as $param => $value ) {
 			$this->functionScore->setParam( $param, $value );
 		}
+		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner;
 	}
 
 	private function applyOverrides( array $chain, array $overrides ) {
@@ -173,8 +179,7 @@ class FunctionScoreChain {
 				return new TermBoostScoreBuilder( $config, $weight,  $func['params'] );
 			default:
 				$builder = null;
-				Hooks::run( 'CirrusSearchScoreBuilder', [ $func, $this->context, &$builder ] );
-				// @phan-suppress-next-line PhanRedundantCondition Must be set by hook
+				$this->cirrusSearchHookRunner->onCirrusSearchScoreBuilder( $func, $this->context, $builder );
 				if ( !$builder ) {
 					throw new InvalidRescoreProfileException( "Unknown function score type {$func['type']}." );
 				}

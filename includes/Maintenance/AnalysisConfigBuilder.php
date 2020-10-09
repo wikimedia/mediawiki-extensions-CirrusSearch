@@ -3,9 +3,9 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\CirrusSearch;
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
-use Hooks;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -68,11 +68,22 @@ class AnalysisConfigBuilder {
 	protected $defaultLanguage;
 
 	/**
+	 * @var CirrusSearchHookRunner
+	 */
+	private $cirrusSearchHookRunner;
+
+	/**
 	 * @param string $langCode The language code to build config for
 	 * @param string[] $plugins list of plugins installed in Elasticsearch
 	 * @param SearchConfig|null $config
+	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
 	 */
-	public function __construct( $langCode, array $plugins, SearchConfig $config = null ) {
+	public function __construct(
+		$langCode,
+		array $plugins,
+		SearchConfig $config = null,
+		CirrusSearchHookRunner $cirrusSearchHookRunner = null
+	) {
 		$this->defaultLanguage = $langCode;
 		$this->plugins = $plugins;
 		foreach ( $this->elasticsearchLanguageAnalyzersFromPlugins as $pluginSpec => $extra ) {
@@ -98,7 +109,9 @@ class AnalysisConfigBuilder {
 		if ( !array_key_exists( 'similarity', $similarity ) ) {
 			$similarity['similarity'] = [];
 		}
-		Hooks::run( 'CirrusSearchSimilarityConfig', [ &$similarity['similarity'] ] );
+		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner ?: new CirrusSearchHookRunner(
+			MediaWikiServices::getInstance()->getHookContainer() );
+		$this->cirrusSearchHookRunner->onCirrusSearchSimilarityConfig( $similarity['similarity'] );
 		$this->similarity = $similarity;
 
 		$this->config = $config;
@@ -168,7 +181,7 @@ class AnalysisConfigBuilder {
 			$language = $this->defaultLanguage;
 		}
 		$config = $this->customize( $this->defaults( $language ), $language );
-		Hooks::run( 'CirrusSearchAnalysisConfig', [ &$config, $this ] );
+		$this->cirrusSearchHookRunner->onCirrusSearchAnalysisConfig( $config, $this );
 		$config = $this->enableHomoglyphPlugin( $config, $language );
 		if ( $this->shouldActivateIcuTokenization( $language ) ) {
 			$config = $this->enableICUTokenizer( $config );

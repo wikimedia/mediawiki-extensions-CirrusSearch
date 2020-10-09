@@ -51,14 +51,15 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		$rewritten
 	) {
 		$config = new HashSearchConfig( [] );
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, $queryString, $this->namespacePrefixParser() )
+		$query = $this->getNewFTSearchQueryBuilder( $config, $queryString )
 			->setAllowRewrite( true )
 			->build();
 
 		$rewrittenResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 1 );
 		$rewrittenQuery = null;
 		if ( $suggestion != null && $rewritten ) {
-			$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $query, $suggestion, $this->namespacePrefixParser() )
+			$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $query, $suggestion,
+				$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() )
 				->build();
 		}
 		$searcherFactory = $this->getSearcherFactoryMock( $rewrittenQuery, $rewrittenResults );
@@ -70,7 +71,8 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		$this->assertNotNull( $fallback->getSearchRequest(
 			$this->getMockBuilder( Client::class )->disableOriginalConstructor()->getMock() ) );
 		$initialResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), $rewritten ? 0 : 1 );
-		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory, $this->namespacePrefixParser() );
+		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory, $this->namespacePrefixParser(),
+			$this->createCirrusSearchHookRunner() );
 		$this->assertSame( 0.0, $fallback->successApproximation( $context ), "No success without a response" );
 		$context->setSuggestResponse( $response );
 		$this->assertSame( $expectedApproxScore, $fallback->successApproximation( $context ) );
@@ -129,10 +131,9 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 				'my_profile' => $profile
 			]
 		];
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+		$query = $this->getNewFTSearchQueryBuilder(
 				$this->newHashSearchConfig( $config ),
-				$query,
-				$this->namespacePrefixParser()
+				$query
 			)
 			->setInitialNamespaces( $namespaces )
 			->setOffset( $offset )
@@ -187,28 +188,25 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 
 		$params = [ 'profile' => 'my_profile' ];
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+		$query = $this->getNewFTSearchQueryBuilder(
 				$this->newHashSearchConfig( $config ),
-				'foo bar',
-				$this->namespacePrefixParser()
+				'foo bar'
 			)
 			->setWithDYMSuggestion( false )
 			->build();
 		$this->assertNull( IndexLookupFallbackMethod::build( $query, $params ) );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+		$query = $this->getNewFTSearchQueryBuilder(
 				$this->newHashSearchConfig( $config ),
-				'foo bar',
-				$this->namespacePrefixParser()
+				'foo bar'
 			)
 			->setWithDYMSuggestion( true )
 			->build();
 		$this->assertNotNull( IndexLookupFallbackMethod::build( $query, $params ) );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+		$query = $this->getNewFTSearchQueryBuilder(
 				$this->newHashSearchConfig( $config ),
-				'foo bar',
-				$this->namespacePrefixParser()
+				'foo bar'
 			)
 			->setWithDYMSuggestion( true )
 			->setOffset( 10 )
@@ -246,10 +244,9 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 	 * @dataProvider profileInvalidProfileParams
 	 */
 	public function testInvalidProfileParam( array $queryParams, $excMessage ) {
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+		$query = $this->getNewFTSearchQueryBuilder(
 				$this->newHashSearchConfig( [] ),
-				'foo',
-				$this->namespacePrefixParser()
+				'foo'
 			)
 			->setWithDYMSuggestion( true )
 			->build();

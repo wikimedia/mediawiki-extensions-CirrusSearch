@@ -10,7 +10,6 @@ use CirrusSearch\Parser\AST\PhraseQueryNode;
 use CirrusSearch\Parser\FTQueryClassifiersRepository;
 use CirrusSearch\Parser\KeywordRegistry;
 use CirrusSearch\Parser\QueryParser;
-use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\Query\ArticleTopicFeature;
 use CirrusSearch\Query\InCategoryFeature;
 use CirrusSearch\Search\Escaper;
@@ -61,7 +60,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 			}
 		};
 		$parser = new QueryStringRegexParser( $registry, new Escaper( 'en', false ), 'all',
-			new FTQueryClassifiersRepository( $config ), $this->namespacePrefixParser(), 10 );
+			new FTQueryClassifiersRepository( $config, $this->createCirrusSearchHookRunner() ), $this->namespacePrefixParser(), 10 );
 
 		try {
 			$parser->parse( str_repeat( "a", 11 ) );
@@ -112,7 +111,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 	 * @return QueryParser
 	 */
 	public function buildParser( $config ) {
-		$parser = QueryParserFactory::newFullTextQueryParser( $config, $this->namespacePrefixParser() );
+		$parser = $this->createNewFullTextQueryParser( $config );
 		$this->assertInstanceOf( QueryStringRegexParser::class, $parser );
 		return $parser;
 	}

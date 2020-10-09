@@ -6,7 +6,6 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Dispatch\BasicSearchQueryRoute;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchQuery;
-use CirrusSearch\Search\SearchQueryBuilder;
 
 /**
  * @group CirrusSearch
@@ -139,19 +138,19 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 		$service->registerFTSearchQueryRoute( 'bar', 0.4, [ 1 ] );
 		$service->freeze();
 		$dispatch = $service->getDispatchService();
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo', $this->namespacePrefixParser() )
+		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
 			->setInitialNamespaces( [ 0 ] )
 			->build();
 		$route = $dispatch->bestRoute( $query );
 		$this->assertEquals( 'foo', $route->getProfileContext() );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo', $this->namespacePrefixParser() )
+		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
 			->setInitialNamespaces( [ 1 ] )
 			->build();
 		$route = $dispatch->bestRoute( $query );
 		$this->assertEquals( 'bar', $route->getProfileContext() );
 
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo', $this->namespacePrefixParser() )
+		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
 			->setInitialNamespaces( [ 2 ] )
 			->build();
 		$route = $dispatch->bestRoute( $query );

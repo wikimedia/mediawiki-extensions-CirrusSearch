@@ -5,7 +5,6 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
-use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\AbstractQuery;
@@ -293,7 +292,7 @@ class PrefixFeatureTest extends CirrusTestCase {
 		$feature = new PrefixFeature( $this->namespacePrefixParser() );
 		$feature->apply( $context, $query );
 		$this->assertEquals( $expectedNamespaces, $context->getNamespaces() );
-		$parser = QueryParserFactory::newFullTextQueryParser( $config, $this->namespacePrefixParser() );
+		$parser = $this->createNewFullTextQueryParser( $config );
 		$parsedQuery = $parser->parse( $query );
 		$this->assertEquals( $additionalNs, $parsedQuery->getRequiredNamespaces() );
 	}

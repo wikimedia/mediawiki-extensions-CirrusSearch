@@ -168,20 +168,21 @@ class FallbackMethodTraitTest extends BaseFallbackMethodTest {
 		$rewrittenResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 2 );
 
 		$searchConfig = $this->newHashSearchConfig( $config );
-		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $searchConfig, $initialQueryString, $this->namespacePrefixParser() )
+		$query = $this->getNewFTSearchQueryBuilder( $searchConfig, $initialQueryString )
 			->setAllowRewrite( $allowRewrite )
 			->build();
 		if ( $isRewritten ) {
-			$rewritten = SearchQueryBuilder::forRewrittenQuery( $query, $rewrittenQueryString, $this->namespacePrefixParser() )->build();
+			$rewritten = SearchQueryBuilder::forRewrittenQuery( $query, $rewrittenQueryString,
+				$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() )->build();
 		} else {
 			$rewritten = null;
 		}
 		$context = new FallbackRunnerContextImpl( $initialResult,
 			$this->getSearcherFactoryMock( $rewritten, $rewrittenResults ),
-			$this->namespacePrefixParser() );
+			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() );
 
 		if ( !$costlyCallAllowed ) {
-			$dummyQuery = SearchQueryBuilder::newFTSearchQueryBuilder( $searchConfig, 'foo', $this->namespacePrefixParser() )
+			$dummyQuery = $this->getNewFTSearchQueryBuilder( $searchConfig, 'foo' )
 				->build();
 			$context->makeSearcher( $dummyQuery );
 		}

@@ -3,10 +3,8 @@
 namespace CirrusSearch\Parser\AST\Visitor;
 
 use CirrusSearch\CirrusIntegrationTestCase;
-use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\AST\BooleanClause;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
-use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\Query\FilterQueryFeature;
 use CirrusSearch\Query\InTitleFeature;
 use PHPUnit\Framework\TestCase;
@@ -100,10 +98,7 @@ class KeywordNodeVisitorTest extends CirrusIntegrationTestCase {
 	 * @dataProvider provideQueries
 	 */
 	public function test( $term, array $states, $classFilter, $exlusionFilter ) {
-		$parser = QueryParserFactory::newFullTextQueryParser(
-			new HashSearchConfig( [] ),
-			$this->namespacePrefixParser()
-		);
+		$parser = $this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) );
 		$visitor = new class( $exlusionFilter, $classFilter, $states ) extends KeywordNodeVisitor {
 			/**
 			 * @var int

@@ -5,7 +5,6 @@ namespace CirrusSearch\Parser\AST;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
-use CirrusSearch\Parser\QueryParserFactory;
 
 /**
  * @covers \CirrusSearch\Parser\AST\ParsedQuery
@@ -39,7 +38,7 @@ class ParsedQueryTest extends CirrusIntegrationTestCase {
 	 * @covers \CirrusSearch\Parser\AST\ParsedQuery::getCrossSearchStrategy()
 	 */
 	public function testCrossSearchStrategy( $query, CrossSearchStrategy $expectedStratery ) {
-		$parser = QueryParserFactory::newFullTextQueryParser( $this->newHashSearchConfig( [] ), $this->namespacePrefixParser() );
+		$parser = $this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) );
 		$pQuery = $parser->parse( $query );
 		$this->assertEquals( $expectedStratery, $pQuery->getCrossSearchStrategy() );
 	}
@@ -76,7 +75,7 @@ class ParsedQueryTest extends CirrusIntegrationTestCase {
 	 */
 	public function testFeaturesUsed( $query, array $features ) {
 		$config = new HashSearchConfig( [ 'CirrusSearchEnableRegex' => true ] );
-		$parser = QueryParserFactory::newFullTextQueryParser( $config, $this->namespacePrefixParser() );
+		$parser = $this->createNewFullTextQueryParser( $config );
 		$parsedQuery = $parser->parse( $query );
 		$this->assertArrayEquals( $features, $parsedQuery->getFeaturesUsed() );
 	}
@@ -98,7 +97,7 @@ class ParsedQueryTest extends CirrusIntegrationTestCase {
 	 * @param int $queryStartOffset
 	 */
 	public function testNsHeader( $query, $expectedNsHeader, $queryStartOffset ) {
-		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ), $this->namespacePrefixParser() );
+		$parser = $this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) );
 		$pq = $parser->parse( $query );
 		$this->assertEquals( $expectedNsHeader, $pq->getNamespaceHeader() !== null ? $pq->getNamespaceHeader()->getNamespace() : null );
 		$this->assertEquals( $queryStartOffset, $pq->getRoot()->getStartOffset() );
@@ -192,7 +191,7 @@ class ParsedQueryTest extends CirrusIntegrationTestCase {
 	 * @param $expectedActualNamespace
 	 */
 	public function testActualNamespace( $query, $initialNamespaces, $expectedActualNamespace ) {
-		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ), $this->namespacePrefixParser() );
+		$parser = $this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) );
 		$pq = $parser->parse( $query );
 		$this->assertEquals( $expectedActualNamespace, $pq->getActualNamespaces( $initialNamespaces ) );
 		if ( $expectedActualNamespace !== [] ) {
@@ -217,23 +216,23 @@ class ParsedQueryTest extends CirrusIntegrationTestCase {
 	 * @param $hasLeadingTilde
 	 */
 	public function testLeadingTilde( $query, $hasLeadingTilde ) {
-		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ), $this->namespacePrefixParser() );
+		$parser = $this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) );
 		$pq = $parser->parse( $query );
 		$this->assertEquals( $hasLeadingTilde, $pq->hasCleanup( ParsedQuery::TILDE_HEADER ) );
 	}
 
 	public function testGetQueryWithoutNsHeader() {
 		$this->assertEquals( 'foobar',
-			QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ), $this->namespacePrefixParser() )
+			$this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) )
 				->parse( 'help:foobar' )->getQueryWithoutNsHeader() );
 		$this->assertEquals( 'foobar',
-			QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ), $this->namespacePrefixParser() )
+			$this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) )
 				->parse( '~help:foobar' )->getQueryWithoutNsHeader() );
 		$this->assertEquals( '-foobar',
-			QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ), $this->namespacePrefixParser() )
+			$this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) )
 				->parse( '~help:-foobar' )->getQueryWithoutNsHeader() );
 		$this->assertEquals( ' NOT foobar',
-			QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ), $this->namespacePrefixParser() )
+			$this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) )
 				->parse( 'all: NOT foobar' )->getQueryWithoutNsHeader() );
 	}
 }

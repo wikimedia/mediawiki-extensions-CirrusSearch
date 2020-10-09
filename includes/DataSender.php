@@ -161,7 +161,8 @@ class DataSender extends ElasticsearchIntermediary {
 			$this->connection,
 			$services->getDBLoadBalancer()->getConnection( DB_REPLICA ),
 			$services->getParserCache(),
-			$services->getRevisionStore()
+			$services->getRevisionStore(),
+			new CirrusSearchHookRunner( $services->getHookContainer() )
 		);
 		foreach ( $documents as $i => $doc ) {
 			if ( !$builder->finalize( $doc ) ) {

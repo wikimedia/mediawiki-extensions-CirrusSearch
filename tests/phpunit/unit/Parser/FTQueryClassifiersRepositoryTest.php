@@ -17,7 +17,7 @@ class FTQueryClassifiersRepositoryTest extends CirrusTestCase {
 	 */
 	public function testGetConfig() {
 		$config = new HashSearchConfig( [] );
-		$repo = new FTQueryClassifiersRepository( $config );
+		$repo = new FTQueryClassifiersRepository( $config, $this->createCirrusSearchHookRunner() );
 		$this->assertSame( $config, $repo->getConfig() );
 	}
 
@@ -26,7 +26,7 @@ class FTQueryClassifiersRepositoryTest extends CirrusTestCase {
 	 */
 	public function testDefaultClassifiers() {
 		$config = new HashSearchConfig( [] );
-		$repo = new FTQueryClassifiersRepository( $config );
+		$repo = new FTQueryClassifiersRepository( $config, $this->createCirrusSearchHookRunner() );
 		$defaults = [
 			BasicQueryClassifier::SIMPLE_BAG_OF_WORDS,
 			BasicQueryClassifier::SIMPLE_PHRASE,
@@ -49,7 +49,7 @@ class FTQueryClassifiersRepositoryTest extends CirrusTestCase {
 
 	public function testRegister() {
 		$config = new HashSearchConfig( [] );
-		$this->setTemporaryHook( 'CirrusSearchRegisterFullTextQueryClassifiers',
+		$cirrusSearchHookRunner = $this->createCirrusSearchHookRunner( [ 'CirrusSearchRegisterFullTextQueryClassifiers' =>
 			function ( FTQueryClassifiersRepository $repository ) {
 				$repository->registerClassifierAsCallable( [ 'hook1' ],
 					function ( ParsedQuery $query ) {
@@ -99,8 +99,8 @@ class FTQueryClassifiersRepositoryTest extends CirrusTestCase {
 					$this->assertEquals( 'Classifier with hook1 already registered', $e->getMessage() );
 				}
 			}
-		);
-		$repo = new FTQueryClassifiersRepository( $config );
+		] );
+		$repo = new FTQueryClassifiersRepository( $config, $cirrusSearchHookRunner );
 		foreach ( [ 'hook1', 'hook2' ] as $name ) {
 			$this->assertInstanceOf( ParsedQueryClassifier::class,
 				$repo->getClassifier( $name ) );

@@ -2,11 +2,11 @@
 
 namespace CirrusSearch\BuildDocument;
 
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Connection;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
-use Hooks;
 use IDatabase;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Revision\RevisionAccessException;
@@ -69,24 +69,29 @@ class BuildDocument {
 	private $parserCache;
 	/** @var RevisionStore */
 	private $revStore;
+	/** @var $cirrusSearchHookRunner */
+	private $cirrusSearchHookRunner;
 
 	/**
 	 * @param Connection $connection Cirrus connection to read page properties from
 	 * @param IDatabase $db Wiki database connection to read page properties from
 	 * @param ParserCache $parserCache Cache to read parser output from
 	 * @param RevisionStore $revStore Store for retrieving revisions by id
+	 * @param CirrusSearchHookRunner $cirrusSearchHookRunner
 	 */
 	public function __construct(
 		Connection $connection,
 		IDatabase $db,
 		ParserCache $parserCache,
-		RevisionStore $revStore
+		RevisionStore $revStore,
+		CirrusSearchHookRunner $cirrusSearchHookRunner
 	) {
 		$this->config = $connection->getConfig();
 		$this->connection = $connection;
 		$this->db = $db;
 		$this->parserCache = $parserCache;
 		$this->revStore = $revStore;
+		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner;
 	}
 
 	/**
@@ -113,7 +118,7 @@ class BuildDocument {
 
 			// Use of this hook is deprecated, integration should happen through content handler
 			// interfaces.
-			Hooks::run( 'CirrusSearchBuildDocumentParse', [
+			$this->cirrusSearchHookRunner->onCirrusSearchBuildDocumentParse(
 				$documents[$page->getId()],
 				$page->getTitle(),
 				$page->getContent(),
@@ -122,7 +127,7 @@ class BuildDocument {
 				// not use the parser output.
 				new ParserOutput( null ),
 				$this->connection
-			] );
+			);
 		}
 
 		foreach ( $builders as $builder ) {

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
@@ -69,4 +70,9 @@ interface FallbackRunnerContext {
 	 * @return bool
 	 */
 	public function hasMethodResponse();
+
+	/**
+	 * @return CirrusSearchHookRunner
+	 */
+	public function getCirrusSearchHookRunner(): CirrusSearchHookRunner;
 }

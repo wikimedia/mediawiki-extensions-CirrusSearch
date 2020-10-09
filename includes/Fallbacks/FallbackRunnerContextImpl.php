@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
@@ -48,22 +49,29 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	 * @var NamespacePrefixParser
 	 */
 	private $namespacePrefixParser;
+	/**
+	 * @var CirrusSearchHookRunner
+	 */
+	private $cirrusSearchHookRunner;
 
 	/**
 	 * FallbackRunnerContextImpl constructor.
 	 * @param CirrusSearchResultSet $initialResultSet
 	 * @param SearcherFactory $searcherFactory
 	 * @param NamespacePrefixParser $namespacePrefixParser
+	 * @param CirrusSearchHookRunner $cirrusSearchHookRunner
 	 */
 	public function __construct(
 		CirrusSearchResultSet $initialResultSet,
 		SearcherFactory $searcherFactory,
-		NamespacePrefixParser $namespacePrefixParser
+		NamespacePrefixParser $namespacePrefixParser,
+		CirrusSearchHookRunner $cirrusSearchHookRunner
 	) {
 		$this->initialResultSet = $initialResultSet;
 		$this->previousResultSet = $initialResultSet;
 		$this->searcherFactory = $searcherFactory;
 		$this->namespacePrefixParser = $namespacePrefixParser;
+		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner;
 	}
 
 	/**
@@ -140,5 +148,12 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	 */
 	public function getNamespacePrefixParser(): NamespacePrefixParser {
 		return $this->namespacePrefixParser;
+	}
+
+	/**
+	 * @return CirrusSearchHookRunner
+	 */
+	public function getCirrusSearchHookRunner(): CirrusSearchHookRunner {
+		return $this->cirrusSearchHookRunner;
 	}
 }

@@ -128,18 +128,21 @@ class CirrusSearch extends SearchEngine {
 	private $titleHelper;
 
 	/**
+	 * @var CirrusSearchHookRunner|null
+	 */
+	private $cirrusSearchHookRunner;
+
+	/**
 	 * @param SearchConfig|null $config
 	 * @param CirrusDebugOptions|null $debugOptions
 	 * @param NamespacePrefixParser|null $namespacePrefixParser
 	 * @param InterwikiResolver|null $interwikiResolver
 	 * @param TitleHelper|null $titleHelper
 	 */
-	public function __construct(
-		SearchConfig $config = null,
+	public function __construct( SearchConfig $config = null,
 		CirrusDebugOptions $debugOptions = null,
 		NamespacePrefixParser $namespacePrefixParser = null,
-		InterwikiResolver $interwikiResolver = null,
-		TitleHelper $titleHelper = null
+		InterwikiResolver $interwikiResolver = null, TitleHelper $titleHelper = null
 	) {
 		// Initialize UserTesting before we create a Connection
 		// This is useful to do tests across multiple clusters
@@ -213,7 +216,7 @@ class CirrusSearch extends SearchEngine {
 	protected function doSearchText( $term ) {
 		try {
 			$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $this->config,
-				$term, $this->namespacePrefixParser );
+				$term, $this->namespacePrefixParser, $this->getCirrusSearchHookRunner() );
 		} catch ( SearchQueryParseException $e ) {
 			return $e->asStatus();
 		}
@@ -287,7 +290,8 @@ class CirrusSearch extends SearchEngine {
 			( $this->debugOptions->isReturnRaw() || method_exists( $result, 'addInterwikiResults' ) )
 		) {
 			$iwSearch = new InterwikiSearcher( $this->connection, $query->getSearchConfig(), $this->namespaces, null,
-				$this->debugOptions, $this->namespacePrefixParser, $this->interwikiResolver, $this->titleHelper );
+				$this->debugOptions, $this->namespacePrefixParser, $this->interwikiResolver, $this->titleHelper,
+				$this->getCirrusSearchHookRunner() );
 			$interwikiResults = $iwSearch->getInterwikiResults( $query );
 			if ( $interwikiResults->isOK() && $interwikiResults->getValue() !== [] ) {
 				foreach ( $interwikiResults->getValue() as $interwiki => $interwikiResult ) {
@@ -591,6 +595,14 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private function makeSearcher( SearchConfig $config = null ) {
 		return new Searcher( $this->connection, $this->offset, $this->limit, $config ?? $this->config, $this->namespaces,
-				null, false, $this->debugOptions, $this->namespacePrefixParser, $this->interwikiResolver, $this->titleHelper );
+				null, false, $this->debugOptions, $this->namespacePrefixParser, $this->interwikiResolver, $this->titleHelper,
+				$this->getCirrusSearchHookRunner() );
+	}
+
+	private function getCirrusSearchHookRunner(): CirrusSearchHookRunner {
+		if ( $this->cirrusSearchHookRunner == null ) {
+			$this->cirrusSearchHookRunner = new CirrusSearchHookRunner( $this->getHookContainer() );
+		}
+		return $this->cirrusSearchHookRunner;
 	}
 }

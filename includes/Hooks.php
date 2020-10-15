@@ -726,9 +726,13 @@ class Hooks {
 			$wgOut->addModules( 'ext.cirrus.explore-similar' );
 		}
 
-		$wgOut->addJsConfigVars( [
+		$jsVars = [
 			'wgCirrusSearchRequestSetToken' => Util::getRequestSetToken(),
-		] );
+		];
+		if ( UserTesting::isInitialized() ) {
+			$jsVars['wgCirrusSearchBackendUserTests'] = UserTesting::getInstance()->getActiveTestNamesWithBucket();
+		}
+		$wgOut->addJsConfigVars( $jsVars );
 
 		// This ignores interwiki results for now...not sure what do do with those
 		ElasticsearchIntermediary::setResultPages( [

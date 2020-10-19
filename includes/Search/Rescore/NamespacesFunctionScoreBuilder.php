@@ -4,7 +4,8 @@ namespace CirrusSearch\Search\Rescore;
 
 use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
-use MWNamespace;
+use MediaWiki\MediaWikiServices;
+use NamespaceInfo;
 
 /**
  * Builds a set of functions with namespaces.
@@ -24,14 +25,22 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 	private $namespacesToBoost;
 
 	/**
+	 * @var NamespaceInfo
+	 */
+	private $namespaceInfo;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces
 	 * @param float $weight
+	 * @param NamespaceInfo|null $namespaceInfo
 	 */
-	public function __construct( SearchConfig $config, $namespaces, $weight ) {
+	public function __construct( SearchConfig $config, $namespaces, $weight, NamespaceInfo $namespaceInfo = null ) {
 		parent::__construct( $config, $weight );
+
+		$this->namespaceInfo = $namespaceInfo ?: MediaWikiServices::getInstance()->getNamespaceInfo();
 		$this->namespacesToBoost =
-			$namespaces ?: MWNamespace::getValidNamespaces();
+			$namespaces ?: $this->namespaceInfo->getValidNamespaces();
 		if ( !$this->namespacesToBoost || count( $this->namespacesToBoost ) == 1 ) {
 			// nothing to boost, no need to initialize anything else.
 			return;
@@ -63,14 +72,14 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 		if ( isset( $this->normalizedNamespaceWeights[$namespace] ) ) {
 			return $this->normalizedNamespaceWeights[$namespace];
 		}
-		if ( MWNamespace::isSubject( $namespace ) ) {
+		if ( $this->namespaceInfo->isSubject( $namespace ) ) {
 			if ( $namespace === NS_MAIN ) {
 				return 1;
 			}
 
 			return $this->config->get( 'CirrusSearchDefaultNamespaceWeight' );
 		}
-		$subjectNs = MWNamespace::getSubject( $namespace );
+		$subjectNs = $this->namespaceInfo->getSubject( $namespace );
 		if ( isset( $this->normalizedNamespaceWeights[$subjectNs] ) ) {
 			return $this->config->get( 'CirrusSearchTalkNamespaceWeight' ) *
 				   $this->normalizedNamespaceWeights[$subjectNs];

@@ -2,8 +2,9 @@
 
 namespace CirrusSearch\Search;
 
-use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Search\Rescore\BoostTemplatesFunctionScoreBuilder;
 use CirrusSearch\Search\Rescore\CustomFieldFunctionScoreBuilder;
@@ -15,11 +16,12 @@ use CirrusSearch\Search\Rescore\NamespacesFunctionScoreBuilder;
 use CirrusSearch\Search\Rescore\PreferRecentFunctionScoreBuilder;
 use CirrusSearch\Search\Rescore\RescoreBuilder;
 use CirrusSearch\Search\Rescore\ScriptScoreFunctionScoreBuilder;
+use NamespaceInfo;
 
 /**
  * @group CirrusSearch
  */
-class RescoreBuilderTest extends CirrusIntegrationTestCase {
+class RescoreBuilderTest extends CirrusTestCase {
 	/**
 	 * @covers \CirrusSearch\Search\Rescore\FunctionScoreDecorator
 	 */
@@ -70,7 +72,6 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 	 * @covers \CirrusSearch\Search\Rescore\LangWeightFunctionScoreBuilder
 	 */
 	public function testLangWeight() {
-		// Default user lang seems to be en with unit tests
 		// Test that we generate 2 filters
 		$config = new HashSearchConfig( [
 			'CirrusSearchLanguageWeight' => [
@@ -79,7 +80,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 			],
 			'LanguageCode' => 'de'
 		] );
-		$builder = new LangWeightFunctionScoreBuilder( $config, 1 );
+		$builder = new LangWeightFunctionScoreBuilder( $config, 1, 'en' );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -95,7 +96,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 			'LanguageCode' => 'en'
 		] );
 
-		$builder = new LangWeightFunctionScoreBuilder( $config, 1 );
+		$builder = new LangWeightFunctionScoreBuilder( $config, 1, 'en' );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -107,7 +108,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 			'CirrusSearchLanguageWeight' => [],
 			'LanguageCode' => 'de'
 		] );
-		$builder = new LangWeightFunctionScoreBuilder( $config, 1 );
+		$builder = new LangWeightFunctionScoreBuilder( $config, 1, 'en' );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
@@ -118,13 +119,16 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 	 * @covers \CirrusSearch\Search\Rescore\BoostedQueriesFunction
 	 */
 	public function testBoostTemplates() {
-		$config = new HashSearchConfig( [] );
+		$config = new HashSearchConfig( [ 'CirrusSearchIgnoreOnWikiBoostTemplates' => true ] );
 		$builder = new BoostTemplatesFunctionScoreBuilder( $config, [], false, true, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
 
-		$config = new HashSearchConfig( [ 'CirrusSearchBoostTemplates' => [ 'test' => 3.2 ] ] );
+		$config = new HashSearchConfig( [
+			'CirrusSearchIgnoreOnWikiBoostTemplates' => true,
+			'CirrusSearchBoostTemplates' => [ 'test' => 3.2 ]
+		] );
 		$builder = new BoostTemplatesFunctionScoreBuilder( $config, [], false, true, 1 );
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -135,6 +139,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		$this->assertTrue( $fScore->isEmptyFunction() );
 
 		$config = new HashSearchConfig( [
+			'CirrusSearchIgnoreOnWikiBoostTemplates' => true,
 			'CirrusSearchExtraIndexes' => [ NS_MAIN => [ 'extramain' ] ],
 			'CirrusSearchExtraIndexBoostTemplates' => [
 				'extramain' => [
@@ -220,12 +225,20 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 				NS_HELP => 3,
 			],
 			'CirrusSearchDefaultNamespaceWeight' => 0.2,
-			'CirrusSearchTalkNamespaceWeight' => 0.25
+			'CirrusSearchTalkNamespaceWeight' => 0.25,
 		];
 		$config = new HashSearchConfig( $settings );
 
+		$namespaceInfo = $this->createMock( NamespaceInfo::class );
+		$namespaceInfo->expects( $this->any() )->method( 'isSubject' )->will(
+			$this->returnCallback( function ( $ns ) {
+				return in_array( $ns, [ NS_MAIN, NS_PROJECT, NS_HELP, NS_MEDIAWIKI ] );
+			}
+		) );
+		$namespaceInfo->expects( $this->any() )->method( 'getSubject' )->with( NS_TALK )->willReturn( NS_MAIN );
 		// 5 namespaces in the query generates 5 filters
-		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_PROJECT, NS_HELP, NS_MEDIAWIKI, NS_TALK ], 1 );
+		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_PROJECT, NS_HELP, NS_MEDIAWIKI, NS_TALK ],
+			1, $namespaceInfo );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -233,13 +246,13 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		$this->assertCount( 5, $array['function_score']['functions'] );
 
 		// With a single namespace the function score is empty
-		$builder = new NamespacesFunctionScoreBuilder( $config, [ 0 ], 1 );
+		$builder = new NamespacesFunctionScoreBuilder( $config, [ 0 ], 1, $namespaceInfo );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
 
 		// with 2 namespaces we have 2 functions
-		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_HELP ], 1 );
+		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_HELP ], 1, $namespaceInfo );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -255,7 +268,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 			],
 		];
 		$config = new HashSearchConfig( $settings );
-		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_PROJECT, NS_HELP ], 1 );
+		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_PROJECT, NS_HELP ], 1, $namespaceInfo );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -271,7 +284,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 			],
 		];
 		$config = new HashSearchConfig( $settings );
-		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_PROJECT, NS_HELP ], 1 );
+		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_PROJECT, NS_HELP ], 1, $namespaceInfo );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -284,9 +297,12 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 	 * @covers \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
 	public function testFallbackProfile( $settings, $namespaces, $expectedFunctionCount ) {
-		$config = new HashSearchConfig( $settings + [ 'CirrusSearchBoostTemplates' => [ 'Good' => 1.3 ] ] );
+		$config = $this->newHashSearchConfig( $settings + [
+			'CirrusSearchIgnoreOnWikiBoostTemplates' => true,
+			'CirrusSearchBoostTemplates' => [ 'Good' => 1.3 ]
+		] );
 
-		$context = new SearchContext( $config, $namespaces );
+		$context = new SearchContext( $config, $namespaces, null, null, null, $this->createCirrusSearchHookRunner() );
 		$builder = new RescoreBuilder( $context, $this->createCirrusSearchHookRunner(), $config->get( 'CirrusSearchRescoreProfile' ) );
 		$rescore = $builder->build();
 		$array = $rescore[0]['query']['rescore_query'];
@@ -387,9 +403,9 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 	 * @covers \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
 	public function testWindowSizeOverride( $settings, $expected ) {
-		$config = new HashSearchConfig( $settings + [ 'CirrusSearchRescoreProfile' => 'default' ] );
+		$config = $this->newHashSearchConfig( $settings + [ 'CirrusSearchRescoreProfile' => 'default' ] );
 
-		$context = new SearchContext( $config, null );
+		$context = new SearchContext( $config, null, null, null, null, $this->createCirrusSearchHookRunner() );
 		$builder = new RescoreBuilder( $context, $this->createCirrusSearchHookRunner(), 'default' );
 		$rescore = $builder->build();
 		$this->assertEquals( $expected, $rescore[0]['window_size'] );
@@ -513,7 +529,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 	 */
 	public function testTermBoosts( $weight, array $settings, array $functions ) {
 		$config = new HashSearchConfig( [] );
-		$context = new SearchContext( $config, null );
+		$context = new SearchContext( $config, null, null, null, null, $this->createCirrusSearchHookRunner() );
 		$builder = new Rescore\TermBoostScoreBuilder( $context, $weight, $settings );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
@@ -533,7 +549,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 	public function testBadRescoreProfile( $settings, $expectedException ) {
 		$config = $this->newHashSearchConfig( $settings + [ 'CirrusSearchRescoreProfile' => 'default' ] );
 
-		$context = new SearchContext( $config, null );
+		$context = new SearchContext( $config, null, null, null, null, $this->createCirrusSearchHookRunner() );
 		try {
 			$builder = new RescoreBuilder( $context, $this->createCirrusSearchHookRunner(), 'default' );
 			$builder->build();
@@ -709,7 +725,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 			'CirrusSearchRescoreProfile' => 'default',
 		] );
 
-		$context = new SearchContext( $config, [ NS_MAIN, NS_USER ] );
+		$context = new SearchContext( $config, [ NS_MAIN, NS_USER ], null, null, null, $this->createCirrusSearchHookRunner() );
 		$builder = new RescoreBuilder( $context, $this->createCirrusSearchHookRunner(), 'default' );
 		$rescores = $builder->build();
 		$this->assertCount( 1, $rescores );
@@ -717,4 +733,101 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 		// Check the weight override was applied
 		$this->assertEquals( $weight, $query['function_score']['functions'][0]['weight'] );
 	}
+
+	/**
+	 * @dataProvider provideRescoreProfilesForSyntaxBasedFallback
+	 * @covers \CirrusSearch\Search\Rescore\RescoreBuilder
+	 */
+	public function testSyntaxBasedFallbackProfile( $settings, $query, $expectedFunctionCount ) {
+		$config = $this->newHashSearchConfig( $settings + [
+				'CirrusSearchIgnoreOnWikiBoostTemplates' => true,
+				'CirrusSearchBoostTemplates' => [ 'Good' => 1.3 ]
+			] );
+
+		$searchQuery = SearchQueryBuilder::newFTSearchQueryBuilder( $config, $query,
+			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() )->build();
+		$context = SearchContext::fromSearchQuery( $searchQuery, null, $this->createCirrusSearchHookRunner() );
+		$builder = new RescoreBuilder( $context, $this->createCirrusSearchHookRunner(), $config->get( 'CirrusSearchRescoreProfile' ) );
+		$rescore = $builder->build();
+		$array = $rescore[0]['query']['rescore_query'];
+		$array = $array->toArray();
+		$this->assertCount( $expectedFunctionCount, $array['function_score']['functions'] );
+	}
+
+	public static function provideRescoreProfilesForSyntaxBasedFallback() {
+		$defaultChain = [
+			'functions' => [
+				[ 'type' => 'boostlinks' ]
+			]
+		];
+		$fullChain = [
+			'functions' => [
+				[ 'type' => 'boostlinks' ],
+				[ 'type' => 'templates' ]
+			]
+		];
+
+		$buildConfig = function ( array $supportedSyntax, array $unsupportedSyntax ) use ( $defaultChain, $fullChain ) {
+			return [
+				'CirrusSearchRescoreProfile' => 'full',
+				'CirrusSearchRescoreProfiles' => [
+					'full' => [
+						'supported_namespaces' => 'all',
+						'unsupported_syntax' => $unsupportedSyntax,
+						'supported_syntax' => $supportedSyntax,
+						'fallback_profile' => 'default',
+						'rescore' => [
+							[
+								'window' => 123,
+								'type' => 'function_score',
+								'function_chain' => 'full',
+							]
+						]
+					],
+					'default' => [
+						'supported_namespaces' => 'all',
+						'rescore' => [
+							[
+								'window' => 123,
+								'type' => 'function_score',
+								'function_chain' => 'default',
+							]
+						]
+					]
+				],
+				'CirrusSearchRescoreFunctionScoreChains' => [
+					'full' => $fullChain,
+					'default' => $defaultChain
+				]
+			];
+		};
+		return [
+			'No fallback needed' => [
+				$buildConfig( [], [] ),
+				'foo',
+				2
+			],
+			'should not fallback if only simple bag of words is supported and such query is passed' => [
+				$buildConfig( [ BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ], [] ),
+				'foo',
+				2
+			],
+			'should not fallback if only simple bag of words and phrases are supported and a phrase query is passed' => [
+				$buildConfig( [ BasicQueryClassifier::SIMPLE_BAG_OF_WORDS, BasicQueryClassifier::SIMPLE_PHRASE ], [] ),
+				'"foo"',
+				2
+			],
+			'should use fallback if only simple bag of words supported and complex query is passed' => [
+				$buildConfig( [ BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ], [] ),
+				'foo AND bar',
+				1
+			],
+			'should use fallback if only complex query is disallowed and such query is passed' => [
+				$buildConfig( [], [ BasicQueryClassifier::COMPLEX_QUERY ] ),
+				'foo AND bar',
+				1
+			],
+		];
+	}
+
 }

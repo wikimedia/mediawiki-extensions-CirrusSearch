@@ -308,13 +308,23 @@ class RescoreBuilder {
 	 * @return bool
 	 */
 	private function isProfileSyntaxSupported( array $profile ) {
-		if ( !isset( $profile['unsupported_syntax'] ) ) {
-			return true;
-		}
-
-		foreach ( $profile['unsupported_syntax'] as $reject ) {
-			if ( $this->context->isSyntaxUsed( $reject ) ) {
+		if ( ( $profile['supported_syntax'] ?? [] ) !== [] ) {
+			$supportedSyntax = false;
+			foreach ( $profile['supported_syntax'] as $supported ) {
+				if ( $this->context->isSyntaxUsed( $supported ) ) {
+					$supportedSyntax = true;
+					break;
+				}
+			}
+			if ( !$supportedSyntax ) {
 				return false;
+			}
+		}
+		if ( ( $profile['unsupported_syntax'] ?? [] ) !== [] ) {
+			foreach ( $profile['unsupported_syntax'] as $reject ) {
+				if ( $this->context->isSyntaxUsed( $reject ) ) {
+					return false;
+				}
 			}
 		}
 

@@ -23,6 +23,7 @@
                 "polish_charfilter"
             ],
             "filter": [
+                "homoglyph_norm",
                 "lowercase",
                 "polish_stop",
                 "polish_stem",

@@ -15,6 +15,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
+                "homoglyph_norm",
                 "lowercase",
                 "greek_stop",
                 "greek_stemmer",

@@ -14,6 +14,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
+                "homoglyph_norm",
                 "lowercase",
                 "slovak_stemmer",
                 "asciifolding"

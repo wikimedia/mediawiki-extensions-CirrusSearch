@@ -1480,11 +1480,17 @@ STEMMER_RULES
 	 */
 	public function enableHomoglyphPlugin( array $config, string $language ) {
 		$inDenyList = $this->homoglyphPluginDenyList[$language] ?? false;
-		if ( $config['analyzer']['text']['type'] == 'custom' && !$inDenyList ) {
-			if ( in_array( 'extra-analysis-homoglyph', $this->plugins ) ) {
+		if ( in_array( 'extra-analysis-homoglyph', $this->plugins ) && !$inDenyList ) {
+			if ( $config['analyzer']['text']['type'] == 'custom' ) {
 				$filters = $config['analyzer']['text']['filter'] ?? [];
 				array_unshift( $filters, 'homoglyph_norm' );
 				$config['analyzer']['text']['filter'] = $filters;
+			}
+			// @phan-suppress-next-line PhanTypeInvalidDimOffset, PhanTypeArraySuspiciousNull
+			if ( $config['analyzer']['text_search']['type'] == 'custom' ) {
+				$filters = $config['analyzer']['text_search']['filter'] ?? [];
+				array_unshift( $filters, 'homoglyph_norm' );
+				$config['analyzer']['text_search']['filter'] = $filters;
 			}
 		}
 		return $config;

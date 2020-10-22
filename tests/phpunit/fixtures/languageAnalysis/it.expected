@@ -23,6 +23,7 @@
                 "word_break_helper"
             ],
             "filter": [
+                "homoglyph_norm",
                 "italian_elision",
                 "aggressive_splitting",
                 "lowercase",

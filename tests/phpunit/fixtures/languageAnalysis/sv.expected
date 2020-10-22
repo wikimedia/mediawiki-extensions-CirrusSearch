@@ -16,6 +16,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
+                "homoglyph_norm",
                 "lowercase",
                 "swedish_stop",
                 "swedish_stemmer",

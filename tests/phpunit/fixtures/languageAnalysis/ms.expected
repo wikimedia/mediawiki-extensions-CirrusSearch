@@ -20,6 +20,7 @@
                 "indonesian_charfilter"
             ],
             "filter": [
+                "homoglyph_norm",
                 "lowercase",
                 "indonesian_stop",
                 "indonesian_stemmer"

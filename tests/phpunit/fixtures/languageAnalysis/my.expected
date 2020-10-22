@@ -12,6 +12,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
+                "homoglyph_norm",
                 "lowercase"
             ]
         },

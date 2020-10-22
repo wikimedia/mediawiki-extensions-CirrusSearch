@@ -15,6 +15,7 @@
             "type": "custom",
             "tokenizer": "hebrew",
             "filter": [
+                "homoglyph_norm",
                 "niqqud",
                 "hebrew_lemmatizer",
                 "lowercase",

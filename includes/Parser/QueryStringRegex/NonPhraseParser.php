@@ -88,10 +88,13 @@ class NonPhraseParser {
 	/**
 	 * @param string $query
 	 * @param int $start
+	 * @param int $end
 	 * @return ParsedNode|null
 	 */
-	public function parse( $query, $start ) {
+	public function parse( string $query, int $start, int $end ) {
 		$match = [];
+		Assert::precondition( $start < $end, '$start < $end' );
+		Assert::precondition( $end <= strlen( $query ), '$end <= strlen( $query )' );
 		$ret = preg_match( self::NEGATION, $query, $match, PREG_OFFSET_CAPTURE, $start );
 		Assert::postcondition( $ret !== false, 'Regex failed: ' . preg_last_error() );
 		$wholeStart = $start;
@@ -104,7 +107,6 @@ class NonPhraseParser {
 		}
 		$wholeEnd = -1;
 
-		$end = strlen( $query );
 		while ( $start < $end ) {
 			$ret = preg_match( self::NON_QUOTE, $query, $match, PREG_OFFSET_CAPTURE, $start );
 			Assert::postcondition( $ret !== false, 'Regex failed: ' . preg_last_error() );

@@ -638,7 +638,7 @@ class QueryStringRegexParser implements QueryParser {
 			return true;
 		}
 
-		if ( $this->consumeWord() ) {
+		if ( $this->consumeWord( $maxOffset ) ) {
 			return true;
 		}
 
@@ -698,10 +698,11 @@ class QueryStringRegexParser implements QueryParser {
 	}
 
 	/**
+	 * @param int $maxOffset
 	 * @return bool
 	 */
-	private function consumeWord() {
-		$node = $this->nonPhraseParser->parse( $this->query, $this->offset );
+	private function consumeWord( int $maxOffset ) {
+		$node = $this->nonPhraseParser->parse( $this->query, $this->offset, $maxOffset );
 		if ( $node !== null ) {
 			$this->token->node( $node );
 			return true;

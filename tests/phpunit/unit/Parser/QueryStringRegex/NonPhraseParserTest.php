@@ -19,9 +19,12 @@ class NonPhraseParserTest extends CirrusTestCase {
 	 * @param int $start
 	 * @param ParsedNode|null $expected
 	 */
-	public function testWord( $query, $start, $expected ) {
+	public function testWord( $query, $start, $end, $expected ) {
+		if ( $end === -1 ) {
+			$end = strlen( $query );
+		}
 		$parser = new NonPhraseParser( new Escaper( 'en', false ) );
-		$nodes = $parser->parse( $query, $start );
+		$nodes = $parser->parse( $query, $start, $end );
 		$this->assertEquals( $expected, $nodes );
 	}
 
@@ -29,105 +32,105 @@ class NonPhraseParserTest extends CirrusTestCase {
 		return [
 			'simple' => [
 				'this is just"something"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'this' ),
 					'this' )
 			],
 			'negated phrase (bis)' => [
 				'just-"something"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just' ),
 					'just' )
 			],
 			'collapsed' => [
 				'just"something"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just' ),
 					'just' )
 			],
 			'collapsed negation' => [
 				'just!"something"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just' ),
 					'just' )
 			],
 			'escaped quote phrase' => [
 				'just\\"something"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just\\"something' ),
 					'just"something' )
 			],
 			'escaped negation' => [
 				'just\\!"something"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just !' ),
 					'just!' )
 			],
 			'escaped negation (bis)' => [
 				'just\\-"something"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just\\-' ),
 					'just-' )
 			],
 			'escape escape sequence and negation' => [
 				'just\\\\!"something"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just\\\\' ),
 					'just\\' )
 			],
 			'escape escape sequence and negation (bis)' => [
 				'just\\\\-"something"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just\\\\' ),
 					'just\\' )
 			],
 			'ends with dash' => [
 				'just-',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just-' ),
 					'just-' )
 			],
 			'ends with excl' => [
 				'just!',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just!' ),
 					'just!' )
 			],
 			'ends with escape sequence' => [
 				'just\\',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just\\' ),
 					'just\\' )
 			],
 			'ends with ! and escaped dquotes' => [
 				'just!\\"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just!\\"' ),
 					'just!"' )
 			],
 			'ends with double escape and dquotes' => [
 				'just\\\\"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just\\\\' ),
 					'just\\' )
 			],
 			'escaped double dquotes' => [
 				'just\"b',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( 'just\"b' ),
 					'just"b'
@@ -135,17 +138,17 @@ class NonPhraseParserTest extends CirrusTestCase {
 			],
 			'starts with phrase' => [
 				'"hello"',
-				0,
+				0, -1,
 				null
 			],
 			'starts with negated phrase' => [
 				'-"hello"',
-				0,
+				0, -1,
 				null
 			],
 			'negation needs to precede a letter, a number or a _' => [
 				'-@hello"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( '-@hello' ),
 					'-@hello'
@@ -153,7 +156,7 @@ class NonPhraseParserTest extends CirrusTestCase {
 			],
 			'negation (! version) needs to precede a letter, a number or a _' => [
 				'!@hello"',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( '!@hello' ),
 					'!@hello'
@@ -161,7 +164,7 @@ class NonPhraseParserTest extends CirrusTestCase {
 			],
 			'negation alone is a word' => [
 				'-',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( '-' ),
 					'-'
@@ -169,7 +172,7 @@ class NonPhraseParserTest extends CirrusTestCase {
 			],
 			'negation (! version) alone is a word' => [
 				'!',
-				0,
+				0, -1,
 				new WordsQueryNode( 0,
 					strlen( '!' ),
 					'!'
@@ -177,7 +180,7 @@ class NonPhraseParserTest extends CirrusTestCase {
 			],
 			'negation with dash' => [
 				'-test',
-				0,
+				0, -1,
 				new NegatedNode( 0,
 					strlen( '-test' ),
 					new WordsQueryNode( 1,
@@ -189,7 +192,7 @@ class NonPhraseParserTest extends CirrusTestCase {
 			],
 			'negation with dash and non ascii' => [
 				'-çà',
-				0,
+				0, -1,
 				new NegatedNode( 0,
 					strlen( '-çà' ),
 					new WordsQueryNode( 1,
@@ -201,7 +204,7 @@ class NonPhraseParserTest extends CirrusTestCase {
 			],
 			'negation with dash and number' => [
 				'-11',
-				0,
+				0, -1,
 				new NegatedNode( 0,
 					strlen( '-11' ),
 					new WordsQueryNode( 1,
@@ -213,7 +216,7 @@ class NonPhraseParserTest extends CirrusTestCase {
 			],
 			'negation with excl' => [
 				'!test',
-				0,
+				0, -1,
 				new NegatedNode( 0,
 					strlen( '!test' ),
 					new WordsQueryNode( 1,
@@ -223,6 +226,14 @@ class NonPhraseParserTest extends CirrusTestCase {
 					'!'
 				)
 			],
+			'stop early' => [
+				'this\ intitle:test',
+				0, strlen( 'this\ ' ),
+				new WordsQueryNode( 0,
+					strlen( 'this\ ' ),
+					'this '
+				)
+			],
 		];
 	}
 
@@ -230,7 +241,7 @@ class NonPhraseParserTest extends CirrusTestCase {
 		$q = str_repeat( "a-a!a\\!\\\"", 1000 );
 		$expected = substr( str_repeat( "a-a!a!\"", 1000 ), 2 );
 		$parser = new NonPhraseParser( new Escaper( 'en', false ) );
-		$node = $parser->parse( $q, 2 );
+		$node = $parser->parse( $q, 2, strlen( $q ) );
 		$this->assertInstanceOf( WordsQueryNode::class, $node );
 		/**
 		 * @var WordsQueryNode $node

@@ -4,13 +4,18 @@ namespace CirrusSearch\Parser\QueryStringRegex;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Parser\AST\BooleanClause;
 use CirrusSearch\Parser\AST\EmptyQueryNode;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Parser\AST\ParsedBooleanNode;
 use CirrusSearch\Parser\AST\PhraseQueryNode;
+use CirrusSearch\Parser\AST\WordsQueryNode;
 use CirrusSearch\Parser\FTQueryClassifiersRepository;
 use CirrusSearch\Parser\KeywordRegistry;
+use CirrusSearch\Parser\ParsedQueryClassifiersRepository;
 use CirrusSearch\Parser\QueryParser;
 use CirrusSearch\Query\ArticleTopicFeature;
+use CirrusSearch\Query\FileNumericFeature;
 use CirrusSearch\Query\InCategoryFeature;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\SearchConfig;
@@ -104,6 +109,47 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 					QueryStringRegexParser::QUERY_LEN_HARD_LIMIT + 1,
 					QueryStringRegexParser::QUERY_LEN_HARD_LIMIT ) );
 		}
+	}
+
+	/**
+	 * @dataProvider provideEscapedQueries
+	 */
+	public function testT266163( string $query, array $expected ) {
+		$parser = new QueryStringRegexParser(
+			new class () implements KeywordRegistry {
+				public function getKeywords() {
+					return [ new FileNumericFeature() ];
+				}
+			},
+			$this->createMock( Escaper::class ),
+			'all',
+			$this->createMock( ParsedQueryClassifiersRepository::class ),
+			$this->namespacePrefixParser(),
+			null
+		);
+
+		$parsedQuery = $parser->parse( $query )->getRoot();
+		$this->assertInstanceOf( ParsedBooleanNode::class, $parsedQuery );
+		$this->assertSame( $expected, array_map( function ( BooleanClause $clause ) {
+			return get_class( $clause->getNode() );
+		}, $parsedQuery->getClauses() ) );
+	}
+
+	public function provideEscapedQueries() {
+		return [
+			'escaped space does not disable keyword' => [
+				'foo\ filew:100 fileh:200',
+				[ WordsQueryNode::class, KeywordFeatureNode::class, KeywordFeatureNode::class ]
+			],
+			'this space is not escaped' => [
+				'foo\\ filew:100 fileh:200',
+				[ WordsQueryNode::class, KeywordFeatureNode::class, KeywordFeatureNode::class ]
+			],
+			'not a keyword because of the missing space' => [
+				'foo\filew:100 fileh:200',
+				[ WordsQueryNode::class, KeywordFeatureNode::class ]
+			],
+		];
 	}
 
 	/**

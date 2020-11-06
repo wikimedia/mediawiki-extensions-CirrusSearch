@@ -18,7 +18,7 @@
 			"Violetanka"
 		]
 	},
-	"cirrussearch-desc": "MediaWiki için elastik arama-güçlü arama",
+	"cirrussearch-desc": "MediaWiki için Elasticsearch destekli arama",
 	"cirrussearch-backend-error": "Biz geçici bir sorun nedeniyle aramanızı tamamlayamadık. Lütfen daha sonra tekrar deneyin.",
 	"cirrussearch-parse-error": "Sorgu anlaşılamadı. Lütfen daha basit olun. Sorgu arama sistemini iyileştirmek için oturum açmış olmalısınız.",
 	"cirrussearch-too-busy-error": "Arama şu anda çok meşgul. Lütfen daha sonra tekrar deneyiniz.",
@@ -37,7 +37,7 @@
 	"cirrussearch-completion-profile-strict": "Birkaç noktalama işareti kaldırılmış ancak aksan işaretleri ve stres işaretleri olan katı profil tutulur.",
 	"cirrussearch-completion-profile-classic": "Klasik önek, birkaç noktalama işareti ve bazı aksan işaretleri kaldırıldı.",
 	"cirrussearch-completion-profile-normal": "Birkaç noktalama işareti, bazı aksan işaretleri ve engellenenler kaldırıldı.",
-	"cirrussearch-completion-profile-normal-subphrases": "Birkaç noktalama işareti, bazı aksan işaretleri ve engellenenler kaldırıldı. Alt cümleleri de eşleştirecektir (dahili wiki yapılandırmasına bağlı olarak alt deyimler veya alt sayfalar olabilir).",
+	"cirrussearch-completion-profile-normal-subphrases": "Birkaç noktalama işareti, bazı aksan işaretleri ve engellenenler kaldırıldı. Alt cümleleri de eşleştirecektir (dahili viki yapılandırmasına bağlı olarak alt deyimler veya alt sayfalar olabilir).",
 	"cirrussearch-completion-profile-fuzzy": "Yazım hatası düzeltmesiyle normale benzer (iki yazım hatası desteklenir).",
 	"cirrussearch-completion-profile-fast-fuzzy": "Deneysel fuzzy profil (herhangi bir zamanda kaldırılabilir)",
 	"cirrussearch-completion-profile-fuzzy-subphrases": "Yazım hatası düzeltmesiyle normale benzer (iki yazım hatası desteklenir). Alt cümleleri de eşleştirecektir (dahili wiki yapılandırmasına bağlı olarak alt deyimler veya alt sayfalar olabilir).",
@@ -67,7 +67,7 @@
 	"cirrussearch-regex-timed-out": "Normal ifade araması zaman aşımına uğradı, yalnızca kısmi sonuçlar var. Tam sonuç almak için normal ifadenizi basitleştirmeyi deneyin.",
 	"cirrussearch-file-numeric-feature-not-a-number": "'$1' arama terimi sayısal değerler gerektirir, ancak '$2' sağlanmıştır.",
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "'$1' arama terimi, birden fazla bağımsız değişken ve '$2' içeren bir işaret sağlanmasına izin vermiyor.",
-	"cirrussearch-feature-not-available": "'$1' arama anahtar kelimesi bu wikide etkin değil.",
+	"cirrussearch-feature-not-available": "'$1' arama anahtar kelimesi bu vikide etkin değil.",
 	"cirrussearch-feature-too-many-conditions": "'$1' için çok fazla koşul sağlandı, $2 kısaltıldı.",
 	"cirrussearch-feature-deepcat-endpoint": "Derin kategori aramasını kullanmak için $wgCirrusSearchCategoryEndpoint geçerli bir SPARQL bitiş noktasına ayarlanmalıdır.",
 	"cirrussearch-feature-deepcat-exception": "Derin kategori arama SPARQL sorgusu başarısız oldu",

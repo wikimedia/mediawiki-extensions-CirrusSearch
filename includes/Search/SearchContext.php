@@ -125,6 +125,11 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $nonTextQueries = [];
 
 	/**
+	 * @var SearchQuery
+	 */
+	private $searchQuery;
+
+	/**
 	 * @var bool Should this search limit results to the local wiki?
 	 */
 	private $limitSearchToLocalWiki = false;
@@ -588,6 +593,13 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
+	 * @return SearchQuery
+	 */
+	public function getSearchQuery() {
+		return $this->searchQuery;
+	}
+
+	/**
 	 * @return bool Should this search limit results to the local wiki? If
 	 *  not called the default is false.
 	 */
@@ -843,6 +855,9 @@ class SearchContext implements WarningCollector, FilterBuilder {
 			new FetchPhaseConfigBuilder( $query->getSearchConfig(), $query->getSearchEngineEntryPoint() ),
 			$cirrusSearchHookRunner
 		);
+
+		$searchContext->searchQuery = $query;
+
 		$searchContext->limitSearchToLocalWiki = !$query->getCrossSearchStrategy()->isExtraIndicesSearchSupported();
 
 		$searchContext->rescoreProfile = $query->getForcedProfile( SearchProfileService::RESCORE );

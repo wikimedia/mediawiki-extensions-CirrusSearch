@@ -69,7 +69,7 @@ class BuildDocument {
 	private $parserCache;
 	/** @var RevisionStore */
 	private $revStore;
-	/** @var $cirrusSearchHookRunner */
+	/** @var CirrusSearchHookRunner */
 	private $cirrusSearchHookRunner;
 
 	/**

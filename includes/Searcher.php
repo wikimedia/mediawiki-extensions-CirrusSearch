@@ -1036,6 +1036,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		}
 
 		/** @var FullTextQueryBuilder $qb */
+		// @phan-suppress-next-line PhanTypeInvalidCallableArraySize
 		$qb = ObjectFactory::getObjectFromSpec( $objectFactorySpecs );
 		if ( !( $qb instanceof FullTextQueryBuilder ) ) {
 			throw new RuntimeException( 'Bad builder class configured.' );

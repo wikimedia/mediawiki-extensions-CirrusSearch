@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchContext;
@@ -152,7 +153,9 @@ class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 			],
 		] );
 		$builder = new FullTextQueryStringQueryBuilder( $config, [] );
-		$searchContext = new SearchContext( $config );
+		$searchContext = new SearchContext(
+			$config, null, null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+		);
 		$builder->build( $searchContext, $term );
 		$actual = $searchContext->getSyntaxUsed();
 

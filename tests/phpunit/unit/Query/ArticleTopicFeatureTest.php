@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchContext;
@@ -79,7 +80,9 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 	 */
 	public function testParse( string $term, array $expectedParsedValue, array $expectedQuery ) {
 		$config = new HashSearchConfig( [] );
-		$context = new SearchContext( $config );
+		$context = new SearchContext(
+			$config, null, null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+		);
 		$feature = new ArticleTopicFeature();
 
 		$this->assertParsedValue( $feature, $term, $expectedParsedValue );

@@ -80,6 +80,7 @@ class SaneitizeLoop {
 		$loopId = $jobInfo->has( 'sanitize_job_loop_id' ) ? $jobInfo->get( 'sanitize_job_loop_id' ) : 0;
 		$jobsSent = $jobInfo->get( 'sanitize_job_jobs_sent' );
 		$jobsSentTotal = $jobInfo->get( 'sanitize_job_jobs_sent_total' );
+		$jobsSentCurLoop = 0;
 		$idsSent = $jobInfo->get( 'sanitize_job_ids_sent' );
 		$idsSentTotal = $jobInfo->get( 'sanitize_job_ids_sent_total' );
 		$jobs = [];
@@ -101,6 +102,7 @@ class SaneitizeLoop {
 			$jobs[] = $this->createCheckerJob( $from, $to, $jobInfo->get( 'sanitize_job_cluster' ), $loopId );
 			$jobsSent++;
 			$jobsSentTotal++;
+			$jobsSentCurLoop++;
 			$idsSent += $to - $from;
 			$idsSentTotal += $to - $from;
 			$from = $to + 1;
@@ -114,7 +116,7 @@ class SaneitizeLoop {
 			$jobInfo->set( 'sanitize_job_jobs_sent_total', $jobsSentTotal );
 			$jobInfo->set( 'sanitize_job_ids_sent', $idsSent );
 			$jobInfo->set( 'sanitize_job_ids_sent_total', $idsSentTotal );
-			$this->log( "Created $jobsSent jobs, setting from offset to $from.\n" );
+			$this->log( "Created $jobsSentCurLoop jobs, setting from offset to $from.\n" );
 		} else {
 			$this->log( "No jobs created.\n" );
 		}

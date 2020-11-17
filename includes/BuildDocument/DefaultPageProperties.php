@@ -13,7 +13,7 @@ use WikiPage;
  * Default properties attached to all page documents.
  */
 class DefaultPageProperties implements PagePropertyBuilder {
-	/** @var IDatabase $db Wiki database to query additional page properties from. */
+	/** @var IDatabase Wiki database to query additional page properties from. */
 	private $db;
 
 	/**

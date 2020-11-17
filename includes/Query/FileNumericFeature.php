@@ -136,7 +136,7 @@ class FileNumericFeature extends SimpleKeywordFeature implements FilterQueryFeat
 	 */
 	protected function extractSign( $value, $default = 0 ) {
 		if ( $value[0] == '>' || $value[0] == '<' ) {
-			$sign = ( $value[0] == '>' ) ? 1 : - 1;
+			$sign = ( $value[0] == '>' ) ? 1 : -1;
 			return [ $sign, substr( $value, 1 ) ];
 		} else {
 			return [ $default, $value ];

@@ -78,7 +78,7 @@ class SuggestBuilder {
 	private $scoringMethod;
 
 	/**
-	 * @var integer batch id
+	 * @var int batch id
 	 */
 	private $batchId;
 

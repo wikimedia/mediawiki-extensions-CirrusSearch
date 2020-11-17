@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset>
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
+		<exclude name="Generic.ControlStructures.DisallowYodaConditions.Found" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPrivate" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationProtected" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPublic" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingVar" />
 		<exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures" />
 		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName" />
-		<exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
+		<exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals" />
+		<exclude name="MediaWiki.VariableAnalysis.MisleadingGlobalNames.Misleading$wgContentHandlers" />
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment" />
 		<exclude name="PSR12.Properties.ConstantVisibility.NotFound" />
 		<exclude name="PSR2.Methods.MethodDeclaration.Underscore" />

@@ -15,7 +15,7 @@ class UriParamSearchProfileOverride implements SearchProfileOverride {
 	private $uriParam;
 
 	/**
-	 * @var integer
+	 * @var int
 	 */
 	private $priority;
 

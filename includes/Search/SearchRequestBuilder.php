@@ -20,10 +20,10 @@ class SearchRequestBuilder {
 	/** @var string */
 	private $indexBaseName;
 
-	/** @var  int */
+	/** @var int */
 	private $offset = 0;
 
-	/** @var  int */
+	/** @var int */
 	private $limit = 20;
 
 	/** @var string search timeout, string with time and unit, e.g. 20s for 20 seconds */

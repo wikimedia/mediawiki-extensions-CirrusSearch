@@ -86,12 +86,12 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	const INTERLEAVED_MSEARCH_KEY = '__interleaved__';
 
 	/**
-	 * @var integer search offset
+	 * @var int search offset
 	 */
 	protected $offset;
 
 	/**
-	 * @var integer maximum number of result
+	 * @var int maximum number of result
 	 */
 	protected $limit;
 

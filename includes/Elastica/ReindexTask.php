@@ -187,14 +187,14 @@ class ReindexTask {
 			$status['retries']['bulk'] += $slice['retries']['bulk'];
 			$status['retries']['search'] += $slice['retries']['search'];
 			$status['throttled_millis'] += $slice['throttled_millis'];
-			$status['requests_per_second'] += $slice['requests_per_second'] === - 1 ? INF
+			$status['requests_per_second'] += $slice['requests_per_second'] === -1 ? INF
 				: $slice['requests_per_second'];
 			$status['throttled_until_millis'] += min( $status['throttled_until_millis'],
 				$slice['throttled_until_millis'] );
 		}
 
 		if ( $status['requests_per_second'] === INF ) {
-			$status['requests_per_second'] = - 1;
+			$status['requests_per_second'] = -1;
 		}
 
 		return $status;

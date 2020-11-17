@@ -13,7 +13,7 @@ class FuzzyNode extends ParsedNode {
 	private $word;
 
 	/**
-	 * @var int $fuzziness 0, 1 or 2. -1 meaning that it was not provided by the user
+	 * @var int 0, 1 or 2. -1 meaning that it was not provided by the user
 	 */
 	private $fuzziness;
 

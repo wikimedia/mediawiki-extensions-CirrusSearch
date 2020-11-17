@@ -87,12 +87,12 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	const SEARCH_TYPE = 'comp_suggest';
 
 	/**
-	 * @var integer maximum number of result (final)
+	 * @var int maximum number of result (final)
 	 */
 	private $limit;
 
 	/**
-	 * @var integer offset (final)
+	 * @var int offset (final)
 	 */
 	private $offset;
 

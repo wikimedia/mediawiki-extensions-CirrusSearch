@@ -86,7 +86,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	private $lastProgressPrinted;
 
 	/**
-	 * @var boolean optimize the index when done.
+	 * @var bool optimize the index when done.
 	 */
 	private $optimizeIndex;
 

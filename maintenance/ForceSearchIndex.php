@@ -60,7 +60,7 @@ class ForceSearchIndex extends Maintenance {
 	public $lastJobQueueCheckTime = 0;
 
 	/**
-	 * @var boolean true if the script is run with --ids
+	 * @var bool true if the script is run with --ids
 	 */
 	private $runWithIds;
 

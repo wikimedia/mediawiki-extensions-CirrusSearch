@@ -95,7 +95,7 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 	 */
 	private function doParseValue( $value ) {
 		if ( $value !== '' ) {
-			$lastC = substr( $value, - 1 );
+			$lastC = substr( $value, -1 );
 			if ( $lastC !== '/' && $lastC !== '*' ) {
 				$value .= '/';
 			} elseif ( $lastC === '*' ) {

@@ -44,7 +44,7 @@ class AnalysisConfigBuilder {
 	const KEYWORD_IGNORE_ABOVE = 5000;
 
 	/**
-	 * @var boolean is the icu plugin available?
+	 * @var bool is the icu plugin available?
 	 */
 	private $icu;
 

@@ -150,7 +150,7 @@ class SearchProfileService {
 	private $request;
 
 	/**
-	 * @var boolean
+	 * @var bool
 	 */
 	private $frozen;
 

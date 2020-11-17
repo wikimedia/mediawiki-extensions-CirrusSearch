@@ -60,7 +60,7 @@ class DumpIndex extends Maintenance {
 	private $inputChunkSize = 500;
 
 	/**
-	 * @var boolean
+	 * @var bool
 	 */
 	private $logToStderr = false;
 

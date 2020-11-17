@@ -239,7 +239,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	public function archiveFixtureProvider() {
 		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'archiveSearch/*.query' ) as $queryFile ) {
-			$testName = substr( basename( $queryFile ), 0, - 6 );
+			$testName = substr( basename( $queryFile ), 0, -6 );
 			$query = file_get_contents( CirrusTestCaseTrait::$FIXTURE_DIR . $queryFile );
 			// Remove trailing newline
 			$query = preg_replace( '/\n$/', '', $query );
@@ -403,7 +403,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	public function providePhraseSuggestResponse() {
 		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'phraseSuggestResponses/*.config' ) as $testFile ) {
-			$testName = substr( basename( $testFile ), 0, - 7 );
+			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$tests[$testName] = [
 				$fixture['query'],

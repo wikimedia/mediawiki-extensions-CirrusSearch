@@ -58,7 +58,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	private $maxDeterminizedStates;
 
 	/**
-	 * @var string $shardTimeout timeout for regex queries
+	 * @var string timeout for regex queries
 	 * with the extra plugin
 	 */
 	private $shardTimeout;

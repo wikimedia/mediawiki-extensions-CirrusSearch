@@ -167,7 +167,7 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 		if ( $this->prefix === null ) {
 			$title = Title::makeTitle( NS_CATEGORY, 'ZZ' );
 			$fullName = $title->getFullURL( '', false, PROTO_CANONICAL );
-			$this->prefix = substr( $fullName, 0, - 2 );
+			$this->prefix = substr( $fullName, 0, -2 );
 		}
 		return $this->prefix;
 	}

@@ -38,7 +38,7 @@ class SearchRequestLog extends BaseRequestLog {
 	private $lastResponse;
 
 	/**
-	 * @var int[]|null $namespaces (null if unknown)
+	 * @var int[]|null (null if unknown)
 	 */
 	private $namespaces;
 

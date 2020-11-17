@@ -76,7 +76,7 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 			throw new InvalidRescoreProfileException( 'The midpoint point cannot be higher than scale/4' );
 		}
 
-		return ( - ( 2 * $N - $M ) + sqrt( ( 2 * $N - $M ) * ( 2 * $N - $M ) - 4 * $N * $N ) ) /
+		return ( -( 2 * $N - $M ) + sqrt( ( 2 * $N - $M ) * ( 2 * $N - $M ) - 4 * $N * $N ) ) /
 			   ( 2 * $N * $N );
 	}
 

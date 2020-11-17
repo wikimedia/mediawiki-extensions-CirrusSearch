@@ -39,7 +39,7 @@ class InSourceFeature extends BaseRegexFeature {
 	const FIELD = 'source_text';
 
 	/**
-	 * @var Escaper $escaper an escaper used to sanitize queries when not used as regular expression
+	 * @var Escaper an escaper used to sanitize queries when not used as regular expression
 	 *
 	 * TODO: do not rely on escaper here, this should be consistent with what the Parser does.
 	 * @see Filters::intitle()

@@ -382,7 +382,7 @@ class QueryStringRegexParser implements QueryParser {
 			// The last boolean operator seen before the last one, -1 means none
 			// used to know if the node was attached explicitly by the user
 			$beforeLastBoolType = $lastBoolType;
-			$lastBoolType = - 1;
+			$lastBoolType = -1;
 			switch ( $this->token->getType() ) {
 				case Token::NOT:
 					// NOT something
@@ -459,7 +459,7 @@ class QueryStringRegexParser implements QueryParser {
 			return new EmptyQueryNode( 0, strlen( $this->query ) );
 		}
 		if ( $clauses !== [] ) {
-			if ( $lastBoolType !== - 1 ) {
+			if ( $lastBoolType !== -1 ) {
 				$occur = $this->boolToOccur( $lastBoolType );
 				$clauses[] = $this->createClause( $left, true, $occur );
 			} else {

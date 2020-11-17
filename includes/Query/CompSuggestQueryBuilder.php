@@ -39,7 +39,7 @@ class CompSuggestQueryBuilder {
 	/** @var int (final) */
 	private $offset;
 
-	/** @var array $mergedProfiles (mutable) state built after calling self::build */
+	/** @var array (mutable) state built after calling self::build */
 	private $mergedProfiles;
 
 	/**

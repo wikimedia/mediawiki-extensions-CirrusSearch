@@ -165,7 +165,7 @@ class QualityScore implements SuggestScoringMethod {
 		}
 
 		// Transform the boost to a value between -1 and 1
-		$boost = $boost > 1 ? 1 - ( 1 / $boost ) : - ( 1 - $boost );
+		$boost = $boost > 1 ? 1 - ( 1 / $boost ) : -( 1 - $boost );
 		// @todo: the 0.5 ratio is hardcoded we could maybe allow customization
 		// here, this would be a way to increase the impact of template boost
 		if ( $boost > 0 ) {
@@ -316,7 +316,7 @@ class QualityScore implements SuggestScoringMethod {
 		$score = $metadataExplain['value'];
 		$boost = $boostExplain['value'];
 		$boostExplain = [
-			'value' => $boost > 1 ? 1 - ( 1 / $boost ) : - ( 1 - $boost ),
+			'value' => $boost > 1 ? 1 - ( 1 / $boost ) : -( 1 - $boost ),
 			'description' => ( $boost > 1 ? "1-(1/boost)" : "-(1-boost)" ) . "; boost = $boost",
 			'details' => [ 'template_boosts' => $boostExplain ]
 		];

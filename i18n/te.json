@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Arjunaraoc",
 			"Chaduvari",
 			"Ravichandra"
 		]
@@ -18,12 +19,14 @@
 	"cirrussearch-pref-label": "కొత్తగా వెతుకు",
 	"prefs-completion": "వెతుకులాట పూరణ",
 	"cirrussearch-pref-completion-section-desc": "పూరణ సూచిక",
+	"cirrussearch-pref-completion-profile-help": "అప్రమేయపదపూర్తి లక్షణ పనితీరు సలహాలు(టైపు చేసేటప్పుడే వెతకటం) నిర్ణయం.\n\nఅచ్చుతప్పుల దిద్దడం మెరుగుగా, వెతుకుటకు మెరుగైన సంబంధం కల [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester పదపూర్తి సలహా]  వెతుకు సలహల అల్గారిథమ్. Prefix search అనేది గతంలో వాడిన టైపుచేసేటప్పుడే  వెతికే అల్గారిథం.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "అప్రమేయం (ఉత్తమమైనది)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "రెండు టైపాట్ల వరకూ సవరిస్తుంది. లక్ష్యిత పేజీని బాగా పోలి ఉన్నదారిమార్పులను తీసేస్తుంది.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "రెండు టైపాట్ల వరకూ సవరిస్తుంది. దగ్గారి దారిమార్పులను పరిష్కరిస్తుంది. శీర్షికల్లోని ఉప పదబంధాలను సరిచూస్తుంది.",
+	"cirrussearch-completion-profile-strict-pref-name": "పదపూర్తి విధం(ఖచ్చితమైన) (ఉన్నత)",
 	"cirrussearch-completion-profile-strict-pref-desc": "టైపాట్లను సవరించదు. యాక్సెంట్ ఫోల్డింగు చెయ్యదు. కచ్చితమైన పోలిక చూస్తుంది.",
 	"cirrussearch-completion-profile-normal-pref-name": "దారిమార్పు రీతి (ఉన్నతమైన)",
-	"cirrussearch-completion-profile-normal-pref-desc": "టైపాట్ల సవరాణ చెయ్యదు. దగ్గరి దారిమార్పులను పరిష్కరిస్తుంది.",
+	"cirrussearch-completion-profile-normal-pref-desc": "టైపాట్ల సవరణ చెయ్యదు. దగ్గరి దారిమార్పులను పరిష్కరిస్తుంది.",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "ఉప పదబంధాల పోలికతో కూడిన దారిమార్పు రీతి (ఉన్నతమైన)",
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "టైపాట్ల సవరణ ఉండదు. దగ్గరి దారిమార్పులను పరిష్కరించదు. శీర్షికల్లోని ఉప పదబంధాలను పోల్చుతుంది.",
 	"cirrussearch-completion-profile-classic-pref-name": "సాంప్రదాయికమైన ప్రీఫిక్స్ వెతుకులాట",

@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use MediaWiki\HookContainer\HookContainer;
+
 /**
  * @group CirrusSearch
  */
@@ -113,6 +115,7 @@ class CirrusSearchTest extends CirrusTestCase {
 	 */
 	public function testFailureOnQueryLength() {
 		$engine = $this->getSearchEngine( [ 'CirrusSearchMaxFullTextQueryLength' => 10 ] );
+		$engine->setHookContainer( $this->createMock( HookContainer::class ) );
 		$status = $engine->searchText( str_repeat( "a", 11 ) );
 		$this->assertEquals( $status,
 			\Status::newFatal( 'cirrussearch-query-too-long', 11, 10 ) );

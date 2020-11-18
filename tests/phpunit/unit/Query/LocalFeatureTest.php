@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
@@ -49,7 +50,9 @@ class LocalFeatureTest extends CirrusTestCase {
 			$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::hostWikiOnlyStrategy() );
 		}
 		$this->assertRemaining( $feature, $term, $expectedRemaining );
-		$context = new SearchContext( new HashSearchConfig( [] ) );
+		$context = new SearchContext(
+			new HashSearchConfig( [] ), null, null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+		);
 		$feature->apply( $context, $term );
 		$this->assertEquals( $isLocal, $context->getLimitSearchToLocalWiki() );
 	}

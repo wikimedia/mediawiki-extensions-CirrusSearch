@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusDebugOptions;
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Fallbacks\FallbackRunner;
@@ -298,7 +299,10 @@ class SearchQueryTest extends CirrusTestCase {
 			'CirrusSearchEnableAltLanguage' => true,
 		] );
 		$context = SearchContext::fromSearchQuery(
-			$this->getNewFTSearchQueryBuilder( $config, 'test' )->build() );
+			$this->getNewFTSearchQueryBuilder( $config, 'test' )->build(),
+			null,
+			$this->createMock( CirrusSearchHookRunner::class )
+		);
 		$this->assertEquals( $config, $context->getConfig() );
 		$this->assertEquals( [ NS_MAIN ], $context->getNamespaces() );
 		$this->assertFalse( $context->getLimitSearchToLocalWiki() );
@@ -331,7 +335,8 @@ class SearchQueryTest extends CirrusTestCase {
 		$myFallbackRunner = new FallbackRunner( [] );
 		$context = SearchContext::fromSearchQuery(
 			$query,
-			$myFallbackRunner
+			$myFallbackRunner,
+			$this->createMock( CirrusSearchHookRunner::class )
 		);
 		$this->assertEquals( $config, $context->getConfig() );
 		// the help prefix overrides NS_MAIN

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search\Fetch;
 
 use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CirrusTestCaseTrait;
 use CirrusSearch\Parser\FullTextKeywordRegistry;
@@ -158,7 +159,9 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		$type = new FullTextResultsType( $fetchPhaseBuilder, $query !== null, $this->newTitleHelper() );
 		if ( $query ) {
 			// TODO: switch to new parser.
-			$context = new SearchContext( $config, [], null, null, $fetchPhaseBuilder );
+			$context = new SearchContext(
+				$config, [], null, null, $fetchPhaseBuilder, $this->createMock( CirrusSearchHookRunner::class )
+			);
 			$fullTextKeywordRegistry = new FullTextKeywordRegistry( $config, $this->createCirrusSearchHookRunner(),
 					$this->namespacePrefixParser() );
 			foreach ( $fullTextKeywordRegistry->getKeywords() as $kw ) {

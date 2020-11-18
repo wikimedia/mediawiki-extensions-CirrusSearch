@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchContext;
@@ -23,7 +24,9 @@ class PrefixSearchQueryBuilderTest extends CirrusTestCase {
 			'CirrusSearchPrefixSearchStartsWithAnyWord' => false,
 			'CirrusSearchPrefixWeights' => self::$WEIGHTS,
 		] );
-		$context = new SearchContext( $config );
+		$context = new SearchContext(
+			$config, null, null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+		);
 		// Not sure what we could reliably assert here. The code ran at least?
 		$this->assertFalse( $context->isDirty() );
 		$qb->build( $context, 'full keyword prefix' );

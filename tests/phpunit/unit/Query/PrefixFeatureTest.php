@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
@@ -213,8 +214,9 @@ class PrefixFeatureTest extends CirrusTestCase {
 		$this->assertFilter( $feature, $query, $assertions, [] );
 		$this->assertRemaining( $feature, $query, $expectedRemaining );
 
-		$context = new SearchContext( new HashSearchConfig( [] ),
-			[ -1 ] );
+		$context = new SearchContext(
+			new HashSearchConfig( [] ), [ -1 ], null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+		);
 		$feature->apply( $context, $query );
 		if ( $namespace === null ) {
 			$this->assertNull( $context->getNamespaces() );
@@ -288,7 +290,9 @@ class PrefixFeatureTest extends CirrusTestCase {
 	 */
 	public function testRequiredNamespaces( $query, $namespace, $expectedNamespaces, $additionalNs ) {
 		$config = new HashSearchConfig( [] );
-		$context = new SearchContext( $config, $namespace );
+		$context = new SearchContext(
+			$config, $namespace, null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+		);
 		$feature = new PrefixFeature( $this->namespacePrefixParser() );
 		$feature->apply( $context, $query );
 		$this->assertEquals( $expectedNamespaces, $context->getNamespaces() );
@@ -331,7 +335,9 @@ class PrefixFeatureTest extends CirrusTestCase {
 	 */
 	public function testPrepareSearchContext( $initialNs, $prefix, $expectedNs ) {
 		$config = new HashSearchConfig( [] );
-		$context = new SearchContext( $config, $initialNs );
+		$context = new SearchContext(
+			$config, $initialNs, null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+		);
 		PrefixFeature::prepareSearchContext( $context, $prefix, $this->namespacePrefixParser() );
 		$this->assertEquals( $expectedNs, $context->getNamespaces() );
 		$this->assertCount( 1, $context->getFilters() );

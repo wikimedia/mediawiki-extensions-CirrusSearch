@@ -213,7 +213,7 @@ class AnalysisConfigBuilder {
 			if ( isset( $value[ 'type' ] ) && $value[ 'type' ] != 'custom' ) {
 				continue;
 			}
-			if ( isset( $value[ 'tokenizer' ] ) && 'standard' === $value[ 'tokenizer' ] ) {
+			if ( isset( $value[ 'tokenizer' ] ) && $value[ 'tokenizer' ] === 'standard' ) {
 				$value[ 'tokenizer' ] = 'icu_tokenizer';
 			}
 		}

@@ -199,7 +199,7 @@ class Hooks {
 		);
 
 		foreach ( $lines as $line ) {
-			if ( false === strpos( $line, ':' ) ) {
+			if ( strpos( $line, ':' ) === false ) {
 				continue;
 			}
 			list( $k, $v ) = explode( ':', $line, 2 );

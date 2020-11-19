@@ -113,7 +113,7 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 		) {
 			return null;
 		}
-		if ( $title->getNamespace() === 0 || false === strpos( $clean, ':' ) ) {
+		if ( $title->getNamespace() === 0 || strpos( $clean, ':' ) === false ) {
 			return $clean;
 		}
 		// There is no official way that namespaces work in display title, it

@@ -76,9 +76,7 @@ class IndexCreator {
 			if ( $response->hasError() === true ) {
 				return Status::newFatal( $response->getError() );
 			}
-		} catch ( \Elastica\Exception\InvalidException $ex ) {
-			return Status::newFatal( $ex->getMessage() );
-		} catch ( \Elastica\Exception\ResponseException $ex ) {
+		} catch ( \Elastica\Exception\InvalidException | \Elastica\Exception\ResponseException $ex ) {
 			return Status::newFatal( $ex->getMessage() );
 		}
 

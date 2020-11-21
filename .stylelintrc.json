@@ -2,6 +2,8 @@
 	"extends": "stylelint-config-wikimedia",
 	"rules": {
 		"no-descending-specificity": null,
-		"function-url-quotes": null
+		"function-url-quotes": null,
+		"selector-attribute-brackets-space-inside": null,
+		"unit-disallowed-list": null
 	}
 }

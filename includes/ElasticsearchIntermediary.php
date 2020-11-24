@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Search\SearchMetricsProvider;
+use Elastica\Multi\ResultSet as MultiResultSet;
 use ISearchResultSet;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\User\UserIdentity;
@@ -194,11 +195,11 @@ abstract class ElasticsearchIntermediary {
 	 * Returns a failure if the top-level response has failed or if any of the responses present in
 	 * the resultsets has have failed (in which case the status is initialized with the error
 	 * message of first failed response)
-	 * @param \Elastica\Multi\ResultSet $multiResultSet
+	 * @param MultiResultSet $multiResultSet
 	 * @param Connection|null $connection
 	 * @return Status
 	 */
-	public function multiFailure( \Elastica\Multi\ResultSet $multiResultSet, Connection $connection = null ) {
+	public function multiFailure( MultiResultSet $multiResultSet, Connection $connection = null ) {
 		if ( $connection === null ) {
 			$connection = $this->connection;
 		}
@@ -378,5 +379,18 @@ abstract class ElasticsearchIntermediary {
 	 */
 	protected function appendMetrics( SearchMetricsProvider $provider ) {
 		$this->searchMetrics += $provider->getMetrics();
+	}
+
+	/**
+	 * check validity of the multisearch response
+	 *
+	 * @param MultiResultSet $multiResultSet
+	 * @return bool
+	 */
+	public static function isMSearchResultSetOK( MultiResultSet $multiResultSet ): bool {
+		return !$multiResultSet->hasError() &&
+			   // Catches HTTP errors (ex: 5xx) not reported
+			   // by hasError()
+			   $multiResultSet->getResponse()->isOk();
 	}
 }

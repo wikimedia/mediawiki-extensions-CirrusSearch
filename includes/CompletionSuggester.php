@@ -211,11 +211,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				$this->start( $log );
 				try {
 					$results = $msearch->search();
-					if ( $results->hasError() ||
-						// Catches HTTP errors (ex: 5xx) not reported
-						// by hasError()
-						!$results->getResponse()->isOk()
-					) {
+					if ( !self::isMSearchResultSetOK( $results ) ) {
 						return $this->multiFailure( $results );
 					}
 					return $this->success( $this->processMSearchResponse( $results->getResultSets(), $log ) );

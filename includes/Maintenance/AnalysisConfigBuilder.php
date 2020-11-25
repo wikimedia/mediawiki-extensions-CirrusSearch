@@ -1634,5 +1634,5 @@ STEMMER_RULES
 	 * @var bool[] indexed by language code, languages that will not have the homoglyph
 	 * plugin included in the analysis chain
 	 */
-	private $homoglyphPluginDenyList = [];
+	private $homoglyphPluginDenyList = [ 'en' => true, 'it' => true ];
 }

@@ -567,21 +567,11 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				$this->getPoolCounterType(),
 				$this->user,
 				function () use ( $search, $log, $connection ) {
-					try {
-						$this->start( $log );
-						// @todo only reports the first error, also turns
-						// a partial (single search) error into a complete
-						// failure across the board. Should be addressed
-						// at some point.
-						$multiResultSet = $search->search();
-						if ( !self::isMSearchResultSetOK( $multiResultSet ) ) {
-							return $this->multiFailure( $multiResultSet, $connection );
-						} else {
-							return $this->success( $multiResultSet, $connection );
-						}
-					} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-						return $this->failure( $e, $connection );
-					}
+					// @todo only reports the first error, also turns
+					// a partial (single search) error into a complete
+					// failure across the board. Should be addressed
+					// at some point.
+					return $this->runMSearch( $search, $log, $connection );
 				},
 				$this->searchContext->isSyntaxUsed( 'regex' ) ?
 					'cirrussearch-regex-too-busy-error' : null

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use Elastica\Multi\ResultSet;
 use Elastica\Multi\Search as MultiSearch;
 use MediaWiki\Logger\LoggerFactory;
 use Title;
@@ -129,31 +130,26 @@ class OtherIndexesUpdater extends Updater {
 		}
 
 		// Look up the ids and run all closures to build the list of updates
-		$this->start( new MultiSearchRequestLog(
-			$this->connection->getClient(),
-			'searching for {numIds} ids in other indexes',
-			'other_idx_lookup',
-			[ 'numIds' => $findIdsClosuresCount ]
-		) );
-		$findIdsMultiSearchResult = $findIdsMultiSearch->search();
-		if ( !self::isMSearchResultSetOK( $findIdsMultiSearchResult ) ) {
-			$this->multiFailure( $findIdsMultiSearchResult );
-			return;
-		}
-		try {
-			$this->success();
+		$result = $this->runMSearch(
+			$findIdsMultiSearch,
+			new MultiSearchRequestLog(
+				$this->connection->getClient(),
+				'searching for {numIds} ids in other indexes',
+				'other_idx_lookup',
+				[ 'numIds' => $findIdsClosuresCount ]
+			)
+		);
+		if ( $result->isGood() ) {
+			/** @var ResultSet $findIdsMultiSearchResult */
+			$findIdsMultiSearchResult = $result->getValue();
 			foreach ( $findIdsClosures as $i => $closure ) {
 				$results = $findIdsMultiSearchResult[$i]->getResults();
 				if ( count( $results ) ) {
 					$closure( $results[0]->getId() );
 				}
 			}
-		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-			$this->failure( $e );
-			return;
+			$this->runUpdates( reset( $titles ), $updates );
 		}
-
-		$this->runUpdates( reset( $titles ), $updates );
 	}
 
 	protected function runUpdates( Title $title, array $updates ) {

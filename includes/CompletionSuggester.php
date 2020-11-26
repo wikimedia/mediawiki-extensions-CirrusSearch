@@ -9,7 +9,6 @@ use CirrusSearch\Search\CompletionResultsCollector;
 use CirrusSearch\Search\FancyTitleResultsType;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchRequestBuilder;
-use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query;
@@ -200,7 +199,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		}
 
 		$this->connection->setTimeout( $this->getClientTimeout( self::SEARCH_TYPE ) );
-		$result = Util::doPoolCounterWork(
+		return Util::doPoolCounterWork(
 			'CirrusSearch-Completion',
 			$this->user,
 			function () use( $msearch, $text ) {
@@ -208,19 +207,13 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 					'query' => $text,
 					'offset' => $this->offset,
 				] );
-				$this->start( $log );
-				try {
-					$results = $msearch->search();
-					if ( !self::isMSearchResultSetOK( $results ) ) {
-						return $this->multiFailure( $results );
+				return $this->runMSearch( $msearch, $log, $this->connection,
+					function ( \Elastica\Multi\ResultSet $results ) use ( $log ) {
+						return $this->processMSearchResponse( $results->getResultSets(), $log );
 					}
-					return $this->success( $this->processMSearchResponse( $results->getResultSets(), $log ) );
-				} catch ( ExceptionInterface $e ) {
-					return $this->failure( $e );
-				}
+				);
 			}
 		);
-		return $result;
 	}
 
 	/**

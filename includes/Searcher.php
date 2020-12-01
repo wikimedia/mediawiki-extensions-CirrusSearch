@@ -574,11 +574,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 						// failure across the board. Should be addressed
 						// at some point.
 						$multiResultSet = $search->search();
-						if ( $multiResultSet->hasError() ||
-							// Catches HTTP errors (ex: 5xx) not reported
-							// by hasError()
-							!$multiResultSet->getResponse()->isOk()
-						) {
+						if ( !self::isMSearchResultSetOK( $multiResultSet ) ) {
 							return $this->multiFailure( $multiResultSet, $connection );
 						} else {
 							return $this->success( $multiResultSet, $connection );

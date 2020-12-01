@@ -136,6 +136,10 @@ class OtherIndexesUpdater extends Updater {
 			[ 'numIds' => $findIdsClosuresCount ]
 		) );
 		$findIdsMultiSearchResult = $findIdsMultiSearch->search();
+		if ( !self::isMSearchResultSetOK( $findIdsMultiSearchResult ) ) {
+			$this->multiFailure( $findIdsMultiSearchResult );
+			return;
+		}
 		try {
 			$this->success();
 			foreach ( $findIdsClosures as $i => $closure ) {

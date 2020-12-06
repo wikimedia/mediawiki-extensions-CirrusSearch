@@ -73,7 +73,7 @@ class QueryFixer implements Visitor {
 
 	/**
 	 * @param ParsedQuery $query
-	 * @return QueryFixer|object|null
+	 * @return QueryFixer
 	 */
 	public static function build( ParsedQuery $query ) {
 		if ( self::$cache === null || count( self::$cache ) > 100 ) {

@@ -17,6 +17,7 @@ use CirrusSearch\Parser\QueryParser;
 use CirrusSearch\Query\ArticleTopicFeature;
 use CirrusSearch\Query\FileNumericFeature;
 use CirrusSearch\Query\InCategoryFeature;
+use CirrusSearch\Query\PageIdFeature;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\SearchConfig;
 
@@ -61,6 +62,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 				return [
 					new InCategoryFeature( $this->config ),
 					new ArticleTopicFeature(),
+					new PageIdFeature(),
 				];
 			}
 		};
@@ -75,7 +77,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 				\Status::newFatal( 'cirrussearch-query-too-long', 11, 10 ) );
 		}
 
-		$exemptedKeywords = [ 'incategory', 'articletopic' ];
+		$exemptedKeywords = [ 'incategory', 'articletopic', 'pageid' ];
 		foreach ( $exemptedKeywords as $exemptedKeyword ) {
 			$q = "$exemptedKeyword:test " . str_repeat( "a", 10 );
 			try {

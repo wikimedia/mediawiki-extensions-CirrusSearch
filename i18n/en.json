@@ -57,6 +57,7 @@
 	"cirrussearch-feature-deepcat-exception": "Deep category search SPARQL query failed",
 	"cirrussearch-feature-deepcat-toomany": "Deep category query returned too many categories",
 	"cirrussearch-feature-deepcat-invalid-title": "The provided category is invalid.",
+	"cirrussearch-feature-pageid-invalid-id": "Invalid page {{PLURAL:$2|ID|IDs}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "No valid categories provided to '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "No valid titles provided to '$1'.",
 	"cirrussearch-mlt-not-configured": "The '$1' feature is misconfigured. Ask an admin to fix $wgCirrusSearchMoreLikeThisFields",

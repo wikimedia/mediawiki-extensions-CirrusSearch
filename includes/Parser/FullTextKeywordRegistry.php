@@ -18,6 +18,7 @@ use CirrusSearch\Query\LinksToFeature;
 use CirrusSearch\Query\LocalFeature;
 use CirrusSearch\Query\MoreLikeFeature;
 use CirrusSearch\Query\MoreLikeThisFeature;
+use CirrusSearch\Query\PageIdFeature;
 use CirrusSearch\Query\PreferRecentFeature;
 use CirrusSearch\Query\PrefixFeature;
 use CirrusSearch\Query\SimpleKeywordFeature;
@@ -88,7 +89,9 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			// deepcat feature
 			new DeepcatFeature( $config, $client ),
 			// morelikethis feature: a non-greedy version of the morelike keyword.
-			new MoreLikeThisFeature( $config )
+			new MoreLikeThisFeature( $config ),
+			// ids query
+			new PageIdFeature(),
 		];
 
 		$extraFeatures = [];

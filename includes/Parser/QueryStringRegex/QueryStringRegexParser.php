@@ -75,7 +75,8 @@ class QueryStringRegexParser implements QueryParser {
 	 */
 	const UNLIMITED_KEYWORDS = [
 		'incategory' => true, // T111694
-		'articletopic' => true // T242560
+		'articletopic' => true, // T242560
+		'pageid' => true,
 	];
 
 	/**

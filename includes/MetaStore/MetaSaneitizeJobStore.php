@@ -5,7 +5,7 @@ namespace CirrusSearch\MetaStore;
 use CirrusSearch\Connection;
 
 class MetaSaneitizeJobStore implements MetaStore {
-	const METASTORE_TYPE = "sanitize";
+	public const METASTORE_TYPE = "sanitize";
 
 	/** @var Connection */
 	private $connection;

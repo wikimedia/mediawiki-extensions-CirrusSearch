@@ -50,14 +50,14 @@ use WikiPage;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class BuildDocument {
-	const HINT_FLAGS = 'BuildDocument_flags';
+	private const HINT_FLAGS = 'BuildDocument_flags';
 
 	// Bit field parameters for constructor et al.
-	const INDEX_EVERYTHING = 0;
-	const INDEX_ON_SKIP = 1;
-	const SKIP_PARSE = 2;
-	const SKIP_LINKS = 4;
-	const FORCE_PARSE = 8;
+	public const INDEX_EVERYTHING = 0;
+	public const INDEX_ON_SKIP = 1;
+	public const SKIP_PARSE = 2;
+	public const SKIP_LINKS = 4;
+	public const FORCE_PARSE = 8;
 
 	/** @var SearchConfig */
 	private $config;

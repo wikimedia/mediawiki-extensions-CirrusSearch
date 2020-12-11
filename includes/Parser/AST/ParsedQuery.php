@@ -17,19 +17,19 @@ class ParsedQuery {
 	 * detecting a double quote used as a gershayim
 	 * see T66350
 	 */
-	const CLEANUP_GERSHAYIM_QUIRKS = 'gershayim_quirks';
+	public const CLEANUP_GERSHAYIM_QUIRKS = 'gershayim_quirks';
 
 	/**
 	 * markup to indicate that the had some question marks
 	 * stripped
 	 * @see \CirrusSearch\Util::stripQuestionMarks
 	 */
-	const CLEANUP_QMARK_STRIPPING = 'stripped_qmark';
+	public const CLEANUP_QMARK_STRIPPING = 'stripped_qmark';
 
 	/**
 	 * markup to indicate that we removed a '~' at the beginning of the query
 	 */
-	const TILDE_HEADER = 'tilde_header';
+	public const TILDE_HEADER = 'tilde_header';
 
 	/**
 	 * @var ParsedNode

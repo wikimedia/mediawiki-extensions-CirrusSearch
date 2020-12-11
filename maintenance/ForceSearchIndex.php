@@ -43,7 +43,7 @@ require_once "$IP/maintenance/Maintenance.php";
 require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class ForceSearchIndex extends Maintenance {
-	const SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS = 3;
+	private const SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS = 3;
 	/** @var MWTimestamp|null */
 	public $fromDate = null;
 	/** @var MWTimestamp|null */

@@ -14,10 +14,10 @@ use HtmlArmor;
  * of execution so the execution trace can be logged.
  */
 class FallbackStatus {
-	const NO_ACTION = 'noSuggestion';
-	const ACTION_SUGGEST_QUERY = 'suggestQuery';
-	const ACTION_REPLACE_LOCAL_RESULTS = 'replaceLocalResults';
-	const ACTION_ADD_INTERWIKI_RESULTS = 'addInterwikiResults';
+	public const NO_ACTION = 'noSuggestion';
+	public const ACTION_SUGGEST_QUERY = 'suggestQuery';
+	public const ACTION_REPLACE_LOCAL_RESULTS = 'replaceLocalResults';
+	public const ACTION_ADD_INTERWIKI_RESULTS = 'addInterwikiResults';
 
 	/** @var string */
 	private $actionName;

@@ -29,7 +29,7 @@ use Wikimedia\Assert\Assert;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class ElasticaWrite extends CirrusGenericJob {
-	const MAX_ERROR_RETRY = 4;
+	private const MAX_ERROR_RETRY = 4;
 
 	/**
 	 * @var array Map from method name to list of classes to

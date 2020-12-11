@@ -22,7 +22,7 @@ interface SearchQueryDispatchService {
 	 * Anything below is unlikely to be selected as cirrus defaults
 	 * are made to catchup all query types.
 	 */
-	const CIRRUS_DEFAULTS_SCORE = 0.0001;
+	public const CIRRUS_DEFAULTS_SCORE = 0.0001;
 
 	/**
 	 * Determine the best route for the $query.

@@ -12,7 +12,7 @@ use Elastica\Query\BoolQuery;
 use GitInfo;
 
 class MetaVersionStore implements MetaStore {
-	const METASTORE_TYPE = 'version';
+	public const METASTORE_TYPE = 'version';
 
 	/** @var Connection */
 	private $connection;

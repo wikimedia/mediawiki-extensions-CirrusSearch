@@ -36,34 +36,34 @@ class MetaStoreIndex {
 	 * @const int major version, increment when adding an incompatible change
 	 * to settings or mappings.
 	 */
-	const METASTORE_MAJOR_VERSION = 2;
+	private const METASTORE_MAJOR_VERSION = 2;
 
 	/**
 	 * @const int minor version increment only when adding a new field to
 	 * an existing mapping or a new mapping.
 	 */
-	const METASTORE_MINOR_VERSION = 0;
+	private const METASTORE_MINOR_VERSION = 0;
 
 	/**
 	 * @const string the doc id used to store version information related
 	 * to the meta store itself. This value is not supposed to be changed.
 	 */
-	const METASTORE_VERSION_DOCID = 'metastore_version';
+	private const METASTORE_VERSION_DOCID = 'metastore_version';
 
 	/**
 	 * @const string index name
 	 */
-	const INDEX_NAME = 'mw_cirrus_metastore';
+	public const INDEX_NAME = 'mw_cirrus_metastore';
 
 	/**
 	 * @const string previous index name (bc code)
 	 */
-	const OLD_INDEX_NAME = 'mw_cirrus_versions';
+	private const OLD_INDEX_NAME = 'mw_cirrus_versions';
 
 	/**
 	 * @const string type for storing internal data
 	 */
-	const INTERNAL_TYPE = 'internal';
+	private const INTERNAL_TYPE = 'internal';
 
 	/**
 	 * @var Connection

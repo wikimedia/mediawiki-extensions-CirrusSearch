@@ -37,7 +37,7 @@ class CheckerJob extends CirrusGenericJob {
 	 * @const int max number of retries, 3 means that the job can be run at
 	 * most 4 times.
 	 */
-	const JOB_MAX_RETRIES = 3;
+	private const JOB_MAX_RETRIES = 3;
 
 	/**
 	 * Construct a new CherckerJob.

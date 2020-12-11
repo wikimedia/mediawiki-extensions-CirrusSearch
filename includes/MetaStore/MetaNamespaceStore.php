@@ -10,7 +10,7 @@ use Elastica\Query\Match;
 
 class MetaNamespaceStore implements MetaStore {
 	/** @const Value of metastore 'type' field for our documents */
-	const METASTORE_TYPE = 'namespace';
+	public const METASTORE_TYPE = 'namespace';
 
 	/** @var string */
 	private $wikiId;

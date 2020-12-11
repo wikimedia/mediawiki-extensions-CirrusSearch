@@ -31,17 +31,17 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 	/**
 	 * The simplest query ever: only words
 	 */
-	const SIMPLE_BAG_OF_WORDS = 'simple_bag_of_words';
+	public const SIMPLE_BAG_OF_WORDS = 'simple_bag_of_words';
 
 	/**
 	 * Only quoted words
 	 */
-	const SIMPLE_PHRASE = 'simple_phrase_query';
+	public const SIMPLE_PHRASE = 'simple_phrase_query';
 
 	/**
 	 * A simple bag of words query with some quoted words
 	 */
-	const BAG_OF_WORDS_WITH_PHRASE = 'bag_of_words_with_phrase_query';
+	public const BAG_OF_WORDS_WITH_PHRASE = 'bag_of_words_with_phrase_query';
 
 	/**
 	 * Expert: a query that uses some special syntax such as:
@@ -49,12 +49,12 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 	 * - explicit boolean expression
 	 * - complex phrase (phrase prefix, non default slop)
 	 */
-	const COMPLEX_QUERY = 'complex_query';
+	public const COMPLEX_QUERY = 'complex_query';
 
 	/**
 	 * Query that was fixed/corrected
 	 */
-	const BOGUS_QUERY = 'bogus_query';
+	public const BOGUS_QUERY = 'bogus_query';
 
 	/**
 	 * @var bool

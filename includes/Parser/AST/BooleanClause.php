@@ -10,9 +10,9 @@ use Wikimedia\Assert\Assert;
  * A boolean clause
  */
 class BooleanClause implements Visitable {
-	const MUST = 'MUST';
-	const SHOULD = 'SHOULD';
-	const MUST_NOT = 'MUST_NOT';
+	public const MUST = 'MUST';
+	public const SHOULD = 'SHOULD';
+	public const MUST_NOT = 'MUST_NOT';
 
 	/**
 	 * @var ParsedNode

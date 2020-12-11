@@ -35,7 +35,7 @@ class RescoreBuilder {
 	/**
 	 * @var int Maximum number of rescore profile fallbacks
 	 */
-	const FALLBACK_LIMIT = 4;
+	private const FALLBACK_LIMIT = 4;
 
 	/**
 	 * List of allowed rescore params
@@ -49,9 +49,9 @@ class RescoreBuilder {
 		'score_mode'
 	];
 
-	const FUNCTION_SCORE_TYPE = "function_score";
-	const LTR_TYPE = "ltr";
-	const PHRASE = "phrase";
+	private const FUNCTION_SCORE_TYPE = "function_score";
+	private const LTR_TYPE = "ltr";
+	private const PHRASE = "phrase";
 
 	/**
 	 * @var SearchContext

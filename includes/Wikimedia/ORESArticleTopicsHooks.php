@@ -16,15 +16,15 @@ use SearchEngine;
  * @see ArticleTopicFeature
  */
 class ORESArticleTopicsHooks {
-	const FIELD_NAME = 'ores_articletopics';
-	const FIELD_SIMILARITY = 'ores_articletopics_similarity';
-	const FIELD_INDEX_ANALYZER = 'ores_articletopics';
-	const FIELD_SEARCH_ANALYZER = 'keyword';
-	const WMF_EXTRA_FEATURES = 'CirrusSearchWMFExtraFeatures';
-	const CONFIG_OPTIONS = 'ores_articletopics';
-	const BUILD_OPTION = 'build';
-	const USE_OPTION = 'use';
-	const MAX_SCORE_OPTION = 'max_score';
+	public const FIELD_NAME = 'ores_articletopics';
+	public const FIELD_SIMILARITY = 'ores_articletopics_similarity';
+	public const FIELD_INDEX_ANALYZER = 'ores_articletopics';
+	public const FIELD_SEARCH_ANALYZER = 'keyword';
+	public const WMF_EXTRA_FEATURES = 'CirrusSearchWMFExtraFeatures';
+	public const CONFIG_OPTIONS = 'ores_articletopics';
+	public const BUILD_OPTION = 'build';
+	public const USE_OPTION = 'use';
+	public const MAX_SCORE_OPTION = 'max_score';
 
 	/**
 	 * Configure the similarity needed for the article topics field

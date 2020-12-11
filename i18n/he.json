@@ -60,6 +60,7 @@
 	"cirrussearch-feature-deepcat-exception": "שאילתת ה־SPARQL לחיפוש עמוק בקטגוריה נכשלה",
 	"cirrussearch-feature-deepcat-toomany": "שאילתת החיפוש העמוק בקטגוריה החזירה יותר מדי קטגוריות",
 	"cirrussearch-feature-deepcat-invalid-title": "הקטגוריה שניתנה אינה תקינה.",
+	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|מזהה דף בלתי־תקין|מזהי דף בלתי־תקינים}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "לא ניתנו קטגוריות תקינות לפקודה \"$1\".",
 	"cirrussearch-mlt-feature-no-valid-titles": "לא ניתנו כותרת תקינות לפקודה \"$1\".",
 	"cirrussearch-mlt-not-configured": "האפשרות \"$1\" אינה מוגדרת באופן תקין. נא לבקש ממנהל האתר לתקן את $wgCirrusSearchMoreLikeThisFields",

@@ -62,6 +62,7 @@
 	"cirrussearch-feature-deepcat-exception": "Die SPARQL-Abfrage für die Deepcat-Suche ist fehlgeschlagen",
 	"cirrussearch-feature-deepcat-toomany": "Die Deepcat-Abfrage hat zu viele Kategorien zurückgegeben",
 	"cirrussearch-feature-deepcat-invalid-title": "Die angegebene Kategorie ist ungültig.",
+	"cirrussearch-feature-pageid-invalid-id": "Ungültige Seiten-{{PLURAL:$2|ID|IDs}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Es wurden keine gültigen Kategorien für „$1“ angegeben.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Keine gültigen Titel für „$1“ angegeben.",
 	"cirrussearch-mlt-not-configured": "Die Funktion „$1“ ist falsch konfiguriert. Bitte einen Administrator, $wgCirrusSearchMoreLikeThisFields anzupassen.",

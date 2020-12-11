@@ -73,6 +73,7 @@
 	"cirrussearch-feature-deepcat-exception": "Derin kategori arama SPARQL sorgusu başarısız oldu",
 	"cirrussearch-feature-deepcat-toomany": "Derin kategori sorgusu çok fazla kategori döndürdü",
 	"cirrussearch-feature-deepcat-invalid-title": "Sağlanan kategori geçersiz.",
+	"cirrussearch-feature-pageid-invalid-id": "Geçersiz sayfa {{PLURAL:$2|kimliği|kimlikleri}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "'$1' için geçerli bir kategori sağlanmadı.",
 	"cirrussearch-mlt-feature-no-valid-titles": "'$1' için geçerli başlık yok.",
 	"cirrussearch-mlt-not-configured": "'$1' özelliği yanlış yapılandırılmış. Bir yöneticiden $wgCirrusSearchMoreLikeThisFields düzeltmesini isteyin",

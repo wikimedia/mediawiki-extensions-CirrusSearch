@@ -63,10 +63,10 @@ use Wikimedia\ObjectFactory;
 class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	const SUGGESTION_HIGHLIGHT_PRE = '<em>';
 	const SUGGESTION_HIGHLIGHT_POST = '</em>';
-	const HIGHLIGHT_PRE_MARKER = ''; // \uE000. Can't be a unicode literal until php7
-	const HIGHLIGHT_PRE = '<span class="searchmatch">';
-	const HIGHLIGHT_POST_MARKER = ''; // \uE001
-	const HIGHLIGHT_POST = '</span>';
+	public const HIGHLIGHT_PRE_MARKER = ''; // \uE000. Can't be a unicode literal until php7
+	public const HIGHLIGHT_PRE = '<span class="searchmatch">';
+	public const HIGHLIGHT_POST_MARKER = ''; // \uE001
+	public const HIGHLIGHT_POST = '</span>';
 
 	/**
 	 * Maximum offset + limit depth allowed. As in the deepest possible result

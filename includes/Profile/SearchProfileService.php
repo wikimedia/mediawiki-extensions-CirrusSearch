@@ -64,14 +64,14 @@ class SearchProfileService {
 	 * Used at query when building elastic queries
 	 * @see \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
-	const RESCORE = 'rescore';
+	public const RESCORE = 'rescore';
 
 	/**
 	 * Profile type used to build function chains
 	 * Used at query time by rescore builders
 	 * @see \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
-	const RESCORE_FUNCTION_CHAINS = 'rescore_function_chains';
+	public const RESCORE_FUNCTION_CHAINS = 'rescore_function_chains';
 
 	/**
 	 * Profile type used by the completion suggester
@@ -101,7 +101,7 @@ class SearchProfileService {
 	 * Profiles used for building fulltext search queries
 	 * @see \CirrusSearch\Search\SearchContext::getFulltextQueryBuilderProfile()
 	 */
-	const FT_QUERY_BUILDER = 'ft_query_builder';
+	public const FT_QUERY_BUILDER = 'ft_query_builder';
 
 	/**
 	 * Profile type used by FallbackRunner.

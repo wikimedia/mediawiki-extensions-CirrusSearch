@@ -19,7 +19,7 @@ class TextIndexField extends CirrusIndexField {
 	 * Distance that lucene places between multiple values of the same field.
 	 * Set pretty high to prevent accidental phrase queries between those values.
 	 */
-	const POSITION_INCREMENT_GAP = 10;
+	public const POSITION_INCREMENT_GAP = 10;
 
 	/* Bit field parameters for string fields.
 	 *   ENABLE_NORMS: Enable norms on the field.  Good for text you search against but useless

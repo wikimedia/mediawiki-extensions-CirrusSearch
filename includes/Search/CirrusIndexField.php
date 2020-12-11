@@ -22,7 +22,7 @@ abstract class CirrusIndexField extends SearchIndexFieldDefinition {
 	/**
 	 * Name of the hint as returned by SearchIndexField::getEngineHints()
 	 */
-	const NOOP_HINT = 'noop';
+	public const NOOP_HINT = 'noop';
 
 	/**
 	 * Name of the type in Elastic

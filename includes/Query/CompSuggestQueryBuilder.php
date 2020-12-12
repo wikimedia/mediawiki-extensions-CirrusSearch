@@ -290,7 +290,7 @@ class CompSuggestQueryBuilder {
 	 * @return int the number of results to fetch from elastic
 	 */
 	public static function computeHardLimit( $limit, $offset, SearchConfig $config ) {
-		$limit = $limit + $offset;
+		$limit += $offset;
 		$hardLimit = $config->get( 'CirrusSearchCompletionSuggesterHardLimit' );
 		if ( $hardLimit === null ) {
 			$hardLimit = 50;

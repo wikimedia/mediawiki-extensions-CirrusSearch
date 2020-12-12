@@ -31,7 +31,6 @@ class NegatedNode extends ParsedNode {
 	 */
 	public function __construct( $startOffset, $endOffset, ParsedNode $child, $negationType ) {
 		Assert::parameter( self::validNegationType( $negationType ), 'negationType', 'Invalid negation type provided' );
-		Assert::parameter( self::validNegationType( $negationType ), 'negationType', 'Invalid negation type provided' );
 		parent::__construct( $startOffset, $endOffset );
 		$this->child = $child;
 		$this->negationType = $negationType;

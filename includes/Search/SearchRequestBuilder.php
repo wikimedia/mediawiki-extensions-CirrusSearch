@@ -142,7 +142,7 @@ class SearchRequestBuilder {
 					->addFilter( $mainQuery )
 					->addMust( ( new Query\FunctionScore() )
 						->setQuery( new Query\MatchAll() )
-						/** @phan-suppress-next-line PhanTypeMismatchArgument empty array isn't jsonified to {} properly */
+						/** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal empty array isn't jsonified to {} properly */
 						->addFunction( 'random_score', (object)[] ) ) );
 				break;
 			default:

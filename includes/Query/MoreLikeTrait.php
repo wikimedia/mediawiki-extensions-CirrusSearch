@@ -126,7 +126,7 @@ trait MoreLikeTrait {
 		$query->setParams( $this->getConfig()->get( 'CirrusSearchMoreLikeThisConfig' ) );
 		$query->setFields( $moreLikeThisFields );
 
-		/** @phan-suppress-next-line PhanTypeMismatchArgument library is mis-annotated */
+		/** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal library is mis-annotated */
 		$query->setLike( $likeDocs );
 
 		return $query;

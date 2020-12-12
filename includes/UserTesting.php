@@ -237,7 +237,7 @@ class UserTesting {
 			$piece = substr( $hash, $i, 4 );
 			$dec = hexdec( $piece );
 			// xor will retain the uniform distribution
-			$sum = $sum ^ $dec;
+			$sum ^= $dec;
 		}
 		return $sum / ( ( 1 << 16 ) - 1 );
 	}

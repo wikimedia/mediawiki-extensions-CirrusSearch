@@ -13,7 +13,6 @@
 		<exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals" />
 		<exclude name="MediaWiki.VariableAnalysis.MisleadingGlobalNames.Misleading$wgContentHandlers" />
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment" />
-		<exclude name="PSR12.Properties.ConstantVisibility.NotFound" />
 		<exclude name="PSR2.Methods.MethodDeclaration.Underscore" />
 	</rule>
 	<rule ref="MediaWiki.NamingConventions.ValidGlobalName">

@@ -22,21 +22,21 @@ use CirrusSearch\Util;
  */
 class QualityScore implements SuggestScoringMethod {
 	// TODO: move these constants into a cirrus profile
-	const INCOMING_LINKS_MAX_DOCS_FACTOR = 0.1;
+	public const INCOMING_LINKS_MAX_DOCS_FACTOR = 0.1;
 
-	const EXTERNAL_LINKS_NORM = 20;
-	const PAGE_SIZE_NORM = 50000;
-	const HEADING_NORM = 20;
-	const REDIRECT_NORM = 30;
+	public const EXTERNAL_LINKS_NORM = 20;
+	public const PAGE_SIZE_NORM = 50000;
+	public const HEADING_NORM = 20;
+	public const REDIRECT_NORM = 30;
 
-	const INCOMING_LINKS_WEIGHT = 0.6;
-	const EXTERNAL_LINKS_WEIGHT = 0.1;
-	const PAGE_SIZE_WEIGHT = 0.1;
-	const HEADING_WEIGHT = 0.2;
-	const REDIRECT_WEIGHT = 0.1;
+	private const INCOMING_LINKS_WEIGHT = 0.6;
+	private const EXTERNAL_LINKS_WEIGHT = 0.1;
+	private const PAGE_SIZE_WEIGHT = 0.1;
+	private const HEADING_WEIGHT = 0.2;
+	private const REDIRECT_WEIGHT = 0.1;
 
 	// The final score will be in the range [0, SCORE_RANGE]
-	const SCORE_RANGE = 10000000;
+	public const SCORE_RANGE = 10000000;
 
 	/**
 	 * Template boosts configured by the mediawiki admin.

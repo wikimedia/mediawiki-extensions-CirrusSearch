@@ -5,22 +5,22 @@ namespace CirrusSearch\Search;
 use Title;
 
 class ArrayCirrusSearchResult extends CirrusSearchResult {
-	const DOC_ID = 'doc_id';
-	const SCORE = 'score';
-	const EXPLANATION = 'explanation';
-	const TEXT_SNIPPET = 'text_snippet';
-	const TITLE_SNIPPET = 'title_snippet';
-	const REDIRECT_SNIPPET = 'redirect_snippet';
-	const REDIRECT_TITLE = 'redirect_title';
-	const SECTION_SNIPPET = 'section_snippet';
-	const SECTION_TITLE = 'section_title';
-	const CATEGORY_SNIPPET = 'category_snippet';
-	const TIMESTAMP = 'timestamp';
-	const WORD_COUNT = 'word_count';
-	const BYTE_SIZE = 'byte_size';
-	const INTERWIKI_NAMESPACE_TEXT = 'interwiki_namespace_text';
-	const IS_FILE_MATCH = 'is_file_match';
-	const EXTRA_FIELDS = 'extra_fields';
+	public const DOC_ID = 'doc_id';
+	public const SCORE = 'score';
+	public const EXPLANATION = 'explanation';
+	public const TEXT_SNIPPET = 'text_snippet';
+	public const TITLE_SNIPPET = 'title_snippet';
+	public const REDIRECT_SNIPPET = 'redirect_snippet';
+	public const REDIRECT_TITLE = 'redirect_title';
+	public const SECTION_SNIPPET = 'section_snippet';
+	public const SECTION_TITLE = 'section_title';
+	public const CATEGORY_SNIPPET = 'category_snippet';
+	public const TIMESTAMP = 'timestamp';
+	public const WORD_COUNT = 'word_count';
+	public const BYTE_SIZE = 'byte_size';
+	public const INTERWIKI_NAMESPACE_TEXT = 'interwiki_namespace_text';
+	public const IS_FILE_MATCH = 'is_file_match';
+	public const EXTRA_FIELDS = 'extra_fields';
 
 	/**
 	 * @var array

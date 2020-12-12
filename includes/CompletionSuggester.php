@@ -73,17 +73,17 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	/**
 	 * @const string multisearch key to identify the comp suggest request
 	 */
-	const MSEARCH_KEY_SUGGEST = "suggest";
+	private const MSEARCH_KEY_SUGGEST = "suggest";
 
 	/**
 	 * @const string multisearch key to identify the prefix search request
 	 */
-	const MSEARCH_KEY_PREFIX = "prefix";
+	private const MSEARCH_KEY_PREFIX = "prefix";
 
 	/**
 	 * Search type (used for logs & timeout configs)
 	 */
-	const SEARCH_TYPE = 'comp_suggest';
+	private const SEARCH_TYPE = 'comp_suggest';
 
 	/**
 	 * @var int maximum number of result (final)

@@ -73,19 +73,19 @@ class SearchProfileServiceFactory {
 	/**
 	 * Name of the service declared in MediaWikiServices
 	 */
-	const SERVICE_NAME = self::class;
+	public const SERVICE_NAME = self::class;
 
 	/**
 	 * Name of the repositories holding profiles
 	 * provided by Cirrus.
 	 */
-	const CIRRUS_BASE = 'cirrus_base';
+	private const CIRRUS_BASE = 'cirrus_base';
 
 	/**
 	 * Name of the repositories holding profiles customized
 	 * by wiki admin using CirrusSearch config vars.
 	 */
-	const CIRRUS_CONFIG = 'cirrus_config';
+	private const CIRRUS_CONFIG = 'cirrus_config';
 
 	/**
 	 * @var InterwikiResolver

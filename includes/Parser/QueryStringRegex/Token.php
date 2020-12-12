@@ -10,16 +10,16 @@ use Wikimedia\Assert\Assert;
  */
 class Token {
 
-	const EOF = 0;
+	private const EOF = 0;
 
 	/** explicit boolean AND */
-	const BOOL_AND = 1;
+	public const BOOL_AND = 1;
 
 	/** explicit boolean OR */
-	const BOOL_OR = 2;
+	public const BOOL_OR = 2;
 
 	/** explicit negation */
-	const NOT = 3;
+	public const NOT = 3;
 
 	/**
 	 * Parsed node, due to its "mixed" nature
@@ -28,9 +28,9 @@ class Token {
 	 * tokens. The PARSED_NODE token type represent
 	 * this type of "complex" token
 	 */
-	const PARSED_NODE = 4;
+	public const PARSED_NODE = 4;
 
-	const WHITESPACE = 5;
+	public const WHITESPACE = 5;
 
 	/**
 	 * @var string[] token type labels

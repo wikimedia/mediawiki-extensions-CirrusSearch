@@ -61,8 +61,8 @@ use Wikimedia\ObjectFactory;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
-	const SUGGESTION_HIGHLIGHT_PRE = '<em>';
-	const SUGGESTION_HIGHLIGHT_POST = '</em>';
+	public const SUGGESTION_HIGHLIGHT_PRE = '<em>';
+	public const SUGGESTION_HIGHLIGHT_POST = '</em>';
 	public const HIGHLIGHT_PRE_MARKER = ''; // \uE000. Can't be a unicode literal until php7
 	public const HIGHLIGHT_PRE = '<span class="searchmatch">';
 	public const HIGHLIGHT_POST_MARKER = ''; // \uE001
@@ -73,17 +73,17 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * to return. Too deep will cause very slow queries. 10,000 feels plenty
 	 * deep. This should be <= index.max_result_window in elasticsearch.
 	 */
-	const MAX_OFFSET_LIMIT = 10000;
+	private const MAX_OFFSET_LIMIT = 10000;
 
 	/**
 	 * Identifies the main search in MSearchRequests/MSearchResponses
 	 */
-	const MAINSEARCH_MSEARCH_KEY = '__main__';
+	public const MAINSEARCH_MSEARCH_KEY = '__main__';
 
 	/**
 	 * Identifies the "tested" search request in MSearchRequests/MSearchResponses
 	 */
-	const INTERLEAVED_MSEARCH_KEY = '__interleaved__';
+	private const INTERLEAVED_MSEARCH_KEY = '__interleaved__';
 
 	/**
 	 * @var int search offset

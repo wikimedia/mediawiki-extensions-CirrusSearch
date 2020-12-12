@@ -7,7 +7,7 @@ namespace CirrusSearch\BuildDocument\Completion;
  * inputs on title suggestions
  */
 class DefaultSortSuggestionsBuilder implements ExtraSuggestionsBuilder {
-	const FIELD = 'defaultsort';
+	private const FIELD = 'defaultsort';
 
 	/**
 	 * @inheritDoc

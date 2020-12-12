@@ -24,7 +24,7 @@ class LanguageFeature extends SimpleKeywordFeature implements FilterQueryFeature
 	 * Limit search to 20 languages. Arbitrarily chosen, but should be more
 	 * than enough and some sort of limit has to be enforced.
 	 */
-	const QUERY_LIMIT = 20;
+	public const QUERY_LIMIT = 20;
 
 	/**
 	 * @return string[]

@@ -34,9 +34,9 @@ use Wikimedia\Assert\Assert;
  */
 class MappingConfigBuilder {
 	// Bit field parameters for buildConfig
-	const PREFIX_START_WITH_ANY = 1;
-	const PHRASE_SUGGEST_USE_TEXT = 2;
-	const OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER = 4;
+	public const PREFIX_START_WITH_ANY = 1;
+	public const PHRASE_SUGGEST_USE_TEXT = 2;
+	public const OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER = 4;
 
 	/**
 	 * Version number for the core analysis. Increment the major
@@ -44,7 +44,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.10';
+	public const VERSION = '1.10';
 
 	/**
 	 * @var bool should the index be optimized for the experimental highlighter?

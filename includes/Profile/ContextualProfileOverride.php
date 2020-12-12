@@ -14,7 +14,7 @@ class ContextualProfileOverride implements SearchProfileOverride {
 	 * Language code context, defaults to current context language
 	 * @see \IContextSource::getLanguage()
 	 */
-	const LANGUAGE = 'language';
+	public const LANGUAGE = 'language';
 
 	/** @var string */
 	private $template;

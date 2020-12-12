@@ -11,7 +11,7 @@ namespace CirrusSearch;
  */
 interface InterwikiResolver {
 	/** @const string service name */
-	const SERVICE = 'CirrusSearchInterwikiresolver';
+	public const SERVICE = 'CirrusSearchInterwikiresolver';
 
 	/**
 	 * @return string[] of wikiIds indexed by interwiki prefix

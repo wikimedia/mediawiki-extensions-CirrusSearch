@@ -36,7 +36,7 @@ class InSourceFeature extends BaseRegexFeature {
 	/**
 	 * Source field
 	 */
-	const FIELD = 'source_text';
+	private const FIELD = 'source_text';
 
 	/**
 	 * @var Escaper an escaper used to sanitize queries when not used as regular expression

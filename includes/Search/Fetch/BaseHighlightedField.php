@@ -9,9 +9,9 @@ use Elastica\Query\BoolQuery;
 use Wikimedia\Assert\Assert;
 
 class BaseHighlightedField extends HighlightedField {
-	const TYPE = 'highlighting';
+	public const TYPE = 'highlighting';
 
-	const FVH_HL_TYPE = 'fvh';
+	public const FVH_HL_TYPE = 'fvh';
 
 	/** @var int|null */
 	private $numberOfFragments;

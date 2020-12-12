@@ -22,7 +22,7 @@ use Wikimedia\Assert\Assert;
 class CompSuggestQueryBuilder {
 	use QueryBuilderTraits;
 
-	const VARIANT_EXTRA_DISCOUNT = 0.0001;
+	public const VARIANT_EXTRA_DISCOUNT = 0.0001;
 
 	/** @var SearchContext (final) */
 	private $searchContext;

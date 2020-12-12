@@ -17,7 +17,7 @@ abstract class CirrusIndexField extends SearchIndexFieldDefinition {
 	 * Name of the param on \Elastica\Document that contains
 	 * hints about the noop_script handlers.
 	 */
-	const DOC_HINT_PARAM = '_cirrus_hints';
+	public const DOC_HINT_PARAM = '_cirrus_hints';
 
 	/**
 	 * Name of the hint as returned by SearchIndexField::getEngineHints()

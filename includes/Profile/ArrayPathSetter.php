@@ -56,7 +56,7 @@ use Wikimedia\Assert\Assert;
  * The full path must always be matched.
  */
 class ArrayPathSetter {
-	const PATTERN = '/\G(?:(?<!^)[.]|^)(?<keypath>[^.\[\]]+)(?:\[(?<lookaheadkey>[^.\[\]]+)=(?<lookaheadvalue>[^.\[\]]+)\])?/';
+	private const PATTERN = '/\G(?:(?<!^)[.]|^)(?<keypath>[^.\[\]]+)(?:\[(?<lookaheadkey>[^.\[\]]+)=(?<lookaheadvalue>[^.\[\]]+)\])?/';
 	/**
 	 * @var mixed[]
 	 */

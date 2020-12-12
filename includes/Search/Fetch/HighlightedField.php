@@ -6,29 +6,29 @@ use CirrusSearch\Search\ArrayCirrusSearchResult;
 
 abstract class HighlightedField {
 	/** Priority for properties that are doc dependent (e.g. doc size) */
-	const DEFAULT_TARGET_PRIORITY = 100;
+	public const DEFAULT_TARGET_PRIORITY = 100;
 
 	/** Priority for properties that are query dependent (highlight in content) */
-	const QUERY_DEPENDENT_TARGET_PRIORITY = 200;
+	public const QUERY_DEPENDENT_TARGET_PRIORITY = 200;
 
 	/** Priority for properties that are query dependent and triggered using search keywords (intitle:foo highlight) */
-	const EXPERT_SYNTAX_PRIORITY = 300;
+	public const EXPERT_SYNTAX_PRIORITY = 300;
 
-	const TARGET_TITLE_SNIPPET = ArrayCirrusSearchResult::TITLE_SNIPPET;
+	public const TARGET_TITLE_SNIPPET = ArrayCirrusSearchResult::TITLE_SNIPPET;
 
-	const TARGET_REDIRECT_SNIPPET = ArrayCirrusSearchResult::REDIRECT_SNIPPET;
+	public const TARGET_REDIRECT_SNIPPET = ArrayCirrusSearchResult::REDIRECT_SNIPPET;
 
-	const TARGET_CATEGORY_SNIPPET = ArrayCirrusSearchResult::CATEGORY_SNIPPET;
+	public const TARGET_CATEGORY_SNIPPET = ArrayCirrusSearchResult::CATEGORY_SNIPPET;
 
-	const TARGET_MAIN_SNIPPET = ArrayCirrusSearchResult::TEXT_SNIPPET;
+	public const TARGET_MAIN_SNIPPET = ArrayCirrusSearchResult::TEXT_SNIPPET;
 
-	const TARGET_SECTION_SNIPPET = ArrayCirrusSearchResult::SECTION_SNIPPET;
+	public const TARGET_SECTION_SNIPPET = ArrayCirrusSearchResult::SECTION_SNIPPET;
 
 	/**
 	 * Priority for properties are query dependent and triggered using costly search keywords
 	 * (for intitle:/foo[0-9]/ intitle:bar we will prefer the highlight on the regex over the simple intitle:bar)
 	 */
-	const COSTLY_EXPERT_SYNTAX_PRIORITY = 400;
+	public const COSTLY_EXPERT_SYNTAX_PRIORITY = 400;
 
 	/** @var string */
 	private $fieldName;

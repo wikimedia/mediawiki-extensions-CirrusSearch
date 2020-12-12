@@ -30,7 +30,7 @@ class SuggesterMappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '3.0';
+	public const VERSION = '3.0';
 
 	/** @var SearchConfig */
 	private $config;

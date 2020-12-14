@@ -33,7 +33,7 @@ use WikiPage;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class DataSender extends ElasticsearchIntermediary {
-	const ALL_INDEXES_FROZEN_NAME = 'freeze-everything';
+	private const ALL_INDEXES_FROZEN_NAME = 'freeze-everything';
 
 	/** @var \Psr\Log\LoggerInterface */
 	private $log;

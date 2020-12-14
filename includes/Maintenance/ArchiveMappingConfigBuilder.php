@@ -6,7 +6,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\Search\TextIndexField;
 
 class ArchiveMappingConfigBuilder extends MappingConfigBuilder {
-	const VERSION = '1.0';
+	public const VERSION = '1.0';
 
 	public function buildConfig() {
 		return [ $this->getMainType() => [

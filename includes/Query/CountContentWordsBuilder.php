@@ -12,7 +12,7 @@ use Elastica\Aggregation\Sum;
 class CountContentWordsBuilder {
 	// The count doesn't change all that quickly. Re-run the query
 	// no more than daily per-wiki.
-	const CACHE_SECONDS = 86400;
+	private const CACHE_SECONDS = 86400;
 
 	/**
 	 * @param SearchContext $context the search context

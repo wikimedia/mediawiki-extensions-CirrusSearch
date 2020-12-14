@@ -16,7 +16,7 @@ class SearchQuery {
 	 * Identifier for the fulltext SearchEngine entry point
 	 * @see \SearchEngine::searchText()
 	 */
-	const SEARCH_TEXT = 'searchText';
+	public const SEARCH_TEXT = 'searchText';
 
 	/**
 	 * @var ParsedQuery

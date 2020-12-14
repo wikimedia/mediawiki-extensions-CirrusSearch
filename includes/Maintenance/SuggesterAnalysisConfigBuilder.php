@@ -23,7 +23,7 @@ namespace CirrusSearch\Maintenance;
  */
 
 class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
-	const VERSION = "1.4";
+	public const VERSION = "1.4";
 
 	/**
 	 * Build an analysis config with sane defaults

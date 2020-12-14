@@ -31,7 +31,7 @@ class SourceRegex extends AbstractQuery {
 	 * Use of the empty string falls back to the ROOT locale.
 	 * Note that the locale here is only used for transforming strings to lowercase
 	 */
-	const MW_LANG_CODE_TO_JAVA_LOCALE = [
+	private const MW_LANG_CODE_TO_JAVA_LOCALE = [
 		'be-tarask' => 'be',
 		'map-bms' => '',
 		'roa-tara' => '',

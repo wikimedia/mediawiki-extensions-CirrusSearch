@@ -11,8 +11,8 @@ use MultiConfig;
  * SearchConfig implemenation backed by a simple \HashConfig
  */
 class HashSearchConfig extends SearchConfig {
-	const FLAG_INHERIT = 'inherit';
-	const FLAG_LOAD_CONT_LANG = 'load-cont-lang';
+	public const FLAG_INHERIT = 'inherit';
+	public const FLAG_LOAD_CONT_LANG = 'load-cont-lang';
 
 	/** @var bool */
 	private $localWiki = false;

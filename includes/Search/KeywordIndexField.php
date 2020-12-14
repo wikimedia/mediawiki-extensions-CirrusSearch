@@ -33,7 +33,7 @@ class KeywordIndexField extends CirrusIndexField {
 	/**
 	 * Maximum number of characters allowed in keyword terms.
 	 */
-	const KEYWORD_IGNORE_ABOVE = 5000;
+	private const KEYWORD_IGNORE_ABOVE = 5000;
 
 	public function getMapping( \SearchEngine $engine ) {
 		$config = parent::getMapping( $engine );

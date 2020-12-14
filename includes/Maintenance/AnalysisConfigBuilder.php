@@ -36,12 +36,12 @@ class AnalysisConfigBuilder {
 	 * You may also need to increment MetaStoreIndex::METASTORE_MAJOR_VERSION
 	 * manually as well.
 	 */
-	const VERSION = '0.12';
+	public const VERSION = '0.12';
 
 	/**
 	 * Maximum number of characters allowed in keyword terms.
 	 */
-	const KEYWORD_IGNORE_ABOVE = 5000;
+	private const KEYWORD_IGNORE_ABOVE = 5000;
 
 	/**
 	 * @var bool is the icu plugin available?

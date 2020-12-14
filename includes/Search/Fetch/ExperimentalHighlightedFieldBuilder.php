@@ -6,7 +6,7 @@ use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\SearchConfig;
 
 class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
-	const EXPERIMENTAL_HL_TYPE = 'experimental';
+	public const EXPERIMENTAL_HL_TYPE = 'experimental';
 
 	/**
 	 * @param string $fieldName

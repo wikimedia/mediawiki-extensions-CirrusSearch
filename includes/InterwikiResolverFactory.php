@@ -12,7 +12,7 @@ class InterwikiResolverFactory {
 	/**
 	 * @const string service name used in MediaWikiServices
 	 */
-	const SERVICE = 'CirrusSearchInterwikiResolverFactory';
+	public const SERVICE = 'CirrusSearchInterwikiResolverFactory';
 
 	/**
 	 * @return InterwikiResolverFactory

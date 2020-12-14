@@ -17,7 +17,7 @@ use Title;
  * Since we don't actually index templates like that, munge the query here.
  */
 class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeature {
-	const MAX_CONDITIONS = 256;
+	public const MAX_CONDITIONS = 256;
 
 	/**
 	 * @return string[]

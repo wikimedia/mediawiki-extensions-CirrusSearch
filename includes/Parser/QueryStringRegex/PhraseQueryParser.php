@@ -27,12 +27,12 @@ class PhraseQueryParser {
 	/**
 	 * Start of a phrase
 	 */
-	const PHRASE_START = '/\G(?<negate>-|!)?"/';
+	public const PHRASE_START = '/\G(?<negate>-|!)?"/';
 
 	/**
 	 * Normal phrase detection
 	 */
-	const PHRASE_REGEX = '/\G(?<negate>-|!)?"(?<value>(?:\\\\.|[^"])*)"(?<slop>~(?<slopvalue>\d+))?(?<fuzzy>~)?/';
+	private const PHRASE_REGEX = '/\G(?<negate>-|!)?"(?<value>(?:\\\\.|[^"])*)"(?<slop>~(?<slopvalue>\d+))?(?<fuzzy>~)?/';
 
 	/**
 	 * @var Escaper

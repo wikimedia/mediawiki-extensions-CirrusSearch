@@ -31,9 +31,9 @@ use Elastica\Type;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Reindexer {
-	const MAX_CONSECUTIVE_ERRORS = 5;
-	const MONITOR_SLEEP_SECONDS = 30;
-	const MAX_WAIT_FOR_COUNT_SEC = 600;
+	private const MAX_CONSECUTIVE_ERRORS = 5;
+	private const MONITOR_SLEEP_SECONDS = 30;
+	private const MAX_WAIT_FOR_COUNT_SEC = 600;
 
 	/**
 	 * @var SearchConfig

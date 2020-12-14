@@ -13,7 +13,7 @@ use WANObjectCache;
  */
 class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 
-	const MATRIX_CACHE_TTL = 600;
+	private const MATRIX_CACHE_TTL = 600;
 
 	/**
 	 * @var WANObjectCache

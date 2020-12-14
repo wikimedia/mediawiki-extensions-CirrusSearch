@@ -32,13 +32,13 @@ class RequestLogger {
 	/**
 	 * @const int max number of results to store in cirrussearch-request logs (per request)
 	 */
-	const LOG_MAX_RESULTS = 50;
+	private const LOG_MAX_RESULTS = 50;
 
 	// If a title hit was given to the user, but the hit was not
 	// obtained via ElasticSearch, we won't really know where it came from.
 	// We still want to log the fact that the request set generated a hit
 	// for this title.  When this happens, the hit index field value will be this.
-	const UNKNOWN_HIT_INDEX = '_UNKNOWN_';
+	private const UNKNOWN_HIT_INDEX = '_UNKNOWN_';
 
 	/**
 	 * @var RequestLog[] Set of requests made

@@ -20,7 +20,7 @@ use Elastica\Query\AbstractQuery;
  * Selects only files of these specified features.
  */
 class FileTypeFeature extends SimpleKeywordFeature implements FilterQueryFeature {
-	const MAX_CONDITIONS = 20;
+	public const MAX_CONDITIONS = 20;
 
 	/** @var string[] Map of aliases from user provided term to term to search for */
 	private $aliases;

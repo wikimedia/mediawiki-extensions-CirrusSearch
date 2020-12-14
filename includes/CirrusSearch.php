@@ -58,17 +58,17 @@ class CirrusSearch extends SearchEngine {
 	 * is returned by self::getProfiles so instead of assigning a default
 	 * profile at this point we use this special profile.
 	 */
-	const AUTOSELECT_PROFILE = 'engine_autoselect';
+	public const AUTOSELECT_PROFILE = 'engine_autoselect';
 
 	/** @const string name of the prefixsearch fallback profile */
-	const COMPLETION_PREFIX_FALLBACK_PROFILE = 'classic';
+	public const COMPLETION_PREFIX_FALLBACK_PROFILE = 'classic';
 
 	/**
 	 * @const int Maximum title length that we'll check in prefix and keyword searches.
 	 * Since titles can be 255 bytes in length we're setting this to 255
 	 * characters.
 	 */
-	const MAX_TITLE_SEARCH = 255;
+	public const MAX_TITLE_SEARCH = 255;
 
 	/**
 	 * Name of the feature to extract more fields during a fulltext search request.
@@ -76,14 +76,14 @@ class CirrusSearch extends SearchEngine {
 	 * of the source document.
 	 * @see SearchEngine::supports() anf SearchEngine::setFeatureData()
 	 */
-	const EXTRA_FIELDS_TO_EXTRACT = 'extra-fields-to-extract';
+	public const EXTRA_FIELDS_TO_EXTRACT = 'extra-fields-to-extract';
 
 	/**
 	 * Name of the entry in the extension data array holding the extracted field
 	 * requested using the EXTRA_FIELDS_TO_EXTRACT feature.
 	 * @see \SearchResult::getExtensionData()
 	 */
-	const EXTRA_FIELDS = ArrayCirrusSearchResult::EXTRA_FIELDS;
+	private const EXTRA_FIELDS = ArrayCirrusSearchResult::EXTRA_FIELDS;
 
 	/**
 	 * @var array metrics about the last thing we searched sourced from the

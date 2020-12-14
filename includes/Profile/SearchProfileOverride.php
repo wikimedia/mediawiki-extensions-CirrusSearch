@@ -9,22 +9,22 @@ interface SearchProfileOverride {
 	/**
 	 * Default priority for uri param overrides
 	 */
-	const URI_PARAM_PRIO = 100;
+	public const URI_PARAM_PRIO = 100;
 
 	/**
 	 * Default priority for user pref overrides
 	 */
-	const USER_PREF_PRIO = 200;
+	public const USER_PREF_PRIO = 200;
 
 	/**
-	 * Default prority for contextual overrides
+	 * Default priority for contextual overrides
 	 */
-	const CONTEXTUAL_PRIO = 300;
+	public const CONTEXTUAL_PRIO = 300;
 
 	/**
 	 * Default priority for config overrides
 	 */
-	const CONFIG_PRIO = 400;
+	public const CONFIG_PRIO = 400;
 
 	/**
 	 * Get the overridden name or null if it cannot be overridden.

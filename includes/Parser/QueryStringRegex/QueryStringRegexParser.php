@@ -55,25 +55,25 @@ class QueryStringRegexParser implements QueryParser {
 	/**
 	 * Whitespace regex including unicode and some control chars
 	 */
-	const WHITESPACE_REGEX = '/\G[\pZ\pC]+/u';
+	private const WHITESPACE_REGEX = '/\G[\pZ\pC]+/u';
 
-	const QUERY_LEN_HARD_LIMIT = 2048;
+	public const QUERY_LEN_HARD_LIMIT = 2048;
 
 	/**
 	 * see T66350
 	 */
-	const GERSHAYIM_REGEX = '/(\p{L}{2,})(?:")(\p{L})(?=[^\p{L}]|$)/u';
+	private const GERSHAYIM_REGEX = '/(\p{L}{2,})(?:")(\p{L})(?=[^\p{L}]|$)/u';
 
 	/**
 	 * Supported explicit boolean operator
 	 *
 	 */
-	const EXPLICIT_BOOLEAN_OPERATOR = '/\G(?:(?<AND>AND|&&)|(?<OR>OR|\|\|)|(?<NOT>NOT))(?![^\pZ\pC"])/u';
+	private const EXPLICIT_BOOLEAN_OPERATOR = '/\G(?:(?<AND>AND|&&)|(?<OR>OR|\|\|)|(?<NOT>NOT))(?![^\pZ\pC"])/u';
 
 	/**
 	 * Keywords which do not count when measuring the length of the the query
 	 */
-	const UNLIMITED_KEYWORDS = [
+	private const UNLIMITED_KEYWORDS = [
 		'incategory' => true, // T111694
 		'articletopic' => true, // T242560
 		'pageid' => true,
@@ -177,7 +177,7 @@ class QueryStringRegexParser implements QueryParser {
 	/**
 	 * Default
 	 */
-	const DEFAULT_OCCUR = BooleanClause::MUST;
+	private const DEFAULT_OCCUR = BooleanClause::MUST;
 
 	/**
 	 * @var int

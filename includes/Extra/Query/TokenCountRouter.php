@@ -30,32 +30,32 @@ class TokenCountRouter extends AbstractQuery {
 	/**
 	 * @const string greater than
 	 */
-	const GT = 'gt';
+	public const GT = 'gt';
 
 	/**
 	 * @const string greater or equal
 	 */
-	const GTE = 'gte';
+	public const GTE = 'gte';
 
 	/**
 	 * @const string equal
 	 */
-	const EQ = 'eq';
+	public const EQ = 'eq';
 
 	/**
 	 * @const string not equal
 	 */
-	const NEQ = 'neq';
+	public const NEQ = 'neq';
 
 	/**
 	 * @const string less than or equal
 	 */
-	const LTE = 'lte';
+	public const LTE = 'lte';
 
 	/**
 	 * @const string less than
 	 */
-	const LT = 'lt';
+	public const LT = 'lt';
 
 	/**
 	 * @param string $text the text to analyze

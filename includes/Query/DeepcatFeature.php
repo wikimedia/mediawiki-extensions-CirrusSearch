@@ -47,20 +47,20 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	/**
 	 * User agent to use for SPARQL queries
 	 */
-	const USER_AGENT = 'CirrusSearch deepcat feature';
+	public const USER_AGENT = 'CirrusSearch deepcat feature';
 	/**
 	 * Timeout (in seconds) for SPARQL query.
 	 * TODO: make configurable?
 	 */
-	const TIMEOUT = 3;
+	public const TIMEOUT = 3;
 	/**
 	 * Stats key for SPARQL requests
 	 */
-	const STATSD_SPARQL_KEY = 'CirrusSearch.deepcat.sparql';
+	private const STATSD_SPARQL_KEY = 'CirrusSearch.deepcat.sparql';
 	/**
 	 * Stats key for reporting too many categories
 	 */
-	const STATSD_TOOMANY_KEY = 'CirrusSearch.deepcat.toomany';
+	private const STATSD_TOOMANY_KEY = 'CirrusSearch.deepcat.toomany';
 
 	/**
 	 * @param Config $config

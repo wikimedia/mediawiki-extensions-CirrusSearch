@@ -12,10 +12,10 @@ use Config;
  */
 class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 
-	const MAX_ERRORS_HARD_LIMIT = 2;
-	const MAX_TERM_FREQ_HARD_LIMIT = 0.6;
-	const PREFIX_LENGTH_HARD_LIMIT = 2;
-	const CIRRUSSEARCH_DIDYOUMEAN_SETTINGS = 'cirrussearch-didyoumean-settings';
+	private const MAX_ERRORS_HARD_LIMIT = 2;
+	private const MAX_TERM_FREQ_HARD_LIMIT = 0.6;
+	private const PREFIX_LENGTH_HARD_LIMIT = 2;
+	public const CIRRUSSEARCH_DIDYOUMEAN_SETTINGS = 'cirrussearch-didyoumean-settings';
 
 	/**
 	 * @var string[]

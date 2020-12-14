@@ -11,16 +11,16 @@ namespace CirrusSearch\BuildDocument\Completion;
  */
 class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 	/** @const string */
-	const LANG_FIELD = 'language';
+	private const LANG_FIELD = 'language';
 
 	/** @const int */
-	const MAX_SUBPHRASES = 10;
+	private const MAX_SUBPHRASES = 10;
 
 	/** @const string subpage type */
-	const SUBPAGE_TYPE = 'subpage';
+	public const SUBPAGE_TYPE = 'subpage';
 
 	/** @const string subpage type */
-	const STARTS_WITH_ANY_WORDS_TYPE = 'anywords';
+	public const STARTS_WITH_ANY_WORDS_TYPE = 'anywords';
 
 	/**
 	 * @var string[] list of regex char ranges indexed by type

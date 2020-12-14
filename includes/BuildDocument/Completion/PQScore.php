@@ -6,11 +6,11 @@ namespace CirrusSearch\BuildDocument\Completion;
  * Score that combines QualityScore and the pageviews statistics (popularity)
  */
 class PQScore extends QualityScore {
-	const QSCORE_WEIGHT = 1;
-	const POPULARITY_WEIGHT = 0.4;
+	private const QSCORE_WEIGHT = 1;
+	private const POPULARITY_WEIGHT = 0.4;
 	// 0.04% of the total page views is the max we accept
 	// @todo: tested on enwiki values only
-	const POPULARITY_MAX = 0.0004;
+	private const POPULARITY_MAX = 0.0004;
 
 	/**
 	 * @return string[]

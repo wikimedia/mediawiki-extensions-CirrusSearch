@@ -31,37 +31,37 @@ class Connection extends ElasticaConnection {
 	/**
 	 * Name of the index that holds content articles.
 	 */
-	const CONTENT_INDEX_TYPE = 'content';
+	public const CONTENT_INDEX_TYPE = 'content';
 
 	/**
 	 * Name of the index that holds non-content articles.
 	 */
-	const GENERAL_INDEX_TYPE = 'general';
+	public const GENERAL_INDEX_TYPE = 'general';
 
 	/**
 	 * Name of the index that hosts content title suggestions
 	 */
-	const TITLE_SUGGEST_TYPE = 'titlesuggest';
+	public const TITLE_SUGGEST_TYPE = 'titlesuggest';
 
 	/**
 	 * Name of the index that hosts archive data
 	 */
-	const ARCHIVE_INDEX_TYPE = 'archive';
+	public const ARCHIVE_INDEX_TYPE = 'archive';
 
 	/**
 	 * Name of the page type.
 	 */
-	const PAGE_TYPE_NAME = 'page';
+	public const PAGE_TYPE_NAME = 'page';
 
 	/**
 	 * Name of the title suggest type
 	 */
-	const TITLE_SUGGEST_TYPE_NAME = 'titlesuggest';
+	public const TITLE_SUGGEST_TYPE_NAME = 'titlesuggest';
 
 	/**
 	 * Name of the archive type
 	 */
-	const ARCHIVE_TYPE_NAME = 'archive';
+	public const ARCHIVE_TYPE_NAME = 'archive';
 
 	/**
 	 * string[] Map of index types (suffix names)

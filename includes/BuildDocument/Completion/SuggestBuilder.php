@@ -37,32 +37,32 @@ class SuggestBuilder {
 	 * It'll be used when searching to trim the input query
 	 * and when determining close redirects
 	 */
-	const MAX_INPUT_LENGTH = 50;
+	public const MAX_INPUT_LENGTH = 50;
 
 	/**
 	 * The acceptable edit distance to group similar strings
 	 */
-	const GROUP_ACCEPTABLE_DISTANCE = 2;
+	private const GROUP_ACCEPTABLE_DISTANCE = 2;
 
 	/**
 	 * Discount suggestions based on redirects
 	 */
-	const REDIRECT_DISCOUNT = 0.1;
+	public const REDIRECT_DISCOUNT = 0.1;
 
 	/**
 	 * Discount suggestions based on cross namespace redirects
 	 */
-	const CROSSNS_DISCOUNT = 0.005;
+	public const CROSSNS_DISCOUNT = 0.005;
 
 	/**
 	 * Redirect suggestion type
 	 */
-	const REDIRECT_SUGGESTION = 'r';
+	public const REDIRECT_SUGGESTION = 'r';
 
 	/**
 	 * Title suggestion type
 	 */
-	const TITLE_SUGGESTION = 't';
+	public const TITLE_SUGGESTION = 't';
 
 	/**
 	 * Number of common prefix chars a redirect must share with the title to be
@@ -70,7 +70,7 @@ class SuggestBuilder {
 	 * This is useful not to promote Eraq as a title suggestion for Iraq
 	 * Less than 3 can lead to weird results like oba => Osama Bin Laden
 	 */
-	const REDIRECT_COMMON_PREFIX_LEN = 3;
+	private const REDIRECT_COMMON_PREFIX_LEN = 3;
 
 	/**
 	 * @var SuggestScoringMethod the scoring function

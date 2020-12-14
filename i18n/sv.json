@@ -65,6 +65,7 @@
 	"cirrussearch-feature-deepcat-exception": "Djup kategorisökning med SPARQL-fråga misslyckades",
 	"cirrussearch-feature-deepcat-toomany": "Frågan för djup kategori returnerade för många svar",
 	"cirrussearch-feature-deepcat-invalid-title": "Den angivna kategorin är ogiltig.",
+	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Ogiltigt sid-ID|Ogiltiga sid-ID:n}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Inga giltiga kategorier tillhandahölls i \"$1\".",
 	"cirrussearch-mlt-feature-no-valid-titles": "Inga giltiga titlar tillhandahölls för \"$1\".",
 	"cirrussearch-mlt-not-configured": "Funktionen \"$1\" är felkonfigurerad. Be en administratör att åtgärda $wgCirrusSearchMoreLikeThisFields",

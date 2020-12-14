@@ -47,6 +47,7 @@
 	"cirrussearch-completion-profile-classic-pref-desc": "Nessuna correzione errori di battitura. Corrispondenze con l'inizio dei titoli.",
 	"cirrussearch-regex-timed-out": "La ricerca ha impiegato troppo tempo, è disponibile solo un elenco parziale di risultati. Prova a semplificare l'espressione regolare per ottenere una lista completa.",
 	"cirrussearch-feature-too-many-conditions": "Troppe condizioni fornite per '$1', trocanto in $2.",
+	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Pagina non valida|Pagine non valide}} ID: $1",
 	"cirrussearch-explore-similar-categories": "Categorie",
 	"cirrussearch-explore-similar-languages": "Lingue",
 	"cirrussearch-explore-similar-related-none": "Non sono disponibili pagine correlate",

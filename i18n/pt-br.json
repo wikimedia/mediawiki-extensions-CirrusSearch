@@ -66,6 +66,7 @@
 	"cirrussearch-feature-deepcat-exception": "Consulta SPARQL de pesquisa de categoria profunda falhou",
 	"cirrussearch-feature-deepcat-toomany": "A consulta profunda da categoria retornou muitas categorias",
 	"cirrussearch-feature-deepcat-invalid-title": "A categoria fornecida é inválida.",
+	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|ID|IDs}} de página inválida: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nenhuma categoria válida fornecida a '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nenhum título válido fornecido a '$1'.",
 	"cirrussearch-mlt-not-configured": "O recurso \"$1\" está mal configurado. Peça a um administrador para consertar $wgCirrusSearchMoreLikeThisFields",

@@ -64,10 +64,9 @@ class Connection extends ElasticaConnection {
 	public const ARCHIVE_TYPE_NAME = 'archive';
 
 	/**
-	 * string[] Map of index types (suffix names)
-	 * indexed by mapping type.
+	 * Map of index types (suffix names) indexed by mapping type.
 	 */
-	private static $TYPE_MAPPING = [
+	private const TYPE_MAPPING = [
 		self::PAGE_TYPE_NAME => [
 			self::CONTENT_INDEX_TYPE,
 			self::GENERAL_INDEX_TYPE,
@@ -218,12 +217,12 @@ class Connection extends ElasticaConnection {
 	 * @return string[]
 	 */
 	public function getAllIndexTypes( $mappingType = self::PAGE_TYPE_NAME ) {
-		Assert::parameter( $mappingType === null || isset( self::$TYPE_MAPPING[$mappingType] ),
+		Assert::parameter( $mappingType === null || isset( self::TYPE_MAPPING[$mappingType] ),
 			'$mappingType', "Unknown mapping type $mappingType" );
 		$indexTypes = [];
 
 		if ( $mappingType === null ) {
-			foreach ( self::$TYPE_MAPPING as $types ) {
+			foreach ( self::TYPE_MAPPING as $types ) {
 				$indexTypes = array_merge( $indexTypes, $types );
 			}
 			$indexTypes = array_merge(
@@ -233,7 +232,7 @@ class Connection extends ElasticaConnection {
 		} else {
 			$indexTypes = array_merge(
 				$indexTypes,
-				self::$TYPE_MAPPING[$mappingType],
+				self::TYPE_MAPPING[$mappingType],
 				$mappingType === self::PAGE_TYPE_NAME ?
 					array_values( $this->config->get( 'CirrusSearchNamespaceMappings' ) ) : []
 			);
@@ -316,7 +315,7 @@ class Connection extends ElasticaConnection {
 		}
 		// If no namespaces provided all indices are needed
 		$mappings = $this->config->get( 'CirrusSearchNamespaceMappings' );
-		return array_merge( self::$TYPE_MAPPING[self::PAGE_TYPE_NAME],
+		return array_merge( self::TYPE_MAPPING[self::PAGE_TYPE_NAME],
 			array_values( $mappings ) );
 	}
 

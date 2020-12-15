@@ -67,6 +67,7 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 	private function defaultContentHandlers() {
 		global $IP;
 		require "$IP/includes/DefaultSettings.php";
+		// phpcs:ignore MediaWiki.VariableAnalysis.MisleadingGlobalNames
 		return $wgContentHandlers;
 	}
 }

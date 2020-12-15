@@ -8,7 +8,7 @@ namespace CirrusSearch\Search;
  */
 class StaticCrossProjectBlockScorer extends CrossProjectBlockScorer {
 	/**
-	 * static weights
+	 * @var float[] Static weights
 	 */
 	private $staticScores;
 

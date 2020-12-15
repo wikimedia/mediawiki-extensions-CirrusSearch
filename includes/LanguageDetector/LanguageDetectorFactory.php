@@ -7,7 +7,7 @@ use MediaWiki\Logger\LoggerFactory;
 
 class LanguageDetectorFactory {
 	/**
-	 * SearchConfig
+	 * @var SearchConfig
 	 */
 	private $config;
 

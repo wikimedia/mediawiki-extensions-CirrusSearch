@@ -23,8 +23,8 @@ class SearchConfig implements \Config {
 	// Magic word to tell the SearchConfig to translate INDEX_BASE_NAME into wfWikiID()
 	public const WIKI_ID_MAGIC_WORD = '__wikiid__';
 
-	/** @static string[] non cirrus vars to load when loading external wiki config */
-	private static $nonCirrusVars = [
+	/** Non cirrus vars to load when loading external wiki config */
+	private const NON_CIRRUS_VARS = [
 		'wgLanguageCode',
 		'wgContentNamespaces',
 		'wgNamespacesToBeSearchedDefault',
@@ -259,7 +259,7 @@ class SearchConfig implements \Config {
 	 * @return string[] list of "non-cirrus" var names
 	 */
 	public static function getNonCirrusConfigVarNames() {
-		return self::$nonCirrusVars;
+		return self::NON_CIRRUS_VARS;
 	}
 
 	/**

@@ -50,7 +50,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Sıralama, öncelikle gelen bağlantı sayılarına dayalıdır",
 	"prefs-completion": "Arama tamamlama",
 	"cirrussearch-pref-completion-section-desc": "Tamamlama önerici",
-	"cirrussearch-pref-completion-profile-help": "Otomatik tamamlama (yazarken arama) önerileri için davranışı ayarlayın.\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Tamamlama önericisi], daha iyi yazım hatası düzeltme ve arama alaka düzeyine sahip arama önerileri için bir algoritmadır. Önek araması, tür olarak eski arama öneri algoritmasıdır.",
+	"cirrussearch-pref-completion-profile-help": "Otomatik tamamlama (yazarken arama) önerileri için davranışı ayarlayın.\n\n[https://www.mediawiki.org/wiki/Extension:CirrusSearch/CompletionSuggester/tr Tamamlama önericisi], daha iyi yazım hatası düzeltme ve arama alâka düzeyine sahip arama önerileri için bir algoritmadır. Önek araması, tür olarak eski arama öneri algoritmasıdır.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Varsayılan (önerilen)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "En fazla iki yazım hatasını düzeltir. Ana başlığa çok benzeyen yönlendirmeleri kaldırır.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Alt kelime eşleme (daha uzun sayfa başlıkları için önerilir)",

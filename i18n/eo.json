@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Gamliel Fishkin",
+			"Javiero",
 			"KuboF",
 			"Mirin",
 			"NMaia"
@@ -25,6 +26,7 @@
 	"cirrussearch-file-numeric-feature-not-a-number": "La serĉvorto '$1' postulas nombran valoron, sed '$2' estis donita.",
 	"cirrussearch-feature-not-available": "La serĉa ŝlosilvorto '$1' ne estas ŝaltita en ĉi tiu vikio.",
 	"cirrussearch-feature-deepcat-exception": "Malsukcesis SPARQL-peto por profunda kategoria serĉado",
+	"cirrussearch-feature-pageid-invalid-id": "Nevalida paĝo {{PLURAL:$2|ID|IDs}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Neniu valida kategorio provizita al '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Neniu valida titolo provizita al '$1'.",
 	"cirrussearch-explore-similar-related": "Rilata",

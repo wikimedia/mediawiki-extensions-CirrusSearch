@@ -57,7 +57,7 @@ class QueryStringRegexParser implements QueryParser {
 	 */
 	private const WHITESPACE_REGEX = '/\G[\pZ\pC]+/u';
 
-	public const QUERY_LEN_HARD_LIMIT = 2048;
+	public const QUERY_LEN_HARD_LIMIT = 4096;
 
 	/**
 	 * see T66350

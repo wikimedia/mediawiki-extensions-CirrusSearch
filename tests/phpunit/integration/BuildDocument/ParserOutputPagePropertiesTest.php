@@ -4,6 +4,7 @@ namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\Connection;
+use CirrusSearch\HashSearchConfig;
 use ContentHandler;
 use Elastica\Document;
 use ParserCache;
@@ -23,6 +24,16 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 		$this->assertContains( 'Template:CirrusSearchInvalidUTF8',
 			ParserOutputPageProperties::fixAndFlagInvalidUTF8InSource(
 				[ 'source_text' => chr( 130 ) ], 1 )['template'] ?? [] );
+	}
+
+	public function testTruncateFileContent() {
+		$doc = [ 'file_text' => 'e é e' ];
+		$this->assertSame( $doc, ParserOutputPageProperties::truncateFileTextContent( -1, $doc ) );
+		$this->assertSame( $doc, ParserOutputPageProperties::truncateFileTextContent( 100, $doc ) );
+		$this->assertSame( [ 'file_text' => '' ], ParserOutputPageProperties::truncateFileTextContent( 0, $doc ) );
+		$this->assertSame( [ 'file_text' => 'e ' ], ParserOutputPageProperties::truncateFileTextContent( 2, $doc ) );
+		$this->assertSame( [ 'file_text' => 'e ' ], ParserOutputPageProperties::truncateFileTextContent( 3, $doc ) );
+		$this->assertSame( [ 'file_text' => 'e é' ], ParserOutputPageProperties::truncateFileTextContent( 4, $doc ) );
 	}
 
 	public function displayTitleProvider() {
@@ -97,7 +108,7 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 	private function buildDoc( WikiPage $page ) {
 		$doc = new Document( null, [] );
 		$cache = $this->mock( ParserCache::class );
-		$builder = new ParserOutputPageProperties( $cache, false );
+		$builder = new ParserOutputPageProperties( $cache, false, new HashSearchConfig( [] ) );
 		$builder->finalizeReal( $doc, $page, null, new CirrusSearch );
 		return $doc;
 	}

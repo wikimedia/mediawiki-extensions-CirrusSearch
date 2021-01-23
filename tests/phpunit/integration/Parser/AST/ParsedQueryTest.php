@@ -186,9 +186,6 @@ class ParsedQueryTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider provideTestActualNamespace
 	 * @covers \CirrusSearch\Parser\AST\NamespaceHeaderNode
-	 * @param $query
-	 * @param $initialNamespaces
-	 * @param $expectedActualNamespace
 	 */
 	public function testActualNamespace( $query, $initialNamespaces, $expectedActualNamespace ) {
 		$parser = $this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) );
@@ -212,8 +209,6 @@ class ParsedQueryTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideTestLeadingTilde
-	 * @param $query
-	 * @param $hasLeadingTilde
 	 */
 	public function testLeadingTilde( $query, $hasLeadingTilde ) {
 		$parser = $this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) );

@@ -13,7 +13,7 @@ use Elastica\Response;
  * @covers \CirrusSearch\Elastica\ReindexTask
  */
 class ReindexTaskTest extends CirrusTestCase {
-	// example status response to in-progress task
+	/** @var array example status response to in-progress task */
 	private $inProgressTaskResponse = [
 		"completed" => false,
 		"task" => [
@@ -44,7 +44,7 @@ class ReindexTaskTest extends CirrusTestCase {
 		]
 	];
 
-	// example status response to in-progress task with slices
+	/** @var array example status response to in-progress task with slices */
 	private $inProgressWithSlicesTaskResponse = [
 		"completed" => false,
 		"task" => [
@@ -76,7 +76,7 @@ class ReindexTaskTest extends CirrusTestCase {
 		]
 	];
 
-	// example detailed status response for child task
+	/** @var array example detailed status response for child task */
 	private $inProgressDetailedSliceStatus = [
 		"parent_task_id" => "abc:123",
 		"cancellable" => true,

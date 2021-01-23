@@ -212,9 +212,6 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideQueries
-	 * @param $term
-	 * @param $result
-	 * @param $filters
 	 */
 	public function testFilterNoEndpoint( $term, $result, $filters ) {
 		$config = new \HashConfig( [

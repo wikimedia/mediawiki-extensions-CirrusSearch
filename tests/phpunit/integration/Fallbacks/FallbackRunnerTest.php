@@ -232,8 +232,8 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 
 			/**
 			 * @param int $prio
-			 * @param $rewritteCallback
-			 * @param $metrics
+			 * @param callable|null $rewritteCallback
+			 * @param array $metrics
 			 */
 			public function __construct(
 				$prio,
@@ -257,7 +257,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			}
 
 			/**
-			 * @param CirrusSearchResultSet $firstPassResults
+			 * @param FallbackRunnerContext $context
 			 * @return float
 			 */
 			public function successApproximation( FallbackRunnerContext $context ) {
@@ -265,8 +265,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			}
 
 			/**
-			 * @param CirrusSearchResultSet $firstPassResults results of the initial query
-			 * @param CirrusSearchResultSet $previousSet results returned by previous fallback method
+			 * @param FallbackRunnerContext $context
 			 * @return FallbackStatus
 			 */
 			public function rewrite( FallbackRunnerContext $context ): FallbackStatus {

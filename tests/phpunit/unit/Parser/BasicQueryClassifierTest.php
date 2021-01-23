@@ -41,8 +41,6 @@ class BasicQueryClassifierTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideQueries
-	 * @param string $query
-	 * @param string|null $class
 	 */
 	public function test( $query, $classes ) {
 		$parser = $this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) );

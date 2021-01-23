@@ -52,10 +52,6 @@ class LanguageFeatureTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideQueries()
-	 * @param string $term
-	 * @param array $expected
-	 * @param $filter
-	 * @param array $warnings
 	 */
 	public function testTooManyLanguagesWarning( $term, $expected, array $filter, $warnings ) {
 		$feature = new LanguageFeature();

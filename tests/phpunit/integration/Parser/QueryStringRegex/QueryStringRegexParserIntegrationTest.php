@@ -37,9 +37,6 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideRefImplQueries
-	 * @param array $expected
-	 * @param array $config
-	 * @param string $queryString
 	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
 	 */
 	public function testRefImplFixtures( array $expected, $queryString, array $config = [] ) {

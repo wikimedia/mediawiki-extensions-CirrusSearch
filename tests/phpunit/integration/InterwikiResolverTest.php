@@ -389,6 +389,10 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	}
 
 	/**
+	 * @param string $wikiId
+	 * @param array $blockList
+	 * @param array $overrides
+	 * @param \MultiHttpClient|null $client
 	 * @return InterwikiResolver
 	 */
 	private function getSiteMatrixInterwikiResolver( $wikiId, array $blockList,

@@ -215,7 +215,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 	}
 
 	/**
-	 *
+	 * @return array
 	 */
 	public function profileInvalidProfileParams() {
 		return [

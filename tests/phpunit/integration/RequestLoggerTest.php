@@ -224,6 +224,8 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 	/**
 	 * Build the necessary dependencies to use Searcher to return a specified
 	 * response.
+	 * @param array|null $responses
+	 * @return array
 	 */
 	private function buildDependencies( $responses ) {
 		// Plugin in a request logger that we know is empty

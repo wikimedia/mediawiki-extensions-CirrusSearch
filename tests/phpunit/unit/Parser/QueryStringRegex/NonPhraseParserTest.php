@@ -4,7 +4,6 @@ namespace CirrusSearch\Parser\QueryStringRegex;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Parser\AST\NegatedNode;
-use CirrusSearch\Parser\AST\ParsedNode;
 use CirrusSearch\Parser\AST\WordsQueryNode;
 use CirrusSearch\Search\Escaper;
 
@@ -15,9 +14,6 @@ use CirrusSearch\Search\Escaper;
 class NonPhraseParserTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideWordQueries
-	 * @param string $query
-	 * @param int $start
-	 * @param ParsedNode|null $expected
 	 */
 	public function testWord( $query, $start, $end, $expected ) {
 		if ( $end === -1 ) {

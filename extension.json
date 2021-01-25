@@ -608,9 +608,6 @@
 		"CirrusSearchFiletypeAliases": {
 			"value": []
 		},
-		"CirrusSearchMaxFileTextLength": {
-			"value": -1
-		},
 		"CirrusSearchElasticQuirks": {
 			"value": []
 		},

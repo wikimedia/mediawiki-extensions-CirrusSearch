@@ -182,7 +182,7 @@ class BuildDocument {
 		$forceParse = $flags & self::FORCE_PARSE;
 		$builders = [ new DefaultPageProperties( $this->db ) ];
 		if ( !$skipParse ) {
-			$builders[] = new ParserOutputPageProperties( $this->parserCache, (bool)$forceParse, $this->config );
+			$builders[] = new ParserOutputPageProperties( $this->parserCache, (bool)$forceParse );
 		}
 		if ( !$skipLinks ) {
 			$builders[] = new RedirectsAndIncomingLinks( $this->connection );

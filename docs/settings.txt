@@ -1467,19 +1467,6 @@ Example:
         'document' => 'office',
     ];
 
-; $wgCirrusSearchMaxFileTextLength
-
-Default:
-    $wgCirrusSearchMaxFileTextLength = -1;
-
-Set maximum length allowed to be sent to the index from the content of media files (generally PDF/DejaVu files).
-Content whose size exceeds this value will be truncated and the first N bytes of the content will be kept where N
-is equal to $wgCirrusSearchMaxFileTextLength.
-
-Values:
- - strictly negative value to keep the full content and disable this feature (default)
- - positive value to truncate the content the expected size (0 will remove everything)
-
 ; $wgCirrusSearchElasticQuirks
 
 Default:

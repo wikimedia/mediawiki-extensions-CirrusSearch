@@ -14,7 +14,6 @@ use CirrusSearch\Search\Escaper;
 class PhraseQueryParserTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideQueries
-	 * @param string $lang
 	 * @param string $query
 	 * @param int $start
 	 * @param int $end

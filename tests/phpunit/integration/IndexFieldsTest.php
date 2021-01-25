@@ -26,7 +26,7 @@ class IndexFieldsTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @dataProvider getTypes
-	 * @param int    $type Field type
+	 * @param int $type Field type
 	 * @param string $typeName Internal type name
 	 * @param string $klass Class name
 	 */
@@ -46,7 +46,7 @@ class IndexFieldsTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @dataProvider getTypes
-	 * @param int    $type Field type
+	 * @param int $type Field type
 	 * @param string $typeName Internal type name
 	 * @param string $klass Class name
 	 */

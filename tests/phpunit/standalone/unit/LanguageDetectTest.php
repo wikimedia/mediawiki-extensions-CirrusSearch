@@ -102,6 +102,7 @@ class LanguageDetectTest extends CirrusTestCase {
 	 * lang1 is result with defaults (testTextCatDetector)
 	 * lang2 is result with non-defaults (testTextCatDetectorWithParams)
 	 *		see notes inline
+	 * @return array
 	 */
 	public function getLanguageTexts() {
 		return [

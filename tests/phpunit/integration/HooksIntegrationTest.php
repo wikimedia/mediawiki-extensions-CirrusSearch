@@ -204,11 +204,6 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 	 * @covers \CirrusSearch\Hooks::overrideSecret
 	 * @covers \CirrusSearch\Hooks::overrideNumeric
 	 * @covers \CirrusSearch\Hooks::overrideSecret
-	 * @param string $option
-	 * @param mixed $originalValue
-	 * @param string $paramName
-	 * @param string $paramValue
-	 * @param mixed $expectedValue
 	 * @throws \MWException
 	 */
 	public function testOverrides( $option, $originalValue, $paramName, $paramValue, $expectedValue,

@@ -25,7 +25,7 @@ class SearchFieldsTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider getFields
-	 * @param int    $type Generic type
+	 * @param int $type Generic type
 	 * @param string $elasticType Elasticsearch type
 	 */
 	public function testFields( $type, $elasticType ) {

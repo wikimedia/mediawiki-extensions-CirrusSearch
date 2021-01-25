@@ -50,7 +50,6 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 	 * @param string $overrideType
 	 * @param string $overrideKey
 	 * @param array[] $profiles
-	 * @param bool $forceMwGlobals
 	 * @throws \Exception
 	 * @throws \FatalError
 	 * @throws \MWException
@@ -230,10 +229,6 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideTestInterwikiOverrides
-	 * @param array $hostWikiConfig
-	 * @param array $targetWikiConfig
-	 * @param string $profileType
-	 * @param string $defaultProfile
 	 * @throws \FatalError
 	 * @throws \MWException
 	 */

@@ -33,10 +33,6 @@ class ElasticsearchIntermediaryTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider profileTestTimeouts
-	 * @param array $config
-	 * @param $searchType
-	 * @param $expectedClientTimeout
-	 * @param $expectedShardTimeout
 	 */
 	public function testTimeouts( array $config, $searchType, $expectedClientTimeout, $expectedShardTimeout ) {
 		$connection = new DummyConnection( new HashSearchConfig( $config ) );

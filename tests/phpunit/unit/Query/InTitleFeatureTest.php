@@ -88,10 +88,6 @@ class InTitleFeatureTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideRegexQueries
-	 * @param $query
-	 * @param $expectedRemaining
-	 * @param $negated
-	 * @param $filterValue
 	 */
 	public function testRegex( $query, $expectedRemaining, $negated, $filterValue, $insensitive ) {
 		$filterCallback = null;

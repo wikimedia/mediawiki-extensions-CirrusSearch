@@ -195,6 +195,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	 * @dataProvider provideTestIdentifyNamespace
 	 * @param string $namespace
 	 * @param int|bool $expected
+	 * @param string $method
 	 */
 	public function testIdentifyNamespace( $namespace, $expected, $method ) {
 		$this->setMwGlobals( [

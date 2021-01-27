@@ -24,9 +24,6 @@ use MockHttpTrait;
 class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	use MockHttpTrait;
 
-	/**
-	 * @return bool
-	 */
 	public function testCirrusConfigInterwikiResolver() {
 		$resolver = $this->getCirrusConfigInterwikiResolver();
 

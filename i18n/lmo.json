@@ -8,7 +8,7 @@
 	"cirrussearch-backend-error": "Hemm stad minga bon de completà la toa ricerca per via d'on problema temporani. Prova anmò pussee tard.",
 	"cirrussearch-parse-error": "A l'è stad no possibil interpretà la domanda. Fala pusse sempliz. La domanda l'è stada registrada per migliorà el sistema de ricerca.",
 	"cirrussearch-too-busy-error": "A gh'è una granda missolta in sul motor de ricerca. Prova anmò pussee tard.",
-	"cirrussearch-regex-syntax-error": "Eror de sintassi ind l'espression regolar a $2: $1",
+	"cirrussearch-regex-syntax-error": "Eror de sintassi in de l'espression regolar a $2: $1",
 	"cirrussearch-regex-too-busy-error": "Trope ricerche con di espression regolar a inn 'dree a girà adess. Prova anmò pussee tard.",
 	"cirrussearch-regex-too-complex-error": "L'espression regolar l'è tropa complicada. Per savenn pussee sora come fala pussee sempliz varda [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|qui]] .",
 	"cirrussearch-now-using": "Quell proget chì el drova un motor de ricerca noeuv ([[mw:Special:MyLanguage/Help:CirrusSearch|per savenn pussee]]).",

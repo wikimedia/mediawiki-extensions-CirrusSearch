@@ -978,6 +978,30 @@ STEMMER_RULES
 
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
+		case 'khmer':
+			// See Khmer: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T185721
+			$config[ 'char_filter' ][ 'khmer_numbers' ] = [
+				'type' => 'mapping',
+				'mappings' => [
+					"\u17e0=>0", "\u17e1=>1", "\u17e2=>2", "\u17e3=>3",
+					"\u17e4=>4", "\u17e5=>5", "\u17e6=>6", "\u17e7=>7",
+					"\u17e8=>8", "\u17e9=>9"
+				],
+			];
+
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'char_filter' => [
+					'khmer_syll_reorder', 'khmer_numbers',
+				],
+				'tokenizer' => 'standard',
+				'filter' => [
+					'lowercase',
+				],
+			];
+
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+			break;
 		case 'korean':
 			// Unpack nori analyzer to add ICU normalization and custom filters
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T206874
@@ -1603,16 +1627,17 @@ STEMMER_RULES
 	private $elasticsearchLanguageAnalyzersFromPlugins = [
 		// multiple plugin requirement can be comma separated
 		/**
-		 * For Polish, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T154517
-		 * For Ukrainian, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160106
-		 * For Chinese, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
-		 * For Hebrew, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T162741
-		 * For Serbian, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
-		 * For Bosnian, Croatian, and Serbo-Croatian, see
+		 * Polish: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T154517
+		 * Ukrainian: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160106
+		 * Chinese: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
+		 * Hebrew: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T162741
+		 * Serbian: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
+		 * Bosnian, Croatian, and Serbo-Croatian:
 		 *    https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
-		 * For Slovak, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
-		 * For Esperanto (eo), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
-		 * For Korean see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T206874
+		 * Slovak: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
+		 * Esperanto: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
+		 * Korean: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T206874
+		 * Khmer: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T185721
 		 */
 
 		'analysis-stempel' => [ 'pl' => 'polish' ],
@@ -1628,6 +1653,7 @@ STEMMER_RULES
 			'sh' => 'serbo-croatian', 'sr' => 'serbian' ],
 		'extra-analysis-slovak' => [ 'sk' => 'slovak' ],
 		'analysis-nori' => [ 'ko' => 'korean' ],
+		'extra-analysis-khmer' => [ 'km' => 'khmer' ],
 	];
 
 	/**

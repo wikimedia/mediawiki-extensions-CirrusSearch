@@ -469,7 +469,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			'analysis-ukrainian', 'analysis-stconvert',
 			'extra-analysis-serbian', 'extra-analysis-slovak',
 			'extra-analysis-esperanto', 'analysis-nori',
-			'extra-analysis-homoglyph',
+			'extra-analysis-homoglyph', 'extra-analysis-khmer',
 		];
 		$builder = new AnalysisConfigBuilder( $langCode, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		if ( is_string( $expected ) ) {

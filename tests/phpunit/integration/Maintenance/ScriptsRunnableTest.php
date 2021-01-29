@@ -28,7 +28,7 @@ class ScriptsRunnableTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider scriptPathProvider
 	 */
-	public function  testScriptCanBeLoaded( $path ) {
+	public function testScriptCanBeLoaded( $path ) {
 		$preload = escapeshellarg( __DIR__ . '/ScriptsRunnablePreload.php' );
 		$cmd = implode( ' ', [ PHP_BINARY, $preload, escapeshellarg( $path ) ] );
 		exec( $cmd, $output, $retCode );

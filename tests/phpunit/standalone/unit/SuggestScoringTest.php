@@ -116,15 +116,15 @@ class SuggestScoringTest extends CirrusTestCase {
 		}
 
 		// Edges
-		$res = $qs->boost( 1, 1 );
-		$this->assertEquals( $res, 1, "When boost is 1 the score remains unchanged." );
-		$res = $qs->boost( 1, 0 );
-		$this->assertEquals( $res, 0.5, "When boost is 0 the score is divided by 2." );
-		$res = $qs->boost( 1,  2 ^ 31 - 1 );
-		$this->assertEquals( $res, 1,
+		$res = $qs->boost( 1.0, 1.0 );
+		$this->assertSame( 1.0, $res, "When boost is 1 the score remains unchanged." );
+		$res = $qs->boost( 1.0, 0.0 );
+		$this->assertSame( 0.5, $res, "When boost is 0 the score is divided by 2." );
+		$res = $qs->boost( 1.0,  (float)( 2 ^ 31 - 1 ) );
+		$this->assertSame( 1.0, $res,
 			"When score is 1 and boost is very high the score is still 1." );
-		$res = $qs->boost( 0,  0 );
-		$this->assertEquals( $res, 0, "When score is 0 and boost is 0 the score is still 0." );
+		$res = $qs->boost( 0.0,  0.0 );
+		$this->assertSame( 0.0, $res, "When score is 0 and boost is 0 the score is still 0." );
 	}
 
 	/**

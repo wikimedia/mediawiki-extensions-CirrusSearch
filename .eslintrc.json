@@ -3,5 +3,8 @@
 	"extends": [
 		"wikimedia/server",
 		"wikimedia/mediawiki"
-	]
+	],
+	"rules": {
+		"no-useless-escape": "warn"
+	}
 }

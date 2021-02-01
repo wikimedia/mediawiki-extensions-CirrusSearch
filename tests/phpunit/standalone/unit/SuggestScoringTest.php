@@ -120,7 +120,7 @@ class SuggestScoringTest extends CirrusTestCase {
 		$this->assertSame( 1.0, $res, "When boost is 1 the score remains unchanged." );
 		$res = $qs->boost( 1.0, 0.0 );
 		$this->assertSame( 0.5, $res, "When boost is 0 the score is divided by 2." );
-		$res = $qs->boost( 1.0,  (float)( 2 ^ 31 - 1 ) );
+		$res = $qs->boost( 1.0, 1000.0 );
 		$this->assertSame( 1.0, $res,
 			"When score is 1 and boost is very high the score is still 1." );
 		$res = $qs->boost( 0.0,  0.0 );
@@ -254,16 +254,16 @@ class SuggestScoringTest extends CirrusTestCase {
 
 		for ( $i = 0; $i < 1000; $i++ ) {
 			$page = [
-				'incoming_links' => mt_rand( 0, 2 ^ 31 - 1 ),
+				'incoming_links' => mt_rand( 0, 1000 ),
 				'external_link' => array_fill( 0, mt_rand( 1, 2000 ), null ),
 				'text_bytes' => mt_rand( 1, 400000 ),
 				'heading' => array_fill( 0, mt_rand( 1, 1000 ), null ),
 				'redirect' => array_fill( 0, mt_rand( 1, 1000 ), null ),
 				'template' => mt_rand( 0, 1 ) == 1 ? [ 'Good' ] : [ 'Bad' ]
 			];
-			$this->assertGreaterThan( 0, $qs->score( $page ), "Score is always greater than 0" );
-			$this->assertLessThan( QualityScore::SCORE_RANGE, $qs->score( $page ),
-				"Score is always lower than " . QualityScore::SCORE_RANGE );
+			$this->assertGreaterThanOrEqual( 0, $qs->score( $page ), 'Score is never below 0' );
+			$this->assertLessThanOrEqual( QualityScore::SCORE_RANGE, $qs->score( $page ),
+				'Score is never above ' . QualityScore::SCORE_RANGE );
 			$this->assertEqualsWithDelta( $qs->explain( $page )['value'], $qs->score( $page ),
 			2, "Explanation matches" );
 		}

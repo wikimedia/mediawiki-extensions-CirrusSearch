@@ -23,10 +23,21 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 	public function parseProvider() {
 		$term = function ( string $topic ) {
 			return [
-				'term' => [
-					'ores_articletopics' => [
-						'value' => $topic,
-						'boost' => 1.0,
+				[
+					'term' => [
+						'weighted_tags' => [
+							'value' => 'classification.ores.articletopic/' . $topic,
+							'boost' => 1.0,
+						],
+					],
+				],
+				// TODO: remove once all wikis are reindexed
+				[
+					'term' => [
+						'ores_articletopics' => [
+							'value' => $topic,
+							'boost' => 1.0,
+						],
 					],
 				],
 			];
@@ -47,7 +58,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 				[ 'topics' => [ 'STEM.STEM*' ] ],
 				$match( [
 					'dis_max' => [
-						'queries' => [ $term( 'STEM.STEM*' ) ],
+						'queries' => $term( 'STEM.STEM*' ),
 					],
 				] ),
 			],
@@ -56,7 +67,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 				[ 'topics' => [ 'STEM.STEM*' ] ],
 				$filter( [
 					'dis_max' => [
-						'queries' => [ $term( 'STEM.STEM*' ) ],
+						'queries' => $term( 'STEM.STEM*' ),
 					],
 				] ),
 			],
@@ -65,10 +76,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 				[ 'topics' => [ 'Culture.Media.Media*', 'Culture.Media.Music' ] ],
 				$match( [
 					'dis_max' => [
-						'queries' => [
-							$term( 'Culture.Media.Media*' ),
-							$term( 'Culture.Media.Music' ),
-						],
+						'queries' => array_merge( $term( 'Culture.Media.Media*' ), $term( 'Culture.Media.Music' ) ),
 					],
 				] ),
 			],

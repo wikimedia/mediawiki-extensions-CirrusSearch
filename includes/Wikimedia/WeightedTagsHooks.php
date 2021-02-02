@@ -11,17 +11,17 @@ use MediaWiki\MediaWikiServices;
 use SearchEngine;
 
 /**
- * Functionality related to the (Wikimedia-specific) articletopic search feature.
+ * Functionality related to the (Wikimedia-specific) weighted_tags search feature.
  * @package CirrusSearch\Wikimedia
  * @see ArticleTopicFeature
  */
-class ORESArticleTopicsHooks {
-	public const FIELD_NAME = 'ores_articletopics';
-	public const FIELD_SIMILARITY = 'ores_articletopics_similarity';
-	public const FIELD_INDEX_ANALYZER = 'ores_articletopics';
+class WeightedTagsHooks {
+	public const FIELD_NAME = 'weighted_tags';
+	public const FIELD_SIMILARITY = 'weighted_tags_similarity';
+	public const FIELD_INDEX_ANALYZER = 'weighted_tags';
 	public const FIELD_SEARCH_ANALYZER = 'keyword';
 	public const WMF_EXTRA_FEATURES = 'CirrusSearchWMFExtraFeatures';
-	public const CONFIG_OPTIONS = 'ores_articletopics';
+	public const CONFIG_OPTIONS = 'weighted_tags';
 	public const BUILD_OPTION = 'build';
 	public const USE_OPTION = 'use';
 	public const MAX_SCORE_OPTION = 'max_score';
@@ -32,7 +32,7 @@ class ORESArticleTopicsHooks {
 	 * @see https://www.mediawiki.org/wiki/Extension:CirrusSearch/Hooks/CirrusSearchSimilarityConfig
 	 */
 	public static function onCirrusSearchSimilarityConfig( array &$similarity ) {
-		self::configureOresArticleTopicsSimilarity( $similarity,
+		self::configureWeightedTagsSimilarity( $similarity,
 			MediaWikiServices::getInstance()->getMainConfig() );
 	}
 
@@ -41,7 +41,7 @@ class ORESArticleTopicsHooks {
 	 * @param array &$similarity similarity settings to update
 	 * @param Config $config current configuration
 	 */
-	public static function configureOresArticleTopicsSimilarity(
+	public static function configureWeightedTagsSimilarity(
 		array &$similarity,
 		Config $config
 	) {
@@ -60,7 +60,7 @@ class ORESArticleTopicsHooks {
 	}
 
 	/**
-	 * Define mapping for the ores_articletopics field.
+	 * Define mapping for the weighted_tags field.
 	 * @param array &$fields array of field definitions to update
 	 * @param SearchEngine $engine the search engine requesting field definitions
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/SearchIndexFields
@@ -69,7 +69,7 @@ class ORESArticleTopicsHooks {
 		if ( !( $engine instanceof CirrusSearch ) ) {
 			return;
 		}
-		self::configureOresArticleTopicsFieldMapping( $fields,
+		self::configureWeightedTagsFieldMapping( $fields,
 			MediaWikiServices::getInstance()->getMainConfig() );
 	}
 
@@ -78,7 +78,7 @@ class ORESArticleTopicsHooks {
 	 * @param \SearchIndexField[] &$fields array of field definitions to update
 	 * @param Config $config the wiki configuration
 	 */
-	public static function configureOresArticleTopicsFieldMapping(
+	public static function configureWeightedTagsFieldMapping(
 		array &$fields,
 		Config $config
 	) {
@@ -86,7 +86,7 @@ class ORESArticleTopicsHooks {
 			return;
 		}
 
-		$fields[self::FIELD_NAME] = new ORESArticleTopicsField(
+		$fields[self::FIELD_NAME] = new WeightedTags(
 			self::FIELD_NAME,
 			self::FIELD_NAME,
 			self::FIELD_INDEX_ANALYZER,
@@ -96,21 +96,21 @@ class ORESArticleTopicsHooks {
 	}
 
 	/**
-	 * Configure default analyzer for the ores_articletopics field.
+	 * Configure default analyzer for the weighted_tags field.
 	 * @param array &$config analysis settings to update
 	 * @param AnalysisConfigBuilder $analysisConfigBuilder unneeded
 	 * @see https://www.mediawiki.org/wiki/Extension:CirrusSearch/Hooks/CirrusSearchAnalysisConfig
 	 */
 	public static function onCirrusSearchAnalysisConfig( array &$config, AnalysisConfigBuilder $analysisConfigBuilder ) {
-		self::configureOresArticleTopicsFieldAnalysis( $config,
+		self::configureWeightedTagsFieldAnalysis( $config,
 			MediaWikiServices::getInstance()->getMainConfig() );
 	}
 
 	/**
-	 * Make ArticleTopicFeature (articletopic: search keyword) available.
+	 * Make weighted_tags search features available
 	 * @param SearchConfig $config
 	 * @param array &$extraFeatures Array holding KeywordFeature objects
-	 * @see https://www.mediawiki.org/wiki/Extension:CirrusSearch/Hooks/CirrusSearchAddQueryFeatures
+	 * @see ArticleTopicFeature
 	 */
 	public static function onCirrusSearchAddQueryFeatures( SearchConfig $config, array &$extraFeatures ) {
 		if ( self::canUse( $config ) ) {
@@ -125,7 +125,7 @@ class ORESArticleTopicsHooks {
 	 * @param Config $config the wiki configuration
 	 * @internal
 	 */
-	public static function configureOresArticleTopicsFieldAnalysis(
+	public static function configureWeightedTagsFieldAnalysis(
 		array &$analysisConfig,
 		Config $config
 	) {
@@ -137,43 +137,43 @@ class ORESArticleTopicsHooks {
 			'type' => 'custom',
 			'tokenizer' => 'keyword',
 			'filter' => [
-				'ores_articletopics_term_freq',
+				'weighted_tags_term_freq',
 			]
 		];
-		$analysisConfig['filter']['ores_articletopics_term_freq'] = [
+		$analysisConfig['filter']['weighted_tags_term_freq'] = [
 			'type' => 'term_freq',
 			// must be a char that never appears in the topic names/ids
 			'split_char' => '|',
-			// max score (clamped), we assume that orig_ores_score * 1000
+			// max score (clamped), we assume that orig_score * 1000
 			'max_tf' => $maxScore,
 		];
 	}
 
 	/**
-	 * Check whether articletopic data should be processed.
+	 * Check whether weighted_tags data should be processed.
 	 * @param Config $config
 	 * @return bool
 	 */
 	private static function canBuild( Config $config ): bool {
 		$extraFeatures = $config->get( self::WMF_EXTRA_FEATURES );
-		$oresArticleTopicsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
-		return (bool)( $oresArticleTopicsOptions[self::BUILD_OPTION] ?? false );
+		$weightedTagsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
+		return (bool)( $weightedTagsOptions[self::BUILD_OPTION] ?? false );
 	}
 
 	/**
-	 * Check whether articletopic data is available for searching.
+	 * Check whether weighted_tags data is available for searching.
 	 * @param Config $config
 	 * @return bool
 	 */
 	private static function canUse( Config $config ): bool {
 		$extraFeatures = $config->get( self::WMF_EXTRA_FEATURES );
-		$oresArticleTopicsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
-		return (bool)( $oresArticleTopicsOptions[self::USE_OPTION] ?? false );
+		$weightedTagsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
+		return (bool)( $weightedTagsOptions[self::USE_OPTION] ?? false );
 	}
 
 	private static function maxScore( Config $config ): int {
 		$extraFeatures = $config->get( self::WMF_EXTRA_FEATURES );
-		$oresArticleTopicsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
-		return (int)( $oresArticleTopicsOptions[self::MAX_SCORE_OPTION] ?? 1000 );
+		$weightedTagsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
+		return (int)( $weightedTagsOptions[self::MAX_SCORE_OPTION] ?? 1000 );
 	}
 }

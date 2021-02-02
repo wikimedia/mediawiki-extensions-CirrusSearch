@@ -3,9 +3,9 @@
 namespace CirrusSearch\Wikimedia;
 
 /**
- * @covers \CirrusSearch\Wikimedia\ORESArticleTopicsField
+ * @covers \CirrusSearch\Wikimedia\WeightedTags
  */
-class ORESArticleTopicsFieldTest extends \MediaWikiUnitTestCase {
+class WeightedTagsFieldTest extends \MediaWikiUnitTestCase {
 	public function testField() {
 		$searchEngine = $this->createMock( \SearchEngine::class );
 		$indexAnalyzer = 'indexAnalyzer';
@@ -13,7 +13,7 @@ class ORESArticleTopicsFieldTest extends \MediaWikiUnitTestCase {
 		$similarity = 'sim';
 		$fieldName = 'test';
 		$typeName = 'unused';
-		$field = new ORESArticleTopicsField( 'test', 'unused', $indexAnalyzer,
+		$field = new WeightedTags( 'test', 'unused', $indexAnalyzer,
 			$searchAnalyzer, $similarity );
 		$mapping = $field->getMapping( $searchEngine );
 		$this->assertSame( [

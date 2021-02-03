@@ -32,6 +32,6 @@ class MockKeyword extends SimpleKeywordFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		// never called
+		throw new \LogicException( __METHOD__ . ' should not be called' );
 	}
 }

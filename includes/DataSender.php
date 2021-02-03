@@ -132,6 +132,77 @@ class DataSender extends ElasticsearchIntermediary {
 	}
 
 	/**
+	 * @param string $indexType
+	 * @param string[] $docIds
+	 * @param string $tagField
+	 * @param string $tagPrefix
+	 * @param int $batchSize
+	 * @return Status
+	 */
+	public function sendResetWeightedTags(
+		string $indexType,
+		array $docIds,
+		string $tagField,
+		string $tagPrefix,
+		int $batchSize = 30
+	): Status {
+		if ( !$this->isAvailableForWrites() ) {
+			return Status::newFatal( 'cirrussearch-indexes-frozen' );
+		}
+
+		$client = $this->connection->getClient();
+		$status = Status::newGood();
+		$pageType =
+			$this->connection->getIndexType( $this->indexBaseName, $indexType,
+				Connection::PAGE_TYPE_NAME );
+		foreach ( array_chunk( $docIds, $batchSize ) as $docIdsChunk ) {
+			$bulk = new \Elastica\Bulk( $client );
+			$bulk->setType( $pageType );
+			foreach ( $docIdsChunk as $docId ) {
+				$script = new \Elastica\Script\Script( 'super_detect_noop', [
+					'source' => [
+						$tagField => [ "$tagPrefix/" . CirrusIndexField::MULTILIST_DELETE_GROUPING ]
+					],
+					'handlers' => [ $tagField => CirrusIndexField::MULTILIST_HANDLER ],
+				], 'super_detect_noop' );
+				$script->setId( $docId );
+				$bulk->addScript( $script, 'update' );
+			}
+
+			// Execute the bulk update
+			$exception = null;
+			try {
+				$this->start( new BulkUpdateRequestLog( $this->connection->getClient(),
+					'updating {numBulk} documents',
+					'send_data_reset_weighted_tags' ) );
+				$bulk->send();
+			}
+			catch ( ResponseException $e ) {
+				if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e ) ) {
+					$exception = $e;
+				}
+			}
+			catch ( \Elastica\Exception\ExceptionInterface $e ) {
+				$exception = $e;
+			}
+			if ( $exception === null ) {
+				$this->success();
+			} else {
+				$this->failure( $exception );
+				$this->failedLog->warning( "Reset weighted tag {weightedTagFieldName} for {weightedTagPrefix} in articles: {documents}",
+					[
+						'exception' => $exception,
+						'weightedTagFieldName' => $tagField,
+						'weightedTagPrefix' => $tagPrefix,
+						'docIds' => implode( ',', $docIds )
+					] );
+				$status->error( 'cirrussearch-failed-update-reset-weighted-tags' );
+			}
+		}
+		return $status;
+	}
+
+	/**
 	 * @param string $indexType type of index to which to send $documents
 	 * @param \Elastica\Document[] $documents documents to send
 	 * @param string $elasticType Mapping type to use for the document

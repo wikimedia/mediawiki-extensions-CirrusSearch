@@ -84,7 +84,7 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 		// tied to WikiPage as well.
 		$output = $contentHandler->getParserOutputForIndexing( $page, $parserCache );
 
-		$fieldDefinitions = $contentHandler->getFieldsForSearchIndex( $engine );
+		$fieldDefinitions = $engine->getSearchIndexFields();
 		$fieldContent = $contentHandler->getDataForSearchIndex( $page, $output, $engine );
 		$fieldContent = self::fixAndFlagInvalidUTF8InSource( $fieldContent, $page->getId() );
 		$fieldContent = $this->truncateFileContent( $fieldContent );

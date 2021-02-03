@@ -67,7 +67,12 @@ class LanguageFeature extends SimpleKeywordFeature implements FilterQueryFeature
 	 * @return array|false|null
 	 */
 	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
-		$langs = explode( ',', $value );
+		if ( strpos( $value, ',' ) !== false ) {
+			$langs = explode( ',', $value );
+			$warningCollector->addWarning( 'cirrussearch-inlanguage-deprecate-comma' );
+		} else {
+			$langs = explode( '|', $value );
+		}
 		if ( count( $langs ) > self::QUERY_LIMIT ) {
 			$warningCollector->addWarning(
 				'cirrussearch-feature-too-many-conditions',

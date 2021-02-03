@@ -3120,10 +3120,10 @@
 		}
 	},
 	"keyword: inlanguage": {
-		"query": "inlanguage:fr,en inlanguage:\"fr,en\"",
+		"query": "inlanguage:fr|en inlanguage:\"fr|en\"",
 		"expected": {
-			"query": "inlanguage:fr,en inlanguage:\"fr,en\"",
-			"rawQuery": "inlanguage:fr,en inlanguage:\"fr,en\"",
+			"query": "inlanguage:fr|en inlanguage:\"fr|en\"",
+			"rawQuery": "inlanguage:fr|en inlanguage:\"fr|en\"",
 			"queryClassCache": [
 				"complex_query"
 			],
@@ -3142,8 +3142,8 @@
 									"endOffset": 16,
 									"keyword": "CirrusSearch\\Query\\LanguageFeature",
 									"key": "inlanguage",
-									"value": "fr,en",
-									"quotedValue": "fr,en",
+									"value": "fr|en",
+									"quotedValue": "fr|en",
 									"delimiter": "",
 									"suffix": "",
 									"parsedValue": {
@@ -3163,8 +3163,8 @@
 									"endOffset": 35,
 									"keyword": "CirrusSearch\\Query\\LanguageFeature",
 									"key": "inlanguage",
-									"value": "fr,en",
-									"quotedValue": "\"fr,en\"",
+									"value": "fr|en",
+									"quotedValue": "\"fr|en\"",
 									"delimiter": "\"",
 									"suffix": "",
 									"parsedValue": {

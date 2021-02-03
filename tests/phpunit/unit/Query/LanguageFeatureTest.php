@@ -28,7 +28,7 @@ class LanguageFeatureTest extends CirrusTestCase {
 				[]
 			],
 			'multiple' => [
-				'inlanguage:fr,en',
+				'inlanguage:fr|en',
 				[ 'langs' => [ 'fr', 'en' ] ],
 				[ 'bool' => [ 'should' => [
 					[ 'match' => [ 'language' => [ 'query' => 'fr' ] ] ],
@@ -36,8 +36,17 @@ class LanguageFeatureTest extends CirrusTestCase {
 				] ] ],
 				[]
 			],
+			'multiple with comma back compat' => [
+				'inlanguage:fr,en',
+				[ 'langs' => [ 'fr', 'en' ] ],
+				[ 'bool' => [ 'should' => [
+					[ 'match' => [ 'language' => [ 'query' => 'fr' ] ] ],
+					[ 'match' => [ 'language' => [ 'query' => 'en' ] ] ],
+				] ] ],
+				[ [ 'cirrussearch-inlanguage-deprecate-comma' ] ]
+			],
 			'too many' => [
-				'inlanguage:' . implode( ',', $tooMany ),
+				'inlanguage:' . implode( '|', $tooMany ),
 				[ 'langs' => $actualLangs ],
 				[ 'bool' => [ 'should' => array_map(
 					function ( $l ) {

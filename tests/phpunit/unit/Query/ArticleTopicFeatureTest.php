@@ -31,15 +31,6 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 						],
 					],
 				],
-				// TODO: remove once all wikis are reindexed
-				[
-					'term' => [
-						'ores_articletopics' => [
-							'value' => $topic,
-							'boost' => 1.0,
-						],
-					],
-				],
 			];
 		};
 		$match = static function ( array $query ) {

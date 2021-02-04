@@ -5,7 +5,6 @@ namespace CirrusSearch\Fallbacks;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\OtherIndexesUpdater;
 use CirrusSearch\Parser\AST\Visitor\QueryFixer;
-use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusSearchResultSet;
@@ -114,15 +113,6 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		}
 
 		list( $suggestion, $highlight ) = $this->fixDYMSuggestion( $firstPassResults );
-
-		if ( !$context->costlyCallAllowed()
-			|| !$this->query->isAllowRewrite()
-			|| $this->resultsThreshold( $previousSet )
-			|| !$this->query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::SIMPLE_BAG_OF_WORDS )
-		) {
-			// Can't perform a full rewrite currently, simply suggest the query.
-			return FallbackStatus::suggestQuery( $suggestion, $highlight );
-		}
 
 		return $this->maybeSearchAndRewrite( $context, $this->query,
 			$suggestion, $highlight );

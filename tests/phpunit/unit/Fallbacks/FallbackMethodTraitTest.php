@@ -128,6 +128,9 @@ class FallbackMethodTraitTest extends BaseFallbackMethodTest {
 			'rewritten if query is rewritable, threshold met' => [
 				[], 2, "foo", true, "bar", true, true
 			],
+			'rewritten when using expert syntax' => [
+				[], 2, "foo AND bar", true, "food AND bar", true, true,
+			],
 			'not rewritten if query is not rewritable' => [
 				[], 1, "foo", false, "bar", true, false
 			],
@@ -139,9 +142,6 @@ class FallbackMethodTraitTest extends BaseFallbackMethodTest {
 			],
 			'not rewritten if costly call not allowed' => [
 				[], 2, "foo", true, "bar", false, false
-			],
-			'not rewritten if not a simple bag of word query' => [
-				[], 2, "foo AND bar", true, "bar", true, false
 			],
 		];
 	}

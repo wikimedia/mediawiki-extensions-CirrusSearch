@@ -9,6 +9,7 @@
             ],
             "filter": [
                 "aggressive_splitting",
+                "homoglyph_norm",
                 "possessive_english",
                 "lowercase",
                 "stop",
@@ -26,6 +27,7 @@
             ],
             "filter": [
                 "aggressive_splitting",
+                "homoglyph_norm",
                 "possessive_english",
                 "lowercase",
                 "stop",

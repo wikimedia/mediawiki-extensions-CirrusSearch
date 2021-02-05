@@ -9,6 +9,7 @@
             "filter": [
                 "italian_elision",
                 "aggressive_splitting",
+                "homoglyph_norm",
                 "lowercase",
                 "italian_stop",
                 "light_italian_stemmer",
@@ -24,6 +25,7 @@
             "filter": [
                 "italian_elision",
                 "aggressive_splitting",
+                "homoglyph_norm",
                 "lowercase",
                 "italian_stop",
                 "light_italian_stemmer",

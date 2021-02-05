@@ -1505,17 +1505,31 @@ STEMMER_RULES
 	public function enableHomoglyphPlugin( array $config, string $language ) {
 		$inDenyList = $this->homoglyphPluginDenyList[$language] ?? false;
 		if ( in_array( 'extra-analysis-homoglyph', $this->plugins ) && !$inDenyList ) {
-			if ( $config['analyzer']['text']['type'] == 'custom' ) {
-				$filters = $config['analyzer']['text']['filter'] ?? [];
-				array_unshift( $filters, 'homoglyph_norm' );
-				$config['analyzer']['text']['filter'] = $filters;
+			$config = $this->insertHomoglyphFilter( $config, 'text' );
+			$config = $this->insertHomoglyphFilter( $config, 'text_search' );
+		}
+		return $config;
+	}
+
+	private function insertHomoglyphFilter( array $config, string $analyzer ) {
+		if ( !array_key_exists( $analyzer, $config['analyzer'] ) ) {
+			return $config;
+		}
+
+		if ( $config['analyzer'][$analyzer]['type'] == 'custom' ) {
+			$filters = $config['analyzer'][$analyzer]['filter'] ?? [];
+
+			$lastBadFilter = -1;
+			foreach ( $this->homoglyphIncompatibleFilters as $badFilter ) {
+				$badFilterIdx = array_keys( $filters, $badFilter );
+				$badFilterIdx = end( $badFilterIdx );
+				if ( $badFilterIdx !== false && $badFilterIdx > $lastBadFilter ) {
+					$lastBadFilter = $badFilterIdx;
+				}
 			}
-			// @phan-suppress-next-line PhanTypeInvalidDimOffset, PhanTypeArraySuspiciousNull
-			if ( $config['analyzer']['text_search']['type'] == 'custom' ) {
-				$filters = $config['analyzer']['text_search']['filter'] ?? [];
-				array_unshift( $filters, 'homoglyph_norm' );
-				$config['analyzer']['text_search']['filter'] = $filters;
-			}
+			array_splice( $filters, $lastBadFilter + 1, 0, 'homoglyph_norm' );
+
+			$config['analyzer'][$analyzer]['filter'] = $filters;
 		}
 		return $config;
 	}
@@ -1660,5 +1674,12 @@ STEMMER_RULES
 	 * @var bool[] indexed by language code, languages that will not have the homoglyph
 	 * plugin included in the analysis chain
 	 */
-	private $homoglyphPluginDenyList = [ 'en' => true, 'it' => true ];
+	public $homoglyphPluginDenyList = [];
+
+	/**
+	 * @var string[] list of token-splitting token filters that interact poorly with the
+	 * homoglyph filter. see T268730
+	 */
+	public $homoglyphIncompatibleFilters = [ 'aggressive_splitting' ];
+
 }

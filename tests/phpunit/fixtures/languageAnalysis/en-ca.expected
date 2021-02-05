@@ -8,8 +8,8 @@
                 "kana_map"
             ],
             "filter": [
-                "homoglyph_norm",
                 "aggressive_splitting",
+                "homoglyph_norm",
                 "possessive_english",
                 "lowercase",
                 "stop",
@@ -26,8 +26,8 @@
                 "kana_map"
             ],
             "filter": [
-                "homoglyph_norm",
                 "aggressive_splitting",
+                "homoglyph_norm",
                 "possessive_english",
                 "lowercase",
                 "stop",

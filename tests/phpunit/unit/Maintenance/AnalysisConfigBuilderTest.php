@@ -101,6 +101,27 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$this->assertTrue( $builder->shouldActivateIcuTokenization( 'bo' ) );
 	}
 
+	/** @dataProvider provideHomoglyphPluginFilters */
+	public function testHomoglyphPluginOrdering( array $input, array $expected ) {
+		$config = $this->buildConfig( [] );
+		$plugins = [ 'extra', 'extra-analysis-homoglyph' ];
+		$builder = new AnalysisConfigBuilder( 'xx', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
+		$builder->homoglyphIncompatibleFilters = [ 'badfilter1', 'badfilter2' ];
+		$result = $builder->enableHomoglyphPlugin( $input, 'xx' );
+
+		$this->assertEquals( $expected[ 'analyzer' ], $result[ 'analyzer' ] );
+		if ( isset( $expected[ 'filter' ] ) ) {
+			$this->assertEquals( $expected[ 'filter' ], $result[ 'filter' ] );
+		} else {
+			$this->assertFalse( isset( $result[ 'filter' ] ) );
+		}
+
+		// disable homoglyphs for language 'xx'
+		$builder->homoglyphPluginDenyList = [ 'xx' => 'true' ];
+		$result = $builder->enableHomoglyphPlugin( $input, 'xx' );
+		$this->assertEquals( $input[ 'analyzer' ], $result[ 'analyzer' ] );
+	}
+
 	public static function provideASCIIFoldingFilters() {
 		return [
 			'only custom is updated' => [
@@ -425,6 +446,175 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 							'tokenizer' => 'icu_tokenizer',
 							'filter' => [ 'random' ]
 						]
+					],
+				],
+			],
+		];
+	}
+
+	public static function provideHomoglyphPluginFilters() {
+		return [
+			'homoglyph should be first' => [
+				[
+					'analyzer' => [
+						'text' => [
+							'type' => 'custom',
+							'filter' => [ 'random_filter', 'filter2' ]
+						],
+						'text_search' => [
+							'type' => 'custom',
+							'filter' => [ 'filter2', 'random_filter' ]
+						],
+					],
+				],
+				[
+					'analyzer' => [
+						'text' => [
+							'type' => 'custom',
+							'filter' => [ 'homoglyph_norm', 'random_filter', 'filter2' ]
+						],
+						'text_search' => [
+							'type' => 'custom',
+							'filter' => [ 'homoglyph_norm', 'filter2', 'random_filter' ]
+						],
+					],
+				],
+			],
+
+			'homoglyph after bad filter' => [
+				[
+					'analyzer' => [
+						'text' => [
+							'type' => 'custom',
+							'filter' => [ 'random_filter', 'badfilter2' ]
+						],
+						'text_search' => [
+							'type' => 'custom',
+							'filter' => [ 'badfilter2', 'random_filter' ]
+						],
+					],
+				],
+				[
+					'analyzer' => [
+						'text' => [
+							'type' => 'custom',
+							'filter' => [ 'random_filter', 'badfilter2', 'homoglyph_norm' ]
+						],
+						'text_search' => [
+							'type' => 'custom',
+							'filter' => [ 'badfilter2', 'homoglyph_norm', 'random_filter' ]
+						],
+					],
+				],
+			],
+
+			'homoglyph after multiple or duplicate bad filters' => [
+				[
+					'analyzer' => [
+						'text' => [
+							'type' => 'custom',
+							'filter' => [ 'badfilter1', 'random_filter', 'badfilter1' ]
+						],
+						'text_search' => [
+							'type' => 'custom',
+							'filter' => [ 'badfilter2', 'badfilter1', 'random_filter' ]
+						],
+					],
+				],
+				[
+					'analyzer' => [
+						'text' => [
+							'type' => 'custom',
+							'filter' => [ 'badfilter1', 'random_filter', 'badfilter1',
+											'homoglyph_norm' ]
+						],
+						'text_search' => [
+							'type' => 'custom',
+							'filter' => [ 'badfilter2', 'badfilter1', 'homoglyph_norm',
+											'random_filter' ]
+						],
+					],
+				],
+			],
+
+			'homoglyph: only custom is updated' => [
+				[
+					'analyzer' => [
+						'text' => [
+							'type' => 'french',
+							'filter' => [ 'asciifolding_preserve' ]
+						]
+					],
+				],
+				[
+					'analyzer' => [
+						'text' => [
+							'type' => 'french',
+							'filter' => [ 'asciifolding_preserve' ]
+						]
+					],
+				],
+			],
+
+			'homoglyph: text only' => [
+				[
+					'analyzer' => [
+						'text' => [
+							'type' => 'custom',
+							'filter' => [ 'random_filter' ]
+						],
+					],
+				],
+				[
+					'analyzer' => [
+						'text' => [
+							'type' => 'custom',
+							'filter' => [ 'homoglyph_norm', 'random_filter' ]
+						]
+					],
+				],
+			],
+
+			'homoglyph: text_search only' => [
+				[
+					'analyzer' => [
+						'text_search' => [
+							'type' => 'custom',
+							'filter' => [ 'random_filter' ]
+						],
+					],
+				],
+				[
+					'analyzer' => [
+						'text_search' => [
+							'type' => 'custom',
+							'filter' => [ 'homoglyph_norm', 'random_filter' ]
+						]
+					],
+				],
+			],
+
+			'homoglyph: config without filter' => [
+				[
+					'analyzer' => [
+						'text' => [
+							'type' => 'custom',
+						],
+						'text_search' => [
+							'type' => 'custom',
+						],
+					],
+				],
+				[
+					'analyzer' => [
+						'text' => [
+							'type' => 'custom',
+							'filter' => [ 'homoglyph_norm' ]
+						],
+						'text_search' => [
+							'type' => 'custom',
+							'filter' => [ 'homoglyph_norm' ]
+						],
 					],
 				],
 			],

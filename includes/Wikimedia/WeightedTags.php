@@ -6,11 +6,11 @@ use SearchEngine;
 use SearchIndexFieldDefinition;
 
 /**
- * Field definitions for the (Wikimedia-specific) articletopic search feature.
+ * Field definitions for the (Wikimedia-specific) weighted_tags search feature.
  * @package CirrusSearch\Wikimedia
- * @see ORESArticleTopicsHooks
+ * @see WeightedTagsHooks
  */
-class ORESArticleTopicsField extends SearchIndexFieldDefinition {
+class WeightedTags extends SearchIndexFieldDefinition {
 	/**
 	 * @var string
 	 */

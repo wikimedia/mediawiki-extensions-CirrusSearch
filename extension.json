@@ -118,15 +118,15 @@
 		"ArticleRevisionVisibilitySet": "CirrusSearch\\Hooks::onRevisionDelete",
 		"ArticleUndelete": "CirrusSearch\\Hooks::onArticleUndelete",
 		"BeforeInitialize": "CirrusSearch\\Hooks::onBeforeInitialize",
-		"CirrusSearchAddQueryFeatures": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchAddQueryFeatures",
-		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchAnalysisConfig",
-		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onCirrusSearchSimilarityConfig",
+		"CirrusSearchAddQueryFeatures": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAddQueryFeatures",
+		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAnalysisConfig",
+		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchSimilarityConfig",
 		"GetPreferences": "CirrusSearch\\Hooks::onGetPreferences",
 		"LinksUpdateComplete": "CirrusSearch\\Hooks::onLinksUpdateCompleted",
 		"MediaWikiServices": "CirrusSearch\\Hooks::onMediaWikiServices",
 		"PrefixSearchExtractNamespace": "CirrusSearch\\Hooks::onPrefixSearchExtractNamespace",
 		"ResourceLoaderGetConfigVars": "CirrusSearch\\Hooks::onResourceLoaderGetConfigVars",
-		"SearchIndexFields": "CirrusSearch\\Wikimedia\\ORESArticleTopicsHooks::onSearchIndexFields",
+		"SearchIndexFields": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onSearchIndexFields",
 		"SearchGetNearMatch": "CirrusSearch\\Hooks::onSearchGetNearMatch",
 		"ShowSearchHitTitle": "CirrusSearch\\Hooks::onShowSearchHitTitle",
 		"SoftwareInfo": "CirrusSearch\\Hooks::onSoftwareInfo",
@@ -642,9 +642,9 @@
 			"value": "elastic"
 		},
 		"CirrusSearchWMFExtraFeatures": {
-			"description": "Configuration for Wikimedia-spexific extra features.\n\n* ores_articletopics: search articles by topic.\n** build: include in the index definition",
+			"description": "Configuration for Wikimedia-spexific extra features.\n\n* weighted_tags: multi purpose tag search.\n** build: include in the index definition",
 			"value": {
-				"ores_articletopics": {
+				"weighted_tags": {
 					"build": false,
 					"use": false
 				}

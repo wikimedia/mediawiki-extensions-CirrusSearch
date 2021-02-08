@@ -4,7 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
-use CirrusSearch\Wikimedia\ORESArticleTopicsHooks;
+use CirrusSearch\Wikimedia\WeightedTagsHooks;
 use Elastica\Query\DisMax;
 use Elastica\Query\Term;
 use Message;
@@ -13,10 +13,11 @@ use Message;
  * Finds pages based on how well they match a given topic, based on scores provided by the
  * (Wikimedia-specific) articletopic ORES model.
  * @package CirrusSearch\Wikimedia
- * @see ORESArticleTopicsHooks
+ * @see WeightedTagsHooks
  * @see https://www.mediawiki.org/wiki/Help:CirrusSearch#Articletopic
  */
 class ArticleTopicFeature extends SimpleKeywordFeature {
+	public const ARTICLE_TOPIC_TAG_PREFIX = 'classification.ores.articletopic/';
 
 	public const TERMS_TO_LABELS = [
 		'biography' => 'Culture.Biography.Biography*',
@@ -88,7 +89,7 @@ class ArticleTopicFeature extends SimpleKeywordFeature {
 	/**
 	 * Helper method for turning raw ORES score data (as stored in the Cirrus document) into
 	 * search terms, for analytics/debugging.
-	 * @param array $rawTopicData The contents of the document's ores_articletopics field
+	 * @param array $rawTopicData The unprefixed content of the document's weighted_tags field
 	 * @return array corresponding search term => ORES score (rounded to three decimals)
 	 */
 	public static function getTopicScores( array $rawTopicData ): array {
@@ -136,10 +137,17 @@ class ArticleTopicFeature extends SimpleKeywordFeature {
 		}
 
 		$query = new DisMax();
+		// TODO: remove 'ores_articletopics' once fully migrated
+		$fields = [
+			WeightedTagsHooks::FIELD_NAME => self::ARTICLE_TOPIC_TAG_PREFIX,
+			'ores_articletopics' => ''
+		];
 		foreach ( $topics as $topic ) {
-			$topicQuery = new Term();
-			$topicQuery->setTerm( ORESArticleTopicsHooks::FIELD_NAME, $topic );
-			$query->addQuery( $topicQuery );
+			foreach ( $fields as $field => $prefix ) {
+				$topicQuery = new Term();
+				$topicQuery->setTerm( $field, $prefix . $topic );
+				$query->addQuery( $topicQuery );
+			}
 		}
 
 		if ( !$negated ) {

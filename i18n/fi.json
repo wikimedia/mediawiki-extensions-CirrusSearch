@@ -34,5 +34,6 @@
 	"cirrussearch-explore-similar-related-none": "Ei samankaltaisia sivuja saatavilla",
 	"cirrussearch-explore-similar-categories-none": "Ei luokkia käytettävissä",
 	"cirrussearch-explore-similar-languages-none": "Ei käytettävissä muilla kielillä",
-	"cirrussearch-article-words": "Sanoja kaikilla sisältösivuilla"
+	"cirrussearch-article-words": "Sanoja kaikilla sisältösivuilla",
+	"cirrussearch-inlanguage-deprecate-comma": "Pilkku erottimena inlanguage-avainsanassa on poistumassa käytöstä. Käytä |-merkkiä kielten erottamiseen."
 }

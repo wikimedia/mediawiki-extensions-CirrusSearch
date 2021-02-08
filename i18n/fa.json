@@ -10,6 +10,7 @@
 			"Ladsgroup",
 			"Mardetanha",
 			"Physicsch",
+			"Reza koulivand",
 			"Reza1615",
 			"فلورانس"
 		]
@@ -72,5 +73,6 @@
 	"cirrussearch-explore-similar-related-none": "هیچ صفحه مرتبطی در دسترس نیست",
 	"cirrussearch-explore-similar-categories-none": "هیچ رده‌ای در دسترس نیست",
 	"cirrussearch-explore-similar-languages-none": "در زبان‌های دیگر در دسترس نیست",
-	"cirrussearch-article-words": "کلمات در تمام صفحات محتوا"
+	"cirrussearch-article-words": "کلمات در تمام صفحات محتوا",
+	"cirrussearch-inlanguage-deprecate-comma": "استفاده از ویرگول به عنوان جدا کننده برای کلمه کلیدی غیرزبانی منسوخ است. لطفا استفاده کنید |  (لوله) برای جدا کردن زبانها."
 }

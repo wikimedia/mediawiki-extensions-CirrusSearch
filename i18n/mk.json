@@ -75,5 +75,6 @@
 	"cirrussearch-autoselect-profile": "Пребарувачот нека го одреди најпогодниот профил.",
 	"cirrussearch-offset-too-large": "Не можев да го добијам исходот. Поддржани се до $1 ставки, но побарани се ставки почнувајќи од $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Го занемарувам барањетп за страничење на произволно подредени исходни ставки.",
-	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Непрепознаен назив на темата|Непрепознаени називи на темите}} за клучниот збор <kbd>articletopic:</kbd>: $1"
+	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Непрепознаен назив на темата|Непрепознаени називи на темите}} за клучниот збор <kbd>articletopic:</kbd>: $1",
+	"cirrussearch-inlanguage-deprecate-comma": "Употребата на запирка како одделувач за внатрејазичниот клучен збор е застарена. Наместо тоа, користете | (права цртва) за да ги одделите јазиците."
 }

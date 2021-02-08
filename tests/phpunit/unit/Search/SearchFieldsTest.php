@@ -62,6 +62,16 @@ class SearchFieldsTest extends CirrusTestCase {
 		$hint = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
 		$this->assertNull( $hint );
 		$this->assertFalse( $doc->hasParam( CirrusIndexField::DOC_HINT_PARAM ) );
+
+		CirrusIndexField::addNoopHandler( $doc, "foo", CirrusIndexField::MULTILIST_HANDLER );
+		$doc->set( "foo", "test/" . CirrusIndexField::MULTILIST_DELETE_GROUPING );
+		CirrusIndexField::resetHints( $doc );
+		$this->assertSame( [], $doc->get( "foo" ) );
+
+		CirrusIndexField::addNoopHandler( $doc, "foo", CirrusIndexField::MULTILIST_HANDLER );
+		$doc->set( "foo", [ "test/" . CirrusIndexField::MULTILIST_DELETE_GROUPING, "other/to_keep" ] );
+		CirrusIndexField::resetHints( $doc );
+		$this->assertSame( [ "other/to_keep" ], $doc->get( "foo" ) );
 	}
 
 	public function testHintsRoundTrip() {

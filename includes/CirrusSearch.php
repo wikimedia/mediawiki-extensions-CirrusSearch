@@ -16,8 +16,10 @@ use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Search\TitleResultsType;
+use CirrusSearch\Wikimedia\WeightedTagsHooks;
 use ISearchResultSet;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\ProperPageIdentity;
 use RequestContext;
 use SearchEngine;
 use SearchIndexField;
@@ -591,6 +593,16 @@ class CirrusSearch extends SearchEngine {
 				$searcher->processRawReturn( $status->getValue(), $this->request ) );
 		}
 		return $status;
+	}
+
+	/**
+	 * Request the reset of the weighted_tags field for the category $tagCategory.
+	 *
+	 * @param ProperPageIdentity $page
+	 * @param string $tagPrefix
+	 */
+	public function resetWeightedTags( ProperPageIdentity $page, string $tagPrefix ): void {
+		( new Updater( $this->connection ) )->resetWeightedTags( $page, WeightedTagsHooks::FIELD_NAME, $tagPrefix );
 	}
 
 	/**

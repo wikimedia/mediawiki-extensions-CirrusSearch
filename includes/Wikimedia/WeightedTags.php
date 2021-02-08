@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Wikimedia;
 
+use CirrusSearch\Search\CirrusIndexField;
 use SearchEngine;
 use SearchIndexFieldDefinition;
 
@@ -57,5 +58,13 @@ class WeightedTags extends SearchIndexFieldDefinition {
 			'norms' => false,
 			'similarity' => $this->similarity,
 		];
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getEngineHints( SearchEngine $engine ) {
+		// see https://github.com/wikimedia/search-extra/blob/master/docs/super_detect_noop.md
+		return [ CirrusIndexField::NOOP_HINT => CirrusIndexField::MULTILIST_HANDLER ];
 	}
 }

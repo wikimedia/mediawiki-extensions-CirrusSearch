@@ -6,6 +6,7 @@ use CirrusSearch\BuildDocument\BuildDocument;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\ProperPageIdentity;
 use TextContent;
 use Title;
 use Wikimedia\Assert\Assert;
@@ -219,6 +220,24 @@ class Updater extends ElasticsearchIntermediary {
 		}
 
 		return $count;
+	}
+
+	/**
+	 * @param ProperPageIdentity $page
+	 * @param string $tagField
+	 * @param string $tagPrefix
+	 */
+	public function resetWeightedTags( ProperPageIdentity $page, string $tagField, string $tagPrefix ) {
+		Assert::precondition( $page->exists(), "page must exist" );
+		$docId = $this->connection->getConfig()->makeId( $page->getId() );
+		$indexType = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
+		$this->pushElasticaWriteJobs( [ $docId ], function ( array $docIds, string $cluster ) use ( $indexType, $tagField, $tagPrefix ) {
+			return Job\ElasticaWrite::build(
+				$cluster,
+				'sendResetWeightedTags',
+				[ $indexType, $docIds, $tagField, $tagPrefix ]
+			);
+		} );
 	}
 
 	/**

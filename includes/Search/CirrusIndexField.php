@@ -4,6 +4,8 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\SearchConfig;
+use Elastica\Document;
+use Elastica\Param;
 use SearchEngine;
 use SearchIndexField;
 use SearchIndexFieldDefinition;
@@ -18,6 +20,16 @@ abstract class CirrusIndexField extends SearchIndexFieldDefinition {
 	 * hints about the noop_script handlers.
 	 */
 	public const DOC_HINT_PARAM = '_cirrus_hints';
+
+	/**
+	 * name of the noop handler for multilist
+	 */
+	public const MULTILIST_HANDLER = 'multilist';
+
+	/**
+	 * magic word to instruct the noop plugin to cleanup a particular multilist group
+	 */
+	public const MULTILIST_DELETE_GROUPING = '__DELETE_GROUPING__';
 
 	/**
 	 * Name of the hint as returned by SearchIndexField::getEngineHints()
@@ -84,11 +96,11 @@ abstract class CirrusIndexField extends SearchIndexFieldDefinition {
 	 * Inspect SearchIndexField::getEngineHints() for indexing hints
 	 * and forward them to special metadata in the document.
 	 *
-	 * @param \Elastica\Document $doc
+	 * @param Document $doc
 	 * @param string $fieldName
 	 * @param array $hints
 	 */
-	public static function addIndexingHints( \Elastica\Document $doc, $fieldName, array $hints ) {
+	public static function addIndexingHints( Document $doc, $fieldName, array $hints ) {
 		if ( $hints && isset( $hints[self::NOOP_HINT] ) ) {
 			self::addNoopHandler( $doc, $fieldName, $hints[self::NOOP_HINT] );
 		}
@@ -147,11 +159,34 @@ abstract class CirrusIndexField extends SearchIndexFieldDefinition {
 	/**
 	 * Clear all hints
 	 *
-	 * @param \Elastica\Param $doc
+	 * @param Param $doc
 	 */
-	public static function resetHints( \Elastica\Param $doc ) {
+	public static function resetHints( Param $doc ) {
 		if ( $doc->hasParam( self::DOC_HINT_PARAM ) ) {
+			if ( $doc instanceof Document ) {
+				self::resetMultiList( $doc );
+			}
 			$doc->setParam( self::DOC_HINT_PARAM, null );
+		}
+	}
+
+	/**
+	 * Remove multilist __DELETE_GROUPING__ records
+	 * @param Document $doc
+	 */
+	private static function resetMultiList( Document $doc ) {
+		$noopHandlers = self::getHint( $doc, self::NOOP_HINT ) ?: [];
+		foreach ( $noopHandlers as $field => $handler ) {
+			if ( $handler === self::MULTILIST_HANDLER && $doc->has( $field ) ) {
+				$data = $doc->get( $field );
+				$data = is_array( $data ) ? $data : [ $data ];
+				$doc->set(
+					$field,
+					array_values( array_filter( $data, function ( string $x ) {
+							return !str_ends_with( $x, self::MULTILIST_DELETE_GROUPING );
+					} ) )
+				);
+			}
 		}
 	}
 }

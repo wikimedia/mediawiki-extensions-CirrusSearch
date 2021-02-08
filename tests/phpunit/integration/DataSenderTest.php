@@ -31,6 +31,8 @@ use Elastica\Response;
  * @covers \CirrusSearch\DataSender
  */
 class DataSenderTest extends CirrusIntegrationTestCase {
+	private $actualCalls;
+
 	/**
 	 * @dataProvider provideDocs
 	 */
@@ -312,50 +314,80 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 			'CirrusSearchReplicaGroup' => 'default',
 		];
 		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
-		$mockClient = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->setProxyTarget( new Client( [ 'connections' => [] ] ) )
-			->setMethods( [ 'request' ] )
-			->getMock();
+		$mockClient = $this->prepareClientMock( count( array_chunk( $actions, $batchSize ) ) );
 
-		$actualCalls = [];
-		$mockClient->expects( $this->exactly( count( array_chunk( $actions, $batchSize ) ) ) )
-			->method( 'request' )
-			->will( $this->returnCallback(
-				function ( $path, $method, $data, $params, $contentType ) use ( &$actualCalls ) {
-					$lines = $this->unBulkify( $data );
-					$actualCalls[] = [
-						'path' => $path,
-						'method' => $method,
-						'data' => $lines,
-						'params' => $params,
-						'contentType' => $contentType,
-					];
-					$responses = array_map(
-						function ( $d ) {
-							return new Response( [ 'result' => 'updated', 200 ] );
-						},
-						range( 0, count( $lines ) / 2 )
-					);
-					return new ResponseSet( new Response( [], 200 ), $responses );
-				}
-			) );
-
-		$mockCon = $this->getMockBuilder( Connection::class )
-			->disableOriginalConstructor()
-			->setProxyTarget( new Connection( $searchConfig, 'default' ) )
-			->setMethods( [ 'getClient' ] )
-			->getMock();
-		$mockCon->expects( $this->atLeastOnce() )
-			->method( 'getClient' )
-			->willReturn( $mockClient );
-		$sender = new DataSender( $mockCon, $searchConfig, function () {
-			return true;
-		} );
+		$sender = $this->prepareDataSender( $searchConfig, $mockClient );
 		$sender->sendOtherIndexUpdates( $localSite, $indexName, $actions, $batchSize );
 
+		$this->assertFileContains(
+			CirrusIntegrationTestCase::fixturePath( $expectedFile ),
+			CirrusIntegrationTestCase::encodeFixture( $this->mergeCalls( $this->actualCalls ) ),
+			self::canRebuildFixture()
+		);
+	}
+
+	public function provideResetWeightedTagsRequest(): array {
+		$tests = [];
+		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendResetWeightedTags-request-*.config' ) as $testFile ) {
+			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
+			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
+			$expectedFile = dirname( $testFile ) . "/$testName.expected";
+			$tests[$testName] = [
+				$fixture['config'],
+				$fixture['indexType'],
+				$fixture['batchSize'],
+				$fixture['docIds'],
+				$fixture['tagField'],
+				$fixture['tagPrefix'],
+				$expectedFile,
+			];
+		}
+		return $tests;
+	}
+
+	/**
+	 * @dataProvider provideResetWeightedTagsRequest
+	 * @param array $config
+	 * @param string $indexType
+	 * @param int $batchSize
+	 * @param array $docIds
+	 * @param string $tagField
+	 * @param string $tagPrefix
+	 * @param string $expectedFile
+	 * @throws \MWException
+	 */
+	public function testResetWeightedTags(
+		array $config,
+		string $indexType,
+		int $batchSize,
+		array $docIds,
+		string $tagField,
+		string $tagPrefix,
+		string $expectedFile
+	): void {
+		$minimalSetup = [
+			'CirrusSearchClusters' => [
+				'default' => [ 'localhost' ]
+			],
+			'CirrusSearchReplicaGroup' => 'default',
+		];
+		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
+		$count = count( array_chunk( $docIds, $batchSize ) );
+		$mockClient = $this->prepareClientMock( $count );
+
+		$sender = $this->prepareDataSender( $searchConfig, $mockClient );
+		$sender->sendResetWeightedTags( $indexType, $docIds, $tagField, $tagPrefix, $batchSize );
+
+		$this->assertFileContains(
+			CirrusIntegrationTestCase::fixturePath( $expectedFile ),
+			CirrusIntegrationTestCase::encodeFixture( $this->mergeCalls( $this->actualCalls ) ),
+			self::canRebuildFixture()
+		);
+	}
+
+	private function mergeCalls( array $requestCalls ): array {
 		$merged = [];
-		foreach ( $actualCalls as $nb => $actualCall ) {
+		foreach ( $requestCalls as $nb => $actualCall ) {
 			if ( isset( $merged['path'] ) ) {
 				foreach ( [ 'path', 'method', 'params', 'contentType' ] as $k ) {
 					$this->assertEquals( $merged[$k], $actualCall[$k], "Bulk message $nb has same value for $k the the first bulk" );
@@ -366,11 +398,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 				$merged['data'] = [ $actualCall['data'] ];
 			}
 		}
-		$this->assertFileContains(
-			CirrusIntegrationTestCase::fixturePath( $expectedFile ),
-			CirrusIntegrationTestCase::encodeFixture( $merged ),
-			self::canRebuildFixture()
-		);
+		return $merged;
 	}
 
 	private function unBulkify( $data ) {
@@ -380,5 +408,53 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 			},
 			array_slice( explode( "\n", $data ), 0, -1 )
 		);
+	}
+
+	private function prepareDataSender( SearchConfig $searchConfig, Client $client ): DataSender {
+		$mockCon = $this->getMockBuilder( Connection::class )
+			->disableOriginalConstructor()
+			->setProxyTarget( new Connection( $searchConfig, 'default' ) )
+			->setMethods( [ 'getClient' ] )
+			->getMock();
+		$mockCon->expects( $this->atLeastOnce() )
+			->method( 'getClient' )
+			->willReturn( $client );
+		return new DataSender( $mockCon, $searchConfig, function () {
+			return true;
+		} );
+	}
+
+	/**
+	 * @param int $count
+	 * @return Client|\PHPUnit\Framework\MockObject\MockObject
+	 */
+	private function prepareClientMock( int $count ): Client {
+		$mockClient =
+			$this->getMockBuilder( Client::class )
+				->disableOriginalConstructor()
+				->setProxyTarget( new Client( [ 'connections' => [] ] ) )
+				->setMethods( [ 'request' ] )
+				->getMock();
+
+		$mockClient->expects( $this->exactly( $count ) )
+			->method( 'request' )
+			->will( $this->returnCallback( function ( $path, $method, $data, $params, $contentType
+			) {
+				$lines = $this->unBulkify( $data );
+				$this->actualCalls[] = [
+					'path' => $path,
+					'method' => $method,
+					'data' => $lines,
+					'params' => $params,
+					'contentType' => $contentType,
+				];
+				$responses = array_map( function ( $d ) {
+					return new Response( [ 'result' => 'updated', 200 ] );
+				}, range( 0, count( $lines ) / 2 ) );
+
+				return new ResponseSet( new Response( [], 200 ), $responses );
+			} ) );
+
+		return $mockClient;
 	}
 }

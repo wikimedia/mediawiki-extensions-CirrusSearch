@@ -117,13 +117,14 @@ class Updater extends ElasticsearchIntermediary {
 				return [ null, $redirects ];
 			}
 
-			// Never. Ever. Index. Negative. Namespaces.
-			if ( $title->getNamespace() < 0 ) {
+			// Don't index special pages, interwiki links, bad namespaces, etc
+			$logger = LoggerFactory::getInstance( 'CirrusSearch' );
+			if ( !$title->canExist() ) {
+				$logger->debug( "Ignoring an update for a page that cannot exist: $titleText" );
 				return [ null, $redirects ];
 			}
 
 			$page = WikiPage::factory( $title );
-			$logger = LoggerFactory::getInstance( 'CirrusSearch' );
 			if ( !$page->exists() ) {
 				$logger->debug( "Ignoring an update for a nonexistent page: $titleText" );
 				return [ null, $redirects ];

@@ -90,5 +90,5 @@
 	"cirrussearch-offset-too-large": "Impossible de récupérer les résultats. Jusqu’à $1 résultats de recherche sont pris en charge, mais des résultats à partir du nº $2 ont été demandés.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorer la requête pour paginer aléatoirement les résultats triés.",
 	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Nom|Noms}} de sujet inconnus pour le mot-clé <kbd>articletopic:</kbd> : $1",
-	"cirrussearch-inlanguage-deprecate-comma": "L’utilisation d’une virgule comme séparateur pour le mot-clé inlanguage est obsolète. Veuillez utiliser | (barre verticale) pour séparer les langues."
+	"cirrussearch-inlanguage-deprecate-comma": "L’utilisation de la virgule comme séparateur pour le mot-clé « inlanguage » est obsolète. Veuillez utiliser la barre verticale « | » pour séparer les langues."
 }

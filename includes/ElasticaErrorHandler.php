@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use Elastica\Exception\Bulk\ResponseException as BulkResponseException;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
 use MediaWiki\Logger\LoggerFactory;
@@ -28,8 +29,7 @@ class ElasticaErrorHandler {
 	 */
 	public static function extractMessage( \Elastica\Exception\ExceptionInterface $exception ) {
 		$error = self::extractFullError( $exception );
-
-		return $error['type'] . ': ' . $error['reason'];
+		return self::formatMessage( $error );
 	}
 
 	/**
@@ -40,7 +40,18 @@ class ElasticaErrorHandler {
 	 *  so we have to suppress those warnings.
 	 */
 	public static function extractFullError( \Elastica\Exception\ExceptionInterface $exception ): array {
-		if ( !( $exception instanceof ResponseException ) ) {
+		if ( $exception instanceof BulkResponseException ) {
+			$actionReasons = [];
+			foreach ( $exception->getActionExceptions() as $actionException ) {
+				$actionReasons[] = $actionException->getMessage() . ': '
+					. self::formatMessage( $actionException->getResponse()->getFullError() );
+			}
+			return [
+				'type' => 'bulk',
+				'reason' => $exception->getMessage(),
+				'actionReasons' => $actionReasons,
+			];
+		} elseif ( !( $exception instanceof ResponseException ) ) {
 			// simulate the basic full error structure
 			return [
 				'type' => 'unknown',
@@ -191,7 +202,7 @@ class ElasticaErrorHandler {
 		if ( !isset( $error['root_cause'][0]['type'] ) ) {
 			return [
 				Status::newFatal( 'cirrussearch-backend-error' ),
-				$error['type'] . ': ' . $error['reason']
+				self::formatMessage( $error )
 			];
 		}
 
@@ -262,8 +273,38 @@ class ElasticaErrorHandler {
 
 		return [
 			Status::newFatal( 'cirrussearch-backend-error' ),
-			$cause['type'] . ': ' . $cause['reason']
+			self::formatMessage( $cause )
 		];
+	}
+
+	/**
+	 * Takes an error and converts it into a useful message. Mostly this is to deal with
+	 * errors where the useful part is hidden inside a caused_by chain.
+	 * @param array $error An error array, such as the one returned by extractFullError().
+	 * @return string
+	 */
+	protected static function formatMessage( array $error ) {
+		if ( isset( $error['actionReasons'] ) ) {
+			$message = $error['type'] . ': ' . $error['reason'];
+			foreach ( $error['actionReasons'] as $actionReason ) {
+				$message .= "  - $actionReason\n";
+			}
+			return $message;
+		}
+
+		$causeChain = [];
+		$errorCursor = $error;
+		while ( isset( $errorCursor['caused_by'] ) ) {
+			$errorCursor = $errorCursor['caused_by'];
+			if ( $errorCursor['reason'] ) {
+				$causeChain[] = $errorCursor['reason'];
+			}
+		}
+		$message = $error['type'] . ': ' . $error['reason'];
+		if ( $causeChain ) {
+			$message .= ' (' . implode( ' -> ', array_reverse( $causeChain ) ) . ')';
+		}
+		return $message;
 	}
 
 }

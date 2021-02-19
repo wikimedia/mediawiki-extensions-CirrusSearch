@@ -227,6 +227,31 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param ProperPageIdentity $page
 	 * @param string $tagField
 	 * @param string $tagPrefix
+	 * @param string|string[]|null $tagNames
+	 * @param int|int[]|null $tagWeights
+	 */
+	public function updateWeightedTags(
+		ProperPageIdentity $page, string $tagField, string $tagPrefix, $tagNames = null, $tagWeights = null
+	) {
+		Assert::precondition( $page->exists(), "page must exist" );
+		$docId = $this->connection->getConfig()->makeId( $page->getId() );
+		$indexType = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
+		$this->pushElasticaWriteJobs( [ $docId ], function ( array $docIds, string $cluster ) use (
+			$docId, $indexType, $tagField, $tagPrefix, $tagNames, $tagWeights
+		) {
+			$tagWeights = ( $tagWeights === null ) ? null : [ $docId => $tagWeights ];
+			return Job\ElasticaWrite::build(
+				$cluster,
+				'sendUpdateWeightedTags',
+				[ $indexType, $docIds, $tagField, $tagPrefix, $tagNames, $tagWeights ]
+			);
+		} );
+	}
+
+	/**
+	 * @param ProperPageIdentity $page
+	 * @param string $tagField
+	 * @param string $tagPrefix
 	 */
 	public function resetWeightedTags( ProperPageIdentity $page, string $tagField, string $tagPrefix ) {
 		Assert::precondition( $page->exists(), "page must exist" );

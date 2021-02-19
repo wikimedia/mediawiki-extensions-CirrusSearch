@@ -326,6 +326,72 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		);
 	}
 
+	public function provideUpdateWeightedTagsRequest(): array {
+		$tests = [];
+		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendUpdateWeightedTags-request-*.config' ) as $testFile ) {
+			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
+			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
+			$expectedFile = dirname( $testFile ) . "/$testName.expected";
+			$tests[$testName] = [
+				$fixture['config'],
+				$fixture['indexType'],
+				$fixture['batchSize'],
+				$fixture['docIds'],
+				$fixture['tagField'],
+				$fixture['tagPrefix'],
+				$fixture['tagNames'],
+				$fixture['tagWeights'],
+				$expectedFile,
+			];
+		}
+		return $tests;
+	}
+
+	/**
+	 * @dataProvider provideUpdateWeightedTagsRequest
+	 * @param array $config
+	 * @param string $indexType
+	 * @param int $batchSize
+	 * @param array $docIds
+	 * @param string $tagField
+	 * @param string $tagPrefix
+	 * @param string|array|null $tagNames
+	 * @param array|null $tagWeights
+	 * @param string $expectedFile
+	 * @throws \MWException
+	 */
+	public function testUpdateWeightedTags(
+		array $config,
+		string $indexType,
+		int $batchSize,
+		array $docIds,
+		string $tagField,
+		string $tagPrefix,
+		$tagNames,
+		?array $tagWeights,
+		string $expectedFile
+	): void {
+		$minimalSetup = [
+			'CirrusSearchClusters' => [
+				'default' => [ 'localhost' ]
+			],
+			'CirrusSearchReplicaGroup' => 'default',
+		];
+		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
+		$count = count( array_chunk( $docIds, $batchSize ) );
+		$mockClient = $this->prepareClientMock( $count );
+
+		$sender = $this->prepareDataSender( $searchConfig, $mockClient );
+		$sender->sendUpdateWeightedTags( $indexType, $docIds, $tagField, $tagPrefix,
+			$tagNames, $tagWeights, $batchSize );
+
+		$this->assertFileContains(
+			CirrusIntegrationTestCase::fixturePath( $expectedFile ),
+			CirrusIntegrationTestCase::encodeFixture( $this->mergeCalls( $this->actualCalls ) ),
+			self::canRebuildFixture()
+		);
+	}
+
 	public function provideResetWeightedTagsRequest(): array {
 		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendResetWeightedTags-request-*.config' ) as $testFile ) {

@@ -136,18 +136,44 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @param string[] $docIds
 	 * @param string $tagField
 	 * @param string $tagPrefix
+	 * @param string|string[]|null $tagNames
+	 * @param int[]|int[][]|null $tagWeights An optional map of docid => weight. When $tagName is
+	 *   null, the weight is an integer. When $tagName is not null, the weight is itself a
+	 *   tagname => int map. Weights are between 1-1000.
 	 * @param int $batchSize
 	 * @return Status
 	 */
-	public function sendResetWeightedTags(
+	public function sendUpdateWeightedTags(
 		string $indexType,
 		array $docIds,
 		string $tagField,
 		string $tagPrefix,
+		$tagNames = null,
+		array $tagWeights = null,
 		int $batchSize = 30
 	): Status {
 		if ( !$this->isAvailableForWrites() ) {
 			return Status::newFatal( 'cirrussearch-indexes-frozen' );
+		}
+
+		Assert::parameterType( [ 'string', 'array', 'null' ], $tagNames, '$tagName' );
+		if ( is_array( $tagNames ) ) {
+			Assert::parameterElementType( 'string', $tagNames, '$tagName' );
+		}
+		if ( $tagNames === null ) {
+			$tagNames = [ 'exists' ];
+			if ( $tagWeights !== null ) {
+				$tagWeights = [ 'exists' => $tagWeights ];
+			}
+		} elseif ( is_string( $tagNames ) ) {
+			$tagNames = [ $tagNames ];
+		}
+
+		Assert::precondition( strpos( $tagPrefix, '/' ) === false,
+			"invalid tag prefix $tagPrefix: must not contain /" );
+		foreach ( $tagNames as $tagName ) {
+			Assert::precondition( strpos( $tagName, '|' ) === false,
+				"invalid tag name $tagName: must not contain |" );
 		}
 
 		$client = $this->connection->getClient();
@@ -159,10 +185,16 @@ class DataSender extends ElasticsearchIntermediary {
 			$bulk = new \Elastica\Bulk( $client );
 			$bulk->setType( $pageType );
 			foreach ( $docIdsChunk as $docId ) {
+				$tags = [];
+				foreach ( $tagNames as $tagName ) {
+					$tagValue = "$tagPrefix/$tagName";
+					if ( $tagWeights !== null ) {
+						$tagValue .= '|' . $tagWeights[$docId][$tagName];
+					}
+					$tags[] = $tagValue;
+				}
 				$script = new \Elastica\Script\Script( 'super_detect_noop', [
-					'source' => [
-						$tagField => [ "$tagPrefix/" . CirrusIndexField::MULTILIST_DELETE_GROUPING ]
-					],
+					'source' => [ $tagField => $tags ],
 					'handlers' => [ $tagField => CirrusIndexField::MULTILIST_HANDLER ],
 				], 'super_detect_noop' );
 				$script->setId( $docId );
@@ -189,17 +221,45 @@ class DataSender extends ElasticsearchIntermediary {
 				$this->success();
 			} else {
 				$this->failure( $exception );
-				$this->failedLog->warning( "Reset weighted tag {weightedTagFieldName} for {weightedTagPrefix} in articles: {documents}",
+				$this->failedLog->warning( "Update weighted tag {weightedTagFieldName} for {weightedTagPrefix} in articles: {documents}",
 					[
 						'exception' => $exception,
 						'weightedTagFieldName' => $tagField,
 						'weightedTagPrefix' => $tagPrefix,
+						'weightedTagNames' => implode( '|', $tagNames ),
+						'weightedTagWeight' => $tagWeights,
 						'docIds' => implode( ',', $docIds )
 					] );
-				$status->error( 'cirrussearch-failed-update-reset-weighted-tags' );
+				$status->error( 'cirrussearch-failed-update-weighted-tags' );
 			}
 		}
 		return $status;
+	}
+
+	/**
+	 * @param string $indexType
+	 * @param string[] $docIds
+	 * @param string $tagField
+	 * @param string $tagPrefix
+	 * @param int $batchSize
+	 * @return Status
+	 */
+	public function sendResetWeightedTags(
+		string $indexType,
+		array $docIds,
+		string $tagField,
+		string $tagPrefix,
+		int $batchSize = 30
+	): Status {
+		return $this->sendUpdateWeightedTags(
+			$indexType,
+			$docIds,
+			$tagField,
+			$tagPrefix,
+			CirrusIndexField::MULTILIST_DELETE_GROUPING,
+			null,
+			$batchSize
+		);
 	}
 
 	/**

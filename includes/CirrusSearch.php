@@ -407,9 +407,9 @@ class CirrusSearch extends SearchEngine {
 
 		// Not really useful, mostly for testing purpose
 		$variants = $this->debugOptions->getCirrusCompletionVariant();
-		if ( empty( $variants ) ) {
-			$contentLang = MediaWikiServices::getInstance()->getContentLanguage();
-			$variants = $contentLang->autoConvertToAllVariants( $search );
+		if ( !$variants ) {
+			$converter = MediaWikiServices::getInstance()->getLanguageConverterFactory()->getLanguageConverter();
+			$variants = $converter->autoConvertToAllVariants( $search );
 		} elseif ( count( $variants ) > 3 ) {
 			// We should not allow too many variants
 			$variants = array_slice( $variants, 0, 3 );

@@ -17,7 +17,7 @@ use Message;
  * @see https://www.mediawiki.org/wiki/Help:CirrusSearch#Articletopic
  */
 class ArticleTopicFeature extends SimpleKeywordFeature {
-	public const ARTICLE_TOPIC_TAG_PREFIX = 'classification.ores.articletopic/';
+	public const ARTICLE_TOPIC_TAG_PREFIX = 'classification.ores.articletopic';
 
 	public const TERMS_TO_LABELS = [
 		'biography' => 'Culture.Biography.Biography*',
@@ -139,7 +139,7 @@ class ArticleTopicFeature extends SimpleKeywordFeature {
 		$query = new DisMax();
 		// TODO: remove 'ores_articletopics' once fully migrated
 		$fields = [
-			WeightedTagsHooks::FIELD_NAME => self::ARTICLE_TOPIC_TAG_PREFIX,
+			WeightedTagsHooks::FIELD_NAME => self::ARTICLE_TOPIC_TAG_PREFIX . '/',
 			'ores_articletopics' => ''
 		];
 		foreach ( $topics as $topic ) {

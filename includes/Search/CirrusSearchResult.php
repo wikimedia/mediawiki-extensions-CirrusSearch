@@ -68,7 +68,7 @@ abstract class CirrusSearchResult extends SearchResult {
 	final public function isMissingRevision() {
 		global $wgCirrusSearchDevelOptions;
 		if ( isset( $wgCirrusSearchDevelOptions['ignore_missing_rev'] ) ) {
-			return true;
+			return false;
 		}
 		return !$this->getTitle()->isKnown();
 	}

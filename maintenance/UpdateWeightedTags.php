@@ -80,7 +80,7 @@ class UpdateWeightedTags extends Maintenance {
 					$this->fatalError( '--weight should be used together with --tagName' );
 				}
 			} else {
-				if ( count( $tagNames ) !== count( $tagWeights ) ) {
+				if ( $tagWeights && count( $tagNames ) !== count( $tagWeights ) ) {
 					$this->fatalError( 'When --weight is used, it must occur the same number of times as --tagName' );
 				}
 				foreach ( $tagNames as $tagName ) {

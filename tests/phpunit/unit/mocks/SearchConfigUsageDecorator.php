@@ -12,7 +12,7 @@ class SearchConfigUsageDecorator extends SearchConfig {
 
 	public function get( $name ) {
 		$val = parent::get( $name );
-		// Some config vars are objects.. (e.g. wgContLang)
+		// Some config vars are objects
 		if ( !is_object( $val ) ) {
 			static::$usedConfigKeys[$name] = true;
 		}

@@ -16,6 +16,7 @@ use CirrusSearch\Parser\ParsedQueryClassifiersRepository;
 use CirrusSearch\Parser\QueryParser;
 use CirrusSearch\Query\ArticleTopicFeature;
 use CirrusSearch\Query\FileNumericFeature;
+use CirrusSearch\Query\HasRecommendationFeature;
 use CirrusSearch\Query\InCategoryFeature;
 use CirrusSearch\Query\PageIdFeature;
 use CirrusSearch\Search\Escaper;
@@ -48,7 +49,10 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 		$this->assertSame( '', $phraseNode->getPhrase() );
 	}
 
-	public function testMaxLength() {
+	/**
+	 * @dataProvider provideMaxLength
+	 */
+	public function testMaxLength( int $maxQueryLen, string $query, bool $expectedToPass ) {
 		$config = new HashSearchConfig( [] );
 
 		$registry = new class( $config ) implements KeywordRegistry {
@@ -63,37 +67,41 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 					new InCategoryFeature( $this->config ),
 					new ArticleTopicFeature(),
 					new PageIdFeature(),
+					new HasRecommendationFeature(),
 				];
 			}
 		};
 		$parser = new QueryStringRegexParser( $registry, new Escaper( 'en', false ), 'all',
-			new FTQueryClassifiersRepository( $config, $this->createCirrusSearchHookRunner() ), $this->namespacePrefixParser(), 10 );
+			new FTQueryClassifiersRepository( $config, $this->createCirrusSearchHookRunner() ),
+			$this->namespacePrefixParser(), $maxQueryLen );
 
 		try {
-			$parser->parse( str_repeat( "a", 11 ) );
-			$this->fail( "Expected exception" );
+			$parser->parse( $query );
+			if ( !$expectedToPass ) {
+				$this->fail( 'Expected to fail' );
+			}
+			$this->assertTrue( true );
 		} catch ( SearchQueryParseException $e ) {
-			$this->assertEquals( $e->asStatus(),
-				\Status::newFatal( 'cirrussearch-query-too-long', 11, 10 ) );
+			if ( $expectedToPass ) {
+				$this->fail( 'Expected to pass, failed with' . $e->asStatus()->__toString() );
+			}
+			$this->assertTrue( $e->asStatus()->hasMessage( 'cirrussearch-query-too-long' ), 'Unexpected error' );
+		}
+	}
+
+	public function provideMaxLength() {
+		// return value: [ length limit, query, expected to pass? ]
+		yield [ 10, str_repeat( 'a', 10 ), true ];
+		yield [ 10, str_repeat( 'a', 11 ), false ];
+
+		foreach ( [ 'incategory', 'articletopic', 'pageid' ] as $exemptedKeyword ) {
+			yield [ 10, "$exemptedKeyword:test " . str_repeat( 'a', 9 ), true ];
+			yield [ 10, "-$exemptedKeyword:test " . str_repeat( 'a', 9 ), true ];
+			yield [ 10, "$exemptedKeyword:test " . str_repeat( 'a', 10 ), false ];
+			yield [ 10, "-$exemptedKeyword:test " . str_repeat( 'a', 10 ), false ];
 		}
 
-		$exemptedKeywords = [ 'incategory', 'articletopic', 'pageid' ];
-		foreach ( $exemptedKeywords as $exemptedKeyword ) {
-			$q = "$exemptedKeyword:test " . str_repeat( "a", 10 );
-			try {
-				$parser->parse( "$exemptedKeyword:test " . str_repeat( "a", 10 ) );
-				$this->fail( "Expected exception" );
-			}
-			catch ( SearchQueryParseException $e ) {
-				// The allowed query length is what is the configured limit + the size occupied by incategory keywords
-				$this->assertEquals( $e->asStatus(),
-					\Status::newFatal( 'cirrussearch-query-too-long', mb_strlen( $q ),
-						10 + mb_strlen( "$exemptedKeyword:test" ) ) );
-			}
-
-			// the use of an exempted keyword keyword inhibits the size check
-			$parser->parse( "$exemptedKeyword:test " . str_repeat( "a", 9 ) );
-		}
+		yield [ 10, 'hasrecommendation:' . str_repeat( 'a', 9 ), false ];
 	}
 
 	public function testHardLimitOnQueryLength() {
@@ -163,4 +171,5 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 		$this->assertInstanceOf( QueryStringRegexParser::class, $parser );
 		return $parser;
 	}
+
 }

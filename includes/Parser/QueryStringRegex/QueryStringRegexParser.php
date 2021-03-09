@@ -823,9 +823,13 @@ class QueryStringRegexParser implements QueryParser {
 		Assert::precondition( $this->query !== null, "Query must be set" );
 		$maxLen = $this->maxQueryLen;
 		// don't limit incategory
-		foreach ( $this->preTaggedNodes as $n ) {
-			if ( $n instanceof KeywordFeatureNode && $this->unlimitedKeywords( $n->getKey() ) ) {
-				$maxLen += mb_strlen( substr( $this->query, $n->getStartOffset(), $n->getEndOffset() ) );
+		foreach ( $this->preTaggedNodes as $node ) {
+			$realNode = $node;
+			if ( $node instanceof NegatedNode ) {
+				$realNode = $node->getChild();
+			}
+			if ( $realNode instanceof KeywordFeatureNode && $this->unlimitedKeywords( $realNode->getKey() ) ) {
+				$maxLen += mb_strlen( substr( $this->query, $node->getStartOffset(), $node->getEndOffset() ) );
 			}
 		}
 		$queryLen = mb_strlen( $this->query );

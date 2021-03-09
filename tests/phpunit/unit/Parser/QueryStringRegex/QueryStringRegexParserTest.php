@@ -85,7 +85,9 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 			if ( $expectedToPass ) {
 				$this->fail( 'Expected to pass, failed with' . $e->asStatus()->__toString() );
 			}
-			$this->assertTrue( $e->asStatus()->hasMessage( 'cirrussearch-query-too-long' ), 'Unexpected error' );
+			$hasMessage = $e->asStatus()->hasMessage( 'cirrussearch-query-too-long' )
+				|| $e->asStatus()->hasMessage( 'cirrussearch-query-too-long-with-exemptions' );
+			$this->assertTrue( $hasMessage, 'Unexpected error' );
 		}
 	}
 

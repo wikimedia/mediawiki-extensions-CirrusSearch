@@ -21,6 +21,7 @@ use CirrusSearch\Query\KeywordFeature;
 use CirrusSearch\Query\PrefixFeature;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\Util;
+use Message;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -822,7 +823,7 @@ class QueryStringRegexParser implements QueryParser {
 	private function checkQueryLen(): void {
 		Assert::precondition( $this->query !== null, "Query must be set" );
 		$maxLen = $this->maxQueryLen;
-		// don't limit incategory
+		$exemptKeywords = [];
 		foreach ( $this->preTaggedNodes as $node ) {
 			$realNode = $node;
 			if ( $node instanceof NegatedNode ) {
@@ -830,12 +831,19 @@ class QueryStringRegexParser implements QueryParser {
 			}
 			if ( $realNode instanceof KeywordFeatureNode && $this->unlimitedKeywords( $realNode->getKey() ) ) {
 				$maxLen += mb_strlen( substr( $this->query, $node->getStartOffset(), $node->getEndOffset() ) );
+				$exemptKeywords[] = $realNode->getKey();
 			}
 		}
 		$queryLen = mb_strlen( $this->query );
 		if ( $queryLen > $maxLen ) {
-			throw new SearchQueryParseException( 'cirrussearch-query-too-long',
-				$queryLen, $maxLen );
+			if ( $exemptKeywords ) {
+				sort( $exemptKeywords );
+				throw new SearchQueryParseException( 'cirrussearch-query-too-long-with-exemptions',
+					$queryLen, $this->maxQueryLen, Message::listParam( array_unique( $exemptKeywords ), 'comma' ) );
+			} else {
+				throw new SearchQueryParseException( 'cirrussearch-query-too-long', $queryLen,
+					$this->maxQueryLen );
+			}
 		}
 	}
 

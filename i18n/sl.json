@@ -11,7 +11,7 @@
 	"cirrussearch-now-using": "Ta wiki uporablja nov iskalnik.([[mw:Special:MyLanguage/Help:CirrusSearch|Poizvedi več]])",
 	"cirrussearch-pref-label": "Novo iskanje",
 	"cirrussearch-give-feedback": "Sporočite nam svoje mnenje",
-	"cirrussearch-query-too-long": "Vnešeno geslo je predolgo. ($1 > $2)",
+	"cirrussearch-query-too-long": "Vneseno geslo je predolgo. (Dolžina: $1; dovoljeno: $2)",
 	"cirrussearch-completion-profile-fuzzy": "Podobno normalnemu s popravki zatipkanj (podprti dve zatipkanji)",
 	"cirrussearch-qi-profile-popular-pv": "Uvrstitev na podlagi ogledov strani",
 	"cirrussearch-qi-profile-popular-inclinks": "Uvrstitev na podlagi števila dohodnih povezav",

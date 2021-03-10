@@ -84,7 +84,7 @@ class CompSuggestQueryBuilder {
 	 * @return Suggest
 	 */
 	public function build( $term, $variants = null ) {
-		$this->checkTitleSearchRequestLength( $term );
+		$this->checkTitleSearchRequestLength( $term, $this->searchContext );
 		$origTerm = $term;
 		if ( mb_strlen( $term ) > SuggestBuilder::MAX_INPUT_LENGTH ) {
 			// Trim the query otherwise we won't find results

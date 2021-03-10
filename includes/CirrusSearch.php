@@ -2,7 +2,6 @@
 
 namespace CirrusSearch;
 
-use ApiUsageException;
 use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
 use CirrusSearch\Profile\ContextualProfileOverride;
@@ -468,14 +467,7 @@ class CirrusSearch extends SearchEngine {
 			$searcher->setResultsType( new TitleResultsType() );
 		}
 
-		try {
-			$status = $searcher->prefixSearch( $search, $variants );
-		} catch ( ApiUsageException $e ) {
-			if ( defined( 'MW_API' ) ) {
-				throw $e;
-			}
-			return SearchSuggestionSet::emptySuggestionSet();
-		}
+		$status = $searcher->prefixSearch( $search, $variants );
 
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status

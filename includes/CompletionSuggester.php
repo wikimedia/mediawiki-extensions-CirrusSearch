@@ -346,6 +346,10 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$prefixSearchContext = new SearchContext( $this->config, $namespaces );
 		$prefixSearchContext->setResultsType( new FancyTitleResultsType( 'prefix' ) );
 		$this->prefixSearchQueryBuilder->build( $prefixSearchContext, $term, $variants );
+		if ( !$prefixSearchContext->areResultsPossible() ) {
+			// $prefixSearchContext might contain warnings, but these are lost.
+			return null;
+		}
 		$this->prefixSearchRequestBuilder = new SearchRequestBuilder( $prefixSearchContext, $this->connection, $this->indexBaseName );
 		$this->prefixSearchRequestBuilder->setTimeout( $this->getTimeout( self::SEARCH_TYPE ) );
 		return $this->prefixSearchRequestBuilder->setLimit( $limit )

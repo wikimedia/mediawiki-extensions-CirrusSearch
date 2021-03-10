@@ -5,7 +5,6 @@ namespace CirrusSearch;
 use ApiBase;
 use ApiMain;
 use ApiOpenSearch;
-use ApiUsageException;
 use CirrusSearch\Job\JobTraits;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
@@ -493,7 +492,6 @@ class Hooks {
 	 * @param string $term the original search term and all language variants
 	 * @param null|Title &$titleResult resulting match.  A Title if we found something, unchanged otherwise.
 	 * @return bool return false if we find something, true otherwise so mediawiki can try its default behavior
-	 * @throws ApiUsageException
 	 */
 	public static function onSearchGetNearMatch( $term, &$titleResult ) {
 		global $wgSearchType;
@@ -516,14 +514,7 @@ class Hooks {
 			$term = $title->getText();
 		}
 		$searcher->setResultsType( new FancyTitleResultsType( 'near_match' ) );
-		try {
-			$status = $searcher->nearMatchTitleSearch( $term );
-		} catch ( ApiUsageException $e ) {
-			if ( defined( 'MW_API' ) ) {
-				throw $e;
-			}
-			return true;
-		}
+		$status = $searcher->nearMatchTitleSearch( $term );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
 		// construction site to log errors.

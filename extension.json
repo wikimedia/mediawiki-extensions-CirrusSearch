@@ -71,6 +71,8 @@
 				"resources/ext.cirrus.serp.js"
 			],
 			"dependencies": [
+				"mediawiki.router",
+				"mediawiki.util",
 				"mediawiki.Uri"
 			],
 			"styles": [],

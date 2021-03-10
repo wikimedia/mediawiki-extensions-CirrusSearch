@@ -1,13 +1,17 @@
 $( function () {
-	if ( !history.replaceState ) {
+	var uri, router = require( 'mediawiki.router' );
+	if ( !router.isSupported() ) {
 		return;
 	}
 
 	try {
-		var uri = new mw.Uri( location.href );
+		uri = new mw.Uri( location.href );
 		if ( uri.query.searchToken ) {
 			delete uri.query.searchToken;
-			history.replaceState( {}, '', uri.toString() );
+			router.navigateTo( document.title, {
+				path: uri.toString(),
+				useReplaceState: true
+			} );
 		}
 	} catch ( e ) {
 		// Don't install the click handler when the browser location can't be parsed anyway
@@ -19,11 +23,15 @@ $( function () {
 		return;
 	}
 
-	$( document ).on( 'click', 'a', function () {
+	// Limit to content area so this doesn't interfere with clicks to UI elements
+	$( mw.util.$content ).on( 'click', 'a', function () {
 		try {
 			var clickUri = new mw.Uri( location.href );
 			clickUri.query.searchToken = mw.config.get( 'wgCirrusSearchRequestSetToken' );
-			history.replaceState( {}, '', clickUri.toString() );
+			router.navigateTo( document.title, {
+				path: clickUri.toString(),
+				useReplaceState: true
+			} );
 		} catch ( e ) {
 		}
 	} );

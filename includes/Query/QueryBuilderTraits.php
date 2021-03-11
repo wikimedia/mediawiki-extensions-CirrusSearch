@@ -2,28 +2,34 @@
 
 namespace CirrusSearch\Query;
 
-use ApiUsageException;
 use CirrusSearch\CirrusSearch;
+use CirrusSearch\Search\SearchContext;
 
 /**
  * Various utility functions that can be shared across cirrus query builders
  */
 trait QueryBuilderTraits {
 	/**
-	 * @param string $term
-	 * @throws ApiUsageException if the query is longer than {@link MAX_TITLE_SEARCH}
+	 * Short circuits query execution with zero results when
+	 * the search is longer than possible. Query builders may
+	 * short circuit themselves based on the return value.
+	 *
+	 * @param string $term Term being searched for
+	 * @param SearchContext $searchContext Context to short circuit
+	 * @return bool True when $term is an acceptable length.
 	 */
-	public function checkTitleSearchRequestLength( $term ) {
+	public function checkTitleSearchRequestLength( $term, SearchContext $searchContext ) {
 		$requestLength = mb_strlen( $term );
 		if ( $requestLength > CirrusSearch::MAX_TITLE_SEARCH ) {
-			// TODO: stop using ApiUsageException we are not even sure that we are in an API call
-			throw ApiUsageException::newWithMessage(
-				null,
-				[ 'apierror-cirrus-requesttoolong', $requestLength, CirrusSearch::MAX_TITLE_SEARCH ],
-				'request_too_long',
-				[],
-				400
+			$searchContext->setResultsPossible( false );
+			$searchContext->addWarning(
+				'cirrussearch-query-too-long',
+				$requestLength,
+				CirrusSearch::MAX_TITLE_SEARCH
 			);
+			return false;
+		} else {
+			return true;
 		}
 	}
 }

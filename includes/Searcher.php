@@ -252,7 +252,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * Perform a "near match" title search which is pretty much a prefix match without the prefixes.
 	 * @param string $term text by which to search
 	 * @return Status status containing results defined by resultsType on success
-	 * @throws \ApiUsageException
 	 */
 	public function nearMatchTitleSearch( $term ) {
 		( new NearMatchQueryBuilder() )->build( $this->searchContext, $term );
@@ -274,7 +273,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @param string $term text by which to search
 	 * @param string[] $variants variants to search for
 	 * @return Status status containing results defined by resultsType on success
-	 * @throws \ApiUsageException
 	 */
 	public function prefixSearch( $term, $variants = [] ) {
 		( new PrefixSearchQueryBuilder() )->build( $this->searchContext, $term, $variants );
@@ -922,7 +920,16 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @return Status
 	 */
 	private function emptyResultSet() {
-		$status = Status::newGood( BaseCirrusSearchResultSet::emptyResultSet( $this->searchContext->isSpecialKeywordUsed() ) );
+		$results = $this->searchContext->getResultsType()->createEmptyResult();
+		if ( $results instanceof BaseCirrusSearchResultSet ) {
+			// TODO: Keywords are very specific to full-text search, while
+			// ResultsType and this method are much more general.
+			// While awkward, this maintains BC until we decide what to do.
+			$results = BaseCirrusSearchResultSet::emptyResultSet(
+				$this->searchContext->isSpecialKeywordUsed()
+			);
+		}
+		$status = Status::newGood( $results );
 		foreach ( $this->searchContext->getWarnings() as $warning ) {
 			$status->warning( ...$warning );
 		}

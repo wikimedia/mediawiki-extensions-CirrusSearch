@@ -14,10 +14,11 @@ class NearMatchQueryBuilder {
 	/**
 	 * @param SearchContext $searchContext the search context
 	 * @param string $term the original search term
-	 * @throws \ApiUsageException if the query is too long
 	 */
 	public function build( SearchContext $searchContext, $term ) {
-		$this->checkTitleSearchRequestLength( $term );
+		if ( !$this->checkTitleSearchRequestLength( $term, $searchContext ) ) {
+			return;
+		}
 
 		$searchContext->setOriginalSearchTerm( $term );
 		// Elasticsearch seems to have trouble extracting the proper terms to highlight

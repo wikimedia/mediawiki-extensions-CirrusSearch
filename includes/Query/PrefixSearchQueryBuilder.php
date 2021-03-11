@@ -19,10 +19,11 @@ class PrefixSearchQueryBuilder {
 	 * @param SearchContext $searchContext the search context
 	 * @param string $term the original search term
 	 * @param array|null $variants list of variants
-	 * @throws \ApiUsageException if the query is too long
 	 */
 	public function build( SearchContext $searchContext, $term, $variants = null ) {
-		$this->checkTitleSearchRequestLength( $term );
+		if ( !$this->checkTitleSearchRequestLength( $term, $searchContext ) ) {
+			return;
+		}
 		$searchContext->setOriginalSearchTerm( $term );
 		$searchContext->setProfileContext( SearchProfileService::CONTEXT_PREFIXSEARCH );
 		$searchContext->addSyntaxUsed( 'prefix' );

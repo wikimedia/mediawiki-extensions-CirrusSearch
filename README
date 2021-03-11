@@ -4,7 +4,9 @@ MediaWiki extension: CirrusSearch
 Installation
 ------------
 Get Elasticsearch up and running somewhere. Elasticsearch v6.x is only supported but 6.5.4 or higher is
-recommended.
+recommended. If you will be running Elasticsearch on a host separate from the mediawiki installation see
+https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html. Be careful with the
+network configuration, never expose an unprotected node to the internet.
 
 Place the CirrusSearch extension in your extensions directory.
 You also need to install the Elastica MediaWiki extension.

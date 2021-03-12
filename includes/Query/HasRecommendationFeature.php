@@ -7,6 +7,7 @@ use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
+use CirrusSearch\Wikimedia\WeightedTagsHooks;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\Match;
 
@@ -64,9 +65,12 @@ class HasRecommendationFeature extends SimpleKeywordFeature implements FilterQue
 	 */
 	private function doGetFilterQuery( array $parsedValue ): ?AbstractQuery {
 		$queries = [];
+		$fields = [ 'ores_articletopics', WeightedTagsHooks::FIELD_NAME ];
 		foreach ( $parsedValue['recommendationflags'] as $recFlag ) {
-			$tagValue = "recommendation." . $recFlag . '/exists';
-			$queries[] = ( new Match() )->setFieldQuery( 'weighted_tags', $tagValue );
+			foreach ( $fields as $field ) {
+				$tagValue = "recommendation." . $recFlag . '/exists';
+				$queries[] = ( new Match() )->setFieldQuery( $field, $tagValue );
+			}
 		}
 		$query = Filters::booleanOr( $queries, false );
 

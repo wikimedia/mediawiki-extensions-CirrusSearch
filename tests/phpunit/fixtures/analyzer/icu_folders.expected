@@ -72,7 +72,7 @@
                 "icu_normalizer",
                 "greek_stop",
                 "greek_stemmer",
-                "greek_length"
+                "remove_empty"
             ]
         },
         "el_text_search": {
@@ -83,7 +83,7 @@
                 "icu_normalizer",
                 "greek_stop",
                 "greek_stemmer",
-                "greek_length"
+                "remove_empty"
             ]
         },
         "en_plain": {
@@ -571,10 +571,6 @@
             "type": "stemmer",
             "language": "greek"
         },
-        "greek_length": {
-            "type": "length",
-            "min": 1
-        },
         "en_icu_folding": {
             "type": "icu_folding"
         },
@@ -666,19 +662,16 @@
                 "\\u3044=>\\u30a4",
                 "\\u3045=>\\u30a5",
                 "\\u3046=>\\u30a6",
-                "\\u3094=>\\u30f4",
                 "\\u3047=>\\u30a7",
                 "\\u3048=>\\u30a8",
                 "\\u3049=>\\u30a9",
                 "\\u304a=>\\u30aa",
-                "\\u3095=>\\u30f5",
                 "\\u304b=>\\u30ab",
                 "\\u304c=>\\u30ac",
                 "\\u304d=>\\u30ad",
                 "\\u304e=>\\u30ae",
                 "\\u304f=>\\u30af",
                 "\\u3050=>\\u30b0",
-                "\\u3096=>\\u30f6",
                 "\\u3051=>\\u30b1",
                 "\\u3052=>\\u30b2",
                 "\\u3053=>\\u30b3",
@@ -745,7 +738,10 @@
                 "\\u3090=>\\u30f0",
                 "\\u3091=>\\u30f1",
                 "\\u3092=>\\u30f2",
-                "\\u3093=>\\u30f3"
+                "\\u3093=>\\u30f3",
+                "\\u3094=>\\u30f4",
+                "\\u3095=>\\u30f5",
+                "\\u3096=>\\u30f6"
             ]
         },
         "french_charfilter": {

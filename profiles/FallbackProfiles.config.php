@@ -75,6 +75,29 @@ return [
 				'class' => \CirrusSearch\Fallbacks\LangDetectFallbackMethod::class,
 				'params' => []
 			],
+		],
+	],
+	'phrase_suggest_glentM01_and_langdetect' => [
+		'methods' => [
+			'glent-m0run' => [
+				'class' => \CirrusSearch\Fallbacks\IndexLookupFallbackMethod::class,
+				'params' => [
+					'profile' => 'glent',
+					'profile_params' => [
+						'methods' => [ 'm0run', 'm1run' ],
+					]
+				]
+			],
+			'phrase-default' => [
+				'class' => \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod::class,
+				'params' => [
+					'profile' => 'default',
+				]
+			],
+			'langdetect' => [
+				'class' => \CirrusSearch\Fallbacks\LangDetectFallbackMethod::class,
+				'params' => []
+			],
 		]
 	],
 	'none' => []

@@ -4,6 +4,7 @@ namespace CirrusSearch\Search\Rescore;
 
 use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use NamespaceInfo;
 
@@ -46,19 +47,20 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 			return;
 		}
 		$this->normalizedNamespaceWeights = [];
-		$language = $config->get( 'ContLang' );
 		foreach ( $config->get( 'CirrusSearchNamespaceWeights' ) as $ns =>
 				  $weight
 		) {
-			if ( is_string( $ns ) ) {
-				$ns = $language->getNsIndex( $ns );
-				// Ignore namespaces that don't exist.
-				if ( $ns === false ) {
-					continue;
-				}
+			if ( !is_int( $ns ) && !ctype_digit( $ns ) ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+					'Namespace names are no longer accepted as namespaces in '
+					. "CirrusSearchNamespaceWeights. Ignoring {invalid_ns}",
+					[ 'invalid_ns' => $ns ]
+				);
+
+				continue;
 			}
 			// Now $ns should always be an integer.
-			$this->normalizedNamespaceWeights[$ns] = $weight;
+			$this->normalizedNamespaceWeights[(int)$ns] = $weight;
 		}
 	}
 

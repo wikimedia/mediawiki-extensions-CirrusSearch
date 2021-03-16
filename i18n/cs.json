@@ -26,7 +26,7 @@
 	"cirrussearch-pref-label": "Nové hledání",
 	"cirrussearch-pref-desc": "Vyzkoušejte nový vyhledávač, který podporuje více jazyků, zobrazuje novější výsledky a dokonce hledá text uvnitř šablon.",
 	"cirrussearch-give-feedback": "Sdělte nám svůj názor",
-	"cirrussearch-query-too-long": "Vyhledávací dotaz je delší než maximální povolená délka. ($1 > $2)",
+	"cirrussearch-query-too-long": "Vyhledávací dotaz je delší než maximální povolená délka. (Zadáno: $1; dovoleno: $2)",
 	"cirrussearch-completion-profile-strict": "Přísný profil s odstraněním několika málo interpunkčních znaků, ale ponecháním diakritiky a znamének přízvuku.",
 	"cirrussearch-completion-profile-classic": "Klasické prefixové, odstraněno několik málo interpunkčních znaků a některá diakritická znaménka.",
 	"cirrussearch-completion-profile-normal": "Odstraněno několik málo interpunkčních znaků, některá diakritická znaménka a stopslova.",

@@ -24,14 +24,19 @@ class HasRecommendationFeatureTest extends CirrusTestCase {
 			'simple' => [
 				'hasrecommendation:image',
 				[ 'recommendationflags' => [ 'image' ] ],
-				[ 'match' => [ 'weighted_tags' => [ 'query' => 'recommendation.image/exists' ] ] ],
+				[ 'bool' => [ 'should' => [
+					[ 'match' => [ 'ores_articletopics' => [ 'query' => 'recommendation.image/exists' ] ] ],
+					[ 'match' => [ 'weighted_tags' => [ 'query' => 'recommendation.image/exists' ] ] ],
+				] ] ],
 				[]
 			],
 			'multiple' => [
 				'hasrecommendation:link|image',
 				[ 'recommendationflags' => [ 'link', 'image' ] ],
 				[ 'bool' => [ 'should' => [
+					[ 'match' => [ 'ores_articletopics' => [ 'query' => 'recommendation.link/exists' ] ] ],
 					[ 'match' => [ 'weighted_tags' => [ 'query' => 'recommendation.link/exists' ] ] ],
+					[ 'match' => [ 'ores_articletopics' => [ 'query' => 'recommendation.image/exists' ] ] ],
 					[ 'match' => [ 'weighted_tags' => [ 'query' => 'recommendation.image/exists' ] ] ],
 				] ] ],
 				[]
@@ -39,12 +44,15 @@ class HasRecommendationFeatureTest extends CirrusTestCase {
 			'too many' => [
 				'hasrecommendation:' . implode( '|', $tooMany ),
 				[ 'recommendationflags' => $actualrecFlags ],
-				[ 'bool' => [ 'should' => array_map(
+				[ 'bool' => [ 'should' => array_merge( ...array_map(
 					function ( $l ) {
-						return [ 'match' => [ 'weighted_tags' => [ 'query' => "recommendation." . $l . '/exists' ] ] ];
+						return [
+							[ 'match' => [ 'ores_articletopics' => [ 'query' => "recommendation." . $l . '/exists' ] ] ],
+							[ 'match' => [ 'weighted_tags' => [ 'query' => "recommendation." . $l . '/exists' ] ] ],
+						];
 					},
 					range( 1, HasRecommendationFeature::QUERY_LIMIT )
-				) ] ],
+				) ) ] ],
 				[ [ 'cirrussearch-feature-too-many-conditions', 'hasrecommendation',
 					HasRecommendationFeature::QUERY_LIMIT ] ]
 			],

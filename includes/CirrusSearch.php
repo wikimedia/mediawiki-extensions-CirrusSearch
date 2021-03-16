@@ -604,8 +604,13 @@ class CirrusSearch extends SearchEngine {
 	 *   $tagWeights should be a single number; otherwise it should be a tagname => weight map.
 	 */
 	public function updateWeightedTags( ProperPageIdentity $page, string $tagPrefix, $tagNames = null, $tagWeights = null ): void {
-		( new Updater( $this->connection ) )->updateWeightedTags( $page,
-			WeightedTagsHooks::FIELD_NAME, $tagPrefix, $tagNames, $tagWeights );
+		// This will cause unnecessary indexing load, but for a temporary BC fix that will be removed in a few
+		// weeks dual writes seems preferable over a refactoring.
+		$fields = [ WeightedTagsHooks::FIELD_NAME, 'ores_articletopics' ];
+		foreach ( $fields as $tagField ) {
+			( new Updater( $this->connection ) )->updateWeightedTags( $page,
+				$tagField, $tagPrefix, $tagNames, $tagWeights );
+		}
 	}
 
 	/**
@@ -615,7 +620,12 @@ class CirrusSearch extends SearchEngine {
 	 * @param string $tagPrefix
 	 */
 	public function resetWeightedTags( ProperPageIdentity $page, string $tagPrefix ): void {
-		( new Updater( $this->connection ) )->resetWeightedTags( $page, WeightedTagsHooks::FIELD_NAME, $tagPrefix );
+		// This will cause unnecessary indexing load, but for a temporary BC fix that will be removed in a few
+		// weeks dual writes seems preferable over a refactoring.
+		$fields = [ WeightedTagsHooks::FIELD_NAME, 'ores_articletopics' ];
+		foreach ( $fields as $tagField ) {
+			( new Updater( $this->connection ) )->resetWeightedTags( $page, $tagField, $tagPrefix );
+		}
 	}
 
 	/**

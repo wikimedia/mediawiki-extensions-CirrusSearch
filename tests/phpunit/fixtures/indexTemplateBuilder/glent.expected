@@ -13,12 +13,12 @@
                 "analyzer": {
                     "near_match": {
                         "type": "custom",
+                        "char_filter": [
+                            "near_space_flattener"
+                        ],
                         "tokenizer": "no_splitting",
                         "filter": [
                             "icu_normalizer"
-                        ],
-                        "char_filter": [
-                            "near_space_flattener"
                         ]
                     }
                 },

@@ -2,10 +2,10 @@
     "analyzer": {
         "text": {
             "type": "custom",
-            "tokenizer": "standard",
             "char_filter": [
                 "russian_charfilter"
             ],
+            "tokenizer": "standard",
             "filter": [
                 "homoglyph_norm",
                 "lowercase",
@@ -15,10 +15,10 @@
         },
         "text_search": {
             "type": "custom",
-            "tokenizer": "standard",
             "char_filter": [
                 "russian_charfilter"
             ],
+            "tokenizer": "standard",
             "filter": [
                 "homoglyph_norm",
                 "lowercase",
@@ -28,24 +28,24 @@
         },
         "plain": {
             "type": "custom",
-            "tokenizer": "standard",
-            "filter": [
-                "lowercase"
-            ],
             "char_filter": [
                 "word_break_helper",
                 "russian_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "lowercase"
             ]
         },
         "plain_search": {
             "type": "custom",
-            "tokenizer": "standard",
-            "filter": [
-                "lowercase"
-            ],
             "char_filter": [
                 "word_break_helper",
                 "russian_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "lowercase"
             ]
         },
         "short_text": {
@@ -78,12 +78,12 @@
         },
         "source_text_plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper_source_text"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper_source_text"
             ]
         },
         "suggest": {
@@ -118,45 +118,45 @@
         },
         "near_match": {
             "type": "custom",
+            "char_filter": [
+                "near_space_flattener"
+            ],
             "tokenizer": "no_splitting",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "near_space_flattener"
             ]
         },
         "near_match_asciifolding": {
             "type": "custom",
+            "char_filter": [
+                "near_space_flattener"
+            ],
             "tokenizer": "no_splitting",
             "filter": [
                 "truncate_keyword",
                 "lowercase",
                 "asciifolding"
-            ],
-            "char_filter": [
-                "near_space_flattener"
             ]
         },
         "prefix": {
             "type": "custom",
+            "char_filter": [
+                "near_space_flattener"
+            ],
             "tokenizer": "prefix",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "near_space_flattener"
             ]
         },
         "prefix_asciifolding": {
             "type": "custom",
+            "char_filter": [
+                "near_space_flattener"
+            ],
             "tokenizer": "prefix",
             "filter": [
                 "lowercase",
                 "asciifolding"
-            ],
-            "char_filter": [
-                "near_space_flattener"
             ]
         },
         "word_prefix": {
@@ -221,6 +221,10 @@
             "type": "truncate",
             "length": 5000
         },
+        "remove_empty": {
+            "type": "length",
+            "min": 1
+        },
         "russian_stop": {
             "type": "stop",
             "stopwords": "_russian_"
@@ -258,10 +262,10 @@
                 "_=>\\u0020",
                 "-=>\\u0020",
                 "\\u0301=>",
-                "\\u0451=>\\u0435",
-                "\\u0401=>\\u0415",
                 "\\u0435\\u0308=>\\u0435",
-                "\\u0415\\u0308=>\\u0415"
+                "\\u0415\\u0308=>\\u0415",
+                "\\u0451=>\\u0435",
+                "\\u0401=>\\u0415"
             ]
         },
         "word_break_helper": {
@@ -287,11 +291,11 @@
             "type": "mapping",
             "mappings": [
                 "\\u0301=>",
-                "\\u0130=>I",
                 "\\u0435\\u0308=>\\u0435",
                 "\\u0415\\u0308=>\\u0415",
                 "\\u0451=>\\u0435",
-                "\\u0401=>\\u0415"
+                "\\u0401=>\\u0415",
+                "\\u0130=>I"
             ]
         }
     }

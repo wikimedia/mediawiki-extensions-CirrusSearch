@@ -2,6 +2,9 @@
     "analyzer": {
         "en_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "icu_normalizer",
@@ -9,28 +12,25 @@
                 "icu_folding",
                 "preserve_original",
                 "remove_empty"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "en_plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "en_text": {
             "type": "custom",
-            "tokenizer": "standard",
             "char_filter": [
                 "word_break_helper",
                 "kana_map"
             ],
+            "tokenizer": "standard",
             "filter": [
                 "aggressive_splitting",
                 "possessive_english",
@@ -44,11 +44,11 @@
         },
         "en_text_search": {
             "type": "custom",
-            "tokenizer": "standard",
             "char_filter": [
                 "word_break_helper",
                 "kana_map"
             ],
+            "tokenizer": "standard",
             "filter": [
                 "aggressive_splitting",
                 "possessive_english",
@@ -62,32 +62,32 @@
         },
         "ru_plain": {
             "type": "custom",
-            "tokenizer": "standard",
-            "filter": [
-                "icu_normalizer"
-            ],
             "char_filter": [
                 "word_break_helper",
                 "russian_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer"
             ]
         },
         "ru_plain_search": {
             "type": "custom",
-            "tokenizer": "standard",
-            "filter": [
-                "icu_normalizer"
-            ],
             "char_filter": [
                 "word_break_helper",
                 "russian_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer"
             ]
         },
         "ru_text": {
             "type": "custom",
-            "tokenizer": "standard",
             "char_filter": [
                 "russian_charfilter"
             ],
+            "tokenizer": "standard",
             "filter": [
                 "icu_normalizer",
                 "russian_stop",
@@ -96,10 +96,10 @@
         },
         "ru_text_search": {
             "type": "custom",
-            "tokenizer": "standard",
             "char_filter": [
                 "russian_charfilter"
             ],
+            "tokenizer": "standard",
             "filter": [
                 "icu_normalizer",
                 "russian_stop",
@@ -108,22 +108,22 @@
         },
         "es_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "es_plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "es_text": {
@@ -140,22 +140,22 @@
         },
         "de_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "de_plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "de_text": {
@@ -172,33 +172,33 @@
         },
         "zh_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "smartcn_stop",
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "zh_plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "smartcn_stop",
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "zh_text": {
             "type": "custom",
-            "tokenizer": "smartcn_tokenizer",
             "char_filter": [
                 "stconvertfix",
                 "tsconvert"
             ],
+            "tokenizer": "smartcn_tokenizer",
             "filter": [
                 "smartcn_stop",
                 "icu_normalizer"
@@ -206,11 +206,11 @@
         },
         "zh_text_search": {
             "type": "custom",
-            "tokenizer": "smartcn_tokenizer",
             "char_filter": [
                 "stconvertfix",
                 "tsconvert"
             ],
+            "tokenizer": "smartcn_tokenizer",
             "filter": [
                 "smartcn_stop",
                 "icu_normalizer"
@@ -218,50 +218,50 @@
         },
         "ko_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "ko_plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "ko_text": {
             "type": "custom",
-            "tokenizer": "nori_tok",
             "char_filter": [
                 "nori_charfilter",
                 "nori_combo_filter"
             ],
+            "tokenizer": "nori_tok",
             "filter": [
                 "nori_posfilter",
                 "nori_readingform",
                 "icu_normalizer",
-                "nori_length"
+                "remove_empty"
             ]
         },
         "ko_text_search": {
             "type": "custom",
-            "tokenizer": "nori_tok",
             "char_filter": [
                 "nori_charfilter",
                 "nori_combo_filter"
             ],
+            "tokenizer": "nori_tok",
             "filter": [
                 "nori_posfilter",
                 "nori_readingform",
                 "icu_normalizer",
-                "nori_length"
+                "remove_empty"
             ]
         }
     },
@@ -329,10 +329,6 @@
                 "VCN",
                 "VX"
             ]
-        },
-        "nori_length": {
-            "type": "length",
-            "min": 1
         }
     },
     "char_filter": {
@@ -354,19 +350,16 @@
                 "\\u3044=>\\u30a4",
                 "\\u3045=>\\u30a5",
                 "\\u3046=>\\u30a6",
-                "\\u3094=>\\u30f4",
                 "\\u3047=>\\u30a7",
                 "\\u3048=>\\u30a8",
                 "\\u3049=>\\u30a9",
                 "\\u304a=>\\u30aa",
-                "\\u3095=>\\u30f5",
                 "\\u304b=>\\u30ab",
                 "\\u304c=>\\u30ac",
                 "\\u304d=>\\u30ad",
                 "\\u304e=>\\u30ae",
                 "\\u304f=>\\u30af",
                 "\\u3050=>\\u30b0",
-                "\\u3096=>\\u30f6",
                 "\\u3051=>\\u30b1",
                 "\\u3052=>\\u30b2",
                 "\\u3053=>\\u30b3",
@@ -433,18 +426,21 @@
                 "\\u3090=>\\u30f0",
                 "\\u3091=>\\u30f1",
                 "\\u3092=>\\u30f2",
-                "\\u3093=>\\u30f3"
+                "\\u3093=>\\u30f3",
+                "\\u3094=>\\u30f4",
+                "\\u3095=>\\u30f5",
+                "\\u3096=>\\u30f6"
             ]
         },
         "russian_charfilter": {
             "type": "mapping",
             "mappings": [
                 "\\u0301=>",
-                "\\u0130=>I",
                 "\\u0435\\u0308=>\\u0435",
                 "\\u0415\\u0308=>\\u0415",
                 "\\u0451=>\\u0435",
-                "\\u0401=>\\u0415"
+                "\\u0401=>\\u0415",
+                "\\u0130=>I"
             ]
         },
         "stconvertfix": {

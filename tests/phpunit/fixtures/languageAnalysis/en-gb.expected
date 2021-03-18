@@ -2,11 +2,11 @@
     "analyzer": {
         "text": {
             "type": "custom",
-            "tokenizer": "standard",
             "char_filter": [
                 "word_break_helper",
                 "kana_map"
             ],
+            "tokenizer": "standard",
             "filter": [
                 "aggressive_splitting",
                 "homoglyph_norm",
@@ -20,11 +20,11 @@
         },
         "text_search": {
             "type": "custom",
-            "tokenizer": "standard",
             "char_filter": [
                 "word_break_helper",
                 "kana_map"
             ],
+            "tokenizer": "standard",
             "filter": [
                 "aggressive_splitting",
                 "homoglyph_norm",
@@ -38,24 +38,24 @@
         },
         "plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase",
                 "asciifolding_preserve",
                 "dedup_asciifolding"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "short_text": {
@@ -88,12 +88,12 @@
         },
         "source_text_plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper_source_text"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper_source_text"
             ]
         },
         "suggest": {
@@ -122,45 +122,45 @@
         },
         "near_match": {
             "type": "custom",
+            "char_filter": [
+                "near_space_flattener"
+            ],
             "tokenizer": "no_splitting",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "near_space_flattener"
             ]
         },
         "near_match_asciifolding": {
             "type": "custom",
+            "char_filter": [
+                "near_space_flattener"
+            ],
             "tokenizer": "no_splitting",
             "filter": [
                 "truncate_keyword",
                 "lowercase",
                 "asciifolding"
-            ],
-            "char_filter": [
-                "near_space_flattener"
             ]
         },
         "prefix": {
             "type": "custom",
+            "char_filter": [
+                "near_space_flattener"
+            ],
             "tokenizer": "prefix",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "near_space_flattener"
             ]
         },
         "prefix_asciifolding": {
             "type": "custom",
+            "char_filter": [
+                "near_space_flattener"
+            ],
             "tokenizer": "prefix",
             "filter": [
                 "lowercase",
                 "asciifolding"
-            ],
-            "char_filter": [
-                "near_space_flattener"
             ]
         },
         "word_prefix": {
@@ -226,6 +226,10 @@
         "truncate_keyword": {
             "type": "truncate",
             "length": 5000
+        },
+        "remove_empty": {
+            "type": "length",
+            "min": 1
         },
         "possessive_english": {
             "type": "stemmer",
@@ -293,19 +297,16 @@
                 "\\u3044=>\\u30a4",
                 "\\u3045=>\\u30a5",
                 "\\u3046=>\\u30a6",
-                "\\u3094=>\\u30f4",
                 "\\u3047=>\\u30a7",
                 "\\u3048=>\\u30a8",
                 "\\u3049=>\\u30a9",
                 "\\u304a=>\\u30aa",
-                "\\u3095=>\\u30f5",
                 "\\u304b=>\\u30ab",
                 "\\u304c=>\\u30ac",
                 "\\u304d=>\\u30ad",
                 "\\u304e=>\\u30ae",
                 "\\u304f=>\\u30af",
                 "\\u3050=>\\u30b0",
-                "\\u3096=>\\u30f6",
                 "\\u3051=>\\u30b1",
                 "\\u3052=>\\u30b2",
                 "\\u3053=>\\u30b3",
@@ -372,7 +373,10 @@
                 "\\u3090=>\\u30f0",
                 "\\u3091=>\\u30f1",
                 "\\u3092=>\\u30f2",
-                "\\u3093=>\\u30f3"
+                "\\u3093=>\\u30f3",
+                "\\u3094=>\\u30f4",
+                "\\u3095=>\\u30f5",
+                "\\u3096=>\\u30f6"
             ]
         }
     }

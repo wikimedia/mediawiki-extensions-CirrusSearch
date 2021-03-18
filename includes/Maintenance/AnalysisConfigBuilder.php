@@ -244,11 +244,6 @@ class AnalysisConfigBuilder {
 			'name' => 'nfkc',
 		];
 
-		$config[ 'filter' ][ 'remove_empty' ] = [
-			'type' => 'length',
-			'min' => 1,
-		];
-
 		$newfilters = [];
 		foreach ( $config[ 'analyzer' ] as $name => $value ) {
 			if ( isset( $value[ 'type' ] ) && $value[ 'type' ] != 'custom' ) {
@@ -391,49 +386,36 @@ class AnalysisConfigBuilder {
 					'type' => $this->getDefaultTextAnalyzerType( $language ),
 					'char_filter' => [ 'word_break_helper' ],
 				],
-				'text_search' => [
-					// These defaults are not applied to non-custom
-					// analysis chains, i.e., those that use the
-					// default language analyzers on 'text_search'
-					'type' => $this->getDefaultTextAnalyzerType( $language ),
-					'char_filter' => [ 'word_break_helper' ],
-				],
+				// text_search is not configured here because it will be copied from text
 				'plain' => [
 					// Surprisingly, the Lucene docs claim this works for
 					// Chinese, Japanese, and Thai as well.
 					// The difference between this and the 'standard'
 					// analyzer is the lack of english stop words.
 					'type' => 'custom',
+					'char_filter' => [ 'word_break_helper' ],
 					'tokenizer' => 'standard',
 					'filter' => [ 'lowercase' ],
-					'char_filter' => [ 'word_break_helper' ],
 				],
 				'plain_search' => [
 					// In accent squashing languages this will not contain accent
 					// squashing to allow searches with accents to only find accents
 					// and searches without accents to find both.
 					'type' => 'custom',
+					'char_filter' => [ 'word_break_helper' ],
 					'tokenizer' => 'standard',
 					'filter' => [ 'lowercase' ],
-					'char_filter' => [ 'word_break_helper' ],
 				],
 				// Used by ShortTextIndexField
 				'short_text' => [
 					'type' => 'custom',
 					'tokenizer' => 'whitespace',
-					'filter' => [
-						'lowercase',
-						'aggressive_splitting',
-						'asciifolding_preserve',
-					],
+					'filter' => [ 'lowercase', 'aggressive_splitting', 'asciifolding_preserve' ],
 				],
 				'short_text_search' => [
 					'type' => 'custom',
 					'tokenizer' => 'whitespace',
-					'filter' => [
-						'lowercase',
-						'aggressive_splitting',
-					],
+					'filter' => [ 'lowercase', 'aggressive_splitting' ],
 				],
 				'source_text_plain' => [
 					'type' => 'custom',
@@ -443,9 +425,9 @@ class AnalysisConfigBuilder {
 				],
 				'source_text_plain_search' => [
 					'type' => 'custom',
+					'char_filter' => [ 'word_break_helper_source_text' ],
 					'tokenizer' => 'standard',
 					'filter' => [ 'lowercase' ],
-					'char_filter' => [ 'word_break_helper_source_text' ],
 				],
 				'suggest' => [
 					'type' => 'custom',
@@ -464,27 +446,27 @@ class AnalysisConfigBuilder {
 				],
 				'near_match' => [
 					'type' => 'custom',
+					'char_filter' => [ 'near_space_flattener' ],
 					'tokenizer' => 'no_splitting',
 					'filter' => [ 'lowercase' ],
-					'char_filter' => [ 'near_space_flattener' ],
 				],
 				'near_match_asciifolding' => [
 					'type' => 'custom',
+					'char_filter' => [ 'near_space_flattener' ],
 					'tokenizer' => 'no_splitting',
 					'filter' => [ 'truncate_keyword', 'lowercase', 'asciifolding' ],
-					'char_filter' => [ 'near_space_flattener' ],
 				],
 				'prefix' => [
 					'type' => 'custom',
+					'char_filter' => [ 'near_space_flattener' ],
 					'tokenizer' => 'prefix',
 					'filter' => [ 'lowercase' ],
-					'char_filter' => [ 'near_space_flattener' ],
 				],
 				'prefix_asciifolding' => [
 					'type' => 'custom',
+					'char_filter' => [ 'near_space_flattener' ],
 					'tokenizer' => 'prefix',
 					'filter' => [ 'lowercase', 'asciifolding' ],
-					'char_filter' => [ 'near_space_flattener' ],
 				],
 				'word_prefix' => [
 					'type' => 'custom',
@@ -544,6 +526,10 @@ class AnalysisConfigBuilder {
 				'truncate_keyword' => [
 					'type' => 'truncate',
 					'length' => self::KEYWORD_IGNORE_ABOVE,
+				],
+				'remove_empty' => [
+					'type' => 'length',
+					'min' => 1,
 				],
 			],
 			'tokenizer' => [
@@ -624,6 +610,10 @@ class AnalysisConfigBuilder {
 	 * @return array
 	 */
 	private function customize( $config, $language ) {
+		// A common regression caused by unpacking is that İ is no longer treated correctly,
+		// so specify the mapping just once and re-use.
+		$dottedI = [ '\u0130=>I' ];
+
 		switch ( $this->getDefaultTextAnalyzerType( $language ) ) {
 		// Please add languages in alphabetical order.
 		case 'bosnian':
@@ -636,25 +626,13 @@ class AnalysisConfigBuilder {
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
-				'filter' => [
-					'lowercase',
-					'asciifolding',
-					'serbian_stemmer',
-				],
+				'filter' => [ 'lowercase', 'asciifolding', 'serbian_stemmer' ],
 			];
-
-			// For BCS, text_search is just a copy of text
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
-		case 'chinese_surrogate_fix':
-			// remove empty tokens generated by surrogate_merger (T168427)
-			$filters = [];
-			$filters[] = 'surrogate_merger';
-			// fall through to get the rest of the Chinese config...
 		case 'chinese':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
 			$config[ 'char_filter' ][ 'stconvertfix' ] = [
-				// hack for STConvert errors
+				// hack for STConvert errors (still present as of March 2021)
 				// see https://github.com/medcl/elasticsearch-analysis-stconvert/issues/13
 				'type' => 'mapping',
 				'mappings' => [
@@ -668,117 +646,60 @@ class AnalysisConfigBuilder {
 				'keep_both' => false,
 				'convert_type' => 't2s',
 			];
-
-			$config[ 'filter' ][ 'smartcn_stop' ] = [
-				// SmartCN converts lots of punctuation to "," but we don't want to index it
-				'type' => 'stop',
-				'stopwords' => [ "," ],
-			];
-
-			$filters = $filters ?? [];
-			$filters[] = 'smartcn_stop';
-			$filters[] = 'lowercase';
+			// SmartCN converts lots of punctuation to ',' but we don't want to index it
+			$config[ 'filter' ][ 'smartcn_stop' ] = $this->stopFilter( [ "," ] );
 
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'tokenizer' => 'smartcn_tokenizer',
 				'char_filter' => [ 'stconvertfix', 'tsconvert' ],
-				'filter' => $filters,
+				'tokenizer' => 'smartcn_tokenizer',
+				'filter' => [ 'smartcn_stop', 'lowercase' ],
 			];
 
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			$config[ 'analyzer' ][ 'plain' ][ 'filter' ] = [ 'smartcn_stop', 'lowercase' ];
 			$config[ 'analyzer' ][ 'plain_search' ][ 'filter' ] = $config[ 'analyzer' ][ 'plain' ][ 'filter' ];
 			break;
 		case 'english':
+			// Map hiragana (\u3041-\u3096) to katakana (\u30a1-\u30f6), currently only for English
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T176197
+			$hkmap = [];
+			for ( $i = 0x3041; $i <= 0x3096; $i++ ) {
+			  $hkmap[] = sprintf( "\\u%04x=>\\u%04x", $i, $i + 0x60 );
+			}
 			$config[ 'char_filter' ][ 'kana_map' ] = [
-				// Map hiragana to katakana, currently only for English
-				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T176197
 					'type' => 'mapping',
-					'mappings' => [
-						"\u3041=>\u30a1", "\u3042=>\u30a2", "\u3043=>\u30a3",
-						"\u3044=>\u30a4", "\u3045=>\u30a5", "\u3046=>\u30a6",
-						"\u3094=>\u30f4", "\u3047=>\u30a7", "\u3048=>\u30a8",
-						"\u3049=>\u30a9", "\u304a=>\u30aa", "\u3095=>\u30f5",
-						"\u304b=>\u30ab", "\u304c=>\u30ac", "\u304d=>\u30ad",
-						"\u304e=>\u30ae", "\u304f=>\u30af", "\u3050=>\u30b0",
-						"\u3096=>\u30f6", "\u3051=>\u30b1", "\u3052=>\u30b2",
-						"\u3053=>\u30b3", "\u3054=>\u30b4", "\u3055=>\u30b5",
-						"\u3056=>\u30b6", "\u3057=>\u30b7", "\u3058=>\u30b8",
-						"\u3059=>\u30b9", "\u305a=>\u30ba", "\u305b=>\u30bb",
-						"\u305c=>\u30bc", "\u305d=>\u30bd", "\u305e=>\u30be",
-						"\u305f=>\u30bf", "\u3060=>\u30c0", "\u3061=>\u30c1",
-						"\u3062=>\u30c2", "\u3063=>\u30c3", "\u3064=>\u30c4",
-						"\u3065=>\u30c5", "\u3066=>\u30c6", "\u3067=>\u30c7",
-						"\u3068=>\u30c8", "\u3069=>\u30c9", "\u306a=>\u30ca",
-						"\u306b=>\u30cb", "\u306c=>\u30cc", "\u306d=>\u30cd",
-						"\u306e=>\u30ce", "\u306f=>\u30cf", "\u3070=>\u30d0",
-						"\u3071=>\u30d1", "\u3072=>\u30d2", "\u3073=>\u30d3",
-						"\u3074=>\u30d4", "\u3075=>\u30d5", "\u3076=>\u30d6",
-						"\u3077=>\u30d7", "\u3078=>\u30d8", "\u3079=>\u30d9",
-						"\u307a=>\u30da", "\u307b=>\u30db", "\u307c=>\u30dc",
-						"\u307d=>\u30dd", "\u307e=>\u30de", "\u307f=>\u30df",
-						"\u3080=>\u30e0", "\u3081=>\u30e1", "\u3082=>\u30e2",
-						"\u3083=>\u30e3", "\u3084=>\u30e4", "\u3085=>\u30e5",
-						"\u3086=>\u30e6", "\u3087=>\u30e7", "\u3088=>\u30e8",
-						"\u3089=>\u30e9", "\u308a=>\u30ea", "\u308b=>\u30eb",
-						"\u308c=>\u30ec", "\u308d=>\u30ed", "\u308e=>\u30ee",
-						"\u308f=>\u30ef", "\u3090=>\u30f0", "\u3091=>\u30f1",
-						"\u3092=>\u30f2", "\u3093=>\u30f3",
-					],
+					'mappings' => $hkmap,
 				];
+			$config[ 'filter' ][ 'possessive_english' ] = $this->stemmerFilter( 'possessive_english' );
 
-			$config[ 'filter' ][ 'possessive_english' ] = [
-				'type' => 'stemmer',
-				'language' => 'possessive_english',
+			// Setup custom stemmer
+			$config[ 'filter' ][ 'custom_stem' ] = [
+				'type' => 'stemmer_override',
+				'rules' => 'guidelines => guideline',
 			];
-			// Replace the default English analyzer with a rebuilt copy with asciifolding inserted before stemming
+
+			// Replace English analyzer with a rebuilt copy with asciifolding inserted before stemming
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142037
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'tokenizer' => 'standard',
 				'char_filter' => [ 'word_break_helper', 'kana_map' ],
+				'tokenizer' => 'standard',
+				'filter' => [ 'aggressive_splitting', 'possessive_english', 'lowercase',
+					'stop', 'asciifolding', 'kstem', 'custom_stem' ],
 			];
-			$filters = [];
-			$filters[] = 'aggressive_splitting';
-			$filters[] = 'possessive_english';
-			$filters[] = 'lowercase';
-			$filters[] = 'stop';
-			$filters[] = 'asciifolding'; // See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142037
-			$filters[] = 'kstem';
-			$filters[] = 'custom_stem';
-			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
 
 			// Add asciifolding_preserve to the plain analyzer as well (but not plain_search)
 			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
 			// Add asciifolding_preserve filters
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
-
-			// In English text_search is just a copy of text
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
-
-			// Setup custom stemmer
-			$config[ 'filter' ][ 'custom_stem' ] = [
-				'type' => 'stemmer_override',
-				'rules' => <<<STEMMER_RULES
-guidelines => guideline
-STEMMER_RULES
-				,
-			];
 			break;
 		case 'esperanto':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
-				'filter' => [
-					'lowercase',
-					'asciifolding',
-					'esperanto_stemmer',
-				],
+				'filter' => [ 'lowercase', 'asciifolding', 'esperanto_stemmer' ],
 			];
-
-			// Text_search is just a copy of text
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'french':
 			// Add asciifolding_preserve to filters
@@ -787,83 +708,38 @@ STEMMER_RULES
 
 			$config[ 'char_filter' ][ 'french_charfilter' ] = [
 				'type' => 'mapping',
-				'mappings' => [
-					'\u0130=>I',		// dotted I (fix regression caused by unpacking)
+				'mappings' => array_merge( $dottedI, [
 					'\u02BC=>\u0027',	// modifier apostrophe to straight quote T146804
-				],
+				] ),
 			];
-			$config[ 'filter' ][ 'french_elision' ] = [
-				'type' => 'elision',
-				'articles_case' => true,
-				'articles' => [
-					'l', 'm', 't', 'qu', 'n', 's',
-					'j', 'd', 'c', 'jusqu', 'quoiqu',
-					'lorsqu', 'puisqu',
-				],
-			];
-			$config[ 'filter' ][ 'french_stop' ] = [
-				'type' => 'stop',
-				'stopwords' => '_french_',
-			];
-			$config[ 'filter' ][ 'french_stemmer' ] = [
-				'type' => 'stemmer',
-				'language' => 'light_french',
-			];
+			$config[ 'filter' ][ 'french_elision' ] = $this->elisionFilter( true, [ 'l', 'm', 't', 'qu', 'n',
+				's', 'j', 'd', 'c', 'jusqu', 'quoiqu', 'lorsqu', 'puisqu' ] );
+			$config[ 'filter' ][ 'french_stop' ] = $this->stopFilter( '_french_' );
+			$config[ 'filter' ][ 'french_stemmer' ] = $this->stemmerFilter( 'light_french' );
 
-			// Replace the default French analyzer with a rebuilt copy with asciifolding_preserve tacked on the end
+			// Replace French analyzer with a rebuilt copy with asciifolding_preserve tacked on the end
 			// T141216 / T142620
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'tokenizer' => 'standard',
 				'char_filter' => [ 'french_charfilter' ],
+				'tokenizer' => 'standard',
+				'filter' => [ 'french_elision', 'lowercase', 'french_stop', 'french_stemmer',
+					'asciifolding_preserve' ],
 			];
-
-			$filters = [];
-			$filters[] = 'french_elision';
-			$filters[] = 'lowercase';
-			$filters[] = 'french_stop';
-			$filters[] = 'french_stemmer';
-			$filters[] = 'asciifolding_preserve';
-			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
-
-			// In French text_search is just a copy of text
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'greek':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'greek';
 
 			// Unpack Greek analysis so we can add empty-token filter
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T203117
-			$config[ 'filter' ][ 'greek_stop' ] = [
-				'type' => 'stop',
-				'stopwords' => '_greek_',
-			];
-
-			$config[ 'filter' ][ 'greek_stemmer' ] = [
-				'type' => 'stemmer',
-				'language' => 'greek',
-			];
-
-			// Greek-specific remove empty tokens
-			$config[ 'filter' ][ 'greek_length' ] = [
-				'type' => 'length',
-				'min' => 1,
-			];
+			$config[ 'filter' ][ 'greek_stop' ] = $this->stopFilter( '_greek_' );
+			$config[ 'filter' ][ 'greek_stemmer' ] = $this->stemmerFilter( 'greek' );
 
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
-				'filter' => [
-					'lowercase',
-					'greek_stop',
-					'greek_stemmer',
-					'greek_length',
-				],
+				'filter' => [ 'lowercase', 'greek_stop', 'greek_stemmer', 'remove_empty' ],
 			];
-
-			// Text_search is just a copy of text
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
-
 			break;
 		case 'hebrew':
 			$config[ 'analyzer' ][ 'text' ] = [
@@ -871,136 +747,72 @@ STEMMER_RULES
 				'tokenizer' => 'hebrew',
 				'filter' => [ 'niqqud', 'hebrew_lemmatizer', 'lowercase', 'asciifolding' ],
 			];
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'indonesian':
 		case 'malay':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T196780
 			$config[ 'char_filter' ][ 'indonesian_charfilter' ] = [
 				'type' => 'mapping',
-				'mappings' => [
-					'\u0130=>I',	// dotted I (fix regression caused by unpacking)
-				],
+				'mappings' => $dottedI,
 			];
 
-			$config[ 'filter' ][ 'indonesian_stop' ] = [
-				'type' => 'stop',
-				'stopwords' => '_indonesian_',
-			];
-			$config[ 'filter' ][ 'indonesian_stemmer' ] = [
-				'type' => 'stemmer',
-				'language' => 'indonesian',
-			];
+			$config[ 'filter' ][ 'indonesian_stop' ] = $this->stopFilter( '_indonesian_' );
+			$config[ 'filter' ][ 'indonesian_stemmer' ] = $this->stemmerFilter( 'indonesian' );
 
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'tokenizer' => 'standard',
 				'char_filter' => [ 'indonesian_charfilter' ],
-				'filter' => [
-					'lowercase',
-					'indonesian_stop',
-					'indonesian_stemmer',
-				],
+				'tokenizer' => 'standard',
+				'filter' => [ 'lowercase', 'indonesian_stop', 'indonesian_stemmer' ],
 			];
-
-			// In Indonesian/Malay text_search is just a copy of text
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'irish':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T217602
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'irish';
 			break;
 		case 'italian':
-			$config[ 'filter' ][ 'italian_elision' ] = [
-				'type' => 'elision',
-				'articles' => [
-					'c', 'l', 'all', 'dall', 'dell', 'nell', 'sull',
-					'coll', 'pell', 'gl', 'agl', 'dagl', 'degl', 'negl',
-					'sugl', 'un', 'm', 't', 's', 'v', 'd'
-				],
-			];
-			$config[ 'filter' ][ 'italian_stop' ] = [
-				'type' => 'stop',
-				'stopwords' => '_italian_',
-			];
-			$config[ 'filter' ][ 'light_italian_stemmer' ] = [
-				'type' => 'stemmer',
-				'language' => 'light_italian',
-			];
+			$config[ 'filter' ][ 'italian_elision' ] = $this->elisionFilter( false, [ 'c', 'l', 'all',
+				'dall', 'dell', 'nell', 'sull', 'coll', 'pell', 'gl', 'agl', 'dagl', 'degl', 'negl',
+				'sugl', 'un', 'm', 't', 's', 'v', 'd' ] );
+			$config[ 'filter' ][ 'italian_stop' ] = $this->stopFilter( '_italian_' );
+			$config[ 'filter' ][ 'light_italian_stemmer' ] = $this->stemmerFilter( 'light_italian' );
+
 			// Replace the default Italian analyzer with a rebuilt copy with asciifolding tacked on the end
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'tokenizer' => 'standard',
 				'char_filter' => [ 'word_break_helper' ],
+				'tokenizer' => 'standard',
+				'filter' => [ 'italian_elision', 'aggressive_splitting', 'lowercase', 'italian_stop',
+					'light_italian_stemmer', 'asciifolding' ]
 			];
-			$filters = [];
-			$filters[] = 'italian_elision';
-			$filters[] = 'aggressive_splitting';
-			$filters[] = 'lowercase';
-			$filters[] = 'italian_stop';
-			$filters[] = 'light_italian_stemmer';
-			$filters[] = 'asciifolding';
-			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
 
 			// Add asciifolding_preserve to the plain analyzer as well (but not plain_search)
 			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
 			// Add asciifolding_preserve to filters
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
-
-			// In Italian text_search is just a copy of text
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'japanese':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T166731
-			$config[ 'char_filter' ][ 'fullwidthnumfix' ] = [
-				// pre-convert fullwidth numbers because Kuromoji tokenizer treats them weirdly
-				'type' => 'mapping',
-				'mappings' => [
-					"\uff10=>0", "\uff11=>1", "\uff12=>2", "\uff13=>3",
-					"\uff14=>4", "\uff15=>5", "\uff16=>6", "\uff17=>7",
-					"\uff18=>8", "\uff19=>9",
-				],
-			];
+
+			// pre-convert fullwidth numbers because Kuromoji tokenizer treats them weirdly
+			$config[ 'char_filter' ][ 'fullwidthnumfix' ] = $this->numberCharFilter( 0xff10 );
 
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'char_filter' => [ 'fullwidthnumfix' ],
 				'tokenizer' => 'kuromoji_tokenizer',
+				'filter' => [ 'kuromoji_baseform', 'cjk_width', 'ja_stop', 'kuromoji_stemmer', 'lowercase' ],
 			];
-
-			$filters = [];
-			$filters[] = 'kuromoji_baseform';
-			$filters[] = 'cjk_width';
-			$filters[] = 'ja_stop';
-			$filters[] = 'kuromoji_stemmer';
-			$filters[] = 'lowercase';
-			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
-
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'khmer':
 			// See Khmer: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T185721
-			$config[ 'char_filter' ][ 'khmer_numbers' ] = [
-				'type' => 'mapping',
-				'mappings' => [
-					"\u17e0=>0", "\u17e1=>1", "\u17e2=>2", "\u17e3=>3",
-					"\u17e4=>4", "\u17e5=>5", "\u17e6=>6", "\u17e7=>7",
-					"\u17e8=>8", "\u17e9=>9"
-				],
-			];
-
+			$config[ 'char_filter' ][ 'khmer_numbers' ] = $this->numberCharFilter( 0x17e0 );
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'char_filter' => [
-					'khmer_syll_reorder', 'khmer_numbers',
-				],
+				'char_filter' => [ 'khmer_syll_reorder', 'khmer_numbers' ],
 				'tokenizer' => 'standard',
-				'filter' => [
-					'lowercase',
-				],
+				'filter' => [ 'lowercase' ],
 			];
-
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'korean':
 			// Unpack nori analyzer to add ICU normalization and custom filters
@@ -1013,19 +825,15 @@ STEMMER_RULES
 				'decompound_mode' => 'mixed',
 			];
 
-			// Nori-specific character filters:
-			// * convert middle dot to arae-a
-			// * convert dotted-I to I
-			// * remove soft hyphens and zero-width non-joiners
+			// Nori-specific character filters
 			$config[ 'char_filter' ][ 'nori_charfilter' ] = [
 				'type' => 'mapping',
-				'mappings' => [
-					"\\u0130=>I",
-					"\\u00B7=>\\u0020",
-					"\\u318D=>\\u0020",
-					"\\u00AD=>",
-					"\\u200C=>",
-				],
+				'mappings' => array_merge( $dottedI, [
+					'\u00B7=>\u0020', // convert middle dot to space
+					'\u318D=>\u0020', // arae-a to space
+					'\u00AD=>',		  // remove soft hyphens
+					'\u200C=>',		  // remove zero-width non-joiners
+				] ),
 			];
 
 			// Nori-specific pattern_replace to strip combining diacritics
@@ -1035,144 +843,83 @@ STEMMER_RULES
 				'replacement' => '',
 			];
 
-			// Nori-specific remove empty tokens
-			$config[ 'filter' ][ 'nori_length' ] = [
-				'type' => 'length',
-				'min' => 1,
-			];
-
 			// Nori-specific part of speech filter (add 'VCP', 'VCN', 'VX' to default)
 			$config[ 'filter' ][ 'nori_posfilter' ] = [
 				'type' => 'nori_part_of_speech',
-				'stoptags' => [ 'E', 'IC', 'J', 'MAG', 'MAJ', 'MM', 'SP', 'SSC',
-					'SSO', 'SC', 'SE', 'XPN', 'XSA', 'XSN', 'XSV', 'UNA', 'NA',
-					'VSV', 'VCP', 'VCN', 'VX' ],
+				'stoptags' => [ 'E', 'IC', 'J', 'MAG', 'MAJ', 'MM', 'SP', 'SSC', 'SSO', 'SC',
+					'SE', 'XPN', 'XSA', 'XSN', 'XSV', 'UNA', 'NA', 'VSV', 'VCP', 'VCN', 'VX' ],
 			];
 
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
+				'char_filter' => [ 'nori_charfilter', 'nori_combo_filter' ],
 				'tokenizer' => 'nori_tok',
-				'char_filter' => [
-					'nori_charfilter',
-					'nori_combo_filter',
-				],
-				'filter' => [
-					'nori_posfilter',
-					'nori_readingform',
-					'lowercase',
-					'nori_length',
-				],
+				'filter' => [ 'nori_posfilter', 'nori_readingform', 'lowercase', 'remove_empty' ],
 			];
-
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'mirandese':
 			// Unpack default analyzer to add Mirandese-specific elision and stop words
 			// See phab ticket T194941
 
-			$config[ 'filter' ][ 'mirandese_elision' ] = [
-				'type' => 'elision',
-				'articles_case' => true,
-				'articles' => [
-					'l', 'd', 'qu'
-				],
-			];
-
-			$config[ 'filter' ][ 'mirandese_stop' ] = [
-				'type' => 'stop',
-				'stopwords' => require __DIR__ . '/AnalysisLanguageData/mirandeseStopwords.php',
-			];
-
+			$config[ 'filter' ][ 'mirandese_elision' ] = $this->elisionFilter( true, [ 'l', 'd', 'qu' ] );
+			$config[ 'filter' ][ 'mirandese_stop' ] = $this->stopFilter( require __DIR__ .
+				'/AnalysisLanguageData/mirandeseStopwords.php' );
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
-				'filter' => [
-					'lowercase',
-					'mirandese_elision',
-					'mirandese_stop',
-				],
+				'filter' => [ 'lowercase', 'mirandese_elision', 'mirandese_stop' ],
 			];
-
-			// Text_search is just a copy of text
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'polish':
 			$config[ 'char_filter' ][ 'polish_charfilter' ] = [
 				'type' => 'mapping',
-				'mappings' => [
-					'\u0130=>I', // dotted I (fix regression caused by unpacking)
-				],
+				'mappings' => $dottedI,
 			];
 
 			// these are real stop words for Polish
-			$config[ 'filter' ][ 'polish_stop' ] = [
-				'type' => 'stop',
-				'stopwords' => require __DIR__ . '/AnalysisLanguageData/polishStopwords.php',
-			];
+			$config[ 'filter' ][ 'polish_stop' ] = $this->stopFilter( require __DIR__ .
+				'/AnalysisLanguageData/polishStopwords.php' );
 
 			// Stempel is statistical, and certain stems are really terrible, so we filter them
 			// after stemming. See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T186046
 
-			// Stempel-specific pattern filter [a-zął]?[a-zćń]
+			// Stempel-specific pattern filter [a-zął]?[a-zćń] for unreliable stems
 			$config[ 'filter' ][ 'stempel_pattern_filter' ] = [
 				'type' => 'pattern_replace',
 				'pattern' => '^([a-zął]?[a-zćń]|..ć|\d.*ć)$',
 				'replacement' => '',
 			];
 
-			// Stempel-specific remove empty tokens generated by pattern_replace
-			$config[ 'filter' ][ 'stempel_length' ] = [
-				'type' => 'length',
-				'min' => 1,
-			];
-
-			// Stempel-specific stop words--additional bad stems
-			$config[ 'filter' ][ 'stempel_stop' ] = [
-				'type' => 'stop',
-				'stopwords' => [
-					'ować', 'iwać', 'obić', 'snąć', 'ywać', 'ium', 'my', 'um',
-					],
-			];
+			// Stempel-specific stop words--additional unreliable stems
+			$config[ 'filter' ][ 'stempel_stop' ] = $this->stopFilter( [ 'ować', 'iwać', 'obić',
+				'snąć', 'ywać', 'ium', 'my', 'um' ] );
 
 			// unpacked Stempel
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'tokenizer' => 'standard',
 				'char_filter' => [ 'polish_charfilter' ],
-				'filter' => [
-					'lowercase',
-					'polish_stop', // real stop words
-					'polish_stem', // Stempel stemmer
-					'stempel_pattern_filter', // filter unreliable stems
-					'stempel_length', // filter empty tokens
-					'stempel_stop', // filter unreliable stems
-				],
+				'tokenizer' => 'standard',
+				'filter' => [ 'lowercase', 'polish_stop', 'polish_stem', 'stempel_pattern_filter',
+					'remove_empty', 'stempel_stop' ],
 			];
-
-			// text_search is just a copy of text
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'russian':
+			$ruCharMap = [
+					'\u0301=>',				// combining acute accent, only used to show stress T102298
+					'\u0435\u0308=>\u0435',	// T124592 fold ё=>е and Ё=>Е, with combining diacritic...
+					'\u0415\u0308=>\u0415',
+					'\u0451=>\u0435',		// ... or precomposed
+					'\u0401=>\u0415',
+				];
+
 			$config[ 'char_filter' ][ 'russian_charfilter' ] = [
 				'type' => 'mapping',
-				'mappings' => [
-					'\u0301=>',		// combining acute accent, only used to show stress T102298
-					'\u0130=>I',	// dotted I (fix regression caused by unpacking)
-				],
+				'mappings' => array_merge( $ruCharMap, $dottedI ),
 			];
 
-			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0301=>'; // T102298
-
-			// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
-			$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
-			$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
-			$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0451=>\u0435';
-			$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0401=>\u0415';
-
-			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0451=>\u0435';
-			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0401=>\u0415';
-			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
-			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
+			// add Russian character mappings to near_space_flattener
+			array_push( $config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ],
+				...$ruCharMap );
 
 			// Drop acute stress marks and fold ё=>е everywhere
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T124592
@@ -1184,27 +931,14 @@ STEMMER_RULES
 
 			// unpack built-in Russian analyzer and add character filter
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T124592
-			$config[ 'filter' ][ 'russian_stop' ] = [
-				'type' => 'stop',
-				'stopwords' => '_russian_',
-			];
-			$config[ 'filter' ][ 'russian_stemmer' ] = [
-				'type' => 'stemmer',
-				'language' => 'russian',
-			];
+			$config[ 'filter' ][ 'russian_stop' ] = $this->stopFilter( '_russian_' );
+			$config[ 'filter' ][ 'russian_stemmer' ] = $this->stemmerFilter( 'russian' );
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'tokenizer' => 'standard',
 				'char_filter' => [ 'russian_charfilter' ],
+				'tokenizer' => 'standard',
+				'filter' => [ 'lowercase', 'russian_stop', 'russian_stemmer' ]
 			];
-			$filters = [];
-			$filters[] = 'lowercase';
-			$filters[] = 'russian_stop';
-			$filters[] = 'russian_stemmer';
-			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
-
-			// In Russian text_search is just a copy of text
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'slovak':
 			/* Unpack default analyzer to add Slovak stemming and custom folding
@@ -1214,14 +948,8 @@ STEMMER_RULES
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
-				'filter' => [
-					'lowercase',
-					'slovak_stemmer',
-					'asciifolding',
-				],
+				'filter' => [ 'lowercase', 'slovak_stemmer', 'asciifolding' ],
 			];
-
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'swedish':
 			// Add asciifolding_preserve to filters
@@ -1229,37 +957,26 @@ STEMMER_RULES
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
 			// Unpack built-in swedish analyzer to add asciifolding_preserve
-			$config[ 'filter' ][ 'swedish_stop' ] = [
-				'type' => 'stop',
-				'stopwords' => '_swedish_',
-			];
-			$config[ 'filter' ][ 'swedish_stemmer' ] = [
-				'type' => 'stemmer',
-				'language' => 'swedish',
-			];
+			$config[ 'filter' ][ 'swedish_stop' ] = $this->stopFilter( '_swedish_' );
+			$config[ 'filter' ][ 'swedish_stemmer' ] = $this->stemmerFilter( 'swedish' );
 
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
-				'filter' => [
-					'lowercase',
-					'swedish_stop',
-					'swedish_stemmer',
-					'asciifolding_preserve',
-				],
+				'filter' => [ 'lowercase', 'swedish_stop', 'swedish_stemmer', 'asciifolding_preserve' ],
 			];
-
-			// In Swedish text_search is just a copy of text
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'turkish':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
 			break;
 		}
 
+		// text_search is just a copy of text
+		// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
+		$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+
 		// replace lowercase filters with icu_normalizer filter
 		if ( $this->icu ) {
-			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 			foreach ( $config[ 'analyzer' ] as &$analyzer ) {
 				if ( !isset( $analyzer[ 'filter'  ] ) ) {
 					continue;
@@ -1287,6 +1004,55 @@ STEMMER_RULES
 		}
 
 		return $config;
+	}
+
+	/**
+	 * Create an elision filter with the "articles" provided; $case determines whether
+	 * stripping is case sensitive or not
+	 *
+	 * @param bool $case
+	 * @param array $articles
+	 * @return mixed[] token filter
+	 */
+	private function elisionFilter( bool $case, array $articles ): array {
+		return [ 'type' => 'elision', 'articles_case' => $case, 'articles' => $articles ];
+	}
+
+	/**
+	 * Create a stop word filter with the provided config. The config can be a list
+	 * of stop words, or a string like _french_ that refers to a pre-defined list.
+	 *
+	 * @param mixed $stopwords
+	 * @return mixed[] token filter
+	 */
+	private function stopFilter( $stopwords ): array {
+		return [ 'type' => 'stop', 'stopwords' => $stopwords ];
+	}
+
+	/**
+	 * Create a stemmer filter with the provided config.
+	 *
+	 * @param string $stemmer
+	 * @return mixed[] token filter
+	 */
+	private function stemmerFilter( string $stemmer ): array {
+		return [ 'type' => 'stemmer', 'language' => $stemmer ];
+	}
+
+	/**
+	 * Create a character filter that maps non-Arabic digits (e.g., ០-៩ or ０-９) to
+	 * Arabic digits (0-9). Since they are usually all in a row, we just need the
+	 * starting digit (equal to 0)
+	 *
+	 * @param int $start
+	 * @return mixed[] character filter
+	 */
+	private function numberCharFilter( int $start ): array {
+		$numMap = [];
+		for ( $i = 0; $i <= 9; $i++ ) {
+		  $numMap[] = sprintf( "\\u%04x=>%d", $start + $i, $i );
+		}
+		return [ 'type' => 'mapping', 'mappings' => $numMap ];
 	}
 
 	/**
@@ -1656,10 +1422,7 @@ STEMMER_RULES
 
 		'analysis-stempel' => [ 'pl' => 'polish' ],
 		'analysis-kuromoji' => [ 'ja' => 'japanese' ],
-		// ordering of the next two is important
 		'analysis-stconvert,analysis-smartcn' => [ 'zh' => 'chinese' ],
-		'extra-analysis-surrogates,analysis-stconvert,analysis-smartcn' =>
-			[ 'zh' => 'chinese_surrogate_fix' ],
 		'analysis-hebrew' => [ 'he' => 'hebrew' ],
 		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],
 		'extra-analysis-esperanto' => [ 'eo' => 'esperanto' ],

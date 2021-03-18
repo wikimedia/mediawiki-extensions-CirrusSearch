@@ -2,54 +2,54 @@
     "analyzer": {
         "text": {
             "type": "custom",
-            "tokenizer": "standard",
             "char_filter": [
                 "polish_charfilter"
             ],
+            "tokenizer": "standard",
             "filter": [
                 "homoglyph_norm",
                 "lowercase",
                 "polish_stop",
                 "polish_stem",
                 "stempel_pattern_filter",
-                "stempel_length",
+                "remove_empty",
                 "stempel_stop"
             ]
         },
         "text_search": {
             "type": "custom",
-            "tokenizer": "standard",
             "char_filter": [
                 "polish_charfilter"
             ],
+            "tokenizer": "standard",
             "filter": [
                 "homoglyph_norm",
                 "lowercase",
                 "polish_stop",
                 "polish_stem",
                 "stempel_pattern_filter",
-                "stempel_length",
+                "remove_empty",
                 "stempel_stop"
             ]
         },
         "plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "short_text": {
@@ -82,12 +82,12 @@
         },
         "source_text_plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper_source_text"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper_source_text"
             ]
         },
         "suggest": {
@@ -116,45 +116,45 @@
         },
         "near_match": {
             "type": "custom",
+            "char_filter": [
+                "near_space_flattener"
+            ],
             "tokenizer": "no_splitting",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "near_space_flattener"
             ]
         },
         "near_match_asciifolding": {
             "type": "custom",
+            "char_filter": [
+                "near_space_flattener"
+            ],
             "tokenizer": "no_splitting",
             "filter": [
                 "truncate_keyword",
                 "lowercase",
                 "asciifolding"
-            ],
-            "char_filter": [
-                "near_space_flattener"
             ]
         },
         "prefix": {
             "type": "custom",
+            "char_filter": [
+                "near_space_flattener"
+            ],
             "tokenizer": "prefix",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "near_space_flattener"
             ]
         },
         "prefix_asciifolding": {
             "type": "custom",
+            "char_filter": [
+                "near_space_flattener"
+            ],
             "tokenizer": "prefix",
             "filter": [
                 "lowercase",
                 "asciifolding"
-            ],
-            "char_filter": [
-                "near_space_flattener"
             ]
         },
         "word_prefix": {
@@ -218,6 +218,10 @@
         "truncate_keyword": {
             "type": "truncate",
             "length": 5000
+        },
+        "remove_empty": {
+            "type": "length",
+            "min": 1
         },
         "polish_stop": {
             "type": "stop",
@@ -411,10 +415,6 @@
             "type": "pattern_replace",
             "pattern": "^([a-z\u0105\u0142]?[a-z\u0107\u0144]|..\u0107|\\d.*\u0107)$",
             "replacement": ""
-        },
-        "stempel_length": {
-            "type": "length",
-            "min": 1
         },
         "stempel_stop": {
             "type": "stop",

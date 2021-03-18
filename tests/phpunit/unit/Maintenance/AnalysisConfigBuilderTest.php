@@ -758,18 +758,6 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				[ 'extra', 'analysis-icu' ],
 				'icu_folders',
 			],
-			"chinese without surrogate merger" => [
-				[ 'zh', ],
-				$emptyConfig,
-				[ 'analysis-stconvert', 'analysis-smartcn' ],
-				'zh_no_surrogate_merger',
-			],
-			"chinese with surrogate merger" => [
-				[ 'zh', ],
-				$emptyConfig,
-				[ 'extra-analysis-surrogates', 'analysis-stconvert', 'analysis-smartcn' ],
-				'zh_surrogate_merger',
-			],
 			"language-specific lowercasing" => [
 				[ 'el', 'ga', 'tr' ],
 				$emptyConfig,

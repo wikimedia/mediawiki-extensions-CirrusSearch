@@ -119,7 +119,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 		list( $wiki, $prefix ) = $wikiAndPrefix;
 		return $this->loadConfigFromAPI(
 			[ $prefix => $wiki ],
-			[ HashSearchConfig::FLAG_LOAD_CONT_LANG ],
+			[],
 			[ $this, 'minimalSearchConfig' ] );
 	}
 

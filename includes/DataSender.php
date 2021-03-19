@@ -156,9 +156,9 @@ class DataSender extends ElasticsearchIntermediary {
 			return Status::newFatal( 'cirrussearch-indexes-frozen' );
 		}
 
-		Assert::parameterType( [ 'string', 'array', 'null' ], $tagNames, '$tagName' );
+		Assert::parameterType( [ 'string', 'array', 'null' ], $tagNames, '$tagNames' );
 		if ( is_array( $tagNames ) ) {
-			Assert::parameterElementType( 'string', $tagNames, '$tagName' );
+			Assert::parameterElementType( 'string', $tagNames, '$tagNames' );
 		}
 		if ( $tagNames === null ) {
 			$tagNames = [ 'exists' ];
@@ -175,6 +175,20 @@ class DataSender extends ElasticsearchIntermediary {
 			Assert::precondition( strpos( $tagName, '|' ) === false,
 				"invalid tag name $tagName: must not contain |" );
 		}
+		if ( $tagWeights ) {
+			foreach ( $tagWeights as $docId => $docWeights ) {
+				Assert::precondition( in_array( $docId, $docIds ),
+					"document ID $docId used in \$tagWeights but not found in \$docIds" );
+				foreach ( $docWeights as $tagName => $weight ) {
+					Assert::precondition( in_array( $tagName, $tagNames, true ),
+						"tag name $tagName used in \$tagWeights but not found in \$tagNames" );
+					Assert::precondition( is_int( $weight ), "weights must be integers but $weight is "
+						. gettype( $weight ) );
+					Assert::precondition( $weight >= 1 && $weight <= 1000,
+						"weights must be between 1 and 1000 (found: $weight)" );
+				}
+			}
+		}
 
 		$client = $this->connection->getClient();
 		$status = Status::newGood();
@@ -189,7 +203,10 @@ class DataSender extends ElasticsearchIntermediary {
 				foreach ( $tagNames as $tagName ) {
 					$tagValue = "$tagPrefix/$tagName";
 					if ( $tagWeights !== null ) {
-						$tagValue .= '|' . $tagWeights[$docId][$tagName];
+						// To pass the assertions above, the weight must be either an int, a float
+						// with an integer value, or a string representation of one of those.
+						// Convert to int to ensure there is no trailing '.0'.
+						$tagValue .= '|' . (int)$tagWeights[$docId][$tagName];
 					}
 					$tags[] = $tagValue;
 				}

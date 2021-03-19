@@ -27,6 +27,7 @@ use Status;
 use Title;
 use User;
 use WebRequest;
+use Wikimedia\Assert\Assert;
 
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
@@ -604,11 +605,37 @@ class CirrusSearch extends SearchEngine {
 	 *   $tagWeights should be a single number; otherwise it should be a tagname => weight map.
 	 */
 	public function updateWeightedTags( ProperPageIdentity $page, string $tagPrefix, $tagNames = null, $tagWeights = null ): void {
+		Assert::parameterType( [ 'string', 'array', 'null' ], $tagNames, '$tagNames' );
+		if ( is_array( $tagNames ) ) {
+			Assert::parameterElementType( 'string', $tagNames, '$tagNames' );
+		}
+		Assert::precondition( strpos( $tagPrefix, '/' ) === false,
+			"invalid tag prefix $tagPrefix: must not contain /" );
+		foreach ( (array)$tagNames as $tagName ) {
+			Assert::precondition( strpos( $tagName, '|' ) === false,
+				"invalid tag name $tagName: must not contain |" );
+		}
+		if ( $tagWeights !== null ) {
+			if ( $tagNames === null ) {
+				$tagWeightsToCheck = [ $tagWeights ];
+			} else {
+				$tagWeightsToCheck = $tagWeights;
+			}
+			foreach ( $tagWeightsToCheck as $tagName => $weight ) {
+				if ( $tagNames ) {
+					Assert::precondition( in_array( $tagName, (array)$tagNames, true ),
+						"tag name $tagName used in \$tagWeights but not found in \$tagNames" );
+				}
+				Assert::precondition( (int)$weight == (float)$weight && $weight >= 1 && $weight <= 1000,
+					"weights must be integers between 1 and 1000 (found: $weight)" );
+			}
+		}
+
 		// This will cause unnecessary indexing load, but for a temporary BC fix that will be removed in a few
 		// weeks dual writes seems preferable over a refactoring.
 		$fields = [ WeightedTagsHooks::FIELD_NAME, 'ores_articletopics' ];
 		foreach ( $fields as $tagField ) {
-			( new Updater( $this->connection ) )->updateWeightedTags( $page,
+			$this->getUpdater()->updateWeightedTags( $page,
 				$tagField, $tagPrefix, $tagNames, $tagWeights );
 		}
 	}
@@ -624,8 +651,16 @@ class CirrusSearch extends SearchEngine {
 		// weeks dual writes seems preferable over a refactoring.
 		$fields = [ WeightedTagsHooks::FIELD_NAME, 'ores_articletopics' ];
 		foreach ( $fields as $tagField ) {
-			( new Updater( $this->connection ) )->resetWeightedTags( $page, $tagField, $tagPrefix );
+			$this->getUpdater()->resetWeightedTags( $page, $tagField, $tagPrefix );
 		}
+	}
+
+	/**
+	 * Helper method to facilitate mocking during tests.
+	 * @return Updater
+	 */
+	protected function getUpdater() {
+		return new Updater( $this->connection );
 	}
 
 	/**

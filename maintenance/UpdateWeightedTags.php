@@ -56,6 +56,7 @@ class UpdateWeightedTags extends Maintenance {
 			$tagNames = $this->getOption( 'tagName' );
 			$tagWeights = $this->getOption( 'weight' );
 			if ( $tagWeights !== null ) {
+				$tagWeights = array_map( 'intval', $tagWeights );
 				$tagWeights = array_combine( $tagNames, $tagWeights );
 			}
 			$cirrusSearch->updateWeightedTags( $page, $tagPrefix, $tagNames, $tagWeights );

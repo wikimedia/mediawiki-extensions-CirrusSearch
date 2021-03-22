@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Adeliine",
 			"Pikne"
 		]
 	},
@@ -15,7 +16,7 @@
 	"cirrussearch-pref-label": "Uus otsing",
 	"cirrussearch-pref-desc": "Proovi uut otsingut, mis toetab rohkem keeli, näitab ajakohasemaid tulemusi ja leiab isegi mallis oleva teksti.",
 	"cirrussearch-give-feedback": "Anna meile tagasisidet",
-	"cirrussearch-query-too-long": "Päring on pikem kui maksimaalselt lubatud. ($1 > $2)",
+	"cirrussearch-query-too-long": "Päring on pikem kui maksimaalselt lubatud. (Päritud: $1; lubatud: $2)",
 	"prefs-completion": "Otsingu viimistlemine",
 	"cirrussearch-pref-completion-section-desc": "Viimistletud soovitused",
 	"cirrussearch-pref-completion-profile-help": "Määra, kuidas näidatakse automaatseid otsisoovitusi (otsimine tippimise ajal).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Viimistletud soovituste] algoritm tuleb tippimisvigadega paremini toime ja pakub asjakohasemaid otsisoovitusi. Eesliite otsing kasutab vana tippimise ajal soovituste pakkumise algoritmi.",

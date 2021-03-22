@@ -626,8 +626,10 @@ class CirrusSearch extends SearchEngine {
 					Assert::precondition( in_array( $tagName, (array)$tagNames, true ),
 						"tag name $tagName used in \$tagWeights but not found in \$tagNames" );
 				}
-				Assert::precondition( (int)$weight == (float)$weight && $weight >= 1 && $weight <= 1000,
-					"weights must be integers between 1 and 1000 (found: $weight)" );
+				Assert::precondition( is_int( $weight ), "weights must be integers but $weight is "
+					. gettype( $weight ) );
+				Assert::precondition( $weight >= 1 && $weight <= 1000,
+					"weights must be between 1 and 1000 (found: $weight)" );
 			}
 		}
 

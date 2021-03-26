@@ -38,7 +38,7 @@ class ElasticsearchIntermediaryTest extends CirrusTestCase {
 		$connection = new DummyConnection( new HashSearchConfig( $config ) );
 		$intermediary = new class( $connection ) extends ElasticsearchIntermediary {
 			public function __construct( Connection $connection ) {
-				parent::__construct( $connection, new UserIdentityValue( 0, '', 0 ) );
+				parent::__construct( $connection, new UserIdentityValue( 0, '' ) );
 			}
 
 			protected function newLog( $description, $queryType, array $extra = [] ) {

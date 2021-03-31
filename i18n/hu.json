@@ -4,6 +4,7 @@
 			"Bencemac",
 			"Csega",
 			"Csigabi",
+			"Hanna Tardos",
 			"Tacsipacsi",
 			"Tgr"
 		]
@@ -21,7 +22,8 @@
 	"cirrussearch-pref-label": "Új keresés",
 	"cirrussearch-pref-desc": "Próbáld ki az új keresőt, ami több nyelvet támogat, hamarabb frissül, és a sablonok révén bekerülő szövegre is lehet keresni vele.",
 	"cirrussearch-give-feedback": "Visszajelzés",
-	"cirrussearch-query-too-long": "A keresőkifejezés hosszabb a megengedettnél ($1 > $2).",
+	"cirrussearch-query-too-long": "A keresőkifejezés hosszabb a megengedettnél. (Valós: $1; megengedett: $2)",
+	"cirrussearch-query-too-long-with-exemptions": "A keresőkifejezés hosszabb a megengedettnél. (Valós: $1; megengedett: $2, $3 nem számolva)",
 	"cirrussearch-completion-profile-strict": "Szigorú profil, egy pár írásjelet eltávolít, de az ékezeteket és hangsúlyjeleket meghagyja.",
 	"cirrussearch-completion-profile-classic": "Klasszikus előtag, néhány írásjelet és bizonyos ékezeteket eltávolít.",
 	"cirrussearch-completion-profile-normal": "Néhány írásjel, bizonyos ékezetek és szavak eltávolítása.",

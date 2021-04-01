@@ -32,5 +32,6 @@
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Ei paranda tippimisvigu. Lahendab ligidased ümbersuunamised. Vastab pealkirjades sisalduvale alamfraasile.",
 	"cirrussearch-completion-profile-classic-pref-name": "Tavapärane eesliite otsing",
 	"cirrussearch-completion-profile-classic-pref-desc": "Ei paranda tippimisvigu. Soovitused vastavad pealkirjade algustele.",
+	"cirrussearch-regex-timed-out": "Regulaaravaldisega otsing aegus, saadaval on ainult osa tulemusi. Selleks et kõik tulemused hankida, proovi regulaaravaldist lihtsustada.",
 	"cirrussearch-article-words": "Sõnu kõigil sisulehekülgedel"
 }

@@ -517,7 +517,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	private function attachPageConditions( IDatabase $dbr, BatchRowIterator $it, $columnPrefix ) {
-		if ( $this->namespace ) {
+		if ( $this->namespace !== null ) {
 			$it->addConditions( [
 				"{$columnPrefix}_namespace" => $this->namespace,
 			] );

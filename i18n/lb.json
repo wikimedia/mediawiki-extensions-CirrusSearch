@@ -7,7 +7,7 @@
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-Sichfonctioun fir MediaWiki",
-	"cirrussearch-backend-error": "Mir konnten Är Sich wéinst engem temporäre Problem net maachen. Probéiert wgl. méi spéit nach eng Kéier.",
+	"cirrussearch-backend-error": "Mir konnten Är Sich wéinst engem temporäre Probleem net maachen. Probéiert wgl. méi spéit nach eng Kéier.",
 	"cirrussearch-parse-error": "D'Ufro gouf net verstanen. Maacht se wgl. méi einfach. D'Ufro gouf geloggt fir de Sichsystem ze verbesseren.",
 	"cirrussearch-too-busy-error": "Sichen ass elo iwwerlaascht. Probéiert wgl. méi spéit nach emol.",
 	"cirrussearch-now-using": "Dës Wiki benotzt eng nei Sichmaschinn.([[mw:Special:MyLanguage/Help:CirrusSearch|Fir méi ze wëssen]])",

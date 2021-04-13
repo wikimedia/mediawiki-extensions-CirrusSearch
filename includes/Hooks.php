@@ -441,6 +441,24 @@ class Hooks {
 	}
 
 	/**
+	 * Hook into UploadComplete, overwritten files do not seem to trigger LinksUpdateComplete.
+	 * Since files do contain indexed metadata we need to refresh the search index when a file
+	 * is overwritten on an existing title.
+	 * @param \UploadBase $uploadBase
+	 */
+	public static function onUploadComplete( \UploadBase $uploadBase ) {
+		if ( $uploadBase->getTitle()->exists() ) {
+			JobQueueGroup::singleton()->push(
+				new Job\LinksUpdate( $uploadBase->getTitle(), [
+					'addedLinks' => [],
+					'removedLinks' => [],
+					'prioritize' => true
+				] )
+			);
+		}
+	}
+
+	/**
 	 * Extract namespaces from query string.
 	 * @param array &$namespaces
 	 * @param string &$search

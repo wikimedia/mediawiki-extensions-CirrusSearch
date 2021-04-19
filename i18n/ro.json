@@ -17,7 +17,7 @@
 	"cirrussearch-pref-label": "Noua funcție de căutare",
 	"cirrussearch-pref-desc": "Încercați noua noastră funcție de căutare, care suportă un număr mai mare de limbi, furnizează rezultate actualizate și poate găsi text chiar și în interiorul formatelor.",
 	"cirrussearch-give-feedback": "Oferiți-ne părerea dumneavoastră.",
-	"cirrussearch-query-too-long": "Cererea de căutare este mai lungă decât lungimea maximă permisă. ($1 > $2)",
+	"cirrussearch-query-too-long": "Cererea de căutare este mai lungă decât lungimea maximă permisă. (Curentă: $1; permisă: $2)",
 	"prefs-completion": "Completarea căutării",
 	"cirrussearch-article-words": "Cuvinte în toate paginile cu conținut"
 }

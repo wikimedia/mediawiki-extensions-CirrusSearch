@@ -81,8 +81,8 @@
 	"cirrussearch-explore-similar-languages-none": "Text shown when there are no other languages in the Explore Similar search results.",
 	"cirrussearch-article-words": "Text shown on Special:Statistics along with a count of the number of words across all content pages. By default, these are all the pages in the main namespace, but wikis may configure additional content namespaces.",
 	"cirrussearch-keyword-prefix-ns-mismatch": "Warning shown when user uses the prefix keyword where the namespace identified is not compatible with the list of namespaces requested.",
-	"cirrussearch-autoselect-profile": "Special profile used as a default in search APIs that let CirrusSearch decides on the best set of profiles to use.",
-	"cirrussearch-offset-too-large": "Warning shown when search results are requested beyond the supported limit",
+	"cirrussearch-autoselect-profile": "Special profile used as a default in search APIs that lets CirrusSearch decide on the best set of profiles to use.",
+	"cirrussearch-offset-too-large": "Warning shown when search results are requested beyond the supported limit.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Warning shown when user attempts to paginate when also requesting randomly sorted results.",
 	"cirrussearch-articletopic-invalid-topic": "Warning shown when the <kbd>articletopic:</kbd> search keyword is used with an unrecognized topic name.\n\nParameters:\n* $1 - comma-separated list of topic names.\n* $2 - number of unrecognized topic names.",
 	"cirrussearch-inlanguage-deprecate-comma": "Warning shown when the <kbd>inlanguage:</kbd> search keyword is used with a comma instead of a pipe as the separator between multiple provided languages."

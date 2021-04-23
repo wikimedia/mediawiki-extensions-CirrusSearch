@@ -56,7 +56,9 @@ $wgCirrusSearchWriteClusters = ['search.dc1', 'search.dc2']
 Maintenance tasks (update mapping, reindex, etc.) must be performed per
 CirrusSearch cluster. CirrusSearch maintenance scripts all take a `--cluster`
 option to specify the CirrusSearch cluster to operate on. When not specified
-the default search cluster is used.
+the default search cluster is used. Informational maintenance scripts that
+can not change any state may choose to emit for all clusters when `--cluster`
+is not provided.
 
 
 == Cross wiki search with a single group per cluster

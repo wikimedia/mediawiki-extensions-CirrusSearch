@@ -25,6 +25,7 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Ricerche classeche pe prefisse",
 	"cirrussearch-completion-profile-classic-pref-desc": "Nisciuna correzzione de errore de battiture. S'accocchie cu l'inizie de le titole.",
 	"cirrussearch-feature-deepcat-invalid-title": "'A categorije date non g'è valide.",
+	"cirrussearch-feature-pageid-invalid-id": "ID {{PLURAL:$2|d'a pàgene|de le pàggene}} invalide: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nisciuna categorije valide date a '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nisciune titole valide date a '$1'.",
 	"cirrussearch-explore-similar-related": "Collegate",

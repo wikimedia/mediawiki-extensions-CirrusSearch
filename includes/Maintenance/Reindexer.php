@@ -7,6 +7,7 @@ use CirrusSearch\Elastica\ReindexRequest;
 use CirrusSearch\Elastica\ReindexResponse;
 use CirrusSearch\Elastica\ReindexTask;
 use CirrusSearch\SearchConfig;
+use Elastica\Client;
 use Elastica\Exception\Connection\HttpException;
 use Elastica\Index;
 use Elastica\Request;
@@ -34,6 +35,7 @@ class Reindexer {
 	private const MAX_CONSECUTIVE_ERRORS = 5;
 	private const MONITOR_SLEEP_SECONDS = 30;
 	private const MAX_WAIT_FOR_COUNT_SEC = 600;
+	private const AUTO_SLICE_CEILING = 20;
 
 	/**
 	 * @var SearchConfig
@@ -167,7 +169,7 @@ class Reindexer {
 
 		$request = new ReindexRequest( $this->oldType, $this->type, $chunkSize );
 		if ( $slices === null ) {
-			$request->setSlices( $this->getNumberOfShards( $this->oldType->getIndex() ) );
+			$request->setSlices( $this->estimateSlices( $this->oldType->getIndex() ) );
 		} else {
 			$request->setSlices( $slices );
 		}
@@ -508,6 +510,31 @@ class Reindexer {
 			yield $val;
 			$val = min( $max, $val * $ratio );
 		}
+	}
+
+	/**
+	 * Auto detect the number of slices to use when reindexing.
+	 *
+	 * Note that elasticseach 7.x added an 'auto' setting, but we are on
+	 * 6.x. That setting uses one slice per shard, up to a certain limit (20 in
+	 * 7.9). This implementation provides the same limits, and adds an additional
+	 * constraint that the auto-detected value must be <= the number of nodes.
+	 *
+	 * @param Index $index The index the estimate a slice count for
+	 * @return int The number of slices to reindex with
+	 */
+	private function estimateSlices( Index $index ) {
+		return min(
+			$this->getNumberOfNodes( $index->getClient() ),
+			$this->getNumberOfShards( $index ),
+			self::AUTO_SLICE_CEILING
+		);
+	}
+
+	private function getNumberOfNodes( Client $client ) {
+		$endpoint = ( new \Elasticsearch\Endpoints\Cat\Nodes() )
+			->setParams( [ 'format' => 'json' ] );
+		return count( $client->requestEndpoint( $endpoint )->getData() );
 	}
 
 	private function getNumberOfShards( Index $index ) {

@@ -359,6 +359,8 @@ class AnalysisConfigBuilder {
 			return '[^ĐđŽžĆćŠšČč]';
 		case 'eo':
 			return '[^ĈĉĜĝĤĥĴĵŜŝŬŭ]';
+		case 'es':
+			return '[^ñ]';
 		case 'fi':
 			return '[^åäöÅÄÖ]';
 		case 'ru':
@@ -631,15 +633,12 @@ class AnalysisConfigBuilder {
 			break;
 		case 'chinese':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
-			$config[ 'char_filter' ][ 'stconvertfix' ] = [
+			$config[ 'char_filter' ][ 'stconvertfix' ] = $this->mappingCharFilter( [
 				// hack for STConvert errors (still present as of March 2021)
 				// see https://github.com/medcl/elasticsearch-analysis-stconvert/issues/13
-				'type' => 'mapping',
-				'mappings' => [
-					'\u606d\u5f18=>\u606d \u5f18',
-					'\u5138=>\u3469',
-				],
-			];
+				'\u606d\u5f18=>\u606d \u5f18',
+				'\u5138=>\u3469',
+			] );
 			$config[ 'char_filter' ][ 'tsconvert' ] = [
 				'type' => 'stconvert',
 				'delimiter' => '#',
@@ -666,10 +665,7 @@ class AnalysisConfigBuilder {
 			for ( $i = 0x3041; $i <= 0x3096; $i++ ) {
 			  $hkmap[] = sprintf( "\\u%04x=>\\u%04x", $i, $i + 0x60 );
 			}
-			$config[ 'char_filter' ][ 'kana_map' ] = [
-					'type' => 'mapping',
-					'mappings' => $hkmap,
-				];
+			$config[ 'char_filter' ][ 'kana_map' ] = $this->mappingCharFilter( $hkmap );
 			$config[ 'filter' ][ 'possessive_english' ] = $this->stemmerFilter( 'possessive_english' );
 
 			// Setup custom stemmer
@@ -706,12 +702,9 @@ class AnalysisConfigBuilder {
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142620
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
-			$config[ 'char_filter' ][ 'french_charfilter' ] = [
-				'type' => 'mapping',
-				'mappings' => array_merge( $dottedI, [
-					'\u02BC=>\u0027',	// modifier apostrophe to straight quote T146804
-				] ),
-			];
+			$config[ 'char_filter' ][ 'french_charfilter' ] =
+				// modifier apostrophe to straight quote T146804
+				$this->mappingCharFilter( array_merge( $dottedI, [ '\u02BC=>\u0027' ] ) );
 			$config[ 'filter' ][ 'french_elision' ] = $this->elisionFilter( true, [ 'l', 'm', 't', 'qu', 'n',
 				's', 'j', 'd', 'c', 'jusqu', 'quoiqu', 'lorsqu', 'puisqu' ] );
 			$config[ 'filter' ][ 'french_stop' ] = $this->stopFilter( '_french_' );
@@ -751,11 +744,7 @@ class AnalysisConfigBuilder {
 		case 'indonesian':
 		case 'malay':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T196780
-			$config[ 'char_filter' ][ 'indonesian_charfilter' ] = [
-				'type' => 'mapping',
-				'mappings' => $dottedI,
-			];
-
+			$config[ 'char_filter' ][ 'indonesian_charfilter' ] = $this->mappingCharFilter( $dottedI );
 			$config[ 'filter' ][ 'indonesian_stop' ] = $this->stopFilter( '_indonesian_' );
 			$config[ 'filter' ][ 'indonesian_stemmer' ] = $this->stemmerFilter( 'indonesian' );
 
@@ -825,16 +814,14 @@ class AnalysisConfigBuilder {
 				'decompound_mode' => 'mixed',
 			];
 
-			// Nori-specific character filters
-			$config[ 'char_filter' ][ 'nori_charfilter' ] = [
-				'type' => 'mapping',
-				'mappings' => array_merge( $dottedI, [
+			// Nori-specific character filter
+			$config[ 'char_filter' ][ 'nori_charfilter' ] =
+				$this->mappingCharFilter( array_merge( $dottedI, [
 					'\u00B7=>\u0020', // convert middle dot to space
 					'\u318D=>\u0020', // arae-a to space
 					'\u00AD=>',		  // remove soft hyphens
 					'\u200C=>',		  // remove zero-width non-joiners
-				] ),
-			];
+				] ) );
 
 			// Nori-specific pattern_replace to strip combining diacritics
 			$config[ 'char_filter' ][ 'nori_combo_filter' ] = [
@@ -871,10 +858,7 @@ class AnalysisConfigBuilder {
 			];
 			break;
 		case 'polish':
-			$config[ 'char_filter' ][ 'polish_charfilter' ] = [
-				'type' => 'mapping',
-				'mappings' => $dottedI,
-			];
+			$config[ 'char_filter' ][ 'polish_charfilter' ] = $this->mappingCharFilter( $dottedI );
 
 			// these are real stop words for Polish
 			$config[ 'filter' ][ 'polish_stop' ] = $this->stopFilter( require __DIR__ .
@@ -912,10 +896,8 @@ class AnalysisConfigBuilder {
 					'\u0401=>\u0415',
 				];
 
-			$config[ 'char_filter' ][ 'russian_charfilter' ] = [
-				'type' => 'mapping',
-				'mappings' => array_merge( $ruCharMap, $dottedI ),
-			];
+			$config[ 'char_filter' ][ 'russian_charfilter' ] =
+				$this->mappingCharFilter( array_merge( $ruCharMap, $dottedI ) );
 
 			// add Russian character mappings to near_space_flattener
 			array_push( $config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ],
@@ -949,6 +931,19 @@ class AnalysisConfigBuilder {
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'filter' => [ 'lowercase', 'slovak_stemmer', 'asciifolding' ],
+			];
+			break;
+		case 'spanish':
+			$config[ 'char_filter' ][ 'spanish_charfilter' ] = $this->mappingCharFilter( $dottedI );
+			$config[ 'filter' ][ 'spanish_stop' ] = $this->stopFilter( '_spanish_' );
+			$config[ 'filter' ][ 'spanish_stemmer' ] = $this->stemmerFilter( 'light_spanish' );
+
+			// Unpack Spanish analyzer T277699
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'char_filter' => [ 'spanish_charfilter' ],
+				'tokenizer' => 'standard',
+				'filter' => [ 'lowercase', 'spanish_stop', 'spanish_stemmer', 'asciifolding' ],
 			];
 			break;
 		case 'swedish':
@@ -1040,6 +1035,16 @@ class AnalysisConfigBuilder {
 	}
 
 	/**
+	 * Create a mapping character filter with the mappings provided.
+	 *
+	 * @param array $mappings
+	 * @return mixed[] character filter
+	 */
+	private function mappingCharFilter( array $mappings ): array {
+		return [ 'type' => 'mapping', 'mappings' => $mappings ];
+	}
+
+	/**
 	 * Create a character filter that maps non-Arabic digits (e.g., ០-៩ or ０-９) to
 	 * Arabic digits (0-9). Since they are usually all in a row, we just need the
 	 * starting digit (equal to 0)
@@ -1052,7 +1057,7 @@ class AnalysisConfigBuilder {
 		for ( $i = 0; $i <= 9; $i++ ) {
 		  $numMap[] = sprintf( "\\u%04x=>%d", $start + $i, $i );
 		}
-		return [ 'type' => 'mapping', 'mappings' => $numMap ];
+		return $this->mappingCharFilter( $numMap );
 	}
 
 	/**
@@ -1324,6 +1329,7 @@ class AnalysisConfigBuilder {
 		'en-ca' => 'english',
 		'en-gb' => 'english',
 		'simple' => 'english',
+		'es' => 'spanish',
 		'fi' => 'finnish',
 		'fr' => 'french',
 		'gl' => 'galician',
@@ -1363,6 +1369,7 @@ class AnalysisConfigBuilder {
 		'en-gb' => true,
 		'simple' => true,
 		'eo' => true,
+		'es' => true,
 		'fr' => true,
 		'he' => true,
 		'hr' => true,

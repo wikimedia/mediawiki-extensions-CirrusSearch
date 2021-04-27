@@ -113,7 +113,11 @@
             ],
             "tokenizer": "standard",
             "filter": [
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "es_icu_folding",
+                "preserve_original",
+                "remove_empty"
             ]
         },
         "es_plain_search": {
@@ -127,15 +131,31 @@
             ]
         },
         "es_text": {
-            "type": "spanish",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "spanish_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer",
+                "spanish_stop",
+                "spanish_stemmer",
+                "es_icu_folding",
+                "remove_empty"
             ]
         },
         "es_text_search": {
-            "type": "spanish",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "spanish_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer",
+                "spanish_stop",
+                "spanish_stemmer",
+                "es_icu_folding",
+                "remove_empty"
             ]
         },
         "de_plain": {
@@ -298,6 +318,18 @@
             "type": "stemmer",
             "language": "russian"
         },
+        "es_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00f1]"
+        },
+        "spanish_stop": {
+            "type": "stop",
+            "stopwords": "_spanish_"
+        },
+        "spanish_stemmer": {
+            "type": "stemmer",
+            "language": "light_spanish"
+        },
         "smartcn_stop": {
             "type": "stop",
             "stopwords": [
@@ -440,6 +472,12 @@
                 "\\u0415\\u0308=>\\u0415",
                 "\\u0451=>\\u0435",
                 "\\u0401=>\\u0415",
+                "\\u0130=>I"
+            ]
+        },
+        "spanish_charfilter": {
+            "type": "mapping",
+            "mappings": [
                 "\\u0130=>I"
             ]
         },

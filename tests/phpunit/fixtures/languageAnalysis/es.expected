@@ -1,15 +1,17 @@
 {
     "analyzer": {
         "text": {
-            "type": "spanish",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
-            ]
-        },
-        "text_search": {
-            "type": "spanish",
-            "char_filter": [
-                "word_break_helper"
+                "spanish_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "spanish_stop",
+                "spanish_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -166,6 +168,20 @@
             "filter": [
                 "lowercase"
             ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "spanish_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "spanish_stop",
+                "spanish_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -202,6 +218,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "spanish_stop": {
+            "type": "stop",
+            "stopwords": "_spanish_"
+        },
+        "spanish_stemmer": {
+            "type": "stemmer",
+            "language": "light_spanish"
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -250,6 +274,12 @@
                 "(=>\\u0020",
                 ")=>\\u0020",
                 ":=>\\u0020"
+            ]
+        },
+        "spanish_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\\u0130=>I"
             ]
         }
     }

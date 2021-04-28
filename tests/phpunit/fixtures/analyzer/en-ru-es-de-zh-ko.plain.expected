@@ -53,7 +53,11 @@
             ],
             "tokenizer": "standard",
             "filter": [
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "es_icu_folding",
+                "preserve_original",
+                "remove_empty"
             ]
         },
         "es_plain_search": {
@@ -140,6 +144,10 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "es_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00f1]"
         },
         "smartcn_stop": {
             "type": "stop",

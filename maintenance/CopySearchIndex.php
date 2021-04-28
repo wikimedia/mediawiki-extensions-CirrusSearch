@@ -98,29 +98,12 @@ class CopySearchIndex extends Maintenance {
 				->getType( Connection::PAGE_TYPE_NAME ),
 			// Source Index
 			$this->getConnection()->getPageType( $this->indexBaseName, $this->indexType ),
-			$clusterSettings->getShardCount( $this->indexType ),
-			$clusterSettings->getReplicaCount( $this->indexType ),
-			$this->getMergeSettings(),
 			$this
 		);
 		$reindexer->reindex( $slices, 1, $reindexChunkSize );
-		$reindexer->waitForShards();
+		$reindexer->waitForGreen();
 
 		return true;
-	}
-
-	/**
-	 * Get the merge settings for this index.
-	 * @return array
-	 */
-	private function getMergeSettings() {
-		global $wgCirrusSearchMergeSettings;
-
-		if ( isset( $wgCirrusSearchMergeSettings[ $this->indexType ] ) ) {
-			return $wgCirrusSearchMergeSettings[ $this->indexType ];
-		}
-		// If there aren't configured merge settings for this index type default to the content type.
-		return $wgCirrusSearchMergeSettings[ 'content' ];
 	}
 }
 

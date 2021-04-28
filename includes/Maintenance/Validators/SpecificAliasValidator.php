@@ -30,11 +30,6 @@ class SpecificAliasValidator extends IndexAliasValidator {
 	private $reindexAndRemoveOk;
 
 	/**
-	 * @var bool
-	 */
-	private $tooFewReplicas;
-
-	/**
 	 * @param Client $client
 	 * @param string $aliasName
 	 * @param string $specificIndexName
@@ -43,7 +38,6 @@ class SpecificAliasValidator extends IndexAliasValidator {
 	 * @param array $reindexParams
 	 * @param Validator[] $reindexValidators
 	 * @param bool $reindexAndRemoveOk
-	 * @param bool $tooFewReplicas
 	 * @param Printer|null $out
 	 */
 	public function __construct(
@@ -55,7 +49,6 @@ class SpecificAliasValidator extends IndexAliasValidator {
 		array $reindexParams,
 		array $reindexValidators,
 		$reindexAndRemoveOk,
-		$tooFewReplicas,
 		Printer $out = null
 	) {
 		// @todo: this constructor takes too many arguments - refactor!
@@ -66,7 +59,6 @@ class SpecificAliasValidator extends IndexAliasValidator {
 		$this->reindexParams = $reindexParams;
 		$this->reindexValidators = $reindexValidators;
 		$this->reindexAndRemoveOk = $reindexAndRemoveOk;
-		$this->tooFewReplicas = $tooFewReplicas;
 	}
 
 	/**
@@ -92,16 +84,18 @@ class SpecificAliasValidator extends IndexAliasValidator {
 			$this->output( "is taken...\n" );
 			$this->outputIndented( "\tReindexing...\n" );
 			$this->reindexer->reindex( ...$this->reindexParams );
-			if ( $this->tooFewReplicas ) {
-				foreach ( $this->reindexValidators as $validator ) {
-					$status = $validator->validate();
-					if ( !$status->isOK() ) {
-						return $status;
-					}
+			# Expecting this to usually be a noop, index should have been created with
+			# appropriate settings and reindexer should restore all the settings it
+			# changed, but it couldn't hurt to check again.
+			foreach ( $this->reindexValidators as $validator ) {
+				$status = $validator->validate();
+				if ( !$status->isOK() ) {
+					return $status;
 				}
-
-				$this->reindexer->waitForShards();
 			}
+			// Validators might have changed replica counts, wait for everything to
+			// get to green.
+			$this->reindexer->waitForGreen();
 		} catch ( \Exception $e ) {
 			return Status::newFatal( new RawMessage( $e->getMessage() ) );
 		}

@@ -147,7 +147,7 @@
         },
         "es_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00f1]"
+            "unicodeSetFilter": "[^\u00d1\u00f1]"
         },
         "smartcn_stop": {
             "type": "stop",

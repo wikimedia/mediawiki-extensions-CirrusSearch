@@ -360,7 +360,7 @@ class AnalysisConfigBuilder {
 		case 'eo':
 			return '[^ĈĉĜĝĤĥĴĵŜŝŬŭ]';
 		case 'es':
-			return '[^ñ]';
+			return '[^Ññ]';
 		case 'fi':
 			return '[^åäöÅÄÖ]';
 		case 'ru':

@@ -90,11 +90,11 @@ class MultiClusterAssignment implements ClusterAssignment {
 	}
 
 	/**
-	 * Check if a cluster is declared "writable".
-	 * NOTE: a cluster is considered writable even if one of its index is
-	 * frozen.
-	 * Before sending any writes in this cluster, the forzen index status
-	 * must be checked fr the  target index.
+	 * Check if a cluster is configured to accept writes
+	 * NOTE: While configured to accept writes, the service may or may
+	 * not be accepting writes at a given moment. Before sending any writes
+	 * to this cluster the frozen cluster status must be checked for the
+	 * target cluster.
 	 * @see DataSender::isAvailableForWrites()
 	 *
 	 * @param string $cluster

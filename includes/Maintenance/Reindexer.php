@@ -76,21 +76,6 @@ class Reindexer {
 	private $oldType;
 
 	/**
-	 * @var int
-	 */
-	private $shardCount;
-
-	/**
-	 * @var string
-	 */
-	private $replicaCount;
-
-	/**
-	 * @var array
-	 */
-	private $mergeSettings;
-
-	/**
 	 * @var Printer
 	 */
 	private $out;
@@ -106,9 +91,6 @@ class Reindexer {
 	 * @param Connection $target
 	 * @param Type $type
 	 * @param Type $oldType
-	 * @param int $shardCount
-	 * @param string $replicaCount
-	 * @param array $mergeSettings
 	 * @param Printer|null $out
 	 * @param string[] $fieldsToDelete
 	 * @throws \Exception
@@ -119,9 +101,6 @@ class Reindexer {
 		Connection $target,
 		Type $type,
 		Type $oldType,
-		$shardCount,
-		$replicaCount,
-		array $mergeSettings,
 		Printer $out = null,
 		$fieldsToDelete = []
 	) {
@@ -131,9 +110,6 @@ class Reindexer {
 		$this->connection = $target;
 		$this->type = $type;
 		$this->oldType = $oldType;
-		$this->shardCount = $shardCount;
-		$this->replicaCount = $replicaCount;
-		$this->mergeSettings = $mergeSettings;
 		$this->out = $out;
 		$this->fieldsToDelete = $fieldsToDelete;
 		$this->index = $type->getIndex();
@@ -145,13 +121,11 @@ class Reindexer {
 	 *
 	 * @param int|null $slices The number of slices to use, or null to use
 	 *  the number of shards
-	 * @param int $refreshInterval
 	 * @param int $chunkSize
 	 * @param float $acceptableCountDeviation
 	 */
 	public function reindex(
 		$slices = null,
-		$refreshInterval = 1,
 		$chunkSize = 100,
 		$acceptableCountDeviation = 0.05
 	) {
@@ -159,13 +133,25 @@ class Reindexer {
 		// optimize after this to consolidate down to a proper number of segments but that is
 		// is worth the price.  total_shards_per_node will help to make sure that each shard
 		// has as few neighbors as possible.
+		$this->outputIndented( "Preparing index settings for reindex\n" );
 		$this->setConnectionTimeout();
 		$settings = $this->index->getSettings();
-		$maxShardsPerNode = $this->decideMaxShardsPerNodeForReindex();
+		$oldSettings = $settings->get();
+		if ( !is_array( $oldSettings ) ) {
+			throw new \RuntimeException( 'Invalid response from index settings' );
+		}
 		$settings->set( [
 			'refresh_interval' => -1,
-			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
+			'routing.allocation.total_shards_per_node' =>
+				$this->decideMaxShardsPerNodeForReindex( $oldSettings ),
+			// It's probably inefficient to let the index be created with replicas,
+			// then drop the empty replicas a few moments later. Doing it like this
+			// allows reindexing and index creation to operate independantly without
+			// needing to know about each other.
+			'auto_expand_replicas' => 'false',
+			'number_of_replicas' => 0,
 		] );
+		$this->waitForGreen();
 
 		$request = new ReindexRequest( $this->oldType, $this->type, $chunkSize );
 		if ( $slices === null ) {
@@ -188,7 +174,7 @@ class Reindexer {
 			$this->fatalError( $e->getMessage() );
 		}
 
-		$this->out->outputIndented( "Started reindex task: " . $task->getId() . "\n" );
+		$this->outputIndented( "Started reindex task: " . $task->getId() . "\n" );
 		$response = $this->monitorReindexTask( $task, $this->type );
 		$task->delete();
 		if ( !$response->isSuccessful() ) {
@@ -203,11 +189,15 @@ class Reindexer {
 		$this->waitForCounts( $acceptableCountDeviation );
 		$this->output( "done\n" );
 
-		// Revert settings changed just for reindexing
-		$newSettings = [ 'refresh_interval' => $refreshInterval . 's' ];
-		if ( $this->mergeSettings ) {
-			$newSettings['merge.policy'] = $this->mergeSettings;
-		}
+		// Revert settings changed just for reindexing. Although we set number_of_replicas above
+		// we do not reset it's value here, rather allowing auto_expand_replicas to pick an
+		// appropriate value.
+		$newSettings = [
+			'refresh_interval' => $oldSettings['refresh_interval'],
+			'auto_expand_replicas' => $oldSettings['auto_expand_replicas'],
+			'routing.allocation.total_shards_per_node' =>
+				$oldSettings['routing']['allocation']['total_shards_per_node'] ?? -1,
+		];
 		$settings->set( $newSettings );
 	}
 
@@ -242,41 +232,19 @@ class Reindexer {
 		}
 	}
 
-	public function waitForShards() {
-		if ( !$this->replicaCount || $this->replicaCount === "false" ) {
-			$this->outputIndented( "\tNo replicas, skipping.\n" );
-			return;
-		}
-		$this->outputIndented( "\tWaiting for all shards to start...\n" );
-		list( $lower, $upper ) = explode( '-', $this->replicaCount );
+	public function waitForGreen() {
+		$this->outputIndented( "Waiting for index green status..." );
 		$each = 0;
-		while ( true ) {
-			$health = $this->getHealth();
-			$active = $health[ 'active_shards' ];
-			$relocating = $health[ 'relocating_shards' ];
-			$initializing = $health[ 'initializing_shards' ];
-			$unassigned = $health[ 'unassigned_shards' ];
-			$nodes = $health[ 'number_of_nodes' ];
-			if ( $nodes < $lower ) {
-				$this->fatalError( "Require $lower replicas but only have $nodes nodes. "
-					. "This is almost always due to misconfiguration, aborting." );
-			}
-			// If the upper range is all, expect the upper bound to be the number of nodes
-			if ( $upper === 'all' ) {
-				$upper = $nodes - 1;
-			}
-			$expectedReplicas = min( max( $nodes - 1, $lower ), $upper );
-			$expectedActive = $this->shardCount * ( 1 + $expectedReplicas );
-			if ( $each === 0 || $active === $expectedActive ) {
-				$this->outputIndented( "\t\tactive:$active/$expectedActive relocating:$relocating" .
-					" initializing:$initializing unassigned:$unassigned\n" );
-				if ( $active === $expectedActive ) {
-					break;
-				}
+		$status = $this->getHealth();
+		while ( $status['status'] !== 'green' ) {
+			if ( $each === 0 ) {
+				$this->output( '.' );
 			}
 			$each = ( $each + 1 ) % 20;
 			sleep( 1 );
+			$status = $this->getHealth();
 		}
+		$this->output( "done\n" );
 	}
 
 	/**
@@ -285,9 +253,9 @@ class Reindexer {
 	 * @return array Response data array
 	 */
 	private function getHealth() {
+		$indexName = $this->index->getName();
+		$path = "_cluster/health/$indexName";
 		while ( true ) {
-			$indexName = $this->index->getName();
-			$path = "_cluster/health/$indexName";
 			$response = $this->index->getClient()->request( $path );
 			if ( $response->hasError() ) {
 				$this->error( 'Error fetching index health but going to retry.  Message: ' .
@@ -300,26 +268,25 @@ class Reindexer {
 	}
 
 	/**
+	 * Decide shards per node during reindex operation
+	 *
+	 * While reindexing we run with no replicas, meaning the default
+	 * configuration for max shards per node might allow things to
+	 * become very unbalanced. Choose a value that spreads the
+	 * indexing load across as many instances as possible.
+	 *
+	 * @param array $settings Configured live index settings
 	 * @return int
 	 */
-	private function decideMaxShardsPerNodeForReindex() {
-		$health = $this->getHealth();
-		$totalNodes = $health[ 'number_of_nodes' ];
-		$totalShards = $this->shardCount * ( $this->getMaxReplicaCount() + 1 );
-		return (int)ceil( 1.0 * $totalShards / $totalNodes );
-	}
-
-	/**
-	 * @return int
-	 */
-	private function getMaxReplicaCount() {
-		$replica = explode( '-', $this->replicaCount );
-		return (int)end( $replica );
+	private function decideMaxShardsPerNodeForReindex( array $settings ): int {
+		$numberOfNodes = $this->getHealth()[ 'number_of_nodes' ];
+		$numberOfShards = $settings['number_of_shards'];
+		return (int)ceil( $numberOfShards / $numberOfNodes );
 	}
 
 	/**
 	 * Set the maintenance timeout to the connection we will issue the reindex request
-	 * to, so that it does not timeout will the reindex is running.
+	 * to, so that it does not timeout while the reindex is running.
 	 */
 	private function setConnectionTimeout() {
 		$timeout = $this->searchConfig->get( 'CirrusSearchMaintenanceTimeout' );
@@ -348,10 +315,12 @@ class Reindexer {
 
 	/**
 	 * @param string $message
+	 * @param string $prefix By default prefixes tab to fake an
+	 *  additional indentation level.
 	 */
-	private function outputIndented( $message ) {
+	private function outputIndented( $message, $prefix = "\t" ) {
 		if ( $this->out ) {
-			$this->out->outputIndented( $message );
+			$this->out->outputIndented( $prefix . $message );
 		}
 	}
 
@@ -460,7 +429,7 @@ class Reindexer {
 				$status = $task->getStatus();
 			} catch ( \Exception $e ) {
 				if ( ++$consecutiveErrors > self::MAX_CONSECUTIVE_ERRORS ) {
-					$this->out->outputIndented( "\n" );
+					$this->output( "\n" );
 					$this->fatalError(
 						"$e\n\n" .
 						"Lost connection to elasticsearch cluster. The reindex task "
@@ -480,7 +449,7 @@ class Reindexer {
 						throw $e;
 					}
 				}
-				$this->out->outputIndented( "Error: {$e->getMessage()}\n" );
+				$this->outputIndented( "Error: {$e->getMessage()}\n" );
 				usleep( 500000 );
 				continue;
 			}
@@ -488,7 +457,7 @@ class Reindexer {
 			$consecutiveErrors = 0;
 
 			// What is worth reporting here?
-			$this->out->outputIndented(
+			$this->outputIndented(
 				"Task: {$task->getId()} "
 				. "Search Retries: {$status->getSearchRetries()} "
 				. "Bulk Retries: {$status->getBulkRetries()} "

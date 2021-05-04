@@ -29,7 +29,6 @@ class SpecificAliasValidatorTest extends CirrusIntegrationTestCase {
 			[],
 			[],
 			false,
-			false,
 			$this->createMock( Printer::class )
 		);
 

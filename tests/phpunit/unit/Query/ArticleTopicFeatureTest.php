@@ -21,7 +21,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 	}
 
 	public function parseProvider() {
-		$term = function ( string $topic ) {
+		$term = static function ( string $topic ) {
 			return [
 				[
 					'term' => [
@@ -42,10 +42,10 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 				],
 			];
 		};
-		$match = function ( array $query ) {
+		$match = static function ( array $query ) {
 			return [ 'bool' => [ 'must' => [ $query ] ] ];
 		};
-		$filter = function ( array $query ) {
+		$filter = static function ( array $query ) {
 			return [ 'bool' => [
 				'must' => [ [ 'match_all' => [] ] ],
 				'filter' => [ [ 'bool' => [ 'must_not' => [ $query ] ] ] ],
@@ -98,7 +98,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 		$feature->apply( $context, $term );
 		$actualQuery = $context->getQuery()->toArray();
 		// MatchAll is converted to an stdClass instead of an array
-		array_walk_recursive( $actualQuery, function ( &$node ) {
+		array_walk_recursive( $actualQuery, static function ( &$node ) {
 			if ( $node instanceof \stdClass ) {
 				$node = [];
 			}

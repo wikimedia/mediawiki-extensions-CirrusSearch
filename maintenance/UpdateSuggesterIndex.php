@@ -570,7 +570,7 @@ class UpdateSuggesterIndex extends Maintenance {
 				}
 				$this->outputProgress( $docsDumped, $totalDocsToDump );
 				MWElasticUtils::withRetry( $this->indexRetryAttempts,
-					function () use ( $destinationType, $suggestDocs ) {
+					static function () use ( $destinationType, $suggestDocs ) {
 						$destinationType->addDocuments( $suggestDocs );
 					}
 				);

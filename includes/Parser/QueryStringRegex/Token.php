@@ -203,7 +203,7 @@ class Token {
 		if ( is_int( $types ) ) {
 			return [ self::getTypeLabel( $types ) ];
 		}
-		return array_map( function ( $type ) {
+		return array_map( static function ( $type ) {
 			return self::$TYPE_LABEL[$type];
 		}, $types );
 	}

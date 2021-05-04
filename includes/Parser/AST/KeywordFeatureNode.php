@@ -154,7 +154,7 @@ class KeywordFeatureNode extends ParsedNode {
 						"delimiter" => $this->delimiter,
 						"suffix" => $this->suffix,
 						"parsedValue" => $this->parsedValue,
-					], function ( $x ) {
+					], static function ( $x ) {
 						return $x !== null;
 					}
 				)

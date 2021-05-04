@@ -216,7 +216,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 	}
 
 	public static function fallbackStatusCb( FallbackStatus $status ): callable {
-		return function ( FallbackRunnerContext $context ) use ( $status ) {
+		return static function ( FallbackRunnerContext $context ) use ( $status ) {
 			return $status;
 		};
 	}

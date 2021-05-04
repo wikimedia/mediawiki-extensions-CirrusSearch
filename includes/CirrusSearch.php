@@ -184,7 +184,7 @@ class CirrusSearch extends SearchEngine {
 		$this->features['show-multimedia-search-results'] = $this->config->get( 'CirrusSearchCrossProjectShowMultimedia' ) == true;
 		$this->debugOptions = $debugOptions ?? CirrusDebugOptions::fromRequest( $this->request );
 		$this->titleHelper = $titleHelper ?: new TitleHelper( wfWikiID(), $interwikiResolver,
-			function ( $v ) {
+			static function ( $v ) {
 				return \Sanitizer::escapeIdForLink( $v );
 			}
 		);

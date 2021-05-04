@@ -187,7 +187,7 @@ class KeywordParserTest extends CirrusTestCase {
 		$config = new HashSearchConfig( [], [ HashSearchConfig::FLAG_INHERIT ] );
 
 		$assertFunc = function ( array $nodes ) {
-			uasort( $nodes, function ( KeywordFeatureNode $a, KeywordFeatureNode $b ) {
+			uasort( $nodes, static function ( KeywordFeatureNode $a, KeywordFeatureNode $b ) {
 				return $a->getStartOffset() - $b->getStartOffset();
 			} );
 			$this->assertCount( 2, $nodes );

@@ -14,7 +14,7 @@ class LanguageFeatureTest extends CirrusTestCase {
 
 	public function provideQueries() {
 		$tooMany = array_map(
-			function ( $l ) {
+			static function ( $l ) {
 				return (string)$l;
 			},
 			range( 1, LanguageFeature::QUERY_LIMIT + 20 )
@@ -49,7 +49,7 @@ class LanguageFeatureTest extends CirrusTestCase {
 				'inlanguage:' . implode( '|', $tooMany ),
 				[ 'langs' => $actualLangs ],
 				[ 'bool' => [ 'should' => array_map(
-					function ( $l ) {
+					static function ( $l ) {
 						return [ 'match' => [ 'language' => [ 'query' => (string)$l ] ] ];
 					},
 					range( 1, LanguageFeature::QUERY_LIMIT )

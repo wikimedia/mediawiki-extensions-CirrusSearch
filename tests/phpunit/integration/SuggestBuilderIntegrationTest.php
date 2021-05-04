@@ -124,7 +124,7 @@ class SuggestBuilderIntegrationTest extends \MediaWikiIntegrationTestCase {
 		$id = $doc['id'];
 		unset( $doc['id'] );
 		return array_map(
-			function ( $x ) {
+			static function ( $x ) {
 				$dat = $x->getData();
 				unset( $dat['batch_id'] );
 				return $dat;

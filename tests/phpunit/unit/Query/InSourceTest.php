@@ -142,7 +142,7 @@ class InSourceTest extends CirrusTestCase {
 	 * @throws \MWException
 	 */
 	public function testRegex( $query, $expectedRemaining, $filterValue, $insensitive ) {
-		$filterCallback = function ( SourceRegex $x ) use ( $filterValue, $insensitive ) {
+		$filterCallback = static function ( SourceRegex $x ) use ( $filterValue, $insensitive ) {
 			return $filterValue === $x->getParam( 'regex' ) &&
 				   $x->getParam( 'field' ) === 'source_text' &&
 				   $x->getParam( 'ngram_field' ) === 'source_text.trigram' &&

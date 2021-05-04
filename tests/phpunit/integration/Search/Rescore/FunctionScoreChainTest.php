@@ -74,7 +74,7 @@ class FunctionScoreChainTest extends CirrusIntegrationTestCase {
 
 	private function createChain( $func, array $overrides = [] ) {
 		$hookContainer = $this->createCirrusSearchHookRunner( [
-			'CirrusSearchProfileService' => function ( $service ) use ( $func ) {
+			'CirrusSearchProfileService' => static function ( $service ) use ( $func ) {
 				$service->registerArrayRepository(
 					SearchProfileService::RESCORE_FUNCTION_CHAINS,
 					'name',

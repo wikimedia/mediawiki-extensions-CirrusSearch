@@ -246,7 +246,7 @@ EOD
 			// instead run these jobs with concurrency limits to keep them
 			// spread over time. Insert jobs in the order we asked for them
 			// to be run to have some semblance of sanity.
-			usort( $jobs, function ( CheckerJob $job1, CheckerJob $job2 ) {
+			usort( $jobs, static function ( CheckerJob $job1, CheckerJob $job2 ) {
 				return $job1->getReadyTimestamp() - $job2->getReleaseTimestamp();
 			} );
 			JobQueueGroup::singleton()->push( $jobs );
@@ -304,7 +304,7 @@ EOD
 			$this->getSearchConfig()
 				->getProfileService()
 				->listExposedProfiles( SearchProfileService::SANEITIZER );
-		uasort( $profiles, function ( $a, $b ) {
+		uasort( $profiles, static function ( $a, $b ) {
 			return $a['max_wiki_size'] <=> $b['max_wiki_size'];
 		} );
 		$wikiSize = $this->maxId - $this->minId;

@@ -105,7 +105,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 		// #2 and #3 we count the number of links to the page with Elasticsearch.
 		// Since we only have $wgCirrusSearchIndexedRedirects we only count that many terms.
 		$this->linkCountMultiSearch->addSearch( $this->buildCount( $outgoingLinksToCount ) );
-		$this->linkCountClosures[] = function ( $count ) use( $doc, $redirectCount ) {
+		$this->linkCountClosures[] = static function ( $count ) use( $doc, $redirectCount ) {
 			$doc->set( 'incoming_links', $count + $redirectCount );
 			CirrusIndexField::addNoopHandler( $doc, 'incoming_links', 'within 20%' );
 		};

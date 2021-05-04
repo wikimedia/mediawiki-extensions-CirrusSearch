@@ -156,7 +156,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 
 		switch ( $query['type'] ) {
 		case 'fulltext':
-			$work = function ( $config, $connection ) use ( $query ) {
+			$work = static function ( $config, $connection ) use ( $query ) {
 				$offset = isset( $query['offset'] ) ? $query['offset'] : 0;
 				$limit = isset( $query['limit'] ) ? $query['limit'] : 20;
 				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;
@@ -187,7 +187,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 				}
 			}
 
-			$work = function ( $config, $connection ) use ( $query ) {
+			$work = static function ( $config, $connection ) use ( $query ) {
 				$limit = isset( $query['limit'] ) ? $query['limit'] : 5;
 				$offset = isset( $query['offset'] ) ? $query['offset'] : 0;
 				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;
@@ -197,7 +197,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			break;
 
 		case 'get':
-			$work = function ( $config, $connection ) use ( $query ) {
+			$work = static function ( $config, $connection ) use ( $query ) {
 				$searcher = new Searcher( $connection, 0, 20, $config, null, null, 'wiki' );
 				$sourceFiltering = isset( $query['sourceFiltering'] )
 					? $query['sourceFiltering']
@@ -207,7 +207,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			break;
 
 		case 'findNamespace':
-			$work = function ( $config, $connection ) use ( $query ) {
+			$work = static function ( $config, $connection ) use ( $query ) {
 				$searcher = new Searcher( $connection, 0, 20, $config, null, null, 'wiki' );
 				// ugly ... but whatever
 				$searcher->updateNamespacesFromQuery( $query['name'] );
@@ -268,7 +268,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			$transport->expects( $this->any() )
 				->method( 'exec' )
 				->will( $this->onConsecutiveCalls(
-					...array_map( function ( $response ) {
+					...array_map( static function ( $response ) {
 						return new Response( $response, 200 );
 					}, $responses )
 				) );
@@ -283,7 +283,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		] );
 		$connection = new Connection( $config, 'default' );
 		$this->setTemporaryHook( 'PrefixSearchExtractNamespace',
-			function ( &$namespace, &$query ) use ( $connection ) {
+			static function ( &$namespace, &$query ) use ( $connection ) {
 				return Hooks::prefixSearchExtractNamespaceWithConnection( $connection,
 					$namespace, $query );
 			}

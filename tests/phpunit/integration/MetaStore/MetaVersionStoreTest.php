@@ -24,7 +24,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 		$doc = null;
 		$type->expects( $this->once() )
 			->method( 'addDocument' )
-			->will( $this->returnCallback( function ( $arg ) use ( &$doc ) {
+			->will( $this->returnCallback( static function ( $arg ) use ( &$doc ) {
 				$doc = $arg;
 			} ) );
 
@@ -70,7 +70,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 		$search = null;
 		$type->expects( $this->any() )
 			->method( 'search' )
-			->will( $this->returnCallback( function ( $passed ) use ( &$search ) {
+			->will( $this->returnCallback( static function ( $passed ) use ( &$search ) {
 				$search = $passed;
 			} ) );
 		// What can we really test? Feels more like integration

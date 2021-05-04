@@ -121,7 +121,7 @@ class Escaper {
 
 		// Turn bad fuzzy searches into searches that contain a ~ and set $this->fuzzyQuery for good ones.
 		$string = preg_replace_callback( '/(?<leading>\w)~(?<trailing>\S*)/u',
-			function ( $matches ) use ( &$fuzzyQuery ) {
+			static function ( $matches ) use ( &$fuzzyQuery ) {
 				if ( preg_match( '/^(|[0-2])$/', $matches[ 'trailing' ] ) ) {
 					return $matches[ 0 ];
 				} else {
@@ -131,7 +131,7 @@ class Escaper {
 			}, $string );
 
 		// Turn bad proximity searches into searches that contain a ~
-		$string = preg_replace_callback( '/"~(?<trailing>\S*)/u', function ( $matches ) {
+		$string = preg_replace_callback( '/"~(?<trailing>\S*)/u', static function ( $matches ) {
 			if ( preg_match( '/\d+/', $matches[ 'trailing' ] ) ) {
 				return $matches[ 0 ];
 			} else {

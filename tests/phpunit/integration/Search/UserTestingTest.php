@@ -46,12 +46,12 @@ class UserTestingTest extends CirrusIntegrationTestCase {
 			->getMock();
 		$mockReq->expects( $this->any() )
 			->method( 'getIP' )
-			->will( $this->returnCallback( function () {
+			->will( $this->returnCallback( static function () {
 				return mt_rand();
 			} ) );
 		$mockReq->expects( $this->any() )
 			->method( 'getHeader' )
-			->will( $this->returnCallback( function () {
+			->will( $this->returnCallback( static function () {
 				return mt_rand();
 			} ) );
 
@@ -115,14 +115,14 @@ class UserTestingTest extends CirrusIntegrationTestCase {
 			'wgCirrusSearchRescoreProfile' => 'global',
 		] );
 		UserTesting::getInstance(
-			function () {
+			static function () {
 				return true;
 			}
 		);
 		$this->assertEquals( 'test', $GLOBALS['wgCirrusSearchRescoreProfile'] );
 		$GLOBALS['wgCirrusSearchRescoreProfile'] = 'global';
 		UserTesting::getInstance(
-			function () {
+			static function () {
 				return true;
 			}
 		);
@@ -209,13 +209,13 @@ class UserTestingTest extends CirrusIntegrationTestCase {
 		if ( is_array( $callback ) ) {
 			// reverse so pop in reverse order
 			$retvals = array_reverse( $callback );
-			$callback = function () use ( &$retvals ) {
+			$callback = static function () use ( &$retvals ) {
 				$retval = array_pop( $retvals );
 				return $retval ? mt_rand( 0, mt_getrandmax() ) / mt_getrandmax() : 0;
 			};
 		} elseif ( is_bool( $callback ) ) {
 			$retval = $callback;
-			$callback = function () use ( $retval ) {
+			$callback = static function () use ( $retval ) {
 				return $retval ? mt_rand( 0, mt_getrandmax() ) / mt_getrandmax() : 0;
 			};
 		}

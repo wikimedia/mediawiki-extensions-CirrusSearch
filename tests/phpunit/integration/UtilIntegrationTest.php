@@ -22,7 +22,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		] );
 		$services = MediaWikiServices::getInstance();
 		$services->resetServiceForTesting( 'MainWANObjectCache' );
-		$services->redefineService( 'MainWANObjectCache', function () {
+		$services->redefineService( 'MainWANObjectCache', static function () {
 			return new \WANObjectCache( [ 'cache' => new \HashBagOStuff() ] );
 		} );
 
@@ -160,7 +160,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	 */
 	private function getMockCache() {
 		$mock = $this->getMockBuilder( \MessageCache::class )->disableOriginalConstructor()->getMock();
-		$mock->method( 'get' )->willReturnCallback( function ( $key, $useDB, Language $lang ) {
+		$mock->method( 'get' )->willReturnCallback( static function ( $key, $useDB, Language $lang ) {
 			return "This is $key in {$lang->getCode()}|100%";
 		} );
 		return $mock;

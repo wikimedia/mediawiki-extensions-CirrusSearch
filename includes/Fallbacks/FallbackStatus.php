@@ -55,7 +55,7 @@ class FallbackStatus {
 	 * @return FallbackStatus
 	 */
 	public static function suggestQuery( string $query, $snippet = null ): FallbackStatus {
-		return new self( self::ACTION_SUGGEST_QUERY, function ( CirrusSearchResultSet $currentSet ) use ( $query, $snippet ) {
+		return new self( self::ACTION_SUGGEST_QUERY, static function ( CirrusSearchResultSet $currentSet ) use ( $query, $snippet ) {
 			$currentSet->setSuggestionQuery( $query, $snippet );
 			return $currentSet;
 		} );
@@ -70,7 +70,7 @@ class FallbackStatus {
 	public static function replaceLocalResults( CirrusSearchResultSet $rewrittenResults, string $query, $snippet = null ): FallbackStatus {
 		return new self(
 			self::ACTION_REPLACE_LOCAL_RESULTS,
-			function ( CirrusSearchResultSet $currentSet ) use ( $rewrittenResults, $query, $snippet ) {
+			static function ( CirrusSearchResultSet $currentSet ) use ( $rewrittenResults, $query, $snippet ) {
 				$rewrittenResults->setRewrittenQuery( $query, $snippet );
 				return $rewrittenResults;
 			} );
@@ -82,14 +82,16 @@ class FallbackStatus {
 	 * @return FallbackStatus
 	 */
 	public static function addInterwikiResults( CirrusSearchResultSet $results, string $wikiId ): FallbackStatus {
-		return new self( self::ACTION_ADD_INTERWIKI_RESULTS, function ( CirrusSearchResultSet $currentSet ) use ( $results, $wikiId ) {
+		return new self( self::ACTION_ADD_INTERWIKI_RESULTS, static function (
+			CirrusSearchResultSet $currentSet
+		) use ( $results, $wikiId ) {
 			$currentSet->addInterwikiResults( $results, \SearchResultSet::INLINE_RESULTS, $wikiId );
 			return $currentSet;
 		} );
 	}
 
 	public static function noSuggestion(): FallbackStatus {
-		return new self( self::NO_ACTION, function ( CirrusSearchResultSet $currentSet ) {
+		return new self( self::NO_ACTION, static function ( CirrusSearchResultSet $currentSet ) {
 			return $currentSet;
 		} );
 	}

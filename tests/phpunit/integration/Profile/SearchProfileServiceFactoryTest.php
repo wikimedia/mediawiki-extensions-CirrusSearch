@@ -56,7 +56,7 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 	 */
 	public function testOverrides( $type, $context, $overrideType, $overrideKey, $profiles ) {
 		$cirrusSearchHookRunner = $this->createCirrusSearchHookRunner( [
-			'CirrusSearchProfileService' => function ( SearchProfileService $service ) use ( $type, $profiles ) {
+			'CirrusSearchProfileService' => static function ( SearchProfileService $service ) use ( $type, $profiles ) {
 				$service->registerArrayRepository( $type, 'unit_test', $profiles );
 			}
 		] );

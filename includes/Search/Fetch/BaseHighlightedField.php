@@ -303,7 +303,7 @@ class BaseHighlightedField extends HighlightedField {
 	 * @return callable
 	 */
 	protected static function entireValue(): callable {
-		return function ( SearchConfig $config, $fieldName, $target, $priority = self::DEFAULT_TARGET_PRIORITY ) {
+		return static function ( SearchConfig $config, $fieldName, $target, $priority = self::DEFAULT_TARGET_PRIORITY ) {
 			$self = new self( $fieldName, self::FVH_HL_TYPE, $target, $priority );
 			$self->setNumberOfFragments( 0 );
 			$self->setOrder( 'score' );
@@ -316,7 +316,7 @@ class BaseHighlightedField extends HighlightedField {
 	 * @return callable
 	 */
 	protected static function redirectAndHeadings(): callable {
-		return function ( SearchConfig $config, $fieldName, $target, $priority = self::DEFAULT_TARGET_PRIORITY ) {
+		return static function ( SearchConfig $config, $fieldName, $target, $priority = self::DEFAULT_TARGET_PRIORITY ) {
 			$self = new self( $fieldName, self::FVH_HL_TYPE, $target, $priority );
 			$self->setNumberOfFragments( 1 );
 			$self->matchPlainFields();
@@ -330,7 +330,7 @@ class BaseHighlightedField extends HighlightedField {
 	 * @return callable
 	 */
 	protected static function text(): callable {
-		return function ( SearchConfig $config, $fieldName, $target, $priority ) {
+		return static function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = new self( $fieldName, self::FVH_HL_TYPE, $target, $priority );
 			$self->setNumberOfFragments( 1 );
 			$self->matchPlainFields();

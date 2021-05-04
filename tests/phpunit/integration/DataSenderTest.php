@@ -188,7 +188,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 						self::canRebuildFixture()
 					);
 					$responses = array_map(
-						function ( Document $d ) {
+						static function ( Document $d ) {
 							return new Response( [ 'result' => 'updated', 200 ] );
 						},
 						$documents
@@ -205,7 +205,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
 			->willReturn( $mockClient );
-		$sender = new DataSender( $mockCon, $searchConfig, function () {
+		$sender = new DataSender( $mockCon, $searchConfig, static function () {
 			return true;
 		} );
 		$sender->sendData( $indexType, $documents );
@@ -262,7 +262,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 						self::canRebuildFixture()
 					);
 					$responses = array_map(
-						function ( $d ) {
+						static function ( $d ) {
 							return new Response( [ 'result' => 'updated', 200 ] );
 						},
 						$ids
@@ -279,7 +279,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
 			->willReturn( $mockClient );
-		$sender = new DataSender( $mockCon, $searchConfig, function () {
+		$sender = new DataSender( $mockCon, $searchConfig, static function () {
 			return true;
 		} );
 		$sender->sendDeletes( $ids, $indexType );
@@ -469,7 +469,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 
 	private function unBulkify( $data ) {
 		return array_map(
-			function ( $d ) {
+			static function ( $d ) {
 				return json_decode( $d, true );
 			},
 			array_slice( explode( "\n", $data ), 0, -1 )
@@ -485,7 +485,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
 			->willReturn( $client );
-		return new DataSender( $mockCon, $searchConfig, function () {
+		return new DataSender( $mockCon, $searchConfig, static function () {
 			return true;
 		} );
 	}
@@ -514,7 +514,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 					'params' => $params,
 					'contentType' => $contentType,
 				];
-				$responses = array_map( function ( $d ) {
+				$responses = array_map( static function ( $d ) {
 					return new Response( [ 'result' => 'updated', 200 ] );
 				}, range( 0, count( $lines ) / 2 ) );
 

@@ -59,7 +59,7 @@ class ArrayProfileRepository implements SearchProfileRepository {
 	 * @return ArrayProfileRepository
 	 */
 	public static function fromFile( $repoType, $repoName, $phpFile ) {
-		return self::lazyLoaded( $repoType, $repoName, function () use ( $phpFile ) {
+		return self::lazyLoaded( $repoType, $repoName, static function () use ( $phpFile ) {
 			return require $phpFile;
 		} );
 	}

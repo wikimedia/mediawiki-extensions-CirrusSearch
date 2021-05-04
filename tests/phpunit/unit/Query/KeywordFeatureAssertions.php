@@ -95,12 +95,12 @@ class KeywordFeatureAssertions {
 		}
 		$warnings = [];
 		$context->method( 'addWarning' )
-			->will( $this->testCase->returnCallback( function () use ( &$warnings ) {
+			->will( $this->testCase->returnCallback( static function () use ( &$warnings ) {
 				$warnings[] = array_filter( func_get_args() );
 			} ) );
 
 		$context->method( 'getWarnings' )
-			->will( $this->testCase->returnCallback( function () use ( &$warnings ) {
+			->will( $this->testCase->returnCallback( static function () use ( &$warnings ) {
 				return $warnings;
 			} ) );
 
@@ -135,7 +135,7 @@ class KeywordFeatureAssertions {
 		$warnings = [];
 
 		$context->method( 'addWarning' )
-			->will( $this->testCase->returnCallback( function () use ( &$warnings ) {
+			->will( $this->testCase->returnCallback( static function () use ( &$warnings ) {
 				$warnings[] = array_filter( func_get_args() );
 			} ) );
 
@@ -155,7 +155,7 @@ class KeywordFeatureAssertions {
 		$context = $this->mockContext();
 		$context->expects( $this->testCase->any() )
 			->method( 'addWarning' )
-			->will( $this->testCase->returnCallback( function () use ( &$warnings ) {
+			->will( $this->testCase->returnCallback( static function () use ( &$warnings ) {
 				$warnings[] = array_filter( func_get_args() );
 			} ) );
 		$feature->apply( $context, $term );
@@ -352,7 +352,7 @@ class KeywordFeatureAssertions {
 		$warnings = [];
 		if ( $expectedWarnings !== null ) {
 			$context->method( 'addWarning' )
-				->will( $this->testCase->returnCallback( function ( ...$args ) use ( &$warnings ) {
+				->will( $this->testCase->returnCallback( static function ( ...$args ) use ( &$warnings ) {
 					$warnings[] = array_filter( $args );
 				} ) );
 		}
@@ -562,7 +562,7 @@ class KeywordFeatureAssertions {
 	 * @return array
 	 */
 	protected function extractWarnings( $parser ) {
-		return array_map( function ( ParseWarning $warning ) {
+		return array_map( static function ( ParseWarning $warning ) {
 			return array_merge( [ $warning->getMessage() ], $warning->getMessageParams() );
 		}, $parser->getWarnings() );
 	}

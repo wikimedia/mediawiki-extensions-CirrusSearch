@@ -54,7 +54,7 @@ class ParsedBooleanNode extends ParsedNode {
 			parent::baseParams(),
 			[
 				'clauses' => array_map(
-					function ( BooleanClause $clause ) {
+					static function ( BooleanClause $clause ) {
 						return [
 							$clause->getOccur() => $clause->getNode()->toArray(),
 							"explicit" => $clause->isExplicit(),

@@ -34,7 +34,7 @@ class DefaultPagePropertiesIntegrationTest extends \MediaWikiIntegrationTestCase
 
 		// Control time to ensure the revision timestamps differ
 		$currentTime = 12345;
-		\MWTimestamp::setFakeTime( function () use ( &$currentTime ) {
+		\MWTimestamp::setFakeTime( static function () use ( &$currentTime ) {
 			return $currentTime;
 		} );
 		try {

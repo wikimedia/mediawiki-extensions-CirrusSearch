@@ -37,7 +37,7 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 
 		foreach ( $assertions as $title => $expectedIndices ) {
 			$found = array_map(
-				function ( $other ) {
+				static function ( $other ) {
 					return $other->getSearchIndex( 'default' );
 				},
 				OtherIndexesUpdater::getExternalIndexes( $config, Title::newFromText( $title ) )
@@ -81,7 +81,7 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 		foreach ( $assertions as $assertion ) {
 			list( $namespaces, $indices ) = $assertion;
 			$found = array_map(
-				function ( $other ) {
+				static function ( $other ) {
 					return $other->getSearchIndex( 'default' );
 				},
 				OtherIndexesUpdater::getExtraIndexesForNamespaces( $config, $namespaces )

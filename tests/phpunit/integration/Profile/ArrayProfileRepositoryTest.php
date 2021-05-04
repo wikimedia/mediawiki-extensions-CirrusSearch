@@ -31,7 +31,7 @@ class ArrayProfileRepositoryTest extends CirrusIntegrationTestCase {
 			'prof1' => [],
 			'prof2' => [],
 		];
-		$loader = function () use ( &$loaded, $profiles ) {
+		$loader = static function () use ( &$loaded, $profiles ) {
 			$loaded = true;
 			return $profiles;
 		};
@@ -48,7 +48,7 @@ class ArrayProfileRepositoryTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testBadCallback() {
-		$loader = function () {
+		$loader = static function () {
 			return 'meh';
 		};
 		$repo = ArrayProfileRepository::lazyLoaded( 'my_type', 'my_name',  $loader );

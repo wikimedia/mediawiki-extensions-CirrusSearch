@@ -44,7 +44,7 @@ class KeywordParser implements WarningCollector {
 		$keyListRegex = implode(
 			'|',
 			array_map(
-				function ( $kw ) {
+				static function ( $kw ) {
 					return preg_quote( $kw, '/' );
 				},
 				$feature->getKeywordPrefixes()

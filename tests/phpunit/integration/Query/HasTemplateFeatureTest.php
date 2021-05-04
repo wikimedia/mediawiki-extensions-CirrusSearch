@@ -92,7 +92,7 @@ class HasTemplateFeatureTest extends CirrusIntegrationTestCase {
 		$feature = new HasTemplateFeature();
 		$q = implode( '|', range( 1, HasTemplateFeature::MAX_CONDITIONS + 1 ) );
 		$parsedValue = array_map(
-			function ( $v ) {
+			static function ( $v ) {
 				return "Template:$v";
 			},
 			range( 1, HasTemplateFeature::MAX_CONDITIONS )

@@ -59,7 +59,7 @@ class SaneitizeLoop {
 		$this->pushJobFreq = $pushJobFreq;
 		$this->chunkSize = $chunkSize;
 		$this->minLoopDuration = $minLoopDuration;
-		$this->logger = $logger ?? function ( $msg, $channel = null ) {
+		$this->logger = $logger ?? static function ( $msg, $channel = null ) {
 		};
 	}
 

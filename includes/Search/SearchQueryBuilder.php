@@ -179,7 +179,7 @@ final class SearchQueryBuilder {
 		// profile, so that we could try to run the default profile on sister wikis
 		$namespaces = $original->getInitialNamespaces();
 		if ( $namespaces !== null ) {
-			$namespaces = array_filter( $namespaces, function ( $namespace ) {
+			$namespaces = array_filter( $namespaces, static function ( $namespace ) {
 				return $namespace <= NS_CATEGORY_TALK;
 			} );
 		}

@@ -323,7 +323,7 @@ class ResultSet extends BaseSearchResultSet implements CirrusSearchResultSet {
 	 */
 	public function extractTitles() {
 		return array_map(
-			function ( SearchResult $result ) {
+			static function ( SearchResult $result ) {
 				return $result->getTitle();
 			},
 			$this->extractResults() );

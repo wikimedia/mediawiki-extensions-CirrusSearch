@@ -160,7 +160,7 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 			$warnings = [ [ 'cirrussearch-feature-deepcat-toomany' ] ];
 		} else {
 			$expectedData = array_map(
-				function ( $data ) {
+				static function ( $data ) {
 					return $data['out'];
 				},
 				$result
@@ -241,7 +241,7 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 		// 1: for asserting expandData
 		// 2: for asserting old & new parsing techniques
 		$client->expects( $this->exactly( 3 ) )->method( 'query' )->willReturnCallback(
-			function () {
+			static function () {
 				throw new SparqlException( "Bad SPARQL error!" );
 			}
 		);

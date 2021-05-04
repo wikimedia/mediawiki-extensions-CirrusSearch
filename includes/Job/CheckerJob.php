@@ -256,7 +256,7 @@ class CheckerJob extends CirrusGenericJob {
 	 */
 	private static function makeIsOldClosure( $loopId, $numCycles ) {
 		$loopMod = $loopId % $numCycles;
-		return function ( \WikiPage $page ) use ( $numCycles, $loopMod ) {
+		return static function ( \WikiPage $page ) use ( $numCycles, $loopMod ) {
 			$pageIdMod = $page->getId() % $numCycles;
 			return $pageIdMod == $loopMod;
 		};

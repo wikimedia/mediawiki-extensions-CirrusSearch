@@ -93,7 +93,7 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 		$lines = $this->bagOStuff->getWithSetCallback(
 			$this->bagOStuff->makeKey( self::CIRRUSSEARCH_DIDYOUMEAN_SETTINGS ),
 			600,
-			function () {
+			static function () {
 				$source = wfMessage( 'cirrussearch-didyoumean-settings' )->inContentLanguage();
 				if ( !$source || $source->isDisabled() ) {
 					return [];

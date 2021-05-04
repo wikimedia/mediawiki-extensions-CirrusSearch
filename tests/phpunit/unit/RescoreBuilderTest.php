@@ -231,7 +231,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 
 		$namespaceInfo = $this->createMock( NamespaceInfo::class );
 		$namespaceInfo->expects( $this->any() )->method( 'isSubject' )->will(
-			$this->returnCallback( function ( $ns ) {
+			$this->returnCallback( static function ( $ns ) {
 				return in_array( $ns, [ NS_MAIN, NS_PROJECT, NS_HELP, NS_MEDIAWIKI ] );
 			}
 		) );
@@ -767,7 +767,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			]
 		];
 
-		$buildConfig = function ( array $supportedSyntax, array $unsupportedSyntax ) use ( $defaultChain, $fullChain ) {
+		$buildConfig = static function ( array $supportedSyntax, array $unsupportedSyntax ) use ( $defaultChain, $fullChain ) {
 			return [
 				'CirrusSearchRescoreProfile' => 'full',
 				'CirrusSearchRescoreProfiles' => [

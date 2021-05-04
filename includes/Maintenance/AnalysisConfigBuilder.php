@@ -1181,7 +1181,7 @@ class AnalysisConfigBuilder {
 			if ( !isset( $analyzer[ 'filter' ] ) ) {
 				continue;
 			}
-			$analyzer[ 'filter' ] = array_map( function ( $filter ) use ( $oldName, $newName ) {
+			$analyzer[ 'filter' ] = array_map( static function ( $filter ) use ( $oldName, $newName ) {
 				if ( $filter === $oldName ) {
 					return $newName;
 				}

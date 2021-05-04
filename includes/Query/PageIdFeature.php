@@ -30,10 +30,10 @@ class PageIdFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		$key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector
 	) {
 		$values = explode( '|', $value );
-		$validValues = array_filter( $values, function ( $singleValue ) {
+		$validValues = array_filter( $values, static function ( $singleValue ) {
 			return ctype_digit( $singleValue );
 		} );
-		$validValues = array_map( function ( $singleValue ) {
+		$validValues = array_map( static function ( $singleValue ) {
 			return (int)$singleValue;
 		}, array_values( $validValues ) );
 		if ( count( $validValues ) < count( $values ) ) {

@@ -141,7 +141,7 @@ class Filters {
 	 * @return AbstractQuery
 	 */
 	public static function insource( Escaper $escaper, $value ) {
-		return self::insourceOrIntitle( $escaper, $value, function () {
+		return self::insourceOrIntitle( $escaper, $value, static function () {
 			return [ 'source_text.plain' ];
 		} );
 	}
@@ -154,7 +154,7 @@ class Filters {
 	 * @return AbstractQuery
 	 */
 	public static function intitle( Escaper $escaper, $value ) {
-		return self::insourceOrIntitle( $escaper, $value, function ( $queryString ) {
+		return self::insourceOrIntitle( $escaper, $value, static function ( $queryString ) {
 			if ( preg_match( '/[?*]/u', $queryString ) ) {
 				return [ 'title.plain', 'redirect.title.plain' ];
 			} else {

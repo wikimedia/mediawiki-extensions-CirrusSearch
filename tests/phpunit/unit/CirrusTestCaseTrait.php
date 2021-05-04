@@ -128,7 +128,7 @@ trait CirrusTestCaseTrait {
 	 * @see Assert::callback()
 	 */
 	public function captureArgs( &$args, callable $callback = null ) {
-		return $this->callback( function ( ...$argToCapture ) use ( &$args, $callback ) {
+		return $this->callback( static function ( ...$argToCapture ) use ( &$args, $callback ) {
 			$args = $argToCapture;
 			if ( $callback !== null ) {
 				return $callback( $argToCapture );

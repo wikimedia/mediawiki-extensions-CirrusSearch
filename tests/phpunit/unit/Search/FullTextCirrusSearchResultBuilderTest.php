@@ -359,7 +359,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 				]
 			],
 		];
-		return array_map( function ( array $v ) {
+		return array_map( static function ( array $v ) {
 			$v[0] = new \Elastica\Result( $v[0] );
 			return $v;
 		}, $cases );
@@ -380,7 +380,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 	}
 
 	private function getter( $field, $type ): callable {
-		return function ( CirrusSearchResult $result ) use ( $field, $type ) {
+		return static function ( CirrusSearchResult $result ) use ( $field, $type ) {
 			return call_user_func( [ $result, ( $type === 'boolean' ? 'is' : 'get' ) . ucfirst( $field ) ] );
 		};
 	}

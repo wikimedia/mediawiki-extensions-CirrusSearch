@@ -14,7 +14,7 @@ class HasRecommendationFeatureTest extends CirrusTestCase {
 
 	public function provideQueries() {
 		$tooMany = array_map(
-			function ( $l ) {
+			static function ( $l ) {
 				return (string)$l;
 			},
 			range( 1, HasRecommendationFeature::QUERY_LIMIT + 5 )
@@ -45,7 +45,7 @@ class HasRecommendationFeatureTest extends CirrusTestCase {
 				'hasrecommendation:' . implode( '|', $tooMany ),
 				[ 'recommendationflags' => $actualrecFlags ],
 				[ 'bool' => [ 'should' => array_merge( ...array_map(
-					function ( $l ) {
+					static function ( $l ) {
 						return [
 							[ 'match' => [ 'ores_articletopics' => [ 'query' => "recommendation." . $l . '/exists' ] ] ],
 							[ 'match' => [ 'weighted_tags' => [ 'query' => "recommendation." . $l . '/exists' ] ] ],

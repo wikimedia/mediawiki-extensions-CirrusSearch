@@ -164,8 +164,8 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 			$fields[$f->getTarget()][] = $f;
 		}
 		return array_map(
-			function ( array $v ) {
-				usort( $v, function ( HighlightedField $g1, HighlightedField $g2 ) {
+			static function ( array $v ) {
+				usort( $v, static function ( HighlightedField $g1, HighlightedField $g2 ) {
 					return $g2->getPriority() <=> $g1->getPriority();
 				} );
 				return $v;

@@ -52,7 +52,7 @@ class FTQueryClassifiersRepositoryTest extends CirrusTestCase {
 		$cirrusSearchHookRunner = $this->createCirrusSearchHookRunner( [ 'CirrusSearchRegisterFullTextQueryClassifiers' =>
 			function ( FTQueryClassifiersRepository $repository ) {
 				$repository->registerClassifierAsCallable( [ 'hook1' ],
-					function ( ParsedQuery $query ) {
+					static function ( ParsedQuery $query ) {
 						return [ 'hook1' ];
 					}
 				);
@@ -90,7 +90,7 @@ class FTQueryClassifiersRepositoryTest extends CirrusTestCase {
 
 				try {
 					$repository->registerClassifierAsCallable( [ 'hook1' ],
-						function ( ParsedQuery $query ) {
+						static function ( ParsedQuery $query ) {
 							return [ 'hook1' ];
 						}
 					);

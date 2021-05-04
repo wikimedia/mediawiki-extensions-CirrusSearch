@@ -112,7 +112,7 @@ class ArticleTopicFeature extends SimpleKeywordFeature {
 	) {
 		$topics = explode( '|', $value );
 		$invalidTopics = array_diff( $topics, array_keys( self::TERMS_TO_LABELS ) );
-		$validTopics = array_filter( array_map( function ( $topic ) {
+		$validTopics = array_filter( array_map( static function ( $topic ) {
 			return self::TERMS_TO_LABELS[$topic];
 		}, array_diff( $topics, $invalidTopics ) ) );
 

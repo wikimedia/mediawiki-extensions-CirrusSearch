@@ -104,7 +104,7 @@ class Checker {
 		$this->logSane = $logSane;
 		$this->fastRedirectCheck = $fastRedirectCheck;
 		$this->pageCache = $pageCache;
-		$this->isOldFn = $isOldFn ?? function ( WikiPage $page ) {
+		$this->isOldFn = $isOldFn ?? static function ( WikiPage $page ) {
 			return false;
 		};
 	}

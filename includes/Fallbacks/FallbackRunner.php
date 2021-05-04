@@ -144,7 +144,7 @@ class FallbackRunner implements SearchMetricsProvider {
 			];
 		}
 
-		usort( $methods, function ( $a, $b ) {
+		usort( $methods, static function ( $a, $b ) {
 			return $b['score'] <=> $a['score'] ?: $a['position'] <=> $b['position'];
 		} );
 		foreach ( $methods as $fallbackArray ) {

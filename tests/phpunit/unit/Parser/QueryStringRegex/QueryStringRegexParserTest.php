@@ -142,7 +142,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 
 		$parsedQuery = $parser->parse( $query )->getRoot();
 		$this->assertInstanceOf( ParsedBooleanNode::class, $parsedQuery );
-		$this->assertSame( $expected, array_map( function ( BooleanClause $clause ) {
+		$this->assertSame( $expected, array_map( static function ( BooleanClause $clause ) {
 			return get_class( $clause->getNode() );
 		}, $parsedQuery->getClauses() ) );
 	}

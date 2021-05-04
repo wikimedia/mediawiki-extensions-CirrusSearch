@@ -39,7 +39,7 @@ class PrefixSearchQueryBuilder {
 	}
 
 	private function wordPrefixQuery( $term, $variants ) {
-		$buildMatch = function ( $searchTerm ) {
+		$buildMatch = static function ( $searchTerm ) {
 			$match = new Match();
 			// TODO: redirect.title?
 			$match->setField( 'title.word_prefix', [
@@ -63,7 +63,7 @@ class PrefixSearchQueryBuilder {
 	private function keywordPrefixQuery( $term, $variants, $weights ) {
 		// Elasticsearch seems to have trouble extracting the proper terms to highlight
 		// from the default query we make so we feed it exactly the right query to highlight.
-		$buildMatch = function ( $searchTerm, $weight ) use ( $weights ) {
+		$buildMatch = static function ( $searchTerm, $weight ) use ( $weights ) {
 			$query = new MultiMatch();
 			$query->setQuery( $searchTerm );
 			$query->setFields( [

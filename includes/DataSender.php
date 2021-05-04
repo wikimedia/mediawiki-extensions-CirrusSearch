@@ -407,7 +407,7 @@ class DataSender extends ElasticsearchIntermediary {
 			return Status::newGood();
 		} else {
 			$this->failure( $exception );
-			$documentIds = array_map( function ( $d ) {
+			$documentIds = array_map( static function ( $d ) {
 				return $d->getId();
 			}, $documents );
 			$logContext = [ 'docId' => implode( ', ', $documentIds ) ];

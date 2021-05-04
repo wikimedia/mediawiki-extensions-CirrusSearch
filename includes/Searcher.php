@@ -877,7 +877,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 
 		// normalize the 'now' value which contains a timestamp that
 		// may vary.
-		$fixNow = function ( &$value, $key ) {
+		$fixNow = static function ( &$value, $key ) {
 			if ( $key === 'now' && is_int( $value ) ) {
 				$value = 12345678;
 			}

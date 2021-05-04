@@ -221,14 +221,14 @@ class RequestLogger {
 				Util::setIfDefined(
 					$requestContext, 'index', $requestEntry, 'indices',
 					// Use list for search indices, not csv string.
-					function ( $v ) {
+					static function ( $v ) {
 						return explode( ',', $v );
 					}
 				);
 				Util::setIfDefined(
 					$requestContext, 'namespaces', $requestEntry, 'namespaces',
 					// Make sure namespace values are all integers.
-					function ( $v ) {
+					static function ( $v ) {
 						if ( empty( $v ) ) {
 							return $v;
 						} else {

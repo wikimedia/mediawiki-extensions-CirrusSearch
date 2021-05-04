@@ -273,7 +273,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				if ( !isset( $analyzer[ 'filter'  ] ) ) {
 					continue;
 				}
-				$analyzer[ 'filter' ] = array_map( function ( $filter ) {
+				$analyzer[ 'filter' ] = array_map( static function ( $filter ) {
 					if ( $filter === 'lowercase' ) {
 						return 'icu_normalizer';
 					}

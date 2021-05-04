@@ -361,7 +361,7 @@ class ParsedQuery {
 			$ar['queryClassCache'] = $classes;
 		}
 		if ( $this->parseWarnings !== [] ) {
-			$ar['warnings'] = array_map( function ( ParseWarning $w ) {
+			$ar['warnings'] = array_map( static function ( ParseWarning $w ) {
 				return $w->toArray();
 			}, $this->parseWarnings );
 		}

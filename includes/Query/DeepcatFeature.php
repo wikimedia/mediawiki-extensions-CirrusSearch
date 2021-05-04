@@ -223,7 +223,7 @@ SPARQL;
 		}
 
 		$prefixLen = strlen( $this->getCategoryPrefix() );
-		return array_map( function ( $row ) use ( $prefixLen ) {
+		return array_map( static function ( $row ) use ( $prefixLen ) {
 			// TODO: maybe we want to check the prefix is indeed the same?
 			// It should be but who knows...
 			return rawurldecode( substr( $row['out'], $prefixLen ) );

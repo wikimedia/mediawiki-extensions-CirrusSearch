@@ -154,7 +154,7 @@ class Util {
 
 		$key = "$type:$wgCirrusSearchPoolCounterKey";
 
-		$errorCallback = function ( Status $status ) use ( $key, $busyErrorMsg ) {
+		$errorCallback = static function ( Status $status ) use ( $key, $busyErrorMsg ) {
 			/** @todo No good replacements for getErrorsArray */
 			$errors = $status->getErrorsArray();
 			$error = $errors[0][0];
@@ -313,7 +313,7 @@ class Util {
 			$templates = $cache->getWithSetCallback(
 				$cacheKey,
 				600,
-				function () {
+				static function () {
 					$source = wfMessage( 'cirrussearch-boost-templates' )->inContentLanguage();
 					if ( !$source->isDisabled() ) {
 						$lines = Util::parseSettingsInMessage( $source->plain() );

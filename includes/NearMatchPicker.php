@@ -76,7 +76,7 @@ class NearMatchPicker {
 		}
 
 		$transformers = [
-			function ( $term ) {
+			static function ( $term ) {
 				return $term;
 			},
 			[ $this->language, 'lc' ],

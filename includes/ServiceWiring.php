@@ -9,7 +9,7 @@ use MediaWiki\Sparql\SparqlClient;
 
 return [
 	// SPARQL client for deep category search
-	'CirrusCategoriesClient' => function ( MediaWikiServices $services ) {
+	'CirrusCategoriesClient' => static function ( MediaWikiServices $services ) {
 		$config = $services->getMainConfig();
 		$client = new SparqlClient( $config->get( 'CirrusSearchCategoryEndpoint' ),
 			$services->getHttpRequestFactory() );

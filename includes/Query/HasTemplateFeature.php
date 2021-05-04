@@ -99,7 +99,7 @@ class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeat
 		$caseSensitive = $parsedValue['case_sensitive'];
 
 		return Filters::booleanOr( array_map(
-			function ( $v ) use ( $caseSensitive ) {
+			static function ( $v ) use ( $caseSensitive ) {
 				return QueryHelper::matchPage( $caseSensitive ? 'template.keyword' : 'template', $v );
 			},
 			$parsedValue['templates']

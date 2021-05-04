@@ -11,7 +11,7 @@ class AnalysisConfigBuilderIntegrationTest extends CirrusIntegrationTestCase {
 	 * @covers \CirrusSearch\Maintenance\AnalysisConfigBuilder::__construct
 	 */
 	public function testSimilarityHook() {
-		$this->setTemporaryHook( 'CirrusSearchSimilarityConfig', function ( &$config ) {
+		$this->setTemporaryHook( 'CirrusSearchSimilarityConfig', static function ( &$config ) {
 			$config['custom'] = [ 'custom' => [] ];
 		} );
 		$builder = new AnalysisConfigBuilder( 'en', [], new HashSearchConfig( [ 'CirrusSearchSimilarityProfile' => 'default' ] ) );

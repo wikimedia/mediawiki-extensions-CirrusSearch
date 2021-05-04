@@ -9,7 +9,7 @@
 require_once __DIR__ . "/../jenkins/Jenkins.php";
 
 // pop score is global
-$wgHooks['CirrusSearchMappingConfig'][] = function ( array &$config, $mappingConfigBuilder ) {
+$wgHooks['CirrusSearchMappingConfig'][] = static function ( array &$config, $mappingConfigBuilder ) {
 	$config['page']['properties']['popularity_score'] = [
 		'type' => 'double',
 	];

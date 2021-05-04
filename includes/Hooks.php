@@ -188,7 +188,7 @@ class Hooks {
 		$lines = $cache->getWithSetCallback(
 			$cache->makeKey( 'cirrussearch-morelikethis-settings' ),
 			600,
-			function () {
+			static function () {
 				$source = wfMessage( 'cirrussearch-morelikethis-settings' )->inContentLanguage();
 				if ( $source && $source->isDisabled() ) {
 					return [];
@@ -310,7 +310,7 @@ class Hooks {
 		$target = $page->getRedirectTarget();
 		if ( $target ) {
 			// DeferredUpdate so we don't end up racing our own page deletion
-			DeferredUpdates::addCallableUpdate( function () use ( $target ) {
+			DeferredUpdates::addCallableUpdate( static function () use ( $target ) {
 				JobQueueGroup::singleton()->push(
 					new Job\LinksUpdate( $target, [
 						'addedLinks' => [],
@@ -597,7 +597,7 @@ class Hooks {
 				'docId' => self::getConfig()->makeId( $oldId )
 			] );
 			// Push the job after DB commit but cancel on rollback
-			wfGetDB( DB_MASTER )->onTransactionCommitOrIdle( function () use ( $job ) {
+			wfGetDB( DB_MASTER )->onTransactionCommitOrIdle( static function () use ( $job ) {
 				JobQueueGroup::singleton()->lazyPush( $job );
 			}, __METHOD__ );
 		}
@@ -819,7 +819,7 @@ class Hooks {
 		);
 		$container->defineService(
 			InterwikiResolver::SERVICE,
-			function ( MediaWikiServices $serviceContainer ) {
+			static function ( MediaWikiServices $serviceContainer ) {
 				$config = $serviceContainer->getConfigFactory()
 						->makeConfig( 'CirrusSearch' );
 				return $serviceContainer
@@ -828,7 +828,7 @@ class Hooks {
 			}
 		);
 		$container->defineService( SearchProfileServiceFactory::SERVICE_NAME,
-			function ( MediaWikiServices $serviceContainer ) {
+			static function ( MediaWikiServices $serviceContainer ) {
 				$config = $serviceContainer->getConfigFactory()
 					->makeConfig( 'CirrusSearch' );
 				return new SearchProfileServiceFactory(

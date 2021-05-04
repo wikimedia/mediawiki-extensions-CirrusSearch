@@ -182,7 +182,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	 */
 	final public function extractTitles() {
 		return array_map(
-			function ( SearchResult $result ) {
+			static function ( SearchResult $result ) {
 				return $result->getTitle();
 			},
 			$this->extractResults() );

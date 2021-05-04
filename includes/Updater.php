@@ -181,7 +181,7 @@ class Updater extends ElasticsearchIntermediary {
 	public function updatePages( $pages, $flags ) {
 		// Don't update the same page twice. We shouldn't, but meh
 		$pageIds = [];
-		$pages = array_filter( $pages, function ( WikiPage $page ) use ( &$pageIds ) {
+		$pages = array_filter( $pages, static function ( WikiPage $page ) use ( &$pageIds ) {
 			if ( !in_array( $page->getId(), $pageIds ) ) {
 				$pageIds[] = $page->getId();
 				return true;
@@ -210,7 +210,7 @@ class Updater extends ElasticsearchIntermediary {
 
 		$count = 0;
 		foreach ( $allDocuments as $indexType => $documents ) {
-			$this->pushElasticaWriteJobs( $documents, function ( array $chunk, string $cluster ) use ( $indexType ) {
+			$this->pushElasticaWriteJobs( $documents, static function ( array $chunk, string $cluster ) use ( $indexType ) {
 				return Job\ElasticaWrite::build(
 					$cluster,
 					'sendData',
@@ -236,7 +236,7 @@ class Updater extends ElasticsearchIntermediary {
 		Assert::precondition( $page->exists(), "page must exist" );
 		$docId = $this->connection->getConfig()->makeId( $page->getId() );
 		$indexType = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
-		$this->pushElasticaWriteJobs( [ $docId ], function ( array $docIds, string $cluster ) use (
+		$this->pushElasticaWriteJobs( [ $docId ], static function ( array $docIds, string $cluster ) use (
 			$docId, $indexType, $tagField, $tagPrefix, $tagNames, $tagWeights
 		) {
 			$tagWeights = ( $tagWeights === null ) ? null : [ $docId => $tagWeights ];
@@ -257,7 +257,9 @@ class Updater extends ElasticsearchIntermediary {
 		Assert::precondition( $page->exists(), "page must exist" );
 		$docId = $this->connection->getConfig()->makeId( $page->getId() );
 		$indexType = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
-		$this->pushElasticaWriteJobs( [ $docId ], function ( array $docIds, string $cluster ) use ( $indexType, $tagField, $tagPrefix ) {
+		$this->pushElasticaWriteJobs( [ $docId ], static function (
+			array $docIds, string $cluster
+		) use ( $indexType, $tagField, $tagPrefix ) {
 			return Job\ElasticaWrite::build(
 				$cluster,
 				'sendResetWeightedTags',
@@ -283,7 +285,7 @@ class Updater extends ElasticsearchIntermediary {
 		// Deletes are fairly cheap to send, they can be batched in larger
 		// chunks. Unlikely a batch this large ever comes through.
 		$batchSize = 50;
-		$this->pushElasticaWriteJobs( $docIds, function ( array $chunk, string $cluster ) use ( $indexType, $elasticType ) {
+		$this->pushElasticaWriteJobs( $docIds, static function ( array $chunk, string $cluster ) use ( $indexType, $elasticType ) {
 			return Job\ElasticaWrite::build(
 				$cluster,
 				'sendDeletes',
@@ -305,7 +307,7 @@ class Updater extends ElasticsearchIntermediary {
 			return true;
 		}
 		$docs = $this->buildArchiveDocuments( $archived );
-		$this->pushElasticaWriteJobs( $docs, function ( array $chunk, string $cluster ) {
+		$this->pushElasticaWriteJobs( $docs, static function ( array $chunk, string $cluster ) {
 			return Job\ElasticaWrite::build(
 				$cluster,
 				'sendData',

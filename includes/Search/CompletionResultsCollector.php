@@ -185,7 +185,7 @@ class CompletionResultsCollector {
 	 * @return SearchSuggestionSet
 	 */
 	public function logAndGetSet( CompletionRequestLog $log ) {
-		uasort( $this->suggestionsByDocId, function ( SearchSuggestion $a, SearchSuggestion $b ) {
+		uasort( $this->suggestionsByDocId, static function ( SearchSuggestion $a, SearchSuggestion $b ) {
 			if ( $b->getScore() > $a->getScore() ) {
 				return 1;
 			} elseif ( $b->getScore() < $a->getScore() ) {

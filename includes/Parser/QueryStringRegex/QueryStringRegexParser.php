@@ -314,7 +314,7 @@ class QueryStringRegexParser implements QueryParser {
 		$this->warnings = array_merge( $this->warnings, $this->keywordParser->getWarnings() );
 		// All parsed keywords have their offsets marked in $this->keywordOffsetsTracker
 		// We then reparse the query from the beginning finding holes between keyword offsets
-		uasort( $this->preTaggedNodes, function ( ParsedNode $a, ParsedNode $b ) {
+		uasort( $this->preTaggedNodes, static function ( ParsedNode $a, ParsedNode $b ) {
 			if ( $a->getStartOffset() < $b->getStartOffset() ) {
 				return -1;
 			} else {

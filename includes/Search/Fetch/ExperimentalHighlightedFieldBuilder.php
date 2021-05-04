@@ -21,7 +21,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 	 * @return callable
 	 */
 	public static function entireValue(): callable {
-		return function ( SearchConfig $config, $fieldName, $target, $priority ) {
+		return static function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = new self( $fieldName, $target, $priority );
 			$self->matchPlainFields();
 			$self->setFragmenter( 'none' );
@@ -34,7 +34,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 	 * @return callable
 	 */
 	public static function redirectAndHeadings(): callable {
-		return function ( SearchConfig $config, $fieldName, $target, $priority ) {
+		return static function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = new self( $fieldName, $target, $priority );
 			$self->matchPlainFields();
 			$self->addOption( 'skip_if_last_matched', true );
@@ -49,7 +49,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 	 * @return callable
 	 */
 	public static function text(): callable {
-		return function ( SearchConfig $config, $fieldName, $target, $priority ) {
+		return static function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = new self( $fieldName, $target, $priority );
 			$self->matchPlainFields();
 			$self->addOption( 'skip_if_last_matched', true );

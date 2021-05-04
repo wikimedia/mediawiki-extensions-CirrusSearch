@@ -155,7 +155,7 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 		$db->expects( $this->any() )
 			->method( 'select' )
 			->with( 'page' )
-			->will( $this->returnCallback( function ( $table, $select, $where ) {
+			->will( $this->returnCallback( static function ( $table, $select, $where ) {
 				if ( isset( $where['page_id'] ) && $where['page_id'] === [ '2' ] ) {
 					return [ (object)[
 						'page_namespace' => NS_CATEGORY,

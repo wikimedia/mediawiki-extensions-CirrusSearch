@@ -39,7 +39,7 @@ class SuggesterAnalysisConfigBuilderTest extends CirrusIntegrationTestCase {
 	 */
 	public function testLanguageAnalysis( $expected, $langCode, array $extraConfig ) {
 		$this->setTemporaryHook( 'CirrusSearchAnalysisConfig',
-			function () {
+			static function () {
 			}
 		);
 		$config = new HashSearchConfig( $extraConfig + [ 'CirrusSearchSimilarityProfile' => 'default' ] );

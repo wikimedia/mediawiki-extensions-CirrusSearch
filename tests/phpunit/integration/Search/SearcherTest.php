@@ -22,7 +22,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	public function setUp() : void {
 		parent::setUp();
 		MediaWikiServices::getInstance()->getConfigFactory()->register( 'CirrusSearch',
-			function () {
+			static function () {
 				return new SearchConfigUsageDecorator();
 			}
 		);
@@ -85,7 +85,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			// Override the list of namespaces to give more deterministic results
 			'wgHooks' => [
 				'CanonicalNamespaces' => [
-					function ( &$namespaces ) {
+					static function ( &$namespaces ) {
 						$namespaces = [
 							0 => '',
 							-2 => 'Media',
@@ -194,7 +194,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	}
 
 	private function normalizeNow( array $query ) {
-		array_walk_recursive( $query, function ( &$value, $key ) {
+		array_walk_recursive( $query, static function ( &$value, $key ) {
 			if ( $key === 'now' && is_int( $value ) ) {
 				$value = 1468084245000;
 			}
@@ -204,7 +204,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	}
 
 	private function normalizeSeed( array $query ) {
-		array_walk_recursive( $query, function ( &$value, $key ) {
+		array_walk_recursive( $query, static function ( &$value, $key ) {
 			if ( $key === 'seed' && is_string( $value ) ) {
 				$value = 'phpunit searchText random seed';
 			}
@@ -225,7 +225,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		if ( isset( $query[0] ) ) {
 			// list like. Expensive, but sorta-works?
 			// TODO: This breaks things that require a specific ordering, such as the token count router
-			usort( $query, function ( $a, $b ) {
+			usort( $query, static function ( $a, $b ) {
 				return strcmp( json_encode( $a ), json_encode( $b ) );
 			} );
 		} else {

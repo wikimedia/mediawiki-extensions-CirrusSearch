@@ -73,7 +73,7 @@ class CompletionResultsCollectorTest extends CirrusTestCase {
 				[ 'id' => 1, 'score' => 11 ],
 				[ 'id' => 2, 'score' => 9 ],
 			],
-			array_map( function ( SearchSuggestion $s ) {
+			array_map( static function ( SearchSuggestion $s ) {
 				return [ 'id' => $s->getSuggestedTitleID(), 'score' => $s->getScore() ];
 			}, $set->getSuggestions() ) );
 		$requests = $log->getRequests();

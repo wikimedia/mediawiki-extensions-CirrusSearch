@@ -45,7 +45,7 @@ class QueryCompSuggestBuildDoc extends ApiQueryBase {
 
 	private function addExplanation( SuggestBuilder $builder, $pageId, array $docs ) {
 		$docs = array_map(
-			function ( Document $d ) {
+			static function ( Document $d ) {
 				return [ $d->getId() => $d->getData() ];
 			}, $builder->build( $docs, true )
 		);

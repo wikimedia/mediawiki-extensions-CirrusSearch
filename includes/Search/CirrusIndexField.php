@@ -182,7 +182,7 @@ abstract class CirrusIndexField extends SearchIndexFieldDefinition {
 				$data = is_array( $data ) ? $data : [ $data ];
 				$doc->set(
 					$field,
-					array_values( array_filter( $data, function ( string $x ) {
+					array_values( array_filter( $data, static function ( string $x ) {
 							return !str_ends_with( $x, self::MULTILIST_DELETE_GROUPING );
 					} ) )
 				);

@@ -108,7 +108,7 @@ class OtherIndexesUpdater extends Updater {
 				$query = $this->queryForTitle( $title );
 				$search = $type->createSearch( $query );
 				$findIdsMultiSearch->addSearch( $search );
-				$findIdsClosures[] = function ( $docId ) use ( $otherIndex, &$updates, $title ) {
+				$findIdsClosures[] = static function ( $docId ) use ( $otherIndex, &$updates, $title ) {
 					// The searchIndex, including the cluster specified, is needed
 					// as this gets passed to the ExternalIndex constructor in
 					// the created jobs.
@@ -180,7 +180,7 @@ class OtherIndexesUpdater extends Updater {
 	 * @param string $reason
 	 */
 	private function logFailure( array $titles, $reason = '' ) {
-		$articleIDs = array_map( function ( Title $title ) {
+		$articleIDs = array_map( static function ( Title $title ) {
 			return $title->getArticleID();
 		}, $titles );
 		if ( $reason ) {

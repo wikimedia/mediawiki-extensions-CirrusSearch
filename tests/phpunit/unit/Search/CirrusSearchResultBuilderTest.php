@@ -76,7 +76,7 @@ class CirrusSearchResultBuilderTest extends CirrusTestCase {
 	}
 
 	private function getter( $field, $type ) {
-		return function ( CirrusSearchResult $result ) use ( $field, $type ) {
+		return static function ( CirrusSearchResult $result ) use ( $field, $type ) {
 			return call_user_func( [ $result, ( $type === 'boolean' ? 'is' : 'get' ) . ucfirst( $field ) ] );
 		};
 	}

@@ -116,7 +116,7 @@ class InterwikiSearcher extends Searcher {
 		}
 
 		return $mresponses->transformAndGetMulti( $this->searchContext->getResultsType(), array_keys( $iwQueries ),
-			function ( array $v ) use ( $blockScorer ) {
+			static function ( array $v ) use ( $blockScorer ) {
 				return $blockScorer->reorder( $v );
 			} );
 	}

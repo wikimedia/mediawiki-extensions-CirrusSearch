@@ -168,7 +168,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockClient = $this->getMockBuilder( Client::class )
 			->disableOriginalConstructor()
 			->setProxyTarget( new Client( [ 'connections' => [] ] ) )
-			->setMethods( [ 'request' ] )
+			->onlyMethods( [ 'request' ] )
 			->getMock();
 
 		$mockClient->expects( $this->once() )
@@ -200,7 +200,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon = $this->getMockBuilder( Connection::class )
 			->disableOriginalConstructor()
 			->setProxyTarget( new Connection( $searchConfig, 'default' ) )
-			->setMethods( [ 'getClient' ] )
+			->onlyMethods( [ 'getClient' ] )
 			->getMock();
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
@@ -242,7 +242,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockClient = $this->getMockBuilder( Client::class )
 			->disableOriginalConstructor()
 			->setProxyTarget( new Client( [ 'connections' => [] ] ) )
-			->setMethods( [ 'request' ] )
+			->onlyMethods( [ 'request' ] )
 			->getMock();
 
 		$mockClient->expects( $this->once() )
@@ -274,7 +274,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon = $this->getMockBuilder( Connection::class )
 			->disableOriginalConstructor()
 			->setProxyTarget( new Connection( $searchConfig, 'default' ) )
-			->setMethods( [ 'getClient' ] )
+			->onlyMethods( [ 'getClient' ] )
 			->getMock();
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
@@ -480,7 +480,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon = $this->getMockBuilder( Connection::class )
 			->disableOriginalConstructor()
 			->setProxyTarget( new Connection( $searchConfig, 'default' ) )
-			->setMethods( [ 'getClient' ] )
+			->onlyMethods( [ 'getClient' ] )
 			->getMock();
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
@@ -499,7 +499,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 			$this->getMockBuilder( Client::class )
 				->disableOriginalConstructor()
 				->setProxyTarget( new Client( [ 'connections' => [] ] ) )
-				->setMethods( [ 'request' ] )
+				->onlyMethods( [ 'request' ] )
 				->getMock();
 
 		$mockClient->expects( $this->exactly( $count ) )

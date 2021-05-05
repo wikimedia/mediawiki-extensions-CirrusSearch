@@ -132,7 +132,7 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 		$conn = new Connection( $config );
 		$oi = $this->getMockBuilder( OtherIndexesUpdater::class )
 			->setConstructorArgs( [ $conn, $config, [], wfWikiId() ] )
-			->setMethods( [ 'runUpdates' ] )
+			->onlyMethods( [ 'runUpdates' ] )
 			->getMock();
 		$oi->expects( $this->once() )
 			->method( 'runUpdates' )

@@ -597,7 +597,7 @@ class Hooks {
 				'docId' => self::getConfig()->makeId( $oldId )
 			] );
 			// Push the job after DB commit but cancel on rollback
-			wfGetDB( DB_MASTER )->onTransactionCommitOrIdle( static function () use ( $job ) {
+			wfGetDB( DB_PRIMARY )->onTransactionCommitOrIdle( static function () use ( $job ) {
 				JobQueueGroup::singleton()->lazyPush( $job );
 			}, __METHOD__ );
 		}

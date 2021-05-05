@@ -58,7 +58,7 @@ class DeleteBrowserTestPages extends Maintenance {
 		] );
 		$pattern = "/$pattern/";
 
-		$dbw = wfGetDB( DB_MASTER );
+		$dbw = wfGetDB( DB_PRIMARY );
 		$it = new \BatchRowIterator( $dbw, 'page', 'page_id', 500 );
 		$it->setFetchColumns( [ '*' ] );
 		$it->setCaller( __METHOD__ );

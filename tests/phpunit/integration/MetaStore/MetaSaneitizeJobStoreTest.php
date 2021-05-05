@@ -45,7 +45,7 @@ class MetaSaneitizeJobStoreTest extends CirrusIntegrationTestCase {
 			->makeConfig( 'CirrusSearch' );
 		$conn = $this->getMockBuilder( Connection::class )
 			->setConstructorArgs( [ $config ] )
-			->setMethods( [ 'getIndex' ] )
+			->onlyMethods( [ 'getIndex' ] )
 			->getMock();
 
 		$index = $this->getMockBuilder( \Elastica\Index::class )

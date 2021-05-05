@@ -91,7 +91,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 		$conn = $this->getMockBuilder( Connection::class )
 			->setConstructorArgs( [ $config ] )
 			// call real connection on unmocked methods
-			->setMethods( [ 'getIndex' ] )
+			->onlyMethods( [ 'getIndex' ] )
 			->getMock();
 
 		$index = $this->getMockBuilder( \Elastica\Index::class )

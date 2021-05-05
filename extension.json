@@ -480,6 +480,9 @@
 		"CirrusSearchUserTesting": {
 			"value": []
 		},
+		"CirrusSearchActiveTest": {
+			"value": null
+		},
 		"CirrusSearchCompletionProfiles": {
 			"value": []
 		},

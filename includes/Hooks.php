@@ -738,8 +738,18 @@ class Hooks {
 		$jsVars = [
 			'wgCirrusSearchRequestSetToken' => Util::getRequestSetToken(),
 		];
-		if ( UserTesting::isInitialized() ) {
-			$jsVars['wgCirrusSearchBackendUserTests'] = UserTesting::getInstance()->getActiveTestNamesWithBucket();
+		// In theory UserTesting should always have been activated by now, but if
+		// somehow it wasn't we don't want to activate it now at the end of the request
+		// and report incorrect data.
+		if ( UserTestingStatus::hasInstance() ) {
+			$ut = UserTestingStatus::getInstance();
+			if ( $ut->isActive() ) {
+				$trigger = $ut->getTrigger();
+				$jsVars['wgCirrusSearchActiveUserTest'] = $trigger;
+				// bc for first deployment, some users will still have old js.
+				// Should be removed in following deployment.
+				$jsVars['wgCirrusSearchBackendUserTests'] = $trigger ? [ $trigger ] : [];
+			}
 		}
 		$wgOut->addJsConfigVars( $jsVars );
 

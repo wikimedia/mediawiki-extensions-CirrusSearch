@@ -5,7 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\SearchConfig;
-use CirrusSearch\UserTesting;
+use CirrusSearch\UserTestingEngine;
 use MediaWiki\MediaWikiServices;
 
 // Maintenance class is loaded before autoload, so we need to pull the interface
@@ -73,10 +73,12 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		// alternate value would testing on the same cluster
 		// but this index would not receive updates.
 		$trigger = $this->getOption( 'userTestTrigger' );
-		$ut = UserTesting::getInstance( null, $trigger );
-		if ( !$ut->getActiveTestNames() ) {
+		$engine = UserTestingEngine::fromConfig( $this->getConfig() );
+		$status = $engine->decideTestByTrigger( $trigger );
+		if ( !$status->isActive() ) {
 			$this->fatalError( "Unknown user test trigger: $trigger" );
 		}
+		$engine->activateTest( $status );
 	}
 
 	/**

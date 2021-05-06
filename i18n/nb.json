@@ -61,6 +61,7 @@
 	"cirrussearch-feature-deepcat-exception": "SPARQL-spørring for dypt kategorisøk feilet",
 	"cirrussearch-feature-deepcat-toomany": "Spørringen for dype kategorier returnerte for mange kategorier",
 	"cirrussearch-feature-deepcat-invalid-title": "Den gitte kategorien er ugyldig.",
+	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Ugyldig side-ID|Ugyldige side-ID-er}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Ingen gyldige kategorier gitt til «$1».",
 	"cirrussearch-mlt-feature-no-valid-titles": "Ingen gyldige titler gitt til «$1».",
 	"cirrussearch-mlt-not-configured": "Funksjonen «$1» er feilkonfigurert. Be en administrator om å fikse $wgCirrusSearchMoreLikeThisFields",
@@ -75,5 +76,6 @@
 	"cirrussearch-autoselect-profile": "La søkemotoren bestemme den beste profilen å bruke.",
 	"cirrussearch-offset-too-large": "Kunne ikke hente resultater. Opptil $1 {{PLURAL:$1|søkeresultat|søkeresultater}} støttes, men resultater fra og med $2 ble etterspurt.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorerer forespørsel om å dele inn tilfeldig sorterte resultater i sider.",
-	"cirrussearch-articletopic-invalid-topic": "Ikke-gjenkjent {{PLURAL:$2|emnenavn}} for nøkkelordet <kbd>articletopic</kbd>: $1"
+	"cirrussearch-articletopic-invalid-topic": "Ikke-gjenkjent {{PLURAL:$2|emnenavn}} for nøkkelordet <kbd>articletopic</kbd>: $1",
+	"cirrussearch-inlanguage-deprecate-comma": "Bruk av komma som skilletegn for nøkkelordet «inlanguage» støttes ikke lenger. Bruk | (vertikalstrek) for å separere språk."
 }

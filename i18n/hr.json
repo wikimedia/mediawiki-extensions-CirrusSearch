@@ -3,7 +3,8 @@
 		"authors": [
 			"Bugoslav",
 			"Ivi104",
-			"MaGa"
+			"MaGa",
+			"Ponor"
 		]
 	},
 	"cirrussearch-desc": "Pretraga za MediaWiki pomoću Elasticsearcha",
@@ -14,9 +15,9 @@
 	"cirrussearch-now-using": "Ovaj wiki koristi novi način pretrage. ([[mw:Special:MyLanguage/Help:CirrusSearch|Saznajte više]])",
 	"cirrussearch-pref-label": "Novi način pretrage",
 	"cirrussearch-pref-desc": "Isprobajte novi način pretrage koji podržava veliki broj jezika, ažurirane rezultate, a omogućava i pretraživanje unutar predložaka.",
-	"prefs-completion": "Pretražno dovršavanje",
+	"prefs-completion": "Dovršavanje pretraga",
 	"cirrussearch-pref-completion-section-desc": "Dovršivač pretrage",
-	"cirrussearch-pref-completion-profile-help": "Odredite način na koji se vrši automatsko dovršavanje pretraga (pretražuje dok utipkavate).",
+	"cirrussearch-pref-completion-profile-help": "Izaberite način automatskog dovršavanja prilikom utipkavanja pretraga.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Zadano (preporučeno)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Ispravlja do dvije pogreške. Vodi na preusmjeravanja bliska upisanome.",
 	"cirrussearch-completion-profile-strict-pref-name": "Strogi način (napredno)",

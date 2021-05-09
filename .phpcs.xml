@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset>
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
+		<exclude name="Generic.Files.LineLength.TooLong" />
 		<exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.DefaultNullTypeParam" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected" />
@@ -32,7 +33,7 @@
 		<exclude-pattern>tests/phpunit/resources/wmf</exclude-pattern>
 	</rule>
 	<file>.</file>
-	<arg name="extensions" value="php,php5,inc"/>
+	<arg name="extensions" value="php"/>
 	<arg name="encoding" value="UTF-8"/>
 	<exclude-pattern>tests/phan</exclude-pattern>
 </ruleset>

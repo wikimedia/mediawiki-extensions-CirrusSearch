@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Api;
 
+use ApiBase;
 use ApiResult;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
@@ -25,7 +26,7 @@ use MediaWiki\MediaWikiServices;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class ConfigDump extends \ApiBase {
+class ConfigDump extends ApiBase {
 	use ApiTrait;
 
 	public static $PUBLICLY_SHAREABLE_CONFIG_VARS = [
@@ -144,9 +145,16 @@ class ConfigDump extends \ApiBase {
 
 	public function execute() {
 		$result = $this->getResult();
-		$this->addGlobals( $result );
-		$this->addConcreteNamespaceMap( $result );
-		$this->addProfiles( $result );
+		$props = array_flip( $this->extractRequestParams()[ 'prop' ] );
+		if ( isset( $props['globals'] ) ) {
+			$this->addGlobals( $result );
+		}
+		if ( isset( $props['namespacemap'] ) ) {
+			$this->addConcreteNamespaceMap( $result );
+		}
+		if ( isset( $props['profiles'] ) ) {
+			$this->addProfiles( $result );
+		}
 	}
 
 	protected function addGlobals( ApiResult $result ) {
@@ -162,7 +170,8 @@ class ConfigDump extends \ApiBase {
 	 * Include a complete mapping from namespace id to index containing pages.
 	 *
 	 * Intended for external services/users that need to interact
-	 * with elasticsearch directly.
+	 * with elasticsearch or cirrussearch dumps directly.
+	 *
 	 * @param ApiResult $result Impl to write results to
 	 */
 	private function addConcreteNamespaceMap( ApiResult $result ) {
@@ -204,7 +213,17 @@ class ConfigDump extends \ApiBase {
 	}
 
 	public function getAllowedParams() {
-		return [];
+		return [
+			'prop' => [
+				ApiBase::PARAM_DFLT => 'globals|namespacemap|profiles',
+				ApiBase::PARAM_TYPE => [
+					'globals',
+					'namespacemap',
+					'profiles',
+				],
+				ApiBase::PARAM_ISMULTI => true,
+			],
+		];
 	}
 
 	/**

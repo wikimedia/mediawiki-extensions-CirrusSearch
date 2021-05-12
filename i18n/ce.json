@@ -6,7 +6,7 @@
 	},
 	"cirrussearch-desc": "MediaWiki-на лахар Elasticsearch базанца",
 	"cirrussearch-backend-error": "Хана долу гӀалат бахьнехь лахар чекхдакха цаделира. Дехар до гӀорта тӀехьо.",
-	"cirrussearch-parse-error": "Дехарах цакхийтира. Дехар до, и атта дар. Дехар дӀаяздина лахаран система дика ян.",
+	"cirrussearch-parse-error": "Дехарах цакхийтира. Дехар до, и атта дар. Дехар дӀайаздина лахаран система дика йан.",
 	"cirrussearch-too-busy-error": "ХӀинца лахаран халонаш йу. Дехар до, лаха тӀаьхьо.",
 	"cirrussearch-now-using": "ХӀокху викис лелош йу керла лахаран таро. ([[mw:Special:MyLanguage/Help:CirrusSearch|Мадарра]])",
 	"cirrussearch-pref-label": "Керла лахар",
@@ -22,6 +22,6 @@
 	"cirrussearch-completion-profile-normal-pref-name": "ДӀасхьажорийн раж (шорйина)",
 	"cirrussearch-completion-profile-normal-pref-desc": "Нийс ма де гӀалаташ. Гойту йогӀуш йолу дӀасахьажоргаш.",
 	"cirrussearch-completion-profile-classic-pref-name": "Префиксца классикан лахар",
-	"cirrussearch-completion-profile-classic-pref-desc": "Нийс ма де гӀалаташ. Язъеше гойту цӀерш.",
-	"cirrussearch-article-words": "Берриге яззамашкахь ду дош"
+	"cirrussearch-completion-profile-classic-pref-desc": "ГӀалаташ нис цадо. Йазйечу хенахь гойту цӀерш.",
+	"cirrussearch-article-words": "Берриге йаззамашкахь ду дош"
 }

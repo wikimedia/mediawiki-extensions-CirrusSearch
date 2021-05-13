@@ -215,13 +215,13 @@ trait CirrusTestCaseTrait {
 							return [ $pieces[1], [ NS_CATEGORY ] ];
 						case 'help':
 							return [ $pieces[1], [ NS_HELP ] ];
-						case 'template';
+						case 'template':
 							return [ $pieces[1], [ NS_TEMPLATE ] ];
 						case 'category_talk':
 							return [ $pieces[1], [ NS_CATEGORY_TALK ] ];
 						case 'help_talk':
 							return [ $pieces[1], [ NS_HELP_TALK ] ];
-						case 'template_talk';
+						case 'template_talk':
 							return [ $pieces[1], [ NS_TEMPLATE_TALK ] ];
 						case 'file':
 							return [ $pieces[1], [ NS_FILE ] ];

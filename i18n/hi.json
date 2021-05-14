@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Abijeet Patro",
 			"Anamdas",
 			"Hindustanilanguage",
 			"Jayprakash12345",
@@ -45,6 +46,7 @@
 	"cirrussearch-incategory-feature-no-valid-categories": "'$1' के लिए कोई मान्य श्रेणी नहीं दिया गया।",
 	"cirrussearch-mlt-feature-no-valid-titles": "'$1' के लिए कोई मान्य शीर्षक नहीं दिया गया।",
 	"cirrussearch-mlt-not-configured": "'$1' सुविधा को गलत तरीके से कॉन्फ़िगर किया गया है। $WgCirrusSearchMoreLikeThisFields को ठीक करने के लिए एक प्रबन्धक से पूछें।",
+	"cirrussearch-explore-similar-related": "सम्बंधित",
 	"cirrussearch-explore-similar-categories": "श्रेणियाँ",
 	"cirrussearch-explore-similar-languages": "भाषा",
 	"cirrussearch-explore-similar-categories-none": "कोई श्रेणी उपलब्ध नहीं",

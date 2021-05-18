@@ -753,7 +753,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				'all_defaults',
 			],
 			"icu folding languages" => [
-				[ 'bs', 'el', 'en', 'eo', 'fr', 'he', 'hr', 'sh', 'simple', 'sk', 'sr', 'sv', ],
+				[ 'bs', 'de', 'el', 'en', 'eo', 'es', 'fr', 'he', 'hr', 'nl', 'pt', 'sh',
+				  'simple', 'sk', 'sr', 'sv', ],
 				$emptyConfig,
 				[ 'extra', 'analysis-icu' ],
 				'icu_folders',

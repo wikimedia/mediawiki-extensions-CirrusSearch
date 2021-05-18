@@ -351,22 +351,46 @@ class AnalysisConfigBuilder {
 		 * For Esperanto (eo), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
 		 * For Slovak (sk)—which has no folding configured here!—see:
 		 *   https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
+		 * For Spanish (es), see T277699
+		 * For German (de), see T281379
 		 */
 		case 'bs':
 		case 'hr':
 		case 'sh':
 		case 'sr':
 			return '[^ĐđŽžĆćŠšČč]';
+		case 'de':
+			return '[^ÄäÖöÜüẞß]';
 		case 'eo':
 			return '[^ĈĉĜĝĤĥĴĵŜŝŬŭ]';
 		case 'es':
 			return '[^Ññ]';
 		case 'fi':
-			return '[^åäöÅÄÖ]';
+			return '[^ÅåÄäÖö]';
 		case 'ru':
-			return '[^йЙ]';
+			return '[^Йй]';
 		case 'sv':
-			return '[^åäöÅÄÖ]';
+			return '[^ÅåÄäÖö]';
+		default:
+			return null;
+		}
+	}
+
+	/**
+	 * Return the list of chars to exclude from ICU normalization
+	 * @param string $language Config language
+	 * @return null|string
+	 */
+	protected function getICUNormSetFilter( $language ) {
+		if ( $this->config->get( 'CirrusSearchICUNormalizationUnicodeSetFilter' ) !== null ) {
+			return $this->config->get( 'CirrusSearchICUNormalizationUnicodeSetFilter' );
+		}
+		switch ( $language ) {
+		/* For German (de), see T281379
+		 */
+		case 'de':
+			return '[^ẞß]'; // Capital ẞ is lowercased to ß by german_charfilter
+							// lowercase ß is normalized to ss by german_normalization
 		default:
 			return null;
 		}
@@ -599,6 +623,10 @@ class AnalysisConfigBuilder {
 				'type' => 'icu_normalizer',
 				'name' => 'nfkc_cf',
 			];
+			$unicodeSetFilter = $this->getICUNormSetFilter( $language );
+			if ( !empty( $unicodeSetFilter ) ) {
+				$defaults[ 'filter' ][ 'icu_normalizer' ][ 'unicodeSetFilter' ] = $unicodeSetFilter;
+			}
 		}
 
 		return $defaults;
@@ -657,6 +685,28 @@ class AnalysisConfigBuilder {
 
 			$config[ 'analyzer' ][ 'plain' ][ 'filter' ] = [ 'smartcn_stop', 'lowercase' ];
 			$config[ 'analyzer' ][ 'plain_search' ][ 'filter' ] = $config[ 'analyzer' ][ 'plain' ][ 'filter' ];
+			break;
+		case 'dutch':
+			$config[ 'char_filter' ][ 'dutch_charfilter' ] = $this->mappingCharFilter( $dottedI );
+			$config[ 'filter' ][ 'dutch_stop' ] = $this->stopFilter( '_dutch_' );
+			$config[ 'filter' ][ 'dutch_stemmer' ] = $this->stemmerFilter( 'dutch' );
+			$config[ 'filter' ][ 'dutch_override' ] = [
+				'type' => 'stemmer_override',
+				'rules' => [ // these are in the default Dutch analyzer
+					"fiets=>fiets",
+					"bromfiets=>bromfiets",
+					"ei=>eier",
+					"kind=>kinder"
+				],
+			];
+
+			// Unpack Dutch analyzer T281379
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'char_filter' => [ 'dutch_charfilter' ],
+				'tokenizer' => 'standard',
+				'filter' => [ 'lowercase', 'dutch_stop', 'dutch_override', 'dutch_stemmer', 'asciifolding' ],
+			];
 			break;
 		case 'english':
 			// Map hiragana (\u3041-\u3096) to katakana (\u30a1-\u30f6), currently only for English
@@ -719,6 +769,26 @@ class AnalysisConfigBuilder {
 				'filter' => [ 'french_elision', 'lowercase', 'french_stop', 'french_stemmer',
 					'asciifolding_preserve' ],
 			];
+			break;
+		case 'german':
+			$eszettMap = [ 'ẞ=>ß' ]; // We have to explicitly map capital ẞ to lowercase ß
+			$config[ 'char_filter' ][ 'german_charfilter' ] =
+				$this->mappingCharFilter( array_merge( $dottedI, $eszettMap ) );
+			$config[ 'filter' ][ 'german_stop' ] = $this->stopFilter( '_german_' );
+			$config[ 'filter' ][ 'german_stemmer' ] = $this->stemmerFilter( 'light_german' );
+
+			// Unpack German analyzer T281379
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'char_filter' => [ 'german_charfilter' ],
+				'tokenizer' => 'standard',
+				'filter' => [ 'lowercase', 'german_stop', 'german_normalization', 'german_stemmer', 'asciifolding' ],
+			];
+
+			$config[ 'char_filter' ][ 'german_plain_charfilter' ] =
+				$this->mappingCharFilter( $eszettMap );
+			$config[ 'analyzer' ][ 'plain' ][ 'char_filter' ][] = 'german_plain_charfilter';
+			$config[ 'analyzer' ][ 'plain_search' ][ 'char_filter' ][] = 'german_plain_charfilter';
 			break;
 		case 'greek':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'greek';
@@ -885,6 +955,19 @@ class AnalysisConfigBuilder {
 				'tokenizer' => 'standard',
 				'filter' => [ 'lowercase', 'polish_stop', 'polish_stem', 'stempel_pattern_filter',
 					'remove_empty', 'stempel_stop' ],
+			];
+			break;
+		case 'portuguese':
+			$config[ 'char_filter' ][ 'portuguese_charfilter' ] = $this->mappingCharFilter( $dottedI );
+			$config[ 'filter' ][ 'portuguese_stop' ] = $this->stopFilter( '_portuguese_' );
+			$config[ 'filter' ][ 'portuguese_stemmer' ] = $this->stemmerFilter( 'light_portuguese' );
+
+			// Unpack Portuguese analyzer T281379
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'char_filter' => [ 'portuguese_charfilter' ],
+				'tokenizer' => 'standard',
+				'filter' => [ 'lowercase', 'portuguese_stop', 'portuguese_stemmer', 'asciifolding' ],
 			];
 			break;
 		case 'russian':
@@ -1329,7 +1412,6 @@ class AnalysisConfigBuilder {
 		'en-ca' => 'english',
 		'en-gb' => 'english',
 		'simple' => 'english',
-		'es' => 'spanish',
 		'fi' => 'finnish',
 		'fr' => 'french',
 		'gl' => 'galician',
@@ -1363,6 +1445,7 @@ class AnalysisConfigBuilder {
 	 */
 	private $languagesWithIcuFolding = [
 		'bs' => true,
+		'de' => true,
 		'el' => true,
 		'en' => true,
 		'en-ca' => true,
@@ -1373,6 +1456,8 @@ class AnalysisConfigBuilder {
 		'fr' => true,
 		'he' => true,
 		'hr' => true,
+		'nl' => true,
+		'pt' => true,
 		'sh' => true,
 		'sk' => true,
 		'sr' => true,

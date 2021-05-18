@@ -161,33 +161,57 @@
         "de_plain": {
             "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "word_break_helper",
+                "german_plain_charfilter"
             ],
             "tokenizer": "standard",
             "filter": [
-                "icu_normalizer"
+                "de_icu_normalizer",
+                "preserve_original_recorder",
+                "de_icu_folding",
+                "preserve_original",
+                "remove_empty"
             ]
         },
         "de_plain_search": {
             "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "word_break_helper",
+                "german_plain_charfilter"
             ],
             "tokenizer": "standard",
             "filter": [
-                "icu_normalizer"
+                "de_icu_normalizer"
             ]
         },
         "de_text": {
-            "type": "german",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "german_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "de_icu_normalizer",
+                "german_stop",
+                "german_normalization",
+                "german_stemmer",
+                "de_icu_folding",
+                "remove_empty"
             ]
         },
         "de_text_search": {
-            "type": "german",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "german_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "de_icu_normalizer",
+                "german_stop",
+                "german_normalization",
+                "german_stemmer",
+                "de_icu_folding",
+                "remove_empty"
             ]
         },
         "zh_plain": {
@@ -329,6 +353,23 @@
         "spanish_stemmer": {
             "type": "stemmer",
             "language": "light_spanish"
+        },
+        "de_icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf",
+            "unicodeSetFilter": "[^\u1e9e\u00df]"
+        },
+        "de_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00c4\u00e4\u00d6\u00f6\u00dc\u00fc\u1e9e\u00df]"
+        },
+        "german_stop": {
+            "type": "stop",
+            "stopwords": "_german_"
+        },
+        "german_stemmer": {
+            "type": "stemmer",
+            "language": "light_german"
         },
         "smartcn_stop": {
             "type": "stop",
@@ -479,6 +520,19 @@
             "type": "mapping",
             "mappings": [
                 "\\u0130=>I"
+            ]
+        },
+        "german_plain_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\u1e9e=>\u00df"
+            ]
+        },
+        "german_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\\u0130=>I",
+                "\u1e9e=>\u00df"
             ]
         },
         "stconvertfix": {

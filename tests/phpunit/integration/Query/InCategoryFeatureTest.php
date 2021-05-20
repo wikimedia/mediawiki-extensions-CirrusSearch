@@ -178,6 +178,9 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 		$lb->expects( $this->any() )
 			->method( 'getMaintenanceConnectionRef' )
 			->will( $this->returnValue( $db ) );
+		$lb->expects( $this->any() )
+			->method( 'getLocalDomainID' )
+			->will( $this->returnValue( '' ) );
 		$this->setService( 'DBLoadBalancer', $lb );
 	}
 

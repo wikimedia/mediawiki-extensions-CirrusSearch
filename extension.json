@@ -489,6 +489,9 @@
 		"CirrusSearchUseIcuFolding": {
 			"value": "default"
 		},
+		"CirrusSearchICUNormalizationUnicodeSetFilter": {
+			"value": null
+		},
 		"CirrusSearchICUFoldingUnicodeSetFilter": {
 			"value": null
 		},

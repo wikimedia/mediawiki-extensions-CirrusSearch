@@ -1,15 +1,17 @@
 {
     "analyzer": {
         "text": {
-            "type": "portuguese",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
-            ]
-        },
-        "text_search": {
-            "type": "portuguese",
-            "char_filter": [
-                "word_break_helper"
+                "portuguese_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "portuguese_stop",
+                "portuguese_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -166,6 +168,20 @@
             "filter": [
                 "lowercase"
             ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "portuguese_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "portuguese_stop",
+                "portuguese_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -202,6 +218,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "portuguese_stop": {
+            "type": "stop",
+            "stopwords": "_portuguese_"
+        },
+        "portuguese_stemmer": {
+            "type": "stemmer",
+            "language": "light_portuguese"
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -250,6 +274,12 @@
                 "(=>\\u0020",
                 ")=>\\u0020",
                 ":=>\\u0020"
+            ]
+        },
+        "portuguese_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\\u0130=>I"
             ]
         }
     }

@@ -1,15 +1,18 @@
 {
     "analyzer": {
         "text": {
-            "type": "dutch",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
-            ]
-        },
-        "text_search": {
-            "type": "dutch",
-            "char_filter": [
-                "word_break_helper"
+                "dutch_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "dutch_stop",
+                "dutch_override",
+                "dutch_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -166,6 +169,21 @@
             "filter": [
                 "lowercase"
             ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dutch_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "dutch_stop",
+                "dutch_override",
+                "dutch_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -202,6 +220,23 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "dutch_stop": {
+            "type": "stop",
+            "stopwords": "_dutch_"
+        },
+        "dutch_stemmer": {
+            "type": "stemmer",
+            "language": "dutch"
+        },
+        "dutch_override": {
+            "type": "stemmer_override",
+            "rules": [
+                "fiets=>fiets",
+                "bromfiets=>bromfiets",
+                "ei=>eier",
+                "kind=>kinder"
+            ]
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -250,6 +285,12 @@
                 "(=>\\u0020",
                 ")=>\\u0020",
                 ":=>\\u0020"
+            ]
+        },
+        "dutch_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\\u0130=>I"
             ]
         }
     }

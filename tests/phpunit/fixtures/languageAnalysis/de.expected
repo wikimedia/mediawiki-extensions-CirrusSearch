@@ -1,21 +1,25 @@
 {
     "analyzer": {
         "text": {
-            "type": "german",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
-            ]
-        },
-        "text_search": {
-            "type": "german",
-            "char_filter": [
-                "word_break_helper"
+                "german_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "german_stop",
+                "german_normalization",
+                "german_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
             "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "word_break_helper",
+                "german_plain_charfilter"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -25,7 +29,8 @@
         "plain_search": {
             "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "word_break_helper",
+                "german_plain_charfilter"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -166,6 +171,21 @@
             "filter": [
                 "lowercase"
             ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "german_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "german_stop",
+                "german_normalization",
+                "german_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -202,6 +222,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "german_stop": {
+            "type": "stop",
+            "stopwords": "_german_"
+        },
+        "german_stemmer": {
+            "type": "stemmer",
+            "language": "light_german"
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -250,6 +278,19 @@
                 "(=>\\u0020",
                 ")=>\\u0020",
                 ":=>\\u0020"
+            ]
+        },
+        "german_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\\u0130=>I",
+                "\u1e9e=>\u00df"
+            ]
+        },
+        "german_plain_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\u1e9e=>\u00df"
             ]
         }
     }

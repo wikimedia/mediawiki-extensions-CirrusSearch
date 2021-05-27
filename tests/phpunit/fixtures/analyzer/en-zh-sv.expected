@@ -2,6 +2,9 @@
     "analyzer": {
         "en_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "icu_normalizer",
@@ -9,28 +12,25 @@
                 "icu_folding",
                 "preserve_original",
                 "remove_empty"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "en_plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "en_text": {
             "type": "custom",
-            "tokenizer": "standard",
             "char_filter": [
                 "word_break_helper",
                 "kana_map"
             ],
+            "tokenizer": "standard",
             "filter": [
                 "aggressive_splitting",
                 "possessive_english",
@@ -44,11 +44,11 @@
         },
         "en_text_search": {
             "type": "custom",
-            "tokenizer": "standard",
             "char_filter": [
                 "word_break_helper",
                 "kana_map"
             ],
+            "tokenizer": "standard",
             "filter": [
                 "aggressive_splitting",
                 "possessive_english",
@@ -62,33 +62,33 @@
         },
         "zh_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "smartcn_stop",
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "zh_plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "smartcn_stop",
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "zh_text": {
             "type": "custom",
-            "tokenizer": "smartcn_tokenizer",
             "char_filter": [
                 "stconvertfix",
                 "tsconvert"
             ],
+            "tokenizer": "smartcn_tokenizer",
             "filter": [
                 "smartcn_stop",
                 "icu_normalizer"
@@ -96,11 +96,11 @@
         },
         "zh_text_search": {
             "type": "custom",
-            "tokenizer": "smartcn_tokenizer",
             "char_filter": [
                 "stconvertfix",
                 "tsconvert"
             ],
+            "tokenizer": "smartcn_tokenizer",
             "filter": [
                 "smartcn_stop",
                 "icu_normalizer"
@@ -108,6 +108,9 @@
         },
         "sv_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "icu_normalizer",
@@ -115,19 +118,16 @@
                 "sv_icu_folding",
                 "preserve_original",
                 "remove_empty"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "sv_plain_search": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ],
-            "char_filter": [
-                "word_break_helper"
             ]
         },
         "sv_text": {
@@ -190,7 +190,7 @@
         },
         "sv_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00e5\u00e4\u00f6\u00c5\u00c4\u00d6]"
+            "unicodeSetFilter": "[^\u00c5\u00e5\u00c4\u00e4\u00d6\u00f6]"
         },
         "swedish_stop": {
             "type": "stop",

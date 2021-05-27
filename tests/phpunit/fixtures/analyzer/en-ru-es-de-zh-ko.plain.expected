@@ -73,21 +73,27 @@
         "de_plain": {
             "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "word_break_helper",
+                "german_plain_charfilter"
             ],
             "tokenizer": "standard",
             "filter": [
-                "icu_normalizer"
+                "de_icu_normalizer",
+                "preserve_original_recorder",
+                "de_icu_folding",
+                "preserve_original",
+                "remove_empty"
             ]
         },
         "de_plain_search": {
             "type": "custom",
             "char_filter": [
-                "word_break_helper"
+                "word_break_helper",
+                "german_plain_charfilter"
             ],
             "tokenizer": "standard",
             "filter": [
-                "icu_normalizer"
+                "de_icu_normalizer"
             ]
         },
         "zh_plain": {
@@ -149,6 +155,15 @@
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u00d1\u00f1]"
         },
+        "de_icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf",
+            "unicodeSetFilter": "[^\u1e9e\u00df]"
+        },
+        "de_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00c4\u00e4\u00d6\u00f6\u00dc\u00fc\u1e9e\u00df]"
+        },
         "smartcn_stop": {
             "type": "stop",
             "stopwords": [
@@ -175,6 +190,12 @@
                 "\\u0451=>\\u0435",
                 "\\u0401=>\\u0415",
                 "\\u0130=>I"
+            ]
+        },
+        "german_plain_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\u1e9e=>\u00df"
             ]
         }
     },

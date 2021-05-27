@@ -96,7 +96,7 @@ abstract class ElasticsearchIntermediary {
 		// This isn't explicitly used, but we need to make sure it is
 		// instantiated so it has the opportunity to override global
 		// configuration for test buckets.
-		UserTesting::getInstance();
+		UserTestingStatus::getInstance();
 	}
 
 	/**

@@ -355,9 +355,16 @@ class RequestLogger {
 		if ( !empty( $elasticSearchRequests ) ) {
 			$requestEvent['elasticsearch_requests'] = $elasticSearchRequests;
 		}
-		$activeTestNames = UserTesting::getInstance()->getActiveTestNamesWithBucket();
-		if ( !empty( $activeTestNames ) ) {
-			$requestEvent['backend_user_tests'] = $activeTestNames;
+		// Should always be true, but don't accidently instantiate user testing if somehow
+		// it wasn't done previously.
+		if ( UserTestingStatus::hasInstance() ) {
+			$ut = UserTestingStatus::getInstance();
+			if ( $ut->isActive() ) {
+				// Wrap into an array. UserTesting does not support multiple
+				// concurrent tests in one request, but the schema was written
+				// when that was a possibility.
+				$requestEvent['backend_user_tests'] = [ $ut->getTrigger() ];
+			}
 		}
 
 		// If in webrequests, log these request headers in http.headers.

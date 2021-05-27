@@ -6,6 +6,7 @@ use ApiBase;
 use ApiResult;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\UserTestingEngine;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -155,6 +156,9 @@ class ConfigDump extends ApiBase {
 		if ( isset( $props['profiles'] ) ) {
 			$this->addProfiles( $result );
 		}
+		if ( isset( $props['usertesting'] ) ) {
+			$this->addUserTesting( $result );
+		}
 	}
 
 	protected function addGlobals( ApiResult $result ) {
@@ -212,6 +216,17 @@ class ConfigDump extends ApiBase {
 		}
 	}
 
+	protected function addUserTesting( ApiResult $result ) {
+		// UserTesting only automatically assigns test buckets during web requests.
+		// This api call is different from a typical search request though, this is
+		// used from non-search pages to find out what bucket to provide to a new
+		// autocomplete session.
+		$engine = UserTestingEngine::fromConfig( $this->getConfig() );
+		$status = $engine->decideTestByAutoenroll();
+		$result->addValue( null, 'CirrusSearchActiveUserTest',
+			$status->isActive() ? $status->getTrigger() : '' );
+	}
+
 	public function getAllowedParams() {
 		return [
 			'prop' => [
@@ -220,6 +235,7 @@ class ConfigDump extends ApiBase {
 					'globals',
 					'namespacemap',
 					'profiles',
+					'usertesting',
 				],
 				ApiBase::PARAM_ISMULTI => true,
 			],

@@ -164,7 +164,7 @@ class CirrusSearch extends SearchEngine {
 	) {
 		// Initialize UserTesting before we create a Connection
 		// This is useful to do tests across multiple clusters
-		UserTesting::getInstance();
+		UserTestingStatus::getInstance();
 		$this->config = $config ?? MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );

@@ -1,9 +1,37 @@
 {
 	"@metadata": {
 		"authors": [
-			"Gitartha.bordoloi"
+			"Gitartha.bordoloi",
+			"Simbu123"
 		]
 	},
+	"cirrussearch-backend-error": "কোনো এক অস্থায়ী সমস্যাৰ বাবে আমি আপোনাৰ সন্ধান সম্পূৰ্ণ কৰিব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।",
+	"cirrussearch-parse-error": "আপোনাৰ সন্ধানটো বুজি পোৱা হোৱা নাছিল। অনুগ্ৰহ কৰি ইয়াক সৰল কৰক। অনুসন্ধান প্ৰণালী উন্নত কৰিবলৈ সন্ধানটো লগ কৰা হৈছে।",
+	"cirrussearch-too-busy-error": "সন্ধান বৰ্তমান অতি ব্যস্ত। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।",
 	"cirrussearch-now-using": "এই ৱিকিয়ে এটা নতুন সন্ধান ইঞ্জিন ব্যৱহাৰ কৰিছে। ([[mw:Special:MyLanguage/Help:CirrusSearch|অধিক জানক]])",
+	"cirrussearch-pref-label": "নতুন সন্ধান",
+	"cirrussearch-give-feedback": "আমাক আপোনাৰ মতামত জনাওক",
+	"prefs-completion": "সন্ধান সম্পূৰ্ণকৰণ",
+	"cirrussearch-pref-completion-profile-help": "স্বয়ংসম্পূৰ্ণ (টাইপ কৰাৰ লগে লগেই সন্ধান) পৰামৰ্শৰ বাবে আচৰণ নিৰ্বাচন কৰক।\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester সম্পূৰ্ণতা পৰামৰ্শদাতা] হৈছে উন্নত বানান সংশোধন আৰু সন্ধান প্ৰাসংগিকতাৰ সৈতে সন্ধান পৰামৰ্শৰ বাবে এটা এলগৰিথম। 'ধ্ৰুপদী উপসৰ্গ সন্ধান' হৈছে পুৰণা টাইপ কৰাৰ লগে লগে সন্ধান পৰামৰ্শ দিয়া এলগৰিথম।",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "পূৰ্বনিৰ্ধাৰিত (পৰামৰ্শকৃত)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "দুটা পৰ্যন্ত বানান সংশোধন কৰে। মুখ্য শিৰোনামৰ সৈতে একে ধৰণৰ পুনঃনিৰ্দেশনা আঁতৰ কৰে।",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "উপখণ্ড-বাক্য মিলোৱা (দীঘল পৃষ্ঠাৰ শিৰোনামৰ বাবে পৰামৰ্শকৃত)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "দুটা পৰ্যন্ত বানান সংশোধন কৰে। নিকট পুনঃনিৰ্দেশনা মীমাংসা কৰে। শিৰোনামৰ উপখণ্ড-বাক্য মিলায়।",
+	"cirrussearch-completion-profile-strict-pref-name": "কঠোৰ ম'ড (উন্নত)",
+	"cirrussearch-completion-profile-strict-pref-desc": "কোনো বানান সংশোধন নাই। কোনো এক্সেণ্ট ফল্ডিং নাই। কঠোৰ ভাবে মিলন।",
+	"cirrussearch-completion-profile-normal-pref-name": "পুনঃনিৰ্দেশ ম'ড (উন্নত)",
+	"cirrussearch-completion-profile-normal-pref-desc": "কোনো বানান সংশোধন নাই। নিকট পুনঃনিৰ্দেশনা মীমাংসা কৰে।",
+	"cirrussearch-completion-profile-normal-subphrases-pref-name": "উপখণ্ড-বাক্য মিলোৱাৰ সৈতে পুনঃনিৰ্দেশ ম'ডৰ (উন্নত)",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "কোনো বানান সংশোধন নাই। নিকট পুনঃনিৰ্দেশনা মীমাংসা কৰে। শিৰোনামৰ উপখণ্ড-বাক্য মিলায়।",
+	"cirrussearch-completion-profile-classic-pref-name": "ধ্ৰুপদী উপসৰ্গ সন্ধান",
+	"cirrussearch-completion-profile-classic-pref-desc": "কোনো বানান সংশোধন নাই। শিৰোনামৰ আৰম্ভণিৰ সৈতে মিলায়।",
+	"cirrussearch-timed-out": "সন্ধানৰ সময় উকলি গৈছে, কেৱল আংশিক ফলাফলহে উপলব্ধ।",
+	"cirrussearch-regex-timed-out": "ৰেগুলাৰ এক্সপ্ৰেছন সন্ধানৰ সময় উকলি গৈছে, কেৱল আংশিক ফলাফলহে উপলব্ধ। সম্পূৰ্ণ ফলাফল পাবলৈ আপোনাৰ ৰেগুলাৰ এক্সপ্ৰেছন সৰল কৰিবলৈ চেষ্টা কৰক।",
+	"cirrussearch-explore-similar-related": "সম্পৰ্কিত",
+	"cirrussearch-explore-similar-categories": "শ্ৰেণীসমূহ",
+	"cirrussearch-explore-similar-languages": "ভাষাসমূহ",
+	"cirrussearch-explore-similar-related-none": "কোনো সম্পৰ্কিত পৃষ্ঠা উপলব্ধ নহয়",
+	"cirrussearch-explore-similar-categories-none": "কোনো শ্ৰেণী উপলব্ধ নহয়",
+	"cirrussearch-explore-similar-languages-none": "আন ভাষাত উপলব্ধ নহয়",
 	"cirrussearch-article-words": "সকলো সমল পৃষ্ঠাৰ মুঠ শব্দ সংখ্যা"
 }

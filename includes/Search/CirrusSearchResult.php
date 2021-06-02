@@ -25,7 +25,6 @@ abstract class CirrusSearchResult extends SearchResult {
 	private $file;
 
 	/**
-	 * CirrusSearchResult constructor.
 	 * @param Title $title
 	 */
 	public function __construct( Title $title ) {

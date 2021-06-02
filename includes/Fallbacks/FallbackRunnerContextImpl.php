@@ -55,7 +55,6 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	private $cirrusSearchHookRunner;
 
 	/**
-	 * FallbackRunnerContextImpl constructor.
 	 * @param CirrusSearchResultSet $initialResultSet
 	 * @param SearcherFactory $searcherFactory
 	 * @param NamespacePrefixParser $namespacePrefixParser

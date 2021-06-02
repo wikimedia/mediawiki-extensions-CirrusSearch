@@ -27,7 +27,6 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 	private $factoryGroup;
 
 	/**
-	 * FetchPhaseConfigBuilder constructor.
 	 * @param SearchConfig $config
 	 * @param string|null $factoryGroup
 	 */

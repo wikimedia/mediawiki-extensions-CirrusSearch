@@ -32,7 +32,6 @@ class IndexTemplateBuilder {
 	private $languageCode;
 
 	/**
-	 * IndexTemplateBuilder constructor.
 	 * @param Connection $connection
 	 * @param string $templateName
 	 * @param array $templateDefinition

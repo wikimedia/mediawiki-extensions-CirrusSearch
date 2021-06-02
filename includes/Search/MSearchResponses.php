@@ -28,7 +28,6 @@ class MSearchResponses {
 	private $failure;
 
 	/**
-	 * MSearchResponses constructor.
 	 * @param ElasticaResultSet[] $resultSets
 	 * @param Search[] $requests
 	 * @param Status|null $status failure

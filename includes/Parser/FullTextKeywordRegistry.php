@@ -40,7 +40,6 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 	private $features;
 
 	/**
-	 * FullTextKeywordRegistry constructor.
 	 * @param SearchConfig $config
 	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
 	 * @param NamespacePrefixParser|null $namespacePrefixParser

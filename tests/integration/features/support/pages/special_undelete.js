@@ -9,20 +9,20 @@ class SpecialUndelete extends TitlePage {
 	}
 
 	set search_input( search ) {
-		browser.setValue( '#prefix', search );
+		browser.$( '#prefix' ).setValue( search );
 	}
 
 	get search_input() {
-		return browser.getValue( '#prefix' );
+		return browser.$( '#prefix' ).getValue();
 	}
 
 	click_search_button() {
-		browser.click( '#searchUndelete' );
+		browser.$( '#searchUndelete' ).click();
 	}
 
 	// nth is 1-indexed, not 0 like might be expected
 	get_result_at( nth ) {
-		return browser.getText( `.undeleteResult:nth-child(${nth}) a` );
+		return browser.$( `.undeleteResult:nth-child(${nth}) a` ).getText();
 	}
 }
 

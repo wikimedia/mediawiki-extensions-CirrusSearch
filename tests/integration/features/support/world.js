@@ -61,7 +61,7 @@ class TagClient {
 	}
 }
 
-const tagClient = new TagClient( browser.options );
+const tagClient = new TagClient( browser.config );
 // world gets re-created all the time. Try and save some time logging
 // in by sharing api clients
 const apiClients = {};
@@ -89,7 +89,7 @@ function World( { attach, parameters } ) {
 	};
 
 	// Shortcut to environment configs
-	this.config = browser.options;
+	this.config = browser.config;
 
 	// Extra process tracking what tags have been initialized
 	this.tags = tagClient;
@@ -115,7 +115,10 @@ function World( { attach, parameters } ) {
 		const origRawRequest = client.rawRequest;
 		client.rawRequest = function ( requestOptions ) {
 			return origRawRequest.call( client, requestOptions ).then( ( response ) => {
-				response.__request = requestOptions;
+				// TODO: What conditions cause this to be a string?
+				if ( typeof response !== 'string' ) {
+					response.__request = requestOptions;
+				}
 				return response;
 			} );
 		};

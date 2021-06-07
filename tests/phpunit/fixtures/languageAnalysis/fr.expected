@@ -3,22 +3,7 @@
         "text": {
             "type": "custom",
             "char_filter": [
-                "french_charfilter"
-            ],
-            "tokenizer": "standard",
-            "filter": [
-                "homoglyph_norm",
-                "french_elision",
-                "lowercase",
-                "french_stop",
-                "french_stemmer",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
-            ]
-        },
-        "text_search": {
-            "type": "custom",
-            "char_filter": [
+                "dotted_I_fix",
                 "french_charfilter"
             ],
             "tokenizer": "standard",
@@ -188,6 +173,23 @@
             "filter": [
                 "lowercase"
             ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix",
+                "french_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "french_elision",
+                "lowercase",
+                "french_stop",
+                "french_stemmer",
+                "asciifolding_preserve",
+                "dedup_asciifolding"
+            ]
         }
     },
     "filter": {
@@ -301,10 +303,15 @@
                 ":=>\\u0020"
             ]
         },
+        "dotted_I_fix": {
+            "type": "mapping",
+            "mappings": [
+                "\u0130=>I"
+            ]
+        },
         "french_charfilter": {
             "type": "mapping",
             "mappings": [
-                "\\u0130=>I",
                 "\\u02BC=>\\u0027"
             ]
         }

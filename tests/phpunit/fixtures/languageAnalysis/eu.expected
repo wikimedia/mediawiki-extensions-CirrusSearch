@@ -1,15 +1,17 @@
 {
     "analyzer": {
         "text": {
-            "type": "basque",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
-            ]
-        },
-        "text_search": {
-            "type": "basque",
-            "char_filter": [
-                "word_break_helper"
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "basque_stop",
+                "basque_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -166,6 +168,20 @@
             "filter": [
                 "lowercase"
             ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "basque_stop",
+                "basque_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -202,6 +218,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "basque_stop": {
+            "type": "stop",
+            "stopwords": "_basque_"
+        },
+        "basque_stemmer": {
+            "type": "stemmer",
+            "language": "basque"
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -250,6 +274,12 @@
                 "(=>\\u0020",
                 ")=>\\u0020",
                 ":=>\\u0020"
+            ]
+        },
+        "dotted_I_fix": {
+            "type": "mapping",
+            "mappings": [
+                "\u0130=>I"
             ]
         }
     }

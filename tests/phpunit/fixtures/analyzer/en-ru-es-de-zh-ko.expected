@@ -85,6 +85,7 @@
         "ru_text": {
             "type": "custom",
             "char_filter": [
+                "dotted_I_fix",
                 "russian_charfilter"
             ],
             "tokenizer": "standard",
@@ -97,6 +98,7 @@
         "ru_text_search": {
             "type": "custom",
             "char_filter": [
+                "dotted_I_fix",
                 "russian_charfilter"
             ],
             "tokenizer": "standard",
@@ -133,7 +135,7 @@
         "es_text": {
             "type": "custom",
             "char_filter": [
-                "spanish_charfilter"
+                "dotted_I_fix"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -147,7 +149,7 @@
         "es_text_search": {
             "type": "custom",
             "char_filter": [
-                "spanish_charfilter"
+                "dotted_I_fix"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -187,6 +189,7 @@
         "de_text": {
             "type": "custom",
             "char_filter": [
+                "dotted_I_fix",
                 "german_charfilter"
             ],
             "tokenizer": "standard",
@@ -202,6 +205,7 @@
         "de_text_search": {
             "type": "custom",
             "char_filter": [
+                "dotted_I_fix",
                 "german_charfilter"
             ],
             "tokenizer": "standard",
@@ -283,6 +287,7 @@
         "ko_text": {
             "type": "custom",
             "char_filter": [
+                "dotted_I_fix",
                 "nori_charfilter",
                 "nori_combo_filter"
             ],
@@ -297,6 +302,7 @@
         "ko_text_search": {
             "type": "custom",
             "char_filter": [
+                "dotted_I_fix",
                 "nori_charfilter",
                 "nori_combo_filter"
             ],
@@ -512,14 +518,13 @@
                 "\\u0435\\u0308=>\\u0435",
                 "\\u0415\\u0308=>\\u0415",
                 "\\u0451=>\\u0435",
-                "\\u0401=>\\u0415",
-                "\\u0130=>I"
+                "\\u0401=>\\u0415"
             ]
         },
-        "spanish_charfilter": {
+        "dotted_I_fix": {
             "type": "mapping",
             "mappings": [
-                "\\u0130=>I"
+                "\u0130=>I"
             ]
         },
         "german_plain_charfilter": {
@@ -531,7 +536,6 @@
         "german_charfilter": {
             "type": "mapping",
             "mappings": [
-                "\\u0130=>I",
                 "\u1e9e=>\u00df"
             ]
         },
@@ -551,7 +555,6 @@
         "nori_charfilter": {
             "type": "mapping",
             "mappings": [
-                "\\u0130=>I",
                 "\\u00B7=>\\u0020",
                 "\\u318D=>\\u0020",
                 "\\u00AD=>",

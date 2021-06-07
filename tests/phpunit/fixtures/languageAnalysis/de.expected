@@ -3,6 +3,7 @@
         "text": {
             "type": "custom",
             "char_filter": [
+                "dotted_I_fix",
                 "german_charfilter"
             ],
             "tokenizer": "standard",
@@ -175,6 +176,7 @@
         "text_search": {
             "type": "custom",
             "char_filter": [
+                "dotted_I_fix",
                 "german_charfilter"
             ],
             "tokenizer": "standard",
@@ -280,10 +282,15 @@
                 ":=>\\u0020"
             ]
         },
+        "dotted_I_fix": {
+            "type": "mapping",
+            "mappings": [
+                "\u0130=>I"
+            ]
+        },
         "german_charfilter": {
             "type": "mapping",
             "mappings": [
-                "\\u0130=>I",
                 "\u1e9e=>\u00df"
             ]
         },

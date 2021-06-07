@@ -79,7 +79,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 	}
 
 	/** @dataProvider provideICUTokenizer */
-	public function testICUTokinizer( array $input, array $expected ) {
+	public function testICUTokenizer( array $input, array $expected ) {
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuTokenizer' => 'yes' ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
@@ -753,8 +753,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				'all_defaults',
 			],
 			"icu folding languages" => [
-				[ 'bs', 'de', 'el', 'en', 'eo', 'es', 'fr', 'he', 'hr', 'nl', 'pt', 'sh',
-				  'simple', 'sk', 'sr', 'sv', ],
+				[ 'bs', 'ca', 'da', 'de', 'el', 'en', 'eo', 'es', 'eu', 'fr', 'he',
+					'hr', 'nl', 'pt', 'sh', 'simple', 'sk', 'sr', 'sv', ],
 				$emptyConfig,
 				[ 'extra', 'analysis-icu' ],
 				'icu_folders',

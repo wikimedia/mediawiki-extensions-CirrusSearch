@@ -24,6 +24,54 @@
                 "icu_normalizer"
             ]
         },
+        "ca_plain": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "ca_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ]
+        },
+        "ca_plain_search": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer"
+            ]
+        },
+        "da_plain": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "da_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ]
+        },
+        "da_plain_search": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer"
+            ]
+        },
         "de_plain": {
             "type": "custom",
             "char_filter": [
@@ -139,6 +187,30 @@
             ]
         },
         "es_plain_search": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer"
+            ]
+        },
+        "eu_plain": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "eu_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ]
+        },
+        "eu_plain_search": {
             "type": "custom",
             "char_filter": [
                 "word_break_helper"
@@ -402,6 +474,13 @@
             "type": "length",
             "min": 1
         },
+        "ca_icu_folding": {
+            "type": "icu_folding"
+        },
+        "da_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00c6\u00e6\u00d8\u00f8\u00c5\u00e5]"
+        },
         "de_icu_normalizer": {
             "type": "icu_normalizer",
             "name": "nfkc_cf",
@@ -426,6 +505,10 @@
             "unicodeSetFilter": "[^\u0108\u0109\u011c\u011d\u0124\u0125\u0134\u0135\u015c\u015d\u016c\u016d]"
         },
         "es_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00d1\u00f1]"
+        },
+        "eu_icu_folding": {
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u00d1\u00f1]"
         },

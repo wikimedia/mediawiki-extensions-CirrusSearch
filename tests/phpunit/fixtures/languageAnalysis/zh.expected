@@ -274,6 +274,12 @@
                 ":=>\\u0020"
             ]
         },
+        "dotted_I_fix": {
+            "type": "mapping",
+            "mappings": [
+                "\u0130=>I"
+            ]
+        },
         "stconvertfix": {
             "type": "mapping",
             "mappings": [

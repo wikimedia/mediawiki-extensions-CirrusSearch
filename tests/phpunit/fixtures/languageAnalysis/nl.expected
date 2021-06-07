@@ -3,7 +3,7 @@
         "text": {
             "type": "custom",
             "char_filter": [
-                "dutch_charfilter"
+                "dotted_I_fix"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -173,7 +173,7 @@
         "text_search": {
             "type": "custom",
             "char_filter": [
-                "dutch_charfilter"
+                "dotted_I_fix"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -287,10 +287,10 @@
                 ":=>\\u0020"
             ]
         },
-        "dutch_charfilter": {
+        "dotted_I_fix": {
             "type": "mapping",
             "mappings": [
-                "\\u0130=>I"
+                "\u0130=>I"
             ]
         }
     }

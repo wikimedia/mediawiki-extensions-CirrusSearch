@@ -38,6 +38,112 @@
                 "icu_normalizer"
             ]
         },
+        "ca_plain": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "ca_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ]
+        },
+        "ca_plain_search": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer"
+            ]
+        },
+        "ca_text": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "catalan_elision",
+                "icu_normalizer",
+                "catalan_stop",
+                "catalan_stemmer",
+                "ca_icu_folding",
+                "remove_empty"
+            ]
+        },
+        "ca_text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "catalan_elision",
+                "icu_normalizer",
+                "catalan_stop",
+                "catalan_stemmer",
+                "ca_icu_folding",
+                "remove_empty"
+            ]
+        },
+        "da_plain": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "da_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ]
+        },
+        "da_plain_search": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer"
+            ]
+        },
+        "da_text": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer",
+                "danish_stop",
+                "danish_stemmer",
+                "da_icu_folding",
+                "remove_empty"
+            ]
+        },
+        "da_text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer",
+                "danish_stop",
+                "danish_stemmer",
+                "da_icu_folding",
+                "remove_empty"
+            ]
+        },
         "de_plain": {
             "type": "custom",
             "char_filter": [
@@ -67,6 +173,7 @@
         "de_text": {
             "type": "custom",
             "char_filter": [
+                "dotted_I_fix",
                 "german_charfilter"
             ],
             "tokenizer": "standard",
@@ -82,6 +189,7 @@
         "de_text_search": {
             "type": "custom",
             "char_filter": [
+                "dotted_I_fix",
                 "german_charfilter"
             ],
             "tokenizer": "standard",
@@ -267,7 +375,7 @@
         "es_text": {
             "type": "custom",
             "char_filter": [
-                "spanish_charfilter"
+                "dotted_I_fix"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -281,7 +389,7 @@
         "es_text_search": {
             "type": "custom",
             "char_filter": [
-                "spanish_charfilter"
+                "dotted_I_fix"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -289,6 +397,58 @@
                 "spanish_stop",
                 "spanish_stemmer",
                 "es_icu_folding",
+                "remove_empty"
+            ]
+        },
+        "eu_plain": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "eu_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ]
+        },
+        "eu_plain_search": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer"
+            ]
+        },
+        "eu_text": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer",
+                "basque_stop",
+                "basque_stemmer",
+                "eu_icu_folding",
+                "remove_empty"
+            ]
+        },
+        "eu_text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "icu_normalizer",
+                "basque_stop",
+                "basque_stemmer",
+                "eu_icu_folding",
                 "remove_empty"
             ]
         },
@@ -319,6 +479,7 @@
         "fr_text": {
             "type": "custom",
             "char_filter": [
+                "dotted_I_fix",
                 "french_charfilter"
             ],
             "tokenizer": "standard",
@@ -336,6 +497,7 @@
         "fr_text_search": {
             "type": "custom",
             "char_filter": [
+                "dotted_I_fix",
                 "french_charfilter"
             ],
             "tokenizer": "standard",
@@ -453,7 +615,7 @@
         "nl_text": {
             "type": "custom",
             "char_filter": [
-                "dutch_charfilter"
+                "dotted_I_fix"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -468,7 +630,7 @@
         "nl_text_search": {
             "type": "custom",
             "char_filter": [
-                "dutch_charfilter"
+                "dotted_I_fix"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -507,7 +669,7 @@
         "pt_text": {
             "type": "custom",
             "char_filter": [
-                "portuguese_charfilter"
+                "dotted_I_fix"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -521,7 +683,7 @@
         "pt_text_search": {
             "type": "custom",
             "char_filter": [
-                "portuguese_charfilter"
+                "dotted_I_fix"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -770,6 +932,41 @@
             "type": "length",
             "min": 1
         },
+        "ca_icu_folding": {
+            "type": "icu_folding"
+        },
+        "catalan_elision": {
+            "type": "elision",
+            "articles_case": true,
+            "articles": [
+                "d",
+                "l",
+                "m",
+                "n",
+                "s",
+                "t"
+            ]
+        },
+        "catalan_stop": {
+            "type": "stop",
+            "stopwords": "_catalan_"
+        },
+        "catalan_stemmer": {
+            "type": "stemmer",
+            "language": "catalan"
+        },
+        "da_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00c6\u00e6\u00d8\u00f8\u00c5\u00e5]"
+        },
+        "danish_stop": {
+            "type": "stop",
+            "stopwords": "_danish_"
+        },
+        "danish_stemmer": {
+            "type": "stemmer",
+            "language": "danish"
+        },
         "de_icu_normalizer": {
             "type": "icu_normalizer",
             "name": "nfkc_cf",
@@ -833,6 +1030,18 @@
         "spanish_stemmer": {
             "type": "stemmer",
             "language": "light_spanish"
+        },
+        "eu_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00d1\u00f1]"
+        },
+        "basque_stop": {
+            "type": "stop",
+            "stopwords": "_basque_"
+        },
+        "basque_stemmer": {
+            "type": "stemmer",
+            "language": "basque"
         },
         "fr_icu_folding": {
             "type": "icu_folding"
@@ -927,6 +1136,12 @@
                 ")=>\\u0020"
             ]
         },
+        "dotted_I_fix": {
+            "type": "mapping",
+            "mappings": [
+                "\u0130=>I"
+            ]
+        },
         "german_plain_charfilter": {
             "type": "mapping",
             "mappings": [
@@ -936,7 +1151,6 @@
         "german_charfilter": {
             "type": "mapping",
             "mappings": [
-                "\\u0130=>I",
                 "\u1e9e=>\u00df"
             ]
         },
@@ -1031,29 +1245,10 @@
                 "\\u3096=>\\u30f6"
             ]
         },
-        "spanish_charfilter": {
-            "type": "mapping",
-            "mappings": [
-                "\\u0130=>I"
-            ]
-        },
         "french_charfilter": {
             "type": "mapping",
             "mappings": [
-                "\\u0130=>I",
                 "\\u02BC=>\\u0027"
-            ]
-        },
-        "dutch_charfilter": {
-            "type": "mapping",
-            "mappings": [
-                "\\u0130=>I"
-            ]
-        },
-        "portuguese_charfilter": {
-            "type": "mapping",
-            "mappings": [
-                "\\u0130=>I"
             ]
         }
     },

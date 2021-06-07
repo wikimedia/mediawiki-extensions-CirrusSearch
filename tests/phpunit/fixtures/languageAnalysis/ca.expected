@@ -1,15 +1,18 @@
 {
     "analyzer": {
         "text": {
-            "type": "catalan",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
-            ]
-        },
-        "text_search": {
-            "type": "catalan",
-            "char_filter": [
-                "word_break_helper"
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "catalan_elision",
+                "lowercase",
+                "catalan_stop",
+                "catalan_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -166,6 +169,21 @@
             "filter": [
                 "lowercase"
             ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "catalan_elision",
+                "lowercase",
+                "catalan_stop",
+                "catalan_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -202,6 +220,26 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "catalan_stop": {
+            "type": "stop",
+            "stopwords": "_catalan_"
+        },
+        "catalan_stemmer": {
+            "type": "stemmer",
+            "language": "catalan"
+        },
+        "catalan_elision": {
+            "type": "elision",
+            "articles_case": true,
+            "articles": [
+                "d",
+                "l",
+                "m",
+                "n",
+                "s",
+                "t"
+            ]
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -250,6 +288,12 @@
                 "(=>\\u0020",
                 ")=>\\u0020",
                 ":=>\\u0020"
+            ]
+        },
+        "dotted_I_fix": {
+            "type": "mapping",
+            "mappings": [
+                "\u0130=>I"
             ]
         }
     }

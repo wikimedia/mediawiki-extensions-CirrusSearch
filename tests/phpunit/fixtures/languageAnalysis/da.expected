@@ -1,15 +1,17 @@
 {
     "analyzer": {
         "text": {
-            "type": "danish",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
-            ]
-        },
-        "text_search": {
-            "type": "danish",
-            "char_filter": [
-                "word_break_helper"
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "danish_stop",
+                "danish_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -166,6 +168,20 @@
             "filter": [
                 "lowercase"
             ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "danish_stop",
+                "danish_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -202,6 +218,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "danish_stop": {
+            "type": "stop",
+            "stopwords": "_danish_"
+        },
+        "danish_stemmer": {
+            "type": "stemmer",
+            "language": "danish"
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -250,6 +274,12 @@
                 "(=>\\u0020",
                 ")=>\\u0020",
                 ":=>\\u0020"
+            ]
+        },
+        "dotted_I_fix": {
+            "type": "mapping",
+            "mappings": [
+                "\u0130=>I"
             ]
         }
     }

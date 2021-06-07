@@ -3,23 +3,7 @@
         "text": {
             "type": "custom",
             "char_filter": [
-                "polish_charfilter"
-            ],
-            "tokenizer": "standard",
-            "filter": [
-                "homoglyph_norm",
-                "lowercase",
-                "polish_stop",
-                "polish_stem",
-                "stempel_pattern_filter",
-                "remove_empty",
-                "stempel_stop"
-            ]
-        },
-        "text_search": {
-            "type": "custom",
-            "char_filter": [
-                "polish_charfilter"
+                "dotted_I_fix"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -185,6 +169,22 @@
             "tokenizer": "trigram",
             "filter": [
                 "lowercase"
+            ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "polish_stop",
+                "polish_stem",
+                "stempel_pattern_filter",
+                "remove_empty",
+                "stempel_stop"
             ]
         }
     },
@@ -478,10 +478,10 @@
                 ":=>\\u0020"
             ]
         },
-        "polish_charfilter": {
+        "dotted_I_fix": {
             "type": "mapping",
             "mappings": [
-                "\\u0130=>I"
+                "\u0130=>I"
             ]
         }
     }

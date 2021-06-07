@@ -3,19 +3,7 @@
         "text": {
             "type": "custom",
             "char_filter": [
-                "russian_charfilter"
-            ],
-            "tokenizer": "standard",
-            "filter": [
-                "homoglyph_norm",
-                "lowercase",
-                "russian_stop",
-                "russian_stemmer"
-            ]
-        },
-        "text_search": {
-            "type": "custom",
-            "char_filter": [
+                "dotted_I_fix",
                 "russian_charfilter"
             ],
             "tokenizer": "standard",
@@ -188,6 +176,20 @@
             "filter": [
                 "lowercase"
             ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix",
+                "russian_charfilter"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "russian_stop",
+                "russian_stemmer"
+            ]
         }
     },
     "filter": {
@@ -287,6 +289,12 @@
                 ":=>\\u0020"
             ]
         },
+        "dotted_I_fix": {
+            "type": "mapping",
+            "mappings": [
+                "\u0130=>I"
+            ]
+        },
         "russian_charfilter": {
             "type": "mapping",
             "mappings": [
@@ -294,8 +302,7 @@
                 "\\u0435\\u0308=>\\u0435",
                 "\\u0415\\u0308=>\\u0415",
                 "\\u0451=>\\u0435",
-                "\\u0401=>\\u0415",
-                "\\u0130=>I"
+                "\\u0401=>\\u0415"
             ]
         }
     }

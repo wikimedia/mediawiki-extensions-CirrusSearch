@@ -264,6 +264,12 @@
                 ":=>\\u0020"
             ]
         },
+        "dotted_I_fix": {
+            "type": "mapping",
+            "mappings": [
+                "\u0130=>I"
+            ]
+        },
         "khmer_numbers": {
             "type": "mapping",
             "mappings": [

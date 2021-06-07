@@ -96,7 +96,8 @@ class AnalysisConfigBuilder {
 				}
 			}
 			if ( $pluginsPresent ) {
-				$this->elasticsearchLanguageAnalyzers = array_merge( $this->elasticsearchLanguageAnalyzers, $extra );
+				$this->elasticsearchLanguageAnalyzers =
+					array_merge( $this->elasticsearchLanguageAnalyzers, $extra );
 			}
 		}
 		$this->icu = in_array( 'analysis-icu', $plugins );
@@ -123,7 +124,7 @@ class AnalysisConfigBuilder {
 	 * @return bool true if icu folding should be enabled
 	 */
 	public function shouldActivateIcuFolding( $language ) {
-		if ( !$this->icu || !in_array( 'extra', $this->plugins ) ) {
+		if ( !$this->isIcuAvailable() || !in_array( 'extra', $this->plugins ) ) {
 			// ICU folding requires the icu plugin and the extra plugin
 			return false;
 		}
@@ -153,7 +154,7 @@ class AnalysisConfigBuilder {
 	 * @return bool
 	 */
 	public function shouldActivateIcuTokenization( $language ) {
-		if ( !$this->icu ) {
+		if ( !$this->isIcuAvailable() ) {
 			// requires the icu plugin
 			return false;
 		}
@@ -353,17 +354,22 @@ class AnalysisConfigBuilder {
 		 *   https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
 		 * For Spanish (es), see T277699
 		 * For German (de), see T281379
+		 * For Basque (eu) and Danish (da), see T283366
 		 */
 		case 'bs':
 		case 'hr':
 		case 'sh':
 		case 'sr':
 			return '[^ĐđŽžĆćŠšČč]';
+		case 'da':
+			return '[^ÆæØøÅå]';
 		case 'de':
 			return '[^ÄäÖöÜüẞß]';
 		case 'eo':
 			return '[^ĈĉĜĝĤĥĴĵŜŝŬŭ]';
 		case 'es':
+			return '[^Ññ]';
+		case 'eu':
 			return '[^Ññ]';
 		case 'fi':
 			return '[^ÅåÄäÖö]';
@@ -531,7 +537,8 @@ class AnalysisConfigBuilder {
 					// 'catenate_words' => true, // Might be useful but causes errors on indexing
 					// 'catenate_numbers' => true, // Might be useful but causes errors on indexing
 					// 'catenate_all' => true, // Might be useful but causes errors on indexing
-					'preserve_original' => false // "wi-fi-555" finds "wi-fi-555".  Not needed because of plain analysis.
+					'preserve_original' => false // "wi-fi-555" finds "wi-fi-555".
+												 // Not needed because of plain analysis.
 				],
 				'prefix_ngram_filter' => [
 					'type' => 'edgeNGram',
@@ -607,6 +614,15 @@ class AnalysisConfigBuilder {
 						':=>\u0020', // T145023
 					],
 				],
+				'dotted_I_fix' => [
+					// A common regression caused by unpacking is that İ is no longer
+					// treated correctly, so specify the mapping just once and re-use
+					// in analyzer/text/char_filter as needed.
+					'type' => 'mapping',
+					'mappings' => [
+						'İ=>I',
+					],
+				],
 			],
 		];
 		foreach ( $defaults[ 'analyzer' ] as &$analyzer ) {
@@ -618,7 +634,7 @@ class AnalysisConfigBuilder {
 				];
 			}
 		}
-		if ( $this->icu ) {
+		if ( $this->isIcuAvailable() ) {
 			$defaults[ 'filter' ][ 'icu_normalizer' ] = [
 				'type' => 'icu_normalizer',
 				'name' => 'nfkc_cf',
@@ -640,12 +656,20 @@ class AnalysisConfigBuilder {
 	 * @return array
 	 */
 	private function customize( $config, $language ) {
-		// A common regression caused by unpacking is that İ is no longer treated correctly,
-		// so specify the mapping just once and re-use.
-		$dottedI = [ '\u0130=>I' ];
-
 		switch ( $this->getDefaultTextAnalyzerType( $language ) ) {
 		// Please add languages in alphabetical order.
+		case 'basque':
+			$config[ 'filter' ][ 'basque_stop' ] = $this->stopFilter( '_basque_' );
+			$config[ 'filter' ][ 'basque_stemmer' ] = $this->stemmerFilter( 'basque' );
+
+			// Unpack Basque analyzer T283366
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'char_filter' => [ 'dotted_I_fix' ],
+				'tokenizer' => 'standard',
+				'filter' => [ 'lowercase', 'basque_stop', 'basque_stemmer', 'asciifolding' ],
+			];
+			break;
 		case 'bosnian':
 		case 'croatian':
 		case 'serbian':
@@ -657,6 +681,21 @@ class AnalysisConfigBuilder {
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'filter' => [ 'lowercase', 'asciifolding', 'serbian_stemmer' ],
+			];
+			break;
+		case 'catalan':
+			$config[ 'filter' ][ 'catalan_stop' ] = $this->stopFilter( '_catalan_' );
+			$config[ 'filter' ][ 'catalan_stemmer' ] = $this->stemmerFilter( 'catalan' );
+			$config[ 'filter' ][ 'catalan_elision' ] = $this->elisionFilter( true, [ 'd', 'l',
+				'm', 'n', 's', 't' ] );
+
+			// Unpack Catalan analyzer T283366
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'char_filter' => [ 'dotted_I_fix' ],
+				'tokenizer' => 'standard',
+				'filter' => [ 'catalan_elision', 'lowercase', 'catalan_stop', 'catalan_stemmer',
+					'asciifolding' ],
 			];
 			break;
 		case 'chinese':
@@ -684,10 +723,22 @@ class AnalysisConfigBuilder {
 			];
 
 			$config[ 'analyzer' ][ 'plain' ][ 'filter' ] = [ 'smartcn_stop', 'lowercase' ];
-			$config[ 'analyzer' ][ 'plain_search' ][ 'filter' ] = $config[ 'analyzer' ][ 'plain' ][ 'filter' ];
+			$config[ 'analyzer' ][ 'plain_search' ][ 'filter' ] =
+				$config[ 'analyzer' ][ 'plain' ][ 'filter' ];
+			break;
+		case 'danish':
+			$config[ 'filter' ][ 'danish_stop' ] = $this->stopFilter( '_danish_' );
+			$config[ 'filter' ][ 'danish_stemmer' ] = $this->stemmerFilter( 'danish' );
+
+			// Unpack Danish analyzer T283366
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'char_filter' => [ 'dotted_I_fix' ],
+				'tokenizer' => 'standard',
+				'filter' => [ 'lowercase', 'danish_stop', 'danish_stemmer', 'asciifolding' ],
+			];
 			break;
 		case 'dutch':
-			$config[ 'char_filter' ][ 'dutch_charfilter' ] = $this->mappingCharFilter( $dottedI );
 			$config[ 'filter' ][ 'dutch_stop' ] = $this->stopFilter( '_dutch_' );
 			$config[ 'filter' ][ 'dutch_stemmer' ] = $this->stemmerFilter( 'dutch' );
 			$config[ 'filter' ][ 'dutch_override' ] = [
@@ -703,7 +754,7 @@ class AnalysisConfigBuilder {
 			// Unpack Dutch analyzer T281379
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'char_filter' => [ 'dutch_charfilter' ],
+				'char_filter' => [ 'dotted_I_fix' ],
 				'tokenizer' => 'standard',
 				'filter' => [ 'lowercase', 'dutch_stop', 'dutch_override', 'dutch_stemmer', 'asciifolding' ],
 			];
@@ -754,9 +805,9 @@ class AnalysisConfigBuilder {
 
 			$config[ 'char_filter' ][ 'french_charfilter' ] =
 				// modifier apostrophe to straight quote T146804
-				$this->mappingCharFilter( array_merge( $dottedI, [ '\u02BC=>\u0027' ] ) );
-			$config[ 'filter' ][ 'french_elision' ] = $this->elisionFilter( true, [ 'l', 'm', 't', 'qu', 'n',
-				's', 'j', 'd', 'c', 'jusqu', 'quoiqu', 'lorsqu', 'puisqu' ] );
+				$this->mappingCharFilter( [ '\u02BC=>\u0027' ] );
+			$config[ 'filter' ][ 'french_elision' ] = $this->elisionFilter( true, [ 'l', 'm', 't',
+				'qu', 'n', 's', 'j', 'd', 'c', 'jusqu', 'quoiqu', 'lorsqu', 'puisqu' ] );
 			$config[ 'filter' ][ 'french_stop' ] = $this->stopFilter( '_french_' );
 			$config[ 'filter' ][ 'french_stemmer' ] = $this->stemmerFilter( 'light_french' );
 
@@ -764,7 +815,7 @@ class AnalysisConfigBuilder {
 			// T141216 / T142620
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'char_filter' => [ 'french_charfilter' ],
+				'char_filter' => [ 'dotted_I_fix', 'french_charfilter' ],
 				'tokenizer' => 'standard',
 				'filter' => [ 'french_elision', 'lowercase', 'french_stop', 'french_stemmer',
 					'asciifolding_preserve' ],
@@ -773,16 +824,17 @@ class AnalysisConfigBuilder {
 		case 'german':
 			$eszettMap = [ 'ẞ=>ß' ]; // We have to explicitly map capital ẞ to lowercase ß
 			$config[ 'char_filter' ][ 'german_charfilter' ] =
-				$this->mappingCharFilter( array_merge( $dottedI, $eszettMap ) );
+				$this->mappingCharFilter( $eszettMap );
 			$config[ 'filter' ][ 'german_stop' ] = $this->stopFilter( '_german_' );
 			$config[ 'filter' ][ 'german_stemmer' ] = $this->stemmerFilter( 'light_german' );
 
 			// Unpack German analyzer T281379
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'char_filter' => [ 'german_charfilter' ],
+				'char_filter' => [ 'dotted_I_fix', 'german_charfilter' ],
 				'tokenizer' => 'standard',
-				'filter' => [ 'lowercase', 'german_stop', 'german_normalization', 'german_stemmer', 'asciifolding' ],
+				'filter' => [ 'lowercase', 'german_stop', 'german_normalization',
+					'german_stemmer', 'asciifolding' ],
 			];
 
 			$config[ 'char_filter' ][ 'german_plain_charfilter' ] =
@@ -814,13 +866,12 @@ class AnalysisConfigBuilder {
 		case 'indonesian':
 		case 'malay':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T196780
-			$config[ 'char_filter' ][ 'indonesian_charfilter' ] = $this->mappingCharFilter( $dottedI );
 			$config[ 'filter' ][ 'indonesian_stop' ] = $this->stopFilter( '_indonesian_' );
 			$config[ 'filter' ][ 'indonesian_stemmer' ] = $this->stemmerFilter( 'indonesian' );
 
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'char_filter' => [ 'indonesian_charfilter' ],
+				'char_filter' => [ 'dotted_I_fix' ],
 				'tokenizer' => 'standard',
 				'filter' => [ 'lowercase', 'indonesian_stop', 'indonesian_stemmer' ],
 			];
@@ -886,12 +937,12 @@ class AnalysisConfigBuilder {
 
 			// Nori-specific character filter
 			$config[ 'char_filter' ][ 'nori_charfilter' ] =
-				$this->mappingCharFilter( array_merge( $dottedI, [
+				$this->mappingCharFilter( [
 					'\u00B7=>\u0020', // convert middle dot to space
 					'\u318D=>\u0020', // arae-a to space
 					'\u00AD=>',		  // remove soft hyphens
 					'\u200C=>',		  // remove zero-width non-joiners
-				] ) );
+				] );
 
 			// Nori-specific pattern_replace to strip combining diacritics
 			$config[ 'char_filter' ][ 'nori_combo_filter' ] = [
@@ -909,7 +960,7 @@ class AnalysisConfigBuilder {
 
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'char_filter' => [ 'nori_charfilter', 'nori_combo_filter' ],
+				'char_filter' => [ 'dotted_I_fix', 'nori_charfilter', 'nori_combo_filter' ],
 				'tokenizer' => 'nori_tok',
 				'filter' => [ 'nori_posfilter', 'nori_readingform', 'lowercase', 'remove_empty' ],
 			];
@@ -928,8 +979,6 @@ class AnalysisConfigBuilder {
 			];
 			break;
 		case 'polish':
-			$config[ 'char_filter' ][ 'polish_charfilter' ] = $this->mappingCharFilter( $dottedI );
-
 			// these are real stop words for Polish
 			$config[ 'filter' ][ 'polish_stop' ] = $this->stopFilter( require __DIR__ .
 				'/AnalysisLanguageData/polishStopwords.php' );
@@ -951,21 +1000,20 @@ class AnalysisConfigBuilder {
 			// unpacked Stempel
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'char_filter' => [ 'polish_charfilter' ],
+				'char_filter' => [ 'dotted_I_fix' ],
 				'tokenizer' => 'standard',
 				'filter' => [ 'lowercase', 'polish_stop', 'polish_stem', 'stempel_pattern_filter',
 					'remove_empty', 'stempel_stop' ],
 			];
 			break;
 		case 'portuguese':
-			$config[ 'char_filter' ][ 'portuguese_charfilter' ] = $this->mappingCharFilter( $dottedI );
 			$config[ 'filter' ][ 'portuguese_stop' ] = $this->stopFilter( '_portuguese_' );
 			$config[ 'filter' ][ 'portuguese_stemmer' ] = $this->stemmerFilter( 'light_portuguese' );
 
 			// Unpack Portuguese analyzer T281379
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'char_filter' => [ 'portuguese_charfilter' ],
+				'char_filter' => [ 'dotted_I_fix' ],
 				'tokenizer' => 'standard',
 				'filter' => [ 'lowercase', 'portuguese_stop', 'portuguese_stemmer', 'asciifolding' ],
 			];
@@ -980,7 +1028,7 @@ class AnalysisConfigBuilder {
 				];
 
 			$config[ 'char_filter' ][ 'russian_charfilter' ] =
-				$this->mappingCharFilter( array_merge( $ruCharMap, $dottedI ) );
+				$this->mappingCharFilter( array_merge( $ruCharMap ) );
 
 			// add Russian character mappings to near_space_flattener
 			array_push( $config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ],
@@ -1000,7 +1048,7 @@ class AnalysisConfigBuilder {
 			$config[ 'filter' ][ 'russian_stemmer' ] = $this->stemmerFilter( 'russian' );
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'char_filter' => [ 'russian_charfilter' ],
+				'char_filter' => [ 'dotted_I_fix', 'russian_charfilter' ],
 				'tokenizer' => 'standard',
 				'filter' => [ 'lowercase', 'russian_stop', 'russian_stemmer' ]
 			];
@@ -1017,14 +1065,13 @@ class AnalysisConfigBuilder {
 			];
 			break;
 		case 'spanish':
-			$config[ 'char_filter' ][ 'spanish_charfilter' ] = $this->mappingCharFilter( $dottedI );
 			$config[ 'filter' ][ 'spanish_stop' ] = $this->stopFilter( '_spanish_' );
 			$config[ 'filter' ][ 'spanish_stemmer' ] = $this->stemmerFilter( 'light_spanish' );
 
 			// Unpack Spanish analyzer T277699
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'char_filter' => [ 'spanish_charfilter' ],
+				'char_filter' => [ 'dotted_I_fix' ],
 				'tokenizer' => 'standard',
 				'filter' => [ 'lowercase', 'spanish_stop', 'spanish_stemmer', 'asciifolding' ],
 			];
@@ -1054,7 +1101,7 @@ class AnalysisConfigBuilder {
 		$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 
 		// replace lowercase filters with icu_normalizer filter
-		if ( $this->icu ) {
+		if ( $this->isIcuAvailable() ) {
 			foreach ( $config[ 'analyzer' ] as &$analyzer ) {
 				if ( !isset( $analyzer[ 'filter'  ] ) ) {
 					continue;
@@ -1310,7 +1357,8 @@ class AnalysisConfigBuilder {
 		}
 		if ( !empty( $analyzer[ 'tokenizer' ] ) ) {
 			$tokenizer = $analyzer[ 'tokenizer' ];
-			if ( isset( $langConfig[ 'tokenizer' ][ $tokenizer ] ) && !isset( $config[ 'tokenizer' ][ $tokenizer ] ) ) {
+			if ( isset( $langConfig[ 'tokenizer' ][ $tokenizer ] ) &&
+					!isset( $config[ 'tokenizer' ][ $tokenizer ] ) ) {
 				$config[ 'tokenizer' ][ $tokenizer ] = $langConfig[ 'tokenizer' ][ $tokenizer ];
 			}
 		}
@@ -1335,7 +1383,8 @@ class AnalysisConfigBuilder {
 			// Char filters & Tokenizers are nicely namespaced
 			// Filters are NOT - e.g. lowercase & icu_folding filters are different for different
 			// languages! So we need to do some disambiguation here.
-			$langConfig[ 'filter' ] = $this->resolveFilters( $langConfig, $config[ 'filter' ], $defaultFilters, $lang );
+			$langConfig[ 'filter' ] =
+				$this->resolveFilters( $langConfig, $config[ 'filter' ], $defaultFilters, $lang );
 			// Merge configs
 			foreach ( $analyzers as $analyzer ) {
 				$this->mergeConfig( $config, $langConfig, $analyzer, $lang );
@@ -1445,6 +1494,8 @@ class AnalysisConfigBuilder {
 	 */
 	private $languagesWithIcuFolding = [
 		'bs' => true,
+		'ca' => true,
+		'da' => true,
 		'de' => true,
 		'el' => true,
 		'en' => true,
@@ -1453,6 +1504,7 @@ class AnalysisConfigBuilder {
 		'simple' => true,
 		'eo' => true,
 		'es' => true,
+		'eu' => true,
 		'fr' => true,
 		'he' => true,
 		'hr' => true,

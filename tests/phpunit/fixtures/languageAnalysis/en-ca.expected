@@ -288,6 +288,12 @@
                 ":=>\\u0020"
             ]
         },
+        "dotted_I_fix": {
+            "type": "mapping",
+            "mappings": [
+                "\u0130=>I"
+            ]
+        },
         "kana_map": {
             "type": "mapping",
             "mappings": [

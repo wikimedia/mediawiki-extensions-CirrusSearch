@@ -275,7 +275,7 @@ class StepHelpers {
 	 * over multiple indices (content/general).
 	 *
 	 * @param {string} title page title
-	 * @return {Promise.<[]>} resolves to an array of indexed docs or null if title not indexed
+	 * @return {Promise} resolves to an array of indexed docs or null if title not indexed
 	 */
 	getCirrusIndexedContent( title ) {
 		return Promise.coroutine( function* () {

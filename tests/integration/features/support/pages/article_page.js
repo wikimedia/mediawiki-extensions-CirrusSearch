@@ -13,14 +13,14 @@ class ArticlePage extends TitlePage {
 	}
 
 	title_element() {
-		return browser.element( 'h1#firstHeading' );
+		return browser.$( 'h1#firstHeading' );
 	}
 
 	/**
 	 * Performs a search using the search button top-right
 	 */
 	click_search_top_right() {
-		browser.click( '#simpleSearch #searchButton' );
+		browser.$( '#simpleSearch #searchButton' ).click();
 	}
 
 	has_search_suggestions() {
@@ -35,12 +35,15 @@ class ArticlePage extends TitlePage {
 
 	get_search_suggestions() {
 		const selector = '.suggestions .suggestions-results a.mw-searchSuggest-link';
-		browser.waitForVisible( selector, 10000 );
+		browser.waitUntil(
+			() => browser.$( selector ).isExisting(),
+			{ timeout: 10000 }
+		);
 		return this.collect_element_attribute( 'title', selector );
 	}
 
 	set search_query_top_right( search ) {
-		browser.setValue( '#simpleSearch #searchInput', search );
+		browser.$( '#simpleSearch #searchInput' ).setValue( search );
 	}
 
 	get search_query_top_right() {

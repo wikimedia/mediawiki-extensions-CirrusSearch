@@ -51,14 +51,13 @@ class Page {
 				const s = selector || '';
 				const t = ( text ) ? '=' + text : '';
 				const sel = el + s + t;
-				const elems = browser.elements( sel );
-				return elems;
+				return browser.$$( sel );
 			};
 		} );
 	}
 
 	collect_element_texts( selector ) {
-		const elements = browser.elements( selector ).value;
+		const elements = browser.$$( selector );
 		const texts = [];
 		for ( const text of elements ) {
 			texts.push( text.getText() );
@@ -67,7 +66,7 @@ class Page {
 	}
 
 	collect_element_attribute( attr, selector ) {
-		const elements = browser.elements( selector ).value;
+		const elements = browser.$$( selector );
 		const texts = [];
 		for ( const elt of elements ) {
 			texts.push( elt.getAttribute( attr ) );
@@ -78,8 +77,10 @@ class Page {
 	get url() {
 		return this._url;
 	}
+
 	set url( url ) {
 		this._url = url;
+		browser.url( url );
 	}
 
 	login( world, wiki = false ) {
@@ -87,12 +88,13 @@ class Page {
 			world.config.wikis[ wiki ] :
 			world.config.wikis[ world.config.wikis.default ];
 		world.visit( '/wiki/Special:UserLogin' );
-		browser.setValue( '#wpName1', config.username );
-		browser.setValue( '#wpPassword1', config.password );
-		browser.click( '#wpLoginAttempt' );
-		if ( browser.elements( '#mw-input-skipReset' ).value.length > 0 ) {
-			// skip password reset
-			browser.click( '#mw-input-skipReset' );
+		browser.$( '#wpName1' ).setValue( config.username );
+		browser.$( '#wpPassword1' ).setValue( config.password );
+		browser.$( '#wpLoginAttempt' ).click();
+		// skip password reset, not always present?
+		const skip = browser.$( '#mw-input-skipReset' );
+		if ( skip.isExisting() ) {
+			skip.click();
 		}
 	}
 }

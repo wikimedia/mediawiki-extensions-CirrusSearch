@@ -41,11 +41,11 @@ function withApi( world, fn ) {
 // TODO: We might need to share this epoch between wdio runner processes?
 const epoch = +new Date();
 const searchVars = {};
-// These expressions are string matches against capture groups in steps. Yes, .+)
-// is intentional. Cucumber's matching of capture groups is broken so (?:foo (.+))
-// has to be matched as .+). That broken matching also means (?:foo (.+) bar)
-// would have to be matched as '.+) bar' but we don't bother.
-const expressions = [ '.+', '.+?', '.+)' ];
+// These expressions are string matches against capture groups in steps. For
+// any capture group whos regex string matches against the expression apply a
+// few minor transformations from an explicit name into the actual underlying
+// value desired.
+const expressions = [ '.+', '.+?' ];
 const transformer = ( s ) => {
 	if ( s === undefined ) {
 		return s;
@@ -62,11 +62,12 @@ const transformer = ( s ) => {
 	return s.replace( /%{exact:([^}]*)}/g, '$1' );
 };
 
+let i = 0;
 for ( const expression of expressions ) {
 	defineParameterType( {
 		regexp: expression,
 		transformer: transformer,
-		name: 'replacements_' + expression
+		name: 'replacements_' + i++
 	} );
 }
 
@@ -435,7 +436,7 @@ When( /^I dump the cirrus data for (.+)$/, function ( title ) {
 } );
 
 Then( /^the page text contains (.+)$/, function ( text ) {
-	expect( browser.getSource() ).to.contains( text );
+	expect( browser.$( 'body' ).getText() ).to.contains( text );
 } );
 
 Then( /^there are( no)? api search results with (.+) in the data$/, function ( should_not, within ) {

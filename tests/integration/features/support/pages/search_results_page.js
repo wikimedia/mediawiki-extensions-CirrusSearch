@@ -12,12 +12,12 @@ class SearchResultsPage extends Page {
 	 * @return {SearchResultsPage}
 	 */
 	search( search ) {
-		this.url = `/w/index.php?search=${encodeURIComponent( search )}`;
+		this.url = `/w/index.php?title=Special:Search&search=${encodeURIComponent( search )}`;
 		return this;
 	}
 
 	has_search_results() {
-		return browser.elements( '.searchresults ul.mw-search-results' ).value.length > 0;
+		return browser.$( '.searchresults ul.mw-search-results' ).isExisting();
 	}
 
 	get_warnings() {
@@ -37,28 +37,28 @@ class SearchResultsPage extends Page {
 	}
 
 	has_create_page_link() {
-		return browser.elements( '.searchresults p.mw-search-createlink a.new' ).value.length === 1;
+		return browser.$( '.searchresults p.mw-search-createlink a.new' ).isExisting();
 	}
 
 	is_on_srp() {
-		return browser.elements( 'form#search div#mw-search-top-table' ).value.length > 0 ||
-			browser.elements( 'form#powersearch div#mw-search-top-table' ).value.length > 0;
+		return browser.$( 'form#search div#mw-search-top-table' ).isExisting() ||
+			browser.$( 'form#powersearch div#mw-search-top-table' ).isExisting();
 	}
 
 	set search_query( search ) {
-		browser.setValue( 'div#searchText input[name="search"]', search );
+		browser.$( 'div#searchText input[name="search"]' ).setValue( search );
 	}
 
 	get search_query() {
-		return browser.getValue( 'div#searchText input[name="search"]' );
+		return browser.$( 'div#searchText input[name="search"]' ).getValue();
 	}
 
 	get_result_element_at( nth ) {
-		const resultLink = this.results_block().element( `a[data-serp-pos="${nth - 1}"]` );
+		const resultLink = this.results_block().$( `a[data-serp-pos="${nth - 1}"]` );
 		if ( !resultLink.isExisting() ) {
 			return null;
 		}
-		return resultLink.element( '..' );
+		return resultLink.$( '..' );
 	}
 
 	get_result_image_link_at( nth ) {
@@ -74,11 +74,11 @@ class SearchResultsPage extends Page {
 		//    <td>[RESULT ELEMENT BLOCK] position returned by get_result_element_at</td>
 		//  </tr>
 		// </tbody>
-		const tr = resElem.element( '..' );
+		const tr = resElem.$( '..' );
 		if ( tr.getTagName() !== 'tr' ) {
 			return null;
 		}
-		const imageTag = tr.element( 'td a.image img' );
+		const imageTag = tr.$( 'td a.image img' );
 		if ( imageTag.isExisting() ) {
 			return imageTag.getAttribute( 'src' );
 		}
@@ -86,7 +86,7 @@ class SearchResultsPage extends Page {
 	}
 
 	has_search_data_in_results( data ) {
-		return this.results_block().element( `div.mw-search-result-data*=${data}` ).isExisting();
+		return this.results_block().$( `div.mw-search-result-data*=${data}` ).isExisting();
 	}
 
 	get_search_alt_title_at( nth ) {
@@ -94,7 +94,7 @@ class SearchResultsPage extends Page {
 		if ( resultBlock === null ) {
 			return null;
 		}
-		const elt = resultBlock.element( 'span.searchalttitle' );
+		const elt = resultBlock.$( 'span.searchalttitle' );
 		if ( elt.isExisting() ) {
 			return elt.getText();
 		}
@@ -102,18 +102,17 @@ class SearchResultsPage extends Page {
 	}
 
 	get_result_at( nth ) {
-		return this.results_block().getAttribute( `a[data-serp-pos="${nth - 1}"]`, 'title' );
+		return this.results_block().$( `a[data-serp-pos="${nth - 1}"]` ).getAttribute( 'title' );
 	}
 
 	in_search_results( title ) {
-		const elt = this.results_block().element( `a[title="${title}"]` );
+		const elt = this.results_block().$( `a[title="${title}"]` );
 		return elt.isExisting();
 	}
 
 	results_block() {
-		const elt = browser.elements( 'div.searchresults' );
-
-		if ( !elt.value ) {
+		const elt = browser.$( 'div.searchresults' );
+		if ( !elt.isExisting() ) {
 			throw new Error( 'Cannot locate search results block, are you on the SRP?' );
 		}
 		return elt;
@@ -122,9 +121,9 @@ class SearchResultsPage extends Page {
 	click_search() {
 		const forms = [ 'form#powersearch', 'form#search' ];
 		for ( const form of forms ) {
-			const elt = browser.element( form );
-			if ( elt.value ) {
-				elt.click( 'button[type="submit"]' );
+			const elt = browser.$( form );
+			if ( elt.isExisting() ) {
+				elt.$( 'button[type="submit"]' ).click();
 				return;
 			}
 		}
@@ -136,7 +135,7 @@ class SearchResultsPage extends Page {
 	 */
 	click_filter( filter ) {
 		const linkSel = `a=${filter}`;
-		browser.element( 'div.search-types' ).click( linkSel );
+		browser.$( 'div.search-types' ).$( linkSel ).click();
 	}
 
 	/**
@@ -144,14 +143,14 @@ class SearchResultsPage extends Page {
 	 * @param {boolean} first true to select first, false to select all
 	 */
 	select_namespaces( namespaceLabels, first ) {
-		const elt = browser.element( 'form#powersearch fieldset#mw-searchoptions' );
-		if ( !elt.value ) {
+		const elt = browser.$( 'form#powersearch fieldset#mw-searchoptions' );
+		if ( !elt.isExisting() ) {
 			throw new Error( "Cannot find the namespace filters, did you click on 'Advanced' first?" );
 		}
 		for ( const nsLabel of namespaceLabels ) {
 			const labelSel = `label=${nsLabel}`;
-			const label = elt.element( labelSel );
-			if ( label.value ) {
+			const label = elt.$( labelSel );
+			if ( label.isExisting() ) {
 				label.click();
 				if ( first ) {
 					return;

@@ -231,7 +231,7 @@ class BuildDocument {
 		$doc->setDocAsUpsert( $this->canUpsert( $flags ) );
 		// While it would make plenty of sense for a builder to provide the version (revision id),
 		// we need to use it in self::finalize to ensure the revision is still the latest.
-		Assert::precondition( (bool)$page->getLatest(), "Must have a latest revision" );
+		Assert::precondition( (bool)$page->getLatest(), "Must have a latest revision for docId $docId" );
 		$doc->set( 'version', $page->getLatest() );
 		CirrusIndexField::addNoopHandler(
 			$doc, 'version', 'documentVersion' );

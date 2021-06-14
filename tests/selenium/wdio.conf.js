@@ -89,12 +89,18 @@ exports.config = {
 
 	// Test reporter for stdout.
 	// See also: http://webdriver.io/guide/testrunner/reporters.html
-	reporters: [ 'spec', 'junit' ],
-	reporterOptions: {
-		junit: {
-			outputDir: logPath
-		}
-	},
+	reporters: [
+		'spec',
+		[ 'junit',
+			{
+				outputDir: logPath,
+				outputFileFormat: function ( options ) {
+					return `results-${options.cid}-junit.xml`;
+				}
+
+			}
+		]
+	],
 
 	// Options to be passed to Mocha.
 	// See the full list at http://mochajs.org/

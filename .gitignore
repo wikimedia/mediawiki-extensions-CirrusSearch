@@ -8,3 +8,4 @@ vendor/
 composer.lock
 .eslintcache
 /tests/selenium/log
+log

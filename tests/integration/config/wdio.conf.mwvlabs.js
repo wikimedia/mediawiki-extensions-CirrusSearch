@@ -5,12 +5,18 @@ const merge = require( 'deepmerge' ),
 
 // Overwrite default settings
 exports.config = merge( wdioConf.config, {
-	reporters: [ 'dot', 'junit' ],
-	reporterOptions: {
-		junit: {
-			outputDir: __dirname + '/../log'
-		}
-	},
+	reporters: [
+		'dot',
+		[ 'junit',
+			{
+				outputDir: __dirname + '/../log',
+				outputFileFormat: function ( options ) {
+					return `results-${options.cid}-junit.xml`;
+				}
+
+			}
+		]
+	],
 	wikis: {
 		cirrustest: {
 			apiUrl: 'https://cirrustest-' + process.env.MWV_LABS_HOSTNAME + '.wmflabs.org/w/api.php',

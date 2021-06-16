@@ -137,17 +137,10 @@ class ArticleTopicFeature extends SimpleKeywordFeature {
 		}
 
 		$query = new DisMax();
-		// TODO: remove 'ores_articletopics' once fully migrated
-		$fields = [
-			WeightedTagsHooks::FIELD_NAME => self::ARTICLE_TOPIC_TAG_PREFIX . '/',
-			'ores_articletopics' => ''
-		];
 		foreach ( $topics as $topic ) {
-			foreach ( $fields as $field => $prefix ) {
-				$topicQuery = new Term();
-				$topicQuery->setTerm( $field, $prefix . $topic );
-				$query->addQuery( $topicQuery );
-			}
+			$topicQuery = new Term();
+			$topicQuery->setTerm( WeightedTagsHooks::FIELD_NAME, self::ARTICLE_TOPIC_TAG_PREFIX . '/' . $topic );
+			$query->addQuery( $topicQuery );
 		}
 
 		if ( !$negated ) {

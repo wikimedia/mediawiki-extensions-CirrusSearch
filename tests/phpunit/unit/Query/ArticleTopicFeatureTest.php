@@ -21,12 +21,12 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 	}
 
 	public function parseProvider() {
-		$term = static function ( string $topic ) {
+		$term = static function ( string $topic, string $prefix ) {
 			return [
 				[
 					'term' => [
 						'weighted_tags' => [
-							'value' => 'classification.ores.articletopic/' . $topic,
+							'value' => "classification.ores.$prefix/$topic",
 							'boost' => 1.0,
 						],
 					],
@@ -46,28 +46,52 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 		return [
 			'basic search' => [
 				'articletopic:stem',
-				[ 'topics' => [ 'STEM.STEM*' ] ],
+				[
+					'topics' => [ 'STEM.STEM*' ],
+					'tag_prefix' => 'classification.ores.articletopic',
+				],
 				$match( [
 					'dis_max' => [
-						'queries' => $term( 'STEM.STEM*' ),
+						'queries' => $term( 'STEM.STEM*', 'articletopic' ),
+					],
+				] ),
+			],
+			'basic search with drafttopic' => [
+				'drafttopic:stem',
+				[
+					'topics' => [ 'STEM.STEM*' ],
+					'tag_prefix' => 'classification.ores.drafttopic',
+				],
+				$match( [
+					'dis_max' => [
+						'queries' => $term( 'STEM.STEM*', 'drafttopic' ),
 					],
 				] ),
 			],
 			'negated' => [
 				'-articletopic:stem',
-				[ 'topics' => [ 'STEM.STEM*' ] ],
+				[
+					'topics' => [ 'STEM.STEM*' ],
+					'tag_prefix' => 'classification.ores.articletopic',
+				],
 				$filter( [
 					'dis_max' => [
-						'queries' => $term( 'STEM.STEM*' ),
+						'queries' => $term( 'STEM.STEM*', 'articletopic' ),
 					],
 				] ),
 			],
 			'multiple topics' => [
 				'articletopic:media|music',
-				[ 'topics' => [ 'Culture.Media.Media*', 'Culture.Media.Music' ] ],
+				[
+					'topics' => [ 'Culture.Media.Media*', 'Culture.Media.Music' ],
+					'tag_prefix' => 'classification.ores.articletopic',
+				],
 				$match( [
 					'dis_max' => [
-						'queries' => array_merge( $term( 'Culture.Media.Media*' ), $term( 'Culture.Media.Music' ) ),
+						'queries' => array_merge(
+							$term( 'Culture.Media.Media*', 'articletopic' ),
+							$term( 'Culture.Media.Music', 'articletopic' )
+						),
 					],
 				] ),
 			],
@@ -97,11 +121,21 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 		$this->assertSame( $expectedQuery, $actualQuery );
 	}
 
-	public function testParse_invalid() {
+	public function provide_testParse_invalid() {
+		return [
+			'With articletopic' => [ 'articletopic' ],
+			'With drafttopic' => [ 'drafttopic' ]
+		];
+	}
+
+	/**
+	 * @dataProvider provide_testParse_invalid
+	 */
+	public function testParse_invalid( string $keyword ) {
 		$feature = new ArticleTopicFeature();
 		$this->assertWarnings( $feature, [ [ 'cirrussearch-articletopic-invalid-topic',
-			[ 'list' => [ 'foo' ], 'type' => 'comma' ], 1 ] ], 'articletopic:foo' );
-		$this->assertNoResultsPossible( $feature, 'articletopic:foo' );
+											 [ 'list' => [ 'foo' ], 'type' => 'comma' ], 1 ] ], "$keyword:foo" );
+		$this->assertNoResultsPossible( $feature, "$keyword:foo" );
 	}
 
 }

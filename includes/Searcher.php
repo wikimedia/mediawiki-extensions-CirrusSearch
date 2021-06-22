@@ -718,7 +718,15 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		return $this->searchContext;
 	}
 
-	private function getPoolCounterType() {
+	private function getPoolCounterType(): string {
+		// Default pool counter for all search requests. Note that not all
+		// possible requests go through Searcher, so this isn't globally
+		// definitive.
+		$pool = 'CirrusSearch-Search';
+		// Pool counter overrides based on query syntax. Goal is to
+		// separate expensive or high-volume traffic into dedicated
+		// pools with specific limits. Prefix is only high volume
+		// when completion is disabled.
 		$poolCounterTypes = [
 			'regex' => 'CirrusSearch-Regex',
 			'prefix' => 'CirrusSearch-Prefix',
@@ -726,10 +734,42 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		];
 		foreach ( $poolCounterTypes as $type => $counter ) {
 			if ( $this->searchContext->isSyntaxUsed( $type ) ) {
-				return $counter;
+				$pool = $counter;
+				break;
 			}
 		}
-		return 'CirrusSearch-Search';
+		// Put external automated requests into their own bucket The main idea
+		// here is to allow automated access, but prevent that automation from
+		// capping out the pools used by interactive queries.
+		// It's not clear when the automation bucket should not override other
+		// bucketing decisions, for now override everything except Regex since
+		// those can be very expensive and usually use a small pool. If both
+		// the automation and regex pools filled with regexes it would be
+		// significantly more load than expected.
+		if ( $pool !== 'CirrusSearch-Regex' && $this->isAutomatedRequest() ) {
+			$pool = 'CirrusSearch-Automated';
+		}
+		return $pool;
+	}
+
+	private function isAutomatedRequest(): bool {
+		$req = RequestContext::getMain()->getRequest();
+		try {
+			$ip = $req->getIP();
+		} catch ( \MWException $e ) {
+			// No IP, typically this means a CLI invocation. We are attempting
+			// to segregate external automation, internal automation has its
+			// own ability to control configuration and shouldn't be flagged
+			if ( MW_ENTRY_POINT === 'cli' ) {
+				return false;
+			}
+			// When can we get here? Is this ever run?
+			LoggerFactory::getInstance( 'CirrusSearch' )->info(
+				'No IP available during automated request check' );
+			return false;
+		}
+		return Util::looksLikeAutomation(
+			$this->config, $req->getIP(), $req->getHeader( 'User-Agent' ) );
 	}
 
 	/**

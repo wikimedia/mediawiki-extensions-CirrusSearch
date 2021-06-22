@@ -1572,3 +1572,27 @@ Method to use for namespace name resolution, can be:
 - 'naive': using ICU naive case/accent folding
 - 'utr30': using a more aggressive folding technique
    based on the UTR30 specs (specs used but lucene but withdrawn by Unicode)
+
+; $wgCirrusSearchAutomationUserAgentRegex
+
+Default:
+  $wgCirrusSearchAutomationUserAgentRegex = null;
+
+A regular expression to be applied against an http user agent. When matching
+the related request will be considered an automated request and use the
+appropriate pool counter to limit concurrency.
+
+Example:
+  $wgCirrusSearchAutomationUserAgentRegex = '/HeadlessChrome/';
+
+; $wgCirrusSearchAutomationCIDRs
+
+Default:
+  $wgCirrusSearchAutomationCIDRs = [];
+
+List of CIDRs as strings. If an incoming request has an IP matching one of these CIDRs
+it will be consider an automated request and use the appropriate pool counter to limit
+concurrency.
+
+Example:
+  $wgCirrusSearchAutomationCIDRs = ['1.2.3.0/24', '1:2::/32'];

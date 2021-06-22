@@ -662,6 +662,14 @@
 		"CirrusSearchCompletionBannedPageIds": {
 			"description": "Set of page ids to never return in completion search",
 			"value": []
+		},
+		"CirrusSearchAutomationUserAgentRegex": {
+			"description": "Regular expression used to identify http user agents of automated requests",
+			"value": null
+		},
+		"CirrusSearchAutomationCIDRs": {
+			"description": "List of CIDR strings used to identify automated requests",
+			"value": []
 		}
 	},
 	"SearchMappings": {

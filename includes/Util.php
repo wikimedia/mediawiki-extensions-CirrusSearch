@@ -13,6 +13,7 @@ use Title;
 use UIDGenerator;
 use WebRequest;
 use Wikimedia\Assert\Assert;
+use Wikimedia\IPUtils;
 
 /**
  * Random utility functions that don't have a better home
@@ -579,4 +580,37 @@ class Util {
 		}
 		return MediaWikiServices::getInstance()->getStatsdDataFactory();
 	}
+
+	/**
+	 * @param SearchConfig $config Configuration of the check
+	 * @param string $ip The address to check against, ipv4 or ipv6.
+	 * @param string $userAgent Http user agent of the request
+	 * @return bool True when the parameters appear to be a non-interactive use case.
+	 */
+	public static function looksLikeAutomation( SearchConfig $config, string $ip, string $userAgent ): bool {
+		// Does the user agent have an automation-like user agent, such as
+		// HeadlessChrome or a popular http client package for various
+		// languages?
+		$uaPattern = $config->get( 'CirrusSearchAutomationUserAgentRegex' );
+		if ( $uaPattern !== null ) {
+			$ret = preg_match( $uaPattern, $userAgent );
+			if ( $ret === 1 ) {
+				return true;
+			} elseif ( $ret === false ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+					'Invalid regex provided in `CirrusSearchAutomationUserAgentRegex`.' );
+				return false;
+			}
+		}
+
+		// Does the ip address fall into a subnet known for automation?
+		$ranges = $config->get( 'CirrusSearchAutomationCIDRs' );
+		if ( IPUtils::isInRanges( $ip, $ranges ) ) {
+			return true;
+		}
+
+		// Default assumption that requests are interactive
+		return false;
+	}
+
 }

@@ -150,4 +150,41 @@ class UtilTest extends CirrusTestCase {
 		} );
 		$this->assertEquals( [ 'key1' => 123, 'KEY2' => false, 'key4' => [ 'a', 'b', 'c' ] ], $arr2 );
 	}
+
+	public static function lookslikeAutomationProvider() {
+		return [
+			'no config, no problem' => [
+				false, null, [], '1.2.3.4', 'some ua'
+			],
+			'ua match' => [
+				true, '/HeadlessChrome/', [], '1.2.3.4', 'Mozilla/1.2 HeadlessChrome/8.7.6'
+			],
+			'no ua match' => [
+				false, '/HeadlessChrome/', [], '1.2.3.4', 'Mozilla/3.4 Chrome/5.4.3'
+			],
+			'cidr ipv4 match' => [
+				true, null, [ '1.0.0.0/8' ], '1.2.3.4', 'another ua'
+			],
+			'cidr ipv4 no match' => [
+				false, null, [ '1.0.0.0/8' ], '4.3.2.1', 'another ua'
+			],
+			'cidr ipv6 match' => [
+				true, null, [ '1:2::/32' ], '1:2:3::4', 'another ua'
+			],
+			'cidr ipv6 no match' => [
+				false, null, [ '1:2::/32' ], '4:3:2::1', 'another ua'
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider looksLikeAutomationProvider
+	 */
+	public function testLooksLikeAutomation( bool $expect, ?string $uaPattern, array $ranges, string $ip, string $ua ) {
+		$config = new HashSearchConfig( [
+			'CirrusSearchAutomationUserAgentRegex' => $uaPattern,
+			'CirrusSearchAutomationCIDRs' => $ranges,
+		] );
+		$this->assertSame( $expect, Util::looksLikeAutomation( $config, $ip, $ua ) );
+	}
 }

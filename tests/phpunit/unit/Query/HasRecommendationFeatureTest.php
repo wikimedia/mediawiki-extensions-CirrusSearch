@@ -24,14 +24,19 @@ class HasRecommendationFeatureTest extends CirrusTestCase {
 			'simple' => [
 				'hasrecommendation:image',
 				[ 'recommendationflags' => [ 'image' ] ],
-				[ 'match' => [ 'weighted_tags' => [ 'query' => 'recommendation.image/exists' ] ] ],
+				[ 'bool' => [ 'should' => [
+					[ 'match' => [ 'ores_articletopics' => [ 'query' => 'recommendation.image/exists' ] ] ],
+					[ 'match' => [ 'weighted_tags' => [ 'query' => 'recommendation.image/exists' ] ] ],
+				] ] ],
 				[]
 			],
 			'multiple' => [
 				'hasrecommendation:link|image',
 				[ 'recommendationflags' => [ 'link', 'image' ] ],
 				[ 'bool' => [ 'should' => [
+					[ 'match' => [ 'ores_articletopics' => [ 'query' => 'recommendation.link/exists' ] ] ],
 					[ 'match' => [ 'weighted_tags' => [ 'query' => 'recommendation.link/exists' ] ] ],
+					[ 'match' => [ 'ores_articletopics' => [ 'query' => 'recommendation.image/exists' ] ] ],
 					[ 'match' => [ 'weighted_tags' => [ 'query' => 'recommendation.image/exists' ] ] ],
 				] ] ],
 				[]
@@ -42,6 +47,7 @@ class HasRecommendationFeatureTest extends CirrusTestCase {
 				[ 'bool' => [ 'should' => array_merge( ...array_map(
 					static function ( $l ) {
 						return [
+							[ 'match' => [ 'ores_articletopics' => [ 'query' => "recommendation." . $l . '/exists' ] ] ],
 							[ 'match' => [ 'weighted_tags' => [ 'query' => "recommendation." . $l . '/exists' ] ] ],
 						];
 					},

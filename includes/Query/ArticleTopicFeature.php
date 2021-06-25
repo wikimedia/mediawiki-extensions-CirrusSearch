@@ -18,12 +18,6 @@ use Message;
  */
 class ArticleTopicFeature extends SimpleKeywordFeature {
 	public const ARTICLE_TOPIC_TAG_PREFIX = 'classification.ores.articletopic';
-	public const DRAFT_TOPIC_TAG_PREFIX = 'classification.ores.drafttopic';
-
-	private const PREFIX_PER_KEYWORD = [
-		'articletopic' => self::ARTICLE_TOPIC_TAG_PREFIX,
-		'drafttopic' => self::DRAFT_TOPIC_TAG_PREFIX
-	];
 
 	public const TERMS_TO_LABELS = [
 		'biography' => 'Culture.Biography.Biography*',
@@ -111,7 +105,7 @@ class ArticleTopicFeature extends SimpleKeywordFeature {
 
 	/**
 	 * @inheritDoc
-	 * @phan-return array{topics:string[],tag_prefix:string}
+	 * @phan-return array{topics:string[]}
 	 */
 	public function parseValue(
 		$key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector
@@ -126,29 +120,34 @@ class ArticleTopicFeature extends SimpleKeywordFeature {
 			$warningCollector->addWarning( 'cirrussearch-articletopic-invalid-topic',
 				Message::listParam( $invalidTopics, 'comma' ), count( $invalidTopics ) );
 		}
-		return [ 'topics' => $validTopics, 'tag_prefix' => self::PREFIX_PER_KEYWORD[$key] ];
+		return [ 'topics' => $validTopics ];
 	}
 
 	/** @inheritDoc */
 	protected function getKeywords() {
-		return array_keys( self::PREFIX_PER_KEYWORD );
+		return [ 'articletopic' ];
 	}
 
 	/** @inheritDoc */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$parsed = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
-		$topics = $parsed['topics'];
-		$tagPrefix = $parsed['tag_prefix'];
+		$topics = $this->parseValue( $key, $value, $quotedValue, '', '', $context )['topics'];
 		if ( $topics === [] ) {
 			$context->setResultsPossible( false );
 			return [ null, true ];
 		}
 
 		$query = new DisMax();
+		// TODO: remove 'ores_articletopics' once fully migrated
+		$fields = [
+			WeightedTagsHooks::FIELD_NAME => self::ARTICLE_TOPIC_TAG_PREFIX . '/',
+			'ores_articletopics' => ''
+		];
 		foreach ( $topics as $topic ) {
-			$topicQuery = new Term();
-			$topicQuery->setTerm( WeightedTagsHooks::FIELD_NAME, $tagPrefix . '/' . $topic );
-			$query->addQuery( $topicQuery );
+			foreach ( $fields as $field => $prefix ) {
+				$topicQuery = new Term();
+				$topicQuery->setTerm( $field, $prefix . $topic );
+				$query->addQuery( $topicQuery );
+			}
 		}
 
 		if ( !$negated ) {

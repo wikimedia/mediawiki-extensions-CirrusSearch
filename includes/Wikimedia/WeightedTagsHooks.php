@@ -5,7 +5,6 @@ namespace CirrusSearch\Wikimedia;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Query\ArticleTopicFeature;
-use CirrusSearch\Query\HasRecommendationFeature;
 use CirrusSearch\SearchConfig;
 use Config;
 use MediaWiki\MediaWikiServices;
@@ -117,8 +116,6 @@ class WeightedTagsHooks {
 		if ( self::canUse( $config ) ) {
 			// articletopic keyword, matches by ORES topic scores
 			$extraFeatures[] = new ArticleTopicFeature();
-			// article recommendations filter
-			$extraFeatures[] = new HasRecommendationFeature();
 		}
 	}
 

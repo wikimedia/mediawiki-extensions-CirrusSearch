@@ -74,6 +74,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint должен быть установлен на действительную конечную точку SPARQL для использования поиска глубокой категории.",
 	"cirrussearch-feature-deepcat-exception": "Не удалось получить запрос SPARQL с глубокой категорией",
 	"cirrussearch-feature-deepcat-toomany": "Запрос по категории и рекурсивно по подкатегориям  возвратил слишком много категорий",
+	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Неверный ID страницы|Неверные ID страниц}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Не передано корректных категорий в '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Не передано корректных заголовков в '$1'.",
 	"cirrussearch-mlt-not-configured": "Функция '$1' не настроена. Попросите администратора исправить $wgCirrusSearchMoreLikeThisFields",

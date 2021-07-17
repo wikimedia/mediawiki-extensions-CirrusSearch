@@ -456,7 +456,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		foreach ( $requestCalls as $nb => $actualCall ) {
 			if ( isset( $merged['path'] ) ) {
 				foreach ( [ 'path', 'method', 'params', 'contentType' ] as $k ) {
-					$this->assertEquals( $merged[$k], $actualCall[$k], "Bulk message $nb has same value for $k the the first bulk" );
+					$this->assertEquals( $merged[$k], $actualCall[$k], "Bulk message $nb has same value for $k the first bulk" );
 				}
 				$merged['data'][] = $actualCall['data'];
 			} else {

@@ -230,7 +230,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( $this->indexType === Connection::ARCHIVE_INDEX_TYPE &&
 			!$this->getConnection()->getSettings()->isPrivateCluster()
 		) {
-			$this->output( "Warning: Not allowing {$this->indexType} on a non-private cluster" );
+			$this->output( "Warning: Not allowing {$this->indexType} on a non-private cluster\n" );
 			return true;
 		}
 

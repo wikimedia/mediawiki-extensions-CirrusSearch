@@ -7,7 +7,6 @@
 	],
 	"rules": {
 		"max-len": "off",
-		"mediawiki/class-doc": "off",
-		"vars-on-top": "off"
+		"mediawiki/class-doc": "off"
 	}
 }

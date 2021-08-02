@@ -20,7 +20,7 @@ class ArticlePage extends TitlePage {
 	 * Performs a search using the search button top-right
 	 */
 	click_search_top_right() {
-		browser.$( '#simpleSearch #searchButton' ).click();
+		browser.$( '#searchform > button' ).click();
 	}
 
 	has_search_suggestions() {
@@ -34,20 +34,20 @@ class ArticlePage extends TitlePage {
 	}
 
 	get_search_suggestions() {
-		const selector = '.suggestions .suggestions-results a.mw-searchSuggest-link';
+		const selector = '.wvui-typeahead-suggestion__title';
 		browser.waitUntil(
 			() => browser.$( selector ).isExisting(),
 			{ timeout: 10000 }
 		);
-		return this.collect_element_attribute( 'title', selector );
+		return this.collect_element_texts( selector );
 	}
 
 	set search_query_top_right( search ) {
-		browser.$( '#simpleSearch #searchInput' ).setValue( search );
+		browser.$( '#searchform [name=search]' ).setValue( search );
 	}
 
 	get search_query_top_right() {
-		return browser.getValue( '#simpleSearch #searchInput' );
+		return browser.getValue( '#searchform [name=search]' );
 	}
 }
 

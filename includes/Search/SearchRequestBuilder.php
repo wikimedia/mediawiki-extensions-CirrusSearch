@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\Connection;
+use CirrusSearch\Util;
 use Elastica\Query;
 use Elastica\Type;
 use MediaWiki\Logger\LoggerFactory;
@@ -144,7 +145,20 @@ class SearchRequestBuilder {
 						->setQuery( new Query\MatchAll() )
 						/** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal empty array isn't jsonified to {} properly */
 						->addFunction( 'random_score', (object)[] ) ) );
+
 				break;
+			case 'user_random':
+				// Randomly ordered, but consistent for a single user
+				$query->setQuery( ( new Query\BoolQuery() )
+					->addFilter( $mainQuery )
+					->addMust( ( new Query\FunctionScore() )
+						->setQuery( new Query\MatchAll() )
+						->addFunction( 'random_score', [
+							'seed' => Util::generateIdentToken(),
+							'field' => '_seq_no',
+						] ) ) );
+				break;
+
 			default:
 				// Same as just_match. No user warning since an invalid sort
 				// getting this far as a bug in the calling code which should

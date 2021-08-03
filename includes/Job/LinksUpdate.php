@@ -61,7 +61,7 @@ class LinksUpdate extends CirrusTitleJob {
 		$refreshInterval = $this->getSearchConfig()->get( 'CirrusSearchRefreshInterval' );
 		foreach ( $titleKeys as $titleKey ) {
 			$title = Title::newFromDBkey( $titleKey );
-			if ( !$title ) {
+			if ( !$title || !$title->canExist() ) {
 				continue;
 			}
 			// If possible, delay the job execution by a few seconds so Elasticsearch

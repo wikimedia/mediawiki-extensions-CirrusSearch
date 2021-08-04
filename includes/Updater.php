@@ -356,8 +356,9 @@ class Updater extends ElasticsearchIntermediary {
 	public function updateLinkedArticles( $titles ) {
 		$pages = [];
 		foreach ( $titles as $title ) {
-			// Special pages don't get updated
-			if ( !$title || $title->getNamespace() < 0 ) {
+			// Special pages don't get updated, we only index
+			// actual existing pages.
+			if ( !$title || !$title->canExist() ) {
 				continue;
 			}
 

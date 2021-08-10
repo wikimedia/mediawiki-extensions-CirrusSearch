@@ -9,6 +9,7 @@ use CirrusSearch\Test\SearchConfigUsageDecorator;
 use Elastica\Query;
 use Elastica\Response;
 use HtmlArmor;
+use LinkCacheTestTrait;
 use MediaWiki\MediaWikiServices;
 use Title;
 
@@ -18,6 +19,7 @@ use Title;
  * @group Standalone
  */
 class SearcherTest extends CirrusIntegrationTestCase {
+	use LinkCacheTestTrait;
 
 	public function setUp(): void {
 		parent::setUp();
@@ -112,9 +114,8 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		] );
 
 		// Set a couple pre-defined pages for anything (morelike) that needs valid pages
-		$linkCache = MediaWikiServices::getInstance()->getLinkCache();
-		$linkCache->addGoodLinkObj( 12345, Title::newFromText( 'Some page' ) );
-		$linkCache->addGoodLinkObj( 23456, Title::newFromText( 'Other page' ) );
+		$this->addGoodLinkObject( 12345, Title::newFromText( 'Some page' ) );
+		$this->addGoodLinkObject( 23456, Title::newFromText( 'Other page' ) );
 
 		$engine = new CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		// Set some default namespaces, otherwise installed extensions will change

@@ -84,7 +84,7 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 	public function testOverrides() {
 		$request = new \FauxRequest( [ 'profile' => 'prof3' ] );
 		$user = $this->getTestUser()->getUser();
-		$user->setOption( 'profile-pref', 'prof4' );
+		$this->getServiceContainer()->getUserOptionsManager()->setOption( $user, 'profile-pref', 'prof4' );
 		$config = new HashSearchConfig( [ 'ConfigDefault' => 'prof2' ] );
 
 		$profiles = [

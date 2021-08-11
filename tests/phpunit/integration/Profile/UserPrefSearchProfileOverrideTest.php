@@ -40,7 +40,7 @@ class UserPrefSearchProfileOverrideTest extends CirrusIntegrationTestCase {
 	private function getMyTestUser() {
 		$testUser = $this->getTestUser();
 		$user = $testUser->getUser();
-		$user->setOption( 'test-profile-user-pref', 'overridden' );
+		$this->getServiceContainer()->getUserOptionsManager()->setOption( $user, 'test-profile-user-pref', 'overridden' );
 		return $user;
 	}
 }

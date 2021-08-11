@@ -77,7 +77,7 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 		} elseif ( $overrideType === 'pref' ) {
 			$request = new \FauxRequest();
 			$user = $this->getTestUser( [ 'cirrus-profiles', $type, $context, $overrideKey ] )->getUser();
-			$user->setOption( $overrideKey, $profileName );
+			$this->getServiceContainer()->getUserOptionsManager()->setOption( $user, $overrideKey, $profileName );
 			$config = new HashSearchConfig( [] );
 		} elseif ( $overrideType === 'config' ) {
 			$request = new \FauxRequest();

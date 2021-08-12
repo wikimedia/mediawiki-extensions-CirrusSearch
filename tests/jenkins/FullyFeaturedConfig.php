@@ -105,3 +105,4 @@ if ( is_dir( "$IP/extensions/PoolCounter" ) ) {
 
 $wgCirrusSearchIndexDeletes = true;
 $wgCirrusSearchEnableArchive = true;
+$wgCirrusSearchElasticQuirks['retry_on_conflict'] = true;

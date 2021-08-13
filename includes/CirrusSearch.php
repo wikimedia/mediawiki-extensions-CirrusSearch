@@ -76,7 +76,7 @@ class CirrusSearch extends SearchEngine {
 	 * Name of the feature to extract more fields during a fulltext search request.
 	 * Expected value is a list of strings identifying the fields to extract out
 	 * of the source document.
-	 * @see SearchEngine::supports() anf SearchEngine::setFeatureData()
+	 * @see SearchEngine::supports() and SearchEngine::setFeatureData()
 	 */
 	public const EXTRA_FIELDS_TO_EXTRACT = 'extra-fields-to-extract';
 
@@ -247,6 +247,7 @@ class CirrusSearch extends SearchEngine {
 			->setLimit( $this->limit )
 			->setOffset( $this->offset )
 			->setSort( $this->getSort() )
+			->setRandomSeed( $this->getFeatureData( 'random_seed' ) )
 			->setExtraIndicesSearch( true )
 			->setCrossProjectSearch( $this->isFeatureEnabled( 'interwiki' ) )
 			->setWithDYMSuggestion( $this->showSuggestion )

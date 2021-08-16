@@ -2,15 +2,20 @@
 
 For more information see https://www.mediawiki.org/wiki/Selenium
 
-Tests here are running daily in selenium-CirrusSearch-jessie Jenkins job. For documentation see https://www.mediawiki.org/wiki/Selenium/How-to/Run_tests_using_selenium-daily-SITE-EXTENSION_Jenkins_job
+## Setup
 
-## Usage
+See https://www.mediawiki.org/wiki/MediaWiki-Docker/Extension/CirrusSearch
 
-In one terminal window or tab start Chromedriver:
+## Run all specs
 
-    chromedriver --url-base=wd/hub --port=4444
+    npm run selenium-test
 
-In another terminal tab or window:
+## Run specific tests
 
-    npm ci
-    MW_SERVER=https://en.wikipedia.beta.wmflabs.org npm run @selenium-test
+Filter by file name:
+
+    npm run selenium-test -- --spec tests/selenium/specs/[FILE-NAME]
+
+Filter by file name and test name:
+
+    npm run selenium-test -- --spec tests/selenium/specs/[FILE-NAME] --mochaOpts.grep [TEST-NAME]

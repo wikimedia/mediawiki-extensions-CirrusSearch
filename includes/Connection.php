@@ -4,7 +4,7 @@ namespace CirrusSearch;
 
 use ElasticaConnection;
 use Exception;
-use MWNamespace;
+use MediaWiki\MediaWikiServices;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -277,7 +277,7 @@ class Connection extends ElasticaConnection {
 			return self::CONTENT_INDEX_TYPE;
 		}
 
-		return MWNamespace::isContent( $namespace ) ?
+		return MediaWikiServices::getInstance()->getNamespaceInfo()->isContent( $namespace ) ?
 			self::CONTENT_INDEX_TYPE : self::GENERAL_INDEX_TYPE;
 	}
 

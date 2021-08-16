@@ -230,6 +230,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( [ NS_MAIN ], $defaults->getNamespaces() );
 		$this->assertEquals( [ NS_MAIN ], $defaults->getInitialNamespaces() );
 		$this->assertEquals( 'relevance', $defaults->getSort() );
+		$this->assertNull( $defaults->getRandomSeed() );
 		$this->assertSame( 0, $defaults->getOffset() );
 		$this->assertEquals( 10, $defaults->getLimit() );
 		$this->assertEquals( CirrusDebugOptions::defaultOptions(), $defaults->getDebugOptions() );
@@ -255,7 +256,8 @@ class SearchQueryTest extends CirrusTestCase {
 			->setOffset( 10 )
 			->setLimit( 100 )
 			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
-			->setSort( 'size' )
+			->setSort( 'random' )
+			->setRandomSeed( 123 )
 			->setWithDYMSuggestion( false )
 			->setAllowRewrite( true )
 			->addProfileContextParameter( "foo", "bar" )
@@ -271,7 +273,8 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( SearchQuery::SEARCH_TEXT, $custom->getSearchEngineEntryPoint() );
 		$this->assertEquals( [ NS_MAIN, NS_HELP ], $custom->getNamespaces() );
 		$this->assertEquals( [ NS_MAIN, NS_HELP ], $custom->getInitialNamespaces() );
-		$this->assertEquals( 'size', $custom->getSort() );
+		$this->assertEquals( 'random', $custom->getSort() );
+		$this->assertEquals( 123, $custom->getRandomSeed() );
 		$this->assertEquals( 10, $custom->getOffset() );
 		$this->assertEquals( 100, $custom->getLimit() );
 		$this->assertEquals( CirrusDebugOptions::forDumpingQueriesInUnitTests(), $custom->getDebugOptions() );

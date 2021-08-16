@@ -59,6 +59,11 @@ final class SearchQueryBuilder {
 	private $sort;
 
 	/**
+	 * @var int|null
+	 */
+	private $randomSeed;
+
+	/**
 	 * @var string[]
 	 */
 	private $forcedProfiles = [];
@@ -130,6 +135,7 @@ final class SearchQueryBuilder {
 			$namespacePrefixParser, $cirrusSearchHookRunner )->parse( $queryString );
 		$builder->initialNamespaces = [ NS_MAIN ];
 		$builder->sort = \SearchEngine::DEFAULT_SORT;
+		$builder->randomSeed = null;
 		$builder->debugOptions = CirrusDebugOptions::defaultOptions();
 		$builder->limit = 10;
 		$builder->offset = 0;
@@ -186,6 +192,7 @@ final class SearchQueryBuilder {
 
 		$builder->initialNamespaces = $namespaces;
 		$builder->sort = $original->getSort();
+		$builder->randomSeed = $original->getRandomSeed();
 		$builder->debugOptions = $original->getDebugOptions();
 		$builder->searchConfig = $config;
 		$builder->profileContextParameters = $original->getProfileContextParameters();
@@ -255,6 +262,7 @@ final class SearchQueryBuilder {
 		$builder->forcedProfiles = $original->getForcedProfiles();
 		$builder->initialNamespaces = $original->getInitialNamespaces();
 		$builder->sort = $original->getSort();
+		$builder->randomSeed = $original->getRandomSeed();
 		$builder->debugOptions = $original->getDebugOptions();
 		$builder->limit = $original->getLimit();
 		$builder->offset = $original->getOffset();
@@ -282,6 +290,7 @@ final class SearchQueryBuilder {
 			$this->contextualFilters,
 			$this->searchEngineEntryPoint,
 			$this->sort,
+			$this->randomSeed,
 			$this->forcedProfiles,
 			$this->offset,
 			$this->limit,
@@ -372,6 +381,16 @@ final class SearchQueryBuilder {
 	 */
 	public function setLimit( $limit ): SearchQueryBuilder {
 		$this->limit = $limit;
+
+		return $this;
+	}
+
+	/**
+	 * @param int|null $randomSeed
+	 * @return $this
+	 */
+	public function setRandomSeed( ?int $randomSeed ): SearchQueryBuilder {
+		$this->randomSeed = $randomSeed;
 
 		return $this;
 	}

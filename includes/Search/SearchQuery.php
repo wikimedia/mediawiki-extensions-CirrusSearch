@@ -58,6 +58,11 @@ class SearchQuery {
 	private $sort;
 
 	/**
+	 * @var int|null
+	 */
+	private $randomSeed;
+
+	/**
 	 * @var string[]
 	 */
 	private $forcedProfiles;
@@ -110,6 +115,7 @@ class SearchQuery {
 	 * @param \CirrusSearch\Query\Builder\ContextualFilter[] $contextualFilters
 	 * @param string $searchEngineEntryPoint
 	 * @param string $sort
+	 * @param int|null $randomSeed
 	 * @param string[] $forcedProfiles
 	 * @param int $offset
 	 * @param int $limit
@@ -128,6 +134,7 @@ class SearchQuery {
 		array $contextualFilters,
 		$searchEngineEntryPoint,
 		$sort,
+		$randomSeed,
 		array $forcedProfiles,
 		$offset,
 		$limit,
@@ -144,6 +151,7 @@ class SearchQuery {
 		$this->contextualFilters = $contextualFilters;
 		$this->searchEngineEntryPoint = $searchEngineEntryPoint;
 		$this->sort = $sort;
+		$this->randomSeed = $randomSeed;
 		$this->forcedProfiles = $forcedProfiles;
 		$this->offset = $offset;
 		$this->limit = $limit;
@@ -219,6 +227,13 @@ class SearchQuery {
 	 */
 	public function getSort() {
 		return $this->sort;
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public function getRandomSeed(): ?int {
+		return $this->randomSeed;
 	}
 
 	/**

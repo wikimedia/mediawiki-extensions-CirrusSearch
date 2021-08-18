@@ -5,7 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\BoolQuery;
-use Elastica\Query\Match;
+use Elastica\Query\MatchQuery;
 use Elastica\Query\MultiMatch;
 
 /**
@@ -39,7 +39,7 @@ class PrefixSearchQueryBuilder {
 
 	private function wordPrefixQuery( $term, $variants ) {
 		$buildMatch = function ( $searchTerm ) {
-			$match = new Match();
+			$match = new MatchQuery();
 			// TODO: redirect.title?
 			$match->setField( 'title.word_prefix', [
 				'query' => $searchTerm,

@@ -839,7 +839,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		] );
 		$multi->setOperator( 'AND' );
 
-		$fuzzy = new \Elastica\Query\Match();
+		$fuzzy = new \Elastica\Query\MatchQuery();
 		$fuzzy->setFieldQuery( 'title.plain', $term );
 		$fuzzy->setFieldFuzziness( 'title.plain', 'AUTO' );
 		$fuzzy->setFieldOperator( 'title.plain', 'AND' );

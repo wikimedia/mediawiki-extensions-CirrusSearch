@@ -5,7 +5,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\CirrusIntegrationTestCase;
 use Elastica\Client;
 use Elastica\Index;
-use Elastica\Query\Match;
+use Elastica\Query\MatchQuery;
 use Elastica\Response;
 
 /**
@@ -16,9 +16,9 @@ class MSearchRequestsTest extends CirrusIntegrationTestCase {
 
 	public function testDumpQuery() {
 		$search1 = ( new Index( new Client(), "test_one" ) )
-			->createSearch( new Match( 'one', 'test' ), [ 'terminate_after' => 10 ] );
+			->createSearch( new MatchQuery( 'one', 'test' ), [ 'terminate_after' => 10 ] );
 		$search2 = ( new Index( new Client(), "test_two" ) )
-			->createSearch( new Match( 'two', 'test' ), [ 'terminate_after' => 100 ] );
+			->createSearch( new MatchQuery( 'two', 'test' ), [ 'terminate_after' => 100 ] );
 		$requests = MSearchRequests::build( 'first', $search1 );
 		$requests->addRequest( 'second', $search2 );
 		$dumpQuery = $requests->dumpQuery( 'my description' );
@@ -29,21 +29,21 @@ class MSearchRequestsTest extends CirrusIntegrationTestCase {
 				'path' => 'test_one/_search',
 				'options' => [ 'terminate_after' => 10 ],
 				'params' => [ 'terminate_after' => 10 ],
-				'query' => [ 'query' => ( new Match( 'one', 'test' ) )->toArray() ],
+				'query' => [ 'query' => ( new MatchQuery( 'one', 'test' ) )->toArray() ],
 			],
 			'second' => [
 				'description' => 'my description',
 				'path' => 'test_two/_search',
 				'options' => [ 'terminate_after' => 100 ],
 				'params' => [ 'terminate_after' => 100 ],
-				'query' => [ 'query' => ( new Match( 'two', 'test' ) )->toArray() ],
+				'query' => [ 'query' => ( new MatchQuery( 'two', 'test' ) )->toArray() ],
 			]
 		], $dumpQuery->getValue() );
 	}
 
 	public function testTimeout() {
 		$search1 = ( new Index( new Client(), "test_one" ) )
-			->createSearch( new Match( 'one', 'test' ), [ 'terminate_after' => 10 ] );
+			->createSearch( new MatchQuery( 'one', 'test' ), [ 'terminate_after' => 10 ] );
 		$requests = MSearchRequests::build( 'first', $search1 );
 		$rset = new \Elastica\ResultSet( new Response( [ 'timed_out' => true ] ), $search1->getQuery(), [] );
 		$timedOut = $requests->toMSearchResponses( [ $rset ] );
@@ -55,7 +55,7 @@ class MSearchRequestsTest extends CirrusIntegrationTestCase {
 
 	public function testFailed() {
 		$search1 = ( new Index( new Client(), "test_one" ) )
-			->createSearch( new Match( 'one', 'test' ), [ 'terminate_after' => 10 ] );
+			->createSearch( new MatchQuery( 'one', 'test' ), [ 'terminate_after' => 10 ] );
 		$requests = MSearchRequests::build( 'first', $search1 );
 		$status = \Status::newFatal( 'blow' );
 		$failed = $requests->failure( $status );
@@ -68,9 +68,9 @@ class MSearchRequestsTest extends CirrusIntegrationTestCase {
 
 	public function testSuccess() {
 		$search1 = ( new Index( new Client(), "test_one" ) )
-			->createSearch( new Match( 'one', 'test' ), [ 'terminate_after' => 10 ] );
+			->createSearch( new MatchQuery( 'one', 'test' ), [ 'terminate_after' => 10 ] );
 		$search2 = ( new Index( new Client(), "test_two" ) )
-			->createSearch( new Match( 'two', 'test' ), [ 'terminate_after' => 100 ] );
+			->createSearch( new MatchQuery( 'two', 'test' ), [ 'terminate_after' => 100 ] );
 		$requests = MSearchRequests::build( 'first', $search1 );
 		$requests->addRequest( 'second', $search2 );
 

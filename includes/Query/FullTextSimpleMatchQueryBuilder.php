@@ -279,7 +279,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		// - Depending on languages it may lack stopwords,
 		// A dedicated field used for filtering would be nice
 		foreach ( [ 'all', 'all.plain' ] as $field ) {
-			$m = new \Elastica\Query\Match();
+			$m = new \Elastica\Query\MatchQuery();
 			$m->setFieldQuery( $field, $query );
 			$minShouldMatch = '100%';
 			if ( isset( $options['settings'][$field]['minimum_should_match'] ) ) {
@@ -317,7 +317,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		$titleFilter = new \Elastica\Query\BoolQuery();
 
 		foreach ( [ 'title', 'redirect.title' ] as $field ) {
-			$m = new \Elastica\Query\Match();
+			$m = new \Elastica\Query\MatchQuery();
 			$m->setFieldQuery( $field, $query );
 			$m->setFieldMinimumShouldMatch( $field, $minShouldMatch );
 			$titleFilter->addShould( $m );

@@ -81,13 +81,13 @@ class LanguageFeature extends SimpleKeywordFeature implements FilterQueryFeature
 
 	/**
 	 * @param array[] $parsedValue
-	 * @return \Elastica\Query\AbstractQuery|\Elastica\Query\Match|null
+	 * @return \Elastica\Query\AbstractQuery|\Elastica\Query\MatchQuery|null
 	 */
 	private function doGetFilterQuery( $parsedValue ) {
 		$queries = [];
 		foreach ( $parsedValue['langs'] as $lang ) {
 			if ( strlen( trim( $lang ) ) > 0 ) {
-				$query = new \Elastica\Query\Match();
+				$query = new \Elastica\Query\MatchQuery();
 				$query->setFieldQuery( 'language', $lang );
 				$queries[] = $query;
 			}

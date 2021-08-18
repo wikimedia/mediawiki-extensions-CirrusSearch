@@ -59,7 +59,7 @@ class LinksToFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 
 	/**
 	 * @param string $value
-	 * @return \Elastica\Query\Match
+	 * @return \Elastica\Query\MatchQuery
 	 */
 	protected function doGetFilterQuery( $value ) {
 		return QueryHelper::matchPage( 'outgoing_link', $value, true );

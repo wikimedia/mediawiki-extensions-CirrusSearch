@@ -58,9 +58,9 @@ class ContentModelFeature extends SimpleKeywordFeature implements FilterQueryFea
 
 	/**
 	 * @param string $value
-	 * @return Query\Match
+	 * @return Query\MatchQuery
 	 */
 	private function doGetFilterQuery( $value ) {
-		return new Query\Match( 'content_model', [ 'query' => $value ] );
+		return new Query\MatchQuery( 'content_model', [ 'query' => $value ] );
 	}
 }

@@ -10,7 +10,7 @@ use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
-use Elastica\Query\Match;
+use Elastica\Query\MatchQuery;
 use Elastica\Query\Term;
 
 /**
@@ -160,7 +160,7 @@ class PrefixFeatureTest extends CirrusTestCase {
 		$assertions = null;
 
 		$assertFilter = function ( AbstractQuery $filter ) use ( $filterValue ) {
-			$this->assertInstanceOf( Match::class, $filter );
+			$this->assertInstanceOf( MatchQuery::class, $filter );
 			$this->assertEquals( [ 'query' => $filterValue ], $filter->getParam( 'title.prefix' ) );
 			return true;
 		};

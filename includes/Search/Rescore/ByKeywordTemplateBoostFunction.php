@@ -16,7 +16,7 @@ class ByKeywordTemplateBoostFunction implements BoostFunctionBuilder {
 		$queries = [];
 		$weights = [];
 		foreach ( $boostTemplates as $name => $weight ) {
-			$match = new \Elastica\Query\Match();
+			$match = new \Elastica\Query\MatchQuery();
 			$match->setFieldQuery( 'template', $name );
 			$weights[] = $weight;
 			$queries[] = $match;

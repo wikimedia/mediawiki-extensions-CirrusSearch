@@ -197,7 +197,7 @@ class FileNumericFeature extends SimpleKeywordFeature implements FilterQueryFeat
 	 * @return Query\AbstractQuery
 	 */
 	private function buildMatchQuery( $field, $value, $multiplier = 1 ) {
-		$query = new Query\Match();
+		$query = new Query\MatchQuery();
 		$query->setFieldQuery( $field, (string)( $value * $multiplier ) );
 		return $query;
 	}

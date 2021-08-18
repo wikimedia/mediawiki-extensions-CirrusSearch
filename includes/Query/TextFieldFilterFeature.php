@@ -74,7 +74,7 @@ class TextFieldFilterFeature extends SimpleKeywordFeature implements FilterQuery
 			// If used with quotes we create a more precise phrase query
 			$query = new Query\MatchPhrase( $this->field, $value );
 		} else {
-			$query = new Query\Match( $this->field, [ 'query' => $value ] );
+			$query = new Query\MatchQuery( $this->field, [ 'query' => $value ] );
 			$query->setFieldOperator( $this->field, 'AND' );
 		}
 

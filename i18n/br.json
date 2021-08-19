@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Adriendelucca",
 			"Fohanno",
 			"Fulup"
 		]
@@ -9,5 +10,7 @@
 	"cirrussearch-parse-error": "N'eo ket bet komprenet ar reked. Grit unan eeunoc'h, mar plij. Marilhet eo bet ar reked evit gwellaat ar reizhiad enklask.",
 	"cirrussearch-now-using": "Emañ ar wiki-mañ oc'h implijout ur c'heflusker enklask nevez. ([[mw:Special:MyLanguage/Help:CirrusSearch|Gouzout hiroc'h]])",
 	"cirrussearch-pref-label": "Enklask nevez",
-	"cirrussearch-give-feedback": "Roit ho soñj"
+	"cirrussearch-give-feedback": "Roit ho soñj",
+	"cirrussearch-explore-similar-categories": "Rummadoù",
+	"cirrussearch-explore-similar-languages": "Yezhoù"
 }

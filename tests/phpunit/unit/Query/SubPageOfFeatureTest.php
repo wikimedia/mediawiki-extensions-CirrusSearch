@@ -5,7 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Search\Fetch\HighlightedField;
-use Elastica\Query\Match;
+use Elastica\Query\MatchQuery;
 use Elastica\Query\MultiMatch;
 
 /**
@@ -68,14 +68,14 @@ class SubPageOfFeatureTest extends CirrusTestCase {
 				$this->assertHighlighting( $feature, $query, [ 'title.prefix', 'redirect.title.prefix' ],
 					[
 						[
-							'query' => new Match( 'title.prefix', $filterValue ),
+							'query' => new MatchQuery( 'title.prefix', $filterValue ),
 							'target' => HighlightedField::TARGET_TITLE_SNIPPET,
 							'priority' => HighlightedField::EXPERT_SYNTAX_PRIORITY,
 							'number_of_fragments' => 1,
 							'fragment_size' => 10000,
 						],
 						[
-							'query' => new Match( 'redirect.title.prefix', $filterValue ),
+							'query' => new MatchQuery( 'redirect.title.prefix', $filterValue ),
 							'skip_if_last_matched' => true,
 							'target' => HighlightedField::TARGET_REDIRECT_SNIPPET,
 							'priority' => HighlightedField::EXPERT_SYNTAX_PRIORITY,

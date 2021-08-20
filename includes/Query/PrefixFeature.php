@@ -172,7 +172,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		$nsFilter = null;
 		$prefixQuery = null;
 		if ( $value !== null ) {
-			$prefixQuery = new \Elastica\Query\Match();
+			$prefixQuery = new \Elastica\Query\MatchQuery();
 			$prefixQuery->setFieldQuery( 'title.prefix', $value );
 		}
 		if ( $namespace !== null ) {

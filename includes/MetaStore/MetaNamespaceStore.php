@@ -6,7 +6,7 @@ use CirrusSearch\Connection;
 use Elastica\Document;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Ids;
-use Elastica\Query\Match;
+use Elastica\Query\MatchQuery;
 
 class MetaNamespaceStore implements MetaStore {
 	/** @const Value of metastore 'type' field for our documents */
@@ -76,7 +76,7 @@ class MetaNamespaceStore implements MetaStore {
 	 */
 	public function find( $name, array $queryOptions = [] ) {
 		$bool = $this->queryFilter();
-		$bool->addMust( ( new Match() )
+		$bool->addMust( ( new MatchQuery() )
 			->setField( 'namespace_name', $name ) );
 		$query = ( new \Elastica\Query( $bool ) )
 			->setParam( '_source', [ 'namespace_id' ] )
@@ -91,8 +91,8 @@ class MetaNamespaceStore implements MetaStore {
 
 	private function queryFilter() {
 		return ( new BoolQuery() )
-			->addFilter( new Match( 'type', self::METASTORE_TYPE ) )
-			->addFilter( new Match( 'wiki', $this->wikiId ) );
+			->addFilter( new MatchQuery( 'type', self::METASTORE_TYPE ) )
+			->addFilter( new MatchQuery( 'wiki', $this->wikiId ) );
 	}
 
 	private function buildDocuments( \Language $lang ) {

@@ -389,7 +389,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$client = $this->newEngine()->getConnection()->getClient();
 
 		$inital = $this->newResultSet( [] );
-		$query = new Query( new Query\Match( 'foo', 'bar' ) );
+		$query = new Query( new Query\MatchQuery( 'foo', 'bar' ) );
 		$resp = new \Elastica\ResultSet( new Response( [] ), $query, [] );
 		$rewritten = $this->newResultSet( [] );
 		$runner = new FallbackRunner( [ $this->mockElasticSearchRequestFallbackMethod( $query, 0.5, $resp, $rewritten ) ] );

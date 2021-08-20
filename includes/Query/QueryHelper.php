@@ -16,7 +16,7 @@ class QueryHelper {
 	 * @param string $title title query text to match against
 	 * @param bool $underscores If the field contains underscores instead of
 	 *  spaces. Defaults to false.
-	 * @return \Elastica\Query\Match For matching $title to $field
+	 * @return \Elastica\Query\MatchQuery For matching $title to $field
 	 */
 	public static function matchPage( $field, $title, $underscores = false ) {
 		$t = Title::newFromText( $title );
@@ -26,7 +26,7 @@ class QueryHelper {
 		if ( $underscores ) {
 			$title = str_replace( ' ', '_', $title );
 		}
-		$match = new \Elastica\Query\Match();
+		$match = new \Elastica\Query\MatchQuery();
 		$match->setFieldQuery( $field, $title );
 
 		return $match;

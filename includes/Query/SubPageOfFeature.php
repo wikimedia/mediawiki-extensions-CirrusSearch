@@ -10,7 +10,7 @@ use CirrusSearch\Search\Fetch\HighlightFieldGenerator;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
-use Elastica\Query\Match;
+use Elastica\Query\MatchQuery;
 use Elastica\Query\MultiMatch;
 
 /**
@@ -121,7 +121,7 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 		foreach ( $definition as $target => $esfield ) {
 			$field = $highlightFieldGenerator->newHighlightField( $esfield, $target,
 				 HighlightedField::EXPERT_SYNTAX_PRIORITY );
-			$field->setHighlightQuery( new Match( $esfield, $parsedValue['prefix'] ) );
+			$field->setHighlightQuery( new MatchQuery( $esfield, $parsedValue['prefix'] ) );
 			$field->setNumberOfFragments( 1 );
 			$field->setFragmentSize( 10000 );
 			if ( $first ) {

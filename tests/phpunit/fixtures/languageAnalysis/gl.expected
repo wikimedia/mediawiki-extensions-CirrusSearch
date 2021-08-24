@@ -1,15 +1,17 @@
 {
     "analyzer": {
         "text": {
-            "type": "galician",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
-            ]
-        },
-        "text_search": {
-            "type": "galician",
-            "char_filter": [
-                "word_break_helper"
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "galician_stop",
+                "galician_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -166,6 +168,20 @@
             "filter": [
                 "lowercase"
             ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "galician_stop",
+                "galician_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -202,6 +218,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "galician_stop": {
+            "type": "stop",
+            "stopwords": "_galician_"
+        },
+        "galician_stemmer": {
+            "type": "stemmer",
+            "language": "galician"
         },
         "dedup_asciifolding": {
             "type": "unique",

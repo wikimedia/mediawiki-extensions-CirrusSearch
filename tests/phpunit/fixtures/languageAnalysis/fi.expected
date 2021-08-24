@@ -1,15 +1,17 @@
 {
     "analyzer": {
         "text": {
-            "type": "finnish",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
-            ]
-        },
-        "text_search": {
-            "type": "finnish",
-            "char_filter": [
-                "word_break_helper"
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "finnish_stop",
+                "finnish_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -166,6 +168,20 @@
             "filter": [
                 "lowercase"
             ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "finnish_stop",
+                "finnish_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -202,6 +218,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "finnish_stop": {
+            "type": "stop",
+            "stopwords": "_finnish_"
+        },
+        "finnish_stemmer": {
+            "type": "stemmer",
+            "language": "finnish"
         },
         "dedup_asciifolding": {
             "type": "unique",

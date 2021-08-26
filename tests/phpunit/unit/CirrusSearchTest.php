@@ -172,10 +172,9 @@ class CirrusSearchTest extends CirrusTestCase {
 	public function testUpdateWeightedTags( $tagPrefix, $tagNames, $tagWeights, $isValid ) {
 		$pageIdentity = new PageIdentityValue( 1, 0, 'Test', PageIdentityValue::LOCAL );
 		$mockUpdater = $this->createPartialMock( Updater::class, [ 'updateWeightedTags' ] );
-		$mockUpdater->expects( $isValid ? $this->exactly( 2 ) : $this->never() )
+		$mockUpdater->expects( $isValid ? $this->once() : $this->never() )
 			->method( 'updateWeightedTags' )
-			->with( $pageIdentity, $this->logicalOr( $this->equalTo( WeightedTagsHooks::FIELD_NAME ),
-				$this->equalTo( 'ores_articletopics' ) ), $tagPrefix, $tagNames, $tagWeights );
+			->with( $pageIdentity, $this->equalTo( WeightedTagsHooks::FIELD_NAME ), $tagPrefix, $tagNames, $tagWeights );
 		$cirrusSearch = $this->createPartialMock( CirrusSearch::class, [ 'getUpdater' ] );
 		$cirrusSearch->method( 'getUpdater' )->willReturn( $mockUpdater );
 

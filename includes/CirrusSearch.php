@@ -634,13 +634,8 @@ class CirrusSearch extends SearchEngine {
 			}
 		}
 
-		// This will cause unnecessary indexing load, but for a temporary BC fix that will be removed in a few
-		// weeks dual writes seems preferable over a refactoring.
-		$fields = [ WeightedTagsHooks::FIELD_NAME, 'ores_articletopics' ];
-		foreach ( $fields as $tagField ) {
-			$this->getUpdater()->updateWeightedTags( $page,
-				$tagField, $tagPrefix, $tagNames, $tagWeights );
-		}
+		$this->getUpdater()->updateWeightedTags( $page,
+			WeightedTagsHooks::FIELD_NAME, $tagPrefix, $tagNames, $tagWeights );
 	}
 
 	/**
@@ -650,12 +645,7 @@ class CirrusSearch extends SearchEngine {
 	 * @param string $tagPrefix
 	 */
 	public function resetWeightedTags( ProperPageIdentity $page, string $tagPrefix ): void {
-		// This will cause unnecessary indexing load, but for a temporary BC fix that will be removed in a few
-		// weeks dual writes seems preferable over a refactoring.
-		$fields = [ WeightedTagsHooks::FIELD_NAME, 'ores_articletopics' ];
-		foreach ( $fields as $tagField ) {
-			$this->getUpdater()->resetWeightedTags( $page, $tagField, $tagPrefix );
-		}
+		$this->getUpdater()->resetWeightedTags( $page, WeightedTagsHooks::FIELD_NAME, $tagPrefix );
 	}
 
 	/**

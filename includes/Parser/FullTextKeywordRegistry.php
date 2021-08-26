@@ -8,7 +8,6 @@ use CirrusSearch\Query\ContentModelFeature;
 use CirrusSearch\Query\DeepcatFeature;
 use CirrusSearch\Query\FileNumericFeature;
 use CirrusSearch\Query\FileTypeFeature;
-use CirrusSearch\Query\HasRecommendationFeature;
 use CirrusSearch\Query\HasTemplateFeature;
 use CirrusSearch\Query\InCategoryFeature;
 use CirrusSearch\Query\InSourceFeature;
@@ -91,9 +90,7 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			// morelikethis feature: a non-greedy version of the morelike keyword.
 			new MoreLikeThisFeature( $config ),
 			// ids query
-			new PageIdFeature(),
-			// article recommendations filter
-			new HasRecommendationFeature()
+			new PageIdFeature()
 		];
 
 		$extraFeatures = [];

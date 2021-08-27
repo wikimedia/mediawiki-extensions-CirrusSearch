@@ -39,8 +39,8 @@ class UpdateWeightedTags extends Maintenance {
 		$this->addOption( 'page', 'Page title', true, true );
 		$this->addOption( 'tagType', "Tag type. A string such as 'recommendation.link'.", true, true );
 		$this->addOption( 'tagName', "Tag name. Some tag types don't use this.", false, true, false, true );
-		$this->addOption( 'weight', "Weight (0-1000). Some tag types don't use this. When used, must occur the same number of'
-			. ' times as --tagName and will be matched by position.", false, true, false, true );
+		$this->addOption( 'weight', "Weight (0-1000). Some tag types don't use this. When used, must occur the same number of"
+			. " times as --tagName and will be matched by position.", false, true, false, true );
 		$this->addOption( 'reset', 'Reset a tag type (remove all tags belonging to it). Cannot be mixed with --tagName and --weight.' );
 		$this->requireExtension( 'CirrusSearch' );
 	}

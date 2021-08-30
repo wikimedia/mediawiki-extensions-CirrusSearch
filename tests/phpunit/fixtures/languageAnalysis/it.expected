@@ -16,22 +16,6 @@
                 "asciifolding"
             ]
         },
-        "text_search": {
-            "type": "custom",
-            "char_filter": [
-                "word_break_helper"
-            ],
-            "tokenizer": "standard",
-            "filter": [
-                "italian_elision",
-                "aggressive_splitting",
-                "homoglyph_norm",
-                "lowercase",
-                "italian_stop",
-                "light_italian_stemmer",
-                "asciifolding"
-            ]
-        },
         "plain": {
             "type": "custom",
             "char_filter": [
@@ -189,6 +173,22 @@
             "tokenizer": "trigram",
             "filter": [
                 "lowercase"
+            ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "italian_elision",
+                "aggressive_splitting",
+                "homoglyph_norm",
+                "lowercase",
+                "italian_stop",
+                "light_italian_stemmer",
+                "asciifolding"
             ]
         }
     },

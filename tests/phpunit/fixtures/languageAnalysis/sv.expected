@@ -12,18 +12,6 @@
                 "dedup_asciifolding"
             ]
         },
-        "text_search": {
-            "type": "custom",
-            "tokenizer": "standard",
-            "filter": [
-                "homoglyph_norm",
-                "lowercase",
-                "swedish_stop",
-                "swedish_stemmer",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
-            ]
-        },
         "plain": {
             "type": "custom",
             "char_filter": [
@@ -179,6 +167,18 @@
             "tokenizer": "trigram",
             "filter": [
                 "lowercase"
+            ]
+        },
+        "text_search": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "swedish_stop",
+                "swedish_stemmer",
+                "asciifolding_preserve",
+                "dedup_asciifolding"
             ]
         }
     },

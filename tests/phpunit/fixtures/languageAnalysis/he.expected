@@ -11,17 +11,6 @@
                 "asciifolding"
             ]
         },
-        "text_search": {
-            "type": "custom",
-            "tokenizer": "hebrew",
-            "filter": [
-                "homoglyph_norm",
-                "niqqud",
-                "hebrew_lemmatizer",
-                "lowercase",
-                "asciifolding"
-            ]
-        },
         "plain": {
             "type": "custom",
             "char_filter": [
@@ -175,6 +164,17 @@
             "tokenizer": "trigram",
             "filter": [
                 "lowercase"
+            ]
+        },
+        "text_search": {
+            "type": "custom",
+            "tokenizer": "hebrew",
+            "filter": [
+                "homoglyph_norm",
+                "niqqud",
+                "hebrew_lemmatizer",
+                "lowercase",
+                "asciifolding"
             ]
         }
     },

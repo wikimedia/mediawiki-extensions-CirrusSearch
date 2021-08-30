@@ -1,88 +1,88 @@
 {
     "analyzer": {
         "he_plain": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "lowercase"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "he_plain_search": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "lowercase"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "he_text": {
-            "type": "custom",
-            "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ]
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "he_text_search": {
-            "type": "custom",
-            "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ]
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "uk_plain": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "lowercase"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "uk_plain_search": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "lowercase"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "uk_text": {
-            "type": "custom",
-            "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ]
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "uk_text_search": {
-            "type": "custom",
-            "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ]
-        }
-    },
-    "filter": {
-        "lowercase": {
-            "type": "lowercase"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         }
     },
     "char_filter": {
         "word_break_helper": {
-            "type": "mapping",
             "mappings": [
                 "_=>\\u0020",
                 ".=>\\u0020",
                 "(=>\\u0020",
                 ")=>\\u0020"
-            ]
+            ],
+            "type": "mapping"
+        }
+    },
+    "filter": {
+        "lowercase": {
+            "type": "lowercase"
         }
     },
     "tokenizer": []

@@ -10,16 +10,6 @@
                 "asciifolding"
             ]
         },
-        "text_search": {
-            "type": "custom",
-            "tokenizer": "standard",
-            "filter": [
-                "homoglyph_norm",
-                "lowercase",
-                "slovak_stemmer",
-                "asciifolding"
-            ]
-        },
         "plain": {
             "type": "custom",
             "char_filter": [
@@ -173,6 +163,16 @@
             "tokenizer": "trigram",
             "filter": [
                 "lowercase"
+            ]
+        },
+        "text_search": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "slovak_stemmer",
+                "asciifolding"
             ]
         }
     },

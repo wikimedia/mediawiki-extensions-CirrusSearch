@@ -1,8 +1,9 @@
 {
     "analyzer": {
         "he_plain": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
@@ -10,63 +11,62 @@
                 "preserve_original",
                 "remove_empty"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "he_plain_search": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "uk_plain": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "uk_plain_search": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
-        }
-    },
-    "filter": {
-        "icu_normalizer": {
-            "type": "icu_normalizer",
-            "name": "nfkc_cf"
-        },
-        "icu_folding": {
-            "type": "icu_folding"
-        },
-        "remove_empty": {
-            "type": "length",
-            "min": 1
+            "tokenizer": "standard",
+            "type": "custom"
         }
     },
     "char_filter": {
         "word_break_helper": {
-            "type": "mapping",
             "mappings": [
                 "_=>\\u0020",
                 ".=>\\u0020",
                 "(=>\\u0020",
                 ")=>\\u0020"
-            ]
+            ],
+            "type": "mapping"
+        }
+    },
+    "filter": {
+        "icu_folding": {
+            "type": "icu_folding"
+        },
+        "icu_normalizer": {
+            "name": "nfkc_cf",
+            "type": "icu_normalizer"
+        },
+        "remove_empty": {
+            "min": 1,
+            "type": "length"
         }
     },
     "tokenizer": []

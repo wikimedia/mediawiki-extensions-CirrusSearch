@@ -12,18 +12,6 @@
                 "lowercase"
             ]
         },
-        "text_search": {
-            "type": "custom",
-            "char_filter": [
-                "khmer_syll_reorder",
-                "khmer_numbers"
-            ],
-            "tokenizer": "standard",
-            "filter": [
-                "homoglyph_norm",
-                "lowercase"
-            ]
-        },
         "plain": {
             "type": "custom",
             "char_filter": [
@@ -176,6 +164,18 @@
             "type": "custom",
             "tokenizer": "trigram",
             "filter": [
+                "lowercase"
+            ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "khmer_syll_reorder",
+                "khmer_numbers"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
                 "lowercase"
             ]
         }

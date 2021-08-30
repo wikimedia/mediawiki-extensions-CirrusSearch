@@ -53,10 +53,10 @@
                     ]
                 }
             },
-            "size": 20,
             "stats": [
                 "archive"
-            ]
+            ],
+            "size": 20
         },
         "options": {
             "timeout": "20s",

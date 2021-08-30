@@ -6,12 +6,6 @@
                 "word_break_helper"
             ]
         },
-        "text_search": {
-            "type": "arabic",
-            "char_filter": [
-                "word_break_helper"
-            ]
-        },
         "plain": {
             "type": "custom",
             "char_filter": [
@@ -165,6 +159,12 @@
             "tokenizer": "trigram",
             "filter": [
                 "lowercase"
+            ]
+        },
+        "text_search": {
+            "type": "arabic",
+            "char_filter": [
+                "word_break_helper"
             ]
         }
     },

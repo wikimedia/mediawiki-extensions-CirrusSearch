@@ -1,121 +1,121 @@
 {
     "analyzer": {
         "ch_plain": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "ch_plain_search": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "fy_plain": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "fy_plain_search": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "kab_plain": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "kab_plain_search": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "ti_plain": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "ti_plain_search": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "xmf_plain": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "xmf_plain_search": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
-        }
-    },
-    "filter": {
-        "icu_normalizer": {
-            "type": "icu_normalizer",
-            "name": "nfkc_cf"
+            "tokenizer": "standard",
+            "type": "custom"
         }
     },
     "char_filter": {
         "word_break_helper": {
-            "type": "mapping",
             "mappings": [
                 "_=>\\u0020",
                 ".=>\\u0020",
                 "(=>\\u0020",
                 ")=>\\u0020"
-            ]
+            ],
+            "type": "mapping"
+        }
+    },
+    "filter": {
+        "icu_normalizer": {
+            "name": "nfkc_cf",
+            "type": "icu_normalizer"
         }
     },
     "tokenizer": []

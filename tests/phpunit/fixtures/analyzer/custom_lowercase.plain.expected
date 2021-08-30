@@ -1,8 +1,9 @@
 {
     "analyzer": {
         "el_plain": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "lowercase",
                 "icu_normalizer",
@@ -11,100 +12,99 @@
                 "preserve_original",
                 "remove_empty"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "el_plain_search": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "lowercase",
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "ga_plain": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "ga_lowercase",
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "ga_plain_search": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "ga_lowercase",
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "tr_plain": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "tr_lowercase",
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "tr_plain_search": {
-            "type": "custom",
-            "tokenizer": "standard",
+            "char_filter": [
+                "word_break_helper"
+            ],
             "filter": [
                 "tr_lowercase",
                 "icu_normalizer"
             ],
-            "char_filter": [
-                "word_break_helper"
-            ]
-        }
-    },
-    "filter": {
-        "lowercase": {
-            "type": "lowercase",
-            "language": "greek"
-        },
-        "icu_normalizer": {
-            "type": "icu_normalizer",
-            "name": "nfkc_cf"
-        },
-        "icu_folding": {
-            "type": "icu_folding"
-        },
-        "remove_empty": {
-            "type": "length",
-            "min": 1
-        },
-        "ga_lowercase": {
-            "type": "lowercase",
-            "language": "irish"
-        },
-        "tr_lowercase": {
-            "type": "lowercase",
-            "language": "turkish"
+            "tokenizer": "standard",
+            "type": "custom"
         }
     },
     "char_filter": {
         "word_break_helper": {
-            "type": "mapping",
             "mappings": [
                 "_=>\\u0020",
                 ".=>\\u0020",
                 "(=>\\u0020",
                 ")=>\\u0020"
-            ]
+            ],
+            "type": "mapping"
+        }
+    },
+    "filter": {
+        "ga_lowercase": {
+            "language": "irish",
+            "type": "lowercase"
+        },
+        "icu_folding": {
+            "type": "icu_folding"
+        },
+        "icu_normalizer": {
+            "name": "nfkc_cf",
+            "type": "icu_normalizer"
+        },
+        "lowercase": {
+            "language": "greek",
+            "type": "lowercase"
+        },
+        "remove_empty": {
+            "min": 1,
+            "type": "length"
+        },
+        "tr_lowercase": {
+            "language": "turkish",
+            "type": "lowercase"
         }
     },
     "tokenizer": []

@@ -13,19 +13,6 @@
                 "lowercase"
             ]
         },
-        "text_search": {
-            "type": "custom",
-            "char_filter": [
-                "stconvertfix",
-                "tsconvert"
-            ],
-            "tokenizer": "smartcn_tokenizer",
-            "filter": [
-                "homoglyph_norm",
-                "smartcn_stop",
-                "lowercase"
-            ]
-        },
         "plain": {
             "type": "custom",
             "char_filter": [
@@ -180,6 +167,19 @@
             "type": "custom",
             "tokenizer": "trigram",
             "filter": [
+                "lowercase"
+            ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "stconvertfix",
+                "tsconvert"
+            ],
+            "tokenizer": "smartcn_tokenizer",
+            "filter": [
+                "homoglyph_norm",
+                "smartcn_stop",
                 "lowercase"
             ]
         }

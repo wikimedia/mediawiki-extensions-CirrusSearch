@@ -10,16 +10,6 @@
                 "mirandese_stop"
             ]
         },
-        "text_search": {
-            "type": "custom",
-            "tokenizer": "standard",
-            "filter": [
-                "homoglyph_norm",
-                "lowercase",
-                "mirandese_elision",
-                "mirandese_stop"
-            ]
-        },
         "plain": {
             "type": "custom",
             "char_filter": [
@@ -173,6 +163,16 @@
             "tokenizer": "trigram",
             "filter": [
                 "lowercase"
+            ]
+        },
+        "text_search": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "mirandese_elision",
+                "mirandese_stop"
             ]
         }
     },

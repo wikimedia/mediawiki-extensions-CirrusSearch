@@ -15,21 +15,6 @@
                 "lowercase"
             ]
         },
-        "text_search": {
-            "type": "custom",
-            "char_filter": [
-                "fullwidthnumfix"
-            ],
-            "tokenizer": "kuromoji_tokenizer",
-            "filter": [
-                "homoglyph_norm",
-                "kuromoji_baseform",
-                "cjk_width",
-                "ja_stop",
-                "kuromoji_stemmer",
-                "lowercase"
-            ]
-        },
         "plain": {
             "type": "custom",
             "char_filter": [
@@ -182,6 +167,21 @@
             "type": "custom",
             "tokenizer": "trigram",
             "filter": [
+                "lowercase"
+            ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "fullwidthnumfix"
+            ],
+            "tokenizer": "kuromoji_tokenizer",
+            "filter": [
+                "homoglyph_norm",
+                "kuromoji_baseform",
+                "cjk_width",
+                "ja_stop",
+                "kuromoji_stemmer",
                 "lowercase"
             ]
         }

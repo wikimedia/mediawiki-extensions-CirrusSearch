@@ -18,24 +18,6 @@
                 "custom_stem"
             ]
         },
-        "text_search": {
-            "type": "custom",
-            "char_filter": [
-                "word_break_helper",
-                "kana_map"
-            ],
-            "tokenizer": "standard",
-            "filter": [
-                "aggressive_splitting",
-                "homoglyph_norm",
-                "possessive_english",
-                "lowercase",
-                "stop",
-                "asciifolding",
-                "kstem",
-                "custom_stem"
-            ]
-        },
         "plain": {
             "type": "custom",
             "char_filter": [
@@ -193,6 +175,24 @@
             "tokenizer": "trigram",
             "filter": [
                 "lowercase"
+            ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "word_break_helper",
+                "kana_map"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "aggressive_splitting",
+                "homoglyph_norm",
+                "possessive_english",
+                "lowercase",
+                "stop",
+                "asciifolding",
+                "kstem",
+                "custom_stem"
             ]
         }
     },

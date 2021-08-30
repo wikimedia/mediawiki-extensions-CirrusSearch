@@ -1,108 +1,108 @@
 {
     "analyzer": {
         "en_plain": {
-            "type": "custom",
             "char_filter": [
                 "word_break_helper"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
                 "icu_folding",
                 "preserve_original",
                 "remove_empty"
-            ]
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "en_plain_search": {
-            "type": "custom",
             "char_filter": [
                 "word_break_helper"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ]
-        },
-        "zh_plain": {
-            "type": "custom",
-            "char_filter": [
-                "word_break_helper"
             ],
             "tokenizer": "standard",
-            "filter": [
-                "smartcn_stop",
-                "icu_normalizer"
-            ]
-        },
-        "zh_plain_search": {
-            "type": "custom",
-            "char_filter": [
-                "word_break_helper"
-            ],
-            "tokenizer": "standard",
-            "filter": [
-                "smartcn_stop",
-                "icu_normalizer"
-            ]
+            "type": "custom"
         },
         "sv_plain": {
-            "type": "custom",
             "char_filter": [
                 "word_break_helper"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
                 "sv_icu_folding",
                 "preserve_original",
                 "remove_empty"
-            ]
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "sv_plain_search": {
-            "type": "custom",
             "char_filter": [
                 "word_break_helper"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ]
-        }
-    },
-    "filter": {
-        "icu_normalizer": {
-            "type": "icu_normalizer",
-            "name": "nfkc_cf"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         },
-        "icu_folding": {
-            "type": "icu_folding"
+        "zh_plain": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "smartcn_stop",
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         },
-        "remove_empty": {
-            "type": "length",
-            "min": 1
-        },
-        "smartcn_stop": {
-            "type": "stop",
-            "stopwords": [
-                ","
-            ]
-        },
-        "sv_icu_folding": {
-            "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00c5\u00e5\u00c4\u00e4\u00d6\u00f6]"
+        "zh_plain_search": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "smartcn_stop",
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         }
     },
     "char_filter": {
         "word_break_helper": {
-            "type": "mapping",
             "mappings": [
                 "_=>\\u0020",
                 ".=>\\u0020",
                 "(=>\\u0020",
                 ")=>\\u0020"
-            ]
+            ],
+            "type": "mapping"
+        }
+    },
+    "filter": {
+        "icu_folding": {
+            "type": "icu_folding"
+        },
+        "icu_normalizer": {
+            "name": "nfkc_cf",
+            "type": "icu_normalizer"
+        },
+        "remove_empty": {
+            "min": 1,
+            "type": "length"
+        },
+        "smartcn_stop": {
+            "stopwords": [
+                ","
+            ],
+            "type": "stop"
+        },
+        "sv_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00c5\u00e5\u00c4\u00e4\u00d6\u00f6]"
         }
     },
     "tokenizer": []

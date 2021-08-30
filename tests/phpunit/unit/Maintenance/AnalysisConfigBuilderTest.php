@@ -785,6 +785,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$prevConfig = $oldConfig;
 		$builder->buildLanguageConfigs( $oldConfig, $languages,
 			[ 'plain', 'plain_search', 'text', 'text_search' ] );
+		$oldConfig = $this->normalizeAnalysisConfig( $oldConfig );
 		$expectedFile = "analyzer/$expectedConfig.expected";
 		if ( CirrusIntegrationTestCase::hasFixture( $expectedFile ) ) {
 			$expected = CirrusIntegrationTestCase::loadFixture( $expectedFile );
@@ -797,6 +798,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$oldConfig = $prevConfig;
 		$builder->buildLanguageConfigs( $oldConfig, $languages,
 			[ 'plain', 'plain_search' ] );
+		$oldConfig = $this->normalizeAnalysisConfig( $oldConfig );
 		$expectedFile = "analyzer/$expectedConfig.plain.expected";
 		if ( CirrusIntegrationTestCase::hasFixture( $expectedFile ) ) {
 			$expected = CirrusIntegrationTestCase::loadFixture( $expectedFile );
@@ -809,5 +811,28 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 
 	private function buildConfig( array $configs ) {
 		return $this->newHashSearchConfig( $configs + [ 'CirrusSearchSimilarityProfile' => 'default' ] );
+	}
+
+	/**
+	 * Normalize analysis config for storage in fixture files
+	 *
+	 * The analysis config is a map from string to list of named elements, the order itself
+	 * doesn't matter only the names. As such sort everything by key to give a consistent
+	 * ordering in fixtures and avoid unnecessary fixture changes.
+	 *
+	 * @param array $config Elasticsearch analysis config
+	 * @return array Normalized elasticsearch analysis config
+	 */
+	private function normalizeAnalysisConfig( array $config ) {
+		foreach ( $config as $group => $items ) {
+			foreach ( $items as $k => $v ) {
+				if ( is_array( $v ) ) {
+					ksort( $config[$group][$k] );
+				}
+			}
+			ksort( $config[$group] );
+		}
+		ksort( $config );
+		return $config;
 	}
 }

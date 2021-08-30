@@ -5,8 +5,10 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
+use Wikimedia\Rdbms\DBConnRef;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\LoadBalancer;
+use Wikimedia\Rdbms\MaintainableDBConnRef;
 
 /**
  * @covers \CirrusSearch\Query\InCategoryFeature
@@ -151,36 +153,30 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 	 * for use in test cases.
 	 */
 	private function mockDB() {
-		$db = $this->createMock( IDatabase::class );
-		$db->expects( $this->any() )
-			->method( 'select' )
-			->with( 'page' )
-			->will( $this->returnCallback( static function ( $table, $select, $where ) {
-				if ( isset( $where['page_id'] ) && $where['page_id'] === [ '2' ] ) {
-					return [ (object)[
-						'page_namespace' => NS_CATEGORY,
-						'page_title' => 'Cat2',
-						'page_id' => 2,
-					] ];
-				} else {
-					return [];
-				}
-			} ) );
-		$lb = $this->getMockBuilder( LoadBalancer::class )
-			->disableOriginalConstructor()
-			->getMock();
-		$lb->expects( $this->any() )
-			->method( 'getConnection' )
-			->will( $this->returnValue( $db ) );
-		$lb->expects( $this->any() )
-			->method( 'getConnectionRef' )
-			->will( $this->returnValue( $db ) );
-		$lb->expects( $this->any() )
-			->method( 'getMaintenanceConnectionRef' )
-			->will( $this->returnValue( $db ) );
-		$lb->expects( $this->any() )
-			->method( 'getLocalDomainID' )
-			->will( $this->returnValue( '' ) );
+		$dbMocker = static function ( $mock ) {
+			$mock->method( 'select' )
+				->with( 'page' )
+				->willReturnCallback( static function ( $table, $select, $where ) {
+					if ( isset( $where['page_id'] ) && $where['page_id'] === [ '2' ] ) {
+						return [ (object)[
+							'page_namespace' => NS_CATEGORY,
+							'page_title' => 'Cat2',
+							'page_id' => 2,
+						] ];
+					} else {
+						return [];
+					}
+				} );
+			return $mock;
+		};
+		$lb = $this->createMock( LoadBalancer::class );
+		$lb->method( 'getConnection' )
+			->willReturn( $dbMocker( $this->createMock( IDatabase::class ) ) );
+		$lb->method( 'getConnectionRef' )
+			->willReturn( $dbMocker( $this->createMock( DBConnRef::class ) ) );
+		$lb->method( 'getMaintenanceConnectionRef' )
+			->willReturn( $dbMocker( $this->createMock( MaintainableDBConnRef::class ) ) );
+		$lb->method( 'getLocalDomainID' )->willReturn( '' );
 		$this->setService( 'DBLoadBalancer', $lb );
 	}
 

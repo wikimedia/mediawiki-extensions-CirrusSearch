@@ -1,15 +1,17 @@
 {
     "analyzer": {
         "text": {
-            "type": "czech",
+            "type": "custom",
             "char_filter": [
-                "word_break_helper"
-            ]
-        },
-        "text_search": {
-            "type": "czech",
-            "char_filter": [
-                "word_break_helper"
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "czech_stop",
+                "czech_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -166,6 +168,20 @@
             "filter": [
                 "lowercase"
             ]
+        },
+        "text_search": {
+            "type": "custom",
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "czech_stop",
+                "czech_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -202,6 +218,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "czech_stop": {
+            "type": "stop",
+            "stopwords": "_czech_"
+        },
+        "czech_stemmer": {
+            "type": "stemmer",
+            "language": "czech"
         },
         "dedup_asciifolding": {
             "type": "unique",

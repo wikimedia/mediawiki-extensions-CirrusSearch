@@ -714,6 +714,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			'analysis-nori',
 		];
 
+		$reflACB = new \ReflectionClass( AnalysisConfigBuilder::class );
+
 		return [
 			"some languages" => [
 				[ 'en', 'ru', 'es', 'de', 'zh', 'ko' ],
@@ -753,8 +755,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				'all_defaults',
 			],
 			"icu folding languages" => [
-				[ 'bs', 'ca', 'da', 'de', 'el', 'en', 'eo', 'es', 'eu', 'fr', 'he',
-					'hr', 'nl', 'pt', 'sh', 'simple', 'sk', 'sr', 'sv', ],
+				array_keys( $reflACB->getDefaultProperties()[ 'languagesWithIcuFolding' ] ),
 				$emptyConfig,
 				[ 'extra', 'analysis-icu' ],
 				'icu_folders',

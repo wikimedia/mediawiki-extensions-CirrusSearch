@@ -5,11 +5,13 @@ namespace CirrusSearch\Tests\Maintenance;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
+use CirrusSearch\Maintenance\AnalyzerBuilder;
 use Normalizer;
 
 /**
  * @group CirrusSearch
  * @covers \CirrusSearch\Maintenance\AnalysisConfigBuilder
+ * @covers \CirrusSearch\Maintenance\AnalyzerBuilder
  */
 class AnalysisConfigBuilderTest extends CirrusTestCase {
 
@@ -835,4 +837,43 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		ksort( $config );
 		return $config;
 	}
+
+	public static function provideUnpackedOnlyMethods() {
+		$functionsToTest = [ 'omitAsciifolding', 'omitDottedI', 'withAggressiveSplitting',
+			'withAsciifoldingPreserve', 'withLangNorm', 'withLightStemmer', 'withRemoveEmpty',
+			'withWordBreakHelper' ];
+		$ret = [];
+		foreach ( $functionsToTest as $func ) {
+			$ret[ $func ] = [ $func ];
+		}
+		return $ret;
+	}
+
+	/**
+	 * @param string $name
+	 * @dataProvider provideUnpackedOnlyMethods
+	 */
+	public function testUnpackedOnlyMethods( string $name ) {
+		$config = [];
+
+		// Should work if called after withUnpackedAnalyzer()
+		$config = ( new AnalyzerBuilder( 'xx' ) )->
+				withUnpackedAnalyzer()->
+				$name()->
+				build( $config );
+
+		// Should fail if called before withUnpackedAnalyzer()
+		$this->expectException( \ConfigException::class );
+		$config = ( new AnalyzerBuilder( 'xx' ) )->
+				$name()->
+				withUnpackedAnalyzer()->
+				build( $config );
+
+		// Should fail if called without withUnpackedAnalyzer()
+		$this->expectException( \ConfigException::class );
+		$config = ( new AnalyzerBuilder( 'xx' ) )->
+				$name()->
+				build( $config );
+	}
+
 }

@@ -12,7 +12,7 @@
                 "homoglyph_norm",
                 "lowercase",
                 "italian_stop",
-                "light_italian_stemmer",
+                "italian_stemmer",
                 "asciifolding"
             ]
         },
@@ -187,7 +187,7 @@
                 "homoglyph_norm",
                 "lowercase",
                 "italian_stop",
-                "light_italian_stemmer",
+                "italian_stemmer",
                 "asciifolding"
             ]
         }
@@ -258,7 +258,7 @@
             "type": "stop",
             "stopwords": "_italian_"
         },
-        "light_italian_stemmer": {
+        "italian_stemmer": {
             "type": "stemmer",
             "language": "light_italian"
         },

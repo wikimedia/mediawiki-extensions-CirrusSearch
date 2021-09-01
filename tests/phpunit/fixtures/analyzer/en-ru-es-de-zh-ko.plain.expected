@@ -3,7 +3,7 @@
         "de_plain": {
             "char_filter": [
                 "word_break_helper",
-                "german_plain_charfilter"
+                "german_charfilter"
             ],
             "filter": [
                 "de_icu_normalizer",
@@ -18,7 +18,7 @@
         "de_plain_search": {
             "char_filter": [
                 "word_break_helper",
-                "german_plain_charfilter"
+                "german_charfilter"
             ],
             "filter": [
                 "de_icu_normalizer"
@@ -140,7 +140,7 @@
         }
     },
     "char_filter": {
-        "german_plain_charfilter": {
+        "german_charfilter": {
             "mappings": [
                 "\u1e9e=>\u00df"
             ],

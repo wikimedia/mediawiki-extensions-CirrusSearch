@@ -2,11 +2,11 @@
     "analyzer": {
         "text": {
             "type": "custom",
+            "tokenizer": "standard",
             "char_filter": [
                 "dotted_I_fix",
                 "german_charfilter"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "homoglyph_norm",
                 "lowercase",
@@ -20,7 +20,7 @@
             "type": "custom",
             "char_filter": [
                 "word_break_helper",
-                "german_plain_charfilter"
+                "german_charfilter"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -31,7 +31,7 @@
             "type": "custom",
             "char_filter": [
                 "word_break_helper",
-                "german_plain_charfilter"
+                "german_charfilter"
             ],
             "tokenizer": "standard",
             "filter": [
@@ -175,11 +175,11 @@
         },
         "text_search": {
             "type": "custom",
+            "tokenizer": "standard",
             "char_filter": [
                 "dotted_I_fix",
                 "german_charfilter"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "homoglyph_norm",
                 "lowercase",
@@ -289,12 +289,6 @@
             ]
         },
         "german_charfilter": {
-            "type": "mapping",
-            "mappings": [
-                "\u1e9e=>\u00df"
-            ]
-        },
-        "german_plain_charfilter": {
             "type": "mapping",
             "mappings": [
                 "\u1e9e=>\u00df"

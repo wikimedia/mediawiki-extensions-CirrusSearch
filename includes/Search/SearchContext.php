@@ -212,6 +212,10 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @var CirrusSearchHookRunner|null
 	 */
 	private $cirrusSearchHookRunner;
+	/**
+	 * @var array
+	 */
+	private $ltrModelParams = [];
 
 	/**
 	 * @param SearchConfig $config
@@ -534,7 +538,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 			$rescore['query']['rescore_query'] = $rescore['query']['rescore_query']->toArray();
 			$result[] = $rescore;
 		}
-
 		return $result;
 	}
 
@@ -898,5 +901,14 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 */
 	public function getFallbackRunner(): FallbackRunner {
 		return $this->fallbackRunner;
+	}
+
+	public function setLtrParamsForModel( string $modelName, array $params ) {
+		$this->ltrModelParams[$modelName] = $params;
+	}
+
+	public function getLtrParamsForModel( string $modelName ): array {
+		return $this->ltrModelParams[$modelName] ??
+			[ 'query_string' => $this->getCleanedSearchTerm() ];
 	}
 }

@@ -51,6 +51,7 @@ abstract class Maintenance extends \Maintenance implements Printer {
 			false, true );
 		$this->addOption( 'userTestTrigger', 'Use config var and profiles set in the user testing ' .
 			'framework, e.g. --userTestTrigger=trigger', false, true );
+		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function finalSetup() {

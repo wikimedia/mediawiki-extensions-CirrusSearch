@@ -42,7 +42,6 @@ class UpdateWeightedTags extends Maintenance {
 		$this->addOption( 'weight', "Weight (0-1000). Some tag types don't use this. When used, must occur the same number of"
 			. " times as --tagName and will be matched by position.", false, true, false, true );
 		$this->addOption( 'reset', 'Reset a tag type (remove all tags belonging to it). Cannot be mixed with --tagName and --weight.' );
-		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function execute() {

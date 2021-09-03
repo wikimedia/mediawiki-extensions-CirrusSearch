@@ -80,7 +80,6 @@ class SaneitizeJobs extends Maintenance {
 		$this->addOption( 'job-name', 'Tells the script the name of the ' .
 			'sanitize job only useful to run multiple sanitize jobs. ' .
 			'Defaults to "default".', false, true );
-		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function execute() {

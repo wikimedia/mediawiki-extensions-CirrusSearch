@@ -63,7 +63,6 @@ class RunSearch extends Maintenance {
 		$this->addOption( 'explain', 'Include lucene explanation in the results', false, false );
 		$this->addOption( 'limit', 'Set the max number of results returned by query (defaults to 10)', false, true );
 		$this->addOption( 'i-know-what-im-doing', 'Allow setting unknown options from --options', false, false );
-		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function finalSetup() {

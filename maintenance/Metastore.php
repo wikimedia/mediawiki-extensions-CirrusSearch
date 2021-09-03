@@ -54,7 +54,6 @@ class Metastore extends Maintenance {
 			'or --update-index-version, ' .
 			'defaults to wiki id', false, true );
 		$this->addOption( 'dump', 'Dump the metastore index to stdout (elasticsearch bulk index format).' );
-		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function execute() {

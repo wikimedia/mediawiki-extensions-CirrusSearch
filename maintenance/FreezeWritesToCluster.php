@@ -37,7 +37,6 @@ class FreezeWritesToCluster extends Maintenance {
 		$this->addDescription( "Freeze/thaw writes to the elasticsearch cluster. This effects "
 			. "all wikis in a multi-wiki environment. This always operates on a single cluster." );
 		$this->addOption( 'thaw', 'Re-allow writes to the elasticsearch cluster.' );
-		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function execute() {

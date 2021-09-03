@@ -155,7 +155,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			"operates on a single cluster." );
 		$this->addOption( 'indexType', 'Index to update.  Either content or general.', true, true );
 		self::addSharedOptions( $this );
-		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	/**

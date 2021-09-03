@@ -35,7 +35,6 @@ class CirrusNeedsToBeBuilt extends Maintenance {
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Update the configuration or contents of all search indices. Always operates on a single cluster." );
-		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function execute() {

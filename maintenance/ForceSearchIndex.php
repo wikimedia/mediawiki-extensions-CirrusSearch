@@ -131,7 +131,6 @@ class ForceSearchIndex extends Maintenance {
 			'matching the CONTENT_MODEL_* constants.', false, true, false );
 		$this->addOption( 'useDbIndex',
 			'Use specific index when fetching IDs from the database.', false, true, false );
-		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function execute() {

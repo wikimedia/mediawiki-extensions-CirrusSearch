@@ -32,11 +32,6 @@ require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class IndexNamespaces extends Maintenance {
 
-	public function __construct() {
-		parent::__construct();
-		$this->requireExtension( 'CirrusSearch' );
-	}
-
 	public function execute() {
 		$store = $this->maybeCreateMetastore()->namespaceStore();
 		$this->outputIndented( "Indexing namespaces..." );

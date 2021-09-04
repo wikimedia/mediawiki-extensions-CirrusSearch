@@ -34,7 +34,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 	 */
 	private $titleHelper;
 
-	public function setUp() : void {
+	public function setUp(): void {
 		parent::setUp();
 		$config = $this->newHashSearchConfig( [
 			'CirrusSearchWikiToNameMap' => [

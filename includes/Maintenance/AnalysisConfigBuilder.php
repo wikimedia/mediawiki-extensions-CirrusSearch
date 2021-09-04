@@ -1117,7 +1117,7 @@ class AnalysisConfigBuilder {
 	 * @param string|null $stemmerName override default stemmer name
 	 * @return mixed[] updated config
 	 */
-	private function makeUnpackedAnalyzer( array $config, string $langName, string $stemmerName = null ) : array {
+	private function makeUnpackedAnalyzer( array $config, string $langName, string $stemmerName = null ): array {
 		$langStop = "{$langName}_stop";
 		$langStem = "{$langName}_stemmer";
 		$stemmerName = $stemmerName ?? $langName;

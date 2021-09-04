@@ -41,7 +41,7 @@ class RescoreBuilder {
 	 * List of allowed rescore params
 	 * @todo: refactor to const with php 5.6
 	 *
-	 * @var string[] $rescoreMainParams
+	 * @var string[]
 	 */
 	private static $rescoreMainParams = [
 		'query_weight',

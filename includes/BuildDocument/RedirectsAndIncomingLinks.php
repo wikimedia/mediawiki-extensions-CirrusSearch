@@ -9,6 +9,7 @@ use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\SearchRequestLog;
 use Elastica\Document;
+use Elastica\Multi\ResultSet;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Terms;
@@ -159,6 +160,10 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 		// NOOP
 	}
 
+	/**
+	 * @param ResultSet $result
+	 * @return never
+	 */
 	private function raiseLinkCountException( $result ): void {
 		$linkCountClosureCount = count( $this->linkCountClosures );
 		// Seems to happen during connection issues? Treat it the

@@ -71,16 +71,16 @@ class CirrusNeedsToBeBuilt extends Maintenance {
 			} catch ( \Elastica\Exception\ResponseException $e ) {
 				$this->output( "$indexType doesn't exist.\n" );
 				$this->error( "true" );
-				exit( 0 );
+				return true;
 			}
 			if ( $indexType === 'content' && $count === 0 ) {
 				$this->output( "No pages in the content index.  Indexes were probably wiped.\n" );
-				exit( 0 );
+				return true;
 			}
 			$this->output( "Page count in $indexType:  $count\n" );
 		}
-		// The 1 exit code here makes puppet decide that it needs to run whatever is gated by this.
-		exit( 1 );
+		// This result in non-zero exit code, which makes puppet decide that it needs to run whatever is gated by this.
+		return false;
 	}
 }
 

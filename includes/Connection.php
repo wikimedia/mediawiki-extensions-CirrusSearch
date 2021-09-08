@@ -138,6 +138,9 @@ class Connection extends ElasticaConnection {
 		self::$pool[$config->getWikiId()][$clusterId] = $this;
 	}
 
+	/**
+	 * @return never
+	 */
 	public function __sleep() {
 		throw new \RuntimeException( 'Attempting to serialize ES connection' );
 	}

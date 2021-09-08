@@ -5,7 +5,6 @@ namespace CirrusSearch;
 use ApiBase;
 use ApiMain;
 use ApiOpenSearch;
-use CirrusSearch\Job\JobTraits;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
 use DeferredUpdates;
@@ -237,6 +236,7 @@ class Hooks {
 					$wgCirrusSearchMoreLikeThisAllowedFields );
 				break;
 			}
+			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 			if ( $wgCirrusSearchMoreLikeThisConfig['max_query_terms'] > $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit ) {
 				$wgCirrusSearchMoreLikeThisConfig['max_query_terms'] = $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit;
 			}
@@ -279,6 +279,7 @@ class Hooks {
 			$request, 'cirrusMltMinDocFreq' );
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_doc_freq'],
 			$request, 'cirrusMltMaxDocFreq' );
+		// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_query_terms'],
 			$request, 'cirrusMltMaxQueryTerms', $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit );
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_term_freq'],
@@ -434,7 +435,7 @@ class Hooks {
 		} else {
 			$delay = $wgCirrusSearchUpdateDelay['default'];
 		}
-		$params += JobTraits::buildJobDelayOptions( Job\LinksUpdate::class, $delay );
+		$params += Job\LinksUpdate::buildJobDelayOptions( Job\LinksUpdate::class, $delay );
 		$job = new Job\LinksUpdate( $linksUpdate->getTitle(), $params );
 
 		JobQueueGroup::singleton()->push( $job );
@@ -675,6 +676,7 @@ class Hooks {
 	 * @return SearchConfig
 	 */
 	private static function getConfig() {
+		// @phan-suppress-next-line PhanTypeMismatchReturnSuperType
 		return MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
@@ -843,7 +845,7 @@ class Hooks {
 					->makeConfig( 'CirrusSearch' );
 				return new SearchProfileServiceFactory(
 					$serviceContainer->getService( InterwikiResolver::SERVICE ),
-					/** @phan-suppress-next-line PhanTypeMismatchArgument $config is actually a SearchConfig */
+					/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
 					$config,
 					$serviceContainer->getLocalServerObjectCache(),
 					new CirrusSearchHookRunner( $serviceContainer->getHookContainer() )

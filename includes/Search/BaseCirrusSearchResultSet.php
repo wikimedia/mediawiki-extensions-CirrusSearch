@@ -124,6 +124,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 			 * @inheritDoc
 			 */
 			protected function transformOneResult( \Elastica\Result $result ) {
+				// @phan-suppress-previous-line PhanPluginNeverReturnMethod
 				throw new Exception( "An empty ResultSet has nothing to transform" );
 			}
 

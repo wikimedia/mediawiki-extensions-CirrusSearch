@@ -336,6 +336,7 @@ class Reindexer {
 	/**
 	 * @param string $message
 	 * @param int $exitCode
+	 * @return never
 	 */
 	private function fatalError( $message, $exitCode = 1 ) {
 		$this->error( $message );
@@ -463,6 +464,7 @@ class Reindexer {
 				. "Bulk Retries: {$status->getBulkRetries()} "
 				. "Indexed: {$status->getCreated()} / {$status->getTotal()}\n"
 			);
+			// @phan-suppress-next-line PhanPluginRedundantAssignmentInLoop False positive
 			if ( !$status->isComplete() ) {
 				sleep( $sleepSeconds->current() );
 				$sleepSeconds->next();

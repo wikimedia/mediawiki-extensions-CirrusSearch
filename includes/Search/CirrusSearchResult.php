@@ -89,6 +89,7 @@ abstract class CirrusSearchResult extends SearchResult {
 
 	/**
 	 * Lazy initialization of article text from DB
+	 * @return never
 	 */
 	final protected function initText() {
 		throw new \Exception( "initText() should not be called on CirrusSearchResult, " .

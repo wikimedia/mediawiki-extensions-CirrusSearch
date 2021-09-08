@@ -216,6 +216,7 @@ class ConfigUtils {
 	/**
 	 * @param string $message
 	 * @param int $exitCode
+	 * @return never
 	 */
 	private function fatalError( $message, $exitCode = 1 ) {
 		if ( $this->out ) {
@@ -262,7 +263,6 @@ class ConfigUtils {
 			$this->fatalError( "Cannot determine if $indexName is an index: "
 				. $response->getError() );
 		}
-		return false;
 	}
 
 	/**
@@ -283,6 +283,5 @@ class ConfigUtils {
 			$this->fatalError( "Cannot fetch indices with alias $aliasName: "
 				. $response->getError() );
 		}
-		return [];
 	}
 }

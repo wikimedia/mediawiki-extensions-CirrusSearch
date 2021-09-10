@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
+use WikiMap;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {
@@ -38,7 +39,7 @@ class ExpectedIndices extends Maintenance {
 		$clusters = $this->requestedClusters(
 			$this->getOption( 'cluster', null ) );
 		echo \FormatJson::encode( [
-			'dbname' => wfWikiId(),
+			'dbname' => WikiMap::getCurrentWikiId(),
 			'clusters' => $this->clusterInfo( $clusters ),
 		], !$this->getOption( 'oneline' ) ), "\n";
 	}

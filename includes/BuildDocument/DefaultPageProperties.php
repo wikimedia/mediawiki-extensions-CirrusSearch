@@ -7,6 +7,7 @@ use Elastica\Document;
 use IDatabase;
 use MWTimestamp;
 use Title;
+use WikiMap;
 use WikiPage;
 
 /**
@@ -31,7 +32,7 @@ class DefaultPageProperties implements PagePropertyBuilder {
 	 */
 	public function initialize( Document $doc, WikiPage $page ): void {
 		$title = $page->getTitle();
-		$doc->set( 'wiki', wfWikiID() );
+		$doc->set( 'wiki', WikiMap::getCurrentWikiId() );
 		$doc->set( 'namespace',
 			$title->getNamespace() );
 		$doc->set( 'namespace_text',

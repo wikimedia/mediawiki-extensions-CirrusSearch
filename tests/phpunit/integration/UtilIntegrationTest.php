@@ -6,6 +6,7 @@ use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use Config;
 use Language;
 use MediaWiki\MediaWikiServices;
+use WikiMap;
 
 /**
  * @covers \CirrusSearch\Util
@@ -84,11 +85,11 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 				'Featured' => 2,
 			],
 		];
-		$config = $this->getHashConfig( wfWikiID(), $configValues );
+		$config = $this->getHashConfig( WikiMap::getCurrentWikiId(), $configValues );
 
 		// On wiki config should override config templates
 		$cache = $this->makeLocalCache();
-		$this->putDataIntoCache( $cache, wfWikiID() );
+		$this->putDataIntoCache( $cache, WikiMap::getCurrentWikiId() );
 
 		$ru = Util::getDefaultBoostTemplates( $config );
 		$this->assertNotEquals( $configValues['CirrusSearchBoostTemplates'], $ru );
@@ -131,16 +132,16 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		$this->setPrivateVar( Util::class, 'defaultBoostTemplates', null );
 
 		$cache = $this->makeLocalCache();
-		$config = $this->getHashConfig( wfWikiID() );
+		$config = $this->getHashConfig( WikiMap::getCurrentWikiId() );
 		$key = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $config->getWikiId() );
 
 		// FIXME: we cannot really test the default value for $config
 		// with Util::getDefaultBoostTemplates(). It looks like
 		// MediaWikiServices initializes the current wiki SearchConfig
-		// when wfWikiID() == 'wiki' and then it's cached, the test
-		// framework seems to update the wiki name to wiki-unittest_
-		// making it impossible to test if we are running on the local
-		// wiki.
+		// when WikiMap::getCurrentWikiId() == 'wiki' and then it's
+		// cached, the test framework seems to update the wiki name to
+		// wiki-unittest_ making it impossible to test if we are running
+		// on the local wiki.
 		// resetting MediaWikiServices would be nice but it does not
 		// seem to be trivial.
 		$cur = Util::getDefaultBoostTemplates( $config );

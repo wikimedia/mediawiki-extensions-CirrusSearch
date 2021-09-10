@@ -8,6 +8,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\User\UserIdentity;
 use UIDGenerator;
 use User;
+use WikiMap;
 
 /**
  * Handles logging information about requests made to various destinations,
@@ -321,7 +322,7 @@ class RequestLogger {
 				'client_ip' => $webrequest->getIP(),
 				'has_cookies' => $webrequest->getHeader( 'Cookie' ) ? true : false,
 			],
-			'database' => wfWikiID(),
+			'database' => WikiMap::getCurrentWikiId(),
 			'mediawiki_host' => gethostname(),
 			'search_id' => Util::getRequestSetToken(),
 			'source' => Util::getExecutionContext(),

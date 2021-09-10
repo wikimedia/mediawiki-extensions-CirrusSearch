@@ -6,6 +6,7 @@ use CirrusSearch\OtherIndexesUpdater;
 use CirrusSearch\SearchConfig;
 use JobQueueGroup;
 use Title;
+use WikiMap;
 
 /**
  * Job wrapper around OtherIndexes. Used during page updates.
@@ -62,7 +63,11 @@ class OtherIndex extends CirrusGenericJob {
 			list( $namespace, $title ) = $titleArr;
 			$titles[] = Title::makeTitle( $namespace, $title );
 		}
-		$otherIdx = OtherIndexesUpdater::buildOtherIndexesUpdater( $this->searchConfig, $this->params['cluster'], wfWikiID() );
+		$otherIdx = OtherIndexesUpdater::buildOtherIndexesUpdater(
+			$this->searchConfig,
+			$this->params['cluster'],
+			WikiMap::getCurrentWikiId()
+		);
 		$otherIdx->updateOtherIndex( $titles );
 
 		return true;

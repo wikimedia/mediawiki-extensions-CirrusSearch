@@ -27,6 +27,7 @@ use Status;
 use Title;
 use User;
 use WebRequest;
+use WikiMap;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -183,7 +184,7 @@ class CirrusSearch extends SearchEngine {
 		$this->features['interwiki'] = true;
 		$this->features['show-multimedia-search-results'] = $this->config->get( 'CirrusSearchCrossProjectShowMultimedia' ) == true;
 		$this->debugOptions = $debugOptions ?? CirrusDebugOptions::fromRequest( $this->request );
-		$this->titleHelper = $titleHelper ?: new TitleHelper( wfWikiID(), $interwikiResolver,
+		$this->titleHelper = $titleHelper ?: new TitleHelper( WikiMap::getCurrentWikiId(), $interwikiResolver,
 			static function ( $v ) {
 				return \Sanitizer::escapeIdForLink( $v );
 			}

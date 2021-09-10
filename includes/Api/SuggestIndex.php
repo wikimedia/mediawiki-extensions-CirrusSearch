@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Api;
 
+use WikiMap;
+
 /**
  * Update ElasticSearch suggestion index
  *
@@ -28,7 +30,7 @@ class SuggestIndex extends \ApiBase {
 		// and probably should be eventually replaced with something more sane.
 		$updaterScript = "extensions/CirrusSearch/maintenance/UpdateSuggesterIndex.php";
 		$this->getResult()->addValue( null, 'result',
-			wfShellExecWithStderr( "unset REQUEST_METHOD; /usr/local/bin/mwscript $updaterScript --wiki " . wfWikiID() )
+			wfShellExecWithStderr( "unset REQUEST_METHOD; /usr/local/bin/mwscript $updaterScript --wiki " . WikiMap::getCurrentWikiId() )
 		);
 	}
 }

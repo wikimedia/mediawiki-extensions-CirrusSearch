@@ -7,6 +7,7 @@ use CirrusSearch\Sanity\NoopRemediator;
 use CirrusSearch\Sanity\PrintingRemediator;
 use CirrusSearch\Sanity\QueueingRemediator;
 use CirrusSearch\Searcher;
+use WikiMap;
 
 /**
  * Make sure the index for the wiki is sane.
@@ -121,7 +122,7 @@ class Saneitize extends Maintenance {
 	 */
 	private function checkChunk( array $pageIds ) {
 		$updated = $this->checker->check( $pageIds );
-		$this->output( sprintf( "[%20s]%10d/%d\n", wfWikiID(), end( $pageIds ),
+		$this->output( sprintf( "[%20s]%10d/%d\n", WikiMap::getCurrentWikiId(), end( $pageIds ),
 			$this->toPageId ) );
 		return $updated;
 	}

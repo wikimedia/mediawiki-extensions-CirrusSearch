@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use Title;
+use WikiMap;
 
 /**
  * @covers \CirrusSearch\OtherIndexesUpdater
@@ -131,7 +132,7 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 
 		$conn = new Connection( $config );
 		$oi = $this->getMockBuilder( OtherIndexesUpdater::class )
-			->setConstructorArgs( [ $conn, $config, [], wfWikiId() ] )
+			->setConstructorArgs( [ $conn, $config, [], WikiMap::getCurrentWikiId() ] )
 			->onlyMethods( [ 'runUpdates' ] )
 			->getMock();
 		$oi->expects( $this->once() )

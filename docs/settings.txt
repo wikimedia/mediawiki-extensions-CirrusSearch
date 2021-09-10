@@ -1367,7 +1367,8 @@ Default:
 The base name of indexes used on this wiki. This value must be
 unique across all wiki's sharing an elasticsearch cluster unless
 $wgCirrusSearchMultiWikiIndices is set to true.
-The value '__wikiid__' will be resolved at runtime to wfWikiId().
+The value '__wikiid__' will be resolved at runtime to
+WikiMap::getCurrentWikiId().
 
 ; $wgCirrusSearchStripQuestionMarks
 

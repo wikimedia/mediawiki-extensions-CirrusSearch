@@ -9,7 +9,7 @@ use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
-use MediaWiki\MediaWikiServices;
+use LinkCacheTestTrait;
 use Title;
 
 /**
@@ -38,6 +38,7 @@ use Title;
  */
 class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 	use SimpleKeywordFeatureTestTrait;
+	use LinkCacheTestTrait;
 
 	public function applyProvider() {
 		return [
@@ -215,9 +216,8 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 	 */
 	public function testApply( $term, $expectedQuery, $mltUsed, $featureClass, $remainingText = '' ) {
 		// Inject fake pages for MoreLikeTrait::collectTitles() to find
-		$linkCache = MediaWikiServices::getInstance()->getLinkCache();
-		$linkCache->addGoodLinkObj( 12345, Title::newFromText( 'Some page' ) );
-		$linkCache->addGoodLinkObj( 23456, Title::newFromText( 'Other page' ) );
+		$this->addGoodLinkObject( 12345, Title::newFromText( 'Some page' ) );
+		$this->addGoodLinkObject( 23456, Title::newFromText( 'Other page' ) );
 
 		// @todo Use a HashConfig with explicit values?
 		$config = new HashSearchConfig( [ 'CirrusSearchMoreLikeThisTTL' => 600 ], [ HashSearchConfig::FLAG_INHERIT ] );
@@ -254,8 +254,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 	public function testExpandedData() {
 		$config = new SearchConfig();
 		$title = Title::newFromText( 'Some page' );
-		MediaWikiServices::getInstance()->getLinkCache()
-			->addGoodLinkObj( 12345, $title );
+		$this->addGoodLinkObject( 12345, $title );
 		$feature = new MoreLikeFeature( $config );
 
 		$this->assertExpandedData(

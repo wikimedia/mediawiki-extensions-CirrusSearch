@@ -53,9 +53,8 @@ class ConfigUtils {
 		if ( !preg_match( '/^(6.|5.6.)/', $result ) ) {
 			$this->output( "Not supported!\n" );
 			$this->fatalError( "Only Elasticsearch 6.x and 5.6.x are supported.  Your version: $result." );
-		} else {
-			$this->output( "ok\n" );
 		}
+		$this->output( "ok\n" );
 	}
 
 	/**
@@ -106,16 +105,12 @@ class ConfigUtils {
 	 * @return string[] the list of indices
 	 */
 	public function getAllIndicesByType( $typeName ) {
-		$found = null;
 		$response = $this->client->request( $typeName . '*' );
-		if ( $response->isOK() ) {
-			$found = array_keys( $response->getData() );
-		} else {
+		if ( !$response->isOK() ) {
 			$this->fatalError( "Cannot fetch index names for $typeName: "
 				. $response->getError() );
 		}
-		// @phan-suppress-next-line PhanTypeMismatchReturnNullable T240141
-		return $found;
+		return array_keys( $response->getData() );
 	}
 
 	/**
@@ -254,15 +249,14 @@ class ConfigUtils {
 		}
 
 		$response = $this->client->request( $indexName . '/_alias' );
-		if ( $response->isOK() ) {
-			// Only index names are listed as top level keys So if
-			// HEAD /$indexName returns HTTP 200 but $indexName is
-			// not a top level json key then it's an alias
-			return isset( $response->getData()[$indexName] );
-		} else {
+		if ( !$response->isOK() ) {
 			$this->fatalError( "Cannot determine if $indexName is an index: "
 				. $response->getError() );
 		}
+		// Only index names are listed as top level keys So if
+		// HEAD /$indexName returns HTTP 200 but $indexName is
+		// not a top level json key then it's an alias
+		return isset( $response->getData()[$indexName] );
 	}
 
 	/**
@@ -277,11 +271,10 @@ class ConfigUtils {
 			return [];
 		}
 		$response = $this->client->request( $aliasName . '/_alias' );
-		if ( $response->isOK() ) {
-			return array_keys( $response->getData() );
-		} else {
+		if ( !$response->isOK() ) {
 			$this->fatalError( "Cannot fetch indices with alias $aliasName: "
 				. $response->getError() );
 		}
+		return array_keys( $response->getData() );
 	}
 }

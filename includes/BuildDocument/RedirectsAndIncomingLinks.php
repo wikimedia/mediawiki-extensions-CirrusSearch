@@ -14,6 +14,7 @@ use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Terms;
 use Elastica\Search;
+use MediaWiki\Cache\BacklinkCacheFactory;
 use MediaWiki\Logger\LoggerFactory;
 use Title;
 use WikiPage;
@@ -60,10 +61,23 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 	 */
 	private $pageIds = [];
 
-	public function __construct( Connection $conn ) {
+	/**
+	 * @var BacklinkCacheFactory
+	 */
+	private $backlinkCacheFactory;
+
+	/**
+	 * @param Connection $conn
+	 * @param BacklinkCacheFactory $backlinkCacheFactory
+	 */
+	public function __construct(
+		Connection $conn,
+		BacklinkCacheFactory $backlinkCacheFactory
+	) {
 		parent::__construct( $conn, null, 0 );
 		$this->config = $conn->getConfig();
 		$this->linkCountMultiSearch = new MultiSearch( $this->connection->getClient() );
+		$this->backlinkCacheFactory = $backlinkCacheFactory;
 	}
 
 	/**
@@ -78,7 +92,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 		$outgoingLinksToCount = [ $title->getPrefixedDBkey() ];
 
 		// Gather redirects to this page
-		$redirectTitles = $title->getBacklinkCache()
+		$redirectTitles = $this->backlinkCacheFactory->getBacklinkCache( $title )
 			->getLinks( 'redirect', false, false, $this->config->get( 'CirrusSearchIndexedRedirects' ) );
 		$redirects = [];
 		/** @var Title $redirect */

@@ -7,6 +7,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
 use IDatabase;
+use MediaWiki\Cache\BacklinkCacheFactory;
 use MediaWiki\Revision\RevisionStore;
 use ParserCache;
 use Title;
@@ -29,8 +30,16 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 		$revStore = $this->mock( RevisionStore::class );
 		$revStore->method( 'getTitle' )
 			->will( $this->returnValue( $title ) );
+		$backlinkCacheFactory = $this->mock( BacklinkCacheFactory::class );
 
-		return new class( $connection, $db, $parserCache, $revStore, $this->createCirrusSearchHookRunner() ) extends BuildDocument {
+		return new class(
+			$connection,
+			$db,
+			$parserCache,
+			$revStore,
+			$this->createCirrusSearchHookRunner(),
+			$backlinkCacheFactory
+		) extends BuildDocument {
 			// Override create builders to avoid testing those implementations
 			protected function createBuilders( int $flags ): array {
 				return [ new class() implements PagePropertyBuilder {

@@ -199,7 +199,8 @@ class Updater extends ElasticsearchIntermediary {
 			$services->getDBLoadBalancer()->getConnection( DB_REPLICA ),
 			$services->getParserCache(),
 			$services->getRevisionStore(),
-			new CirrusSearchHookRunner( $services->getHookContainer() )
+			new CirrusSearchHookRunner( $services->getHookContainer() ),
+			$services->getBacklinkCacheFactory()
 		);
 		foreach ( $builder->initialize( $pages, $flags ) as $document ) {
 			// This isn't really a property of the connection, so it doesn't matter

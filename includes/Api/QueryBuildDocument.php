@@ -50,7 +50,8 @@ class QueryBuildDocument extends \ApiQueryBase {
 				$this->getDB(),
 				$services->getParserCache(),
 				$services->getRevisionStore(),
-				new CirrusSearchHookRunner( $services->getHookContainer() )
+				new CirrusSearchHookRunner( $services->getHookContainer() ),
+				$services->getBacklinkCacheFactory()
 			);
 			$docs = $builder->initialize( $pages, BuildDocument::INDEX_EVERYTHING );
 			foreach ( $docs as $pageId => $doc ) {

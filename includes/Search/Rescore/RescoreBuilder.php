@@ -148,12 +148,13 @@ class RescoreBuilder {
 		// the ltr query can return negative scores, which mucks with elasticsearch
 		// sorting as that will put these results below documents set to 0. Fix
 		// that up by adding a large constant boost.
-		// NOTE if you choose 'score_mode' = 'max' in the rescore profile this means that the
-		// LTR scores (almost always) completely override the other scores
 		$constant = new \Elastica\Query\ConstantScore( new \Elastica\Query\MatchAll );
 		$constant->setBoost( 100000 );
 		$bool->addShould( $constant );
-		$bool->addShould( new LtrQuery( $model, $this->context->getLtrParamsForModel( $model ) ) );
+		$bool->addShould( new LtrQuery( $model, [
+				// TODO: These params probably shouldn't be hard coded
+				'query_string' => $this->context->getCleanedSearchTerm(),
+			] ) );
 
 		return $bool;
 	}

@@ -7,6 +7,7 @@ use Elastica\Document;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Ids;
 use Elastica\Query\MatchQuery;
+use WikiMap;
 
 class MetaNamespaceStore implements MetaStore {
 	/** @const Value of metastore 'type' field for our documents */
@@ -20,7 +21,7 @@ class MetaNamespaceStore implements MetaStore {
 
 	public function __construct( Connection $connection, $wikiId = null ) {
 		$this->connection = $connection;
-		$this->wikiId = $wikiId ?? wfWikiId();
+		$this->wikiId = $wikiId ?? WikiMap::getCurrentWikiId();
 	}
 
 	/**

@@ -5,6 +5,7 @@ namespace CirrusSearch\MetaStore;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Connection;
 use MediaWiki\MediaWikiServices;
+use WikiMap;
 
 /**
  * Mostly stupid happy path tests. :(
@@ -14,7 +15,7 @@ use MediaWiki\MediaWikiServices;
 class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 	public function testBuildDocument() {
 		list( $conn, $type ) = $this->mockConnection();
-		$doc = MetaVersionStore::buildDocument( $conn, wfWikiId(), 'content' );
+		$doc = MetaVersionStore::buildDocument( $conn, WikiMap::getCurrentWikiId(), 'content' );
 		$this->assertEquals( MetaVersionStore::METASTORE_TYPE, $doc->get( 'type' ) );
 	}
 

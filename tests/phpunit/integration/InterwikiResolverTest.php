@@ -416,9 +416,9 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			'wgCirrusSearchFetchConfigFromApi' => $client !== null,
 
 			// XXX: for the purpose of the test we need
-			// to have wfWikiID() without DBPrefix so we can reuse
-			// the wmf InterwikiCache which is built against WMF config
-			// where no wgDBprefix is set.
+			// to have WikiMap::getCurrentWikiId() without DBPrefix so
+			// we can reuse the wmf InterwikiCache which is built against
+			// WMF config where no wgDBprefix is set.
 			'wgDBprefix' => null,
 			'wgDBname' => $wikiId,
 			// Used by ClassicInterwikiLookup & SiteMatrixInterwikiResolver

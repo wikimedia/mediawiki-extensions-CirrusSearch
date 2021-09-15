@@ -3,6 +3,7 @@
 namespace CirrusSearch\MetaStore;
 
 use CirrusSearch\Connection;
+use WikiMap;
 
 class MetaSaneitizeJobStore implements MetaStore {
 	public const METASTORE_TYPE = "sanitize";
@@ -21,7 +22,7 @@ class MetaSaneitizeJobStore implements MetaStore {
 	public static function docId( $jobName ) {
 		return implode( '-', [
 			self::METASTORE_TYPE,
-			wfWikiId(),
+			WikiMap::getCurrentWikiId(),
 			$jobName
 		] );
 	}
@@ -37,9 +38,9 @@ class MetaSaneitizeJobStore implements MetaStore {
 			self::docId( $jobName ),
 			[
 				'type' => self::METASTORE_TYPE,
-				'wiki' => wfWikiID(),
+				'wiki' => WikiMap::getCurrentWikiId(),
 				'sanitize_job_loop_id' => 0,
-				'sanitize_job_wiki' => wfWikiID(), // Deprecated, use common wiki field
+				'sanitize_job_wiki' => WikiMap::getCurrentWikiId(), // Deprecated, use common wiki field
 				'sanitize_job_created' => time(),
 				'sanitize_job_updated' => time(),
 				'sanitize_job_last_loop' => null,

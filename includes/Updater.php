@@ -9,6 +9,7 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\ProperPageIdentity;
 use TextContent;
 use Title;
+use WikiMap;
 use Wikimedia\Assert\Assert;
 use WikiPage;
 
@@ -338,7 +339,7 @@ class Updater extends ElasticsearchIntermediary {
 			$doc = new \Elastica\Document( $delete['page'], [
 				'namespace' => $title->getNamespace(),
 				'title' => $title->getText(),
-				'wiki' => wfWikiID(),
+				'wiki' => WikiMap::getCurrentWikiId(),
 			] );
 			$doc->setDocAsUpsert( true );
 			$doc->setRetryOnConflict( $this->connection->getConfig()->getElement( 'CirrusSearchUpdateConflictRetryCount' ) );

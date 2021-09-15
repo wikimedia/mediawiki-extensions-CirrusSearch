@@ -10,6 +10,7 @@ use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
 use CirrusSearch\Maintenance\SuggesterMappingConfigBuilder;
 use Elastica\Query\BoolQuery;
 use GitInfo;
+use WikiMap;
 
 class MetaVersionStore implements MetaStore {
 	public const METASTORE_TYPE = 'version';
@@ -127,7 +128,7 @@ class MetaVersionStore implements MetaStore {
 		$docId = self::docId( $connection, $baseName, $typeName );
 		$data = [
 			'type' => self::METASTORE_TYPE,
-			'wiki' => wfWikiId(),
+			'wiki' => WikiMap::getCurrentWikiId(),
 			'index_name' => $connection->getIndexName( $baseName, $typeName ),
 			'analysis_maj' => $aMaj,
 			'analysis_min' => $aMin,

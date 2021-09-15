@@ -13,6 +13,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MWException;
 use MWTimestamp;
 use Title;
+use WikiMap;
 use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 
@@ -135,7 +136,7 @@ class ForceSearchIndex extends Maintenance {
 
 	public function execute() {
 		$this->disablePoolCountersAndLogging();
-		$wiki = sprintf( "[%20s]", wfWikiID() );
+		$wiki = sprintf( "[%20s]", WikiMap::getCurrentWikiId() );
 
 		// Make sure we've actually got indices to populate
 		if ( !$this->simpleCheckIndexes() ) {

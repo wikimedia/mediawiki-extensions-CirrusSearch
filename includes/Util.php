@@ -12,6 +12,7 @@ use Status;
 use Title;
 use UIDGenerator;
 use WebRequest;
+use WikiMap;
 use Wikimedia\Assert\Assert;
 use Wikimedia\IPUtils;
 
@@ -302,7 +303,7 @@ class Util {
 	private static function getOnWikiBoostTemplates( SearchConfig $config ) {
 		$cache = MediaWikiServices::getInstance()->getMainWANObjectCache();
 		$cacheKey = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $config->getWikiId() );
-		if ( $config->getWikiId() == wfWikiID() ) {
+		if ( $config->getWikiId() == WikiMap::getCurrentWikiId() ) {
 			// Local wiki we can fetch boost templates from system
 			// message
 			if ( self::$defaultBoostTemplates !== null ) {

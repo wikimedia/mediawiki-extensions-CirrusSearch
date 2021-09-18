@@ -7,7 +7,6 @@ use CirrusSearch\Connection;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
-use IDatabase;
 use MediaWiki\Cache\BacklinkCacheFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Revision\RevisionAccessException;
@@ -15,6 +14,7 @@ use MediaWiki\Revision\RevisionStore;
 use ParserCache;
 use ParserOutput;
 use Wikimedia\Assert\Assert;
+use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 
 /**

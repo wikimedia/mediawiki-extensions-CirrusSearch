@@ -3,8 +3,8 @@
 namespace CirrusSearch\BuildDocument;
 
 use Elastica\Document;
-use IDatabase;
 use Title;
+use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 
 /**

@@ -6,11 +6,11 @@ use CirrusSearch\CirrusTestCaseTrait;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
-use IDatabase;
 use MediaWiki\Cache\BacklinkCacheFactory;
 use MediaWiki\Revision\RevisionStore;
 use ParserCache;
 use Title;
+use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 
 /**

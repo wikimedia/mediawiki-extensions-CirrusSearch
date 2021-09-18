@@ -4,10 +4,10 @@ namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\Util;
 use Elastica\Document;
-use IDatabase;
 use MWTimestamp;
 use Title;
 use WikiMap;
+use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 
 /**

@@ -49,7 +49,7 @@
 	"cirrussearch-completion-profile-strict-pref-name": "Chế độ chính xác (nâng cao)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Không sửa lỗi sai. Tìm kiếm chính xác những gì được nhập vào.",
 	"cirrussearch-completion-profile-normal-pref-name": "Chế độ đổi hướng (nâng cao)",
-	"cirrussearch-completion-profile-normal-pref-desc": "Không sửa lỗi sai. Chuyển hướng các trang có tên gần giống nhau.",
+	"cirrussearch-completion-profile-normal-pref-desc": "Không sửa lỗi sai. Đổi hướng các trang có tên gần giống nhau.",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Chế độ đổi hướng có tìm cụm từ con (nâng cao)",
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Không sửa lỗi chính tả. Sửa đổi hướng gần. Tìm cụm từ con trong tiêu đề.",
 	"cirrussearch-completion-profile-classic-pref-name": "Tìm tiền tố cổ điển",

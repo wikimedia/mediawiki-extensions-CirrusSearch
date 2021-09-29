@@ -5,7 +5,6 @@ namespace CirrusSearch\Api;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
-use Config;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
@@ -121,8 +120,7 @@ trait ApiTrait {
 			// been removed from the elasticsearch index we lookup the page in
 			// the archive to get it's page id. getPreviousRevisionRecord will
 			// check both the archive and live content to return the most recent.
-			$revRecord = ( new PageArchive( $title, $this->getConfig() ) )
-				->getPreviousRevisionRecord( $now );
+			$revRecord = ( new PageArchive( $title ) )->getPreviousRevisionRecord( $now );
 			if ( !$revRecord ) {
 				return [ null, $hasRedirects ];
 			}
@@ -168,11 +166,6 @@ trait ApiTrait {
 		}
 		return false;
 	}
-
-	/**
-	 * @return Config
-	 */
-	abstract public function getConfig();
 
 	/**
 	 * @return User

@@ -2,13 +2,14 @@
 
 namespace CirrusSearch\Query;
 
+use ArrayIterator;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
-use Wikimedia\Rdbms\DBConnRef;
-use Wikimedia\Rdbms\IDatabase;
-use Wikimedia\Rdbms\LoadBalancer;
-use Wikimedia\Rdbms\MaintainableDBConnRef;
+use MediaWiki\DAO\WikiAwareEntity;
+use MediaWiki\Page\PageSelectQueryBuilder;
+use MediaWiki\Page\PageStore;
+use MediaWiki\Page\PageStoreRecord;
 
 /**
  * @covers \CirrusSearch\Query\InCategoryFeature
@@ -149,35 +150,49 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 	}
 
 	/**
-	 * Injects a database that knows about a fake page with id of 2
+	 * Injects a PageStore that knows about a fake page with id of 2
 	 * for use in test cases.
 	 */
 	private function mockDB() {
-		$dbMocker = static function ( $mock ) {
-			$mock->method( 'select' )
-				->with( 'page' )
-				->willReturnCallback( static function ( $table, $select, $where ) {
-					if ( isset( $where['page_id'] ) && $where['page_id'] === [ '2' ] ) {
-						return [ (object)[
-							'page_namespace' => NS_CATEGORY,
-							'page_title' => 'Cat2',
-							'page_id' => 2,
-						] ];
-					} else {
-						return [];
-					}
-				} );
-			return $mock;
-		};
-		$lb = $this->createMock( LoadBalancer::class );
-		$lb->method( 'getConnection' )
-			->willReturn( $dbMocker( $this->createMock( IDatabase::class ) ) );
-		$lb->method( 'getConnectionRef' )
-			->willReturn( $dbMocker( $this->createMock( DBConnRef::class ) ) );
-		$lb->method( 'getMaintenanceConnectionRef' )
-			->willReturn( $dbMocker( $this->createMock( MaintainableDBConnRef::class ) ) );
-		$lb->method( 'getLocalDomainID' )->willReturn( '' );
-		$this->setService( 'DBLoadBalancer', $lb );
+		$pageStore = $this->createMock( PageStore::class );
+		$pageSelectQueryBuilder = $this->getMockBuilder( PageSelectQueryBuilder::class )
+			->setConstructorArgs(
+				[
+					$this->getServiceContainer()->getDBLoadBalancer()->getConnectionRef( DB_REPLICA ),
+					$pageStore
+				]
+			)
+			->onlyMethods( [ 'fetchPageRecords' ] )
+			->getMock();
+
+		$pageSelectQueryBuilder->method( 'fetchPageRecords' )->willReturnCallback(
+			static function () use ( $pageSelectQueryBuilder ) {
+				[ 'conds' => $conds ] = $pageSelectQueryBuilder->getQueryInfo();
+				if ( isset( $conds['page_id'] ) && $conds['page_id'][0] == '2' ) {
+					return new ArrayIterator( [
+						new PageStoreRecord(
+							(object)[
+								'page_namespace' => NS_CATEGORY,
+								'page_title' => 'Cat2',
+								'page_id' => 2,
+								'page_is_redirect' => false,
+								'page_is_new' => false,
+								'page_latest' => 0,
+								'page_touched' => 0,
+							],
+							WikiAwareEntity::LOCAL
+						)
+					] );
+				} else {
+					return new ArrayIterator( [] );
+				}
+			}
+		);
+
+		$pageStore->method( 'newSelectQueryBuilder' )
+			->willReturn( $pageSelectQueryBuilder );
+
+		$this->setService( 'PageStore', $pageStore );
 	}
 
 	public function testParsedValue() {

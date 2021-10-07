@@ -10,7 +10,8 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Config;
 use Elastica\Query\AbstractQuery;
-use Title;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\PageRecord;
 
 /**
  * Filters by one or more categories, specified either by name or by category
@@ -152,8 +153,18 @@ class InCategoryFeature extends SimpleKeywordFeature implements FilterQueryFeatu
 		$names = $parsedValue['names'];
 		$pageIds = $parsedValue['pageIds'];
 
-		foreach ( Title::newFromIDs( $pageIds ) as $title ) {
-			$names[] = $title->getText();
+		$titles = MediaWikiServices::getInstance()
+			->getPageStore()
+			->newSelectQueryBuilder()
+			->wherePageIds( $pageIds )
+			->caller( __METHOD__ )
+			->fetchPageRecords();
+
+		$titleFormatter = MediaWikiServices::getInstance()->getTitleFormatter();
+
+		/** @var PageRecord $title */
+		foreach ( $titles as $title ) {
+			$names[] = $titleFormatter->getText( $title );
 		}
 
 		if ( $names === [] ) {

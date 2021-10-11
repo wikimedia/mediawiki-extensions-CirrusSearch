@@ -31,7 +31,7 @@ class KeywordFeatureAssertions {
 	private $testCase;
 
 	/**
-	 * @param \MediaWikiTestCase $testCase
+	 * @param \MediaWikiIntegrationTestCase $testCase
 	 */
 	public function __construct( \PHPUnit\Framework\TestCase $testCase ) {
 		$this->testCase = $testCase;

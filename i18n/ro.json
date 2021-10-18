@@ -28,5 +28,7 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Nu corectează greșelile de scriere. Rezolvă redirecționările apropiate.",
 	"cirrussearch-completion-profile-classic-pref-name": "Căutare clasică după prefix",
 	"cirrussearch-completion-profile-classic-pref-desc": "Nu corectează greșelile de scriere. Potrivește începuturile titlurilor.",
+	"cirrussearch-timed-out": "Căutarea a durat prea mult, de aceea sunt disponibile doar rezultate parțiale.",
+	"cirrussearch-regex-timed-out": "Căutarea cu expresii regulate a durat prea mult, de aceea sunt disponibile doar rezultate parțiale. Încercați să simplificați expresia regulată pentru a obține toate rezultatele.",
 	"cirrussearch-article-words": "Cuvinte în toate paginile cu conținut"
 }

@@ -1,9 +1,17 @@
 {
     "analyzer": {
         "text": {
-            "type": "norwegian",
+            "type": "custom",
+            "tokenizer": "standard",
             "char_filter": [
-                "word_break_helper"
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "norwegian_stop",
+                "norwegian_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -162,9 +170,17 @@
             ]
         },
         "text_search": {
-            "type": "norwegian",
+            "type": "custom",
+            "tokenizer": "standard",
             "char_filter": [
-                "word_break_helper"
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "norwegian_stop",
+                "norwegian_stemmer",
+                "asciifolding"
             ]
         }
     },
@@ -202,6 +218,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "norwegian_stop": {
+            "type": "stop",
+            "stopwords": "_norwegian_"
+        },
+        "norwegian_stemmer": {
+            "type": "stemmer",
+            "language": "norwegian"
         },
         "dedup_asciifolding": {
             "type": "unique",

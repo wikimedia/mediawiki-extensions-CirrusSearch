@@ -1,9 +1,20 @@
 {
     "analyzer": {
         "text": {
-            "type": "hindi",
+            "type": "custom",
+            "tokenizer": "standard",
             "char_filter": [
-                "word_break_helper"
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "decimal_digit",
+                "indic_normalization",
+                "hindi_normalization",
+                "hindi_stop",
+                "hindi_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -162,9 +173,20 @@
             ]
         },
         "text_search": {
-            "type": "hindi",
+            "type": "custom",
+            "tokenizer": "standard",
             "char_filter": [
-                "word_break_helper"
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "decimal_digit",
+                "indic_normalization",
+                "hindi_normalization",
+                "hindi_stop",
+                "hindi_stemmer",
+                "asciifolding"
             ]
         }
     },
@@ -202,6 +224,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "hindi_stop": {
+            "type": "stop",
+            "stopwords": "_hindi_"
+        },
+        "hindi_stemmer": {
+            "type": "stemmer",
+            "language": "hindi"
         },
         "dedup_asciifolding": {
             "type": "unique",

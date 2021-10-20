@@ -1,9 +1,19 @@
 {
     "analyzer": {
         "text": {
-            "type": "irish",
+            "type": "custom",
+            "tokenizer": "standard",
             "char_filter": [
-                "word_break_helper"
+                "irish_charfilter"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "irish_hyphenation",
+                "irish_elision",
+                "lowercase",
+                "irish_stop",
+                "irish_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -162,9 +172,19 @@
             ]
         },
         "text_search": {
-            "type": "irish",
+            "type": "custom",
+            "tokenizer": "standard",
             "char_filter": [
-                "word_break_helper"
+                "irish_charfilter"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "irish_hyphenation",
+                "irish_elision",
+                "lowercase",
+                "irish_stop",
+                "irish_stemmer",
+                "asciifolding"
             ]
         }
     },
@@ -203,6 +223,32 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "irish_hyphenation": {
+            "type": "stop",
+            "stopwords": [
+                "h",
+                "n",
+                "t"
+            ],
+            "ignore_case": true
+        },
+        "irish_elision": {
+            "type": "elision",
+            "articles_case": true,
+            "articles": [
+                "d",
+                "m",
+                "b"
+            ]
+        },
+        "irish_stop": {
+            "type": "stop",
+            "stopwords": "_irish_"
+        },
+        "irish_stemmer": {
+            "type": "stemmer",
+            "language": "irish"
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -257,6 +303,30 @@
             "type": "mapping",
             "mappings": [
                 "\u0130=>I"
+            ]
+        },
+        "irish_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\u1e03=>bh",
+                "\u010b=>ch",
+                "\u1e0b=>dh",
+                "\u1e1f=>fh",
+                "\u0121=>gh",
+                "\u1e41=>mh",
+                "\u1e57=>ph",
+                "\u1e61=>sh",
+                "\u1e9b=>sh",
+                "\u1e6b=>th",
+                "\u1e02=>BH",
+                "\u010a=>CH",
+                "\u1e0a=>DH",
+                "\u1e1e=>FH",
+                "\u0120=>GH",
+                "\u1e40=>MH",
+                "\u1e56=>PH",
+                "\u1e60=>SH",
+                "\u1e6a=>TH"
             ]
         }
     }

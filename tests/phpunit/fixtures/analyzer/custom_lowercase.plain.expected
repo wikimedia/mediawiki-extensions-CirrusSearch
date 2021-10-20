@@ -32,7 +32,11 @@
             ],
             "filter": [
                 "ga_lowercase",
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "standard",
             "type": "custom"

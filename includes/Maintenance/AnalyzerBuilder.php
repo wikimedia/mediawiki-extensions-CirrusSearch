@@ -21,6 +21,13 @@ namespace CirrusSearch\Maintenance;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class AnalyzerBuilder {
+	/**
+	 * Indicate that filters should be automatically appended or prepended, rather
+	 * than inserted before a given filter.
+	 */
+	public const APPEND = 1;
+	public const PREPEND = 2;
+
 	/** @var string */
 	private $langName;
 
@@ -76,6 +83,9 @@ class AnalyzerBuilder {
 	/** @var bool */
 	private $unpacked = false;
 
+	/** @var array<int, array<string, string[]>> */
+	private $insertFilterList = [];
+
 	/** @var string */
 	private $dottedIFix = 'dotted_I_fix';
 
@@ -84,9 +94,6 @@ class AnalyzerBuilder {
 
 	/** @var string|null */
 	private $aggressiveSplitting;
-
-	/** @var string|null */
-	private $langNorm;
 
 	/** @var string|null */
 	private $stemmerName;
@@ -183,7 +190,7 @@ class AnalyzerBuilder {
 	}
 
 	/**********
-	 * The with.. and omit.. methods below are only used by unpacked analyzers
+	 * The with.., omit.., and insert.. methods below are only used by unpacked analyzers
 	 */
 
 	/** @return self */
@@ -198,6 +205,18 @@ class AnalyzerBuilder {
 			throw new \ConfigException( "$caller() is only compatible with unpacked analyzers;" .
 				"call withUnpackedAnalyzer() before calling $caller()." );
 		}
+	}
+
+	/**
+	 * @param mixed $beforeFilter specific filter to insert $filters before; use APPEND
+	 *                            or PREPEND to always add to beginning or end of the list
+	 * @param string[] $filterList list of additional filters to insert
+	 * @return self
+	 */
+	public function insertFiltersBefore( $beforeFilter, array $filterList ): self {
+		$this->unpackedCheck();
+		$this->insertFilterList[] = [ $beforeFilter => $filterList ];
+		return $this;
 	}
 
 	/** @return self */
@@ -218,13 +237,6 @@ class AnalyzerBuilder {
 	public function withAggressiveSplitting(): self {
 		$this->unpackedCheck();
 		$this->aggressiveSplitting = 'aggressive_splitting';
-		return $this;
-	}
-
-	/** @return self */
-	public function withLangNorm(): self {
-		$this->unpackedCheck();
-		$this->langNorm = "{$this->langName}_normalization";
 		return $this;
 	}
 
@@ -301,7 +313,6 @@ class AnalyzerBuilder {
 			$this->filters[] = $this->aggressiveSplitting;
 			$this->filters[] = 'lowercase';
 			$this->filters[] = $this->stopName;
-			$this->filters[] = $this->langNorm;
 			$this->filters[] = $this->overrideName;
 			$this->filters[] = $langStem;
 			$this->filters[] = $this->asciifolding;
@@ -309,6 +320,29 @@ class AnalyzerBuilder {
 
 			// remove 'falsey' (== not configured) values from the list
 			$this->filters = array_values( array_filter( $this->filters ) );
+
+			// iterate over all lists of sets of filters to insert, in order, and insert
+			// them before the specified filter. If no such filter exists, $idx == -1 and
+			// the filters will be prepended, but you shouldn't count on that. APPEND and
+			// PREPEND constants can be used to add to beginning or end, regardless of
+			// other filters
+			foreach ( $this->insertFilterList as $filterPatch ) {
+				foreach ( $filterPatch as $beforeFilter => $filterList ) {
+					switch ( $beforeFilter ) {
+					case self::APPEND:
+						$this->filters = array_merge( $this->filters, $filterList );
+						break;
+					case self::PREPEND:
+						$this->filters = array_merge( $filterList, $this->filters );
+						break;
+					default:
+						$idx = array_search( $beforeFilter, $this->filters );
+						array_splice( $this->filters, $idx, 0, $filterList );
+						break;
+					}
+				}
+			}
+
 		}
 
 		$config[ 'analyzer' ][ $this->analyzerName ] = [

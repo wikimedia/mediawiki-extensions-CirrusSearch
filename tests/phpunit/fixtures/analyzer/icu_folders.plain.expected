@@ -340,6 +340,32 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "ga_plain": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "ga_lowercase",
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "ga_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ga_plain_search": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "ga_lowercase",
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "gl_plain": {
             "char_filter": [
                 "word_break_helper"
@@ -388,6 +414,30 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "hi_plain": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "hi_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "hi_plain_search": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "hr_plain": {
             "char_filter": [
                 "word_break_helper"
@@ -412,6 +462,30 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "nb_plain": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "nb_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "nb_plain_search": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "nl_plain": {
             "char_filter": [
                 "word_break_helper"
@@ -427,6 +501,30 @@
             "type": "custom"
         },
         "nl_plain_search": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "nn_plain": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "nn_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "nn_plain_search": {
             "char_filter": [
                 "word_break_helper"
             ],
@@ -650,11 +748,21 @@
         "fr_icu_folding": {
             "type": "icu_folding"
         },
+        "ga_icu_folding": {
+            "type": "icu_folding"
+        },
+        "ga_lowercase": {
+            "language": "irish",
+            "type": "lowercase"
+        },
         "gl_icu_folding": {
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u00d1\u00f1]"
         },
         "he_icu_folding": {
+            "type": "icu_folding"
+        },
+        "hi_icu_folding": {
             "type": "icu_folding"
         },
         "icu_folding": {
@@ -669,8 +777,16 @@
             "language": "greek",
             "type": "lowercase"
         },
+        "nb_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00c6\u00e6\u00d8\u00f8\u00c5\u00e5]"
+        },
         "nl_icu_folding": {
             "type": "icu_folding"
+        },
+        "nn_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00c6\u00e6\u00d8\u00f8\u00c5\u00e5]"
         },
         "pt_icu_folding": {
             "type": "icu_folding"

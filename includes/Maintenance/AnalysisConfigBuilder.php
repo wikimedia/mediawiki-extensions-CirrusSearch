@@ -356,6 +356,7 @@ class AnalysisConfigBuilder {
 		 * For German (de), see T281379
 		 * For Basque (eu) and Danish (da), see T283366
 		 * For Czech (cs), Finnish (fi), and Galician (gl), see T284578
+		 * For Norwegian (nb, nn), see T289612
 		 */
 		case 'bs':
 		case 'hr':
@@ -378,6 +379,9 @@ class AnalysisConfigBuilder {
 			return '[^ÅåÄäÖö]';
 		case 'gl':
 			return '[^Ññ]';
+		case 'nb':
+		case 'nn':
+			return '[^ÆæØøÅå]';
 		case 'ru':
 			return '[^Йй]';
 		case 'sv':
@@ -672,6 +676,7 @@ class AnalysisConfigBuilder {
 		case 'danish':    // Unpack Danish analyzer T283366
 		case 'finnish':   // Unpack Finnish analyzer T284578
 		case 'galician':  // Unpack Galician analyzer T284578
+		case 'norwegian': // Unpack Norwegian analyzer T289612
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
 				build( $config );
@@ -810,7 +815,7 @@ class AnalysisConfigBuilder {
 				withUnpackedAnalyzer()->
 				withCharMap( $eszettMap )->
 				withLightStemmer()->
-				withLangNorm()->
+				insertFiltersBefore( 'german_stemmer', [ 'german_normalization' ] )->
 				build( $config );
 
 			$config[ 'analyzer' ][ 'plain' ][ 'char_filter' ][] = 'german_charfilter';
@@ -832,6 +837,14 @@ class AnalysisConfigBuilder {
 				'filter' => [ 'niqqud', 'hebrew_lemmatizer', 'lowercase', 'asciifolding' ],
 			];
 			break;
+		case 'hindi':
+			// Unpack Hindi analyzer T289612
+			$config = ( new AnalyzerBuilder( $langName ) )->
+				withUnpackedAnalyzer()->
+				insertFiltersBefore( 'hindi_stop',
+					[ 'decimal_digit', 'indic_normalization', 'hindi_normalization' ] )->
+				build( $config );
+			break;
 		case 'indonesian':
 		case 'malay':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T196780
@@ -841,8 +854,24 @@ class AnalysisConfigBuilder {
 				build( $config );
 			break;
 		case 'irish':
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T217602
-			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'irish';
+			$gaCharMap = [ 'ḃ=>bh', 'ċ=>ch', 'ḋ=>dh', 'ḟ=>fh', 'ġ=>gh', 'ṁ=>mh', 'ṗ=>ph',
+				  'ṡ=>sh', 'ẛ=>sh', 'ṫ=>th', 'Ḃ=>BH', 'Ċ=>CH', 'Ḋ=>DH', 'Ḟ=>FH', 'Ġ=>GH',
+				  'Ṁ=>MH', 'Ṗ=>PH', 'Ṡ=>SH', 'Ṫ=>TH' ];
+			$gaElision = [ 'd', 'm', 'b' ];
+			$gaHyphenStop = [ 'h', 'n', 't' ];
+			$config[ 'filter' ][ 'irish_hyphenation' ] =
+				AnalyzerBuilder::stopFilter( $gaHyphenStop, true );
+
+			// Unpack Irish analyzer T289612
+			// See also https://www.mediawiki.org/wiki/User:TJones_(WMF)/T217602
+			$config = ( new AnalyzerBuilder( $langName ) )->
+				withUnpackedAnalyzer()->
+				omitDottedI()->
+				withLangLowercase()->
+				withElision( $gaElision )->
+				withCharMap( $gaCharMap )->
+				insertFiltersBefore( 'irish_elision', [ 'irish_hyphenation' ] )->
+				build( $config );
 			break;
 		case 'italian':
 			// Replace the default Italian analyzer with a rebuilt copy with additional filters
@@ -1381,10 +1410,14 @@ class AnalysisConfigBuilder {
 		'eu' => true,
 		'fi' => true,
 		'fr' => true,
+		'ga' => true,
 		'gl' => true,
 		'he' => true,
+		'hi' => true,
 		'hr' => true,
+		'nb' => true,
 		'nl' => true,
+		'nn' => true,
 		'pt' => true,
 		'sh' => true,
 		'sk' => true,

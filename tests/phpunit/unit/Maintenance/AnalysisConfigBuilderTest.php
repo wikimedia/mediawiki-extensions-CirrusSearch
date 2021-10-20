@@ -126,7 +126,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 
 	public static function provideASCIIFoldingFilters() {
 		return [
-			'only custom is updated' => [
+			'ascii folding: only custom is updated' => [
 				[
 					'analyzer' => [
 						'french' => [
@@ -203,7 +203,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					],
 				],
 			],
-			'config without filter' => [
+			'ascii folding: config without filter' => [
 				// cover some defective corner cases
 				[
 					'analyzer' => [
@@ -225,7 +225,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 
 	public static function provideICUFoldingFilters() {
 		return [
-			'only custom is updated' => [
+			'icu folding: only custom is updated' => [
 				[
 					'analyzer' => [
 						'french' => [
@@ -331,7 +331,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					],
 				],
 			],
-			'config without filter' => [
+			'icu folding: config without filter' => [
 				// cover some defective corner cases
 				[
 					'analyzer' => [
@@ -413,7 +413,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 
 	public static function provideICUTokenizer() {
 		return [
-			'only custom is updated' => [
+			'icu tokenizer: only custom is updated' => [
 				[
 					'analyzer' => [
 						'french' => [
@@ -840,7 +840,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 
 	public static function provideUnpackedOnlyMethods() {
 		$functionsToTest = [ 'omitAsciifolding', 'omitDottedI', 'withAggressiveSplitting',
-			'withAsciifoldingPreserve', 'withLangNorm', 'withLightStemmer', 'withRemoveEmpty',
+			'withAsciifoldingPreserve', 'withLightStemmer', 'withRemoveEmpty',
 			'withWordBreakHelper' ];
 		$ret = [];
 		foreach ( $functionsToTest as $func ) {
@@ -874,6 +874,53 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
 				$name()->
 				build( $config );
+	}
+
+	public function testInsertFiltersBefore() {
+		$config = [];
+		$expected = [ 'xx_FIRST', 'xx_pre_pre', 'xx_pre', 'lowercase', 'xx_stop',
+					  'xx_pre_stem', 'xx_stemmer', 'xx_pre_post', 'xx_post' ];
+
+		// Build up the "expected" analysis chain filters, in a slightly silly way
+		$config = ( new AnalyzerBuilder( 'xx' ) )->
+				withUnpackedAnalyzer()->
+				omitAsciifolding()->
+				insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
+				insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_pre' ] )->
+				insertFiltersBefore( AnalyzerBuilder::APPEND, [ 'xx_post' ] )->
+				insertFiltersBefore( 'xx_pre', [ 'xx_pre_pre' ] )->
+				insertFiltersBefore( 'xx_post', [ 'xx_pre_post' ] )->
+				insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_FIRST' ] )->
+				build( $config );
+
+		$this->assertEquals( $config[ 'analyzer' ][ 'text' ][ 'filter' ], $expected );
+
+		// Let's do it again, but in a different way (this is realistic)
+		$config = ( new AnalyzerBuilder( 'xx' ) )->
+				withUnpackedAnalyzer()->
+				omitAsciifolding()->
+				insertFiltersBefore( AnalyzerBuilder::PREPEND,
+					[ 'xx_FIRST', 'xx_pre_pre', 'xx_pre' ] )->
+				insertFiltersBefore( AnalyzerBuilder::APPEND,
+					[ 'xx_pre_post', 'xx_post' ] )->
+				insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
+				build( $config );
+
+		$this->assertEquals( $config[ 'analyzer' ][ 'text' ][ 'filter' ], $expected );
+
+		// One more time... all over the place
+		$config = ( new AnalyzerBuilder( 'xx' ) )->
+				withUnpackedAnalyzer()->
+				omitAsciifolding()->
+				insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_pre' ] )->
+				insertFiltersBefore( AnalyzerBuilder::APPEND, [ 'xx_pre_post' ] )->
+				insertFiltersBefore( 'xx_pre', [ 'xx_pre_pre' ] )->
+				insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_FIRST' ] )->
+				insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
+				insertFiltersBefore( AnalyzerBuilder::APPEND, [ 'xx_post' ] )->
+				build( $config );
+
+		$this->assertEquals( $config[ 'analyzer' ][ 'text' ][ 'filter' ], $expected );
 	}
 
 }

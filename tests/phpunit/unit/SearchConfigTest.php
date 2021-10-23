@@ -40,7 +40,7 @@ class SearchConfigTest extends CirrusTestCase {
 			$this->assertSame( 123, $config->makePageId( 'mywiki|hop|123' ) );
 			$this->fail();
 		} catch ( \Exception $e ) {
-			$this->assertSame( $e->getMessage(), "Invalid document id: mywiki|hop|123" );
+			$this->assertSame( "Invalid document id: mywiki|hop|123", $e->getMessage() );
 		}
 
 		$config = new HashSearchConfig( [

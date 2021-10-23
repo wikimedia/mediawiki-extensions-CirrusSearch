@@ -129,7 +129,7 @@ class ResultTest extends CirrusTestCase {
 		foreach ( [ $this->buildResult( $data ), $this->buildResult( $data ) ] as $result ) {
 			$msgSuffix = "using " . get_class( $result );
 			$this->assertTrue( $result->getTitle()->isExternal(), "isExternal namespace mismatch $msgSuffix" );
-			$this->assertEquals( $result->getTitle()->getPrefixedText(), "es:Help:Main Page",
+			$this->assertEquals( "es:Help:Main Page", $result->getTitle()->getPrefixedText(),
 			"prefix text must match $msgSuffix" );
 			$this->assertTrue( $result->getRedirectTitle() === null,
 				"redirect is not built with ns mismatch $msgSuffix" );

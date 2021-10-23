@@ -47,7 +47,7 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 		$this->assertContains( 'type', $service->listProfileTypes() );
 		$this->assertArrayHasKey( 'context1', $service->listProfileContexts( 'type' ) );
 		$this->assertArrayHasKey( 'context2', $service->listProfileContexts( 'type' ) );
-		$this->assertEquals( $service->listProfileContexts( 'type' )['context1'], 'prof1' );
+		$this->assertEquals( 'prof1', $service->listProfileContexts( 'type' )['context1'] );
 
 		try {
 			$service->registerDefaultProfile( 'type', 'context2', 'prof2' );

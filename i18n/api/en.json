@@ -4,6 +4,7 @@
 	},
 	"apihelp-cirrus-config-dump-description": "Dump of CirrusSearch configuration.",
 	"apihelp-cirrus-config-dump-summary": "Dump of CirrusSearch configuration.",
+	"apihelp-cirrus-config-dump-param-prop": "Type of configuration variables to dump",
 	"apihelp-cirrus-config-dump-example": "Get a dump of CirrusSearch configuration.",
 	"apihelp-cirrus-mapping-dump-description": "Dump of CirrusSearch mapping for this wiki.",
 	"apihelp-cirrus-mapping-dump-summary": "Dump of CirrusSearch mapping for this wiki.",

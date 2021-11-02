@@ -80,7 +80,6 @@ class ProfilesDump extends \ApiBase {
 		return [
 			'verbose' => [
 				self::PARAM_DFLT => false,
-				self::PARAM_HELP_MSG => 'apihelp-cirrus-profiles-dump-param-verbose',
 			],
 		];
 	}

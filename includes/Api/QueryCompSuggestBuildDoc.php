@@ -38,7 +38,6 @@ class QueryCompSuggestBuildDoc extends ApiQueryBase {
 			'method' => [
 				self::PARAM_TYPE => 'string',
 				self::PARAM_DFLT => $this->getSearchConfig()->get( 'CirrusSearchCompletionDefaultScore' ),
-				self::PARAM_HELP_MSG => 'apihelp-query+compsuggestbuilddoc-param-method',
 			],
 		];
 	}

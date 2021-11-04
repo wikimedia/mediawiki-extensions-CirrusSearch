@@ -10,6 +10,7 @@
 	},
 	"apihelp-cirrus-config-dump-description": "Vidage de la configuration CirrusSearch.",
 	"apihelp-cirrus-config-dump-summary": "Dump de la configuration de CirrusSearch.",
+	"apihelp-cirrus-config-dump-param-prop": "Type de variables de configuration à déverser",
 	"apihelp-cirrus-config-dump-example": "Obtenir un vidage de la configuration de CirrusSearch",
 	"apihelp-cirrus-mapping-dump-description": "Vidage de la correspondance CirrusSearch pour ce wiki.",
 	"apihelp-cirrus-mapping-dump-summary": "Vidage de la table de correspondance de CirrusSearch pour ce wiki.",

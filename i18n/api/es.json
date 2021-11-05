@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Bruno44101",
 			"Dgstranz",
 			"Fitoschido",
 			"Jakeukalane",
@@ -10,6 +11,7 @@
 	},
 	"apihelp-cirrus-config-dump-description": "Volcado de configuración de CirrusSearch.",
 	"apihelp-cirrus-config-dump-summary": "Volcado de la configuración de CirrusSearch.",
+	"apihelp-cirrus-config-dump-param-prop": "Tipo de variables de configuración para volcar",
 	"apihelp-cirrus-config-dump-example": "Obtener un volcado de la configuración de CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Volcado de asignaciones de CirrusSearch para esta wiki.",
 	"apihelp-cirrus-mapping-dump-summary": "Volcado de las asignaciones de CirrusSearch para esta wiki.",

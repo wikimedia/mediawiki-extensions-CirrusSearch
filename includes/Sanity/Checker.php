@@ -307,7 +307,7 @@ class Checker {
 	}
 
 	/**
-	 * @param int[] $pageIds page ids
+	 * @param int[] $pageIds
 	 * @return WikiPage[] the list of wiki pages indexed in page id
 	 */
 	private function loadPagesFromDB( array $pageIds ) {

@@ -57,7 +57,7 @@ class MetaSaneitizeJobStore implements MetaStore {
 	}
 
 	/**
-	 * @param string $jobName job name.
+	 * @param string $jobName
 	 * @return \Elastica\Document|null
 	 */
 	public function get( $jobName ) {

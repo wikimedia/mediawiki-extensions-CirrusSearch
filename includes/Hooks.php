@@ -555,7 +555,7 @@ class Hooks {
 	/**
 	 * Before we've moved a title from $title to $newTitle.
 	 * @param Title $title old title
-	 * @param Title $newTitle new title
+	 * @param Title $newTitle
 	 * @param User $user User who made the move
 	 */
 	public static function onTitleMove( Title $title, Title $newTitle, $user ) {
@@ -565,7 +565,7 @@ class Hooks {
 	/**
 	 * When we've moved a Title from A to B.
 	 * @param LinkTarget $title The old title
-	 * @param LinkTarget $newTitle The new title
+	 * @param LinkTarget $newTitle
 	 * @param UserIdentity $user User who made the move
 	 * @param int $oldId The page id of the old page.
 	 * @param int $redirId

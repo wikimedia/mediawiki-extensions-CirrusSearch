@@ -131,7 +131,7 @@ class Util {
 	 * that Cirrus always uses.
 	 *
 	 * @param string $type same as type parameter on PoolCounter::factory
-	 * @param UserIdentity|null $user the user
+	 * @param UserIdentity|null $user
 	 * @param callable $workCallback callback when pool counter is acquired.  Called with
 	 *  no parameters.
 	 * @param string|null $busyErrorMsg The i18n key to return when the queue
@@ -547,7 +547,7 @@ class Util {
 	 * @param bool $checkEmpty If false, emptyiness of result after $mapFn is called will not be
 	 * 				checked before setting on $destArray.  If true, it will, using Util::isEmpty.
 	 * 				Default: true
-	 * @return array $destArray
+	 * @return array
 	 */
 	public static function setIfDefined(
 		array $sourceArray,

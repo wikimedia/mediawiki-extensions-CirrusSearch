@@ -735,7 +735,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
-	 * @return ResultsType $resultsType results type to return
+	 * @return ResultsType
 	 */
 	public function getResultsType() {
 		Assert::precondition( $this->resultsType !== null, "resultsType unset" );

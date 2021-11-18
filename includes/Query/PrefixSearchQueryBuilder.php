@@ -16,7 +16,7 @@ class PrefixSearchQueryBuilder {
 	use QueryBuilderTraits;
 
 	/**
-	 * @param SearchContext $searchContext the search context
+	 * @param SearchContext $searchContext
 	 * @param string $term the original search term
 	 * @param array|null $variants list of variants
 	 */

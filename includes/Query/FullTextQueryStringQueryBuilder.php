@@ -310,7 +310,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 *
 	 * @param string[] $fields
 	 * @param string $queryString
-	 * @param int $phraseSlop phrase slop
+	 * @param int $phraseSlop
 	 * @return \Elastica\Query\QueryString
 	 */
 	private function buildQueryString( array $fields, $queryString, $phraseSlop ) {

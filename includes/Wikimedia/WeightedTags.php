@@ -28,8 +28,8 @@ class WeightedTags extends SearchIndexFieldDefinition {
 	/**
 	 * @param string $name name of the field
 	 * @param string $type type of the field
-	 * @param string $indexAnalyzer index analyzer
-	 * @param string $searchAnalyzer search analyzer
+	 * @param string $indexAnalyzer
+	 * @param string $searchAnalyzer
 	 * @param string $similarity similiraty name to use
 	 */
 	public function __construct(

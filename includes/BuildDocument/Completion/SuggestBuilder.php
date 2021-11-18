@@ -398,8 +398,8 @@ class SuggestBuilder {
 	/**
 	 * Extracts from $candidates the values that are "similar" to $groupHead
 	 *
-	 * @param string $groupHead string the group "head"
-	 * @param string[] $candidates array of string the candidates
+	 * @param string $groupHead
+	 * @param string[] $candidates
 	 * @param bool $checkVariants if the candidate does not match the groupHead try to match a variant
 	 * @return array 'group' key contains the group with the
 	 *         head and its variants and 'candidates' contains the remaining

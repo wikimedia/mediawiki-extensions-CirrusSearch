@@ -321,7 +321,7 @@ EOD
 	}
 
 	/**
-	 * @param string $jobName job name.
+	 * @param string $jobName
 	 * @return \Elastica\Document|null
 	 */
 	private function getJobInfo( $jobName ) {

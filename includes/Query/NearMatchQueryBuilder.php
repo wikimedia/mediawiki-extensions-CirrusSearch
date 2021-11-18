@@ -12,7 +12,7 @@ class NearMatchQueryBuilder {
 	use QueryBuilderTraits;
 
 	/**
-	 * @param SearchContext $searchContext the search context
+	 * @param SearchContext $searchContext
 	 * @param string $term the original search term
 	 */
 	public function build( SearchContext $searchContext, $term ) {

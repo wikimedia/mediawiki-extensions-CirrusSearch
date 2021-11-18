@@ -103,7 +103,9 @@ class Escaper {
 	 * @return string fixed up query string
 	 */
 	public function fixupWholeQueryString( $string ) {
-		$escapeBadSyntax = [ self::class, 'escapeBadSyntax' ];
+		$escapeBadSyntax = static function ( $matches ) {
+			return preg_replace( '/(?=[^\s\w])/', '\\', $matches[0] );
+		};
 
 		// Be careful when editing this method because the ordering of the replacements matters.
 
@@ -151,20 +153,14 @@ class Escaper {
 
 		// Lowercase AND and OR when not surrounded on both sides by a term.
 		// Lowercase NOT when it doesn't have a term after it.
+		// FIXME: This pattern is heavily broken! It changes "SANDORS" to SandorS".
 		$string = preg_replace_callback( '/^|(AND|OR|NOT)\s*(?:AND|OR)/u',
 			[ self::class, 'lowercaseMatched' ], $string );
+		// FIXME: This changes search terms like "BAND" and turns it into "Band".
 		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/u',
 			[ self::class, 'lowercaseMatched' ], $string );
 
 		return $string;
-	}
-
-	/**
-	 * @param string[] $matches
-	 * @return string
-	 */
-	private static function escapeBadSyntax( $matches ) {
-		return "\\" . implode( "\\", str_split( $matches[ 0 ] ) );
 	}
 
 	/**

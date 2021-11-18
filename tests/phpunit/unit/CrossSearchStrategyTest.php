@@ -12,7 +12,6 @@ class CrossSearchStrategyTest extends CirrusTestCase {
 		$strategy = CrossSearchStrategy::hostWikiOnlyStrategy();
 
 		$this->assertFalse( $strategy->isCrossLanguageSearchSupported() );
-		$this->assertFalse( $strategy->isCrossLanguageSearchSupported() );
 		$this->assertFalse( $strategy->isExtraIndicesSearchSupported() );
 
 		$this->assertSame( $strategy, CrossSearchStrategy::hostWikiOnlyStrategy() );
@@ -21,7 +20,6 @@ class CrossSearchStrategyTest extends CirrusTestCase {
 	public function testAllWikis() {
 		$strategy = CrossSearchStrategy::allWikisStrategy();
 
-		$this->assertTrue( $strategy->isCrossLanguageSearchSupported() );
 		$this->assertTrue( $strategy->isCrossLanguageSearchSupported() );
 		$this->assertTrue( $strategy->isExtraIndicesSearchSupported() );
 

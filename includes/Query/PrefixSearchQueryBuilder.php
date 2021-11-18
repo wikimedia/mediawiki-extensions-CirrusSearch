@@ -9,7 +9,6 @@ use Elastica\Query\MatchQuery;
 use Elastica\Query\MultiMatch;
 
 /**
- *
  * Build a query suited for autocomplete on titles+redirects
  */
 class PrefixSearchQueryBuilder {

@@ -21,7 +21,6 @@
  */
 
 /**
- *
  * See CirrusSearch\BuildDocument\SuggestBuilder and CirrusSearch\Searcher
  * See also: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-completion.html
  *

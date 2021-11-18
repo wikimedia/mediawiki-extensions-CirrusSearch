@@ -7,9 +7,6 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Search\SearchQuery;
 
-/**
- *
- */
 class BasicSearchQueryRouteTest extends CirrusTestCase {
 
 	/**
@@ -84,7 +81,6 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 	}
 
 	/**
-	 *
 	 * @covers \CirrusSearch\Dispatch\BasicSearchQueryRoute::score
 	 * @dataProvider provideTestNamespacesRouting
 	 */

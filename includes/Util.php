@@ -347,7 +347,7 @@ class Util {
 	 * ¿ is not :punct:, hence $more_punct.
 	 *
 	 * @param string $term
-	 * @param string $strippingLevel
+	 * @param string $strippingLevel Either "all", "break", or "final"
 	 * @return string modified term, based on strippingLevel
 	 */
 	public static function stripQuestionMarks( $term, $strippingLevel ) {

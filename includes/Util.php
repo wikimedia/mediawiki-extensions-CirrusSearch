@@ -344,18 +344,16 @@ class Util {
 	 * level, defined by $wgCirrusSearchStripQuestionMarks. Strip all ?s, those
 	 * at word breaks, or only string-final. Ignore queries that are all
 	 * punctuation or use insource. Don't remove escaped \?s, but unescape them.
-	 * ¿ is not :punct:, hence $more_punct.
 	 *
 	 * @param string $term
 	 * @param string $strippingLevel Either "all", "break", or "final"
 	 * @return string modified term, based on strippingLevel
 	 */
 	public static function stripQuestionMarks( $term, $strippingLevel ) {
-		// strip question marks
-		$more_punct = "[¿]";
 		if ( strpos( $term, 'insource:/' ) === false &&
 			 strpos( $term, 'intitle:/' ) === false &&
-			preg_match( "/^([[:punct:]]|\s|$more_punct)+$/", $term ) === 0
+			// ¿ is not in the POSIX character class [:punct:], hence listed separately
+			!preg_match( '/^[[:punct:]\s¿]+$/', $term )
 		) {
 			// FIXME: get rid of negative lookbehinds on (?<!\\\\)
 			// it may improperly transform \\? into \? instead of \\ and destroy properly escaped \
@@ -365,11 +363,11 @@ class Util {
 				$term = preg_replace( '/\\\\\?/', '?', $term );
 			} elseif ( $strippingLevel === 'break' ) {
 				// strip question marks at word boundaries
-				$term = preg_replace( '/(?<!\\\\)(\?)+(\PL|$)/', '$2', $term );
+				$term = preg_replace( '/(?<!\\\\)\?+(\PL|$)/', '$1', $term );
 				$term = preg_replace( '/\\\\\?/', '?', $term );
 			} elseif ( $strippingLevel === 'all' ) {
 				// strip all unescaped question marks
-				$term = preg_replace( '/(?<!\\\\)(\?)+/', ' ', $term );
+				$term = preg_replace( '/(?<!\\\\)\?+/', ' ', $term );
 				$term = preg_replace( '/\\\\\?/', '?', $term );
 			}
 		}

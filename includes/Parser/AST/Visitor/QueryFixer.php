@@ -152,7 +152,7 @@ class QueryFixer implements Visitor {
 				throw new \InvalidArgumentException( '$replacement cannot be null nor wrap a null value' );
 			}
 		}
-		$replacement = preg_replace( '/([~?*"\\\\])/', '\\\\$1', $replacement );
+		$replacement = preg_replace( '/[~?*"\\\\]/', '\\\\$0', $replacement );
 
 		$prefix = "";
 		if ( $this->parsedQuery->hasCleanup( ParsedQuery::TILDE_HEADER ) ) {

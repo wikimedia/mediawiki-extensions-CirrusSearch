@@ -238,7 +238,7 @@ class QueryStringRegexParser implements QueryParser {
 			$query = $nquery;
 		}
 		if ( $this->escaper->getLanguage() === 'he' ) {
-			$nquery = preg_replace( self::GERSHAYIM_REGEX, '$1\\"$2', $query );
+			$nquery = preg_replace( self::GERSHAYIM_REGEX, '$1\"$2', $query );
 			if ( $nquery !== $query ) {
 				$this->queryCleanups[ParsedQuery::CLEANUP_GERSHAYIM_QUIRKS] = true;
 				$query = $nquery;

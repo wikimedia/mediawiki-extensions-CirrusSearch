@@ -53,7 +53,7 @@ class Escaper {
 			// character (״), call a Gershayim, which mark acronyms.  Here we guess if the intent
 			// was to mark a phrase, in which case we leave the quotes alone, or to mark an
 			// acronym, in which case we escape them.
-			return preg_replace( '/(\S+)(?<!\\\\)"(\S)/u', '\1\\"\2', $text );
+			return preg_replace( '/(?<=[^\s\\\\])"(?=\S)/u', '\\"', $text );
 		}
 		return $text;
 	}
@@ -115,16 +115,16 @@ class Escaper {
 		// When allow leading wildcard is disabled elasticsearch will report an
 		// error if these are unescaped. Escape ? and * that don't follow a term.
 		if ( !$this->allowLeadingWildcard ) {
-			$string = preg_replace_callback( '/(?<![\w])([?*])/u', $escapeBadSyntax, $string );
+			$string = preg_replace_callback( '/(?<!\w)[?*]/u', $escapeBadSyntax, $string );
 		}
 
 		// Reduce token ranges to bare tokens without the < or >
-		$string = preg_replace( '/(?:<|>)+([^\s])/u', '$1', $string );
+		$string = preg_replace( '/[<>]+(\S)/u', '$1', $string );
 
 		// Turn bad fuzzy searches into searches that contain a ~ and set $this->fuzzyQuery for good ones.
 		$string = preg_replace_callback( '/(?<leading>\w)~(?<trailing>\S*)/u',
 			static function ( $matches ) use ( &$fuzzyQuery ) {
-				if ( preg_match( '/^(|[0-2])$/', $matches[ 'trailing' ] ) ) {
+				if ( preg_match( '/^[0-2]?$/', $matches[ 'trailing' ] ) ) {
 					return $matches[ 0 ];
 				} else {
 					return $matches[ 'leading' ] . '\\~' .

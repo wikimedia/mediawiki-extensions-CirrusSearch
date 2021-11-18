@@ -59,8 +59,7 @@ class OtherIndex extends CirrusGenericJob {
 	 */
 	protected function doJob() {
 		$titles = [];
-		foreach ( $this->params['titles'] as $titleArr ) {
-			list( $namespace, $title ) = $titleArr;
+		foreach ( $this->params['titles'] as [ $namespace, $title ] ) {
 			$titles[] = Title::makeTitle( $namespace, $title );
 		}
 		$otherIdx = OtherIndexesUpdater::buildOtherIndexesUpdater(

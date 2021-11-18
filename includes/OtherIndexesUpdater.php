@@ -157,8 +157,7 @@ class OtherIndexesUpdater extends Updater {
 		// being frozen doesn't block updates to other indexes
 		// in the same update. Also because the external indexes
 		// may be configured to write to different clusters.
-		foreach ( $updates as $data ) {
-			list( $otherIndex, $actions ) = $data;
+		foreach ( $updates as [ $otherIndex, $actions ] ) {
 			$this->pushElasticaWriteJobs( $actions, function ( array $chunk, string $cluster ) use ( $otherIndex ) {
 				// Name of the index to write to on whatever cluster is connected to
 				$indexName = $otherIndex->getIndexName();

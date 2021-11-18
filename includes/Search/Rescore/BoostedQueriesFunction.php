@@ -44,8 +44,7 @@ class BoostedQueriesFunction implements BoostFunctionBuilder {
 		$mi->attachIterator( new \ArrayIterator( $this->boostedQueries ) );
 		$mi->attachIterator( new \ArrayIterator( $this->weights ) );
 
-		foreach ( $mi as $queryAndWeight ) {
-			list( $query, $weight ) = $queryAndWeight;
+		foreach ( $mi as [ $query, $weight ] ) {
 			$container->addWeightFunction( $weight, $query );
 		}
 	}

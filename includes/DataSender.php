@@ -695,7 +695,7 @@ class DataSender extends ElasticsearchIntermediary {
 			// The noop script only supports Map but an empty array
 			// may be transformed to [] instead of {} when serialized to json
 			// causing class cast exception failures
-			$params['handlers'] = new \stdClass();
+			$params['handlers'] = (object)[];
 		}
 		$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'super_detect_noop' );
 		if ( $doc->getDocAsUpsert() ) {

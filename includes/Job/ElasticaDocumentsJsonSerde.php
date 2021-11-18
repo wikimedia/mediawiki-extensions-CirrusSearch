@@ -37,7 +37,7 @@ class ElasticaDocumentsJsonSerde {
 		// TODO: Because json_encode/decode is involved the round trip
 		// is imperfect. Almost everything here is an array regardless
 		// of what it was before serialization.  That shouldn't matter
-		// for documents, but elastica does occasionally use `new stdClass`
+		// for documents, but elastica does occasionally use `(object)[]`
 		// instead of an empty array to force `{}` in the json output
 		// and that has been lost here.
 

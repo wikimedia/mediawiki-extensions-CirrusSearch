@@ -70,9 +70,8 @@ class IndexCreatorTest extends CirrusTestCase {
 			->disableOriginalConstructor()
 			->getMock();
 
-		$index->expects( $this->any() )
-			->method( 'create' )
-			->will( $this->returnValue( $response ) );
+		$index->method( 'create' )
+			->willReturn( $response );
 
 		return $index;
 	}

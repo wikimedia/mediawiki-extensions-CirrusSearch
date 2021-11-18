@@ -363,9 +363,8 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 		$factory = $this->getMockBuilder( SearchProfileServiceFactory::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$factory->expects( $this->any() )
-			->method( 'loadService' )
-			->will( $this->returnValue( $service ) );
+		$factory->method( 'loadService' )
+			->willReturn( $service );
 		$this->setService( SearchProfileServiceFactory::SERVICE_NAME, $factory );
 
 		$prefs = [];

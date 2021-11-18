@@ -20,7 +20,7 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 
 		$allClustersRemediator = $this->createMock( AllClustersQueueingRemediator::class );
 		$allClustersRemediator->method( 'canSendOptimizedJob' )
-			->with( $this->equalTo( [ 'c1', 'c2' ] ) )
+			->with( [ 'c1', 'c2' ] )
 			->willReturn( true );
 		$allClustersRemediator->expects( $this->once() )
 			->method( 'redirectInIndex' )
@@ -49,7 +49,7 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 
 		$allClustersRemediator = $this->createMock( AllClustersQueueingRemediator::class );
 		$allClustersRemediator->method( 'canSendOptimizedJob' )
-			->with( $this->equalTo( [ 'c1', 'c2' ] ) )
+			->with( [ 'c1', 'c2' ] )
 			->willReturn( true );
 		$allClustersRemediator->expects( $this->never() )->method( 'redirectInIndex' );
 		$allClustersRemediator->expects( $this->never() )->method( 'pageNotInIndex' );
@@ -76,7 +76,7 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 		$allClustersRemediator->expects( $this->never() )->method( 'redirectInIndex' );
 
 		$allClustersRemediator->method( 'canSendOptimizedJob' )
-			->with( $this->equalTo( [ 'c1' ] ) )
+			->with( [ 'c1' ] )
 			->willReturn( false );
 
 		$b1 = new BufferedRemediator();

@@ -118,9 +118,8 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testDisplayTitle( $expected, Title $title, $displayTitle ) {
 		$parserOutput = $this->mock( ParserOutput::class );
-		$parserOutput->expects( $this->any() )
-			->method( 'getDisplayTitle' )
-			->will( $this->returnValue( $displayTitle ) );
+		$parserOutput->method( 'getDisplayTitle' )
+			->willReturn( $displayTitle );
 
 		$engine = new CirrusSearch();
 		$page = $this->pageWithMockParserOutput( $title, $parserOutput );
@@ -138,26 +137,20 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 
 	private function pageWithMockParserOutput( Title $title, ParserOutput $parserOutput ) {
 		$contentHandler = $this->mock( ContentHandler::class );
-		$contentHandler->expects( $this->any() )
-			->method( 'getParserOutputForIndexing' )
-			->will( $this->returnValue( $parserOutput ) );
-		$contentHandler->expects( $this->any() )
-			->method( 'getDataForSearchIndex' )
-			->will( $this->returnValue( [] ) );
+		$contentHandler->method( 'getParserOutputForIndexing' )
+			->willReturn( $parserOutput );
+		$contentHandler->method( 'getDataForSearchIndex' )
+			->willReturn( [] );
 
 		$page = $this->mock( WikiPage::class );
-		$page->expects( $this->any() )
-			->method( 'getTitle' )
-			->will( $this->returnValue( $title ) );
-		$page->expects( $this->any() )
-			->method( 'getContentHandler' )
-			->will( $this->returnValue( $contentHandler ) );
-		$page->expects( $this->any() )
-			->method( 'getContent' )
-			->will( $this->returnValue( new \WikitextContent( 'TEST_CONTENT' ) ) );
-		$page->expects( $this->any() )
-			->method( 'getId' )
-			->will( $this->returnValue( 2 ) );
+		$page->method( 'getTitle' )
+			->willReturn( $title );
+		$page->method( 'getContentHandler' )
+			->willReturn( $contentHandler );
+		$page->method( 'getContent' )
+			->willReturn( new \WikitextContent( 'TEST_CONTENT' ) );
+		$page->method( 'getId' )
+			->willReturn( 2 );
 
 		return $page;
 	}

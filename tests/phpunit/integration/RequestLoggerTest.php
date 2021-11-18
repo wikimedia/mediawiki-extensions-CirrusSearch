@@ -49,9 +49,8 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		$this->assertFalse( $logger->hasQueryLogs() );
 		$log = $this->getMockBuilder( RequestLog::class )->getMock();
 		foreach ( [ 'getLogVariables', 'getRequests' ] as $fn ) {
-			$log->expects( $this->any() )
-				->method( $fn )
-				->will( $this->returnValue( [] ) );
+			$log->method( $fn )
+				->willReturn( [] );
 		}
 		$logger->addRequest( $log );
 		$this->assertTrue( $logger->hasQueryLogs() );
@@ -263,8 +262,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			$transport = $this->getMockBuilder( AbstractTransport::class )
 				->disableOriginalConstructor()
 				->getMock();
-			$transport->expects( $this->any() )
-				->method( 'exec' )
+			$transport->method( 'exec' )
 				->will( $this->onConsecutiveCalls(
 					...array_map( static function ( $response ) {
 						return new Response( $response, 200 );

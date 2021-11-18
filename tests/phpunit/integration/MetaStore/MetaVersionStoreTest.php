@@ -69,8 +69,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 		list( $conn, $type ) = $this->mockConnection();
 		$store = new MetaVersionStore( $conn );
 		$search = null;
-		$type->expects( $this->any() )
-			->method( 'search' )
+		$type->method( 'search' )
 			->will( $this->returnCallback( static function ( $passed ) use ( &$search ) {
 				$search = $passed;
 			} ) );
@@ -98,22 +97,19 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 		$index = $this->getMockBuilder( \Elastica\Index::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$conn->expects( $this->any() )
-			->method( 'getIndex' )
+		$conn->method( 'getIndex' )
 			->with( MetaStoreIndex::INDEX_NAME )
-			->will( $this->returnValue( $index ) );
+			->willReturn( $index );
 
 		$type = $this->getMockBuilder( \Elastica\Type::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$index->expects( $this->any() )
-			->method( 'getType' )
+		$index->method( 'getType' )
 			->with( MetaStoreIndex::INDEX_NAME )
-			->will( $this->returnValue( $type ) );
+			->willReturn( $type );
 
-		$type->expects( $this->any() )
-			->method( 'exists' )
-			->will( $this->returnValue( true ) );
+		$type->method( 'exists' )
+			->willReturn( true );
 
 		return [ $conn, $type ];
 	}

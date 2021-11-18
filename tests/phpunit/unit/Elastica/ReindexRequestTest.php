@@ -66,7 +66,7 @@ class ReindexRequestTest extends CirrusTestCase {
 				'slices' => 1,
 				'requests_per_second' => -1,
 			] )
-			->will( $this->returnValue( new Response( '{}', 200 ) ) );
+			->willReturn( new Response( '{}', 200 ) );
 
 		$this->assertInstanceOf( ReindexResponse::class, $req->reindex() );
 	}
@@ -86,7 +86,7 @@ class ReindexRequestTest extends CirrusTestCase {
 				'slices' => 12,
 				'requests_per_second' => -1,
 			] )
-			->will( $this->returnValue( new Response( '{}', 200 ) ) );
+			->willReturn( new Response( '{}', 200 ) );
 
 		$this->assertInstanceOf( ReindexResponse::class, $req->reindex() );
 	}
@@ -106,7 +106,7 @@ class ReindexRequestTest extends CirrusTestCase {
 				'slices' => 12,
 				'requests_per_second' => 42,
 			] )
-			->will( $this->returnValue( new Response( '{}', 200 ) ) );
+			->willReturn( new Response( '{}', 200 ) );
 
 		$this->assertInstanceOf( ReindexResponse::class, $req->reindex() );
 	}
@@ -126,7 +126,7 @@ class ReindexRequestTest extends CirrusTestCase {
 				'requests_per_second' => -1,
 				'wait_for_completion' => 'false',
 			] )
-			->will( $this->returnValue( new Response( '{"task": "qwerty:4321"}', 200 ) ) );
+			->willReturn( new Response( '{"task": "qwerty:4321"}', 200 ) );
 
 		$task = $req->reindexTask();
 		$this->assertInstanceOf( ReindexTask::class, $task );
@@ -195,7 +195,7 @@ class ReindexRequestTest extends CirrusTestCase {
 		$sourceClient->expects( $this->never() )->method( 'request' );
 		$destClient->expects( $this->once() )
 			->method( 'request' )
-			->will( $this->returnValue( new Response( '{}', 200 ) ) );
+			->willReturn( new Response( '{}', 200 ) );
 		$sourceIndex = new Index( $sourceClient, 'source_idx' );
 		$destIndex = new Index( $destClient, 'dest_idx' );
 		$req = new ReindexRequest( $sourceIndex, $destIndex );

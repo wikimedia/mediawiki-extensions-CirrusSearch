@@ -71,8 +71,8 @@ class ElasticsearchIntermediaryTest extends CirrusTestCase {
 		};
 
 		$log = $this->getMockBuilder( RequestLog::class )->getMock();
-		$log->method( 'getLogVariables' )->will( $this->returnValue( [] ) );
-		$log->method( 'getRequests' )->will( $this->returnValue( [] ) );
+		$log->method( 'getLogVariables' )->willReturn( [] );
+		$log->method( 'getRequests' )->willReturn( [] );
 		$intermediary->start( $log );
 		$intermediary->success();
 		$intermediary->failure();

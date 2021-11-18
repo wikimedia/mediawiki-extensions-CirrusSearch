@@ -100,9 +100,8 @@ class CrossProjectBlockScorerTest extends CirrusIntegrationTestCase {
 		$rs = $this->getMockBuilder( CirrusSearchResultSet::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$rs->expects( $this->any() )
-			->method( 'getTotalHits' )
-			->will( $this->returnValue( $totalHits ) );
+		$rs->method( 'getTotalHits' )
+			->willReturn( $totalHits );
 		return $rs;
 	}
 }

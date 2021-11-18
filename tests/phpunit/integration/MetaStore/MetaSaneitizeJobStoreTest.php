@@ -34,7 +34,7 @@ class MetaSaneitizeJobStoreTest extends CirrusIntegrationTestCase {
 		list( $conn, $type ) = $this->mockConnection();
 		$type->expects( $this->once() )
 			->method( 'getDocument' )
-			->will( $this->returnValue( 'FOUND' ) );
+			->willReturn( 'FOUND' );
 		$store = new MetaSaneitizeJobStore( $conn );
 		$this->assertEquals( 'FOUND', $store->get( 'foo' ) );
 	}
@@ -51,18 +51,16 @@ class MetaSaneitizeJobStoreTest extends CirrusIntegrationTestCase {
 		$index = $this->getMockBuilder( \Elastica\Index::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$conn->expects( $this->any() )
-			->method( 'getIndex' )
+		$conn->method( 'getIndex' )
 			->with( MetaStoreIndex::INDEX_NAME )
-			->will( $this->returnValue( $index ) );
+			->willReturn( $index );
 
 		$type = $this->getMockBuilder( \Elastica\Type::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$index->expects( $this->any() )
-			->method( 'getType' )
+		$index->method( 'getType' )
 			->with( MetaStoreIndex::INDEX_NAME )
-			->will( $this->returnValue( $type ) );
+			->willReturn( $type );
 
 		return [ $conn, $type ];
 	}

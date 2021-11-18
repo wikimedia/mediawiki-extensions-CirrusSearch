@@ -44,14 +44,13 @@ class ConfigUtilsTest extends CirrusTestCase {
 		$client = $this->getMockBuilder( \Elastica\Client::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$client->expects( $this->any() )
-			->method( 'request' )
+		$client->method( 'request' )
 			->with( '_nodes' )
-			->will( $this->returnValue( new \Elastica\Response( [
+			->willReturn( new \Elastica\Response( [
 				'nodes' => [
 					'somenode' => $nodeResponse
 				]
-			] ) ) );
+			] ) );
 
 		$utils = new ConfigUtils( $client, new NoopPrinter() );
 		$availablePlugins = $utils->scanAvailablePlugins( $bannedPlugins );

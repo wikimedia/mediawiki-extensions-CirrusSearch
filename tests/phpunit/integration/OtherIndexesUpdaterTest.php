@@ -110,9 +110,8 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 		$transport = $this->getMockBuilder( \Elastica\Transport\AbstractTransport::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$transport->expects( $this->any() )
-			->method( 'exec' )
-			->will( $this->returnValue( $response ) );
+		$transport->method( 'exec' )
+			->willReturn( $response );
 
 		$config = new HashSearchConfig( [
 			'CirrusSearchWikimediaExtraPlugin' => [

@@ -59,13 +59,13 @@ class AllClustersQueuingRemediatorTest extends CirrusTestCase {
 		$jobQueueGroup->expects( $this->exactly( 7 ) )
 			->method( 'push' )
 			->withConsecutive(
-				[ $this->equalTo( $linksUpdateJob ) ], // oldDocument
-				[ $this->equalTo( $linksUpdateJob ) ], // pageNotIndex
-				[ $this->equalTo( $linksUpdateJob ) ], // redirectInIndex
-				[ $this->equalTo( $linksUpdateJob ) ], // oldVersionInIndex
-				[ $this->equalTo( $wrongIndexDelete ) ], // pageInWrongIndex step1
-				[ $this->equalTo( $linksUpdateJob ) ], // pageInWrongIndex step2
-				[ $this->equalTo( $deletePageJob ) ] // ghostPageInIndex
+				[ $linksUpdateJob ], // oldDocument
+				[ $linksUpdateJob ], // pageNotIndex
+				[ $linksUpdateJob ], // redirectInIndex
+				[ $linksUpdateJob ], // oldVersionInIndex
+				[ $wrongIndexDelete ], // pageInWrongIndex step1
+				[ $linksUpdateJob ], // pageInWrongIndex step2
+				[ $deletePageJob ] // ghostPageInIndex
 			);
 
 		$allClustersRemediator = new AllClustersQueueingRemediator( $clusterAssigment, $jobQueueGroup );

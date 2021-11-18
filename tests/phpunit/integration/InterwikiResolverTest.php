@@ -323,9 +323,8 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		$client = $this->getMockBuilder( \MultiHttpClient::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$client->expects( $this->any() )
-			->method( 'runMulti' )
-			->will( $this->returnValue( $apiResponse ) );
+		$client->method( 'runMulti' )
+			->willReturn( $apiResponse );
 		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [], [], $client );
 		$configs = $resolver->getSameProjectConfigByLang( 'fr' );
 

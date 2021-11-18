@@ -33,10 +33,9 @@ class ClusterSettingsTest extends CirrusTestCase {
 		$config = $this->getMockBuilder( SearchConfig::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$config->expects( $this->any() )
-			->method( 'get' )
+		$config->method( 'get' )
 			->with( 'CirrusSearchShardCount' )
-			->will( $this->returnValue( $shardCounts ) );
+			->willReturn( $shardCounts );
 
 		$settings = new ClusterSettings( $config, $cluster );
 		$this->assertEquals( $expect, $settings->getShardCount( $indexType ) );
@@ -74,10 +73,9 @@ class ClusterSettingsTest extends CirrusTestCase {
 		$config = $this->getMockBuilder( SearchConfig::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$config->expects( $this->any() )
-			->method( 'get' )
+		$config->method( 'get' )
 			->with( 'CirrusSearchReplicas' )
-			->will( $this->returnValue( $replicas ) );
+			->willReturn( $replicas );
 
 		$settings = new ClusterSettings( $config, $cluster );
 		$this->assertEquals( $expect, $settings->getReplicaCount( $indexType ) );
@@ -157,10 +155,9 @@ class ClusterSettingsTest extends CirrusTestCase {
 		$config = $this->getMockBuilder( SearchConfig::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$config->expects( $this->any() )
-			->method( 'get' )
+		$config->method( 'get' )
 			->with( 'CirrusSearchMaxShardsPerNode' )
-			->will( $this->returnValue( $maxShardsPerNode ) );
+			->willReturn( $maxShardsPerNode );
 
 		$settings = new ClusterSettings( $config, $cluster );
 		$this->assertEquals( $expect, $settings->getMaxShardsPerNode( $indexType ) );
@@ -186,10 +183,9 @@ class ClusterSettingsTest extends CirrusTestCase {
 		$config = $this->getMockBuilder( SearchConfig::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$config->expects( $this->any() )
-			->method( 'get' )
+		$config->method( 'get' )
 			->with( 'CirrusSearchDropDelayedJobsAfter' )
-			->will( $this->returnValue( $timeout ) );
+			->willReturn( $timeout );
 
 		$settings = new ClusterSettings( $config, $cluster );
 		$this->assertEquals( $expect, $settings->getDropDelayedJobsAfter() );

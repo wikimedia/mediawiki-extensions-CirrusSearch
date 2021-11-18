@@ -35,8 +35,7 @@ class VersionTest extends CirrusTestCase {
 		$client = $this->getMockBuilder( \Elastica\Client::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$client->expects( $this->any() )
-			->method( 'request' )
+		$client->method( 'request' )
 			->will( $responseAction );
 
 		$config = $this->newHashSearchConfig(
@@ -47,12 +46,11 @@ class VersionTest extends CirrusTestCase {
 		$conn = $this->getMockBuilder( Connection::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$conn->expects( $this->any() )
-			->method( 'getClient' )
-			->will( $this->returnValue( $client ) );
+		$conn->method( 'getClient' )
+			->willReturn( $client );
 		$conn->expects( ( $this->any() ) )
 			->method( 'getConfig' )
-			->will( $this->returnValue( $config ) );
+			->willReturn( $config );
 		return $conn;
 	}
 }

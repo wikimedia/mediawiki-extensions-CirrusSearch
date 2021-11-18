@@ -24,12 +24,12 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 		$config = new SearchConfig;
 		$connection = $this->mock( Connection::class );
 		$connection->method( 'getConfig' )
-			->will( $this->returnValue( $config ) );
+			->willReturn( $config );
 		$db = $this->mock( IDatabase::class );
 		$parserCache = $this->mock( ParserCache::class );
 		$revStore = $this->mock( RevisionStore::class );
 		$revStore->method( 'getTitle' )
-			->will( $this->returnValue( $title ) );
+			->willReturn( $title );
 		$backlinkCacheFactory = $this->mock( BacklinkCacheFactory::class );
 
 		return new class(
@@ -64,15 +64,15 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 
 	public function testHappyPath() {
 		$title = $this->mock( Title::class );
-		$title->method( 'getLatestRevID' )->will( $this->returnValue( 42 ) );
+		$title->method( 'getLatestRevID' )->willReturn( 42 );
 		$pages = [];
 		foreach ( range( 0, 1 ) as $pageId ) {
 			$page = $this->mock( WikiPage::class );
-			$page->method( 'getId' )->will( $this->returnValue( $pageId ) );
-			$page->method( 'getTitle' )->will( $this->returnValue( $title ) );
-			$page->method( 'getLatest' )->will( $this->returnValue( 42 ) );
+			$page->method( 'getId' )->willReturn( $pageId );
+			$page->method( 'getTitle' )->willReturn( $title );
+			$page->method( 'getLatest' )->willReturn( 42 );
 			// $pageId == 0 does not exist
-			$page->method( 'exists' )->will( $this->returnValue( (bool)$pageId ) );
+			$page->method( 'exists' )->willReturn( (bool)$pageId );
 			$pages[] = $page;
 		}
 

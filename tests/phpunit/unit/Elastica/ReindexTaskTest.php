@@ -114,9 +114,9 @@ class ReindexTaskTest extends CirrusTestCase {
 		$client->expects( $this->once() )
 			->method( 'request' )
 			->with( '_tasks/abc:123', Request::GET )
-			->will( $this->returnValue( new Response( json_encode(
+			->willReturn( new Response( json_encode(
 				$this->inProgressTaskResponse
-			), 200 ) ) );
+			), 200 ) );
 
 		$task = new ReindexTask( $client, 'abc:123' );
 		$this->assertSame( 'abc:123', $task->getId() );

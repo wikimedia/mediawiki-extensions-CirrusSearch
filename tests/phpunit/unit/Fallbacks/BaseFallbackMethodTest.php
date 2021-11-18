@@ -26,8 +26,7 @@ abstract class BaseFallbackMethodTest extends CirrusTestCase {
 			->willReturn( [ 'searcherMetrics' => 'called' ] );
 
 		$mock = $this->createMock( SearcherFactory::class );
-		$mock->expects( $this->any() )
-			->method( 'makeSearcher' )
+		$mock->method( 'makeSearcher' )
 			->willReturn( $searcherMock );
 		return $mock;
 	}

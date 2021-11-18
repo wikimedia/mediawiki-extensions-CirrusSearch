@@ -15,9 +15,9 @@ class DefaultPagePropertiesTest extends \MediaWikiUnitTestCase {
 		$page = $this->mock( WikiPage::class );
 		$title = $this->mock( Title::class );
 		$page->method( 'getTitle' )
-			->will( $this->returnValue( $title ) );
+			->willReturn( $title );
 		$page->method( 'getId' )
-			->will( $this->returnValue( 2 ) );
+			->willReturn( 2 );
 		$doc = $this->buildDoc( $page );
 
 		$expectFields = [

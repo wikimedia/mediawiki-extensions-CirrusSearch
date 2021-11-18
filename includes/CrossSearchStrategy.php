@@ -93,7 +93,6 @@ class CrossSearchStrategy {
 	}
 
 	/**
-	 * Is extra indices search supported.
 	 * (in WMF context it's most commonly used to search media files
 	 * on commons from any wikis.)
 	 *

@@ -43,8 +43,6 @@ class ConfigProfileRepository implements SearchProfileRepository {
 	}
 
 	/**
-	 *
-	 * The repository type
 	 * @return string
 	 */
 	public function repositoryType() {

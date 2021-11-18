@@ -641,7 +641,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
-	 * Set the original search term
 	 * @param string $term
 	 */
 	public function setOriginalSearchTerm( $term ) {
@@ -769,7 +768,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
-	 * Set the phrase rescore query
 	 * @param AbstractQuery|null $phraseRescoreQuery
 	 */
 	public function setPhraseRescoreQuery( $phraseRescoreQuery ) {

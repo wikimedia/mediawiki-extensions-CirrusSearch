@@ -166,9 +166,7 @@ class QueryStringRegexParser implements QueryParser {
 	 * @var NamespacePrefixParser
 	 */
 	private $namespacePrefixParser;
-	/**
-	 * Default
-	 */
+
 	private const DEFAULT_OCCUR = BooleanClause::MUST;
 
 	/**

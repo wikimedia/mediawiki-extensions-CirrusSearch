@@ -488,7 +488,6 @@ class SearchProfileService {
 	}
 
 	/**
-	 * List profile types
 	 * @return string[]
 	 */
 	public function listProfileTypes() {

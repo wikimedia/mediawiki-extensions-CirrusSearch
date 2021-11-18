@@ -196,8 +196,6 @@ class AnalysisConfigBuilder {
 	}
 
 	/**
-	 * Build the similarity config
-	 *
 	 * @return array|null the similarity config
 	 */
 	public function buildSimilarityConfig() {

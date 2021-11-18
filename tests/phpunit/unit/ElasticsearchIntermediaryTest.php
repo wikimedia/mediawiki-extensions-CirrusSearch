@@ -12,7 +12,7 @@ use PHPUnit\Framework\AssertionFailedError;
  */
 class ElasticsearchIntermediaryTest extends CirrusTestCase {
 
-	public function profileTestTimeouts() {
+	public function provideTestTimeouts() {
 		return [
 			'simple' => [
 				[
@@ -32,7 +32,7 @@ class ElasticsearchIntermediaryTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider profileTestTimeouts
+	 * @dataProvider provideTestTimeouts
 	 */
 	public function testTimeouts( array $config, $searchType, $expectedClientTimeout, $expectedShardTimeout ) {
 		$connection = new DummyConnection( new HashSearchConfig( $config ) );

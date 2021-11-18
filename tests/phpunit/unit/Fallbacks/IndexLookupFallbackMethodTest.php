@@ -214,10 +214,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		$this->assertNull( IndexLookupFallbackMethod::build( $query, $params ) );
 	}
 
-	/**
-	 * @return array
-	 */
-	public function profileInvalidProfileParams() {
+	public function provideInvalidProfileParams() {
 		return [
 			[
 				[
@@ -241,7 +238,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 	}
 
 	/**
-	 * @dataProvider profileInvalidProfileParams
+	 * @dataProvider provideInvalidProfileParams
 	 */
 	public function testInvalidProfileParam( array $queryParams, $excMessage ) {
 		$query = $this->getNewFTSearchQueryBuilder(

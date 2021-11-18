@@ -212,7 +212,6 @@ class QueryStringRegexParser implements QueryParser {
 		$this->rawQuery = $rawQuery;
 		$this->query = null;
 		$this->keywordOffsetsTracker = new OffsetTracker();
-		$this->offset = 0;
 		$this->token = null;
 		$this->lookBehind = null;
 		$this->preTaggedNodes = [];

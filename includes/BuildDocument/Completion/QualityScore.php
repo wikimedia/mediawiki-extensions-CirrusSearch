@@ -75,12 +75,12 @@ class QualityScore implements SuggestScoringMethod {
 			$this->incomingLinksNorm );
 		$pageSize = $this->scoreNormLog2( $doc['text_bytes'] ?? 0,
 			self::PAGE_SIZE_NORM );
-		$extLinks = $this->scoreNorm( isset( $doc['external_link'] )
-			? count( $doc['external_link'] ) : 0, self::EXTERNAL_LINKS_NORM );
-		$headings = $this->scoreNorm( isset( $doc['heading'] )
-			? count( $doc['heading'] ) : 0, self::HEADING_NORM );
-		$redirects = $this->scoreNorm( isset( $doc['redirect'] )
-			? count( $doc['redirect'] ) : 0, self::REDIRECT_NORM );
+		$extLinks = $this->scoreNorm( count( $doc['external_link'] ?? [] ),
+			self::EXTERNAL_LINKS_NORM );
+		$headings = $this->scoreNorm( count( $doc['heading'] ?? [] ),
+			self::HEADING_NORM );
+		$redirects = $this->scoreNorm( count( $doc['redirect'] ?? [] ),
+			self::REDIRECT_NORM );
 
 		$score = $incLinks * self::INCOMING_LINKS_WEIGHT;
 
@@ -225,12 +225,12 @@ class QualityScore implements SuggestScoringMethod {
 			$this->incomingLinksNorm, 'incoming_links' );
 		$pageSize = $this->explainScoreNormLog2( $doc['text_bytes'] ?? 0,
 			self::PAGE_SIZE_NORM, 'text_bytes' );
-		$extLinks = $this->explainScoreNorm( isset( $doc['external_link'] )
-			? count( $doc['external_link'] ) : 0, self::EXTERNAL_LINKS_NORM, 'external_links_count' );
-		$headings = $this->explainScoreNorm( isset( $doc['heading'] )
-			? count( $doc['heading'] ) : 0, self::HEADING_NORM, 'headings_count' );
-		$redirects = $this->explainScoreNorm( isset( $doc['redirect'] )
-			? count( $doc['redirect'] ) : 0, self::REDIRECT_NORM, 'redirects_count' );
+		$extLinks = $this->explainScoreNorm( count( $doc['external_link'] ?? [] ),
+			self::EXTERNAL_LINKS_NORM, 'external_links_count' );
+		$headings = $this->explainScoreNorm( count( $doc['heading'] ?? [] ),
+			self::HEADING_NORM, 'headings_count' );
+		$redirects = $this->explainScoreNorm( count( $doc['redirect'] ?? [] ),
+			self::REDIRECT_NORM, 'redirects_count' );
 
 		$details = [];
 		$total = self::INCOMING_LINKS_WEIGHT + self::EXTERNAL_LINKS_WEIGHT +

@@ -44,7 +44,7 @@ class Result extends CirrusSearchResult {
 	/** @var bool */
 	private $isFileMatch = false;
 	/** @var string */
-	private $namespaceText = '';
+	private $namespaceText;
 	/** @var int */
 	private $wordCount;
 	/** @var int */

@@ -14,7 +14,7 @@ class BasicSearchQueryRoute implements SearchQueryRoute {
 	private $searchEngineEntryPoint;
 
 	/** @var int[] */
-	private $namespaces = [];
+	private $namespaces;
 
 	/** @var string[] */
 	private $acceptableQueryClasses;

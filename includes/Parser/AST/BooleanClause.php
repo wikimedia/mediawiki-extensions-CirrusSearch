@@ -28,7 +28,7 @@ class BooleanClause implements Visitable {
 	/**
 	 * @var bool true if the node is explicitly connected
 	 */
-	private $explicit = false;
+	private $explicit;
 
 	/**
 	 * @param ParsedNode $node

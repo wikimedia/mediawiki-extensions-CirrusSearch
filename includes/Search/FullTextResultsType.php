@@ -26,7 +26,7 @@ final class FullTextResultsType extends BaseResultsType {
 	/**
 	 * @var string[] list of extra fields to extract
 	 */
-	private $extraFieldsToExtract = [];
+	private $extraFieldsToExtract;
 
 	/**
 	 * @param FetchPhaseConfigBuilder $fetchPhaseBuilder

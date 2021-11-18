@@ -93,7 +93,7 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 			$unittests[$test] = [
 				$data['expected'],
 				$data['query'],
-				isset( $data['config'] ) ? $data['config'] : []
+				$data['config'] ?? []
 			];
 		}
 		return $unittests;

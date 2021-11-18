@@ -35,7 +35,7 @@ class NukeAllIndexes extends Maintenance {
 	public function execute() {
 		global $wgCirrusSearchDevelOptions;
 
-		if ( !isset( $wgCirrusSearchDevelOptions['allow_nuke'] ) || !$wgCirrusSearchDevelOptions['allow_nuke'] ) {
+		if ( !( $wgCirrusSearchDevelOptions['allow_nuke'] ?? false ) ) {
 			$this->output( "Nuke not enabled. Please set \$wgCirrusSearchDevelOptions['allow_nuke'] = true" );
 			return;
 		}

@@ -157,9 +157,9 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		switch ( $query['type'] ) {
 		case 'fulltext':
 			$work = static function ( $config, $connection ) use ( $query ) {
-				$offset = isset( $query['offset'] ) ? $query['offset'] : 0;
-				$limit = isset( $query['limit'] ) ? $query['limit'] : 20;
-				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;
+				$offset = $query['offset'] ?? 0;
+				$limit = $query['limit'] ?? 20;
+				$namespaces = $query['namespaces'] ?? null;
 				$config = new HashSearchConfig(
 					[ SearchConfig::INDEX_BASE_NAME => 'wiki' ],
 					[ HashSearchConfig::FLAG_INHERIT ] );
@@ -188,9 +188,9 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			}
 
 			$work = static function ( $config, $connection ) use ( $query ) {
-				$limit = isset( $query['limit'] ) ? $query['limit'] : 5;
-				$offset = isset( $query['offset'] ) ? $query['offset'] : 0;
-				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;
+				$limit = $query['limit'] ?? 5;
+				$offset = $query['offset'] ?? 0;
+				$namespaces = $query['namespaces'] ?? null;
 				$suggester = new CompletionSuggester( $connection, $limit, $offset, $config, $namespaces, null, 'wiki' );
 				$suggester->suggest( $query['term'] );
 			};
@@ -199,9 +199,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		case 'get':
 			$work = static function ( $config, $connection ) use ( $query ) {
 				$searcher = new Searcher( $connection, 0, 20, $config, null, null, 'wiki' );
-				$sourceFiltering = isset( $query['sourceFiltering'] )
-					? $query['sourceFiltering']
-					: true;
+				$sourceFiltering = $query['sourceFiltering'] ?? true;
 				$searcher->get( $query['docIds'], $sourceFiltering );
 			};
 			break;

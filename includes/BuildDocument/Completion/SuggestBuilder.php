@@ -190,10 +190,7 @@ class SuggestBuilder {
 
 		// Build cross ns suggestions
 		if ( !empty( $crossNsTitles ) ) {
-			$titles = [];
-			foreach ( $crossNsTitles as $data ) {
-				$titles[] = $data['title'];
-			}
+			$titles = array_column( $crossNsTitles, 'title' );
 			$lb = new LinkBatch( $titles );
 			$lb->setCaller( __METHOD__ );
 			$lb->execute();

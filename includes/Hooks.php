@@ -785,10 +785,7 @@ class Hooks {
 	 * @return string[]
 	 */
 	private static function autoCompleteOptionsForPreferences( array $profiles ): array {
-		$available = [];
-		foreach ( $profiles as $profile ) {
-			$available[] = $profile['name'];
-		}
+		$available = array_column( $profiles, 'name' );
 		// Order in which we propose comp suggest profiles
 		$preferredOrder = [
 			'fuzzy',

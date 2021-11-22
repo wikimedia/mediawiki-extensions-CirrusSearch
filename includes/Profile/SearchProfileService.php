@@ -9,8 +9,9 @@ use CirrusSearch\Dispatch\SearchQueryDispatchService;
 use CirrusSearch\Dispatch\SearchQueryRoute;
 use CirrusSearch\Search\SearchQuery;
 use Config;
+use MediaWiki\User\UserIdentity;
+use MediaWiki\User\UserOptionsLookup;
 use RequestContext;
-use User;
 use WebRequest;
 use Wikimedia\Assert\Assert;
 
@@ -140,7 +141,7 @@ class SearchProfileService {
 	private $overriders = [];
 
 	/**
-	 * @var User
+	 * @var UserIdentity
 	 */
 	private $user;
 
@@ -165,10 +166,21 @@ class SearchProfileService {
 	private $routes;
 
 	/**
-	 * @param WebRequest|null $request obtained from \RequestContext::getMain()->getRequest() if null
-	 * @param User|null $user obtained from \RequestContext::getMain()->getUser() if null
+	 * @var UserOptionsLookup
 	 */
-	public function __construct( WebRequest $request = null, User $user = null ) {
+	private $userOptionsLookup;
+
+	/**
+	 * @param UserOptionsLookup $userOptionsLookup
+	 * @param WebRequest|null $request obtained from \RequestContext::getMain()->getRequest() if null
+	 * @param UserIdentity|null $user obtained from \RequestContext::getMain()->getUser() if null
+	 */
+	public function __construct(
+		UserOptionsLookup $userOptionsLookup,
+		WebRequest $request = null,
+		UserIdentity $user = null
+	) {
+		$this->userOptionsLookup = $userOptionsLookup;
 		$this->request = $request ?? RequestContext::getMain()->getRequest();
 		$this->user = $user ?? RequestContext::getMain()->getUser();
 		$this->routes = [
@@ -404,7 +416,10 @@ class SearchProfileService {
 	 * @param string $userPref the name of the key used to store this user preference
 	 */
 	public function registerUserPrefOverride( $type, $profileContext, $userPref ) {
-		$this->registerProfileOverride( $type, $profileContext, new UserPrefSearchProfileOverride( $this->user, $userPref ) );
+		$this->registerProfileOverride(
+			$type,
+			$profileContext,
+			new UserPrefSearchProfileOverride( $this->user, $this->userOptionsLookup, $userPref ) );
 	}
 
 	/**

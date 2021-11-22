@@ -6,7 +6,8 @@ use BagOStuff;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\SearchConfig;
-use User;
+use MediaWiki\User\UserIdentity;
+use MediaWiki\User\UserOptionsLookup;
 use WebRequest;
 
 /**
@@ -107,30 +108,37 @@ class SearchProfileServiceFactory {
 	 */
 	private $cirrusSearchHookRunner;
 
+	/**
+	 * @var UserOptionsLookup
+	 */
+	private $userOptionsLookup;
+
 	public function __construct(
 		InterwikiResolver $resolver,
 		SearchConfig $hostWikiConfig,
 		BagOStuff $localServerCache,
-		CirrusSearchHookRunner $cirrusSearchHookRunner
+		CirrusSearchHookRunner $cirrusSearchHookRunner,
+		UserOptionsLookup $userOptionsLookup
 	) {
 		$this->interwikiResolver = $resolver;
 		$this->hostWikiConfig = $hostWikiConfig;
 		$this->localServerCache = $localServerCache;
 		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner;
+		$this->userOptionsLookup = $userOptionsLookup;
 	}
 
 	/**
 	 * @param SearchConfig $config
 	 * @param WebRequest|null $request
-	 * @param User|null $user
+	 * @param UserIdentity|null $user
 	 * @param bool $forceHook force running the hook even if using HashSearchConfig
 	 * @return SearchProfileService
 	 * @throws \Exception
 	 * @throws \FatalError
 	 * @throws \MWException
 	 */
-	public function loadService( SearchConfig $config, WebRequest $request = null, User $user = null, $forceHook = false ) {
-		$service = new SearchProfileService( $request, $user );
+	public function loadService( SearchConfig $config, WebRequest $request = null, UserIdentity $user = null, $forceHook = false ) {
+		$service = new SearchProfileService( $this->userOptionsLookup, $request, $user );
 		$this->loadCrossProjectBlockScorer( $service, $config );
 		$this->loadSimilarityProfiles( $service, $config );
 		$this->loadRescoreProfiles( $service, $config );

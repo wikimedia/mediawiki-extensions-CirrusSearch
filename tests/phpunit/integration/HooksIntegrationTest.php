@@ -356,7 +356,7 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 		$this->setMwGlobals( [
 			'wgCirrusSearchUseCompletionSuggester' => true,
 		] );
-		$service = new SearchProfileService();
+		$service = new SearchProfileService( $this->getServiceContainer()->getUserOptionsLookup() );
 		$service->registerDefaultProfile( SearchProfileService::COMPLETION,
 			SearchProfileService::CONTEXT_DEFAULT, 'fuzzy' );
 		$service->registerArrayRepository( SearchProfileService::COMPLETION, 'phpunit', $profiles );

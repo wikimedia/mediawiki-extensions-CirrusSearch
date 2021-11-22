@@ -12,6 +12,8 @@ use CirrusSearch\Search\TitleHelper;
 use Config;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Interwiki\InterwikiLookup;
+use MediaWiki\User\StaticUserOptionsLookup;
+use MediaWiki\User\UserOptionsLookup;
 use Title;
 
 trait CirrusTestCaseTrait {
@@ -173,26 +175,41 @@ trait CirrusTestCaseTrait {
 
 	/**
 	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
+	 * @param UserOptionsLookup|null $userOptionsLookup
 	 * @return SearchProfileServiceFactoryFactory
 	 */
 	public function hostWikiSearchProfileServiceFactory(
-		CirrusSearchHookRunner $cirrusSearchHookRunner = null
+		CirrusSearchHookRunner $cirrusSearchHookRunner = null,
+		UserOptionsLookup $userOptionsLookup = null
 	): SearchProfileServiceFactoryFactory {
 		$cirrusSearchHookRunner = $cirrusSearchHookRunner ?: $this->createCirrusSearchHookRunner( [] );
-		return new class( $this, $cirrusSearchHookRunner ) implements SearchProfileServiceFactoryFactory {
+		$userOptionsLookup = $userOptionsLookup ?: $this->createStaticUserOptionsLookup();
+		return new class(
+			$this,
+			$cirrusSearchHookRunner,
+			$userOptionsLookup
+		) implements SearchProfileServiceFactoryFactory {
 			/** @var CirrusTestCaseTrait */
 			private $testCase;
 			/** @var CirrusSearchHookRunner */
 			private $cirrusHookRunner;
+			/** @var UserOptionsLookup */
+			private $userOptionsLookup;
 
-			public function __construct( $testCase, $cirrusHookRunner ) {
+			public function __construct( $testCase, $cirrusHookRunner, $userOptionsLookup ) {
 				$this->testCase = $testCase;
 				$this->cirrusHookRunner = $cirrusHookRunner;
+				$this->userOptionsLookup = $userOptionsLookup;
 			}
 
 			public function getFactory( SearchConfig $config ): SearchProfileServiceFactory {
-				return new SearchProfileServiceFactory( $this->testCase->getInterWikiResolver( $config ),
-					$config, $this->testCase->localServerCacheForProfileService(), $this->cirrusHookRunner );
+				return new SearchProfileServiceFactory(
+					$this->testCase->getInterWikiResolver( $config ),
+					$config,
+					$this->testCase->localServerCacheForProfileService(),
+					$this->cirrusHookRunner,
+					$this->userOptionsLookup
+				);
 			}
 		};
 	}
@@ -322,6 +339,10 @@ trait CirrusTestCaseTrait {
 
 	public function createCirrusSearchHookRunner( $hooks = [] ): CirrusSearchHookRunner {
 		return new CirrusSearchHookRunner( $this->createHookContainer( $hooks ) );
+	}
+
+	public function createStaticUserOptionsLookup( array $userMap = [], array $defaults = [] ) {
+		return new StaticUserOptionsLookup( $userMap, $defaults );
 	}
 
 	/**

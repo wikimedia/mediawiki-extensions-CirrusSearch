@@ -242,7 +242,12 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 	private function getFactory( array $hostWikiConfig = [], CirrusSearchHookRunner $cirrusSearchHookRunner = null ) {
 		$config = new HashSearchConfig( $hostWikiConfig );
 		$resolver = ( new InterwikiResolverFactory() )->getResolver( $config );
-		return new SearchProfileServiceFactory( $resolver, $config, new EmptyBagOStuff(),
-			$cirrusSearchHookRunner ?: $this->createCirrusSearchHookRunner() );
+		return new SearchProfileServiceFactory(
+			$resolver,
+			$config,
+			new EmptyBagOStuff(),
+			$cirrusSearchHookRunner ?: $this->createCirrusSearchHookRunner(),
+			$this->getServiceContainer()->getUserOptionsLookup()
+		);
 	}
 }

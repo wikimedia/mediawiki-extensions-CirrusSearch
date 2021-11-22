@@ -266,8 +266,15 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		SearchProfileServiceFactoryFactory $factoryFactory = null
 	): SearchConfig {
 		try {
-			return new HashSearchConfig( $config, $flags, $inherited,
-				$factoryFactory ?: $this->hostWikiSearchProfileServiceFactory() );
+			return new HashSearchConfig(
+				$config,
+				$flags,
+				$inherited,
+				$factoryFactory ?: $this->hostWikiSearchProfileServiceFactory(
+					null,
+					$this->getServiceContainer()->getUserOptionsLookup()
+				)
+			);
 		} catch ( \MWException $e ) {
 			$this->fail( $e->getMessage() );
 		}

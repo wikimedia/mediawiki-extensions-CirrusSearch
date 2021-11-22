@@ -11,7 +11,11 @@ use CirrusSearch\CirrusIntegrationTestCase;
 class UserPrefSearchProfileOverrideTest extends CirrusIntegrationTestCase {
 
 	public function testNormalUseCase() {
-		$override = new UserPrefSearchProfileOverride( $this->getMyTestUser(), 'test-profile-user-pref' );
+		$override = new UserPrefSearchProfileOverride(
+			$this->getMyTestUser(),
+			$this->getServiceContainer()->getUserOptionsLookup(),
+			'test-profile-user-pref'
+		);
 		$this->assertEquals( SearchProfileOverride::USER_PREF_PRIO, $override->priority() );
 		$this->assertEquals( 'overridden', $override->getOverriddenName( [] ) );
 		$this->assertEquals(
@@ -25,12 +29,20 @@ class UserPrefSearchProfileOverrideTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testWithoutPref() {
-		$override = new UserPrefSearchProfileOverride( $this->getMyTestUser(), 'test-profile-user-pref2' );
+		$override = new UserPrefSearchProfileOverride(
+			$this->getMyTestUser(),
+			$this->getServiceContainer()->getUserOptionsLookup(),
+			'test-profile-user-pref2'
+		);
 		$this->assertNull( $override->getOverriddenName( [] ) );
 	}
 
 	public function testCustomPrio() {
-		$override = new UserPrefSearchProfileOverride( $this->getMyTestUser(), 'test-profile-user-pref', 123 );
+		$override = new UserPrefSearchProfileOverride(
+			$this->getMyTestUser(),
+			$this->getServiceContainer()->getUserOptionsLookup(),
+			'test-profile-user-pref', 123
+		);
 		$this->assertEquals( 123, $override->priority() );
 	}
 

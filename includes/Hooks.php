@@ -845,7 +845,8 @@ class Hooks {
 					/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
 					$config,
 					$serviceContainer->getLocalServerObjectCache(),
-					new CirrusSearchHookRunner( $serviceContainer->getHookContainer() )
+					new CirrusSearchHookRunner( $serviceContainer->getHookContainer() ),
+					$serviceContainer->getUserOptionsLookup()
 				);
 			}
 		);

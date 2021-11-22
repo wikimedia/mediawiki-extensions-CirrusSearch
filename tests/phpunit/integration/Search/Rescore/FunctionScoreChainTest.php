@@ -87,15 +87,23 @@ class FunctionScoreChainTest extends CirrusIntegrationTestCase {
 			}
 		] );
 
-		$config = $this->newHashSearchConfig( [
-			'CirrusSearchPreferRecentDefaultDecayPortion' => 77,
-			'CirrusSearchPreferRecentDefaultHalfLife' => 66,
-			'CirrusSearchLanguageWeight' => [ 'user' => 5 ],
-			'CirrusSearchBoostTemplates' => [
-				'Some Page' => 1.23,
-			],
+		$config = $this->newHashSearchConfig(
+			[
+				'CirrusSearchPreferRecentDefaultDecayPortion' => 77,
+				'CirrusSearchPreferRecentDefaultHalfLife' => 66,
+				'CirrusSearchLanguageWeight' => [ 'user' => 5 ],
+				'CirrusSearchBoostTemplates' => [
+					'Some Page' => 1.23,
+				],
 			'CirrusSearchNamespaceWeights' => [],
-		], [ HashSearchConfig::FLAG_INHERIT ], new HashSearchConfig( [] ), $this->hostWikiSearchProfileServiceFactory( $hookContainer ) );
+			],
+			[ HashSearchConfig::FLAG_INHERIT ],
+			new HashSearchConfig( [] ),
+			$this->hostWikiSearchProfileServiceFactory(
+				$hookContainer,
+				$this->getServiceContainer()->getUserOptionsLookup()
+			)
+		);
 		$this->assertTrue( $config->isLocalWiki(), 'only local wiki runs profile hook' );
 		$context = new SearchContext( $config );
 		return new FunctionScoreChain( $context, 'phpunit', $overrides, $this->createCirrusSearchHookRunner() );

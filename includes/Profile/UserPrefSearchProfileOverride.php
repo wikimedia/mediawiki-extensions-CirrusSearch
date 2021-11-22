@@ -2,16 +2,22 @@
 
 namespace CirrusSearch\Profile;
 
-use User;
+use MediaWiki\User\UserIdentity;
+use MediaWiki\User\UserOptionsLookup;
 
 /**
  * Overrider based on user preference.
  */
 class UserPrefSearchProfileOverride implements SearchProfileOverride {
 	/**
-	 * @var User
+	 * @var UserIdentity
 	 */
 	private $user;
+
+	/**
+	 * @var UserOptionsLookup
+	 */
+	private $userOptionsLookup;
 
 	/**
 	 * @var string name of the preference
@@ -24,12 +30,19 @@ class UserPrefSearchProfileOverride implements SearchProfileOverride {
 	private $priority;
 
 	/**
-	 * @param User $user
+	 * @param UserIdentity $user
+	 * @param UserOptionsLookup $userOptionsLookup
 	 * @param string $preference
 	 * @param int $priority
 	 */
-	public function __construct( User $user, $preference, $priority = SearchProfileOverride::USER_PREF_PRIO ) {
+	public function __construct(
+		UserIdentity $user,
+		UserOptionsLookup $userOptionsLookup,
+		$preference,
+		$priority = SearchProfileOverride::USER_PREF_PRIO
+	) {
 		$this->user = $user;
+		$this->userOptionsLookup = $userOptionsLookup;
 		$this->preference = $preference;
 		$this->priority = $priority;
 	}
@@ -45,7 +58,7 @@ class UserPrefSearchProfileOverride implements SearchProfileOverride {
 		if ( $this->user->getId() === 0 ) {
 			return null;
 		}
-		return $this->user->getOption( $this->preference );
+		return $this->userOptionsLookup->getOption( $this->user, $this->preference );
 	}
 
 	/**

@@ -19,7 +19,7 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 			'prof2' => [ 'inprof2' => [] ],
 			'prof3' => [ 'inprof3' => [] ]
 		];
-		$service = new SearchProfileService();
+		$service = new SearchProfileService( $this->getServiceContainer()->getUserOptionsLookup() );
 		$service->registerArrayRepository( 'type', 'name', $profiles );
 		$this->assertCount( 1, $service->listProfileRepositories( 'type' ) );
 		$this->assertEquals( 'name', $service->listProfileRepositories( 'type' )['name']->repositoryName() );
@@ -35,7 +35,7 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 			'prof2' => [ 'hidden' => [] ],
 			'prof3' => [ 'inprof3' => [] ],
 		] ] );
-		$service = new SearchProfileService();
+		$service = new SearchProfileService( $this->getServiceContainer()->getUserOptionsLookup() );
 		$service->registerArrayRepository( 'type', 'name', $profiles );
 		$service->registerRepository( new ConfigProfileRepository( 'type', 'config_repo', 'ConfigProfiles', $config ) );
 		$this->simpleAssertions( $service );
@@ -95,7 +95,11 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 			'prof5' => [ 'inprof5' => [] ],
 		];
 
-		$service = new SearchProfileService( $request, $user );
+		$service = new SearchProfileService(
+			$this->getServiceContainer()->getUserOptionsLookup(),
+			$request,
+			$user
+		);
 		// prepare multiple profile contexts so that we test different kind of overrides
 		// with all_override containing all of them
 		$service->registerArrayRepository( 'type', 'unit_test', $profiles );
@@ -125,14 +129,14 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testFrozen() {
-		$service = new SearchProfileService();
+		$service = new SearchProfileService( $this->getServiceContainer()->getUserOptionsLookup() );
 		$service->freeze();
 		$this->expectException( SearchProfileException::class );
 		$service->registerArrayRepository( 'type', 'name', [] );
 	}
 
 	public function testRegisterRoute() {
-		$service = new SearchProfileService();
+		$service = new SearchProfileService( $this->getServiceContainer()->getUserOptionsLookup() );
 		$service->registerSearchQueryRoute( new BasicSearchQueryRoute( SearchQuery::SEARCH_TEXT,
 			[ 0 ], [], 'foo', 0.5 ) );
 		$service->registerFTSearchQueryRoute( 'bar', 0.4, [ 1 ] );

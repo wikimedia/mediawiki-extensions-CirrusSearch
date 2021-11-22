@@ -28,7 +28,7 @@ use CirrusSearch\CirrusTestCase;
 class EscaperTest extends CirrusTestCase {
 
 	/**
-	 * @dataProvider fuzzyEscapeTestCases
+	 * @dataProvider provideQueriesToFixup
 	 */
 	public function testFuzzyEscape( $input, $expected ) {
 		$escaper = new Escaper( 'unittest' );
@@ -36,8 +36,9 @@ class EscaperTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $actual );
 	}
 
-	public static function fuzzyEscapeTestCases() {
+	public function provideQueriesToFixup() {
 		return [
+			// Fuzzy escape
 			'Default fuzziness is allowed' => [ 'fuzzy~', 'fuzzy~' ],
 			'No fuzziness is allowed' => [ 'fuzzy~0', 'fuzzy~0' ],
 			'One char edit distance is allowed' => [ 'fuzzy~1', 'fuzzy~1' ],
@@ -48,6 +49,33 @@ class EscaperTest extends CirrusTestCase {
 			'Proximity searches are allowed' => [ '"fuzzy wuzzy"~10', '"fuzzy wuzzy"~10' ],
 			'Float fuzziness with leading 0 is disallowed' => [ 'fuzzy~0.8', 'fuzzy\\~0.8' ],
 			'Float fuzziness is disallowed' => [ 'fuzzy~.8', 'fuzzy\\~.8' ],
+
+			// Looks like a boolean operator, but isn't followed by a term
+			[ 'SOMETHING AND ', 'SOMETHING and ' ],
+			[ 'SOMETHING AND OR', 'SOMETHING AND or' ],
+			[ 'X OR', 'X or' ],
+			[ 'WHAT NOT', 'WHAT not' ],
+			[ 'Q NOT NOT', 'Q NOT not' ],
+
+			// Looks like a boolean operator, but misses a term before
+			[ 'OR WHAT NOW', 'or WHAT NOW' ],
+			[ ' AND WHAT NOW', ' and WHAT NOW' ],
+			[ 'AND OR WHAT NOW', 'and OR WHAT NOW' ],
+
+			// Two boolean operators following each other? Assume higher precedence for the latter.
+			[ 'Q NOT NOT Q', 'Q not NOT Q' ],
+
+			// Boolean operators that are (most probably) meant to be boolean operators
+			[ 'YOU AND ME', 'YOU AND ME' ],
+			[ 'YOU OR ME', 'YOU OR ME' ],
+			[ 'BAND OR X', 'BAND OR X' ],
+			[ 'Z OR ANDS Z', 'Z OR ANDS Z' ],
+			[ 'NOT ME', 'NOT ME' ],
+
+			// These aren't boolean operators
+			[ 'BAND', 'BAND' ],
+			[ 'NOTME', 'NOTME' ],
+			[ 'ANDERSON', 'ANDERSON' ],
 		];
 	}
 
@@ -60,7 +88,7 @@ class EscaperTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $actual );
 	}
 
-	public static function quoteEscapeTestCases() {
+	public function quoteEscapeTestCases() {
 		return [
 			[ 'en', 'foo', 'foo' ],
 			[ 'en', 'fo"o', 'fo"o' ],
@@ -90,7 +118,7 @@ class EscaperTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $actual );
 	}
 
-	public static function balanceQuotesTestCases() {
+	public function balanceQuotesTestCases() {
 		return [
 			[ 'foo', 'foo' ],
 			[ '"foo', '"foo"' ],
@@ -113,7 +141,7 @@ class EscaperTest extends CirrusTestCase {
 		$this->assertEquals( $unescaped, $escaper->unescape( $escaped ) );
 	}
 
-	public static function provideEscapedSequence() {
+	public function provideEscapedSequence() {
 		return [
 			'unchanged' => [ 'foo', 'foo' ],
 			'simple' => [ 'foo\\"', 'foo"' ],

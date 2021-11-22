@@ -153,11 +153,9 @@ class Escaper {
 
 		// Lowercase AND and OR when not surrounded on both sides by a term.
 		// Lowercase NOT when it doesn't have a term after it.
-		// FIXME: This pattern is heavily broken! It changes "SANDORS" to SandorS".
-		$string = preg_replace_callback( '/^|(AND|OR|NOT)\s*(?:AND|OR)/u',
+		$string = preg_replace_callback( '/^\s*(?:AND|OR)\b|\b(?:AND|OR|NOT)\s*$/u',
 			[ self::class, 'lowercaseMatched' ], $string );
-		// FIXME: This changes search terms like "BAND" and turns it into "Band".
-		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/u',
+		$string = preg_replace_callback( '/\b(?:AND|OR|NOT)\s+(?=AND\b|OR\b|NOT\b)/u',
 			[ self::class, 'lowercaseMatched' ], $string );
 
 		return $string;

@@ -352,8 +352,7 @@ class Util {
 	public static function stripQuestionMarks( $term, $strippingLevel ) {
 		if ( strpos( $term, 'insource:/' ) === false &&
 			 strpos( $term, 'intitle:/' ) === false &&
-			// ¿ is not in the POSIX character class [:punct:], hence listed separately
-			!preg_match( '/^[[:punct:]\s¿]+$/', $term )
+			!preg_match( '/^[\p{P}\p{Z}]+$/u', $term )
 		) {
 			// FIXME: get rid of negative lookbehinds on (?<!\\\\)
 			// it may improperly transform \\? into \? instead of \\ and destroy properly escaped \

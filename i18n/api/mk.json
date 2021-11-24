@@ -6,6 +6,7 @@
 	},
 	"apihelp-cirrus-config-dump-description": "Складиштен извадок од поставките на CirrusSearch.",
 	"apihelp-cirrus-config-dump-summary": "Складиштен извадок од поставките на CirrusSearch.",
+	"apihelp-cirrus-config-dump-param-prop": "Вид на променливи од поставувањето за ставање во резервен склад",
 	"apihelp-cirrus-config-dump-example": "складиштен извадок од склад на поставките на CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "складиштен извадок од пресликувањата на CirrusSearch за ова вики.",
 	"apihelp-cirrus-mapping-dump-summary": "Складиштен извадок од пресликувањата на CirrusSearch за ова вики.",

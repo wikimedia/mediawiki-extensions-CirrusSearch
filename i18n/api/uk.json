@@ -9,6 +9,7 @@
 	},
 	"apihelp-cirrus-config-dump-description": "Дамп конфігурації CirrusSearch.",
 	"apihelp-cirrus-config-dump-summary": "Дамп конфігурації CirrusSearch.",
+	"apihelp-cirrus-config-dump-param-prop": "Тип змінних конфігурації для дампу",
 	"apihelp-cirrus-config-dump-example": "Отримати дамп конфігурації CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Дамп відображення CirrusSearch для цієї Вікі.",
 	"apihelp-cirrus-mapping-dump-summary": "Дамп відображення CirrusSearch для цієї Вікі.",

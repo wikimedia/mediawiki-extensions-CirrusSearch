@@ -7,6 +7,7 @@
 	},
 	"apihelp-cirrus-config-dump-description": "היטל של הגדרות CirrusSearch.",
 	"apihelp-cirrus-config-dump-summary": "היטל של הגדרות CirrusSearch.",
+	"apihelp-cirrus-config-dump-param-prop": "סוג משתני ההגדרות להטיל.",
 	"apihelp-cirrus-config-dump-example": "קבלת היטל של הגדרות CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "היטל של מיפויי CirrusSearch בוויקי הזה.",
 	"apihelp-cirrus-mapping-dump-summary": "היטל של מיפויי CirrusSearch עבור הוויקי הזה.",

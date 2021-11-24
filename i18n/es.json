@@ -17,7 +17,8 @@
 			"Rubentl134",
 			"Ryo567",
 			"Suecarmol",
-			"ZealousBlaze"
+			"ZealousBlaze",
+			"Jakeukalane"
 		]
 	},
 	"cirrussearch-desc": "Búsqueda con Elasticsearch para MediaWiki",
@@ -55,7 +56,7 @@
 	"cirrussearch-timed-out": "Se agotó el tiempo de espera de la búsqueda. Solo hay disponibles resultados parciales.",
 	"cirrussearch-regex-timed-out": "Se agotó el tiempo de espera de la búsqueda con expresiones regulares. Solo hay disponibles resultados parciales. Prueba a simplificar la expresión regular para obtener todos los resultados.",
 	"cirrussearch-file-numeric-feature-not-a-number": "El término de búsqueda «$1» requiere valores numéricos, pero se ha provisto «$2».",
-	"cirrussearch-feature-not-available": "No se ha activado en este wiki la palabra clave de búsqueda «$1».",
+	"cirrussearch-feature-not-available": "No se ha activado en esta wiki la palabra clave de búsqueda «$1».",
 	"cirrussearch-feature-too-many-conditions": "Demasiadas condiciones dadas a '$1', truncando a $2.",
 	"cirrussearch-feature-deepcat-invalid-title": "La categoría proporcionada no es válida.",
 	"cirrussearch-incategory-feature-no-valid-categories": "No se proporcionó ninguna categoría válida en «$1».",

@@ -6,6 +6,7 @@
 	},
 	"apihelp-cirrus-config-dump-description": "Copia del configuration CirrusSearch.",
 	"apihelp-cirrus-config-dump-summary": "Copia del configuration CirrusSearch.",
+	"apihelp-cirrus-config-dump-param-prop": "Typo del variabiles de configuration a copiar",
 	"apihelp-cirrus-config-dump-example": "Obtener un copia del configuration de CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Copia del mappatura de CirrusSearch pro iste wiki.",
 	"apihelp-cirrus-mapping-dump-summary": "Copia del mappatura de CirrusSearch pro iste wiki.",

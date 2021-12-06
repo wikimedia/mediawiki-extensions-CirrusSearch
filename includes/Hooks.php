@@ -774,6 +774,7 @@ class Hooks {
 		}
 		$prefs['cirrussearch-pref-completion-profile'] = [
 			'type' => 'radio',
+			'default' => $search->getConfig()->get( 'CirrusSearchCompletionSettings' ),
 			'section' => 'searchoptions/completion',
 			'options' => $options,
 			'label-message' => 'cirrussearch-pref-completion-profile-help',

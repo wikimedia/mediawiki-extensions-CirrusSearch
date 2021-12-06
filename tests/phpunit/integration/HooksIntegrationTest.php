@@ -4,6 +4,8 @@ namespace CirrusSearch;
 
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
+use ConfigFactory;
+use User;
 
 /**
  * Make sure cirrus doens't break any hooks.
@@ -368,7 +370,12 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 		$this->setService( SearchProfileServiceFactory::SERVICE_NAME, $factory );
 
 		$prefs = [];
-		Hooks::onGetPreferences( new \User(), $prefs );
+		$hooks = new Hooks(
+			$this->getMockBuilder( ConfigFactory::class )
+				->disableOriginalConstructor()
+				->getMock()
+		);
+		$hooks->onGetPreferences( new User(), $prefs );
 		return $prefs;
 	}
 

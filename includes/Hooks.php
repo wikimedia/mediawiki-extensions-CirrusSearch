@@ -7,6 +7,7 @@ use ApiMain;
 use ApiOpenSearch;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
+use ConfigFactory;
 use DeferredUpdates;
 use Html;
 use ISearchResultSet;
@@ -15,7 +16,9 @@ use LinksUpdate;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Preferences\Hook\GetPreferencesHook;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\User\Hook\UserGetDefaultOptionsHook;
 use MediaWiki\User\UserIdentity;
 use OutputPage;
 use RequestContext;
@@ -44,11 +47,21 @@ use Xml;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class Hooks {
+class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	/**
 	 * @var string[] Destination of titles being moved (the ->getPrefixedDBkey() form).
 	 */
 	private static $movingTitles = [];
+
+	/** @var ConfigFactory */
+	private $configFactory;
+
+	/**
+	 * @param ConfigFactory $configFactory
+	 */
+	public function __construct( ConfigFactory $configFactory ) {
+		$this->configFactory = $configFactory;
+	}
 
 	/**
 	 * Hooked to call initialize after the user is set up.
@@ -762,7 +775,8 @@ class Hooks {
 		] );
 	}
 
-	public static function onGetPreferences( $user, &$prefs ) {
+	/** @inheritDoc */
+	public function onGetPreferences( $user, &$prefs ) {
 		$search = new CirrusSearch();
 		$profiles = $search->getProfiles( \SearchEngine::COMPLETION_PROFILE_TYPE, $user );
 		if ( empty( $profiles ) ) {
@@ -811,11 +825,10 @@ class Hooks {
 		return count( $messages ) >= 2 ? $messages : [];
 	}
 
-	public static function onUserGetDefaultOptions( &$defaultOptions ) {
-		$config = MediaWikiServices::getInstance()
-				->getConfigFactory()
-				->makeConfig( 'CirrusSearch' );
-		$defaultOptions['cirrussearch-pref-completion-profile'] = $config->get( 'CirrusSearchCompletionSettings' );
+	/** @inheritDoc */
+	public function onUserGetDefaultOptions( &$defaultOptions ) {
+		$defaultOptions['cirrussearch-pref-completion-profile'] =
+			$this->configFactory->makeConfig( 'CirrusSearch' )->get( 'CirrusSearchCompletionSettings' );
 	}
 
 	/**

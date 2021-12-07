@@ -15,7 +15,10 @@
 			"Peter Bowman",
 			"Rubentl134",
 			"Ryo567",
-			"ZealousBlaze"
+			"ZealousBlaze",
+			"Jakeukalane",
+			"McDutchie",
+			"Suecarmol"
 		]
 	},
 	"cirrussearch-desc": "Búsqueda con Elasticsearch para MediaWiki",
@@ -34,8 +37,10 @@
 	"cirrussearch-morelikethis-settings": "#<!-- leave this line exactly as it is --> <pre>\n# Este mensaje te permite configurar los ajustes de la característica \"mas como esto\".\n# Los cambios para esto toman efecto inmediato.\n# La sintaxis es como sigue:\n#   * Todo con el caracter \"#\" al final de la línea es un comentario.\n#   * Toda línea que no esté en blanco es un ajuste de nombre seguido por el caracter \":\" seguida por el valor de ajuste.\n# Los ajustes son:\n#   * min_doc_freq (entero): Número mínimo de documentos  (por fragmento) que se necesita en un periodo para ser considerado.\n#   * minimum_should_match (porcentaje -100% to 100%, o número entero de periodos): El porcentaje de periodos para coincidir. Por defecto 30%.\n#   * min_word_len (entero): Longitud mínima de de periodos a ser considerados. Por defecto 0.\n#   * max_word_len (entero): La longitud máxima de palabras que serán ignoradas. Por defecto indeterminado (0).\n#   * fields (lista de valores separadas por comas):Estos son los campos a usar. Los campos permitidos son título, texto, texto_auxiliar, texto_de_apertura y encabezados.\n# Ejemplos de buenas líneas:\n# min_doc_freq:2\n# max_doc_freq:20000\n# max_query_terms:25\n# min_term_freq:2\n# minimum_should_match:30%\n# min_word_len:2\n# max_word_len:40\n# fields:text,opening_text\n# </pre> <!-- leave this line exactly as it is -->",
 	"cirrussearch-query-too-long": "La solicitud de búsqueda supera la longitud máxima permitida: (Actual: $1; permitido: $2)",
 	"cirrussearch-query-too-long-with-exemptions": "La solicitud de búsqueda supera la longitud máxima permitida. (Actual: $1, permitido: $2, sin contar $3)",
+	"cirrussearch-completion-profile-strict": "Perfil estricto con pocos signos de puntuación eliminados pero diacríticos y marcas de enfásis son conservados.",
 	"cirrussearch-qi-profile-wsum-inclinks-pv": "Suma ponderada basada en enlaces entrantes y en el número de visitas semanales",
 	"cirrussearch-qi-profile-wsum-inclinks": "Suma ponderada basada en enlaces entrantes",
+	"cirrussearch-qi-profile-popular-pv": "Ranking basado principalmente en vistas de página",
 	"prefs-completion": "Compleción de búsquedas",
 	"cirrussearch-pref-completion-section-desc": "Herramienta de sugerencia de completado",
 	"cirrussearch-pref-completion-profile-help": "Define el comportamiento para las sugerencias de autocompletado (búsqueda a medida que escribes).",
@@ -51,7 +56,8 @@
 	"cirrussearch-timed-out": "Se agotó el tiempo de espera de la búsqueda. Solo hay disponibles resultados parciales.",
 	"cirrussearch-regex-timed-out": "Se agotó el tiempo de espera de la búsqueda con expresiones regulares. Solo hay disponibles resultados parciales. Prueba a simplificar la expresión regular para obtener todos los resultados.",
 	"cirrussearch-file-numeric-feature-not-a-number": "El término de búsqueda «$1» requiere valores numéricos, pero se ha provisto «$2».",
-	"cirrussearch-feature-not-available": "No se ha activado en este wiki la palabra clave de búsqueda «$1».",
+	"cirrussearch-feature-not-available": "No se ha activado en esta wiki la palabra clave de búsqueda «$1».",
+	"cirrussearch-feature-too-many-conditions": "Demasiadas condiciones dadas a '$1', truncando a $2.",
 	"cirrussearch-feature-deepcat-invalid-title": "La categoría proporcionada no es válida.",
 	"cirrussearch-incategory-feature-no-valid-categories": "No se proporcionó ninguna categoría válida en «$1».",
 	"cirrussearch-mlt-feature-no-valid-titles": "No se proporcionó ningún título válido en «$1».",
@@ -59,9 +65,11 @@
 	"cirrussearch-explore-similar-related": "Relacionados",
 	"cirrussearch-explore-similar-categories": "Categorías",
 	"cirrussearch-explore-similar-languages": "Idiomas",
-	"cirrussearch-explore-similar-related-none": "No hay páginas reacionadas disponibles",
+	"cirrussearch-explore-similar-related-none": "No hay páginas relacionadas disponibles",
 	"cirrussearch-explore-similar-categories-none": "Ninguna categoría disponible",
 	"cirrussearch-explore-similar-languages-none": "No disponible en otros idiomas",
 	"cirrussearch-article-words": "Palabras en todas las páginas de contenido",
-	"cirrussearch-offset-too-large": "No se han podido obtener los resultados. Se pueden obtener hasta $1 resultados de búsqueda, pero se solicitaron a partir de la posición n.º $2."
+	"cirrussearch-autoselect-profile": "Dejar que el motor de búsqueda decida cuál es el mejor perfil a usar.",
+	"cirrussearch-offset-too-large": "No se han podido obtener los resultados. Se pueden obtener hasta $1 resultados de búsqueda, pero se solicitaron a partir de la posición n.º $2.",
+	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorando petición para paginar resultados aleatoriamente ordenados."
 }

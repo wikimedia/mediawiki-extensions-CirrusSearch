@@ -17,7 +17,16 @@
 	"cirrussearch-pref-label": "Noua funcție de căutare",
 	"cirrussearch-pref-desc": "Încercați noua noastră funcție de căutare, care suportă un număr mai mare de limbi, furnizează rezultate actualizate și poate găsi text chiar și în interiorul formatelor.",
 	"cirrussearch-give-feedback": "Oferiți-ne părerea dumneavoastră.",
-	"cirrussearch-query-too-long": "Cererea de căutare este mai lungă decât lungimea maximă permisă. ($1 > $2)",
+	"cirrussearch-query-too-long": "Cererea de căutare este mai lungă decât lungimea maximă permisă. (Curentă: $1; permisă: $2)",
 	"prefs-completion": "Completarea căutării",
+	"cirrussearch-pref-completion-profile-help": "Setează comportamentul pentru sugestii de autocompletare (caută-așa-cum-scrii).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Sistemul de sugerat completări] este un algoritm pentru sugestii pentru căutare cu corectare mai bună a greșelilor de scriere și o mai bună relevanță a căutării. Căutarea după prefix este moștenirea algoritmului de sugestii de tip „caută-așa-cum-scrii”.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Implicit (recomandat)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corectează până la două greșeli de scriere. Elimină redirecționările care sunt foarte similare cu titlul principal.",
+	"cirrussearch-completion-profile-strict-pref-name": "Modul strict (avansat)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Nu corectează greșelile de scriere. Nu omite accentul. Potrivire strictă.",
+	"cirrussearch-completion-profile-normal-pref-name": "Modul de redirecționare (avansat)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Nu corectează greșelile de scriere. Rezolvă redirecționările apropiate.",
+	"cirrussearch-completion-profile-classic-pref-name": "Căutare clasică după prefix",
+	"cirrussearch-completion-profile-classic-pref-desc": "Nu corectează greșelile de scriere. Potrivește începuturile titlurilor.",
 	"cirrussearch-article-words": "Cuvinte în toate paginile cu conținut"
 }

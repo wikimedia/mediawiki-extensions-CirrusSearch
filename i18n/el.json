@@ -5,7 +5,9 @@
 			"NikosLikomitros",
 			"Nikosgranturismogt",
 			"Protnet",
-			"Twopix"
+			"Twopix",
+			"Geraki",
+			"Giorgos456"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch- αναζήτηση για το MediaWiki",
@@ -21,7 +23,7 @@
 	"cirrussearch-pref-label": "Νέα αναζήτηση",
 	"cirrussearch-pref-desc": "Δοκιμάστε νέα μας αναζήτηση, η οποία υποστηρίζει μεγαλύτερο αριθμό γλωσσών, παρέχει πιο ενημερωμένα αποτελέσματα, και μπορεί ακόμη και να βρει κείμενο μέσα στα πρότυπα.",
 	"cirrussearch-give-feedback": "Πείτε μας τη γνώμη σας",
-	"cirrussearch-query-too-long": "Αναζήτηση με πρόθεμα ήταν μεγαλύτερο από το μέγιστο επιτρεπόμενο μήκος. ($1 > $2)",
+	"cirrussearch-query-too-long": "Το αίτημα αναζήτησης ήταν μεγαλύτερο από το μέγιστο επιτρεπόμενο μήκος. (Πραγματικό: $1 • επιτρεπτό: $2)",
 	"cirrussearch-completion-profile-classic": "Τυπικό πρόθεμα, μερικά σημεία στίξης και κάποια διακριτικά αφαιρέθηκαν.",
 	"cirrussearch-completion-profile-normal": "Μερικά σημεία στίξης, κάποια διακριτικά και stopwords αφαιρέθηκαν.",
 	"cirrussearch-completion-profile-normal-subphrases": "Μερικά σημεία στίξης, κάποια διακριτικά και stopwords αφαιρέθηκαν.Θα ταιριάζουν επίσης υποφράσεις (μπορεί να είναι υποφράσεις ή υποσελίδες ανάλογα με εσωτερική wiki διαμόρφωση).",

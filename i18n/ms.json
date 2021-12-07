@@ -29,5 +29,6 @@
 	"cirrussearch-explore-similar-related-none": "Tiada halaman berkaitan yang tersedia",
 	"cirrussearch-explore-similar-categories-none": "Tiada kategori yang tersedia",
 	"cirrussearch-explore-similar-languages-none": "Tidak tersedia dalam bahasa lain",
-	"cirrussearch-article-words": "Perkataan dalam semua laman kandungan"
+	"cirrussearch-article-words": "Perkataan dalam semua laman kandungan",
+	"cirrussearch-inlanguage-deprecate-comma": "Penggunaan tanda koma sebagai pemisah untuk kata kunci inlanguage sudah lapuk. Sila gunakan tanda paip | untuk memisahkan bahasa."
 }

@@ -3,7 +3,8 @@
 		"authors": [
 			"Piramidion",
 			"Vlad5250",
-			"Ата"
+			"Ата",
+			"DDPAT"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "Дамп конфігурації CirrusSearch.",
@@ -25,7 +26,7 @@
 	"apihelp-query+cirrusbuilddoc-summary": "Дамп документа статті CirrusSearch із серверів бази даних",
 	"apihelp-query+cirrusbuilddoc-example": "Отримати дамп окремої статті CirrusSearch, згенерований з бази даних.",
 	"apierror-cirrus-requesttoolong": "Запит на пошук за префіксом був довшим, аніж дозволено. ($1 &gt; $2)",
-	"apihelp-query+compsuggestbuilddoc-param-method": "Методі підрахунку для використання",
+	"apihelp-query+compsuggestbuilddoc-param-method": "Методи підрахунку для використання",
 	"apierror-compsuggestbuilddoc-bad-method": "Невідомий метод підрахунку",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Дамп документа, використовуваний підказувачем завершення",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "Отримати дамп документа, використовуваного підказувачем завершення"

@@ -3,7 +3,8 @@
 		"authors": [
 			"Danmichaelo",
 			"Jon Harald Søby",
-			"Pmt"
+			"Pmt",
+			"Abuluntu"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-basert søkemotor for MediaWiki",
@@ -21,7 +22,8 @@
 	"cirrussearch-give-feedback": "Gi oss tilbakemelding",
 	"cirrussearch-morelikethis-settings": "#<!-- la denne linja være akkurat som den er --> <pre>\n# Denne beskjeden lar deg konfigurere innstillingene i funksjonen «mer som dette».\n# Endringer som gjøres her trer i kraft umiddelbart.\n# Syntaksen er som følger:\n# * Alt fra et «#»-tegn til slutten av linja er en kommentar.\n# * Hver ikke-blanke linje er innstillingen fulgt av et «:»-tegn, fulgt av innstillingens verdi\n# Innstillingene er:\n# * min_doc_freq (heltall): Minimalt antall dokumenter (per partisjon) som trenger et begrep for å bli vurdert.\n# * max_doc_freq (heltall): Maksimalt antall dokumenter (per partisjon) som trenger et begrep for å bli vurdert.\n#           Begreper med høy frekvens er som regel «stopp-ord».\n# * max_query_terms (heltall): Maksimalt antall begreper som skal vurderes. Verdien er begrenset til $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit (100).\n# *min_term_freq (heltall): Minimalt antall ganger begrepet dukker opp i innputten til dokumentet som skal vurderes. For små felt (titler) bør denne verdien være 1.\n# * minimum_should_match (prosent, -100% til 100%, eller heltall): Prosenten av begreper det skal treffes på. Standard er 30%.\n# * min_word_len (heltall): Minimal lengde for at et begrep skal vurderes. Standard er 0.\n# * max_word_len (heltall): Maksimal lengde for at et ord skal ignoreres. Standard er ingen grense (0).\n# * fields (kommaskilt liste over verdier): Dette er feltene som skal brukes. Tillatte felt er title, text, auxiliary_text, opening_text, headings.\n# Eksempler på riktige linjer:\n# min_doc_freq:2\n# max_doc_freq:20000\n# max_query_erms:25\n# min_term_freq:2\n# minimum_should_match:30%\n# min_word_len:2\n# max_word_len:40\n# fields:text,opening_text\n# </pre> <!-- la denne linja være akkurat som den er -->",
 	"cirrussearch-didyoumean-settings": "#<!-- la denne linja være akkurat som den er --> <pre>\n# Denne beskjeden lar deg konfigurere innstillingene for «Mente du»-forslag.\n# Se også https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-phrase.html\n# Endringer her trer i kraft umiddelbart.\n# Syntaksen er som følger:\n# * Alt fra et «#»-tegn til slutten av linja er en kommentar.\n# * Hver ikke-blanke linje er innstillingsnavnet fulgt av et «:»-tegn, fulgt av innstillingens verdi\n# Innstillingene er:\n# * max_errors (heltall): maksimalt antall begreper som vil anses som feilstavede for å bli rettet. 1 eller 2.\n# * confidence (flytende tall): Konfidensnivået definerer en faktor som brukes på innputtfrasers skår som brukes som ei grense for andre forslagskandidater. Bare kandidater med en skår høyere enn grensa vil inkluderes i resultatet. For eksempel vil et konfidensnivå på 1.0 kun returnere forslag som skårer høyere enn innputtfrasen. Om den er satt til 0.0 vil den beste kandidaten returneres.\n# * min_doc_freq (flytende 0 til 1): Minimumsgrense for antall dokumenter et forslag skal finnes i.\n#           Begreper med høy frekvens er som regel «stopp-ord».\n# * max_term_freq (flytende 0 til 1): Maksimumsgrense for antall dokumenter et begrep kan finnes i for å bli inkludert.\n# * prefix_length (heltall): Minimum antall prefikstegn som skal matche begrepet for at det skal være et forslag.\n# * suggest_mode (missing, popular, always): Forslagsmodusen kontrollerer hvordan forslag inkluderes.\n# Eksempler på riktige linjer:\n# max_errors:2\n# confidence:2.0\n# max_term_freq:0.5\n# min_doc_freq:0.01\n# prefix_length:2\n# suggest_mode:always\n#\n# </pre> <!-- la denne linja være akkurat som den er -->",
-	"cirrussearch-query-too-long": "Søkeforespørselen er lenger enn den maksimale lengden ($1 > $2)",
+	"cirrussearch-query-too-long": "Søkeforespørselen er lengre enn det maksimale antall tegn som tillates. (Oppgitt: $1; tillatt: $2)",
+	"cirrussearch-query-too-long-with-exemptions": "Søkeforespørselen er lengre enn den tillatte maksimallengden. (Faktisk: $1, tillatt: $2, unntatt $3)",
 	"cirrussearch-completion-profile-strict": "Streng profil med få tegnsettingstegn fjernet, men diakritiske tegn beholdes.",
 	"cirrussearch-completion-profile-classic": "Klassisk prefiks, få tegnsettingstegn og noen diakritiske tegn fjernet.",
 	"cirrussearch-completion-profile-normal": "Få tegnsettingstegn, noen diakritiske tegn og stopp-ord fjernet.",
@@ -61,6 +63,7 @@
 	"cirrussearch-feature-deepcat-exception": "SPARQL-spørring for dypt kategorisøk feilet",
 	"cirrussearch-feature-deepcat-toomany": "Spørringen for dype kategorier returnerte for mange kategorier",
 	"cirrussearch-feature-deepcat-invalid-title": "Den gitte kategorien er ugyldig.",
+	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Ugyldig side-ID|Ugyldige side-ID-er}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Ingen gyldige kategorier gitt til «$1».",
 	"cirrussearch-mlt-feature-no-valid-titles": "Ingen gyldige titler gitt til «$1».",
 	"cirrussearch-mlt-not-configured": "Funksjonen «$1» er feilkonfigurert. Be en administrator om å fikse $wgCirrusSearchMoreLikeThisFields",
@@ -75,5 +78,6 @@
 	"cirrussearch-autoselect-profile": "La søkemotoren bestemme den beste profilen å bruke.",
 	"cirrussearch-offset-too-large": "Kunne ikke hente resultater. Opptil $1 {{PLURAL:$1|søkeresultat|søkeresultater}} støttes, men resultater fra og med $2 ble etterspurt.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorerer forespørsel om å dele inn tilfeldig sorterte resultater i sider.",
-	"cirrussearch-articletopic-invalid-topic": "Ikke-gjenkjent {{PLURAL:$2|emnenavn}} for nøkkelordet <kbd>articletopic</kbd>: $1"
+	"cirrussearch-articletopic-invalid-topic": "Ikke-gjenkjent {{PLURAL:$2|emnenavn}} for nøkkelordet <kbd>articletopic</kbd>: $1",
+	"cirrussearch-inlanguage-deprecate-comma": "Bruk av komma som skilletegn for nøkkelordet «inlanguage» støttes ikke lenger. Bruk | (vertikalstrek) for å separere språk."
 }

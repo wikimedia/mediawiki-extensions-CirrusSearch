@@ -13,7 +13,8 @@
 			"Sujiniku",
 			"Takot",
 			"Tmv",
-			"Yusuke1109"
+			"Yusuke1109",
+			"しぃ"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki 用の Elasticsearch 検索",
@@ -28,7 +29,7 @@
 	"cirrussearch-pref-label": "新しい検索",
 	"cirrussearch-pref-desc": "数多くの言語に対応、より新しい検索結果を提供、テンプレート内のテキストも検索可能、という特徴がある新しい検索を試用してみませんか。",
 	"cirrussearch-give-feedback": "フィードバックをください",
-	"cirrussearch-query-too-long": "検索リクエストが許可されている最大長を超えています。($1> $2)",
+	"cirrussearch-query-too-long": "検索リクエストが許可されている最大長を超えています。(現在: $1; 許可されている文字数: $2)",
 	"cirrussearch-query-too-long-with-exemptions": "検索リクエストが許可されている最大長を超えています。\n（あなたの入力したリクエスト: $1文字、許可されている最大長: $2文字（ただし、$3　は文字数に含めません））",
 	"cirrussearch-completion-profile-strict": "いくつかの句読点記号を取り除き発音区別記号やアクセント記号を保持した厳密なプロフィール",
 	"cirrussearch-completion-profile-classic": "いくつかの句読点記号と発音区別記号を取り除いた伝統的な接頭辞",

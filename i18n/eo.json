@@ -4,7 +4,8 @@
 			"Gamliel Fishkin",
 			"KuboF",
 			"Mirin",
-			"NMaia"
+			"NMaia",
+			"Javiero"
 		]
 	},
 	"cirrussearch-desc": "Serĉo por MediaWiki bazita sur Elasticsearch",
@@ -17,7 +18,7 @@
 	"cirrussearch-give-feedback": "Donu al ni vian opinion",
 	"prefs-completion": "Kompletigo de serĉo",
 	"cirrussearch-pref-completion-section-desc": "Kompletiga sugestilo",
-	"cirrussearch-pref-completion-profile-help": "Igi la konduton por aŭtomata kompletigo (serĉado dum tajpado).",
+	"cirrussearch-pref-completion-profile-help": "Igi la konduton por aŭtomata kompletigo (serĉado dum tajpado).\n\nLa [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Kompletiga sugestilo] estas algoritmo por serĉaj sugestoj kun pli bona ĝustigo de tajperaroj kaj serĉa rilateco. Prefiksa serĉo estas la heredaĵa \"serĉo-dunm-vi-tajpas\" sugesta algoritmo.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Defaŭlta (inda)",
 	"cirrussearch-completion-profile-strict-pref-name": "Strikta reĝimo (altnivela)",
 	"cirrussearch-completion-profile-normal-pref-name": "Alidirekta reĝimo (altnivela)",

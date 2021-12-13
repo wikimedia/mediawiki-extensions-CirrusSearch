@@ -5,7 +5,8 @@
 			"David1010",
 			"Dawid Deutschland",
 			"OpusDEI",
-			"Otogi"
+			"Otogi",
+			"Tokoko"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki-ს საძიებელი Elasticsearch-ის ბაზაზე",
@@ -31,5 +32,8 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "არ ასწორებს მცდარბეჭდილებს. ანაცვლებს შესაფერის გადამისამართებას.",
 	"cirrussearch-completion-profile-classic-pref-name": "კლასიკური ძიება პრეფიქსით",
 	"cirrussearch-completion-profile-classic-pref-desc": "არ ასწორებს მცდარბეჭდილებს. კარნახობს სახელწოდებას დასაწყისიდან შეყვანის შესაბამისად",
+	"cirrussearch-explore-similar-categories": "კატეგორიები",
+	"cirrussearch-explore-similar-languages": "ენები",
+	"cirrussearch-explore-similar-languages-none": "სხვა ენებზე არაა ხელმისაწვდომი",
 	"cirrussearch-article-words": "სიტყვების რაოდენობა ყველა გვერდზე"
 }

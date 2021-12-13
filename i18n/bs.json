@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Srdjan m"
+			"Srdjan m",
+			"Srđan"
 		]
 	},
 	"cirrussearch-desc": "Pretraga za MediaWiki pomoću Elasticsearcha",
@@ -34,5 +35,10 @@
 	"cirrussearch-feature-too-many-conditions": "Pruženo je previše uslova za '$1'. Skraćujem na $2.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nisu pružene ispravne kategorije za '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nisu pruženi ispravni naslovi za '$1'.",
-	"cirrussearch-mlt-not-configured": "Mogućnost '$1' pogrešno je postavljena. Pitajte administratora da popravi $wgCirrusSearchMoreLikeThisFields"
+	"cirrussearch-mlt-not-configured": "Mogućnost '$1' pogrešno je postavljena. Pitajte administratora da popravi $wgCirrusSearchMoreLikeThisFields",
+	"cirrussearch-explore-similar-categories": "Kategorije",
+	"cirrussearch-explore-similar-languages": "Jezici",
+	"cirrussearch-explore-similar-related-none": "Nema dostupnih povezanih stranica",
+	"cirrussearch-explore-similar-categories-none": "Nema dostupnih kategorija",
+	"cirrussearch-explore-similar-languages-none": "Nije dostupno na drugim jezicima"
 }

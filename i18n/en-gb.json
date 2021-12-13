@@ -6,7 +6,8 @@
 			"Codynguyen1116",
 			"Dejavu",
 			"Jdforrester",
-			"Samwilson"
+			"Samwilson",
+			"Bjh21"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-powered search for MediaWiki",
@@ -41,7 +42,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Ranking based primarily on incoming link counts",
 	"prefs-completion": "Search completion",
 	"cirrussearch-pref-completion-section-desc": "Completion suggester",
-	"cirrussearch-pref-completion-profile-help": "Set the behaviour for auto-complete (search-as-you-type) suggestions.",
+	"cirrussearch-pref-completion-profile-help": "Set the behaviour for auto-complete (search-as-you-type) suggestions.\n\nThe [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester completion suggester] is an algorithm for search suggestions with better typo correction and search relevance. Prefix search is the legacy search-as-you-type suggestion algorithm.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Default (recommended)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrects up to two typos. Removes redirects that are very similar to the main title.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Subphrase matching (recommended for longer article titles)",

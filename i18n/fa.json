@@ -11,7 +11,9 @@
 			"Mardetanha",
 			"Physicsch",
 			"Reza1615",
-			"فلورانس"
+			"فلورانس",
+			"Jeeputer",
+			"Reza koulivand"
 		]
 	},
 	"cirrussearch-desc": "جستجوی قدرت‌گرفته از Elasticsearch برای مدیاویکی",
@@ -43,9 +45,9 @@
 	"cirrussearch-qi-profile-popular-inclinks": "رتبه‌بندی برپایهٔ تعداد پیوند",
 	"prefs-completion": "کامل کردن جستجو",
 	"cirrussearch-pref-completion-section-desc": "پیشنهاددهندهٔ پایان",
-	"cirrussearch-pref-completion-profile-help": "تنظیم عملکرد برپایهٔ پیشنهاد خودکار (جستجو در زمان تایپ).",
+	"cirrussearch-pref-completion-profile-help": "تنظیم عملکرد پیشنهادهای تکمیل خودکار (جستجو در زمان تایپ).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester پیشنهاددهندهٔ تکمیل] الگوریتمی است برای پیشنهاد عبارت‌های جستجو به‌همراه تصحیح نگارش و ارتباط با جستجوی بهتر. جستجوی پیشوندی، الگوریتم قدیمی پیشنهاد جستجو در زمان تایپ است.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "پیش‌فرض (پیشنهاد می‌شود)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "اصلاح حداکثر تا دو خطای تایپی. پیشنهاد تغییرمسیرهای مشابه.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "اصلاح حداکثر دو خطای تایپی. حذف تغییرمسیرهای بسیار مشابه با عنوان اصلی.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "یافتن بخشی از عبارت (برای عنوان‌های طولانی)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "اصلاح حداکثر تا دو خطای تایپی. پیشنهاد تغییرمسیرهای مشابه. یافتن بخشی از عبارت.",
 	"cirrussearch-completion-profile-strict-pref-name": "حالت سختگیرانه (پیشرفته)",

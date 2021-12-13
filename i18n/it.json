@@ -15,7 +15,7 @@
 		]
 	},
 	"cirrussearch-desc": "Ricerca realizzata con Elasticsearch per MediaWiki",
-	"cirrussearch-backend-error": "Non si è riuscito a completare la tua ricerca a causa di un problema temporaneo. Riprova più tardi.",
+	"cirrussearch-backend-error": "Non è stato possibile completare la tua ricerca a causa di un problema temporaneo. Riprova più tardi.",
 	"cirrussearch-parse-error": "Non è possibile interpretare la query. Si prega di renderla più semplice. La query è stata registrata per migliorare il sistema di ricerca.",
 	"cirrussearch-too-busy-error": "Attualmente il motore di ricerca è sovraccarico. Riprova più tardi.",
 	"cirrussearch-regex-syntax-error": "Errore di sintassi nell'espressione regolare a $2: $1",

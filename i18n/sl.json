@@ -2,21 +2,22 @@
 	"@metadata": {
 		"authors": [
 			"Dbc334",
-			"Janezdrilc"
+			"Janezdrilc",
+			"Eleassar"
 		]
 	},
 	"cirrussearch-backend-error": "Zaradi začasne težave nam ni uspelo izvesti vašega iskanja. Prosimo, poskusite kasneje.",
 	"cirrussearch-too-busy-error": "Iskanje je trenutno preobremenjeno. Prosimo, poskusi ponovno kasneje.",
 	"cirrussearch-now-using": "Ta wiki uporablja nov iskalnik.([[mw:Special:MyLanguage/Help:CirrusSearch|Poizvedi več]])",
 	"cirrussearch-pref-label": "Novo iskanje",
-	"cirrussearch-give-feedback": "Sporoči nam svoje mnenje",
+	"cirrussearch-give-feedback": "Sporočite nam svoje mnenje",
 	"cirrussearch-query-too-long": "Vnešeno geslo je predolgo. ($1 > $2)",
 	"cirrussearch-completion-profile-fuzzy": "Podobno normalnemu s popravki zatipkanj (podprti dve zatipkanji)",
 	"cirrussearch-qi-profile-popular-pv": "Uvrstitev na podlagi ogledov strani",
 	"cirrussearch-qi-profile-popular-inclinks": "Uvrstitev na podlagi števila dohodnih povezav",
 	"prefs-completion": "Samodejno dopolnjevanje izrazov iskanja",
 	"cirrussearch-pref-completion-section-desc": "Predlagatelj iskanja",
-	"cirrussearch-pref-completion-profile-help": "Nastavi način predlaganja za samodejno dopolnjevanje (iskanje med tipkanjem).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Predlagalnik dokončanja] je algoritem za iskalne predloge z boljšim popravljanjem zatipkanj in pomembnostjo zadetkov. Iskanje po predponi je algoritem za iskalne predloge med tipkanjem na podlagi predhodnih iskanj.",
+	"cirrussearch-pref-completion-profile-help": "Nastavite način predlaganja za samodejno dopolnjevanje (iskanje med tipkanjem).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Predlagalnik dokončanja] je algoritem za iskalne predloge z boljšim popravljanjem zatipkanj in pomembnostjo zadetkov. Iskanje po predponi je algoritem za iskalne predloge med tipkanjem na podlagi predhodnih iskanj.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Privzeto (priporočeno)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Popravi do dve zatipkanji. Odstrani preusmeritve, ki so zelo podobne glavnemu naslovu.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Ujemanje podizraza (priporočeno za daljše naslove strani)",
@@ -38,5 +39,5 @@
 	"cirrussearch-explore-similar-languages": "Jeziki",
 	"cirrussearch-explore-similar-categories-none": "Ni kategorij na voljo",
 	"cirrussearch-explore-similar-languages-none": "Ni na voljo v drugih jezikih",
-	"cirrussearch-article-words": "Besede na vseh straneh s vsebino"
+	"cirrussearch-article-words": "Število besed na vseh straneh z vsebino"
 }

@@ -4,7 +4,8 @@
 			"Anakmalaysia",
 			"Aviator",
 			"CyberTroopers",
-			"Jeluang Terluang"
+			"Jeluang Terluang",
+			"Tofeiku"
 		]
 	},
 	"cirrussearch-desc": "Enjin pencarian yang dikuasakan oleh Elasticsearch untuk MediaWiki",
@@ -22,9 +23,11 @@
 	"cirrussearch-query-too-long": "Permintaan carian lebih panjang daripada panjang maksimum yang dibenarkan. ($1> $2)",
 	"prefs-completion": "Penyempurnaan carian",
 	"cirrussearch-pref-completion-section-desc": "Saranan penyempurnaan",
+	"cirrussearch-explore-similar-related": "Berkaitan",
 	"cirrussearch-explore-similar-categories": "Kategori",
 	"cirrussearch-explore-similar-languages": "Bahasa",
 	"cirrussearch-explore-similar-related-none": "Tiada halaman berkaitan yang tersedia",
 	"cirrussearch-explore-similar-categories-none": "Tiada kategori yang tersedia",
-	"cirrussearch-explore-similar-languages-none": "Tidak tersedia dalam bahasa lain"
+	"cirrussearch-explore-similar-languages-none": "Tidak tersedia dalam bahasa lain",
+	"cirrussearch-article-words": "Perkataan dalam semua laman kandungan"
 }

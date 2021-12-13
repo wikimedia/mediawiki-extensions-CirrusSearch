@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Awangba Mangang"
+			"Awangba Mangang",
+			"꯴꯰꯴"
 		]
 	},
 	"cirrussearch-backend-error": "ꯅꯪꯅꯥ ꯊꯤꯔꯤꯕꯗꯣ ꯑꯩꯈꯣꯏꯅꯥ ꯃꯄꯨꯡ ꯐꯥꯍꯟꯕ ꯉꯝꯗꯔꯦ ꯈꯨꯔꯧ ꯈꯔꯥ ꯊꯥꯡꯕꯗꯒꯤ ꯫ ꯆꯥꯟꯕꯤꯗꯨꯅꯥ ꯉꯥꯏꯍꯥꯛ ꯂꯩꯔꯒ ꯑꯃꯨꯛ ꯇꯧꯕꯤꯔꯣ ꯫",
@@ -9,6 +10,7 @@
 	"cirrussearch-give-feedback": "ꯑꯄꯥꯝ-ꯄꯥꯝꯗꯕꯗꯨ ꯑꯩꯈꯣꯏꯗ ꯐꯣꯡꯗꯣꯛꯄꯤꯔꯛꯑꯣ",
 	"prefs-completion": "ꯊꯥꯕꯥ ꯃꯄꯨꯡꯐꯥꯔꯦ",
 	"cirrussearch-completion-profile-strict-pref-name": "ꯑꯍꯛꯄꯥ ꯃꯑꯣꯡ(ꯈꯨꯃꯥꯡꯆꯥꯎꯁꯤꯟꯂꯕ)",
+	"cirrussearch-feature-deepcat-invalid-title": "ꯄꯤꯔꯤꯕ ꯃꯆꯥꯈꯥꯏꯕ ꯑꯁꯤ ꯂꯩꯇꯦ ꯫",
 	"cirrussearch-explore-similar-related": "ꯃꯔꯤꯂꯩꯅꯔꯦ",
 	"cirrussearch-explore-similar-categories": "ꯃꯊꯪ ꯃꯅꯥꯎ ꯈꯥꯏꯗꯣꯛꯄꯥ",
 	"cirrussearch-explore-similar-languages": "ꯂꯣꯟꯁꯤꯡ",

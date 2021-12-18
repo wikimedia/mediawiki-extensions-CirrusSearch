@@ -6,8 +6,8 @@ use CirrusSearch\Hooks;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\MoreLikeThis;
+use MediaWiki\MediaWikiServices;
 use Title;
-use WikiPage;
 
 trait MoreLikeTrait {
 	/**
@@ -70,6 +70,7 @@ trait MoreLikeTrait {
 	private function collectTitlesFromDB( $term ) {
 		$titles = [];
 		$found = [];
+		$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();
 		foreach ( explode( '|', $term ) as $title ) {
 			$title = Title::newFromText( trim( $title ) );
 			while ( true ) {
@@ -88,7 +89,7 @@ trait MoreLikeTrait {
 					break;
 				}
 				// If the page was a redirect loop the while( true ) again.
-				$page = WikiPage::factory( $title );
+				$page = $wikiPageFactory->newFromTitle( $title );
 				if ( !$page->exists() ) {
 					continue 2;
 				}

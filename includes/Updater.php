@@ -109,6 +109,7 @@ class Updater extends ElasticsearchIntermediary {
 	public function traceRedirects( $title ) {
 		// Loop through redirects until we get to the ultimate target
 		$redirects = [];
+		$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();
 		while ( true ) {
 			$titleText = $title->getFullText();
 			if ( in_array( $titleText, $this->updated ) ) {
@@ -125,7 +126,7 @@ class Updater extends ElasticsearchIntermediary {
 				return [ null, $redirects ];
 			}
 
-			$page = WikiPage::factory( $title );
+			$page = $wikiPageFactory->newFromTitle( $title );
 			if ( !$page->exists() ) {
 				$logger->debug( "Ignoring an update for a nonexistent page: $titleText" );
 				return [ null, $redirects ];
@@ -357,6 +358,7 @@ class Updater extends ElasticsearchIntermediary {
 	 */
 	public function updateLinkedArticles( $titles ) {
 		$pages = [];
+		$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();
 		foreach ( $titles as $title ) {
 			// Special pages don't get updated, we only index
 			// actual existing pages.
@@ -364,7 +366,7 @@ class Updater extends ElasticsearchIntermediary {
 				continue;
 			}
 
-			$page = WikiPage::factory( $title );
+			$page = $wikiPageFactory->newFromTitle( $title );
 			if ( $page === null || !$page->exists() ) {
 				// Skip link to nonexistent page.
 				continue;

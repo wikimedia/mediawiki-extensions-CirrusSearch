@@ -10,6 +10,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Updater;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MWException;
 use MWTimestamp;
 use Title;
@@ -546,10 +547,11 @@ class ForceSearchIndex extends Maintenance {
 			$updater = $this->createUpdater();
 
 			$pages = [];
+			$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();
 			foreach ( $batch as $row ) {
 				// No need to call Updater::traceRedirects here because we know this is a valid page
 				// because it is in the database.
-				$page = WikiPage::newFromRow( $row, WikiPage::READ_LATEST );
+				$page = $wikiPageFactory->newFromRow( $row, WikiPage::READ_LATEST );
 
 				// null pages still get attached to keep the counts the same. They will be filtered
 				// later on.

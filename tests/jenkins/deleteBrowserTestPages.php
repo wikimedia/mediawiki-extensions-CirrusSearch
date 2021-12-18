@@ -3,6 +3,7 @@
 namespace CirrusSearch\Jenkins;
 
 use Maintenance;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Deletes pages created by the browser test suite. cleanSetup.php
@@ -64,13 +65,14 @@ class DeleteBrowserTestPages extends Maintenance {
 		$it->setCaller( __METHOD__ );
 		$it = new \RecursiveIteratorIterator( $it );
 
+		$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();
 		$user = \User::newSystemUser( \User::MAINTENANCE_SCRIPT_USER, [ 'steal' => true ] );
 		foreach ( $it as $row ) {
 			if ( preg_match( $pattern, $row->page_title ) !== 1 ) {
 				continue;
 			}
 			$title = \Title::newFromRow( $row );
-			$pageObj = \WikiPage::factory( $title );
+			$pageObj = $wikiPageFactory->newFromTitle( $title );
 			echo "Deleting page $title\n";
 			$pageObj->doDeleteArticleReal( 'cirrussearch maint task', $user );
 		}

@@ -29,7 +29,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 	) {
 		parent::__construct( $config, $client, $wanCache, $srvCache );
 		$this->cache = $wanCache ?: MediaWikiServices::getInstance()->getMainWANObjectCache();
-		if ( $config->getWikiId() !== wfWikiID() ) {
+		if ( $config->getWikiId() !== WikiMap::getCurrentWikiId() ) {
 			throw new \RuntimeException( "This resolver cannot with an external wiki config. (config: " .
 				$config->getWikiId() . ", global: " . WikiMap::getCurrentWikiId() );
 		}

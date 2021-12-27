@@ -28,7 +28,12 @@
 	"prefs-completion": "Paieškos užbaigimas",
 	"cirrussearch-pref-completion-section-desc": "Užbaigimo siūlytojas",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Numatytasis (rekomenduojama)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Pataiso iki dviejų riktų. Nerodo nukreipimų, kurie beveik nesiskiria nuo pagrindinio puslapio pavadinimo.",
 	"cirrussearch-completion-profile-strict-pref-name": "Griežtas režimas (pažengusiems)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Netaiso riktų. Paiso diakritinių ženklų. Rodo tikslius atitikmenis.",
+	"cirrussearch-completion-profile-normal-pref-desc": "Netaiso riktų. Panašius nukreipimus suveda į vieną.",
+	"cirrussearch-completion-profile-classic-pref-name": "Įprastinė paieška pagal žodžio pradžią",
+	"cirrussearch-completion-profile-classic-pref-desc": "Netaiso riktų. Ieškoma pagal žodžio pradžią.",
 	"cirrussearch-explore-similar-categories": "Kategorijos",
 	"cirrussearch-explore-similar-languages": "Kalbos",
 	"cirrussearch-article-words": "Žodžiai visuose turinio puslapiuose"

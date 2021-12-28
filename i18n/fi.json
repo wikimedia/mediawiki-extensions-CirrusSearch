@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"MITO",
 			"MrTapsa",
 			"Nike",
 			"Pxos",
@@ -30,6 +31,12 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Ei kirjoitusvirheiden korjausta. Ratkaisee läheiset uudelleenohjaukset.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klassinen etuliitehaku",
 	"cirrussearch-completion-profile-classic-pref-desc": "Ei kirjoitusvirheiden korjausta. Vastaa otsikoiden alkua.",
+	"cirrussearch-timed-out": "Haku aikakatkaistiin, joten vain osittaisia ​​tuloksia on saatavilla.",
+	"cirrussearch-regex-timed-out": "Regex-haku aikakatkaistiin, joten vain osittaisia ​​tuloksia on saatavilla. Kokeile yksinkertaistaa säännöllistä lauseketta saadaksesi täydelliset tulokset.",
+	"cirrussearch-file-numeric-feature-not-a-number": "Hakutermi \"$1\" vaatii numeerisia arvoja, mutta \"$2\" tarjottiin.",
+	"cirrussearch-feature-not-available": "Hakusana '$1' ei ole käytössä tässä wikissä.",
+	"cirrussearch-feature-too-many-conditions": "Kohdalle '$1' on annettu liian monta ehtoa, lyhennetty arvoksi $2.",
+	"cirrussearch-feature-deepcat-invalid-title": "Tarjottu luokka on virheellinen.",
 	"cirrussearch-explore-similar-categories": "Luokat",
 	"cirrussearch-explore-similar-languages": "Kielet",
 	"cirrussearch-explore-similar-related-none": "Ei samankaltaisia sivuja saatavilla",

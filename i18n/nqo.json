@@ -4,8 +4,10 @@
 			"Lancine.kounfantoh.fofana"
 		]
 	},
+	"cirrussearch-too-busy-error": "ߢߌߣߌ߲ߠߌ߲ ߓߟߏߘߐߜߍ߬ߘߍ߲߬ߣߍ߲߬ߓߊ ߟߋ߬ ߦߋ߫ ߕߊ߲߬. ߊ߬ ߡߊߝߍߣߍ߲߫ ߞߐߝߍ߬ ߣߍ߲߯ߞߍ߫.",
 	"cirrussearch-pref-label": "ߢߌߣߌ߲ߠߌ߲߫ ߞߎߘߊ",
 	"cirrussearch-give-feedback": "ߡߙߌߣߊ߲ ߘߏ߫ ߟߊߣߊ߬ ߊ߲ ߡߊ߬",
+	"prefs-completion": "ߢߌߣߌ߲ߠߌ߲߫ ߘߐߘߎ߲߰ߧߊ߬ߣߍ߲",
 	"cirrussearch-feature-not-available": "ߢߌߣߌ߲ߠߌ߲ ߞߎߡߊߘߋ߲߫ ߡߊߕߍ߰ߣߍ߲ '$1' ߡߊ߫ ߓߌ߬ߟߊ߬ ߥߞߌ ߣߌ߲߬ ߠߊ߫ ߡߎߣߎ߲߬.",
 	"cirrussearch-feature-deepcat-invalid-title": "ߦߌߟߡߊ߫ ߡߊߛߐߣߍ߲ ߓߍ߲߬ߣߍ߲߫ ߕߍ߫",
 	"cirrussearch-incategory-feature-no-valid-categories": "ߦߌߟߡߊ߫ ߓߍ߲߬ߣߍ߲ ߝߋ߲߫ ߡߊ߫ ߡߊߛߐ߫ '$1' ߘߐ߫.",

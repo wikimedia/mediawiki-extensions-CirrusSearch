@@ -3,7 +3,8 @@
 		"authors": [
 			"Fohanno",
 			"Fulup",
-			"Adriendelucca"
+			"Adriendelucca",
+			"Y-M D"
 		]
 	},
 	"cirrussearch-backend-error": "N'hon eus ket gallet kas hoc'h enklask da benn abalamour d'ur gudenn dibad. Esaeit en-dro diwezhatoc'h, mar plij.",
@@ -12,5 +13,6 @@
 	"cirrussearch-pref-label": "Enklask nevez",
 	"cirrussearch-give-feedback": "Roit ho soñj",
 	"cirrussearch-explore-similar-categories": "Rummadoù",
-	"cirrussearch-explore-similar-languages": "Yezhoù"
+	"cirrussearch-explore-similar-languages": "Yezhoù",
+	"cirrussearch-article-words": "Niver a c'herioù en holl pennadoù"
 }

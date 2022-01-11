@@ -89,6 +89,18 @@ containing:
 	$wgSiteMatrixSites['wiki']['name'] = 'wiki';
 	require_once "$IP/extensions/CirrusSearch/tests/jenkins/Jenkins.php";
 
+Additionally we must override the default development settings in `/vagrant/LocalSettings.php`.
+This will avoid deprecation notices from being printed to the site and breaking the browser
+testing. Specifically change the following two lines:
+
+	error_reporting( -1 );
+	ini_set( 'display_errors', 1 );
+
+to:
+
+	error_reporting( 0 );
+	ini_set( 'display_errors', 0 );
+
 ## Inside the MWV instance
 
 Everything in this section is run from inside the mediawiki-vagrant
@@ -111,6 +123,10 @@ $ sudo npm install -g npm
 $ cd /vagrant/mediawiki/extensions/CirrusSearch
 $ npm install
 
+Install junitparser (optional, for parsing test results in python):
+
+$ sudo pip install junitparser
+
 ### Reset to expected state
 
 Before the tests can be run, the MWV instance should be reset to a known state:
@@ -130,7 +146,7 @@ Then the tests can be run. A variety of environment variables control how access
 works. Be sure to change `MWV_LABS_HOSTNAME` to your hostname.
 
 	cd /vagrant/mediawiki/extensions/CirrusSearch/
-	export MWV_LABS_HOSTNAME=cirrus-integ-02
+	export MWV_LABS_HOSTNAME=cirrus-integ02
 	export MEDIAWIKI_USER=Admin
 	export MEDIAWIKI_PASSWORD=vagrant
 	export MEDIAWIKI_CIRRUSTEST_BOT_PASSWORD=vagrant

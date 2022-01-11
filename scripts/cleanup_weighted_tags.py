@@ -23,6 +23,7 @@ import argparse
 import csv
 from collections import defaultdict
 from dataclasses import dataclass
+import os
 import json
 import logging
 import subprocess
@@ -130,7 +131,10 @@ class Wiki:
     def clients(self) -> Sequence[Elasticsearch]:
         # Might not work with all ways of configuring cirrussearch clusters, but works with the expanded
         # definition of [{host: ..., port: ..., transport: ...}, ...]
-        return [Elasticsearch(conn_info) for conn_info in self.clusters]
+        return [
+            Elasticsearch(conn_info, ca_certs=os.environ.get('REQUESTS_CA_BUNDLE'))
+            for conn_info in self.clusters
+        ]
 
     @property
     def all_index(self) -> str:
@@ -181,10 +185,12 @@ def main(
     wikis = [Wiki.from_mwscript(dbname) for dbname in page_id_exclusions.keys()]
 
     for wiki in wikis:
+        logging.info('Starting against wiki: ' + wiki.dbname)
         excluded_page_ids = page_id_exclusions[wiki.dbname]
         for client in wiki.clients:
+            logging.info('Starting against cluster: ' + client.cluster.health()['cluster_name'])
             raw_hits = scan(client, index=wiki.all_index, query=search_query)
-            hits = (Hit(raw['_index'], raw['_id']) for raw in raw_hits)
+            hits = (Hit(raw['_index'], int(raw['_id'])) for raw in raw_hits)
             actions = (
                 build_update_action(hit, super_detect_noop_params)
                 for hit in hits if hit.page_id not in excluded_page_ids)

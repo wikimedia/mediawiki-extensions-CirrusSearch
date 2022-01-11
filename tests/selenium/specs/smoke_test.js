@@ -35,7 +35,7 @@ describe( 'Smoke test for search', function () {
 	it( 'Fill in search term and click search', function () {
 		RandomPage.open();
 		ArticlePage.search_query_top_right = 'ma';
-		ArticlePage.click_search_top_right();
+		ArticlePage.submit_search_top_right();
 		const expectedPage = 'Search results';
 		assert.equal( ArticlePage.articleTitle, expectedPage,
 			`I am on a page named ${expectedPage}` );
@@ -49,7 +49,7 @@ describe( 'Smoke test for search', function () {
 	it( 'Search with accent yields result page with accent', function () {
 		RandomPage.open();
 		ArticlePage.search_query_top_right = 'África';
-		ArticlePage.click_search_top_right();
+		ArticlePage.submit_search_top_right();
 		const expectedPage = 'África';
 		assert.equal( ArticlePage.articleTitle, expectedPage,
 			`I am on a page named ${expectedPage}` );

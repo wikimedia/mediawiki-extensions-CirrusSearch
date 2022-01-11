@@ -467,7 +467,7 @@ BeforeOnce( { tags: '@go or @options', timeout: 120000 }, runBatchFn( {
 	}
 } ) );
 
-BeforeOnce( { tags: '@file_text or @filesearch' }, Promise.coroutine( function* () {
+BeforeOnce( { tags: '@file_text or @filesearch', timeout: 60000 }, Promise.coroutine( function* () {
 	// TODO: this one is really unclear to me, figure out why we need such hack
 	// This file is available on commons.wikimedia.org and because $wgUseInstantCommons is set to true
 	// mwbot may think it's a dup and won't upload it. Use uploadOverwrite to avoid that.

@@ -17,10 +17,12 @@ class ArticlePage extends TitlePage {
 	}
 
 	/**
-	 * Performs a search using the search button top-right
+	 * Performs a search by submitting the search form. The search button
+	 * is harder to automate as it only appears when focused, going back
+	 * and forth between clickable and not-clickable in vector 2.
 	 */
-	click_search_top_right() {
-		browser.$( '#searchform > button' ).click();
+	submit_search_top_right() {
+		browser.$( '#searchform [name=search]' ).keys( '\n' );
 	}
 
 	has_search_suggestions() {

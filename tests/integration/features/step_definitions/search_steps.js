@@ -21,7 +21,7 @@ When( /^I search for (.+)$/, function ( search ) {
 		SearchResultsPage.click_search();
 	} else {
 		ArticlePage.search_query_top_right = search;
-		ArticlePage.click_search_top_right();
+		ArticlePage.submit_search_top_right();
 	}
 } );
 
@@ -109,5 +109,5 @@ Then( /^(.+) is the first suggestion$/, function ( page ) {
 } );
 
 Then( /^I click the search button$/, function () {
-	ArticlePage.click_search_top_right();
+	ArticlePage.submit_search_top_right();
 } );

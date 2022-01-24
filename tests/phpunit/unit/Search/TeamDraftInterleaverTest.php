@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
+use ReflectionNamedType;
 
 /**
  * @covers \CirrusSearch\Search\TeamDraftInterleaver::interleaveResults
@@ -96,10 +97,10 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 							$params[] = [ $paramId ];
 							break;
 						default:
-							if ( !$param->getClass() ) {
+							if ( !( $param->getType() instanceof ReflectionNamedType ) ) {
 								$this->fail( "Invalid param type " . $param->getName() );
 							}
-							$params[] = $this->getMockBuilder( $param->getClass()->getName() )
+							$params[] = $this->getMockBuilder( $param->getType()->getName() )
 								->disableOriginalConstructor()
 								->getMock();
 					}

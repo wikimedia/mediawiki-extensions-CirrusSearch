@@ -119,7 +119,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $mainQuery;
 
 	/**
-	 * @var \Elastica\Query\Match[] Queries that don't use Elastic's "query string" query, for
+	 * @var \Elastica\Query\MatchQuery[] Queries that don't use Elastic's "query string" query, for
 	 *  more advanced searching (e.g. match_phrase_prefix for regular quoted strings).
 	 */
 	private $nonTextQueries = [];

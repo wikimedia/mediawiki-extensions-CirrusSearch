@@ -7,11 +7,19 @@
 			"Kenrick95",
 			"Rachmat.Wahidi",
 			"Rachmat04",
-			"Sumbukompor"
+			"Sumbukompor",
+			"Daud I.F. Argana"
 		]
 	},
+	"cirrussearch-desc": "Mesin pencarian yang didorong oleh Elasticsearch untuk MediaWiki",
+	"cirrussearch-backend-error": "Kami tidak dapat menyelesaikan pencarian Anda karena suatu kendala sementara. Silakan coba lagi nanti.",
+	"cirrussearch-parse-error": "Kueri tidak dipahami. Tolong sederhanakan. Kueri itu telah dicatat untuk memperbaiki sistem pencarian.",
 	"cirrussearch-too-busy-error": "Pencarian sedang terlalu sibuk. Mohon coba lagi nanti.",
+	"cirrussearch-regex-syntax-error": "Galat sintaksis ekspresi reguler di $2: $1",
+	"cirrussearch-regex-too-busy-error": "Terlalu banyak pencarian ekspresi reguler sedang dijalankan. Silakan mencoba lagi nanti.",
+	"cirrussearch-regex-too-complex-error": "Ekspresi reguler terlalu rumit. Pelajari lebih tentang cara menyederhanakannya [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|di sini]].",
 	"cirrussearch-now-using": "Wiki ini menggunakan mesin pencari baru. ([[mw:Special:MyLanguage/Help:CirrusSearch|Pelajari lebih lanjut]])",
+	"cirrussearch-ignored-headings": " # <pre>\n# Judul yang akan diabaikan oleh pencarian.\n# Suntingan ini akan diterapkan setelah halaman dengan judul ini diindeks.\n# Anda bisa memaksakan pengindeksan kembali halaman ini dengan melakukan suntingan kosong (''null edit'')\n# Sintaksisnya adalah seperti berikut:\n#   * Semuanya dari karakter \"#\" ke akhir baris adalah sebuah komentar.\n#   * Setiap baris tak-kosong adalah judul tepat yang akan diabaikan.\nReferensi\nPranala luar\nLihat pula\n #</pre>",
 	"cirrussearch-pref-label": "Pencarian baru",
 	"cirrussearch-completion-profile-classic": "Awalan klasik, beberapa karakter pemisah dan diakritik dihapus.",
 	"cirrussearch-completion-profile-normal": "Beberapa karakter pemisah, diakritik dan kata henti dihapus.",

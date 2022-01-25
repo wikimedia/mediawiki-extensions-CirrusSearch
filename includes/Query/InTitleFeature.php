@@ -68,7 +68,7 @@ class InTitleFeature extends BaseRegexFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$filter = Filters::intitle( $context->escaper(), $quotedValue );
+		$filter = Filters::intitle( $context->escaper(), $quotedValue, $value !== $quotedValue );
 
 		return [ $filter, !$negated ];
 	}
@@ -79,7 +79,7 @@ class InTitleFeature extends BaseRegexFeature {
 	 * @return AbstractQuery|null
 	 */
 	protected function getNonRegexFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
-		return Filters::intitle( $this->escaper, $node->getQuotedValue() );
+		return Filters::intitle( $this->escaper, $node->getQuotedValue(), $node->getValue() !== $node->getQuotedValue() );
 	}
 
 	public function buildNonRegexHLFields( KeywordFeatureNode $node, QueryBuildingContext $context ) {

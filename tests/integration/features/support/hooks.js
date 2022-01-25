@@ -164,7 +164,7 @@ BeforeOnce( { tags: '@accented_namespace' }, runBatchFn( {
 BeforeOnce( { tags: '@setup_main or @filters or @prefix or @bad_syntax or @wildcard or @exact_quotes or @phrase_prefix', timeout: 60000 }, runBatchFn( {
 	edit: {
 		'Template:Template Test': 'pickles [[Category:TemplateTagged]]',
-		'Catapult/adsf': 'catapult subpage [[Catapult]]',
+		'Catapult/adsf': 'catapult subpage [[Catapult|Catapults]]',
 		'Links To Catapult': '[[Catapult]]',
 		Catapult: '♙ asdf [[Category:Weaponry]]',
 		'Amazing Catapult': 'test [[Catapult]] [[Category:Weaponry]]',

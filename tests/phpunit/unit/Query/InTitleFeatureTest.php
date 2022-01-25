@@ -47,10 +47,11 @@ class InTitleFeatureTest extends CirrusTestCase {
 				'this~that ',
 				'intitle:this~that',
 			],
-			'maintains provided quotes' => [
-				[ 'query_string' => $defaults + [
+			'maintains provided quotes and limits to plain' => [
+				[ 'query_string' => [
 					'query' => '"something or other"',
-				] ],
+					'fields' => [ 'title.plain', 'redirect.title.plain' ],
+				] + $defaults ],
 				'"something or other" ',
 				'intitle:"something or other"',
 			],

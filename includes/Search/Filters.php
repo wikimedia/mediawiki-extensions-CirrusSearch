@@ -151,11 +151,12 @@ class Filters {
 	 *
 	 * @param Escaper $escaper
 	 * @param string $value
+	 * @param bool $plain Only search plain fields
 	 * @return AbstractQuery
 	 */
-	public static function intitle( Escaper $escaper, $value ) {
-		return self::insourceOrIntitle( $escaper, $value, static function ( $queryString ) {
-			if ( preg_match( '/[?*]/u', $queryString ) ) {
+	public static function intitle( Escaper $escaper, $value, $plain = false ) {
+		return self::insourceOrIntitle( $escaper, $value, static function ( $queryString ) use ( $plain ) {
+			if ( $plain || preg_match( '/[?*]/u', $queryString ) ) {
 				return [ 'title.plain', 'redirect.title.plain' ];
 			} else {
 				return [ 'title', 'title.plain', 'redirect.title', 'redirect.title.plain' ];

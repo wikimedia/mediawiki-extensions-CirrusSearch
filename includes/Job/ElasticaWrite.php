@@ -4,8 +4,8 @@ namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
-use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use Status;
 use Wikimedia\Assert\Assert;
 
@@ -194,7 +194,7 @@ class ElasticaWrite extends CirrusGenericJob {
 					'delay' => $delay
 				]
 			);
-			JobQueueGroup::singleton()->push( $job );
+			MediaWikiServices::getInstance()->getJobQueueGroup()->push( $job );
 			return true;
 		}
 	}
@@ -231,7 +231,7 @@ class ElasticaWrite extends CirrusGenericJob {
 					'delay' => $delay
 				]
 			);
-			JobQueueGroup::singleton()->push( $job );
+			MediaWikiServices::getInstance()->getJobQueueGroup()->push( $job );
 			return true;
 		}
 	}

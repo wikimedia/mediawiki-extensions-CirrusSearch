@@ -7,7 +7,7 @@ use CirrusSearch\Job\CheckerJob;
 use CirrusSearch\MetaStore\MetaSaneitizeJobStore;
 use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\Profile\SearchProfileService;
-use JobQueueGroup;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Push some sanitize jobs to the JobQueue
@@ -248,7 +248,7 @@ EOD
 			usort( $jobs, static function ( CheckerJob $job1, CheckerJob $job2 ) {
 				return $job1->getReadyTimestamp() - $job2->getReleaseTimestamp();
 			} );
-			JobQueueGroup::singleton()->push( $jobs );
+			MediaWikiServices::getInstance()->getJobQueueGroup()->push( $jobs );
 			$this->updateJob( $jobInfo );
 		}
 	}
@@ -389,7 +389,7 @@ EOD
 	 * @return int the number of jobs in the CheckerJob queue
 	 */
 	private function getPressure() {
-		$queue = JobQueueGroup::singleton()->get( 'cirrusSearchCheckerJob' );
+		$queue = MediaWikiServices::getInstance()->getJobQueueGroup()->get( 'cirrusSearchCheckerJob' );
 		return $queue->getSize() + $queue->getDelayedCount();
 	}
 

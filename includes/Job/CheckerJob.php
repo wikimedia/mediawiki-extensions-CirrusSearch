@@ -11,8 +11,8 @@ use CirrusSearch\Sanity\CheckerException;
 use CirrusSearch\Sanity\MultiClusterRemediatorHelper;
 use CirrusSearch\Sanity\QueueingRemediator;
 use CirrusSearch\Searcher;
-use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Job wrapper around Sanity\Checker
@@ -213,7 +213,10 @@ class CheckerJob extends CirrusGenericJob {
 		}
 
 		$multiClusterRemediator = new MultiClusterRemediatorHelper( $perClusterRemediators, $perClusterBufferedRemediators,
-			new AllClustersQueueingRemediator( $this->getSearchConfig()->getClusterAssignment(), JobQueueGroup::singleton() ) );
+			new AllClustersQueueingRemediator(
+				$this->getSearchConfig()->getClusterAssignment(),
+				MediaWikiServices::getInstance()->getJobQueueGroup()
+			) );
 
 		$ranges = array_chunk( range( $from, $to ), $batchSize );
 		while ( $pageIds = array_shift( $ranges ) ) {
@@ -274,8 +277,9 @@ class CheckerJob extends CirrusGenericJob {
 			'cirrusSearchDeletePages',
 		];
 		$size = 0;
+		$jobQueueGroup = MediaWikiServices::getInstance()->getJobQueueGroup();
 		foreach ( $queues as $queueName ) {
-			$queue = JobQueueGroup::singleton()->get( $queueName );
+			$queue = $jobQueueGroup->get( $queueName );
 			$size += $queue->getSize();
 			$size += $queue->getDelayedCount();
 		}
@@ -332,6 +336,6 @@ class CheckerJob extends CirrusGenericJob {
 				'cluster' => $cluster ?: 'all clusters'
 			]
 		);
-		JobQueueGroup::singleton()->push( $job );
+		MediaWikiServices::getInstance()->getJobQueueGroup()->push( $job );
 	}
 }

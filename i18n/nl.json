@@ -49,7 +49,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Ranking voornamelijk gebaseerd op de inkomende link telt",
 	"prefs-completion": "Zoekopdrachtaanvulling.",
 	"cirrussearch-pref-completion-section-desc": "Aanvullingssuggesties",
-	"cirrussearch-pref-completion-profile-help": "Stel het gedrag in voor automatische (zoeken-terwijl-u-typt) zoekaanvullingssuggesties.\n\nDe [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester suggestie voor aanvullingen] is een algorithme voor zoekaanvullingssuggesties met betere spellingscorrecties en betere zoekrelevantie.\nVoorvoegselzoeken is het oude zoeken-terwijl-u-typt aanvullingssuggestie-algorithme.",
+	"cirrussearch-pref-completion-profile-help": "Stel het gedrag in voor automatische (zoeken-terwijl-u-typt) zoekaanvullingssuggesties.\n\nDe [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester suggestie voor aanvullingen] is een algoritme voor zoekaanvullingssuggesties met betere spellingscorrecties en betere zoekrelevantie.\nVoorvoegselzoeken is het oude zoeken-terwijl-u-typt aanvullingssuggestie-algoritme.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standaard (aanbevolen)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Verbetert maximaal twee typefouten. Verwijdert doorverwijzingen die sterk lijken op de hoofdtitel.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Subphrase matching (aanbevolen voor langere paginatitels)",

@@ -7,6 +7,7 @@ use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\UserTestingEngine;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Settings\SettingsBuilder;
 
 // Maintenance class is loaded before autoload, so we need to pull the interface
 require_once __DIR__ . '/Printer.php';
@@ -54,8 +55,10 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		$this->requireExtension( 'CirrusSearch' );
 	}
 
-	public function finalSetup() {
-		parent::finalSetup();
+	public function finalSetup( SettingsBuilder $settingsBuilder = null ) {
+		// @phan-suppress-next-line PhanParamTooMany temporary, see gerrit 757469
+		parent::finalSetup( $settingsBuilder );
+
 		if ( $this->hasOption( 'userTestTrigger' ) ) {
 			$this->setupUserTest();
 		}

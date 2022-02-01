@@ -4,7 +4,8 @@
 			"Kghbln",
 			"Metalhead64",
 			"Michawiki",
-			"Tiin"
+			"Tiin",
+			"Brettchenweber"
 		]
 	},
 	"cirrussearch-desc": "Ermöglicht eine auf „elasticsearch“ gestützte Suche",
@@ -61,7 +62,7 @@
 	"cirrussearch-feature-too-many-conditions": "Es wurden zu viele Bedingungen für „$1“ angegeben. Die Anzahl wird auf $2 beschränkt.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint sollte auf einen gültigen SPARQL-Endpunkt festgelegt werden, um die Deepcat-Suche zu verwenden.",
 	"cirrussearch-feature-deepcat-exception": "Die SPARQL-Abfrage für die Deepcat-Suche ist fehlgeschlagen",
-	"cirrussearch-feature-deepcat-toomany": "Die Deepcat-Abfrage hat zu viele Kategorien zurückgegeben",
+	"cirrussearch-feature-deepcat-toomany": "Die Deepcat-Abfrage hat zu viele Kategorien zurückgegeben.",
 	"cirrussearch-feature-deepcat-invalid-title": "Die angegebene Kategorie ist ungültig.",
 	"cirrussearch-feature-pageid-invalid-id": "Ungültige Seiten-{{PLURAL:$2|ID|IDs}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Es wurden keine gültigen Kategorien für „$1“ angegeben.",

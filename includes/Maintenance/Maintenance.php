@@ -56,7 +56,6 @@ abstract class Maintenance extends \Maintenance implements Printer {
 	}
 
 	public function finalSetup( SettingsBuilder $settingsBuilder = null ) {
-		// @phan-suppress-next-line PhanParamTooMany temporary, see gerrit 757469
 		parent::finalSetup( $settingsBuilder );
 
 		if ( $this->hasOption( 'userTestTrigger' ) ) {

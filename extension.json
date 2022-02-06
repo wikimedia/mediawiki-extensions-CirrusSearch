@@ -28,7 +28,7 @@
 	"APIPropModules": {
 		"cirrusbuilddoc": "CirrusSearch\\Api\\QueryBuildDocument",
 		"cirrusdoc": "CirrusSearch\\Api\\QueryCirrusDoc",
-		"cirruscompsuggestbuilddoc": "\\CirrusSearch\\Api\\QueryCompSuggestBuildDoc"
+		"cirruscompsuggestbuilddoc": "CirrusSearch\\Api\\QueryCompSuggestBuildDoc"
 	},
 	"ConfigRegistry": {
 		"CirrusSearch": "CirrusSearch\\SearchConfig::newFromGlobals"

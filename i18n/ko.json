@@ -8,7 +8,8 @@
 			"Priviet",
 			"Revi",
 			"Ykhwong",
-			"아라"
+			"아라",
+			"Kwj2772"
 		]
 	},
 	"cirrussearch-desc": "미디어위키용 Elasticsearch 검색",
@@ -34,6 +35,7 @@
 	"cirrussearch-qi-profile-classic": "들어오는 링크 수, 일부 틀, 문서의 언어와 최신화 정도에 기반한 순위 (틀, 언어, 최신화 정도는 이 위키에서 활성화되지 않을 수 있습니다.)",
 	"cirrussearch-qi-profile-classic-noboostlinks": "이 위키에 활성화될 때 일부 틀과 문서의 언어, 최신 정도를 바탕으로 순위를 매김.",
 	"cirrussearch-qi-profile-empty": "쿼리와 독립적인 기능에 기반한 순위 (디버그 전용)",
+	"cirrussearch-qi-profile-popular-pv": "주로 페이지 뷰에 기반한 순위",
 	"prefs-completion": "검색 완성",
 	"cirrussearch-pref-completion-section-desc": "완성 제안 기능",
 	"cirrussearch-pref-completion-profile-help": "자동 완성 (입력하면서 검색) 제안을 위한 동작을 설정합니다.",

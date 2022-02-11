@@ -279,21 +279,27 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param int[]|string[] $docIds List of elasticsearch document ids to delete
 	 * @param string|null $indexType index from which to delete.  null means all.
 	 * @param string|null $elasticType Mapping type to use for the document
+	 * @param array $writeJobParams Parameters passed on to ElasticaWriteJob
 	 * @return bool Always returns true.
 	 */
-	public function deletePages( $titles, $docIds, $indexType = null, $elasticType = null ) {
+	public function deletePages( $titles, $docIds, $indexType = null, $elasticType = null, array $writeJobParams = [] ) {
 		Job\OtherIndex::queueIfRequired( $this->connection->getConfig(), $titles, $this->writeToClusterName );
 
 		// Deletes are fairly cheap to send, they can be batched in larger
 		// chunks. Unlikely a batch this large ever comes through.
 		$batchSize = 50;
-		$this->pushElasticaWriteJobs( $docIds, static function ( array $chunk, string $cluster ) use ( $indexType, $elasticType ) {
-			return Job\ElasticaWrite::build(
-				$cluster,
-				'sendDeletes',
-				[ $chunk, $indexType, $elasticType ]
-			);
-		}, $batchSize );
+		$this->pushElasticaWriteJobs(
+			$docIds,
+			static function ( array $chunk, string $cluster ) use ( $indexType, $elasticType, $writeJobParams ) {
+				return Job\ElasticaWrite::build(
+					$cluster,
+					'sendDeletes',
+					[ $chunk, $indexType, $elasticType ],
+					$writeJobParams
+				);
+			},
+			$batchSize
+		);
 
 		return true;
 	}

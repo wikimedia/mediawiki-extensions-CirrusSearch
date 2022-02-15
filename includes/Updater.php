@@ -422,14 +422,29 @@ class Updater extends ElasticsearchIntermediary {
 		// Elasticsearch has a queue capacity of 50 so if $documents contains 50 pages it could bump up
 		// against the max.  So we chunk it and do them sequentially.
 		$jobs = [];
+		$isolate = $this->connection->getConfig()->get( 'CirrusSearchWriteIsolateClusters' );
 		$clusters = $this->elasticaWriteClusters();
+
 		foreach ( array_chunk( $items, $batchSize ) as $chunked ) {
+			// Queueing one job per cluster ensures isolation. If one clusters falls
+			// behind on writes the others shouldn't notice.
+			// Unfortunately queueing a job per cluster results in quite a few
+			// jobs to run. If the job queue can't keep up some clusters can
+			// be run in-process. Any failures will queue themselves for later
+			// execution.
 			foreach ( $clusters as $cluster ) {
-				$jobs[] = $factory( $chunked, $cluster );
+				$job = $factory( $chunked, $cluster );
+				if ( $isolate === null || in_array( $cluster, $isolate ) ) {
+					$jobs[] = $job;
+				} else {
+					$job->run();
+				}
 			}
 		}
 
-		MediaWikiServices::getInstance()->getJobQueueGroup()->push( $jobs );
+		if ( $jobs ) {
+			MediaWikiServices::getInstance()->getJobQueueGroup()->push( $jobs );
+		}
 	}
 
 	private function elasticaWriteClusters(): array {

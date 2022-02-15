@@ -163,6 +163,9 @@
 		"CirrusSearchWriteClusters": {
 			"value": null
 		},
+		"CirrusSearchWriteIsolateClusters": {
+			"value": null
+		},
 		"CirrusSearchPrivateClusters": {
 			"value": null
 		},

@@ -6,6 +6,7 @@
 	},
 	"apihelp-cirrus-config-dump-description": "Cópia em ficheiro da configuração do CirrusSearch.",
 	"apihelp-cirrus-config-dump-summary": "Cópia em ficheiro da configuração do CirrusSearch.",
+	"apihelp-cirrus-config-dump-param-prop": "Tipo de variáveis de configuração a gravar no ficheiro",
 	"apihelp-cirrus-config-dump-example": "Obter cópia em ficheiro da configuração do CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Cópia em ficheiro do mapeamento do CirrusSearch para esta wiki.",
 	"apihelp-cirrus-mapping-dump-summary": "Cópia em ficheiro do mapeamento do CirrusSearch para esta wiki.",

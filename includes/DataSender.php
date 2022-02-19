@@ -136,10 +136,12 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @param string[] $docIds
 	 * @param string $tagField
 	 * @param string $tagPrefix
-	 * @param string|string[]|null $tagNames
+	 * @param string|string[]|null $tagNames A tag name or list of tag names. Each tag will be
+	 *   set for each document ID. Omit for tags which are fully defined by their prefix.
 	 * @param int[]|int[][]|null $tagWeights An optional map of docid => weight. When $tagName is
 	 *   null, the weight is an integer. When $tagName is not null, the weight is itself a
-	 *   tagname => int map. Weights are between 1-1000.
+	 *   tagname => int map. Weights are between 1-1000, and can be omitted (in which case no
+	 *   update will be sent for the corresponding docid/tag combination).
 	 * @param int $batchSize
 	 * @return Status
 	 */
@@ -203,6 +205,9 @@ class DataSender extends ElasticsearchIntermediary {
 				foreach ( $tagNames as $tagName ) {
 					$tagValue = "$tagPrefix/$tagName";
 					if ( $tagWeights !== null ) {
+						if ( !isset( $tagWeights[$docId][$tagName] ) ) {
+							continue;
+						}
 						// To pass the assertions above, the weight must be either an int, a float
 						// with an integer value, or a string representation of one of those.
 						// Convert to int to ensure there is no trailing '.0'.
@@ -210,12 +215,19 @@ class DataSender extends ElasticsearchIntermediary {
 					}
 					$tags[] = $tagValue;
 				}
+				if ( !$tags ) {
+					continue;
+				}
 				$script = new \Elastica\Script\Script( 'super_detect_noop', [
 					'source' => [ $tagField => $tags ],
 					'handlers' => [ $tagField => CirrusIndexField::MULTILIST_HANDLER ],
 				], 'super_detect_noop' );
 				$script->setId( $docId );
 				$bulk->addScript( $script, 'update' );
+			}
+
+			if ( !$bulk->getActions() ) {
+				continue;
 			}
 
 			// Execute the bulk update

@@ -22,6 +22,10 @@
 
 wfLoadExtension( 'Elastica' );
 
+// Disable migration mode to enable the new UI on logged-out users
+// Browser tests rely on the new layout
+$wgVectorSkinMigrationMode = false;
+
 $wgSearchType = 'CirrusSearch';
 $wgCirrusSearchUseExperimentalHighlighter = true;
 $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = true;

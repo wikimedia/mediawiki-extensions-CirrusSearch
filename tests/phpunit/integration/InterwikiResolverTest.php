@@ -12,6 +12,7 @@ use CirrusSearch\SiteMatrixInterwikiResolver;
 use ExtensionRegistry;
 use MediaWiki\MediaWikiServices;
 use MockHttpTrait;
+use Wikimedia\AtEase\AtEase;
 
 /**
  * @group CirrusSearch
@@ -450,9 +451,9 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	}
 
 	private static function readDbListFile( $fileName ) {
-		\Wikimedia\suppressWarnings();
+		AtEase::suppressWarnings();
 		$fileContent = file( $fileName, FILE_IGNORE_NEW_LINES );
-		\Wikimedia\restoreWarnings();
+		AtEase::restoreWarnings();
 		return $fileContent;
 	}
 

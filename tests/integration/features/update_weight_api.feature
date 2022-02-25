@@ -1,8 +1,10 @@
-@clean @api @update @weight
+@clean @api @update @weight @expect_failure
 Feature: Page updates trigger appropriate weight updates in newly linked and unlinked articles
   # Note that these tests can be a bit flakey if you don't use Redis and checkDelay because they count using
   # Elasticsearch which delays all updates for around a second.  So if the jobs run too fast they won't work.
   # Redis and checkDelay fix this by forcing a delay.
+  # Even with the above, they are still flakey. The underlying architecture is flakey, it depends on ordering
+  # that cannot be guaranteed. 
   Scenario: Pages weights are updated when new pages link to them
     Given I don't wait for a page named WeightedLink%{epoch} 1 to exist
       And I don't wait for a page named WeightedLink%{epoch} 2/1 to exist with contents [[WeightedLink%{epoch} 2]]
@@ -16,7 +18,6 @@ Feature: Page updates trigger appropriate weight updates in newly linked and unl
       And I api search for WeightedLink%{epoch}
      Then WeightedLink%{epoch} 1 is the first api search result
 
-  @expect_failure
   Scenario: Pages weights are updated when links are removed from them
     Given I don't wait for a page named WeightedLinkRemoveUpdate%{epoch} 1/1 to exist with contents [[WeightedLinkRemoveUpdate%{epoch} 1]]
       And I don't wait for a page named WeightedLinkRemoveUpdate%{epoch} 1/2 to exist with contents [[WeightedLinkRemoveUpdate%{epoch} 1]]

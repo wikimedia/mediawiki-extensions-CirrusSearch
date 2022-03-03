@@ -10,12 +10,14 @@
 		return;
 	}
 
-	$.when( mw.loader.using(
-		[
+	$.when(
+		mw.loader.using( [
 			'mediawiki.api',
 			'mediawiki.template.mustache',
 			'ext.uls.common'
-		] ), $.ready )
+		] ),
+		$.ready
+	)
 		.then( function () {
 			return new mw.Api().loadMessagesIfMissing( [
 				'cirrussearch-explore-similar-related',
@@ -31,7 +33,7 @@
 			/**
 			 * CSS classes used in templates
 			 */
-			var cssClassPrefix = 'ext-cirrus__xplr',
+			var cssClassPrefix = 'mw-cirrus__xplr',
 				cssClasses = {
 					contentWrapper: cssClassPrefix + '__content-wrapper',
 					content: cssClassPrefix + '__content',

@@ -893,7 +893,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_FIRST' ] )->
 				build( $config );
 
-		$this->assertEquals( $config[ 'analyzer' ][ 'text' ][ 'filter' ], $expected );
+		$this->assertEquals( $expected, $config[ 'analyzer' ][ 'text' ][ 'filter' ] );
 
 		// Let's do it again, but in a different way (this is realistic)
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
@@ -906,7 +906,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
 				build( $config );
 
-		$this->assertEquals( $config[ 'analyzer' ][ 'text' ][ 'filter' ], $expected );
+		$this->assertEquals( $expected, $config[ 'analyzer' ][ 'text' ][ 'filter' ] );
 
 		// One more time... all over the place
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
@@ -920,7 +920,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				insertFiltersBefore( AnalyzerBuilder::APPEND, [ 'xx_post' ] )->
 				build( $config );
 
-		$this->assertEquals( $config[ 'analyzer' ][ 'text' ][ 'filter' ], $expected );
+		$this->assertEquals( $expected, $config[ 'analyzer' ][ 'text' ][ 'filter' ] );
 	}
 
 }

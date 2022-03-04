@@ -243,7 +243,7 @@ class NonPhraseParserTest extends CirrusTestCase {
 		 * @var WordsQueryNode $node
 		 */
 		$this->assertEquals( 2, $node->getStartOffset() );
-		$this->assertEquals( $node->getEndOffset(), strlen( $q ) );
-		$this->assertEquals( $node->getWords(), $expected );
+		$this->assertEquals( strlen( $q ), $node->getEndOffset() );
+		$this->assertEquals( $expected, $node->getWords() );
 	}
 }

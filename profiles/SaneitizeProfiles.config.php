@@ -62,8 +62,9 @@ return [
 		// will disable reindexing old documents. A value of 4 also means
 		// that 25% of all documents being checked will be marked old and
 		// trigger indexing load (if not noop-ed by elastic).
-		// Default: 4 loops, for total of 8 weeks.
-		'reindex_after_loops' => 4,
+		// Default: 8 loops, for total of 16 weeks, or ~3 times per year
+		// per page.
+		'reindex_after_loops' => 8,
 	],
 	// Loop in 16 days for 99k ids, 0.006 jobs/sec, with 25% ids old/wrong
 	// it's 0.018 updates/sec per cluster
@@ -75,7 +76,7 @@ return [
 		'update_jobs_max_pressure' => 100,
 		'checker_job_max_time' => 60,
 		'min_loop_duration' => 2 * 7 * 24 * 3600,
-		'reindex_after_loops' => 4,
+		'reindex_after_loops' => 8,
 	],
 	// Loop in 15 days for 920k ids, 0.06 jobs/sec, with 25% ids old/wrong
 	// it's 0.18 updates/sec per cluster
@@ -87,7 +88,7 @@ return [
 		'update_jobs_max_pressure' => 250,
 		'checker_job_max_time' => 60,
 		'min_loop_duration' => 2 * 7 * 24 * 3600,
-		'reindex_after_loops' => 4,
+		'reindex_after_loops' => 8,
 	],
 	// Loop in 17 days for 10m ids, 0.13 jobs/sec, with 25% ids old/wrong
 	// it's 1.7 updates/sec per cluster
@@ -99,7 +100,7 @@ return [
 		'update_jobs_max_pressure' => 500,
 		'checker_job_max_time' => 60,
 		'min_loop_duration' => 2 * 7 * 24 * 3600,
-		'reindex_after_loops' => 4,
+		'reindex_after_loops' => 8,
 	],
 	// Loop in 15 days for 27m ids, 0.20 jobs/sec, with 25% ids old/wrong
 	// it's 5.2 updates/sec per cluster
@@ -111,7 +112,7 @@ return [
 		'update_jobs_max_pressure' => 750,
 		'checker_job_max_time' => 60,
 		'min_loop_duration' => 2 * 7 * 24 * 3600,
-		'reindex_after_loops' => 4,
+		'reindex_after_loops' => 8,
 	],
 	// Loop in 16 days for 50m ids, 0.34 jobs/sec, with 25% ids old/wrong
 	// it's 9 updates/sec per cluster
@@ -123,6 +124,6 @@ return [
 		'update_jobs_max_pressure' => 1000,
 		'checker_job_max_time' => 60,
 		'min_loop_duration' => 2 * 7 * 24 * 3600,
-		'reindex_after_loops' => 4,
+		'reindex_after_loops' => 8,
 	],
 ];

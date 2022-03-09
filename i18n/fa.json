@@ -13,7 +13,8 @@
 			"Reza koulivand",
 			"Reza1615",
 			"فلورانس",
-			"Jeeputer"
+			"Jeeputer",
+			"Beginneruser"
 		]
 	},
 	"cirrussearch-desc": "جستجوی قدرت‌گرفته از Elasticsearch برای مدیاویکی",
@@ -65,6 +66,8 @@
 	"cirrussearch-feature-not-available": "عبارت کلیدی '$1' در این ویکی تعریف نشده‌است.",
 	"cirrussearch-feature-too-many-conditions": "موارد زیادی برای '$1' پیدا شد که در $2 کوتاه‌سازی شد.",
 	"cirrussearch-feature-deepcat-toomany": "پرسمان ردهٔ ژرف رده‌های بسیاری را برگرداند",
+	"cirrussearch-feature-deepcat-invalid-title": "رده ارائه‌شده نامعتبر است.",
+	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|شناسه|شناسه‌های}} صفحۀ نامتعبر: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "ردهٔ معتبری برای '$1' یافت نشد.",
 	"cirrussearch-mlt-feature-no-valid-titles": "عنوان معتبری برای '$1' یافت نشد.",
 	"cirrussearch-mlt-not-configured": "خصوصیت $1' به نادرست تنظیم شده‌است. از یکی از ادمین‌ها درخواست کنید که $wgCirrusSearchMoreLikeThisFields را اصلاح کنند.",

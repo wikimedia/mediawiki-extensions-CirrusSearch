@@ -40,7 +40,7 @@ use User;
 use WebRequest;
 use WikiMap;
 use Wikimedia\Assert\Assert;
-use Wikimedia\ObjectFactory;
+use Wikimedia\ObjectFactory\ObjectFactory;
 
 /**
  * Performs searches using Elasticsearch.  Note that each instance of this class

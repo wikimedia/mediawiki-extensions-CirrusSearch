@@ -56,11 +56,6 @@ class MetaStoreIndex {
 	public const INDEX_NAME = 'mw_cirrus_metastore';
 
 	/**
-	 * @const string previous index name (bc code)
-	 */
-	private const OLD_INDEX_NAME = 'mw_cirrus_versions';
-
-	/**
 	 * @const string type for storing internal data
 	 */
 	private const INTERNAL_TYPE = 'internal';
@@ -172,7 +167,6 @@ class MetaStoreIndex {
 	}
 
 	public function createOrUpgradeIfNecessary() {
-		$this->fixOldName();
 		$newIndex = $this->createIfNecessary();
 		if ( $newIndex === null ) {
 			list( $major, $minor ) = $this->metastoreVersion();
@@ -424,28 +418,6 @@ EOD
 	}
 
 	/**
-	 * BC strategy to reuse mw_cirrus_versions as the new mw_cirrus_metastore
-	 * If mw_cirrus_versions exists with no mw_cirrus_metastore
-	 */
-	private function fixOldName() {
-		if ( !$this->client->getIndex( self::OLD_INDEX_NAME )->exists() ) {
-			return;
-		}
-		// Old mw_cirrus_versions exists, if mw_cirrus_metastore alias does not
-		// exist we must create it
-		if ( !$this->client->getIndex( self::INDEX_NAME )->exists() ) {
-			$this->log( "Adding transition alias to " . self::OLD_INDEX_NAME . "\n" );
-			// Old one exists but new one does not
-			// we need to create an alias
-			$index = $this->client->getIndex( self::OLD_INDEX_NAME );
-			$this->switchAliasTo( $index );
-			// The version check (will return 0.0 for
-			// mw_cirrus_versions) should schedule an minor or
-			// major upgrade.
-		}
-	}
-
-	/**
 	 * @return int[] major, minor version
 	 */
 	public function metastoreVersion() {
@@ -493,13 +465,12 @@ EOD
 	}
 
 	/**
-	 * Check if cirrus is ready by checking if some indices have been created on this cluster
+	 * Check if cirrus is ready by checking if the index has been created on this cluster
 	 * @param Connection $connection
 	 * @return bool
 	 */
 	public static function cirrusReady( Connection $connection ) {
-		return $connection->getIndex( self::INDEX_NAME )->exists() ||
-			$connection->getIndex( self::OLD_INDEX_NAME )->exists();
+		return $connection->getIndex( self::INDEX_NAME )->exists();
 	}
 
 	/**

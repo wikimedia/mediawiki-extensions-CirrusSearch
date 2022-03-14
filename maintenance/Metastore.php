@@ -75,18 +75,16 @@ class Metastore extends Maintenance {
 			$storeVersion = $this->metaStore->metastoreVersion();
 			$runtimeVersion = $this->metaStore->runtimeVersion();
 			if ( $storeVersion != $runtimeVersion ) {
-				$this->output( "mw_cirrus_metastore is running an old version (" .
-					implode( '.', $storeVersion ) . ") please upgrade to " .
-					implode( '.', $runtimeVersion ) .
-					" by running metastore.php --upgrade\n" );
+				$this->output( "mw_cirrus_metastore is running an old version ($storeVersion) " .
+					"please upgrade to $runtimeVersion by running metastore.php --upgrade\n" );
 			} else {
 				$this->output( "mw_cirrus_metastore is up to date and running with version " .
-					implode( '.', $storeVersion ) . "\n" );
+					"$storeVersion\n" );
 			}
 		} elseif ( $this->hasOption( 'upgrade' ) ) {
 			$this->metaStore->createOrUpgradeIfNecessary();
 			$this->output( "mw_cirrus_metastore is up and running with version " .
-				implode( '.', $this->metaStore->metastoreVersion() ) . "\n" );
+				$this->metaStore->metastoreVersion() . "\n" );
 		} elseif ( $this->hasOption( 'show-all-index-versions' ) ) {
 			$this->showIndexVersions();
 		} elseif ( $this->hasOption( 'update-index-version' ) ) {

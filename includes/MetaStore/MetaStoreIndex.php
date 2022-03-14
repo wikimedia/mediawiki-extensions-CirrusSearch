@@ -33,16 +33,9 @@ use CirrusSearch\SearchConfig;
  */
 class MetaStoreIndex {
 	/**
-	 * @const int major version, increment when adding an incompatible change
-	 * to settings or mappings.
+	 * @const int version of the index, increment when mappings change
 	 */
-	private const METASTORE_MAJOR_VERSION = 2;
-
-	/**
-	 * @const int minor version increment only when adding a new field to
-	 * an existing mapping or a new mapping.
-	 */
-	private const METASTORE_MINOR_VERSION = 0;
+	private const METASTORE_VERSION = 3;
 
 	/**
 	 * @const string the doc id used to store version information related
@@ -151,23 +144,14 @@ class MetaStoreIndex {
 	public function createOrUpgradeIfNecessary() {
 		$newIndex = $this->createIfNecessary();
 		if ( $newIndex === null ) {
-			list( $major, $minor ) = $this->metastoreVersion();
-			if ( $major < self::METASTORE_MAJOR_VERSION ) {
-				$this->log( self::INDEX_NAME . " major version mismatch upgrading.\n" );
-				$this->majorUpgrade();
-			} elseif ( $major == self::METASTORE_MAJOR_VERSION &&
-				$minor < self::METASTORE_MINOR_VERSION
-			) {
-				$this->log(
-					self::INDEX_NAME . " minor version mismatch trying to upgrade mapping.\n"
-				);
-				$this->minorUpgrade();
-			} elseif ( $major > self::METASTORE_MAJOR_VERSION ||
-				$minor > self::METASTORE_MINOR_VERSION
-			) {
+			$version = $this->metastoreVersion();
+			if ( $version < self::METASTORE_VERSION ) {
+				$this->log( self::INDEX_NAME . " version mismatch, upgrading.\n" );
+				$this->upgradeIndexVersion();
+			} elseif ( $version > self::METASTORE_VERSION ) {
 				throw new \Exception(
-					"Metastore version $major.$minor found, cannot upgrade to a lower version: " .
-						self::METASTORE_MAJOR_VERSION . "." . self::METASTORE_MINOR_VERSION
+					"Metastore version $version found, cannot upgrade to a lower version: " .
+					self::METASTORE_VERSION
 				);
 			}
 		}
@@ -184,7 +168,7 @@ class MetaStoreIndex {
 		);
 
 		return [
-			// Don't forget to update METASTORE_MAJOR_VERSION when changing something
+			// Don't forget to update METASTORE_VERSION when changing something
 			// in the settings.
 			'settings' => [
 				'number_of_shards' => 1,
@@ -219,9 +203,9 @@ class MetaStoreIndex {
 	}
 
 	/**
-	 * Increment :
-	 *   - self:METASTORE_MAJOR_VERSION for incompatible changes
-	 *   - self:METASTORE_MINOR_VERSION when adding new field or new mappings
+	 * Don't forget to update METASTORE_VERSION when changing something
+	 * in the settings.
+	 *
 	 * @return array[] the mapping
 	 */
 	private function buildMapping() {
@@ -249,22 +233,6 @@ class MetaStoreIndex {
 				'properties' => $properties,
 			],
 		];
-	}
-
-	private function minorUpgrade() {
-		$config = $this->buildIndexConfiguration();
-		$index = $this->connection->getIndex( self::INDEX_NAME );
-		foreach ( $this->buildMapping() as $type => $mapping ) {
-			$index->getType( $type )->request(
-				'_mapping',
-				\Elastica\Request::PUT,
-				$config['mappings'],
-				[
-					'master_timeout' => $this->getMasterTimeout(),
-				]
-			);
-		}
-		$this->storeMetastoreVersion( $index );
 	}
 
 	/**
@@ -337,7 +305,7 @@ class MetaStoreIndex {
 		return $indexName;
 	}
 
-	private function majorUpgrade() {
+	private function upgradeIndexVersion() {
 		$plugins = $this->configUtils->scanAvailableModules();
 		if ( !array_search( 'reindex', $plugins ) ) {
 			throw new \Exception( "The reindex module is mandatory to upgrade the metastore" );
@@ -373,17 +341,17 @@ class MetaStoreIndex {
 	}
 
 	/**
-	 * @return int[] major, minor version
+	 * @return int version of index stored at $this->connection
 	 */
 	public function metastoreVersion() {
 		return self::getMetastoreVersion( $this->connection );
 	}
 
 	/**
-	 * @return int[] major, minor version
+	 * @return int version of metastore index expected by runtime
 	 */
 	public function runtimeVersion() {
-		return [ self::METASTORE_MAJOR_VERSION, self::METASTORE_MINOR_VERSION ];
+		return self::METASTORE_VERSION;
 	}
 
 	/**
@@ -395,8 +363,7 @@ class MetaStoreIndex {
 				self::METASTORE_VERSION_DOCID,
 				[
 					'type' => self::INTERNAL_TYPE,
-					'metastore_major_version' => self::METASTORE_MAJOR_VERSION,
-					'metastore_minor_version' => self::METASTORE_MINOR_VERSION,
+					'metastore_major_version' => self::METASTORE_VERSION,
 				]
 			)
 		);
@@ -430,15 +397,15 @@ class MetaStoreIndex {
 
 	/**
 	 * @param Connection $connection
-	 * @return int[] the major and minor version of the meta store
-	 * [0, 0] means that the metastore has never been created
+	 * @return int the major version of the meta store. 0 means that
+	 *  the metastore has never been created.
 	 */
 	public static function getMetastoreVersion( Connection $connection ) {
 		try {
 			$doc = self::getElasticaType( $connection )
 				->getDocument( self::METASTORE_VERSION_DOCID );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
-			return [ 0, 0 ];
+			return 0;
 		} catch ( \Elastica\Exception\ResponseException $e ) {
 			// BC code in case the metastore alias does not exist yet
 			$fullError = $e->getResponse()->getFullError();
@@ -447,14 +414,11 @@ class MetaStoreIndex {
 				&& isset( $fullError['index'] )
 				&& $fullError['index'] === self::INDEX_NAME
 			) {
-				return [ 0, 0 ];
+				return 0;
 			}
 			throw $e;
 		}
-		return [
-			(int)$doc->get( 'metastore_major_version' ),
-			(int)$doc->get( 'metastore_minor_version' )
-		];
+		return (int)$doc->get( 'metastore_major_version' );
 	}
 
 	private function getMasterTimeout() {

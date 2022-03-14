@@ -285,9 +285,6 @@ EOD
 				$this->fatalError( "No metastore found in cluster $cluster" );
 			}
 			$store = new MetaStoreIndex( $connection, $this, $this->getSearchConfig() );
-			if ( !$store->versionIsAtLeast( [ 1, 0 ] ) ) {
-				$this->fatalError( 'Metastore version is too old, expected at least 1.0' );
-			}
 			$this->metaStores[$cluster] = $store->saneitizeJobStore();
 		}
 	}

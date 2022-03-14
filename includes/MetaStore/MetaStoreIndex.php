@@ -133,24 +133,6 @@ class MetaStoreIndex {
 	}
 
 	/**
-	 * Compare the current metastore version to an expected minimum
-	 * acceptable version.
-	 *
-	 * @param int[] $expected The metastore version to expected, as a
-	 *  two element array of major then minor version.
-	 * @return bool True when the metastore index in elasticsearch matches
-	 *  requirements
-	 */
-	public function versionIsAtLeast( array $expected ) {
-		// $version >= $expected
-		return (bool)version_compare(
-			implode( '.', $this->metastoreVersion() ),
-			implode( '.', $expected ),
-			'>='
-		);
-	}
-
-	/**
 	 * @return \Elastica\Index|null Index on creation, or null if the index
 	 *  already exists.
 	 */
@@ -371,40 +353,13 @@ class MetaStoreIndex {
 				'query' => [
 					'bool' => [
 						'must_not' => [
-							[ 'term' => [ 'type' => self::INTERNAL_TYPE ] ],
-							// metastore prior to 1.0 used elasticsearch index
-							// 'type' instead of a type field
-							[ 'type' => [ 'value' => self::INTERNAL_TYPE ] ],
+							[ 'term' => [ 'type' => self::INTERNAL_TYPE ] ]
 						],
 					]
 				],
 			],
 			'dest' => [ 'index' => $index->getName() ],
 		];
-		if ( !$this->versionIsAtLeast( [ 1, 0 ] ) ) {
-			// FROZEN_TYPE assumed to be empty
-			// MetaVersionStore docs need the index_name field added
-			// and doc id's prefixed.
-			// MetaSaneitizeJobStore  already prefixed
-			// INTERNAL_TYPE is not copied
-			$version = MetaVersionStore::METASTORE_TYPE;
-			$sanitize = MetaSaneitizeJobStore::METASTORE_TYPE;
-			$indexName = self::INDEX_NAME;
-			$reindex['script'] = [
-				'lang' => 'painless',
-				'source' => <<<EOD
-ctx._source.type = ctx._type;
-if (ctx._type == '{$version}') {
-	ctx._source.index_name = ctx._id;
-	ctx._id = ctx._type + '-' + ctx._id;
-}
-if (ctx._type == '{$sanitize}') {
-	ctx._source.wiki = ctx._source.sanitize_job_wiki;
-}
-ctx._type = '{$indexName}';
-EOD
-			];
-		}
 		// reindex is extremely fast so we can wait for it
 		// we might consider using the task manager if this process
 		// becomes longer and/or prone to curl timeouts

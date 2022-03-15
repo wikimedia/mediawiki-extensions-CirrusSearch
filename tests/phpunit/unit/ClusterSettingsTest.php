@@ -163,34 +163,6 @@ class ClusterSettingsTest extends CirrusTestCase {
 		$this->assertEquals( $expect, $settings->getMaxShardsPerNode( $indexType ) );
 	}
 
-	public static function provideDropDelayedJobsAfter() {
-		return [
-			'Simple integer timeout is returned directly' => [
-				60, 'dc-foo', 60
-			],
-			'Can set per-cluster timeout' => [
-				[ 'dc-foo' => 99, 'labsearch' => 42 ],
-				'labsearch',
-				42
-			],
-		];
-	}
-
-	/**
-	 * @dataProvider provideDropDelayedJobsAfter()
-	 */
-	public function testDropDelayedJobsAfter( $timeout, $cluster, $expect ) {
-		$config = $this->getMockBuilder( SearchConfig::class )
-			->disableOriginalConstructor()
-			->getMock();
-		$config->method( 'get' )
-			->with( 'CirrusSearchDropDelayedJobsAfter' )
-			->willReturn( $timeout );
-
-		$settings = new ClusterSettings( $config, $cluster );
-		$this->assertEquals( $expect, $settings->getDropDelayedJobsAfter() );
-	}
-
 	public static function provideIsPrivate() {
 		return [
 			'null allows all' => [

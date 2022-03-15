@@ -29,7 +29,7 @@ use CirrusSearch\SearchConfig;
 /**
  * Utility class to manage a multipurpose metadata storage index for cirrus.
  * This store is used to store persistent states related to administrative
- * tasks (index settings upgrade, frozen indices, ...).
+ * tasks (index settings upgrade, wiki namespace names, ...).
  */
 class MetaStoreIndex {
 	/**

@@ -11,7 +11,8 @@ use Wikimedia\Assert\Assert;
 
 /**
  * Performs writes to elasticsearch indexes with requeuing and an
- * exponential backoff when the indexes being written to are frozen.
+ * exponential backoff (if supported by jobqueue) when the index
+ * writes fail.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,55 +149,13 @@ class ElasticaWrite extends CirrusGenericJob {
 		}
 
 		$ok = true;
-		if ( $status->hasMessage( 'cirrussearch-indexes-frozen' ) ) {
-			$action = $this->requeueRetry( $conn ) ? "Requeued" : "Dropped";
-			$this->setLastError( "ElasticaWrite job delayed, cluster frozen: ${action}" );
-		} elseif ( !$status->isOK() ) {
+		if ( !$status->isOK() ) {
 			$action = $this->requeueError( $conn ) ? "Requeued" : "Dropped";
 			$this->setLastError( "ElasticaWrite job failed: ${action}" );
 			$ok = false;
 		}
 
 		return $ok;
-	}
-
-	/**
-	 * Re-queue job that is frozen, or drop the job if it has
-	 * been frozen for too long.
-	 *
-	 * @param Connection $conn
-	 * @return bool True when the job has been queued
-	 */
-	private function requeueRetry( Connection $conn ) {
-		$diff = time() - $this->params['createdAt'];
-		$dropTimeout = $conn->getSettings()->getDropDelayedJobsAfter();
-		if ( $diff > $dropTimeout ) {
-			LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
-				"Dropping delayed ElasticaWrite job for DataSender::{method} in cluster {cluster} after waiting {diff}s",
-				[
-					'method' => $this->params['method'],
-					'cluster' => $conn->getClusterName(),
-					'diff' => $diff,
-				]
-			);
-			return false;
-		} else {
-			$delay = $this->backoffDelay( $this->params['retryCount'] );
-			$params = $this->params;
-			$params['retryCount']++;
-			unset( $params['jobReleaseTimestamp'] );
-			$params += self::buildJobDelayOptions( self::class, $delay );
-			$job = new self( $params );
-			LoggerFactory::getInstance( 'CirrusSearch' )->debug(
-				"ElasticaWrite job reported frozen on cluster {cluster}. Requeueing job with delay of {delay}s",
-				[
-					'cluster' => $conn->getClusterName(),
-					'delay' => $delay
-				]
-			);
-			MediaWikiServices::getInstance()->getJobQueueGroup()->push( $job );
-			return true;
-		}
 	}
 
 	/**

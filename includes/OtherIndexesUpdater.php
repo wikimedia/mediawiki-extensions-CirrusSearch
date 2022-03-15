@@ -153,10 +153,10 @@ class OtherIndexesUpdater extends Updater {
 	}
 
 	protected function runUpdates( Title $title, array $updates ) {
-		// These are split into a job per index so one index
-		// being frozen doesn't block updates to other indexes
-		// in the same update. Also because the external indexes
-		// may be configured to write to different clusters.
+		// These are split into a job per index because the external indexes
+		// may be configured to write to different clusters. This maintains
+		// isolation of writes between clusters so one slow cluster doesn't
+		// drag down the others.
 		foreach ( $updates as [ $otherIndex, $actions ] ) {
 			$this->pushElasticaWriteJobs( $actions, function ( array $chunk, string $cluster ) use ( $otherIndex ) {
 				// Name of the index to write to on whatever cluster is connected to

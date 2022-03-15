@@ -480,9 +480,6 @@
 		"CirrusSearchFeedbackLink": {
 			"value": false
 		},
-		"CirrusSearchDropDelayedJobsAfter": {
-			"value": 172800
-		},
 		"CirrusSearchWriteBackoffExponent": {
 			"value": 6
 		},

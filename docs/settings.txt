@@ -1042,14 +1042,6 @@ Default:
 The URL of a "Give us your feedback" link to append to search results or
 something falsy if you don't want to show the link.
 
-; $wgCirrusSearchDropDelayedJobsAfter
-
-Default:
-    $wgCirrusSearchDropDelayedJobsAfter = 6060242; 2 days
-
-The maximum amount of time jobs delayed due to frozen indexes can remain
-in the job queue.
-
 ; $wgCirrusSearchWriteBackoffExponent
 
 Default:

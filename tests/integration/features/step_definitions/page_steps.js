@@ -342,21 +342,6 @@ Then( /^I delete (.+)( without waiting)?$/, function ( title, withoutWaiting ) {
 	} );
 } );
 
-Then( /^I globally freeze indexing$/, Promise.coroutine( function* () {
-	const client = yield this.onWiki();
-	yield client.request( {
-		action: 'cirrus-freeze-writes'
-	} );
-} ) );
-
-Then( /^I globally thaw indexing$/, Promise.coroutine( function* () {
-	const client = yield this.onWiki();
-	yield client.request( {
-		action: 'cirrus-freeze-writes',
-		thaw: true
-	} );
-} ) );
-
 Then( /^a file named (.+) exists( on commons)? with contents (.+) and description (.+)$/, function ( title, on_commons, fileName, description ) {
 	let stepHelpers = this.stepHelpers;
 	if ( on_commons ) {

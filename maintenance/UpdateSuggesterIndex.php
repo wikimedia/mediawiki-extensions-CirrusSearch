@@ -4,7 +4,6 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\Connection;
-use CirrusSearch\DataSender;
 use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\Maintenance\Validators\AnalyzersValidator;
 use CirrusSearch\MetaStore\MetaStoreIndex;
@@ -214,10 +213,6 @@ class UpdateSuggesterIndex extends Maintenance {
 				);
 			}
 
-			if ( !$this->canWrite() ) {
-				$this->fatalError( 'Index/Cluster is frozen. Giving up.' );
-			}
-
 			$this->builder = SuggestBuilder::create( $this->getConnection(),
 				$this->getOption( 'scoringMethod' ), $this->indexBaseName );
 			# check for broken indices and delete them
@@ -259,16 +254,6 @@ class UpdateSuggesterIndex extends Maintenance {
 			// try should work (and not throw the LogicException deep in the updates).
 			wfMessage( 'ok' )->text();
 		}
-	}
-
-	/**
-	 * Check the frozen indices
-	 * @return true if the cluster/index is not frozen, false otherwise.
-	 */
-	private function canWrite() {
-		// Reuse DataSender even if we don't send anything with it.
-		$sender = new DataSender( $this->getConnection(), $this->getSearchConfig() );
-		return $sender->isAvailableForWrites();
 	}
 
 	/**

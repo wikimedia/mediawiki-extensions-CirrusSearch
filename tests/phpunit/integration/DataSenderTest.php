@@ -205,9 +205,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
 			->willReturn( $mockClient );
-		$sender = new DataSender( $mockCon, $searchConfig, static function () {
-			return true;
-		} );
+		$sender = new DataSender( $mockCon, $searchConfig );
 		$sender->sendData( $indexType, $documents );
 	}
 
@@ -279,9 +277,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
 			->willReturn( $mockClient );
-		$sender = new DataSender( $mockCon, $searchConfig, static function () {
-			return true;
-		} );
+		$sender = new DataSender( $mockCon, $searchConfig );
 		$sender->sendDeletes( $ids, $indexType );
 	}
 
@@ -488,9 +484,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
 			->willReturn( $client );
-		return new DataSender( $mockCon, $searchConfig, static function () {
-			return true;
-		} );
+		return new DataSender( $mockCon, $searchConfig );
 	}
 
 	/**

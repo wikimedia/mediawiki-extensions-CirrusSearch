@@ -13,6 +13,10 @@ done
 # Drop any caches in redis
 redis-cli flushdb
 
+# Force delete the metastore so that we don't end-up failing on the upgrade
+# process if patches modifying this code are tested out of order
+curl -XDELETE http://localhost:9200/mw_cirrus_metastore_*
+
 wikis="cirrustestwiki commonswiki ruwiki"
 for wiki in $wikis; do
 	# Truncate all the tables

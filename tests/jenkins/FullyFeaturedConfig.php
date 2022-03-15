@@ -59,14 +59,6 @@ $wgCirrusSearchPhraseSuggestReverseField = [
 $wgCirrusSearchSimilarityProfile = 'bm25_browser_tests';
 $wgCirrusSearchFullTextQueryBuilderProfile = 'browser_tests';
 
-$wgJobQueueAggregator = [
-	'class'       => 'JobQueueAggregatorRedis',
-	'redisServer' => 'localhost',
-	'redisConfig' => [
-		'password' => null,
-	],
-];
-
 if ( is_dir( "$IP/extensions/PoolCounter" ) ) {
 	// If the pool counter is around set up prod like pool counter settings
 	$wgPoolCounterConf[ 'CirrusSearch-Search' ] = [

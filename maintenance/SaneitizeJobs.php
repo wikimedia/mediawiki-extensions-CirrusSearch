@@ -5,7 +5,6 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\Job\CheckerJob;
 use CirrusSearch\MetaStore\MetaSaneitizeJobStore;
-use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\Profile\SearchProfileService;
 use MediaWiki\MediaWikiServices;
 
@@ -281,10 +280,10 @@ EOD
 
 		$this->metaStores = [];
 		foreach ( $connections as $cluster => $connection ) {
-			if ( !MetaStoreIndex::cirrusReady( $connection ) ) {
+			$store = $this->getMetaStore( $connection );
+			if ( !$store->cirrusReady() ) {
 				$this->fatalError( "No metastore found in cluster $cluster" );
 			}
-			$store = new MetaStoreIndex( $connection, $this, $this->getSearchConfig() );
 			$this->metaStores[$cluster] = $store->saneitizeJobStore();
 		}
 	}

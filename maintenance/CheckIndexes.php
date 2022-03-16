@@ -3,7 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\MetaStore\MetaStoreIndex;
-use CirrusSearch\MetaStore\MetaVersionStore;
 
 /**
  * Check that all Cirrus indexes report OK.
@@ -64,6 +63,7 @@ class CheckIndexes extends Maintenance {
 			// Force silent running mode so we can match Nagios expected output.
 			$this->mQuiet = true;
 		}
+		$this->requireCirrusReady();
 		$this->ensureClusterStateFetched();
 		$this->ensureCirrusInfoFetched();
 		// @todo: use MetaStoreIndex
@@ -240,7 +240,7 @@ class CheckIndexes extends Maintenance {
 
 	private function ensureCirrusInfoFetched() {
 		if ( $this->cirrusInfo === null ) {
-			$store = new MetaVersionStore( $this->getConnection() );
+			$store = $this->getMetaStore()->versionStore();
 			$this->cirrusInfo = [];
 			foreach ( $store->findAll() as $r ) {
 				$data = $r->getData();

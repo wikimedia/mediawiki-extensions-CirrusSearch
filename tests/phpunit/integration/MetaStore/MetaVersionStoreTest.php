@@ -21,7 +21,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 
 	public function testUpdate() {
 		list( $conn, $type ) = $this->mockConnection();
-		$store = new MetaVersionStore( $conn );
+		$store = new MetaVersionStore( $type, $conn );
 		$doc = null;
 		$type->expects( $this->once() )
 			->method( 'addDocument' )
@@ -35,7 +35,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 
 	public function testUpdateAll() {
 		list( $conn, $type ) = $this->mockConnection();
-		$store = new MetaVersionStore( $conn );
+		$store = new MetaVersionStore( $type, $conn );
 		$type->expects( $this->never() )
 			->method( 'addDocument' );
 		$type->expects( $this->once() )
@@ -48,7 +48,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 
 	public function testBuildIndexProperties() {
 		list( $conn, $type ) = $this->mockConnection();
-		$store = new MetaVersionStore( $conn );
+		$store = new MetaVersionStore( $type, $conn );
 		$properties = $store->buildIndexProperties();
 		// TODO: Would be nice to have some sort of check that these
 		// are valid to elasticsearch. But thats more on integration
@@ -58,7 +58,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 
 	public function testFind() {
 		list( $conn, $type ) = $this->mockConnection();
-		$store = new MetaVersionStore( $conn );
+		$store = new MetaVersionStore( $type, $conn );
 		$type->expects( $this->once() )
 			->method( 'getDocument' )
 			->with( 'version-unittest_content' );
@@ -67,7 +67,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 
 	public function testFindAll() {
 		list( $conn, $type ) = $this->mockConnection();
-		$store = new MetaVersionStore( $conn );
+		$store = new MetaVersionStore( $type, $conn );
 		$search = null;
 		$type->method( 'search' )
 			->will( $this->returnCallback( static function ( $passed ) use ( &$search ) {

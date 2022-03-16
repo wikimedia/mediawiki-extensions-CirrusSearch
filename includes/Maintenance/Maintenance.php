@@ -133,6 +133,10 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		return $this->searchConfig;
 	}
 
+	public function getMetaStore( Connection $conn = null ) {
+		return new MetaStoreIndex( $conn ?? $this->getConnection(), $this, $this->getSearchConfig() );
+	}
+
 	/**
 	 * @return string|null
 	 */
@@ -223,4 +227,14 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		$metastore->createIfNecessary();
 		return $metastore;
 	}
+
+	protected function requireCirrusReady() {
+		// If the version does not exist it's certainly because nothing has been indexed.
+		if ( !$this->getMetaStore()->cirrusReady() ) {
+			throw new \Exception(
+				"Cirrus meta store does not exist, you must index your data first"
+			);
+		}
+	}
+
 }

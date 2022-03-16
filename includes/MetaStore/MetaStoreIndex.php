@@ -97,21 +97,21 @@ class MetaStoreIndex {
 	 * @return MetaVersionStore
 	 */
 	public function versionStore() {
-		return new MetaVersionStore( $this->connection );
+		return new MetaVersionStore( $this->elasticaType(), $this->connection );
 	}
 
 	/**
 	 * @return MetaNamespaceStore
 	 */
 	public function namespaceStore() {
-		return new MetaNamespaceStore( $this->connection, $this->config->getWikiId() );
+		return new MetaNamespaceStore( $this->elasticaType(), $this->config->getWikiId() );
 	}
 
 	/**
 	 * @return MetaSaneitizeJobStore
 	 */
 	public function saneitizeJobStore() {
-		return new MetaSaneitizeJobStore( $this->connection );
+		return new MetaSaneitizeJobStore( $this->elasticaType() );
 	}
 
 	/**
@@ -132,7 +132,7 @@ class MetaStoreIndex {
 	public function createIfNecessary() {
 		// If the mw_cirrus_metastore alias does not exists it
 		// means we need to create everything from scratch.
-		if ( self::cirrusReady( $this->connection ) ) {
+		if ( $this->cirrusReady() ) {
 			return null;
 		}
 		$this->log( self::INDEX_NAME . " missing, creating new metastore index.\n" );
@@ -184,7 +184,7 @@ class MetaStoreIndex {
 	 * @param string $suffix index suffix
 	 * @return \Elastica\Index the newly created index
 	 */
-	public function createNewIndex( $suffix = 'first' ) {
+	private function createNewIndex( $suffix = 'first' ) {
 		$name = self::INDEX_NAME . '_' . $suffix;
 		$this->log( "Creating metastore index... $name" );
 		// @todo utilize $this->getIndex()->create(...) once it supports setting
@@ -341,13 +341,6 @@ class MetaStoreIndex {
 	}
 
 	/**
-	 * @return int version of index stored at $this->connection
-	 */
-	public function metastoreVersion() {
-		return self::getMetastoreVersion( $this->connection );
-	}
-
-	/**
 	 * @return int version of metastore index expected by runtime
 	 */
 	public function runtimeVersion() {
@@ -378,32 +371,29 @@ class MetaStoreIndex {
 		}
 	}
 
-	public static function getElasticaType( Connection $connection ) {
-		return $connection->getIndex( self::INDEX_NAME )->getType( self::INDEX_NAME );
+	public function elasticaIndex(): \Elastica\Index {
+		return $this->connection->getIndex( self::INDEX_NAME );
 	}
 
-	public function elasticaType() {
-		return self::getElasticaType( $this->connection );
+	public function elasticaType(): \Elastica\Type {
+		return $this->elasticaIndex()->getType( self::INDEX_NAME );
 	}
 
 	/**
 	 * Check if cirrus is ready by checking if the index has been created on this cluster
-	 * @param Connection $connection
 	 * @return bool
 	 */
-	public static function cirrusReady( Connection $connection ) {
-		return $connection->getIndex( self::INDEX_NAME )->exists();
+	public function cirrusReady() {
+		return $this->elasticaIndex()->exists();
 	}
 
 	/**
-	 * @param Connection $connection
-	 * @return int the major version of the meta store. 0 means that
+	 * @return int the version of the meta store. 0 means that
 	 *  the metastore has never been created.
 	 */
-	public static function getMetastoreVersion( Connection $connection ) {
+	public function metastoreVersion() {
 		try {
-			$doc = self::getElasticaType( $connection )
-				->getDocument( self::METASTORE_VERSION_DOCID );
+			$doc = $this->elasticaType()->getDocument( self::METASTORE_VERSION_DOCID );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
 			return 0;
 		} catch ( \Elastica\Exception\ResponseException $e ) {

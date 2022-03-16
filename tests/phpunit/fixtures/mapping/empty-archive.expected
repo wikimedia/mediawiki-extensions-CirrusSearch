@@ -1,5 +1,5 @@
 {
-    "archive": {
+    "_doc": {
         "dynamic": false,
         "properties": {
             "namespace": {

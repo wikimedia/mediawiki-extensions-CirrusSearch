@@ -278,11 +278,10 @@ class Updater extends ElasticsearchIntermediary {
 	 *      maintenance is skipped.
 	 * @param int[]|string[] $docIds List of elasticsearch document ids to delete
 	 * @param string|null $indexType index from which to delete.  null means all.
-	 * @param string|null $elasticType Mapping type to use for the document
 	 * @param array $writeJobParams Parameters passed on to ElasticaWriteJob
 	 * @return bool Always returns true.
 	 */
-	public function deletePages( $titles, $docIds, $indexType = null, $elasticType = null, array $writeJobParams = [] ) {
+	public function deletePages( $titles, $docIds, $indexType = null, array $writeJobParams = [] ) {
 		Job\OtherIndex::queueIfRequired( $this->connection->getConfig(), $titles, $this->writeToClusterName );
 
 		// Deletes are fairly cheap to send, they can be batched in larger
@@ -290,11 +289,11 @@ class Updater extends ElasticsearchIntermediary {
 		$batchSize = 50;
 		$this->pushElasticaWriteJobs(
 			$docIds,
-			static function ( array $chunk, string $cluster ) use ( $indexType, $elasticType, $writeJobParams ) {
+			static function ( array $chunk, string $cluster ) use ( $indexType, $writeJobParams ) {
 				return Job\ElasticaWrite::build(
 					$cluster,
 					'sendDeletes',
-					[ $chunk, $indexType, $elasticType ],
+					[ $chunk, $indexType ],
 					$writeJobParams
 				);
 			},
@@ -319,7 +318,7 @@ class Updater extends ElasticsearchIntermediary {
 			return Job\ElasticaWrite::build(
 				$cluster,
 				'sendData',
-				[ Connection::ARCHIVE_INDEX_TYPE, $chunk, Connection::ARCHIVE_TYPE_NAME ],
+				[ Connection::ARCHIVE_INDEX_TYPE, $chunk ],
 				[ 'private_data' => true ]
 			);
 		} );

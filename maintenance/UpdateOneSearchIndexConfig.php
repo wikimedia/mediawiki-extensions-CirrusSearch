@@ -140,11 +140,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $similarityConfig;
 
 	/**
-	 * @var string the name of the elastic type
-	 */
-	private $elasticType;
-
-	/**
 	 * @var bool true if the analysis config can be optimized
 	 */
 	private $safeToOptimizeAnalysisConfig;
@@ -383,7 +378,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->availablePlugins,
 			$this->mapping,
 			[
-				$this->elasticType => $this->getType(),
+				'_doc' => $this->getType(),
 			],
 			$this
 		);
@@ -508,7 +503,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$mappingConfigBuilder = new MappingConfigBuilder( $this->optimizeIndexForExperimentalHighlighter, $configFlags );
 		}
 		$this->mapping = $mappingConfigBuilder->buildConfig();
-		$this->elasticType = $mappingConfigBuilder->getMainType();
 		$this->safeToOptimizeAnalysisConfig = $mappingConfigBuilder->canOptimizeAnalysisConfig();
 	}
 
@@ -548,14 +542,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return \Elastica\Type
 	 */
 	protected function getType() {
-		return $this->getIndex()->getType( $this->elasticType );
+		return $this->getIndex()->getType( '_doc' );
 	}
 
 	/**
 	 * @return \Elastica\Type
 	 */
 	protected function getOldType() {
-		return $this->getConnection()->getIndexType( $this->indexBaseName, $this->indexType, $this->elasticType );
+		return $this->getConnection()->getIndexType( $this->indexBaseName, $this->indexType );
 	}
 
 	/**

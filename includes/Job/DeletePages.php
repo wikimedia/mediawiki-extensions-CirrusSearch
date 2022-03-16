@@ -7,7 +7,7 @@ use Title;
 
 /**
  * Job wrapper around Updater::deletePages.  If indexType parameter is
- * specified then only deletes from that type of index.
+ * specified then only deletes from indices with a matching suffix.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

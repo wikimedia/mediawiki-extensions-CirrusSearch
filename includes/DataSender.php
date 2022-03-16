@@ -119,9 +119,7 @@ class DataSender extends ElasticsearchIntermediary {
 
 		$client = $this->connection->getClient();
 		$status = Status::newGood();
-		$pageType =
-			$this->connection->getIndexType( $this->indexBaseName, $indexType,
-				Connection::PAGE_TYPE_NAME );
+		$pageType = $this->connection->getIndexType( $this->indexBaseName, $indexType );
 		foreach ( array_chunk( $docIds, $batchSize ) as $docIdsChunk ) {
 			$bulk = new \Elastica\Bulk( $client );
 			$bulk->setType( $pageType );
@@ -219,10 +217,9 @@ class DataSender extends ElasticsearchIntermediary {
 	/**
 	 * @param string $indexType type of index to which to send $documents
 	 * @param \Elastica\Document[] $documents documents to send
-	 * @param string $elasticType Mapping type to use for the document
 	 * @return Status
 	 */
-	public function sendData( $indexType, array $documents, $elasticType = Connection::PAGE_TYPE_NAME ) {
+	public function sendData( $indexType, array $documents ) {
 		if ( !$documents ) {
 			return Status::newGood();
 		}
@@ -282,9 +279,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$responseSet = null;
 		$justDocumentMissing = false;
 		try {
-			$pageType = $this->connection->getIndexType(
-				$this->indexBaseName, $indexType, $elasticType
-			);
+			$pageType = $this->connection->getIndexType( $this->indexBaseName, $indexType );
 
 			$this->start( new BulkUpdateRequestLog(
 				$this->connection->getClient(),
@@ -399,18 +394,13 @@ class DataSender extends ElasticsearchIntermediary {
 	 *
 	 * @param string[] $docIds elasticsearch document ids to delete
 	 * @param string|null $indexType index from which to delete.  null means all.
-	 * @param string|null $elasticType Mapping type to use for the document. null means all types.
 	 * @return Status
 	 */
-	public function sendDeletes( $docIds, $indexType = null, $elasticType = null ) {
+	public function sendDeletes( $docIds, $indexType = null ) {
 		if ( $indexType === null ) {
 			$indexes = $this->connection->getAllIndexTypes( Connection::PAGE_TYPE_NAME );
 		} else {
 			$indexes = [ $indexType ];
-		}
-
-		if ( $elasticType === null ) {
-			$elasticType = Connection::PAGE_TYPE_NAME;
 		}
 
 		$idCount = count( $docIds );
@@ -418,15 +408,14 @@ class DataSender extends ElasticsearchIntermediary {
 			try {
 				foreach ( $indexes as $indexType ) {
 					$this->startNewLog(
-						'deleting {numIds} from {indexType}/{elasticType}',
+						'deleting {numIds} from {indexType}',
 						'send_deletes', [
 							'numIds' => $idCount,
 							'indexType' => $indexType,
-							'elasticType' => $elasticType,
 						]
 					);
 					$this->connection
-						->getIndexType( $this->indexBaseName, $indexType, $elasticType )
+						->getIndexType( $this->indexBaseName, $indexType )
 						->deleteIds( $docIds );
 					$this->success();
 				}
@@ -475,7 +464,7 @@ class DataSender extends ElasticsearchIntermediary {
 					'super_detect_noop'
 				);
 				$script->setId( $update['docId'] );
-				$script->setParam( '_type', 'page' );
+				$script->setParam( '_type', '_doc' );
 				$script->setParam( '_index', $indexName );
 				$bulk->addScript( $script, 'update' );
 				$titles[] = $title;

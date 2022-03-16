@@ -31,13 +31,13 @@ class MappingDump extends \ApiBase {
 		$conn = $this->getCirrusConnection();
 		$indexPrefix = $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME );
 		foreach ( $conn->getAllIndexTypes( null ) as $index ) {
-			$mapping = Util::getIndexMapping( $conn->getIndex( $indexPrefix, $index ), true );
+			$mapping = Util::getIndexMapping( $conn->getIndex( $indexPrefix, $index ) );
 			$this->getResult()->addValue( null, $index, $mapping );
 		}
 		if ( $this->getSearchConfig()->isCompletionSuggesterEnabled() ) {
 			$index = $conn->getIndex( $indexPrefix, Connection::TITLE_SUGGEST_TYPE );
 			if ( $index->exists() ) {
-				$mapping = Util::getIndexMapping( $index, true );
+				$mapping = Util::getIndexMapping( $index );
 				$this->getResult()->addValue( null, Connection::TITLE_SUGGEST_TYPE, $mapping );
 			}
 		}

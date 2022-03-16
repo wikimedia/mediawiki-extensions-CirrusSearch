@@ -187,18 +187,17 @@ class Connection extends ElasticaConnection {
 	 * @return \Elastica\Type
 	 */
 	public function getPageType( $name, $type = false ) {
-		return $this->getIndexType( $name, $type, self::PAGE_TYPE_NAME );
+		return $this->getIndexType( $name, $type );
 	}
 
 	/**
 	 * Fetch the Elastica Type for pages.
 	 * @param mixed $name basename of index
 	 * @param string|bool $cirrusType type of index (content or general or false to get all)
-	 * @param string $elasticType One of the self::…_TYPE_NAME constants
 	 * @return \Elastica\Type
 	 */
-	public function getIndexType( $name, $cirrusType, $elasticType ) {
-		return $this->getIndex( $name, $cirrusType )->getType( $elasticType );
+	public function getIndexType( $name, $cirrusType ) {
+		return $this->getIndex( $name, $cirrusType )->getType( '_doc' );
 	}
 
 	/**
@@ -207,7 +206,7 @@ class Connection extends ElasticaConnection {
 	 * @return \Elastica\Type
 	 */
 	public function getArchiveType( $name ) {
-		return $this->getIndex( $name, self::ARCHIVE_INDEX_TYPE )->getType( self::ARCHIVE_TYPE_NAME );
+		return $this->getIndex( $name, self::ARCHIVE_INDEX_TYPE )->getType( '_doc' );
 	}
 
 	/**

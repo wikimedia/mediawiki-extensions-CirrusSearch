@@ -518,7 +518,6 @@ class UpdateSuggesterIndex extends Maintenance {
 		$pageAndNs = new Elastica\Query\BoolQuery();
 		$pageAndNs->addShould( new Elastica\Query\Term( [ "namespace" => NS_MAIN ] ) );
 		$pageAndNs->addShould( new Elastica\Query\Term( [ "redirect.namespace" => NS_MAIN ] ) );
-		$pageAndNs->addMust( new Elastica\Query\Type( Connection::PAGE_TYPE_NAME ) );
 		$bool = new Elastica\Query\BoolQuery();
 		$bool->addFilter( $pageAndNs );
 
@@ -535,7 +534,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			$scroll = new \Elastica\Scroll( $search, '15m' );
 
 			$docsDumped = 0;
-			$destinationType = $this->getIndex()->getType( Connection::TITLE_SUGGEST_TYPE_NAME );
+			$destinationType = $this->getIndex()->getType( '_doc' );
 
 			foreach ( $scroll as $results ) {
 				if ( $totalDocsToDump === -1 ) {
@@ -675,7 +674,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			'',
 			Request::PUT,
 			$args,
-			[ 'master_timeout' => $this->masterTimeout ]
+			[ 'master_timeout' => $this->masterTimeout, 'include_type_name' => false ]
 		);
 
 		// Index create is async, we have to make sure that the index is ready
@@ -756,7 +755,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * @return \Elastica\Type
 	 */
 	public function getType() {
-		return $this->getIndex()->getType( Connection::TITLE_SUGGEST_TYPE_NAME );
+		return $this->getIndex()->getType( '_doc' );
 	}
 
 	/**

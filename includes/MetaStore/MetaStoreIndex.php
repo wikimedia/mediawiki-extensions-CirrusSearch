@@ -35,7 +35,7 @@ class MetaStoreIndex {
 	/**
 	 * @const int version of the index, increment when mappings change
 	 */
-	private const METASTORE_VERSION = 3;
+	private const METASTORE_VERSION = 4;
 
 	/**
 	 * @const string the doc id used to store version information related
@@ -231,7 +231,7 @@ class MetaStoreIndex {
 		}
 
 		return [
-			self::INDEX_NAME => [
+			'_doc' => [
 				'dynamic' => false,
 				'properties' => $properties,
 			],
@@ -354,7 +354,7 @@ class MetaStoreIndex {
 	 * @param \Elastica\Index $index new index
 	 */
 	private function storeMetastoreVersion( $index ) {
-		$index->getType( self::INDEX_NAME )->addDocument(
+		$index->getType( '_doc' )->addDocument(
 			new \Elastica\Document(
 				self::METASTORE_VERSION_DOCID,
 				[
@@ -379,7 +379,7 @@ class MetaStoreIndex {
 	}
 
 	public function elasticaType(): \Elastica\Type {
-		return $this->elasticaIndex()->getType( self::INDEX_NAME );
+		return $this->elasticaIndex()->getType( '_doc' );
 	}
 
 	/**

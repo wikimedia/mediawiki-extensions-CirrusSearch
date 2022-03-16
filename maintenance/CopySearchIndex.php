@@ -3,7 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\ClusterSettings;
-use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -94,7 +93,7 @@ class CopySearchIndex extends Maintenance {
 			$targetConnection,
 			// Target Index
 			$targetConnection->getIndex( $this->indexBaseName, $this->indexType, $indexIdentifier )
-				->getType( Connection::PAGE_TYPE_NAME ),
+				->getType( '_doc' ),
 			// Source Index
 			$this->getConnection()->getPageType( $this->indexBaseName, $this->indexType ),
 			$this

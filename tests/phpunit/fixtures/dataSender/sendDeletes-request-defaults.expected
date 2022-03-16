@@ -1,5 +1,5 @@
 {
-    "path": "myfixturewiki_content\/page\/_bulk",
+    "path": "myfixturewiki_content\/_doc\/_bulk",
     "method": "POST",
     "data": [
         {

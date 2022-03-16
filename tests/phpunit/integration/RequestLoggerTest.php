@@ -203,14 +203,6 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			};
 			break;
 
-		case 'findNamespace':
-			$work = static function ( $config, $connection ) use ( $query ) {
-				$searcher = new Searcher( $connection, 0, 20, $config, null, null, 'wiki' );
-				// ugly ... but whatever
-				$searcher->updateNamespacesFromQuery( $query['name'] );
-			};
-			break;
-
 		default:
 			throw new \RuntimeException( "Unknown request type: " . $query['type'] );
 		}
@@ -276,6 +268,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 					[ 'transport' => $transport ],
 				]
 			],
+			'wgCirrusSearchNamespaceResolutionMethod' => 'utr30',
 		] );
 		$connection = new Connection( $config, 'default' );
 		$this->setTemporaryHook( 'PrefixSearchExtractNamespace',

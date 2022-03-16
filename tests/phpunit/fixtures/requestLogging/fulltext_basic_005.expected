@@ -11,19 +11,6 @@
                     "hits_returned": 0,
                     "hits_total": 0,
                     "indices": [
-                        "mw_cirrus_metastore"
-                    ],
-                    "query": "intitle",
-                    "query_type": "namespace",
-                    "search_time_ms": 3,
-                    "suggestion_requested": false
-                },
-                {
-                    "cached": false,
-                    "hits_offset": 0,
-                    "hits_returned": 0,
-                    "hits_total": 0,
-                    "indices": [
                         "wiki"
                     ],
                     "limit": 21,
@@ -48,26 +35,6 @@
         },
         "level": "debug",
         "message": ""
-    },
-    {
-        "channel": "CirrusSearchRequests",
-        "context": {
-            "elasticTookMs": 0,
-            "executor": "123456789",
-            "hitsOffset": 0,
-            "hitsReturned": 0,
-            "hitsTotal": 0,
-            "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
-            "index": "mw_cirrus_metastore",
-            "namespaceName": "intitle",
-            "query": "intitle",
-            "queryType": "namespace",
-            "source": "cli",
-            "suggestionRequested": false,
-            "tookMs": 0
-        },
-        "level": "debug",
-        "message": "lookup namespace for {namespaceName} against {index} took {tookMs} millis and {elasticTookMs} Elasticsearch millis. Found {hitsTotal} total results and returned {hitsReturned} of them starting at {hitsOffset}. Requested via {source} for {identity} by executor {executor}"
     },
     {
         "channel": "CirrusSearchRequests",

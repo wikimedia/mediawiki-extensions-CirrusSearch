@@ -65,6 +65,7 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "عبارت جستجوی '$1' امکان استفاده از چند الگوریتم را نمی‌دهد و با علامت '$2' مشخص شده‌است.",
 	"cirrussearch-feature-not-available": "عبارت کلیدی '$1' در این ویکی تعریف نشده‌است.",
 	"cirrussearch-feature-too-many-conditions": "موارد زیادی برای '$1' پیدا شد که در $2 کوتاه‌سازی شد.",
+	"cirrussearch-feature-deepcat-exception": "پرسمان SPARQL جستجوی ردۀ عمیق شکست خورد",
 	"cirrussearch-feature-deepcat-toomany": "پرسمان ردهٔ ژرف رده‌های بسیاری را برگرداند",
 	"cirrussearch-feature-deepcat-invalid-title": "رده ارائه‌شده نامعتبر است.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|شناسه|شناسه‌های}} صفحۀ نامتعبر: $1",
@@ -77,6 +78,6 @@
 	"cirrussearch-explore-similar-related-none": "هیچ صفحه مرتبطی در دسترس نیست",
 	"cirrussearch-explore-similar-categories-none": "هیچ رده‌ای در دسترس نیست",
 	"cirrussearch-explore-similar-languages-none": "در زبان‌های دیگر در دسترس نیست",
-	"cirrussearch-article-words": "کلمات در تمام صفحات محتوا",
+	"cirrussearch-article-words": "واژه‌ها در همۀ صفحه‌های محتوایی",
 	"cirrussearch-inlanguage-deprecate-comma": "استفاده از ویرگول به عنوان جدا کننده برای کلمه کلیدی غیرزبانی منسوخ است. لطفا استفاده کنید |  (لوله) برای جدا کردن زبانها."
 }

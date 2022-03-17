@@ -6,6 +6,7 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Maintenance\IndexCreator;
 use Elastica\Index;
 use Elastica\Response;
+use Status;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -48,7 +49,7 @@ class IndexCreatorTest extends CirrusTestCase {
 			[] // extra index settings
 		);
 
-		$this->assertInstanceOf( 'Status', $status );
+		$this->assertInstanceOf( Status::class, $status );
 	}
 
 	public function createIndexProvider() {

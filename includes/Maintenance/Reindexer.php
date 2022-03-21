@@ -509,11 +509,9 @@ class Reindexer {
 			# improved if deemed useful.
 			$elapsed  = $now - $start;
 			$rate = ( $prevRemain - $remain ) / $elapsed;
-			echo "val: $remain prev: $prevRemain elapsed: $elapsed rate: $rate\n";
 			if ( $rate > 0 ) {
 				$estimatedCompletion = $now + ( $remain / $rate );
 				$estimatedStr = \MWTimestamp::convert( TS_RFC2822, $estimatedCompletion );
-				echo "remain: $remain est: $estimatedCompletion estStr: $estimatedStr\n";
 			}
 		}
 	}

@@ -425,6 +425,7 @@ class Reindexer {
 	private function monitorReindexTask( ReindexTask $task, Type $target ) {
 		$consecutiveErrors = 0;
 		$sleepSeconds = self::monitorSleepSeconds( 1, 2, self::MONITOR_SLEEP_SECONDS );
+		$completionEstimateGen = self::estimateTimeRemaining();
 		while ( !$task->isComplete() ) {
 			try {
 				$status = $task->getStatus();
@@ -457,12 +458,15 @@ class Reindexer {
 
 			$consecutiveErrors = 0;
 
+			$estCompletion = $completionEstimateGen->send(
+				$status->getTotal() - $status->getCreated() );
 			// What is worth reporting here?
 			$this->outputIndented(
 				"Task: {$task->getId()} "
 				. "Search Retries: {$status->getSearchRetries()} "
 				. "Bulk Retries: {$status->getBulkRetries()} "
-				. "Indexed: {$status->getCreated()} / {$status->getTotal()}\n"
+				. "Indexed: {$status->getCreated()} / {$status->getTotal()} "
+				. "Complete: $estCompletion\n"
 			);
 			// @phan-suppress-next-line PhanPluginRedundantAssignmentInLoop False positive
 			if ( !$status->isComplete() ) {
@@ -480,6 +484,37 @@ class Reindexer {
 		while ( true ) {
 			yield $val;
 			$val = min( $max, $val * $ratio );
+		}
+	}
+
+	/**
+	 * Generator returning the estimated timestamp of completion.
+	 * @return \Generator Must be provided the remaining count via Generator::send, replies
+	 *  with a unix timestamp estimating the completion time.
+	 */
+	private static function estimateTimeRemaining(): \Generator {
+		$estimatedStr = null;
+		$remain = null;
+		$prevRemain = null;
+		$now = microtime( true );
+		while ( true ) {
+			$start = $now;
+			$prevRemain = $remain;
+			$remain = yield $estimatedStr;
+			$now = microtime( true );
+			if ( $remain === null || $prevRemain === null ) {
+				continue;
+			}
+			# Very simple calc, no smoothing and will vary wildly. Could be
+			# improved if deemed useful.
+			$elapsed  = $now - $start;
+			$rate = ( $prevRemain - $remain ) / $elapsed;
+			echo "val: $remain prev: $prevRemain elapsed: $elapsed rate: $rate\n";
+			if ( $rate > 0 ) {
+				$estimatedCompletion = $now + ( $remain / $rate );
+				$estimatedStr = \MWTimestamp::convert( TS_RFC2822, $estimatedCompletion );
+				echo "remain: $remain est: $estimatedCompletion estStr: $estimatedStr\n";
+			}
 		}
 	}
 

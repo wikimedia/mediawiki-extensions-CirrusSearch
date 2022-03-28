@@ -194,7 +194,10 @@ class MetaStoreIndex {
 			'',
 			\Elastica\Request::PUT,
 			$this->buildIndexConfiguration(),
-			[ 'master_timeout' => $this->getMasterTimeout() ]
+			[
+				'master_timeout' => $this->getMasterTimeout(),
+				'include_type_name' => 'true'
+			]
 		);
 		$this->log( " ok\n" );
 		$this->configUtils->waitForGreen( $index->getName(), 3600 );

@@ -4,9 +4,9 @@ namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\Maintenance\Printer;
+use CirrusSearch\Util;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
-use Elastica\Request;
 use Elastica\Type;
 use Elastica\Type\Mapping;
 use RawMessage;
@@ -107,18 +107,11 @@ class MappingValidator extends Validator {
 			}
 
 			try {
-				// @todo Use $action->send(array('master_timeout' => ...))
-				// after updating to version of Elastica library that supports it.
-				// See https://github.com/ruflin/Elastica/pull/1004
 				foreach ( $actions as $action ) {
-					$action->getType()->request(
-						'_mapping',
-						Request::PUT,
-						$action->toArray(),
-						[
-							'master_timeout' => $this->masterTimeout,
-						]
-					);
+					$action->send( [
+						'master_timeout' => $this->masterTimeout,
+						'include_type_name' => 'true',
+					] );
 				}
 				$this->output( "corrected\n" );
 			} catch ( ExceptionInterface $e ) {
@@ -139,7 +132,7 @@ class MappingValidator extends Validator {
 	 * @return bool is the mapping good enough for us?
 	 */
 	private function checkMapping( array $requiredMappings ) {
-		$actualMappings = $this->index->getMapping();
+		$actualMappings = Util::getIndexMapping( $this->index, true );
 		$this->output( "\n" );
 		$this->outputIndented( "\tValidating mapping..." );
 		if ( $this->checkConfig( $actualMappings, $requiredMappings ) ) {

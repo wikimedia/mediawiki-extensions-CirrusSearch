@@ -2,17 +2,17 @@
 
 namespace CirrusSearch\MetaStore;
 
-use CirrusSearch\Connection;
+use Elastica\Type;
 use WikiMap;
 
 class MetaSaneitizeJobStore implements MetaStore {
 	public const METASTORE_TYPE = "sanitize";
 
-	/** @var Connection */
-	private $connection;
+	/** @var Type */
+	private $elasticaType;
 
-	public function __construct( Connection $connection ) {
-		$this->connection = $connection;
+	public function __construct( Type $elasticaType ) {
+		$this->elasticaType = $elasticaType;
 	}
 
 	/**
@@ -52,7 +52,7 @@ class MetaSaneitizeJobStore implements MetaStore {
 				'sanitize_job_jobs_sent_total' => 0
 			]
 		);
-		$this->getType()->addDocument( $doc );
+		$this->elasticaType->addDocument( $doc );
 		return $doc;
 	}
 
@@ -63,7 +63,7 @@ class MetaSaneitizeJobStore implements MetaStore {
 	public function get( $jobName ) {
 		try {
 			// Try to fetch the JobInfo from one of the metastore
-			return $this->getType()->getDocument( self::docId( $jobName ) );
+			return $this->elasticaType->getDocument( self::docId( $jobName ) );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
 			return null;
 		}
@@ -84,18 +84,14 @@ class MetaSaneitizeJobStore implements MetaStore {
 		$jobInfo->set( 'sanitize_job_updated', $version );
 		$jobInfo->setVersion( $version );
 		$jobInfo->setVersionType( 'external' );
-		$this->getType()->addDocument( $jobInfo );
+		$this->elasticaType->addDocument( $jobInfo );
 	}
 
 	/**
 	 * @param string $jobName
 	 */
 	public function delete( $jobName ) {
-		$this->getType()->deleteById( self::docId( $jobName ) );
-	}
-
-	private function getType() {
-		return MetaStoreIndex::getElasticaType( $this->connection );
+		$this->elasticaType->deleteById( self::docId( $jobName ) );
 	}
 
 	/**

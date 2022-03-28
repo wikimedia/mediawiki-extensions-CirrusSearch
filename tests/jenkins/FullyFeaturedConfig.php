@@ -22,6 +22,9 @@
 
 wfLoadExtension( 'Elastica' );
 
+// Browser tests rely on the new vector skin layout
+$wgDefaultSkin = "vector-2022";
+
 $wgSearchType = 'CirrusSearch';
 $wgCirrusSearchUseExperimentalHighlighter = true;
 $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = true;
@@ -54,14 +57,6 @@ $wgCirrusSearchPhraseSuggestReverseField = [
 // Set defaults to BM25 and the new query builder
 $wgCirrusSearchSimilarityProfile = 'bm25_browser_tests';
 $wgCirrusSearchFullTextQueryBuilderProfile = 'browser_tests';
-
-$wgJobQueueAggregator = [
-	'class'       => 'JobQueueAggregatorRedis',
-	'redisServer' => 'localhost',
-	'redisConfig' => [
-		'password' => null,
-	],
-];
 
 if ( is_dir( "$IP/extensions/PoolCounter" ) ) {
 	// If the pool counter is around set up prod like pool counter settings

@@ -216,7 +216,10 @@ class StepHelpers {
 	waitForOperations( operations, log = null, timeoutMs = null ) {
 		return Promise.coroutine( function* () {
 			if ( !timeoutMs ) {
-				timeoutMs = operations.reduce( ( total, v ) => total + ( v[ 0 ].match( /^upload/ ) ? 30000 : 10000 ), 0 );
+				timeoutMs = Math.max(
+					20000,
+					operations.reduce( ( total, v ) => total + ( v[ 0 ].match( /^upload/ ) ? 30000 : 10000 ), 0 )
+				);
 			}
 			const start = new Date();
 

@@ -29,20 +29,13 @@ use CirrusSearch\SearchConfig;
 /**
  * Utility class to manage a multipurpose metadata storage index for cirrus.
  * This store is used to store persistent states related to administrative
- * tasks (index settings upgrade, frozen indices, ...).
+ * tasks (index settings upgrade, wiki namespace names, ...).
  */
 class MetaStoreIndex {
 	/**
-	 * @const int major version, increment when adding an incompatible change
-	 * to settings or mappings.
+	 * @const int version of the index, increment when mappings change
 	 */
-	private const METASTORE_MAJOR_VERSION = 2;
-
-	/**
-	 * @const int minor version increment only when adding a new field to
-	 * an existing mapping or a new mapping.
-	 */
-	private const METASTORE_MINOR_VERSION = 0;
+	private const METASTORE_VERSION = 3;
 
 	/**
 	 * @const string the doc id used to store version information related
@@ -54,11 +47,6 @@ class MetaStoreIndex {
 	 * @const string index name
 	 */
 	public const INDEX_NAME = 'mw_cirrus_metastore';
-
-	/**
-	 * @const string previous index name (bc code)
-	 */
-	private const OLD_INDEX_NAME = 'mw_cirrus_versions';
 
 	/**
 	 * @const string type for storing internal data
@@ -109,21 +97,21 @@ class MetaStoreIndex {
 	 * @return MetaVersionStore
 	 */
 	public function versionStore() {
-		return new MetaVersionStore( $this->connection );
+		return new MetaVersionStore( $this->elasticaType(), $this->connection );
 	}
 
 	/**
 	 * @return MetaNamespaceStore
 	 */
 	public function namespaceStore() {
-		return new MetaNamespaceStore( $this->connection, $this->config->getWikiId() );
+		return new MetaNamespaceStore( $this->elasticaType(), $this->config->getWikiId() );
 	}
 
 	/**
 	 * @return MetaSaneitizeJobStore
 	 */
 	public function saneitizeJobStore() {
-		return new MetaSaneitizeJobStore( $this->connection );
+		return new MetaSaneitizeJobStore( $this->elasticaType() );
 	}
 
 	/**
@@ -138,31 +126,13 @@ class MetaStoreIndex {
 	}
 
 	/**
-	 * Compare the current metastore version to an expected minimum
-	 * acceptable version.
-	 *
-	 * @param int[] $expected The metastore version to expected, as a
-	 *  two element array of major then minor version.
-	 * @return bool True when the metastore index in elasticsearch matches
-	 *  requirements
-	 */
-	public function versionIsAtLeast( array $expected ) {
-		// $version >= $expected
-		return (bool)version_compare(
-			implode( '.', $this->metastoreVersion() ),
-			implode( '.', $expected ),
-			'>='
-		);
-	}
-
-	/**
 	 * @return \Elastica\Index|null Index on creation, or null if the index
 	 *  already exists.
 	 */
 	public function createIfNecessary() {
 		// If the mw_cirrus_metastore alias does not exists it
 		// means we need to create everything from scratch.
-		if ( self::cirrusReady( $this->connection ) ) {
+		if ( $this->cirrusReady() ) {
 			return null;
 		}
 		$this->log( self::INDEX_NAME . " missing, creating new metastore index.\n" );
@@ -172,26 +142,16 @@ class MetaStoreIndex {
 	}
 
 	public function createOrUpgradeIfNecessary() {
-		$this->fixOldName();
 		$newIndex = $this->createIfNecessary();
 		if ( $newIndex === null ) {
-			list( $major, $minor ) = $this->metastoreVersion();
-			if ( $major < self::METASTORE_MAJOR_VERSION ) {
-				$this->log( self::INDEX_NAME . " major version mismatch upgrading.\n" );
-				$this->majorUpgrade();
-			} elseif ( $major == self::METASTORE_MAJOR_VERSION &&
-				$minor < self::METASTORE_MINOR_VERSION
-			) {
-				$this->log(
-					self::INDEX_NAME . " minor version mismatch trying to upgrade mapping.\n"
-				);
-				$this->minorUpgrade();
-			} elseif ( $major > self::METASTORE_MAJOR_VERSION ||
-				$minor > self::METASTORE_MINOR_VERSION
-			) {
+			$version = $this->metastoreVersion();
+			if ( $version < self::METASTORE_VERSION ) {
+				$this->log( self::INDEX_NAME . " version mismatch, upgrading.\n" );
+				$this->upgradeIndexVersion();
+			} elseif ( $version > self::METASTORE_VERSION ) {
 				throw new \Exception(
-					"Metastore version $major.$minor found, cannot upgrade to a lower version: " .
-						self::METASTORE_MAJOR_VERSION . "." . self::METASTORE_MINOR_VERSION
+					"Metastore version $version found, cannot upgrade to a lower version: " .
+					self::METASTORE_VERSION
 				);
 			}
 		}
@@ -208,7 +168,7 @@ class MetaStoreIndex {
 		);
 
 		return [
-			// Don't forget to update METASTORE_MAJOR_VERSION when changing something
+			// Don't forget to update METASTORE_VERSION when changing something
 			// in the settings.
 			'settings' => [
 				'number_of_shards' => 1,
@@ -224,7 +184,7 @@ class MetaStoreIndex {
 	 * @param string $suffix index suffix
 	 * @return \Elastica\Index the newly created index
 	 */
-	public function createNewIndex( $suffix = 'first' ) {
+	private function createNewIndex( $suffix = 'first' ) {
 		$name = self::INDEX_NAME . '_' . $suffix;
 		$this->log( "Creating metastore index... $name" );
 		// @todo utilize $this->getIndex()->create(...) once it supports setting
@@ -243,9 +203,9 @@ class MetaStoreIndex {
 	}
 
 	/**
-	 * Increment :
-	 *   - self:METASTORE_MAJOR_VERSION for incompatible changes
-	 *   - self:METASTORE_MINOR_VERSION when adding new field or new mappings
+	 * Don't forget to update METASTORE_VERSION when changing something
+	 * in the settings.
+	 *
 	 * @return array[] the mapping
 	 */
 	private function buildMapping() {
@@ -273,22 +233,6 @@ class MetaStoreIndex {
 				'properties' => $properties,
 			],
 		];
-	}
-
-	private function minorUpgrade() {
-		$config = $this->buildIndexConfiguration();
-		$index = $this->connection->getIndex( self::INDEX_NAME );
-		foreach ( $this->buildMapping() as $type => $mapping ) {
-			$index->getType( $type )->request(
-				'_mapping',
-				\Elastica\Request::PUT,
-				$config['mappings'],
-				[
-					'master_timeout' => $this->getMasterTimeout(),
-				]
-			);
-		}
-		$this->storeMetastoreVersion( $index );
 	}
 
 	/**
@@ -361,7 +305,7 @@ class MetaStoreIndex {
 		return $indexName;
 	}
 
-	private function majorUpgrade() {
+	private function upgradeIndexVersion() {
 		$plugins = $this->configUtils->scanAvailableModules();
 		if ( !array_search( 'reindex', $plugins ) ) {
 			throw new \Exception( "The reindex module is mandatory to upgrade the metastore" );
@@ -377,40 +321,13 @@ class MetaStoreIndex {
 				'query' => [
 					'bool' => [
 						'must_not' => [
-							[ 'term' => [ 'type' => self::INTERNAL_TYPE ] ],
-							// metastore prior to 1.0 used elasticsearch index
-							// 'type' instead of a type field
-							[ 'type' => [ 'value' => self::INTERNAL_TYPE ] ],
+							[ 'term' => [ 'type' => self::INTERNAL_TYPE ] ]
 						],
 					]
 				],
 			],
 			'dest' => [ 'index' => $index->getName() ],
 		];
-		if ( !$this->versionIsAtLeast( [ 1, 0 ] ) ) {
-			// FROZEN_TYPE assumed to be empty
-			// MetaVersionStore docs need the index_name field added
-			// and doc id's prefixed.
-			// MetaSaneitizeJobStore  already prefixed
-			// INTERNAL_TYPE is not copied
-			$version = MetaVersionStore::METASTORE_TYPE;
-			$sanitize = MetaSaneitizeJobStore::METASTORE_TYPE;
-			$indexName = self::INDEX_NAME;
-			$reindex['script'] = [
-				'lang' => 'painless',
-				'source' => <<<EOD
-ctx._source.type = ctx._type;
-if (ctx._type == '{$version}') {
-	ctx._source.index_name = ctx._id;
-	ctx._id = ctx._type + '-' + ctx._id;
-}
-if (ctx._type == '{$sanitize}') {
-	ctx._source.wiki = ctx._source.sanitize_job_wiki;
-}
-ctx._type = '{$indexName}';
-EOD
-			];
-		}
 		// reindex is extremely fast so we can wait for it
 		// we might consider using the task manager if this process
 		// becomes longer and/or prone to curl timeouts
@@ -424,39 +341,10 @@ EOD
 	}
 
 	/**
-	 * BC strategy to reuse mw_cirrus_versions as the new mw_cirrus_metastore
-	 * If mw_cirrus_versions exists with no mw_cirrus_metastore
-	 */
-	private function fixOldName() {
-		if ( !$this->client->getIndex( self::OLD_INDEX_NAME )->exists() ) {
-			return;
-		}
-		// Old mw_cirrus_versions exists, if mw_cirrus_metastore alias does not
-		// exist we must create it
-		if ( !$this->client->getIndex( self::INDEX_NAME )->exists() ) {
-			$this->log( "Adding transition alias to " . self::OLD_INDEX_NAME . "\n" );
-			// Old one exists but new one does not
-			// we need to create an alias
-			$index = $this->client->getIndex( self::OLD_INDEX_NAME );
-			$this->switchAliasTo( $index );
-			// The version check (will return 0.0 for
-			// mw_cirrus_versions) should schedule an minor or
-			// major upgrade.
-		}
-	}
-
-	/**
-	 * @return int[] major, minor version
-	 */
-	public function metastoreVersion() {
-		return self::getMetastoreVersion( $this->connection );
-	}
-
-	/**
-	 * @return int[] major, minor version
+	 * @return int version of metastore index expected by runtime
 	 */
 	public function runtimeVersion() {
-		return [ self::METASTORE_MAJOR_VERSION, self::METASTORE_MINOR_VERSION ];
+		return self::METASTORE_VERSION;
 	}
 
 	/**
@@ -468,8 +356,7 @@ EOD
 				self::METASTORE_VERSION_DOCID,
 				[
 					'type' => self::INTERNAL_TYPE,
-					'metastore_major_version' => self::METASTORE_MAJOR_VERSION,
-					'metastore_minor_version' => self::METASTORE_MINOR_VERSION,
+					'metastore_major_version' => self::METASTORE_VERSION,
 				]
 			)
 		);
@@ -484,35 +371,31 @@ EOD
 		}
 	}
 
-	public static function getElasticaType( Connection $connection ) {
-		return $connection->getIndex( self::INDEX_NAME )->getType( self::INDEX_NAME );
+	public function elasticaIndex(): \Elastica\Index {
+		return $this->connection->getIndex( self::INDEX_NAME );
 	}
 
-	public function elasticaType() {
-		return self::getElasticaType( $this->connection );
+	public function elasticaType(): \Elastica\Type {
+		return $this->elasticaIndex()->getType( self::INDEX_NAME );
 	}
 
 	/**
-	 * Check if cirrus is ready by checking if some indices have been created on this cluster
-	 * @param Connection $connection
+	 * Check if cirrus is ready by checking if the index has been created on this cluster
 	 * @return bool
 	 */
-	public static function cirrusReady( Connection $connection ) {
-		return $connection->getIndex( self::INDEX_NAME )->exists() ||
-			$connection->getIndex( self::OLD_INDEX_NAME )->exists();
+	public function cirrusReady() {
+		return $this->elasticaIndex()->exists();
 	}
 
 	/**
-	 * @param Connection $connection
-	 * @return int[] the major and minor version of the meta store
-	 * [0, 0] means that the metastore has never been created
+	 * @return int the version of the meta store. 0 means that
+	 *  the metastore has never been created.
 	 */
-	public static function getMetastoreVersion( Connection $connection ) {
+	public function metastoreVersion() {
 		try {
-			$doc = self::getElasticaType( $connection )
-				->getDocument( self::METASTORE_VERSION_DOCID );
+			$doc = $this->elasticaType()->getDocument( self::METASTORE_VERSION_DOCID );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
-			return [ 0, 0 ];
+			return 0;
 		} catch ( \Elastica\Exception\ResponseException $e ) {
 			// BC code in case the metastore alias does not exist yet
 			$fullError = $e->getResponse()->getFullError();
@@ -521,14 +404,11 @@ EOD
 				&& isset( $fullError['index'] )
 				&& $fullError['index'] === self::INDEX_NAME
 			) {
-				return [ 0, 0 ];
+				return 0;
 			}
 			throw $e;
 		}
-		return [
-			(int)$doc->get( 'metastore_major_version' ),
-			(int)$doc->get( 'metastore_minor_version' )
-		];
+		return (int)$doc->get( 'metastore_major_version' );
 	}
 
 	private function getMasterTimeout() {

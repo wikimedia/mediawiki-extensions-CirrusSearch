@@ -179,9 +179,7 @@
                                             "allow_leading_wildcard": true,
                                             "default_operator": "AND",
                                             "fields": [
-                                                "redirect.title",
                                                 "redirect.title.plain",
-                                                "title",
                                                 "title.plain"
                                             ],
                                             "fuzzy_prefix_length": 2,
@@ -468,9 +466,7 @@
                                             "allow_leading_wildcard": true,
                                             "default_operator": "AND",
                                             "fields": [
-                                                "redirect.title",
                                                 "redirect.title.plain",
-                                                "title",
                                                 "title.plain"
                                             ],
                                             "fuzzy_prefix_length": 2,
@@ -757,9 +753,7 @@
                                             "allow_leading_wildcard": true,
                                             "default_operator": "AND",
                                             "fields": [
-                                                "redirect.title",
                                                 "redirect.title.plain",
-                                                "title",
                                                 "title.plain"
                                             ],
                                             "fuzzy_prefix_length": 2,
@@ -1046,9 +1040,7 @@
                                             "allow_leading_wildcard": true,
                                             "default_operator": "AND",
                                             "fields": [
-                                                "redirect.title",
                                                 "redirect.title.plain",
-                                                "title",
                                                 "title.plain"
                                             ],
                                             "fuzzy_prefix_length": 2,

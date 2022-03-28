@@ -3,7 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\MetaStore\MetaStoreIndex;
-use CirrusSearch\MetaStore\MetaVersionStore;
 use CirrusSearch\SearchConfig;
 use Elastica\JSON;
 
@@ -57,7 +56,7 @@ class Metastore extends Maintenance {
 	}
 
 	public function execute() {
-		$this->metaStore = new MetaStoreIndex( $this->getConnection(), $this, $this->getSearchConfig() );
+		$this->metaStore = $this->getMetaStore();
 
 		if ( $this->hasOption( 'dump' ) ) {
 			$this->dump();
@@ -65,7 +64,7 @@ class Metastore extends Maintenance {
 		}
 
 		// Check if the metastore is usable
-		if ( !MetaStoreIndex::cirrusReady( $this->getConnection() ) ) {
+		if ( !$this->metaStore->cirrusReady() ) {
 			// This is certainly a fresh install we need to create
 			// the metastore otherwize updateSearchIndexConfig will fail
 			$this->metaStore->createOrUpgradeIfNecessary();
@@ -75,18 +74,16 @@ class Metastore extends Maintenance {
 			$storeVersion = $this->metaStore->metastoreVersion();
 			$runtimeVersion = $this->metaStore->runtimeVersion();
 			if ( $storeVersion != $runtimeVersion ) {
-				$this->output( "mw_cirrus_metastore is running an old version (" .
-					implode( '.', $storeVersion ) . ") please upgrade to " .
-					implode( '.', $runtimeVersion ) .
-					" by running metastore.php --upgrade\n" );
+				$this->output( "mw_cirrus_metastore is running an old version ($storeVersion) " .
+					"please upgrade to $runtimeVersion by running metastore.php --upgrade\n" );
 			} else {
 				$this->output( "mw_cirrus_metastore is up to date and running with version " .
-					implode( '.', $storeVersion ) . "\n" );
+					"$storeVersion\n" );
 			}
 		} elseif ( $this->hasOption( 'upgrade' ) ) {
 			$this->metaStore->createOrUpgradeIfNecessary();
 			$this->output( "mw_cirrus_metastore is up and running with version " .
-				implode( '.', $this->metaStore->metastoreVersion() ) . "\n" );
+				$this->metaStore->metastoreVersion() . "\n" );
 		} elseif ( $this->hasOption( 'show-all-index-versions' ) ) {
 			$this->showIndexVersions();
 		} elseif ( $this->hasOption( 'update-index-version' ) ) {
@@ -110,7 +107,7 @@ class Metastore extends Maintenance {
 	 * @param string|null $baseName
 	 */
 	private function showIndexVersions( $baseName = null ) {
-		$store = new MetaVersionStore( $this->getConnection() );
+		$store = $this->metaStore->versionStore();
 		$res = $store->findAll( $baseName );
 		foreach ( $res as $r ) {
 			$data = $r->getData();
@@ -135,8 +132,7 @@ class Metastore extends Maintenance {
 	}
 
 	private function dump() {
-		$index = $this->getConnection()->getIndex( MetaStoreIndex::INDEX_NAME );
-		if ( !$index->exists() ) {
+		if ( !$this->metaStore->cirrusReady() ) {
 			$this->fatalError( "Cannot dump metastore: index does not exists. Please run --upgrade first" );
 		}
 
@@ -145,7 +141,7 @@ class Metastore extends Maintenance {
 		$query->setSize( 100 );
 		$query->setSource( true );
 		$query->setSort( [ '_doc' ] );
-		$search = $index->createSearch( $query );
+		$search = $this->metaStore->elasticaIndex()->createSearch( $query );
 		$scroll = new \Elastica\Scroll( $search, '15m' );
 		foreach ( $scroll as $results ) {
 			foreach ( $results as $result ) {

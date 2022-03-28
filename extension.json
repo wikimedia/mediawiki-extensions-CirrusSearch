@@ -28,7 +28,7 @@
 	"APIPropModules": {
 		"cirrusbuilddoc": "CirrusSearch\\Api\\QueryBuildDocument",
 		"cirrusdoc": "CirrusSearch\\Api\\QueryCirrusDoc",
-		"cirruscompsuggestbuilddoc": "\\CirrusSearch\\Api\\QueryCompSuggestBuildDoc"
+		"cirruscompsuggestbuilddoc": "CirrusSearch\\Api\\QueryCompSuggestBuildDoc"
 	},
 	"ConfigRegistry": {
 		"CirrusSearch": "CirrusSearch\\SearchConfig::newFromGlobals"
@@ -161,6 +161,9 @@
 			}
 		},
 		"CirrusSearchWriteClusters": {
+			"value": null
+		},
+		"CirrusSearchWriteIsolateClusters": {
 			"value": null
 		},
 		"CirrusSearchPrivateClusters": {
@@ -476,9 +479,6 @@
 		},
 		"CirrusSearchFeedbackLink": {
 			"value": false
-		},
-		"CirrusSearchDropDelayedJobsAfter": {
-			"value": 172800
 		},
 		"CirrusSearchWriteBackoffExponent": {
 			"value": 6

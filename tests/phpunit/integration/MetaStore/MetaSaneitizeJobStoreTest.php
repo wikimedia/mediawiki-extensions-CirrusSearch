@@ -14,7 +14,7 @@ class MetaSaneitizeJobStoreTest extends CirrusIntegrationTestCase {
 		list( $conn, $type ) = $this->mockConnection();
 		$type->expects( $this->once() )
 			->method( 'addDocument' );
-		$store = new MetaSaneitizeJobStore( $conn );
+		$store = new MetaSaneitizeJobStore( $type, $conn );
 		$doc = $store->create( 'foo', 2018 );
 		$this->assertEquals( MetaSaneitizeJobStore::METASTORE_TYPE, $doc->get( 'type' ) );
 	}
@@ -26,7 +26,7 @@ class MetaSaneitizeJobStoreTest extends CirrusIntegrationTestCase {
 			->will( $this->throwException(
 				new \Elastica\Exception\NotFoundException() ) );
 
-		$store = new MetaSaneitizeJobStore( $conn );
+		$store = new MetaSaneitizeJobStore( $type, $conn );
 		$this->assertNull( $store->get( 'foo' ) );
 	}
 
@@ -35,7 +35,7 @@ class MetaSaneitizeJobStoreTest extends CirrusIntegrationTestCase {
 		$type->expects( $this->once() )
 			->method( 'getDocument' )
 			->willReturn( 'FOUND' );
-		$store = new MetaSaneitizeJobStore( $conn );
+		$store = new MetaSaneitizeJobStore( $type, $conn );
 		$this->assertEquals( 'FOUND', $store->get( 'foo' ) );
 	}
 

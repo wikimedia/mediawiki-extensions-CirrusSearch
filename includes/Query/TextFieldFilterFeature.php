@@ -67,7 +67,7 @@ class TextFieldFilterFeature extends SimpleKeywordFeature implements FilterQuery
 	/**
 	 * @param string $value
 	 * @param string $quotedValue
-	 * @return Query\Match|Query\MatchPhrase
+	 * @return Query\MatchQuery|Query\MatchPhrase
 	 */
 	protected function doGetFilterQuery( $value, $quotedValue ) {
 		if ( $value !== $quotedValue ) {

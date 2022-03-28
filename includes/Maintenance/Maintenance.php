@@ -7,6 +7,7 @@ use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\UserTestingEngine;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Settings\SettingsBuilder;
 
 // Maintenance class is loaded before autoload, so we need to pull the interface
 require_once __DIR__ . '/Printer.php';
@@ -54,8 +55,9 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		$this->requireExtension( 'CirrusSearch' );
 	}
 
-	public function finalSetup() {
-		parent::finalSetup();
+	public function finalSetup( SettingsBuilder $settingsBuilder = null ) {
+		parent::finalSetup( $settingsBuilder );
+
 		if ( $this->hasOption( 'userTestTrigger' ) ) {
 			$this->setupUserTest();
 		}
@@ -129,6 +131,10 @@ abstract class Maintenance extends \Maintenance implements Printer {
 				->makeConfig( 'CirrusSearch' );
 		}
 		return $this->searchConfig;
+	}
+
+	public function getMetaStore( Connection $conn = null ) {
+		return new MetaStoreIndex( $conn ?? $this->getConnection(), $this, $this->getSearchConfig() );
 	}
 
 	/**
@@ -221,4 +227,14 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		$metastore->createIfNecessary();
 		return $metastore;
 	}
+
+	protected function requireCirrusReady() {
+		// If the version does not exist it's certainly because nothing has been indexed.
+		if ( !$this->getMetaStore()->cirrusReady() ) {
+			throw new \Exception(
+				"Cirrus meta store does not exist, you must index your data first"
+			);
+		}
+	}
+
 }

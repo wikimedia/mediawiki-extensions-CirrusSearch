@@ -33,7 +33,7 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible.
 	 *
-	 * You may also need to increment MetaStoreIndex::METASTORE_MAJOR_VERSION
+	 * You may also need to increment MetaStoreIndex::METASTORE_VERSION
 	 * manually as well.
 	 */
 	public const VERSION = '0.12';

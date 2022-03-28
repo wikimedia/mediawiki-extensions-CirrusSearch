@@ -74,6 +74,16 @@ List of clusters that can be used for writing. Must be a subset of
 cluster groups from $wgCirrusSearchClusters.  By default or when set
 to null, all configured cluster groups are available for writing.
 
+; $wgCirrusSearchWriteIsolateClusters
+
+List of clusters, by name, that will have their writes isolated from the other
+clusters. If not set all clusters will be isolated from each other. Limiting
+isolation to only clusters that may have issues will result in reduced job
+queue load.
+
+Default:
+	$wgCirrusSearchWriteIsolateClusters = null;
+
 ; $wgCirrusSearchPrivateClusters
 
 Default:
@@ -1031,14 +1041,6 @@ Default:
 
 The URL of a "Give us your feedback" link to append to search results or
 something falsy if you don't want to show the link.
-
-; $wgCirrusSearchDropDelayedJobsAfter
-
-Default:
-    $wgCirrusSearchDropDelayedJobsAfter = 6060242; 2 days
-
-The maximum amount of time jobs delayed due to frozen indexes can remain
-in the job queue.
 
 ; $wgCirrusSearchWriteBackoffExponent
 

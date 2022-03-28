@@ -4,7 +4,8 @@ namespace CirrusSearch;
 
 use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\Fallbacks\SearcherFactory;
-use CirrusSearch\MetaStore\MetaNamespaceStore;
+use CirrusSearch\Maintenance\NullPrinter;
+use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Parser\FullTextKeywordRegistry;
 use CirrusSearch\Parser\NamespacePrefixParser;
@@ -40,7 +41,7 @@ use User;
 use WebRequest;
 use WikiMap;
 use Wikimedia\Assert\Assert;
-use Wikimedia\ObjectFactory;
+use Wikimedia\ObjectFactory\ObjectFactory;
 
 /**
  * Performs searches using Elasticsearch.  Note that each instance of this class
@@ -464,7 +465,11 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 					$connection = $this->getOverriddenConnection();
 					$connection->setTimeout( $this->getClientTimeout( 'namespace' ) );
 
-					$store = new MetaNamespaceStore( $connection, $this->config->getWikiId() );
+					// A bit awkward, but accepted as this is the backup
+					// implementation of namespace lookup. Deployments should
+					// prefer to install php-intl and use utr30.
+					$store = ( new MetaStoreIndex( $connection, new NullPrinter(), $this->config ) )
+						->namespaceStore();
 					$resultSet = $store->find( $name, [
 						'timeout' => $this->getTimeout( 'namespace' ),
 					] );

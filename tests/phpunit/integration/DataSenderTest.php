@@ -205,9 +205,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
 			->willReturn( $mockClient );
-		$sender = new DataSender( $mockCon, $searchConfig, static function () {
-			return true;
-		} );
+		$sender = new DataSender( $mockCon, $searchConfig );
 		$sender->sendData( $indexType, $documents );
 	}
 
@@ -279,9 +277,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
 			->willReturn( $mockClient );
-		$sender = new DataSender( $mockCon, $searchConfig, static function () {
-			return true;
-		} );
+		$sender = new DataSender( $mockCon, $searchConfig );
 		$sender->sendDeletes( $ids, $indexType );
 	}
 
@@ -342,6 +338,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 				$fixture['tagNames'],
 				$fixture['tagWeights'],
 				$expectedFile,
+				$fixture['expectedRequestCount'] ?? null,
 			];
 		}
 		return $tests;
@@ -358,6 +355,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	 * @param string|array|null $tagNames
 	 * @param array|null $tagWeights
 	 * @param string $expectedFile
+	 * @param int|null $expectedRequestCount
 	 * @throws \MWException
 	 */
 	public function testUpdateWeightedTags(
@@ -369,7 +367,8 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		string $tagPrefix,
 		$tagNames,
 		?array $tagWeights,
-		string $expectedFile
+		string $expectedFile,
+		int $expectedRequestCount = null
 	): void {
 		$minimalSetup = [
 			'CirrusSearchClusters' => [
@@ -379,7 +378,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		];
 		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
 		$count = count( array_chunk( $docIds, $batchSize ) );
-		$mockClient = $this->prepareClientMock( $count );
+		$mockClient = $this->prepareClientMock( $expectedRequestCount ?? $count );
 
 		$sender = $this->prepareDataSender( $searchConfig, $mockClient );
 		$sender->sendUpdateWeightedTags( $indexType, $docIds, $tagField, $tagPrefix,
@@ -485,9 +484,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
 			->willReturn( $client );
-		return new DataSender( $mockCon, $searchConfig, static function () {
-			return true;
-		} );
+		return new DataSender( $mockCon, $searchConfig );
 	}
 
 	/**

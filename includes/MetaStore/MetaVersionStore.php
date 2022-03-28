@@ -9,6 +9,7 @@ use CirrusSearch\Maintenance\MappingConfigBuilder;
 use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
 use CirrusSearch\Maintenance\SuggesterMappingConfigBuilder;
 use Elastica\Query\BoolQuery;
+use Elastica\Type;
 use GitInfo;
 use WikiMap;
 
@@ -18,7 +19,11 @@ class MetaVersionStore implements MetaStore {
 	/** @var Connection */
 	private $connection;
 
-	public function __construct( Connection $connection ) {
+	/** @var Type */
+	private $elasticaType;
+
+	public function __construct( Type $elasticaType, Connection $connection ) {
+		$this->elasticaType = $elasticaType;
 		$this->connection = $connection;
 	}
 
@@ -57,7 +62,7 @@ class MetaVersionStore implements MetaStore {
 	 * @param string $typeName
 	 */
 	public function update( $baseName, $typeName ) {
-		$this->getType()->addDocument( self::buildDocument( $this->connection, $baseName, $typeName ) );
+		$this->elasticaType->addDocument( self::buildDocument( $this->connection, $baseName, $typeName ) );
 	}
 
 	/**
@@ -68,7 +73,7 @@ class MetaVersionStore implements MetaStore {
 		foreach ( $this->connection->getAllIndexTypes( null ) as $typeName ) {
 			$docs[] = self::buildDocument( $this->connection, $baseName, $typeName );
 		}
-		$this->getType()->addDocuments( $docs );
+		$this->elasticaType->addDocuments( $docs );
 	}
 
 	/**
@@ -78,7 +83,7 @@ class MetaVersionStore implements MetaStore {
 	 */
 	public function find( $baseName, $typeName ) {
 		$docId = self::docId( $this->connection, $baseName, $typeName );
-		return $this->getType()->getDocument( $docId );
+		return $this->elasticaType->getDocument( $docId );
 	}
 
 	/**
@@ -101,7 +106,7 @@ class MetaVersionStore implements MetaStore {
 		$query = new \Elastica\Query( $filter );
 		// WHAT ARE YOU DOING TRACKING MORE THAN 5000 INDICES?!?
 		$query->setSize( 5000 );
-		return $this->getType()->search( $query );
+		return $this->elasticaType->search( $query );
 	}
 
 	/**
@@ -141,13 +146,5 @@ class MetaVersionStore implements MetaStore {
 		];
 
 		return new \Elastica\Document( $docId, $data );
-	}
-
-	private function getType() {
-		$type = MetaStoreIndex::getElasticaType( $this->connection );
-		if ( !$type->exists() ) {
-			throw new \Exception( "meta store does not exist, you must index your data first" );
-		}
-		return $type;
 	}
 }

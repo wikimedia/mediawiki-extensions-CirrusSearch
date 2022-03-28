@@ -43,8 +43,12 @@ class ConfigUtils {
 
 	public function checkElasticsearchVersion() {
 		$this->outputIndented( 'Fetching Elasticsearch version...' );
-		$result = $this->client->request( '' );
-		$result = $result->getData();
+		$response = $this->client->request( '' );
+		if ( !$response->isOK() ) {
+			$this->fatalError( "Cannot fetch elasticsearch version: "
+				. $response->getError() );
+		}
+		$result = $response->getData();
 		if ( !isset( $result['version']['number'] ) ) {
 			$this->fatalError( 'unable to determine, aborting.' );
 		}
@@ -118,8 +122,12 @@ class ConfigUtils {
 	 * @return string[] list of modules or plugins
 	 */
 	private function scanModulesOrPlugins( $what ) {
-		$result = $this->client->request( '_nodes' );
-		$result = $result->getData();
+		$response = $this->client->request( '_nodes' );
+		if ( !$response->isOK() ) {
+			$this->fatalError( "Cannot fetch node state from cluster: "
+				. $response->getError() );
+		}
+		$result = $response->getData();
 		$availables = [];
 		$first = true;
 		foreach ( array_values( $result[ 'nodes' ] ) as $node ) {

@@ -180,4 +180,12 @@ class ResultsTypeTest extends CirrusTestCase {
 		$this->assertContains( 'extra_field1', $fullTextRes->getSourceFiltering() );
 		$this->assertContains( 'extra_field2', $fullTextRes->getSourceFiltering() );
 	}
+
+	public function testEmptyResultSet() {
+		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ), true, $this->newTitleHelper() );
+		$results = $fullTextRes->createEmptyResult();
+		$this->assertSame( 0, $results->numRows() );
+		$this->assertFalse( $results->hasMoreResults() );
+	}
+
 }

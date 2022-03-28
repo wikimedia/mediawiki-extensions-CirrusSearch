@@ -5,6 +5,12 @@ Feature: Searches with the intitle filter
     Then Amazing Catapult is the first api search result
       And Two Words is not in the api search results
 
+  Scenario: intitle: doesn't stem when quoted
+    When I api search for intitle:catapults
+    Then Catapult/adsf is in the api search results
+    And I api search for intitle:"catapults"
+    Then Catapult/adsf is not in the api search results
+
   @wildcards
   Scenario: intitle: can take a wildcard
     When I api search for intitle:catapul*

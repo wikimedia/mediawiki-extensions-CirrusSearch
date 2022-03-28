@@ -1,11 +1,12 @@
 $( function () {
-	var uri, router = require( 'mediawiki.router' );
+	var router = require( 'mediawiki.router' );
 	if ( !router.isSupported() ) {
 		return;
 	}
 
+	// Always clean up the address bar, even (and especially) if the feature is disabled.
 	try {
-		uri = new mw.Uri( location.href );
+		var uri = new mw.Uri( location.href );
 		if ( uri.query.searchToken ) {
 			delete uri.query.searchToken;
 			router.navigateTo( document.title, {
@@ -14,17 +15,33 @@ $( function () {
 			} );
 		}
 	} catch ( e ) {
-		// Don't install the click handler when the browser location can't be parsed anyway
+		// Don't install the click handler if the location can't be parsed
 		return;
 	}
 
-	// No need to install the click handler when there is no token
+	// Don't install the click handler if the feature isn't enabled
 	if ( !mw.config.get( 'wgCirrusSearchRequestSetToken' ) ) {
 		return;
 	}
 
-	// Limit to content area so this doesn't interfere with clicks to UI elements
-	$( mw.util.$content ).on( 'click', 'a', function () {
+	/**
+	 * Called when an anchor link in the content area is clicked.
+	 *
+	 * Note:
+	 *
+	 * - This is not limited to links that navigate away, e.g. hash links,
+	 *   or links within interactive widgets created by JS.
+	 *   This means in some edge cases we'll un-pretty the address bar when the
+	 *   user is still on the SERP. This is sub-optimal but accepted given
+	 *   how rare it is for interface messages or gadgets to add such links
+	 *   to a SERP.
+	 *
+	 * - This is not guruanteed to be called only once for a given link (e.g.
+	 *   hook may fire again for a subset or superset of previously-rendered
+	 *   content). Again, unlikely on Special:Search, but okay as the below
+	 *   is safe to run multiple times.
+	 */
+	function handlePossiblyNavigatingClick() {
 		try {
 			var clickUri = new mw.Uri( location.href );
 			clickUri.query.searchToken = mw.config.get( 'wgCirrusSearchRequestSetToken' );
@@ -34,5 +51,13 @@ $( function () {
 			} );
 		} catch ( e ) {
 		}
+	}
+
+	// Bind to content area (instead of document.body) to avoid most potential
+	// issues and overhead from clicks that are definitely not to a search result.
+	mw.hook( 'wikipage.content' ).add( function ( $content ) {
+		// Optimisation: Avoid overhead from finding, iterating, and creating event bindings
+		// for every result. Use a delegate selector instead.
+		$content.on( 'click', 'a', handlePossiblyNavigatingClick );
 	} );
 } );

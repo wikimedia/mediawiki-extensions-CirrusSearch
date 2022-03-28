@@ -8,6 +8,7 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\SearchConfig;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Settings\SettingsBuilder;
 use OrderedStreamingForkController;
 use PageArchive;
 use SearchSuggestionSet;
@@ -65,8 +66,8 @@ class RunSearch extends Maintenance {
 		$this->addOption( 'i-know-what-im-doing', 'Allow setting unknown options from --options', false, false );
 	}
 
-	public function finalSetup() {
-		parent::finalSetup();
+	public function finalSetup( SettingsBuilder $settingsBuilder = null ) {
+		parent::finalSetup( $settingsBuilder );
 		$this->applyGlobals();
 	}
 

@@ -3,7 +3,6 @@
 namespace CirrusSearch\Search;
 
 use BaseSearchResultSet;
-use Exception;
 use HtmlArmor;
 use LinkBatch;
 use SearchResult;
@@ -109,39 +108,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	 * @return CirrusSearchResultSet an empty result set
 	 */
 	final public static function emptyResultSet( $searchContainedSyntax = false ) {
-		return new class( $searchContainedSyntax ) extends BaseCirrusSearchResultSet {
-			/** @var bool */
-			private $searchContainedSyntax;
-
-			/**
-			 * @param bool $searchContainedSyntax
-			 */
-			public function __construct( $searchContainedSyntax ) {
-				$this->searchContainedSyntax = $searchContainedSyntax;
-			}
-
-			/**
-			 * @inheritDoc
-			 */
-			protected function transformOneResult( \Elastica\Result $result ) {
-				// @phan-suppress-previous-line PhanPluginNeverReturnMethod
-				throw new Exception( "An empty ResultSet has nothing to transform" );
-			}
-
-			/**
-			 * @inheritDoc
-			 */
-			public function getElasticaResultSet() {
-				return null;
-			}
-
-			/**
-			 * @inheritDoc
-			 */
-			public function searchContainedSyntax() {
-				return $this->searchContainedSyntax;
-			}
-		};
+		return new EmptySearchResultSet( $searchContainedSyntax );
 	}
 
 	/**

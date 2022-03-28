@@ -234,13 +234,6 @@ until Elasticsearch has appropriately refreshed.  This is an example of configur
 		'password' => $redisPassword,
 	],
  ];
- $wgJobQueueAggregator = [
-	'class'       => 'JobQueueAggregatorRedis',
-	'redisServer' => 'localhost',
-	'redisConfig' => [
-		'password' => $redisPassword,
-	],
- ];
 
 Note: some MediaWiki setups have trouble running the job queue.  It can be finicky.	 The most
 sure fire way to get it to work is also the slowest.  Add this to your LocalSettings.php:

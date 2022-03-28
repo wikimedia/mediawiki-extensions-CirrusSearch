@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use CirrusSearch\BuildDocument\BuildDocument;
-use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Bulk\Action\AbstractDocument;
 use Elastica\Exception\Bulk\ResponseException;
@@ -33,8 +32,6 @@ use WikiPage;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class DataSender extends ElasticsearchIntermediary {
-	private const ALL_INDEXES_FROZEN_NAME = 'freeze-everything';
-
 	/** @var \Psr\Log\LoggerInterface */
 	private $log;
 
@@ -52,83 +49,15 @@ class DataSender extends ElasticsearchIntermediary {
 	private $searchConfig;
 
 	/**
-	 * @var callable
-	 */
-	private $availableForWriteCallback;
-
-	/**
 	 * @param Connection $conn
 	 * @param SearchConfig $config
-	 * @param callable|null $availableForWriteCallback callback that must return a bool (true: available, false: frozen)
 	 */
-	public function __construct( Connection $conn, SearchConfig $config, callable $availableForWriteCallback = null ) {
+	public function __construct( Connection $conn, SearchConfig $config ) {
 		parent::__construct( $conn, null, 0 );
 		$this->log = LoggerFactory::getInstance( 'CirrusSearch' );
 		$this->failedLog = LoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
 		$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->searchConfig = $config;
-		$this->availableForWriteCallback = $availableForWriteCallback ?: function () {
-			return $this->metastoreAvailableForWrite();
-		};
-	}
-
-	/**
-	 * Disallow writes to all indices
-	 *
-	 * @param string $reason Why writes are being paused
-	 */
-	public function freezeIndexes( $reason ) {
-		$this->log->info( "Freezing writes to all indices" );
-		$doc = new \Elastica\Document( self::ALL_INDEXES_FROZEN_NAME, [
-			'host' => gethostname(),
-			'timestamp' => time(),
-			'reason' => strval( $reason ),
-		] );
-		$doc->setDocAsUpsert( true );
-		$doc->setRetryOnConflict( $this->retryOnConflict() );
-
-		$type = MetaStoreIndex::getElasticaType( $this->connection );
-		$type->addDocument( $doc );
-		// Ensure our freeze is immediately seen (mostly for testing purposes)
-		$type->getIndex()->refresh();
-	}
-
-	/**
-	 * Allow writes
-	 *
-	 */
-	public function thawIndexes() {
-		$this->log->info( "Thawing writes to all indices" );
-		MetaStoreIndex::getElasticaType( $this->connection )->deleteIds( [
-			self::ALL_INDEXES_FROZEN_NAME,
-		] );
-	}
-
-	/**
-	 * Checks if all the specified indexes are available for writes. They might
-	 * not currently allow writes during procedures like reindexing or rolling
-	 * restarts.
-	 *
-	 * @return bool
-	 */
-	public function isAvailableForWrites() {
-		return ( $this->availableForWriteCallback )();
-	}
-
-	/**
-	 * @return bool
-	 */
-	private function metastoreAvailableForWrite() {
-		$response = MetaStoreIndex::getElasticaType( $this->connection )
-			->request( self::ALL_INDEXES_FROZEN_NAME, 'GET', [], [
-				'_source' => 'false',
-			] );
-		$result = $response->getData();
-		if ( !isset( $result['found'] ) ) {
-			// Some sort of error response ..what now?
-			return true;
-		}
-		return $result['found'] === false;
 	}
 
 	/**
@@ -136,10 +65,12 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @param string[] $docIds
 	 * @param string $tagField
 	 * @param string $tagPrefix
-	 * @param string|string[]|null $tagNames
+	 * @param string|string[]|null $tagNames A tag name or list of tag names. Each tag will be
+	 *   set for each document ID. Omit for tags which are fully defined by their prefix.
 	 * @param int[]|int[][]|null $tagWeights An optional map of docid => weight. When $tagName is
 	 *   null, the weight is an integer. When $tagName is not null, the weight is itself a
-	 *   tagname => int map. Weights are between 1-1000.
+	 *   tagname => int map. Weights are between 1-1000, and can be omitted (in which case no
+	 *   update will be sent for the corresponding docid/tag combination).
 	 * @param int $batchSize
 	 * @return Status
 	 */
@@ -152,10 +83,6 @@ class DataSender extends ElasticsearchIntermediary {
 		array $tagWeights = null,
 		int $batchSize = 30
 	): Status {
-		if ( !$this->isAvailableForWrites() ) {
-			return Status::newFatal( 'cirrussearch-indexes-frozen' );
-		}
-
 		Assert::parameterType( [ 'string', 'array', 'null' ], $tagNames, '$tagNames' );
 		if ( is_array( $tagNames ) ) {
 			Assert::parameterElementType( 'string', $tagNames, '$tagNames' );
@@ -203,6 +130,9 @@ class DataSender extends ElasticsearchIntermediary {
 				foreach ( $tagNames as $tagName ) {
 					$tagValue = "$tagPrefix/$tagName";
 					if ( $tagWeights !== null ) {
+						if ( !isset( $tagWeights[$docId][$tagName] ) ) {
+							continue;
+						}
 						// To pass the assertions above, the weight must be either an int, a float
 						// with an integer value, or a string representation of one of those.
 						// Convert to int to ensure there is no trailing '.0'.
@@ -210,12 +140,19 @@ class DataSender extends ElasticsearchIntermediary {
 					}
 					$tags[] = $tagValue;
 				}
+				if ( !$tags ) {
+					continue;
+				}
 				$script = new \Elastica\Script\Script( 'super_detect_noop', [
 					'source' => [ $tagField => $tags ],
 					'handlers' => [ $tagField => CirrusIndexField::MULTILIST_HANDLER ],
 				], 'super_detect_noop' );
 				$script->setId( $docId );
 				$bulk->addScript( $script, 'update' );
+			}
+
+			if ( !$bulk->getActions() ) {
+				continue;
 			}
 
 			// Execute the bulk update
@@ -288,10 +225,6 @@ class DataSender extends ElasticsearchIntermediary {
 	public function sendData( $indexType, array $documents, $elasticType = Connection::PAGE_TYPE_NAME ) {
 		if ( !$documents ) {
 			return Status::newGood();
-		}
-
-		if ( !$this->isAvailableForWrites() ) {
-			return Status::newFatal( 'cirrussearch-indexes-frozen' );
 		}
 
 		// Copy the docs so that modifications made in this method are not propagated up to the caller
@@ -480,10 +413,6 @@ class DataSender extends ElasticsearchIntermediary {
 			$elasticType = Connection::PAGE_TYPE_NAME;
 		}
 
-		if ( !$this->isAvailableForWrites() ) {
-			return Status::newFatal( 'cirrussearch-indexes-frozen' );
-		}
-
 		$idCount = count( $docIds );
 		if ( $idCount !== 0 ) {
 			try {
@@ -526,10 +455,6 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @return Status
 	 */
 	public function sendOtherIndexUpdates( $localSite, $indexName, array $otherActions, $batchSize = 30 ) {
-		if ( !$this->isAvailableForWrites() ) {
-			return Status::newFatal( 'cirrussearch-indexes-frozen' );
-		}
-
 		$client = $this->connection->getClient();
 		$status = Status::newGood();
 		foreach ( array_chunk( $otherActions, $batchSize ) as $updates ) {

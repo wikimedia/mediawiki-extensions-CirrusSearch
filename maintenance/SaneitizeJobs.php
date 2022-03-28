@@ -5,9 +5,8 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\Job\CheckerJob;
 use CirrusSearch\MetaStore\MetaSaneitizeJobStore;
-use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\Profile\SearchProfileService;
-use JobQueueGroup;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Push some sanitize jobs to the JobQueue
@@ -248,7 +247,7 @@ EOD
 			usort( $jobs, static function ( CheckerJob $job1, CheckerJob $job2 ) {
 				return $job1->getReadyTimestamp() - $job2->getReleaseTimestamp();
 			} );
-			JobQueueGroup::singleton()->push( $jobs );
+			MediaWikiServices::getInstance()->getJobQueueGroup()->push( $jobs );
 			$this->updateJob( $jobInfo );
 		}
 	}
@@ -281,12 +280,9 @@ EOD
 
 		$this->metaStores = [];
 		foreach ( $connections as $cluster => $connection ) {
-			if ( !MetaStoreIndex::cirrusReady( $connection ) ) {
+			$store = $this->getMetaStore( $connection );
+			if ( !$store->cirrusReady() ) {
 				$this->fatalError( "No metastore found in cluster $cluster" );
-			}
-			$store = new MetaStoreIndex( $connection, $this, $this->getSearchConfig() );
-			if ( !$store->versionIsAtLeast( [ 1, 0 ] ) ) {
-				$this->fatalError( 'Metastore version is too old, expected at least 1.0' );
 			}
 			$this->metaStores[$cluster] = $store->saneitizeJobStore();
 		}
@@ -389,7 +385,7 @@ EOD
 	 * @return int the number of jobs in the CheckerJob queue
 	 */
 	private function getPressure() {
-		$queue = JobQueueGroup::singleton()->get( 'cirrusSearchCheckerJob' );
+		$queue = MediaWikiServices::getInstance()->getJobQueueGroup()->get( 'cirrusSearchCheckerJob' );
 		return $queue->getSize() + $queue->getDelayedCount();
 	}
 

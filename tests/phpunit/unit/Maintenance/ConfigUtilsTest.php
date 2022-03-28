@@ -50,7 +50,7 @@ class ConfigUtilsTest extends CirrusTestCase {
 				'nodes' => [
 					'somenode' => $nodeResponse
 				]
-			] ) );
+			], 200 ) );
 
 		$utils = new ConfigUtils( $client, new NoopPrinter() );
 		$availablePlugins = $utils->scanAvailablePlugins( $bannedPlugins );

@@ -22,9 +22,8 @@
 
 wfLoadExtension( 'Elastica' );
 
-// Disable migration mode to enable the new UI on logged-out users
-// Browser tests rely on the new layout
-$wgVectorSkinMigrationMode = false;
+// Browser tests rely on the new vector skin layout
+$wgDefaultSkin = "vector-2022";
 
 $wgSearchType = 'CirrusSearch';
 $wgCirrusSearchUseExperimentalHighlighter = true;

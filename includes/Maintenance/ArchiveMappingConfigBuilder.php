@@ -8,7 +8,7 @@ class ArchiveMappingConfigBuilder extends MappingConfigBuilder {
 	public const VERSION = '1.0';
 
 	public function buildConfig() {
-		return [ '_doc' => [
+		return [
 			'dynamic' => false,
 			'properties' => [
 				'namespace' => $this->searchIndexFieldFactory
@@ -20,13 +20,13 @@ class ArchiveMappingConfigBuilder extends MappingConfigBuilder {
 					->newKeywordField( 'wiki' )
 					->getMapping( $this->engine ),
 			],
-		] ];
+		];
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	protected function isForPageIndexes() {
+	protected function isForPageIndexes(): bool {
 		return false;
 	}
 

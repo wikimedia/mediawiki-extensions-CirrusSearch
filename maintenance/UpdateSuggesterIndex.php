@@ -674,7 +674,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			'',
 			Request::PUT,
 			$args,
-			[ 'master_timeout' => $this->masterTimeout, 'include_type_name' => false ]
+			[ 'master_timeout' => $this->masterTimeout, 'include_type_name' => 'false' ]
 		);
 
 		// Index create is async, we have to make sure that the index is ready

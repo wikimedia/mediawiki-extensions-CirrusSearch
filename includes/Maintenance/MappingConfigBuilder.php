@@ -267,20 +267,19 @@ class MappingConfigBuilder {
 			$page = $this->setupCopyTo( $page, $nearMatchFields, 'all_near_match' );
 		}
 
-		$mappingConfig = [ '_doc' => $page ];
-
 		if ( $this->isForPageIndexes() ) {
 			// Only trigger the hook when building mapping for indexes of
 			// pages. Maintains compatability with hook impl from when only
 			// pages were run through here and before the mapping type was
 			// renamed to _doc.
-			$mappingConfig = [ 'page' => $mappingConfig['_doc'] ];
+			$mappingConfig = [ 'page' => $page ];
 			$this->cirrusSearchHookRunner->onCirrusSearchMappingConfig( $mappingConfig, $this );
 			Assert::postcondition( count( $mappingConfig ) === 1,
 				'CirrusSearchMappingConfig implementations must not add a new mapping type' );
-			$mappingConfig = [ '_doc' => $mappingConfig['page'] ];
+			$page = $mappingConfig['page'];
 		}
-		return $mappingConfig;
+
+		return $page;
 	}
 
 	/**
@@ -364,7 +363,7 @@ class MappingConfigBuilder {
 	 *
 	 * @return bool
 	 */
-	protected function isForPageIndexes() {
+	protected function isForPageIndexes(): bool {
 		return true;
 	}
 }

@@ -377,9 +377,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->optimizeIndexForExperimentalHighlighter,
 			$this->availablePlugins,
 			$this->mapping,
-			[
-				'_doc' => $this->getType(),
-			],
 			$this
 		);
 		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );

@@ -7,7 +7,6 @@ use CirrusSearch\Maintenance\Printer;
 use CirrusSearch\Util;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
-use Elastica\Type;
 use Elastica\Type\Mapping;
 use RawMessage;
 use Status;
@@ -40,11 +39,6 @@ class MappingValidator extends Validator {
 	private $mappingConfig;
 
 	/**
-	 * @var Type[]
-	 */
-	private $types;
-
-	/**
 	 * @todo this constructor takes way too much arguments - refactor
 	 *
 	 * @param Index $index
@@ -52,7 +46,6 @@ class MappingValidator extends Validator {
 	 * @param bool $optimizeIndexForExperimentalHighlighter
 	 * @param array $availablePlugins
 	 * @param array $mappingConfig
-	 * @param Type[] $types Array with type names as key & type object as value
 	 * @param Printer|null $out
 	 */
 	public function __construct(
@@ -61,7 +54,6 @@ class MappingValidator extends Validator {
 		$optimizeIndexForExperimentalHighlighter,
 		array $availablePlugins,
 		array $mappingConfig,
-		array $types,
 		Printer $out = null
 	) {
 		parent::__construct( $out );
@@ -70,12 +62,10 @@ class MappingValidator extends Validator {
 		$this->masterTimeout = $masterTimeout;
 		$this->optimizeIndexForExperimentalHighlighter = $optimizeIndexForExperimentalHighlighter;
 		$this->availablePlugins = $availablePlugins;
-		Assert::parameter( count( $mappingConfig ) === 1, '$mappingConfig',
-			'Multiple types per index is no longer supported' );
+		// Could be supported, but prefer consistency
+		Assert::parameter( isset( $mappingConfig['properties'] ), '$mappingConfig',
+			'Mapping types are no longer supported, properties must be top level' );
 		$this->mappingConfig = $mappingConfig;
-		Assert::parameter( count( $types ) === 1, '$types',
-			'Multiple types per index is no longer supported' );
-		$this->types = $types;
 	}
 
 	/**
@@ -91,28 +81,17 @@ class MappingValidator extends Validator {
 				"'experimental-highlighter' plugin is not installed on all hosts." ) );
 		}
 
-		$requiredMappings = $this->mappingConfig;
-		if ( !$this->checkMapping( $requiredMappings ) ) {
-			/** @var Mapping[] $actions */
-			$actions = [];
-
-			// TODO Conflict resolution here might leave old portions of mappings
-			foreach ( $this->types as $typeName => $type ) {
-				$action = new Mapping( $type );
-				foreach ( $requiredMappings[$typeName] as $key => $value ) {
-					$action->setParam( $key, $value );
-				}
-
-				$actions[] = $action;
+		if ( !$this->compareMappingToActual() ) {
+			$action = new Mapping( $this->index->getType( '_doc' ) );
+			foreach ( $this->mappingConfig as $key => $value ) {
+				$action->setParam( $key, $value );
 			}
 
 			try {
-				foreach ( $actions as $action ) {
-					$action->send( [
-						'master_timeout' => $this->masterTimeout,
-						'include_type_name' => 'true',
-					] );
-				}
+				$action->send( [
+					'master_timeout' => $this->masterTimeout,
+					'include_type_name' => 'true',
+				] );
 				$this->output( "corrected\n" );
 			} catch ( ExceptionInterface $e ) {
 				$this->output( "failed!\n" );
@@ -128,14 +107,13 @@ class MappingValidator extends Validator {
 	/**
 	 * Check that the mapping returned from Elasticsearch is as we want it.
 	 *
-	 * @param array $requiredMappings the mappings we want
 	 * @return bool is the mapping good enough for us?
 	 */
-	private function checkMapping( array $requiredMappings ) {
-		$actualMappings = Util::getIndexMapping( $this->index, true );
+	private function compareMappingToActual() {
+		$actualMappings = Util::getIndexMapping( $this->index );
 		$this->output( "\n" );
 		$this->outputIndented( "\tValidating mapping..." );
-		if ( $this->checkConfig( $actualMappings, $requiredMappings ) ) {
+		if ( $this->checkConfig( $actualMappings, $this->mappingConfig ) ) {
 			$this->output( "ok\n" );
 			return true;
 		} else {

@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use Elastica\IndexTemplate;
+use Wikimedia\Assert\Assert;
 
 class IndexTemplateBuilder {
 	/**
@@ -45,6 +46,8 @@ class IndexTemplateBuilder {
 		array $availablePlugins,
 		$languageCode
 	) {
+		Assert::parameter( isset( $templateDefinition['mappings']['properties'] ), '$templateDefinition',
+			'Mapping types are no longer supported, properties must be top level in mappings' );
 		$this->connection = $connection;
 		$this->templateName = $templateName;
 		$this->templateDefinition = $templateDefinition;
@@ -75,7 +78,7 @@ class IndexTemplateBuilder {
 	}
 
 	public function execute() {
-		$indexTemplate = new IndexTemplate( $this->connection->getClient(), $this->templateName );
+		$indexTemplate = $this->createIndexTemplate();
 		$analysisConfigBuilder = new AnalysisConfigBuilder( $this->languageCode, $this->availablePlugins, $this->getSearchConfig() );
 		$filter = new AnalysisFilter();
 		list( $analysis, $mappings ) = $filter->filterAnalysis( $analysisConfigBuilder->buildConfig(),
@@ -101,5 +104,20 @@ class IndexTemplateBuilder {
 
 	private function getSearchConfig() {
 		return $this->connection->getConfig();
+	}
+
+	//
+	private function createIndexTemplate() {
+		// Can go back to plain IndexTemplate when upgrading to Elastica 7
+		return new class( $this->connection->getClient(), $this->templateName ) extends IndexTemplate {
+			public function request( $method, $data = [], array $query = [] ) {
+				$path = '_template/' . $this->getName();
+				return $this->getClient()->request( $path, $method, $data, $query );
+			}
+
+			public function create( array $args = [] ) {
+				return $this->request( \Elastica\Request::PUT, $args, [ 'include_type_name' => 'false' ] );
+			}
+		};
 	}
 }

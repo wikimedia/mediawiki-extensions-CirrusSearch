@@ -196,7 +196,7 @@ class MetaStoreIndex {
 			$this->buildIndexConfiguration(),
 			[
 				'master_timeout' => $this->getMasterTimeout(),
-				'include_type_name' => 'true'
+				'include_type_name' => 'false'
 			]
 		);
 		$this->log( " ok\n" );
@@ -209,7 +209,7 @@ class MetaStoreIndex {
 	 * Don't forget to update METASTORE_VERSION when changing something
 	 * in the settings.
 	 *
-	 * @return array[] the mapping
+	 * @return array the mapping
 	 */
 	private function buildMapping() {
 		$properties = [
@@ -231,10 +231,8 @@ class MetaStoreIndex {
 		}
 
 		return [
-			'_doc' => [
-				'dynamic' => false,
-				'properties' => $properties,
-			],
+			'dynamic' => false,
+			'properties' => $properties,
 		];
 	}
 

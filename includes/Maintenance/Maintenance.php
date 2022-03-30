@@ -237,4 +237,31 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		}
 	}
 
+	/**
+	 * Provides support for backward compatible CLI options
+	 *
+	 * Requires either one or neither of the two options to be provided.
+	 *
+	 * @param string $current The current option to request
+	 * @param string $bc The old option to provide BC support for
+	 * @param bool $required True if the option must be provided. When false and no option
+	 *  is provided null is returned.
+	 * @return mixed
+	 */
+	protected function getBackCompatOption( string $current, string $bc, bool $required = true ) {
+		if ( $this->hasOption( $current ) && $this->hasOption( $bc ) ) {
+			$this->error( "\nERROR: --$current cannot be provided with --$bc" );
+			$this->maybeHelp( true );
+		} elseif ( $this->hasOption( $current ) ) {
+			return $this->getOption( $current );
+		} elseif ( $this->hasOption( $bc ) ) {
+			return $this->getOption( $bc );
+		} elseif ( $required ) {
+			$this->error( "\nERROR: Param $current is required" );
+			$this->maybeHelp( true );
+		} else {
+			return null;
+		}
+	}
+
 }

@@ -183,8 +183,8 @@ class ConfigDump extends ApiBase {
 		$conn = $this->getCirrusConnection();
 		$indexBaseName = $conn->getConfig()->get( SearchConfig::INDEX_BASE_NAME );
 		foreach ( $nsInfo->getValidNamespaces() as $ns ) {
-			$indexType = $conn->getIndexSuffixForNamespace( $ns );
-			$indexName = $conn->getIndexName( $indexBaseName, $indexType );
+			$indexSuffix = $conn->getIndexSuffixForNamespace( $ns );
+			$indexName = $conn->getIndexName( $indexBaseName, $indexSuffix );
 			$result->addValue( 'CirrusSearchConcreteNamespaceMap', $ns, $indexName );
 		}
 	}

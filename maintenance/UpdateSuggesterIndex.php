@@ -60,7 +60,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	/**
 	 * @var string
 	 */
-	private $indexTypeName;
+	private $indexSuffix;
 
 	/**
 	 * @var string
@@ -165,7 +165,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->disablePoolCountersAndLogging();
 		$this->workAroundBrokenMessageCache();
 		$this->masterTimeout = $this->getOption( 'masterTimeout', $wgCirrusSearchMasterTimeout );
-		$this->indexTypeName = Connection::TITLE_SUGGEST_TYPE;
+		$this->indexSuffix = Connection::TITLE_SUGGEST_INDEX_SUFFIX;
 
 		$useCompletion = $this->getSearchConfig()->get( 'CirrusSearchUseCompletionSuggester' );
 
@@ -289,7 +289,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			'current', $this->getIndexTypeName()
 		);
 		$this->oldIndex = $this->getConnection()->getIndex(
-			$this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier
+			$this->indexBaseName, $this->indexSuffix, $oldIndexIdentifier
 		);
 		$this->indexIdentifier = $this->utils->pickIndexIdentifierFromOption(
 			'now', $this->getIndexTypeName()
@@ -317,7 +317,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			'current', $this->getIndexTypeName()
 		);
 		$oldIndex = $this->getConnection()->getIndex(
-			$this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier
+			$this->indexBaseName, $this->indexSuffix, $oldIndexIdentifier
 		);
 		if ( !$oldIndex->exists() ) {
 			$this->error( 'Index does not exist yet cannot recycle.' );
@@ -342,7 +342,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		try {
 			$versionDoc = $this->getMetaStore()
 				->versionStore()
-				->find( $this->indexBaseName, $this->indexTypeName );
+				->find( $this->indexBaseName, $this->indexSuffix );
 		} catch ( \Elastica\Exception\NotFoundException $nfe ) {
 			$this->error( 'Index missing in mw_cirrus_metastore::version, cannot recycle.' );
 			return false;
@@ -508,7 +508,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	private function indexData() {
 		// We build the suggestions by reading CONTENT and GENERAL indices.
 		// This does not support extra indices like FILES on commons.
-		$sourceIndexTypes = [ Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE ];
+		$sourceIndexSuffixes = [ Connection::CONTENT_INDEX_SUFFIX, Connection::GENERAL_INDEX_SUFFIX ];
 
 		$query = new Query();
 		$query->setSource( [
@@ -524,8 +524,8 @@ class UpdateSuggesterIndex extends Maintenance {
 		$query->setQuery( $bool );
 		$query->setSort( [ '_doc' ] );
 
-		foreach ( $sourceIndexTypes as $sourceIndexType ) {
-			$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType );
+		foreach ( $sourceIndexSuffixes as $sourceIndexSuffix ) {
+			$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexSuffix );
 			$search = new \Elastica\Search( $this->getClient() );
 			$search->setQuery( $query );
 			$search->addIndex( $sourceIndex );
@@ -540,10 +540,10 @@ class UpdateSuggesterIndex extends Maintenance {
 				if ( $totalDocsToDump === -1 ) {
 					$totalDocsToDump = $results->getTotalHits();
 					if ( $totalDocsToDump === 0 ) {
-						$this->log( "No documents to index from $sourceIndexType\n" );
+						$this->log( "No documents to index from $sourceIndexSuffix\n" );
 						break;
 					}
-					$this->log( "Indexing $totalDocsToDump documents from $sourceIndexType with " .
+					$this->log( "Indexing $totalDocsToDump documents from $sourceIndexSuffix with " .
 						"batchId: {$this->builder->getBatchId()}\n" );
 				}
 				$inputDocs = [];
@@ -566,7 +566,7 @@ class UpdateSuggesterIndex extends Maintenance {
 					}
 				);
 			}
-			$this->log( "Indexing from $sourceIndexType index done.\n" );
+			$this->log( "Indexing from $sourceIndexSuffix index done.\n" );
 		}
 	}
 
@@ -719,11 +719,11 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * @return string Number of replicas this index should have. May be a range such as '0-2'
 	 */
 	private function getReplicaCount() {
-		return $this->getConnection()->getSettings()->getReplicaCount( $this->indexTypeName );
+		return $this->getConnection()->getSettings()->getReplicaCount( $this->indexSuffix );
 	}
 
 	private function getShardCount() {
-		return $this->getConnection()->getSettings()->getShardCount( $this->indexTypeName );
+		return $this->getConnection()->getSettings()->getShardCount( $this->indexSuffix );
 	}
 
 	/**
@@ -731,14 +731,14 @@ class UpdateSuggesterIndex extends Maintenance {
 	 *  node. -1 for unlimited.
 	 */
 	private function getMaxShardsPerNode() {
-		return $this->getConnection()->getSettings()->getMaxShardsPerNode( $this->indexTypeName );
+		return $this->getConnection()->getSettings()->getMaxShardsPerNode( $this->indexSuffix );
 	}
 
 	private function updateVersions() {
 		$this->log( "Updating tracking indexes..." );
 		$this->getMetaStore()
 			->versionStore()
-			->update( $this->indexBaseName, $this->indexTypeName );
+			->update( $this->indexBaseName, $this->indexSuffix );
 		$this->output( "ok.\n" );
 	}
 
@@ -747,7 +747,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	public function getIndex() {
 		return $this->getConnection()->getIndex(
-			$this->indexBaseName, $this->indexTypeName, $this->indexIdentifier
+			$this->indexBaseName, $this->indexSuffix, $this->indexIdentifier
 		);
 	}
 
@@ -769,7 +769,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * @return string name of the index type being updated
 	 */
 	protected function getIndexTypeName() {
-		return $this->getConnection()->getIndexName( $this->indexBaseName, $this->indexTypeName );
+		return $this->getConnection()->getIndexName( $this->indexBaseName, $this->indexSuffix );
 	}
 }
 

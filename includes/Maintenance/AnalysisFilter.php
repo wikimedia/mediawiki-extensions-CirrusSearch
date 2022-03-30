@@ -47,7 +47,7 @@ class AnalysisFilter {
 				$this->findUsedFromField( $mappings['properties'] ) );
 		} else {
 			// BC for parts still using index types
-			foreach ( $mappings as $indexType => $config ) {
+			foreach ( $mappings as $config ) {
 				$analyzers->union(
 					$this->findUsedFromField( $config['properties'] ) );
 			}
@@ -93,8 +93,8 @@ class AnalysisFilter {
 			);
 		} else {
 			// BC for parts still using index types
-			foreach ( $mappings as $indexType => $config ) {
-				$mappings[$indexType]['properties'] = $this->pushAnalyzerAliasesIntoField(
+			foreach ( $mappings as $mappingType => $config ) {
+				$mappings[$mappingType]['properties'] = $this->pushAnalyzerAliasesIntoField(
 					$config['properties'], $aliases
 				);
 			}

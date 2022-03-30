@@ -193,7 +193,7 @@ class Updater extends ElasticsearchIntermediary {
 		$titles = $this->pagesToTitles( $pages );
 		Job\OtherIndex::queueIfRequired( $this->connection->getConfig(), $titles, $this->writeToClusterName );
 
-		$allDocuments = array_fill_keys( $this->connection->getAllIndexTypes(), [] );
+		$allDocuments = array_fill_keys( $this->connection->getAllIndexSuffixes(), [] );
 		$services = MediaWikiServices::getInstance();
 		$builder = new BuildDocument(
 			$this->connection,
@@ -211,12 +211,12 @@ class Updater extends ElasticsearchIntermediary {
 		}
 
 		$count = 0;
-		foreach ( $allDocuments as $indexType => $documents ) {
-			$this->pushElasticaWriteJobs( $documents, static function ( array $chunk, string $cluster ) use ( $indexType ) {
+		foreach ( $allDocuments as $indexSuffix => $documents ) {
+			$this->pushElasticaWriteJobs( $documents, static function ( array $chunk, string $cluster ) use ( $indexSuffix ) {
 				return Job\ElasticaWrite::build(
 					$cluster,
 					'sendData',
-					[ $indexType, $chunk ]
+					[ $indexSuffix, $chunk ]
 				);
 			} );
 			$count += count( $documents );
@@ -237,15 +237,15 @@ class Updater extends ElasticsearchIntermediary {
 	) {
 		Assert::precondition( $page->exists(), "page must exist" );
 		$docId = $this->connection->getConfig()->makeId( $page->getId() );
-		$indexType = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
+		$indexSuffix = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
 		$this->pushElasticaWriteJobs( [ $docId ], static function ( array $docIds, string $cluster ) use (
-			$docId, $indexType, $tagField, $tagPrefix, $tagNames, $tagWeights
+			$docId, $indexSuffix, $tagField, $tagPrefix, $tagNames, $tagWeights
 		) {
 			$tagWeights = ( $tagWeights === null ) ? null : [ $docId => $tagWeights ];
 			return Job\ElasticaWrite::build(
 				$cluster,
 				'sendUpdateWeightedTags',
-				[ $indexType, $docIds, $tagField, $tagPrefix, $tagNames, $tagWeights ]
+				[ $indexSuffix, $docIds, $tagField, $tagPrefix, $tagNames, $tagWeights ]
 			);
 		} );
 	}
@@ -258,14 +258,14 @@ class Updater extends ElasticsearchIntermediary {
 	public function resetWeightedTags( ProperPageIdentity $page, string $tagField, string $tagPrefix ) {
 		Assert::precondition( $page->exists(), "page must exist" );
 		$docId = $this->connection->getConfig()->makeId( $page->getId() );
-		$indexType = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
+		$indexSuffix = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
 		$this->pushElasticaWriteJobs( [ $docId ], static function (
 			array $docIds, string $cluster
-		) use ( $indexType, $tagField, $tagPrefix ) {
+		) use ( $indexSuffix, $tagField, $tagPrefix ) {
 			return Job\ElasticaWrite::build(
 				$cluster,
 				'sendResetWeightedTags',
-				[ $indexType, $docIds, $tagField, $tagPrefix ]
+				[ $indexSuffix, $docIds, $tagField, $tagPrefix ]
 			);
 		} );
 	}
@@ -277,11 +277,11 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param Title[] $titles List of titles to delete.  If empty then skipped other index
 	 *      maintenance is skipped.
 	 * @param int[]|string[] $docIds List of elasticsearch document ids to delete
-	 * @param string|null $indexType index from which to delete.  null means all.
+	 * @param string|null $indexSuffix index from which to delete.  null means all.
 	 * @param array $writeJobParams Parameters passed on to ElasticaWriteJob
 	 * @return bool Always returns true.
 	 */
-	public function deletePages( $titles, $docIds, $indexType = null, array $writeJobParams = [] ) {
+	public function deletePages( $titles, $docIds, $indexSuffix = null, array $writeJobParams = [] ) {
 		Job\OtherIndex::queueIfRequired( $this->connection->getConfig(), $titles, $this->writeToClusterName );
 
 		// Deletes are fairly cheap to send, they can be batched in larger
@@ -289,11 +289,11 @@ class Updater extends ElasticsearchIntermediary {
 		$batchSize = 50;
 		$this->pushElasticaWriteJobs(
 			$docIds,
-			static function ( array $chunk, string $cluster ) use ( $indexType, $writeJobParams ) {
+			static function ( array $chunk, string $cluster ) use ( $indexSuffix, $writeJobParams ) {
 				return Job\ElasticaWrite::build(
 					$cluster,
 					'sendDeletes',
-					[ $chunk, $indexType ],
+					[ $chunk, $indexSuffix ],
 					$writeJobParams
 				);
 			},
@@ -318,7 +318,7 @@ class Updater extends ElasticsearchIntermediary {
 			return Job\ElasticaWrite::build(
 				$cluster,
 				'sendData',
-				[ Connection::ARCHIVE_INDEX_TYPE, $chunk ],
+				[ Connection::ARCHIVE_INDEX_SUFFIX, $chunk ],
 				[ 'private_data' => true ]
 			);
 		} );

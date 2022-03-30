@@ -519,6 +519,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$pageAndNs->addShould( new Elastica\Query\Term( [ "namespace" => NS_MAIN ] ) );
 		$pageAndNs->addShould( new Elastica\Query\Term( [ "redirect.namespace" => NS_MAIN ] ) );
 		$pageAndNs->addMust( new Elastica\Query\Type( Connection::PAGE_TYPE_NAME ) );
+		$pageAndNs->setMinimumShouldMatch( 1 );
 		$bool = new Elastica\Query\BoolQuery();
 		$bool->addFilter( $pageAndNs );
 

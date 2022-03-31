@@ -59,38 +59,6 @@ class Util {
 	}
 
 	/**
-	 * Check if too arrays are recursively the same.  Values are compared with != and arrays
-	 * are descended into.
-	 *
-	 * @param array $lhs one array
-	 * @param array $rhs the other array
-	 * @return bool are they equal
-	 */
-	public static function recursiveSame( $lhs, $rhs ) {
-		if ( array_keys( $lhs ) != array_keys( $rhs ) ) {
-			return false;
-		}
-		foreach ( $lhs as $key => $value ) {
-			if ( !isset( $rhs[ $key ] ) ) {
-				return false;
-			}
-			if ( is_array( $value ) ) {
-				if ( !is_array( $rhs[ $key ] ) ) {
-					return false;
-				}
-				if ( !self::recursiveSame( $value, $rhs[ $key ] ) ) {
-					return false;
-				}
-			} else {
-				if ( $value != $rhs[ $key ] ) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	/**
 	 * @param string $type The pool counter type, such as CirrusSearch-Search
 	 * @param bool $isSuccess If the pool counter gave a success, or failed the request
 	 * @return string The key used for collecting timing stats about this pool counter request

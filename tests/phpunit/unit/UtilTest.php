@@ -25,29 +25,6 @@ namespace CirrusSearch;
  */
 class UtilTest extends CirrusTestCase {
 
-	/**
-	 * @dataProvider recursiveSameTestCases
-	 */
-	public function testRecursiveSame( bool $same, array $lhs, array $rhs ) {
-		$this->assertSame( $same, Util::recursiveSame( $lhs, $rhs ) );
-	}
-
-	public function recursiveSameTestCases() {
-		return [
-			[ true, [], [] ],
-			[ false, [ true ], [] ],
-			[ false, [ true ], [ false ] ],
-			[ true, [ true ], [ true ] ],
-			[ false, [ 1 ], [ 2 ] ],
-			[ false, [ 1, 2 ], [ 2, 1 ] ],
-			[ true, [ 1, 2, 3 ], [ 1, 2, 3 ] ],
-			[ false, [ [ 1 ] ], [ [ 2 ] ] ],
-			[ true, [ [ 1 ] ], [ [ 1 ] ] ],
-			[ true, [ 'candle' => [ 'wax' => 'foo' ] ], [ 'candle' => [ 'wax' => 'foo' ] ] ],
-			[ false, [ 'candle' => [ 'wax' => 'foo' ] ], [ 'candle' => [ 'wax' => 'bar' ] ] ],
-		];
-	}
-
 	public function provideQuestionMarkQueries() {
 		// tests are input, strippingLevel, expectedOutput
 		return [

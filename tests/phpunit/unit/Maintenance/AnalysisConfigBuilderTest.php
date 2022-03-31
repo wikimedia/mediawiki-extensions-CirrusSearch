@@ -628,11 +628,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'languageAnalysis/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$extraConfig = CirrusIntegrationTestCase::loadFixture( $testFile );
-			if ( isset( $extraConfig[ 'LangCode' ] ) ) {
-				$langCode = $extraConfig[ 'LangCode' ];
-			} else {
-				$langCode = $testName;
-			}
+			$langCode = $extraConfig['LangCode'] ?? $testName;
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
 			if ( CirrusIntegrationTestCase::hasFixture( $expectedFile ) ) {
 				$expected = CirrusIntegrationTestCase::loadFixture( $expectedFile );

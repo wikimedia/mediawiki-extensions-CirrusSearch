@@ -1178,13 +1178,7 @@ class AnalysisConfigBuilder {
 	private function resolveFilters( array &$config, array $standardFilters, array $defaultFilters, $prefix ) {
 		$resultFilters = [];
 		foreach ( $config[ 'filter' ] as $name => $filter ) {
-			$existingFilter = null;
-			if ( isset( $standardFilters[ $name ] ) ) {
-				$existingFilter = $standardFilters[ $name ];
-			} elseif ( isset( $defaultFilters[ $name ] ) ) {
-				$existingFilter = $defaultFilters[ $name ];
-			}
-
+			$existingFilter = $standardFilters[$name] ?? $defaultFilters[$name] ?? null;
 			if ( $existingFilter ) { // Filter with this name already exists
 				if ( $existingFilter != $filter ) {
 					// filter with the same name but different config - need to

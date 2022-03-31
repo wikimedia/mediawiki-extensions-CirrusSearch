@@ -100,16 +100,8 @@ class FancyTitleResultsType extends TitleResultsType {
 	 * @return \Title|false choose best
 	 */
 	public static function chooseBestTitleOrRedirect( array $match ) {
-		if ( isset( $match['titleMatch'] ) ) {
-			return $match['titleMatch'];
-		} else {
-			if ( isset( $match['redirectMatches'][0] ) ) {
-				// TODO maybe dig around in the redirect matches and find the best one?
-				return $match['redirectMatches'][0];
-			}
-		}
-
-		return false;
+		// TODO maybe dig around in the redirect matches and find the best one?
+		return $match['titleMatch'] ?? $match['redirectMatches'][0] ?? false;
 	}
 
 	/**

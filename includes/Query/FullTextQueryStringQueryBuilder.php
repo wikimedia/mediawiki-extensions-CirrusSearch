@@ -130,11 +130,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		foreach ( $query as $queryPart ) {
 			if ( isset( $queryPart[ 'escaped' ] ) ) {
 				$escapedQuery[] = $queryPart[ 'escaped' ];
-				if ( isset( $queryPart[ 'nonAll' ] ) ) {
-					$nonAllQuery[] = $queryPart[ 'nonAll' ];
-				} else {
-					$nonAllQuery[] = $queryPart[ 'escaped' ];
-				}
+				$nonAllQuery[] = $queryPart['nonAll'] ?? $queryPart['escaped'];
 				continue;
 			}
 			if ( isset( $queryPart[ 'raw' ] ) ) {

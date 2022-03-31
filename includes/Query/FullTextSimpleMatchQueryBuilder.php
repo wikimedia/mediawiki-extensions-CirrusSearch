@@ -57,12 +57,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	public function __construct( SearchConfig $config, array $feature, array $settings ) {
 		parent::__construct( $config, $feature );
 		$this->fields = $settings['fields'];
-		if ( isset( $settings['filter'] ) ) {
-			$this->filter = $settings['filter'];
-		} else {
-			$this->filter = [ 'type' => 'default' ];
-		}
-
+		$this->filter = $settings['filter'] ?? [ 'type' => 'default' ];
 		$this->phraseFields = $settings['phrase_rescore_fields'];
 		$this->defaultStemWeight = $settings['default_stem_weight'];
 		$this->defaultQueryType = $settings['default_query_type'];

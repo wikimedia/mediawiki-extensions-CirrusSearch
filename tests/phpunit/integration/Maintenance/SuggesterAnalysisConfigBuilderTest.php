@@ -17,11 +17,7 @@ class SuggesterAnalysisConfigBuilderTest extends CirrusIntegrationTestCase {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'languageAnalysisCompSuggest/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$extraConfig = CirrusIntegrationTestCase::loadFixture( $testFile );
-			if ( isset( $extraConfig[ 'LangCode' ] ) ) {
-				$langCode = $extraConfig[ 'LangCode' ];
-			} else {
-				$langCode = $testName;
-			}
+			$langCode = $extraConfig['LangCode'] ?? $testName;
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
 			$tests[ $testName ] = [ $expectedFile, $langCode, $extraConfig ];
 		}

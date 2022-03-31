@@ -32,9 +32,7 @@ use Elastica\Query\AbstractQuery;
  */
 class RescoreBuilder {
 
-	/**
-	 * @var int Maximum number of rescore profile fallbacks
-	 */
+	/** Maximum number of rescore profile fallbacks */
 	private const FALLBACK_LIMIT = 4;
 
 	/**

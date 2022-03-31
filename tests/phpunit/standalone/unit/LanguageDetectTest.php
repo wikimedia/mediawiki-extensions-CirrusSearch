@@ -91,9 +91,7 @@ class LanguageDetectTest extends CirrusTestCase {
 			'CirrusSearchMockLanguage' => null,
 		];
 		$factory = new LanguageDetectorFactory( new HashSearchConfig( $config ) );
-		$actual = array_map( static function ( $v ) {
-			return get_class( $v );
-		}, $factory->getDetectors() );
+		$actual = array_map( 'get_class', $factory->getDetectors() );
 		$this->assertEquals( $exepected, $actual );
 	}
 

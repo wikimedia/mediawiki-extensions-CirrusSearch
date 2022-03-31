@@ -30,12 +30,7 @@ class PageIdFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		$key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector
 	) {
 		$values = explode( '|', $value );
-		$validValues = array_filter( $values, static function ( $singleValue ) {
-			return ctype_digit( $singleValue );
-		} );
-		$validValues = array_map( static function ( $singleValue ) {
-			return (int)$singleValue;
-		}, array_values( $validValues ) );
+		$validValues = array_map( 'intval', array_values( array_filter( $values, 'ctype_digit' ) ) );
 		if ( count( $validValues ) < count( $values ) ) {
 			$invalidValues = array_values( array_diff( $values, $validValues ) );
 			$warningCollector->addWarning( 'cirrussearch-feature-pageid-invalid-id',

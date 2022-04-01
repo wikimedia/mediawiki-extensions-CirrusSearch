@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use ExtensionRegistry;
+use MediaWiki\MainConfigSchema;
 
 /**
  * @covers \CirrusSearch\Maintenance\MappingConfigBuilder
@@ -33,7 +34,7 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 		// which provide extra fields, but we only want the default values
 		// from core.
 		$this->setMwGlobals( [
-			'wgContentHandlers' => $this->defaultContentHandlers(),
+			'wgContentHandlers' => MainConfigSchema::ContentHandlers['default'],
 		] );
 		$this->mergeMwGlobalArrayValue( 'wgHooks', [
 			'CirrusSearchMappingConfig' => [],
@@ -62,12 +63,5 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 			$mappingJson,
 			CirrusIntegrationTestCase::canRebuildFixture()
 		);
-	}
-
-	private function defaultContentHandlers() {
-		global $IP;
-		require "$IP/includes/DefaultSettings.php";
-		// phpcs:ignore MediaWiki.VariableAnalysis.MisleadingGlobalNames
-		return $wgContentHandlers;
 	}
 }

@@ -8,6 +8,7 @@ use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\UserTestingEngine;
 use MediaWiki\MediaWikiServices;
+use Wikimedia\ParamValidator\ParamValidator;
 
 /**
  * Dumps CirrusSearch configuration for easy viewing.
@@ -230,14 +231,14 @@ class ConfigDump extends ApiBase {
 	public function getAllowedParams() {
 		return [
 			'prop' => [
-				ApiBase::PARAM_DFLT => 'globals|namespacemap|profiles',
-				ApiBase::PARAM_TYPE => [
+				ParamValidator::PARAM_DEFAULT => 'globals|namespacemap|profiles',
+				ParamValidator::PARAM_TYPE => [
 					'globals',
 					'namespacemap',
 					'profiles',
 					'usertesting',
 				],
-				ApiBase::PARAM_ISMULTI => true,
+				ParamValidator::PARAM_ISMULTI => true,
 			],
 		];
 	}

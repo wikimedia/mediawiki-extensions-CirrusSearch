@@ -21,7 +21,7 @@ class SearchResultsPage extends Page {
 	}
 
 	get_warnings() {
-		return this.collect_element_texts( '.searchresults div.warningbox p' );
+		return this.collect_element_texts( '.searchresults div.mw-warning-box p' );
 	}
 
 	has_warnings() {
@@ -29,7 +29,7 @@ class SearchResultsPage extends Page {
 	}
 
 	get_errors() {
-		return this.collect_element_texts( '.searchresults div.errorbox p' );
+		return this.collect_element_texts( '.searchresults div.mw-error-box p' );
 	}
 
 	has_errors() {

@@ -152,6 +152,7 @@ class BuildDocument {
 	 *
 	 * @param Document $doc
 	 * @return bool True when the document update can proceed
+	 * @throws BuildDocumentException
 	 */
 	public function finalize( Document $doc ): bool {
 		$flags = CirrusIndexField::getHint( $doc, self::HINT_FLAGS );

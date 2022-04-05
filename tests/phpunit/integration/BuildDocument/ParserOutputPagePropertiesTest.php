@@ -3,7 +3,6 @@
 namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\CirrusSearch;
-use CirrusSearch\Connection;
 use CirrusSearch\HashSearchConfig;
 use ContentHandler;
 use Elastica\Document;
@@ -121,12 +120,18 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 		$parserOutput->method( 'getDisplayTitle' )
 			->willReturn( $displayTitle );
 
-		$engine = new CirrusSearch();
 		$page = $this->pageWithMockParserOutput( $title, $parserOutput );
-		$conn = $this->mock( Connection::class );
 		$doc = $this->buildDoc( $page );
 		$this->assertTrue( $doc->has( 'display_title' ), 'field must exist' );
 		$this->assertSame( $expected, $doc->get( 'display_title' ) );
+	}
+
+	public function testParserOutputUnavailable() {
+		$title = Title::makeTitle( NS_MAIN, 'Phpunit' );
+		$page = $this->pageWithMockParserOutput( $title, null );
+		$this->expectException( BuildDocumentException::class );
+		$this->expectExceptionMessage( "ParserOutput cannot be obtained." );
+		$this->buildDoc( $page );
 	}
 
 	private function mock( $className ) {
@@ -135,7 +140,7 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 			->getMock();
 	}
 
-	private function pageWithMockParserOutput( Title $title, ParserOutput $parserOutput ) {
+	private function pageWithMockParserOutput( Title $title, ?ParserOutput $parserOutput ) {
 		$contentHandler = $this->mock( ContentHandler::class );
 		$contentHandler->method( 'getParserOutputForIndexing' )
 			->willReturn( $parserOutput );

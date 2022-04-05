@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\BuildDocument\BuildDocument;
+use CirrusSearch\BuildDocument\BuildDocumentException;
 use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Bulk\Action\AbstractDocument;
 use Elastica\Exception\Bulk\ResponseException;
@@ -246,13 +247,22 @@ class DataSender extends ElasticsearchIntermediary {
 			new CirrusSearchHookRunner( $services->getHookContainer() ),
 			$services->getBacklinkCacheFactory()
 		);
-		foreach ( $documents as $i => $doc ) {
-			if ( !$builder->finalize( $doc ) ) {
-				// Something has changed while this was hanging out in the job
-				// queue and should no longer be written to elastic.
-				unset( $documents[$i] );
+		try {
+			foreach ( $documents as $i => $doc ) {
+				if ( !$builder->finalize( $doc ) ) {
+					// Something has changed while this was hanging out in the job
+					// queue and should no longer be written to elastic.
+					unset( $documents[$i] );
+				}
 			}
+		} catch ( BuildDocumentException $be ) {
+			$this->failedLog->warning(
+				'Failed to update documents',
+				[ 'exception' => $be ]
+			);
+			return Status::newFatal( 'cirrussearch-failed-build-document' );
 		}
+
 		if ( !$documents ) {
 			// All documents noop'd
 			return Status::newGood();

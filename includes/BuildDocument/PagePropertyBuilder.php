@@ -43,6 +43,7 @@ interface PagePropertyBuilder {
 	 *
 	 * @param Document $doc
 	 * @param Title $title
+	 * @throws BuildDocumentException
 	 */
 	public function finalize( Document $doc, Title $title ): void;
 }

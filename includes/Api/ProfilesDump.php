@@ -5,6 +5,7 @@ namespace CirrusSearch\Api;
 use ApiMain;
 use CirrusSearch\Profile\SearchProfileOverride;
 use CirrusSearch\Profile\SearchProfileService;
+use Wikimedia\ParamValidator\ParamValidator;
 
 /**
  * Dumps CirrusSearch profiles for easy viewing.
@@ -79,7 +80,7 @@ class ProfilesDump extends \ApiBase {
 	public function getAllowedParams() {
 		return [
 			'verbose' => [
-				self::PARAM_DFLT => false,
+				ParamValidator::PARAM_DEFAULT => false,
 			],
 		];
 	}

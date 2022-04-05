@@ -38,7 +38,7 @@ class QueryCompSuggestBuildDoc extends ApiQueryBase {
 		return [
 			'method' => [
 				ParamValidator::PARAM_TYPE => 'string',
-				self::PARAM_DFLT => $this->getSearchConfig()->get( 'CirrusSearchCompletionDefaultScore' ),
+				ParamValidator::PARAM_DEFAULT => $this->getSearchConfig()->get( 'CirrusSearchCompletionDefaultScore' ),
 			],
 		];
 	}

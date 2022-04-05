@@ -3,7 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use Elastica\Client;
-use MWElasticUtils;
+use MediaWiki\Extension\Elastica\MWElasticUtils;
 
 /**
  * This program is free software; you can redistribute it and/or modify

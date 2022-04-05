@@ -2,8 +2,8 @@
 
 namespace CirrusSearch;
 
-use ElasticaConnection;
 use Exception;
+use MediaWiki\Extension\Elastica\ElasticaConnection;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\Assert\Assert;
 

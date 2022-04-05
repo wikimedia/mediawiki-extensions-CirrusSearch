@@ -12,7 +12,7 @@ use Elastica\Index;
 use Elastica\Query;
 use Elastica\Request;
 use Elastica\Status;
-use MWElasticUtils;
+use MediaWiki\Extension\Elastica\MWElasticUtils;
 
 /**
  * Update the search configuration on the search backend for the title

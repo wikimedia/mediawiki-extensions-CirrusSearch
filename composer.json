@@ -5,8 +5,8 @@
 	"license": "GPL-2.0-or-later",
 	"minimum-stability": "dev",
 	"require": {
-		"wikimedia/textcat": "1.3.0",
-		"wikimedia/lucene-explain-parser": "1.0.0"
+		"wikimedia/textcat": "1.3.0 || 2.0.0",
+		"wikimedia/lucene-explain-parser": "1.0.0 || 2.0.0"
 	},
 	"require-dev": {
 		"justinrainbow/json-schema": "~5.2",

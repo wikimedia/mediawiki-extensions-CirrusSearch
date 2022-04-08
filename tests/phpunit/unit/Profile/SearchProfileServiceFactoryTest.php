@@ -2,17 +2,40 @@
 
 namespace CirrusSearch\Profile;
 
-use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CirrusSearchHookRunner;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolverFactory;
 use EmptyBagOStuff;
+use MediaWiki\Interwiki\NullInterwikiLookup;
+use MediaWiki\Session\TestBagOStuff;
+use MediaWiki\User\StaticUserOptionsLookup;
+use MediaWiki\User\UserIdentityValue;
 
 /**
  * @group CirrusSearch
  * @covers \CirrusSearch\Profile\SearchProfileServiceFactory
  */
-class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
+class SearchProfileServiceFactoryTest extends CirrusTestCase {
+	/**
+	 * @var array
+	 */
+	private static $i18nMessages;
+
+	public static function setUpBeforeClass(): void {
+		parent::setUpBeforeClass();
+
+		$jsonQQQQ = file_get_contents( __DIR__ . "/../../../../i18n/qqq.json" );
+
+		if ( $jsonQQQQ === false ) {
+			self::fail( "cannot load qqq.json" );
+		}
+		self::$i18nMessages = json_decode( $jsonQQQQ, true );
+
+		if ( self::$i18nMessages === false ) {
+			self::fail( "cannot parse qqq.json" );
+		}
+	}
 
 	/**
 	 * @dataProvider provideTypeAndContext
@@ -25,8 +48,9 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 	public function testSaneDefaults( $type, $context ) {
 		// Even with an empty search config we should have default profiles
 		// available
-		$factory = $this->getFactory();
-		$service = $factory->loadService( new HashSearchConfig( [] ) );
+		$factory = $this->getFactory( [], null, [] );
+		$service = $factory->loadService( new HashSearchConfig( [] ), null,
+			new UserIdentityValue( 1, 'test' ) );
 		$this->assertNotNull( $service->getProfileName( $type, $context ) );
 		$this->assertNotNull( $service->loadProfile( $type, $context ) );
 	}
@@ -60,9 +84,9 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 				$service->registerArrayRepository( $type, 'unit_test', $profiles );
 			}
 		] );
-		$factory = $this->getFactory( [], $cirrusSearchHookRunner );
 
 		$profileName = key( $profiles );
+		$userOption = [];
 
 		// Don't use TestUser it may have been polluted with default config from other tests.
 		$user = $this->getMockBuilder( \User::class )
@@ -75,8 +99,9 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 			$config = new HashSearchConfig( [] );
 		} elseif ( $overrideType === 'pref' ) {
 			$request = new \FauxRequest();
-			$user = $this->getTestUser( [ 'cirrus-profiles', $type, $context, $overrideKey ] )->getUser();
-			$this->getServiceContainer()->getUserOptionsManager()->setOption( $user, $overrideKey, $profileName );
+			$username = 'test';
+			$user = new UserIdentityValue( 1, $username );
+			$userOption = [ $username => [ $overrideKey => $profileName ] ];
 			$config = new HashSearchConfig( [] );
 		} elseif ( $overrideType === 'config' ) {
 			$request = new \FauxRequest();
@@ -84,6 +109,7 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 		} else {
 			throw new \RuntimeException( "Unknown override type $overrideType" );
 		}
+		$factory = $this->getFactory( [], $cirrusSearchHookRunner, $userOption );
 		$service = $factory->loadService( $config, $request, $user, true );
 		$this->assertEquals( key( $profiles ), $service->getProfileName( $type, $context ) );
 		$this->assertEquals( reset( $profiles ), $service->loadProfile( $type, $context ) );
@@ -149,14 +175,14 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 	 * @throws \MWException
 	 */
 	public function testExportedProfilesWithI18N( $type, array $must_have ) {
-		$factory = $this->getFactory();
+		$factory = $this->getFactory( [], null, [] );
 		$service = $factory->loadService( new HashSearchConfig( [] ) );
 		$profiles = $service->listExposedProfiles( $type );
 
 		$seen = [];
 		foreach ( $profiles as $name => $profile ) {
 			$this->assertArrayHasKey( 'i18n_msg', $profile, "Profile $name in $type has i18n_msg key" );
-			$this->assertTrue( wfMessage( $profile['i18n_msg'] )->exists(),
+			$this->assertArrayHasKey( $profile['i18n_msg'], self::$i18nMessages,
 				"Profile $name in $type has i18n message set" );
 			$seen[] = $name;
 		}
@@ -232,22 +258,32 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 	 * @throws \MWException
 	 */
 	public function testInterwikiOverrides( array $hostWikiConfig, array $targetWikiConfig, $profileType, $overridden ) {
-		$factory = $this->getFactory( $hostWikiConfig );
+		$factory = $this->getFactory( $hostWikiConfig, null, [] );
 		$service = $factory->loadService( new HashSearchConfig( $targetWikiConfig ) );
 		$this->assertEquals( $overridden,
 			$service->getProfileName( $profileType, SearchProfileService::CONTEXT_DEFAULT ) );
 		$this->assertEquals( [ 'INTERWIKI' ], $service->loadProfile( $profileType ) );
 	}
 
-	private function getFactory( array $hostWikiConfig = [], CirrusSearchHookRunner $cirrusSearchHookRunner = null ) {
+	private function getFactory( array $hostWikiConfig = [],
+								 CirrusSearchHookRunner $cirrusSearchHookRunner = null,
+								 $userOption = []
+	) {
 		$config = new HashSearchConfig( $hostWikiConfig );
-		$resolver = ( new InterwikiResolverFactory() )->getResolver( $config );
+		$httpClient = new \NullMultiHttpClient( [] );
+		$bagOfStuff = new TestBagOStuff();
+		$interWikiLookup = new NullInterwikiLookup();
+
+		$interwikiResolverFactory = new InterwikiResolverFactory();
+		$resolver = $interwikiResolverFactory->getResolver( $config, $httpClient, null,
+			$bagOfStuff, $interWikiLookup );
+
 		return new SearchProfileServiceFactory(
 			$resolver,
 			$config,
 			new EmptyBagOStuff(),
 			$cirrusSearchHookRunner ?: $this->createCirrusSearchHookRunner(),
-			$this->getServiceContainer()->getUserOptionsLookup()
+			new StaticUserOptionsLookup( $userOption )
 		);
 	}
 }

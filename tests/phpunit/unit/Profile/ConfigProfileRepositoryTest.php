@@ -2,13 +2,13 @@
 
 namespace CirrusSearch\Profile;
 
-use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 
 /**
  * @group CirrusSearch
  * @covers \CirrusSearch\Profile\ConfigProfileRepository
  */
-class ConfigProfileRepositoryTest extends CirrusIntegrationTestCase {
+class ConfigProfileRepositoryTest extends CirrusTestCase {
 
 	/**
 	 * @throws \ConfigException

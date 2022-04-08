@@ -2,16 +2,18 @@
 
 namespace CirrusSearch\Profile;
 
-use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Dispatch\BasicSearchQueryRoute;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchQuery;
+use MediaWiki\User\StaticUserOptionsLookup;
+use MediaWiki\User\UserIdentityValue;
 
 /**
  * @group CirrusSearch
  * @covers \CirrusSearch\Profile\SearchProfileService
  */
-class SearchProfileServiceTest extends CirrusIntegrationTestCase {
+class SearchProfileServiceTest extends CirrusTestCase {
 
 	public function testSimpleSingleRepo() {
 		$profiles = [
@@ -19,7 +21,7 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 			'prof2' => [ 'inprof2' => [] ],
 			'prof3' => [ 'inprof3' => [] ]
 		];
-		$service = new SearchProfileService( $this->getServiceContainer()->getUserOptionsLookup() );
+		$service = $this->getSearchProfileService();
 		$service->registerArrayRepository( 'type', 'name', $profiles );
 		$this->assertCount( 1, $service->listProfileRepositories( 'type' ) );
 		$this->assertEquals( 'name', $service->listProfileRepositories( 'type' )['name']->repositoryName() );
@@ -35,7 +37,7 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 			'prof2' => [ 'hidden' => [] ],
 			'prof3' => [ 'inprof3' => [] ],
 		] ] );
-		$service = new SearchProfileService( $this->getServiceContainer()->getUserOptionsLookup() );
+		$service = $this->getSearchProfileService();
 		$service->registerArrayRepository( 'type', 'name', $profiles );
 		$service->registerRepository( new ConfigProfileRepository( 'type', 'config_repo', 'ConfigProfiles', $config ) );
 		$this->simpleAssertions( $service );
@@ -83,8 +85,9 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 
 	public function testOverrides() {
 		$request = new \FauxRequest( [ 'profile' => 'prof3' ] );
-		$user = $this->getTestUser()->getUser();
-		$this->getServiceContainer()->getUserOptionsManager()->setOption( $user, 'profile-pref', 'prof4' );
+		$username = 'test';
+		$user = new UserIdentityValue( 1, $username );
+		$userOptions = [ $username => [ 'profile-pref' => 'prof4' ] ];
 		$config = new HashSearchConfig( [ 'ConfigDefault' => 'prof2' ] );
 
 		$profiles = [
@@ -96,7 +99,7 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 		];
 
 		$service = new SearchProfileService(
-			$this->getServiceContainer()->getUserOptionsLookup(),
+			new StaticUserOptionsLookup( $userOptions ),
 			$request,
 			$user
 		);
@@ -129,14 +132,14 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testFrozen() {
-		$service = new SearchProfileService( $this->getServiceContainer()->getUserOptionsLookup() );
+		$service = $this->getSearchProfileService();
 		$service->freeze();
 		$this->expectException( SearchProfileException::class );
 		$service->registerArrayRepository( 'type', 'name', [] );
 	}
 
 	public function testRegisterRoute() {
-		$service = new SearchProfileService( $this->getServiceContainer()->getUserOptionsLookup() );
+		$service = $this->getSearchProfileService();
 		$service->registerSearchQueryRoute( new BasicSearchQueryRoute( SearchQuery::SEARCH_TEXT,
 			[ 0 ], [], 'foo', 0.5 ) );
 		$service->registerFTSearchQueryRoute( 'bar', 0.4, [ 1 ] );
@@ -159,5 +162,9 @@ class SearchProfileServiceTest extends CirrusIntegrationTestCase {
 			->build();
 		$route = $dispatch->bestRoute( $query );
 		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT, $route->getProfileContext() );
+	}
+
+	private function getSearchProfileService(): SearchProfileService {
+		return new SearchProfileService( new StaticUserOptionsLookup( [] ) );
 	}
 }

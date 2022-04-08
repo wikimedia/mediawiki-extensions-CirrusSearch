@@ -2,14 +2,14 @@
 
 namespace CirrusSearch\Profile;
 
-use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 
 /**
  * @covers \CirrusSearch\Profile\SearchProfileRepositoryTransformer
  * @covers \CirrusSearch\Profile\ArrayPathSetter
  * @group CirrusSearch
  */
-class SearchProfileRepositoryTransformerTest extends CirrusIntegrationTestCase {
+class SearchProfileRepositoryTransformerTest extends CirrusTestCase {
 
 	public function provideRepositories() {
 		$tests = [

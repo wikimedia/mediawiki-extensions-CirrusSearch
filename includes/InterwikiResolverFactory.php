@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use BagOStuff;
+use MediaWiki\Interwiki\InterwikiLookup;
 use WANObjectCache;
 
 /**
@@ -31,7 +32,9 @@ class InterwikiResolverFactory {
 	 * @param \MultiHttpClient|null $client http client to fetch cirrus config
 	 * @param WANObjectCache|null $wanCache Cache object for caching repeated requests
 	 * @param BagOStuff|null $srvCache Local server cache object for caching repeated requests
+	 * @param InterwikiLookup|null $iwLookup
 	 * @return InterwikiResolver
+	 * @throws \Exception
 	 * @see CirrusSearchInterwikiResolverFactory::accepts()
 	 * @see SiteMatrixInterwikiResolver::accepts()
 	 */
@@ -39,10 +42,11 @@ class InterwikiResolverFactory {
 		SearchConfig $config,
 		\MultiHttpClient $client = null,
 		WANObjectCache $wanCache = null,
-		BagOStuff $srvCache = null
+		BagOStuff $srvCache = null,
+		InterwikiLookup $iwLookup = null
 	) {
 		if ( CirrusConfigInterwikiResolver::accepts( $config ) ) {
-			return new CirrusConfigInterwikiResolver( $config, $client, $wanCache, $srvCache );
+			return new CirrusConfigInterwikiResolver( $config, $client, $wanCache, $srvCache, $iwLookup );
 		}
 		if ( SiteMatrixInterwikiResolver::accepts( $config ) ) {
 			return new SiteMatrixInterwikiResolver( $config, $client, $wanCache, $srvCache );

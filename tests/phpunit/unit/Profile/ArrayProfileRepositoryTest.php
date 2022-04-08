@@ -2,13 +2,13 @@
 
 namespace CirrusSearch\Profile;
 
-use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 
 /**
  * @group CirrusSearch
  * @covers \CirrusSearch\Profile\ArrayProfileRepository
  */
-class ArrayProfileRepositoryTest extends CirrusIntegrationTestCase {
+class ArrayProfileRepositoryTest extends CirrusTestCase {
 
 	public function testSimpleArray() {
 		$profiles = [

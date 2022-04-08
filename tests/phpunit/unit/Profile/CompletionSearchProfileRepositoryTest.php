@@ -2,14 +2,14 @@
 
 namespace CirrusSearch\Profile;
 
-use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 
 /**
  * @group CirrusSearch
  * @covers \CirrusSearch\Profile\CompletionSearchProfileRepository
  */
-class CompletionSearchProfileRepositoryTest extends CirrusIntegrationTestCase {
+class CompletionSearchProfileRepositoryTest extends CirrusTestCase {
 
 	public function test() {
 		// Without subphrases the normal-subphrases is hidden

@@ -143,7 +143,7 @@ class Updater extends ElasticsearchIntermediary {
 			$this->updated[] = $titleText;
 			if ( $content->isRedirect() ) {
 				$redirects[] = $page;
-				$target = $content->getUltimateRedirectTarget();
+				$target = $content->getRedirectTarget();
 				if ( $target->equals( $page->getTitle() ) ) {
 					// This doesn't warn about redirect loops longer than one but we'll catch those anyway.
 					$logger->info( "Title redirecting to itself. Skip indexing" );

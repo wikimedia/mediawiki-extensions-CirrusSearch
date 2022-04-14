@@ -50,8 +50,10 @@ return [
 			'index_patterns' => [ 'glent_*' ],
 			'version' => 1,
 			'settings' => [
-				'number_of_shards' => 1,
-				'auto_expand_replicas' => '0-5',
+				'index' => [
+					'number_of_shards' => 1,
+					'auto_expand_replicas' => '0-5',
+				],
 			],
 			'mappings' => [
 				'_source' => [

@@ -665,7 +665,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		}
 
 		$args = [
-			'settings' => $settings,
+			'settings' => [ 'index' => $settings ],
 			'mappings' => $mappingConfigBuilder->buildConfig()
 		];
 		// @todo utilize $this->getIndex()->create(...) once it supports setting

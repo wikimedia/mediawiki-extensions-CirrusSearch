@@ -171,9 +171,11 @@ class MetaStoreIndex {
 			// Don't forget to update METASTORE_VERSION when changing something
 			// in the settings.
 			'settings' => [
-				'number_of_shards' => 1,
-				'auto_expand_replicas' => '0-2',
-				'analysis' => $analysis,
+				'index' => [
+					'number_of_shards' => 1,
+					'auto_expand_replicas' => '0-2',
+					'analysis' => $analysis,
+				]
 			],
 			'mappings' => $mappings,
 		];

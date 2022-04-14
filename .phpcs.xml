@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset>
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
+		<exclude name="Generic.ControlStructures.DisallowYodaConditions.Found" />
+		<exclude name="MediaWiki.Commenting.FunctionComment.DefaultNullTypeParam" />
+		<exclude name="MediaWiki.Commenting.FunctionComment.ExtraParamComment" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic" />
+		<exclude name="MediaWiki.Commenting.FunctionComment.MissingParamTag" />
+		<exclude name="MediaWiki.Commenting.FunctionComment.MissingReturn" />
+		<exclude name="MediaWiki.Commenting.FunctionComment.NoParamType" />
+		<exclude name="MediaWiki.Commenting.FunctionComment.ObjectTypeHintReturn" />
+		<exclude name="MediaWiki.Commenting.FunctionComment.ParamNameNoMatch" />
+		<exclude name="MediaWiki.Commenting.FunctionComment.SpacingAfterParamType" />
+		<exclude name="MediaWiki.Commenting.FunctionComment.WrongStyle" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPrivate" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationProtected" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPublic" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingVar" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.NotShortBoolVar" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.NotShortIntVar" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.SpacingAfterVarType" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.SpacingBeforeVarType" />
+		<exclude name="MediaWiki.Commenting.PropertyDocumentation.WrongStyle" />
+		<exclude name="MediaWiki.Commenting.RedundantVarName.Found" />
 		<exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures" />
 		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName" />
-		<exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
+		<exclude name="MediaWiki.PHPUnit.AssertionOrder.WrongOrder" />
+		<exclude name="MediaWiki.PHPUnit.SetMethods.SetMethods" />
+		<exclude name="MediaWiki.Usage.FinalPrivate.Found" />
+		<exclude name="MediaWiki.Usage.StaticClosure.StaticClosure" />
+		<exclude name="MediaWiki.VariableAnalysis.MisleadingGlobalNames.Misleading$wgContentHandlers" />
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment" />
+		<exclude name="MediaWiki.WhiteSpace.UnaryMinusSpacing.SpaceFound" />
+		<exclude name="MediaWiki.WhiteSpace.WhiteSpaceBeforeFunction.ExtraWhiteSpaceFound" />
+		<exclude name="PSR12.Functions.ReturnTypeDeclaration.SpaceBeforeColon" />
 		<exclude name="PSR12.Properties.ConstantVisibility.NotFound" />
+		<exclude name="PSR2.ControlStructures.SwitchDeclaration.SpaceBeforeColonCASE" />
+		<exclude name="PSR2.ControlStructures.SwitchDeclaration.WrongOpenercase" />
 		<exclude name="PSR2.Methods.MethodDeclaration.Underscore" />
 	</rule>
 	<rule ref="MediaWiki.NamingConventions.ValidGlobalName">

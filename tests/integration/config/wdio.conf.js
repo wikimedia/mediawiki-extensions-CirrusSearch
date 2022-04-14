@@ -134,7 +134,7 @@ exports.config = {
 		//
 		browserName: 'chrome',
 		// Since Chrome v57 https://bugs.chromium.org/p/chromedriver/issues/detail?id=1625
-		chromeOptions: {
+		'goog:chromeOptions': {
 			args: [ '--enable-automation', '--remote-debugging-port=9222', '--headless', '--window-size=1200x800' ]
 		}
 	} ],

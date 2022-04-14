@@ -45,7 +45,8 @@ exports.config = {
 			args: [
 				...( process.env.DISPLAY ? [] : [ '--headless' ] ),
 				// Chrome sandbox does not work in Docker
-				...( fs.existsSync( '/.dockerenv' ) ? [ '--no-sandbox' ] : [] )
+				...( fs.existsSync( '/.dockerenv' ) ? [ '--no-sandbox' ] : [] ),
+				'--window-size=1280x1024'
 			]
 		}
 	} ],

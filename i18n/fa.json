@@ -42,6 +42,7 @@
 	"cirrussearch-qi-profile-classic": "رتبه‌بندی بر پایهٔ تعداد پیوندهای دریافتی، تعدادی از الگوها، میان‌ویکی و تازه‌ساخت‌ها (templates/language/recency ممکن است در این ویکی تعریف نشده‌باشد).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "رتبه بندی براساس برخی الگوها، زبان صفحه و زمان فعال شدن در این ویکی.",
 	"cirrussearch-qi-profile-empty": "رتبه بندی صرفا براساس ویژگی های جستجو (فقط برای دیباگ)",
+	"cirrussearch-qi-profile-wsum-inclinks": "جمع وزنی برپایه پیوندهای ورودی",
 	"cirrussearch-qi-profile-popular-pv": "رتبه‌بندی برپایهٔ بازدید صفحه",
 	"cirrussearch-qi-profile-popular-inclinks": "رتبه‌بندی برپایهٔ تعداد پیوند",
 	"prefs-completion": "کامل کردن جستجو",
@@ -65,6 +66,7 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "عبارت جستجوی '$1' امکان استفاده از چند الگوریتم را نمی‌دهد و با علامت '$2' مشخص شده‌است.",
 	"cirrussearch-feature-not-available": "عبارت کلیدی '$1' در این ویکی تعریف نشده‌است.",
 	"cirrussearch-feature-too-many-conditions": "موارد زیادی برای '$1' پیدا شد که در $2 کوتاه‌سازی شد.",
+	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint باید به یک نقطه پایانی معتبر SPARQL تنظیم شود تا برای جستجوی عمیق رده استفاده شود.",
 	"cirrussearch-feature-deepcat-exception": "پرسمان SPARQL جستجوی ردۀ عمیق شکست خورد",
 	"cirrussearch-feature-deepcat-toomany": "پرسمان ردهٔ ژرف رده‌های بسیاری را برگرداند",
 	"cirrussearch-feature-deepcat-invalid-title": "رده ارائه‌شده نامعتبر است.",
@@ -79,5 +81,7 @@
 	"cirrussearch-explore-similar-categories-none": "هیچ رده‌ای در دسترس نیست",
 	"cirrussearch-explore-similar-languages-none": "در زبان‌های دیگر در دسترس نیست",
 	"cirrussearch-article-words": "واژه‌ها در همۀ صفحه‌های محتوایی",
+	"cirrussearch-keyword-prefix-ns-mismatch": "فضای نام یافت شده در عبارت جستجو <code>prefix:</code> با فضای نام درخواست‌شده سازگار نیست. شما می‌توانید آن را با پیشوند دادن پرسمان خودتان همراه با <code>all:</code> درست کنید.",
+	"cirrussearch-autoselect-profile": "اجازه بده موتور جستجو بهترین نمایه را برای به‌کارگیری تعیین کند.",
 	"cirrussearch-inlanguage-deprecate-comma": "استفاده از ویرگول به عنوان جدا کننده برای کلمه کلیدی غیرزبانی منسوخ است. لطفا استفاده کنید |  (لوله) برای جدا کردن زبانها."
 }

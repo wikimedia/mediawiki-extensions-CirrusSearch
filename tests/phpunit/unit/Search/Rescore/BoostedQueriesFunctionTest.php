@@ -41,8 +41,6 @@ class BoostedQueriesFunctionTest extends CirrusTestCase {
 					]
 				]
 			],
-			/*
-			 * TODO: add support for negative weights
 			'single negative query' => [
 				[ $termQuery ],
 				[ -0.3 ],
@@ -67,7 +65,6 @@ class BoostedQueriesFunctionTest extends CirrusTestCase {
 					]
 				]
 			],
-			*/
 		];
 	}
 

@@ -509,12 +509,24 @@ class RescoreBuilderTest extends CirrusTestCase {
 				[ 'statement_keywords' => [ 'P31=Q1234' => -2, 'P279=Q345' => -7 ] ],
 				[
 					[
-						'weight' => -0.2,
-						'filter' => [ 'term' => [ 'statement_keywords' => 'P31=Q1234' ] ]
+						'weight' => 0.1 * -2 * -1,
+						'filter' => [
+							'bool' => [
+								'must_not' => [
+									[ 'term' => [ 'statement_keywords' => 'P31=Q1234' ] ]
+								]
+							]
+						]
 					],
 					[
-						'weight' => -0.7,
-						'filter' => [ 'term' => [ 'statement_keywords' => 'P279=Q345' ] ]
+						'weight' => 0.1 * -7 * -1,
+						'filter' => [
+							'bool' => [
+								'must_not' => [
+									[ 'term' => [ 'statement_keywords' => 'P279=Q345' ] ]
+								]
+							]
+						]
 					],
 				]
 

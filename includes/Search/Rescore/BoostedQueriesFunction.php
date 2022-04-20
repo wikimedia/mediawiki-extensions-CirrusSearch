@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search\Rescore;
 
 use Elastica\Query\AbstractQuery;
+use Elastica\Query\BoolQuery;
 use Elastica\Query\FunctionScore;
 use Wikimedia\Assert\Assert;
 
@@ -45,6 +46,14 @@ class BoostedQueriesFunction implements BoostFunctionBuilder {
 		$mi->attachIterator( new \ArrayIterator( $this->weights ) );
 
 		foreach ( $mi as [ $query, $weight ] ) {
+			if ( $weight < 0 ) {
+				$mustNotQuery = new BoolQuery();
+				$mustNotQuery->addMustNot( $query );
+
+				$weight *= -1;
+				$query = $mustNotQuery;
+			}
+
 			$container->addWeightFunction( $weight, $query );
 		}
 	}

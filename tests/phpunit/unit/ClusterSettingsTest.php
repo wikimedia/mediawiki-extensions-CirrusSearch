@@ -29,7 +29,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideShardCount
 	 */
-	public function testShardCount( $shardCounts, $cluster, $indexType, $expect ) {
+	public function testShardCount( $shardCounts, $cluster, $indexSuffix, $expect ) {
 		$config = $this->getMockBuilder( SearchConfig::class )
 			->disableOriginalConstructor()
 			->getMock();
@@ -38,7 +38,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 			->willReturn( $shardCounts );
 
 		$settings = new ClusterSettings( $config, $cluster );
-		$this->assertEquals( $expect, $settings->getShardCount( $indexType ) );
+		$this->assertEquals( $expect, $settings->getShardCount( $indexSuffix ) );
 	}
 
 	public static function provideReplicaCounts() {
@@ -69,7 +69,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideReplicaCounts
 	 */
-	public function testReplicaCount( $replicas, $cluster, $indexType, $expect ) {
+	public function testReplicaCount( $replicas, $cluster, $indexSuffix, $expect ) {
 		$config = $this->getMockBuilder( SearchConfig::class )
 			->disableOriginalConstructor()
 			->getMock();
@@ -78,7 +78,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 			->willReturn( $replicas );
 
 		$settings = new ClusterSettings( $config, $cluster );
-		$this->assertEquals( $expect, $settings->getReplicaCount( $indexType ) );
+		$this->assertEquals( $expect, $settings->getReplicaCount( $indexSuffix ) );
 	}
 
 	public static function provideMaxShardsPerNode() {
@@ -86,25 +86,25 @@ class ClusterSettingsTest extends CirrusTestCase {
 			'empty configuration' => [
 				'maxShardsPerNode' => [],
 				'cluster' => 'default',
-				'indexType' => 'content',
+				'indexSuffix' => 'content',
 				'expect' => -1,
 			],
 			'explicitly unbounded' => [
 				'maxShardsPerNode' => [ 'content' => 1, 'general' => 'unlimited' ],
 				'cluster' => 'default',
-				'indexType' => 'general',
+				'indexSuffix' => 'general',
 				'expect' => -1,
 			],
 			'defined for index type' => [
 				'maxShardsPerNode' => [ 'content' => 1 ],
 				'cluster' => 'default',
-				'indexType' => 'content',
+				'indexSuffix' => 'content',
 				'expect' => 1,
 			],
 			'defined for other index type' => [
 				'maxShardsPerNode' => [ 'general' => 1 ],
 				'cluster' => 'default',
-				'indexType' => 'content',
+				'indexSuffix' => 'content',
 				'expect' => -1,
 			],
 			'defined per cluster (1/2)' => [
@@ -113,7 +113,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 					'cluster2' => [ 'content' => 1 ],
 				],
 				'cluster' => 'cluster1',
-				'indexType' => 'content',
+				'indexSuffix' => 'content',
 				'expect' => 3,
 			],
 
@@ -123,7 +123,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 					'cluster2' => [ 'content' => 1 ],
 				],
 				'cluster' => 'cluster2',
-				'indexType' => 'content',
+				'indexSuffix' => 'content',
 				'expect' => 1,
 			],
 			'mixed per-cluster and global defaults (1/2)' => [
@@ -132,7 +132,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 					'content' => 1,
 				],
 				'cluster' => 'cluster1',
-				'indexType' => 'content',
+				'indexSuffix' => 'content',
 				'expect' => 3,
 			],
 			'mixed per-cluster and global defaults (2/2)' => [
@@ -142,7 +142,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 					'content' => 1,
 				],
 				'cluster' => 'cluster1',
-				'indexType' => 'content',
+				'indexSuffix' => 'content',
 				'expect' => 3,
 			],
 		];
@@ -151,7 +151,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideMaxShardsPerNode
 	 */
-	public function testGetMaxShardsPerNode( $maxShardsPerNode, $cluster, $indexType, $expect ) {
+	public function testGetMaxShardsPerNode( $maxShardsPerNode, $cluster, $indexSuffix, $expect ) {
 		$config = $this->getMockBuilder( SearchConfig::class )
 			->disableOriginalConstructor()
 			->getMock();
@@ -160,7 +160,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 			->willReturn( $maxShardsPerNode );
 
 		$settings = new ClusterSettings( $config, $cluster );
-		$this->assertEquals( $expect, $settings->getMaxShardsPerNode( $indexType ) );
+		$this->assertEquals( $expect, $settings->getMaxShardsPerNode( $indexSuffix ) );
 	}
 
 	public static function provideIsPrivate() {

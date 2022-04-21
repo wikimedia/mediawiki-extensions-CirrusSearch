@@ -70,7 +70,7 @@ class MetaVersionStore implements MetaStore {
 	 */
 	public function updateAll( $baseName ) {
 		$docs = [];
-		foreach ( $this->connection->getAllIndexTypes( null ) as $typeName ) {
+		foreach ( $this->connection->getAllIndexSuffixes( null ) as $typeName ) {
 			$docs[] = self::buildDocument( $this->connection, $baseName, $typeName );
 		}
 		$this->elasticaType->addDocuments( $docs );
@@ -97,7 +97,7 @@ class MetaVersionStore implements MetaStore {
 			->setTerm( 'type', self::METASTORE_TYPE ) );
 		if ( $baseName !== null ) {
 			$ids = new \Elastica\Query\Ids();
-			foreach ( $this->connection->getAllIndexTypes( null ) as $typeName ) {
+			foreach ( $this->connection->getAllIndexSuffixes( null ) as $typeName ) {
 				$ids->addId( self::docId( $this->connection, $baseName, $typeName ) );
 			}
 			$filter->addFilter( $ids );
@@ -118,10 +118,10 @@ class MetaVersionStore implements MetaStore {
 	 */
 	public static function buildDocument( Connection $connection, $baseName, $typeName ) {
 		global $IP;
-		if ( $typeName == Connection::TITLE_SUGGEST_TYPE ) {
+		if ( $typeName == Connection::TITLE_SUGGEST_INDEX_SUFFIX ) {
 			list( $aMaj, $aMin ) = explode( '.', SuggesterAnalysisConfigBuilder::VERSION, 3 );
 			list( $mMaj, $mMin ) = explode( '.', SuggesterMappingConfigBuilder::VERSION, 3 );
-		} elseif ( $typeName === Connection::ARCHIVE_INDEX_TYPE ) {
+		} elseif ( $typeName === Connection::ARCHIVE_INDEX_SUFFIX ) {
 			list( $aMaj, $aMin ) = explode( '.', AnalysisConfigBuilder::VERSION, 3 );
 			list( $mMaj, $mMin ) = explode( '.', ArchiveMappingConfigBuilder::VERSION, 3 );
 		} else {

@@ -26,6 +26,8 @@ Feature: Full text search
     | "3.1 Conquest of Persian empire"     | none                     | not in          |
     # You can't search for the [edit] tokens that users can click to edit sections
     | "Succession of Umar edit"            | none                     | not in          |
+    # Not a particularly strong test, only verifies the english analysis chain.
+    | ♙                                    | Catapult                 | not in          |
 
   @setup_main
   Scenario Outline: Searching for empty-string like values
@@ -36,7 +38,6 @@ Feature: Full text search
   Examples:
     | term                    | title          |
     | the empty string        | Search         |
-    | ♙                       | Search results |
     | %{exact: }              | Search results |
     | %{exact:      }         | Search results |
     | %{exact:              } | Search results |

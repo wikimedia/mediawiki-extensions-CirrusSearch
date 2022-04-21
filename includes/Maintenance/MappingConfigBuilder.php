@@ -4,7 +4,6 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\CirrusSearchHookRunner;
-use CirrusSearch\Connection;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
 use CirrusSearch\Search\SourceTextIndexField;
@@ -268,17 +267,19 @@ class MappingConfigBuilder {
 			$page = $this->setupCopyTo( $page, $nearMatchFields, 'all_near_match' );
 		}
 
-		$mappingConfig = [ $this->getMainType() => $page ];
-
-		if ( $this->getMainType() === Connection::PAGE_TYPE_NAME ) {
-			// For now only trigger the hook on the "page" indices.
-			// It's probably that implementors don't pay attention to the new getMainType()
-			// method.
+		if ( $this->isForPageIndexes() ) {
+			// Only trigger the hook when building mapping for indexes of
+			// pages. Maintains compatability with hook impl from when only
+			// pages were run through here and before the mapping type was
+			// renamed to _doc.
+			$mappingConfig = [ 'page' => $page ];
 			$this->cirrusSearchHookRunner->onCirrusSearchMappingConfig( $mappingConfig, $this );
 			Assert::postcondition( count( $mappingConfig ) === 1,
 				'CirrusSearchMappingConfig implementations must not add a new mapping type' );
+			$page = $mappingConfig['page'];
 		}
-		return $mappingConfig;
+
+		return $page;
 	}
 
 	/**
@@ -341,14 +342,6 @@ class MappingConfigBuilder {
 	}
 
 	/**
-	 * The elastic type name used by this index
-	 * @return string
-	 */
-	public function getMainType() {
-		return Connection::PAGE_TYPE_NAME;
-	}
-
-	/**
 	 * Whether or not it's safe to optimize the analysis config.
 	 * It's generally safe to optimize if all the analyzers needed are
 	 * properly referenced in the mapping.
@@ -359,5 +352,18 @@ class MappingConfigBuilder {
 	 */
 	public function canOptimizeAnalysisConfig() {
 		return false;
+	}
+
+	/**
+	 * If page index hooks should be run
+	 *
+	 * Extending classes used for other kinds of indexes will want to return
+	 * false here to avoid modifications from hooks expecting to adjust the
+	 * mapping for pages.
+	 *
+	 * @return bool
+	 */
+	protected function isForPageIndexes(): bool {
+		return true;
 	}
 }

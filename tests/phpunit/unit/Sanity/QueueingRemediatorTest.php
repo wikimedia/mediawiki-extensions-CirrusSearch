@@ -31,7 +31,7 @@ class QueueingRemediatorTest extends CirrusTestCase {
 			] );
 
 			$wrongIndexDelete = new DeletePages( $title, [
-				'indexType' => $wrongIndex,
+				'indexSuffix' => $wrongIndex,
 				'docId' => $docId,
 				'cluster' => $cluster,
 			] );

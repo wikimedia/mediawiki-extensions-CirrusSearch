@@ -14,23 +14,23 @@ class BufferedRemediatorTest extends CirrusTestCase {
 	public function testGetActions() {
 		$wp = $this->createMock( WikiPage::class );
 		$docId = "123";
-		$indexType = "content";
+		$indexSuffix = "content";
 		$title = Title::makeTitle( NS_MAIN, "Test" );
 
 		$remediator = new BufferedRemediator();
 
 		$remediator->ghostPageInIndex( $docId, $title );
 		$remediator->oldDocument( $wp );
-		$remediator->oldVersionInIndex( $docId, $wp, $indexType );
-		$remediator->pageInWrongIndex( $docId, $wp, $indexType );
+		$remediator->oldVersionInIndex( $docId, $wp, $indexSuffix );
+		$remediator->pageInWrongIndex( $docId, $wp, $indexSuffix );
 		$remediator->pageNotInIndex( $wp );
 		$remediator->redirectInIndex( $wp );
 
 		$expected = [
 			[ 'ghostPageInIndex', [ $docId, $title ] ],
 			[ 'oldDocument', [ $wp ] ],
-			[ 'oldVersionInIndex', [ $docId, $wp, $indexType ] ],
-			[ 'pageInWrongIndex', [ $docId, $wp, $indexType ] ],
+			[ 'oldVersionInIndex', [ $docId, $wp, $indexSuffix ] ],
+			[ 'pageInWrongIndex', [ $docId, $wp, $indexSuffix ] ],
 			[ 'pageNotInIndex', [ $wp ] ],
 			[ 'redirectInIndex', [ $wp ] ]
 		];
@@ -51,14 +51,14 @@ class BufferedRemediatorTest extends CirrusTestCase {
 	public function testReplayOn() {
 		$wp = $this->createMock( WikiPage::class );
 		$docId = "123";
-		$indexType = "content";
+		$indexSuffix = "content";
 		$title = Title::makeTitle( NS_MAIN, "Test" );
 
 		$remediator = new BufferedRemediator();
 		$remediator->ghostPageInIndex( $docId, $title );
 		$remediator->oldDocument( $wp );
-		$remediator->oldVersionInIndex( $docId, $wp, $indexType );
-		$remediator->pageInWrongIndex( $docId, $wp, $indexType );
+		$remediator->oldVersionInIndex( $docId, $wp, $indexSuffix );
+		$remediator->pageInWrongIndex( $docId, $wp, $indexSuffix );
 		$remediator->pageNotInIndex( $wp );
 		$remediator->redirectInIndex( $wp );
 
@@ -71,10 +71,10 @@ class BufferedRemediatorTest extends CirrusTestCase {
 			->with( $wp );
 		$mock->expects( $this->once() )
 			->method( 'oldVersionInIndex' )
-			->with( $docId, $wp, $indexType );
+			->with( $docId, $wp, $indexSuffix );
 		$mock->expects( $this->once() )
 			->method( 'pageInWrongIndex' )
-			->with( $docId, $wp, $indexType );
+			->with( $docId, $wp, $indexSuffix );
 		$mock->expects( $this->once() )
 			->method( 'pageNotInIndex' )
 			->with( $wp );

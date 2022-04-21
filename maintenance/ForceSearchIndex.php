@@ -381,9 +381,9 @@ class ForceSearchIndex extends Maintenance {
 		}
 
 		// Now check all index types to see if they exist
-		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
+		foreach ( $this->getConnection()->getAllIndexSuffixes() as $indexSuffix ) {
 			// If the alias for this type doesn't exist, fail
-			if ( !$this->getConnection()->getIndex( $indexBaseName, $indexType )->exists() ) {
+			if ( !$this->getConnection()->getIndex( $indexBaseName, $indexSuffix )->exists() ) {
 				return false;
 			}
 		}

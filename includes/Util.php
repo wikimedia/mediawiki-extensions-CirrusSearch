@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use Elastica\Index;
+use Elasticsearch\Endpoints;
 use IBufferingStatsdDataFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -579,4 +581,22 @@ class Util {
 		return false;
 	}
 
+	/**
+	 * Recreation of Index::getMapping but with support for include_type_name.
+	 *
+	 * Should be removed once 7.x is the minimum supported version and all
+	 * callers have transitioned to includeTypeName === false.
+	 *
+	 * @param Index $index
+	 * @param bool $includeTypeName True to include the deprecated index type in response.
+	 * @return array
+	 */
+	public static function getIndexMapping( Index $index, bool $includeTypeName = false ) {
+		$response = $index->requestEndpoint( ( new Endpoints\Indices\Mapping\Get() )
+			->setParams( [ 'include_type_name' => $includeTypeName ? 'true' : 'false' ] ) );
+		$data = $response->getData();
+		// $data is single element array with the backing index name as key
+		$mapping = array_shift( $data );
+		return $mapping['mappings'] ?? [];
+	}
 }

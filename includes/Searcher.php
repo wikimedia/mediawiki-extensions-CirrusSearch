@@ -399,7 +399,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 */
 	public function get( array $docIds, $sourceFiltering, $usePoolCounter = true ) {
 		$connection = $this->getOverriddenConnection();
-		$indexType = $connection->pickIndexTypeForNamespaces(
+		$indexSuffix = $connection->pickIndexSuffixForNamespaces(
 			$this->searchContext->getNamespaces()
 		);
 
@@ -410,10 +410,10 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		) );
 		$size *= count( $docIds );
 
-		$work = function () use ( $docIds, $sourceFiltering, $indexType, $size, $connection ) {
+		$work = function () use ( $docIds, $sourceFiltering, $indexSuffix, $size, $connection ) {
 			try {
-				$this->startNewLog( 'get of {indexType}.{docIds}', 'get', [
-					'indexType' => $indexType,
+				$this->startNewLog( 'get of {indexSuffix}.{docIds}', 'get', [
+					'indexSuffix' => $indexSuffix,
 					'docIds' => $docIds,
 				] );
 				// Shard timeout not supported on get requests so we just use the client side timeout
@@ -421,7 +421,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				// We use a search query instead of _get/_mget, these methods are
 				// theorically well suited for this kind of job but they are not
 				// supported on aliases with multiple indices (content/general)
-				$pageType = $connection->getPageType( $this->indexBaseName, $indexType );
+				$pageType = $connection->getPageType( $this->indexBaseName, $indexSuffix );
 				$query = new \Elastica\Query( new \Elastica\Query\Ids( $docIds ) );
 				$query->setParam( '_source', $sourceFiltering );
 				$query->addParam( 'stats', 'get' );

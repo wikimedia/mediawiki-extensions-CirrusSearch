@@ -41,13 +41,13 @@
             "hitsTotal": 0,
             "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
             "index": "wiki",
-            "indexType": false,
+            "indexSuffix": false,
             "queryType": "get",
             "source": "cli",
             "suggestionRequested": false,
             "tookMs": 0
         },
         "level": "debug",
-        "message": "get of {indexType}.{docIds} against {index} took {tookMs} millis and {elasticTookMs} Elasticsearch millis. Found {hitsTotal} total results and returned {hitsReturned} of them starting at {hitsOffset}. Requested via {source} for {identity} by executor {executor}"
+        "message": "get of {indexSuffix}.{docIds} against {index} took {tookMs} millis and {elasticTookMs} Elasticsearch millis. Found {hitsTotal} total results and returned {hitsReturned} of them starting at {hitsOffset}. Requested via {source} for {identity} by executor {executor}"
     }
 ]

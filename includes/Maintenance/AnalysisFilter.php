@@ -41,9 +41,16 @@ class AnalysisFilter {
 	 */
 	public function findUsedAnalyzersInMappings( array $mappings ) {
 		$analyzers = new Set();
-		foreach ( $mappings as $indexType => $config ) {
+		if ( isset( $mappings['properties'] ) ) {
+			// modern elastic, no index types
 			$analyzers->union(
-				$this->findUsedFromField( $config['properties'] ) );
+				$this->findUsedFromField( $mappings['properties'] ) );
+		} else {
+			// BC for parts still using index types
+			foreach ( $mappings as $config ) {
+				$analyzers->union(
+					$this->findUsedFromField( $config['properties'] ) );
+			}
 		}
 		return $analyzers;
 	}
@@ -79,10 +86,18 @@ class AnalysisFilter {
 	 * @return array Updated index mapping configuration
 	 */
 	public function pushAnalyzerAliasesIntoMappings( array $mappings, $aliases ) {
-		foreach ( $mappings as $indexType => $config ) {
-			$mappings[$indexType]['properties'] = $this->pushAnalyzerAliasesIntoField(
-				$config['properties'], $aliases
+		if ( isset( $mappings['properties'] ) ) {
+			// modern elastic, no index types
+			$mappings['properties'] = $this->pushAnalyzerAliasesIntoField(
+				$mappings['properties'], $aliases
 			);
+		} else {
+			// BC for parts still using index types
+			foreach ( $mappings as $mappingType => $config ) {
+				$mappings[$mappingType]['properties'] = $this->pushAnalyzerAliasesIntoField(
+					$config['properties'], $aliases
+				);
+			}
 		}
 		return $mappings;
 	}
@@ -150,10 +165,8 @@ class AnalysisFilter {
 		}
 		$aliases = [];
 		foreach ( $keysByContent as $keys ) {
-			// Sort to give a stable winner for each group
-			// 5.6: $winner = min(...$keys);
-			asort( $keys );
-			$winner = reset( $keys );
+			// Min to give a stable winner for each group.
+			$winner = count( $keys ) === 1 ? reset( $keys ) : min( ...$keys );
 			foreach ( $keys as $key ) {
 				$aliases[$key] = $winner;
 			}

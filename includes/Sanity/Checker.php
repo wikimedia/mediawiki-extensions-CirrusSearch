@@ -261,14 +261,14 @@ class Checker {
 	 */
 	private function checkIndexMismatch( $docId, $pageId, WikiPage $page, array $fromIndex ) {
 		$foundInsanityInIndex = false;
-		$expectedType = $this->connection->getIndexSuffixForNamespace(
+		$expectedSuffix = $this->connection->getIndexSuffixForNamespace(
 			$page->getTitle()->getNamespace()
 		);
 		foreach ( $fromIndex as $indexInfo ) {
-			$type = $this->connection->extractIndexSuffix( $indexInfo->getIndex() );
-			if ( $type !== $expectedType ) {
+			$suffix = $this->connection->extractIndexSuffix( $indexInfo->getIndex() );
+			if ( $suffix !== $expectedSuffix ) {
 				// Got to grab the index type from the index name....
-				$this->remediator->pageInWrongIndex( $docId, $page, $type );
+				$this->remediator->pageInWrongIndex( $docId, $page, $suffix );
 				$foundInsanityInIndex = true;
 			}
 		}

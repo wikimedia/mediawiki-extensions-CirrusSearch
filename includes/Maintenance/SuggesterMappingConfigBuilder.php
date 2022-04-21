@@ -47,7 +47,7 @@ class SuggesterMappingConfigBuilder {
 	}
 
 	/**
-	 * @return array[]
+	 * @return array
 	 */
 	public function buildConfig() {
 		$suggest = [
@@ -85,7 +85,7 @@ class SuggesterMappingConfigBuilder {
 			];
 
 		}
-		return [ \CirrusSearch\Connection::TITLE_SUGGEST_TYPE_NAME => $suggest ];
+		return $suggest;
 	}
 
 }

@@ -35,7 +35,7 @@ class MetaStoreIndex {
 	/**
 	 * @const int version of the index, increment when mappings change
 	 */
-	private const METASTORE_VERSION = 4;
+	private const METASTORE_VERSION = 3;
 
 	/**
 	 * @const string the doc id used to store version information related
@@ -171,11 +171,9 @@ class MetaStoreIndex {
 			// Don't forget to update METASTORE_VERSION when changing something
 			// in the settings.
 			'settings' => [
-				'index' => [
-					'number_of_shards' => 1,
-					'auto_expand_replicas' => '0-2',
-					'analysis' => $analysis,
-				]
+				'number_of_shards' => 1,
+				'auto_expand_replicas' => '0-2',
+				'analysis' => $analysis,
 			],
 			'mappings' => $mappings,
 		];
@@ -196,10 +194,7 @@ class MetaStoreIndex {
 			'',
 			\Elastica\Request::PUT,
 			$this->buildIndexConfiguration(),
-			[
-				'master_timeout' => $this->getMasterTimeout(),
-				'include_type_name' => 'false'
-			]
+			[ 'master_timeout' => $this->getMasterTimeout() ]
 		);
 		$this->log( " ok\n" );
 		$this->configUtils->waitForGreen( $index->getName(), 3600 );
@@ -211,7 +206,7 @@ class MetaStoreIndex {
 	 * Don't forget to update METASTORE_VERSION when changing something
 	 * in the settings.
 	 *
-	 * @return array the mapping
+	 * @return array[] the mapping
 	 */
 	private function buildMapping() {
 		$properties = [
@@ -233,8 +228,10 @@ class MetaStoreIndex {
 		}
 
 		return [
-			'dynamic' => false,
-			'properties' => $properties,
+			self::INDEX_NAME => [
+				'dynamic' => false,
+				'properties' => $properties,
+			],
 		];
 	}
 
@@ -354,7 +351,7 @@ class MetaStoreIndex {
 	 * @param \Elastica\Index $index new index
 	 */
 	private function storeMetastoreVersion( $index ) {
-		$index->getType( '_doc' )->addDocument(
+		$index->getType( self::INDEX_NAME )->addDocument(
 			new \Elastica\Document(
 				self::METASTORE_VERSION_DOCID,
 				[
@@ -379,7 +376,7 @@ class MetaStoreIndex {
 	}
 
 	public function elasticaType(): \Elastica\Type {
-		return $this->elasticaIndex()->getType( '_doc' );
+		return $this->elasticaIndex()->getType( self::INDEX_NAME );
 	}
 
 	/**

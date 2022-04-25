@@ -50,38 +50,38 @@ return [
 			'index_patterns' => [ 'glent_*' ],
 			'version' => 1,
 			'settings' => [
-				'index' => [
-					'number_of_shards' => 1,
-					'auto_expand_replicas' => '0-5',
-				],
+				'number_of_shards' => 1,
+				'auto_expand_replicas' => '0-5',
 			],
 			'mappings' => [
-				'_source' => [
-					'enabled' => false,
-				],
-				'properties' => [
-					'suggestion_score' => [
-						'type' => 'float',
-						'index' => false,
+				'_doc' => [
+					'_source' => [
+						'enabled' => false,
 					],
-					'wiki' => [
-						'type' => 'keyword',
-					],
-					'method' => [
-						'type' => 'keyword',
-						'store' => true,
-					],
-					'dym' => [
-						'type' => 'text',
-						'index' => false,
-						'store' => true,
-					],
-					'query' => [
-						'type' => 'text',
-						'index' => true,
-						'analyzer' => 'near_match',
-						'search_analyzer' => 'near_match',
-						'index_options' => 'docs'
+					'properties' => [
+						'suggestion_score' => [
+							'type' => 'float',
+							'index' => false,
+						],
+						'wiki' => [
+							'type' => 'keyword',
+						],
+						'method' => [
+							'type' => 'keyword',
+							'store' => true,
+						],
+						'dym' => [
+							'type' => 'text',
+							'index' => false,
+							'store' => true,
+						],
+						'query' => [
+							'type' => 'text',
+							'index' => true,
+							'analyzer' => 'near_match',
+							'search_analyzer' => 'near_match',
+							'index_options' => 'docs'
+						]
 					]
 				]
 			]

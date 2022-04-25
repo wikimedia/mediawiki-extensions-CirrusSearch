@@ -9,7 +9,7 @@
             "search_type": "dfs_query_then_fetch",
             "timeout": "120s"
         },
-        "path": "wiki\/_doc\/_search",
+        "path": "wiki\/page\/_search",
         "query": {
             "_source": [
                 "namespace",

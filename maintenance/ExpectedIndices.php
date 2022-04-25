@@ -75,13 +75,13 @@ class ExpectedIndices extends Maintenance {
 	private function allIndexNames( Connection $conn ): array {
 		$config = $this->getSearchConfig();
 		$baseName = $config->get( SearchConfig::INDEX_BASE_NAME );
-		$suffixes = $conn->getAllIndexSuffixes( null );
+		$types = $conn->getAllIndexTypes( null );
 		if ( $config->isCompletionSuggesterEnabled() ) {
-			$suffixes[] = Connection::TITLE_SUGGEST_INDEX_SUFFIX;
+			$types[] = Connection::TITLE_SUGGEST_TYPE;
 		}
 		$output = [];
-		foreach ( $suffixes as $indexSuffix ) {
-			$output[] = $conn->getIndexName( $baseName, $indexSuffix );
+		foreach ( $types as $indexType ) {
+			$output[] = $conn->getIndexName( $baseName, $indexType );
 		}
 		return $output;
 	}

@@ -65,11 +65,11 @@ class UpdateSearchIndexConfig extends Maintenance {
 			$child->execute();
 			$child->done();
 
-			foreach ( $conn->getAllIndexSuffixes( null ) as $indexSuffix ) {
-				$this->outputIndented( "$indexSuffix index...\n" );
+			foreach ( $conn->getAllIndexTypes( null ) as $indexType ) {
+				$this->outputIndented( "$indexType index...\n" );
 				$child = $this->runChild( UpdateOneSearchIndexConfig::class );
 				$child->mOptions[ 'cluster' ] = $cluster;
-				$child->mOptions[ 'indexSuffix' ] = $indexSuffix;
+				$child->mOptions[ 'indexType' ] = $indexType;
 				$child->execute();
 				$child->done();
 			}

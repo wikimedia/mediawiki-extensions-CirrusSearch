@@ -157,7 +157,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$this->offset = $offset;
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->completionIndex = $this->connection->getIndex( $this->indexBaseName,
-			Connection::TITLE_SUGGEST_INDEX_SUFFIX );
+			Connection::TITLE_SUGGEST_TYPE );
 		$this->searchContext = new SearchContext( $this->config, $namespaces );
 
 		$profileDefinition = $this->config->getProfileService()

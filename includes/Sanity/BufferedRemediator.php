@@ -37,14 +37,14 @@ class BufferedRemediator implements Remediator {
 	/**
 	 * @inheritDoc
 	 */
-	public function pageInWrongIndex( $docId, WikiPage $page, $indexSuffix ) {
+	public function pageInWrongIndex( $docId, WikiPage $page, $indexType ) {
 		$this->actions[] = [ substr( __METHOD__, strlen( __CLASS__ ) + 2 ), func_get_args() ];
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function oldVersionInIndex( $docId, WikiPage $page, $indexSuffix ) {
+	public function oldVersionInIndex( $docId, WikiPage $page, $indexType ) {
 		$this->actions[] = [ substr( __METHOD__, strlen( __CLASS__ ) + 2 ), func_get_args() ];
 	}
 

@@ -4,9 +4,10 @@ namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\Maintenance\Printer;
-use CirrusSearch\Util;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
+use Elastica\Request;
+use Elastica\Type;
 use Elastica\Type\Mapping;
 use RawMessage;
 use Status;
@@ -39,6 +40,11 @@ class MappingValidator extends Validator {
 	private $mappingConfig;
 
 	/**
+	 * @var Type[]
+	 */
+	private $types;
+
+	/**
 	 * @todo this constructor takes way too much arguments - refactor
 	 *
 	 * @param Index $index
@@ -46,6 +52,7 @@ class MappingValidator extends Validator {
 	 * @param bool $optimizeIndexForExperimentalHighlighter
 	 * @param array $availablePlugins
 	 * @param array $mappingConfig
+	 * @param Type[] $types Array with type names as key & type object as value
 	 * @param Printer|null $out
 	 */
 	public function __construct(
@@ -54,6 +61,7 @@ class MappingValidator extends Validator {
 		$optimizeIndexForExperimentalHighlighter,
 		array $availablePlugins,
 		array $mappingConfig,
+		array $types,
 		Printer $out = null
 	) {
 		parent::__construct( $out );
@@ -62,10 +70,12 @@ class MappingValidator extends Validator {
 		$this->masterTimeout = $masterTimeout;
 		$this->optimizeIndexForExperimentalHighlighter = $optimizeIndexForExperimentalHighlighter;
 		$this->availablePlugins = $availablePlugins;
-		// Could be supported, but prefer consistency
-		Assert::parameter( isset( $mappingConfig['properties'] ), '$mappingConfig',
-			'Mapping types are no longer supported, properties must be top level' );
+		Assert::parameter( count( $mappingConfig ) === 1, '$mappingConfig',
+			'Multiple types per index is no longer supported' );
 		$this->mappingConfig = $mappingConfig;
+		Assert::parameter( count( $types ) === 1, '$types',
+			'Multiple types per index is no longer supported' );
+		$this->types = $types;
 	}
 
 	/**
@@ -81,17 +91,35 @@ class MappingValidator extends Validator {
 				"'experimental-highlighter' plugin is not installed on all hosts." ) );
 		}
 
-		if ( !$this->compareMappingToActual() ) {
-			$action = new Mapping( $this->index->getType( '_doc' ) );
-			foreach ( $this->mappingConfig as $key => $value ) {
-				$action->setParam( $key, $value );
+		$requiredMappings = $this->mappingConfig;
+		if ( !$this->checkMapping( $requiredMappings ) ) {
+			/** @var Mapping[] $actions */
+			$actions = [];
+
+			// TODO Conflict resolution here might leave old portions of mappings
+			foreach ( $this->types as $typeName => $type ) {
+				$action = new Mapping( $type );
+				foreach ( $requiredMappings[$typeName] as $key => $value ) {
+					$action->setParam( $key, $value );
+				}
+
+				$actions[] = $action;
 			}
 
 			try {
-				$action->send( [
-					'master_timeout' => $this->masterTimeout,
-					'include_type_name' => 'true',
-				] );
+				// @todo Use $action->send(array('master_timeout' => ...))
+				// after updating to version of Elastica library that supports it.
+				// See https://github.com/ruflin/Elastica/pull/1004
+				foreach ( $actions as $action ) {
+					$action->getType()->request(
+						'_mapping',
+						Request::PUT,
+						$action->toArray(),
+						[
+							'master_timeout' => $this->masterTimeout,
+						]
+					);
+				}
 				$this->output( "corrected\n" );
 			} catch ( ExceptionInterface $e ) {
 				$this->output( "failed!\n" );
@@ -107,13 +135,14 @@ class MappingValidator extends Validator {
 	/**
 	 * Check that the mapping returned from Elasticsearch is as we want it.
 	 *
+	 * @param array $requiredMappings the mappings we want
 	 * @return bool is the mapping good enough for us?
 	 */
-	private function compareMappingToActual() {
-		$actualMappings = Util::getIndexMapping( $this->index );
+	private function checkMapping( array $requiredMappings ) {
+		$actualMappings = $this->index->getMapping();
 		$this->output( "\n" );
 		$this->outputIndented( "\tValidating mapping..." );
-		if ( $this->checkConfig( $actualMappings, $this->mappingConfig ) ) {
+		if ( $this->checkConfig( $actualMappings, $requiredMappings ) ) {
 			$this->output( "ok\n" );
 			return true;
 		} else {

@@ -81,7 +81,7 @@ class QueueingRemediator implements Remediator {
 	public function pageInWrongIndex( $docId, WikiPage $page, $wrongIndex ) {
 		$this->jobQueue->push(
 			new DeletePages( $page->getTitle(), [
-				'indexSuffix' => $wrongIndex,
+				'indexType' => $wrongIndex,
 				'docId' => $docId,
 				'cluster' => $this->cluster,
 			] )

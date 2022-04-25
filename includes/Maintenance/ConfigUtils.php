@@ -3,7 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use Elastica\Client;
-use Elasticsearch\Endpoints;
 use MediaWiki\Extension\Elastica\MWElasticUtils;
 
 /**
@@ -55,9 +54,9 @@ class ConfigUtils {
 		}
 		$result = $result[ 'version' ][ 'number' ];
 		$this->output( "$result..." );
-		if ( strpos( $result, '6.8' ) !== 0 ) {
+		if ( strpos( $result, '6.' ) !== 0 && strpos( $result, '5.6.' ) !== 0 ) {
 			$this->output( "Not supported!\n" );
-			$this->fatalError( "Only Elasticsearch 6.8.x is supported.  Your version: $result." );
+			$this->fatalError( "Only Elasticsearch 6.x and 5.6.x are supported.  Your version: $result." );
 		}
 		$this->output( "ok\n" );
 	}
@@ -110,9 +109,7 @@ class ConfigUtils {
 	 * @return string[] the list of indices
 	 */
 	public function getAllIndicesByType( $typeName ) {
-		$response = $this->client->requestEndpoint( ( new Endpoints\Indices\Get() )
-			->setIndex( $typeName . '*' )
-			->setParams( [ 'include_type_name' => 'false' ] ) );
+		$response = $this->client->request( $typeName . '*' );
 		if ( !$response->isOK() ) {
 			$this->fatalError( "Cannot fetch index names for $typeName: "
 				. $response->getError() );

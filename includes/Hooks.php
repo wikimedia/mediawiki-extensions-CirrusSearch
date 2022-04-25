@@ -601,12 +601,12 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 		}
 
 		$conn = self::getConnection();
-		$oldIndexSuffix = $conn->getIndexSuffixForNamespace( $title->getNamespace() );
-		$newIndexSuffix = $conn->getIndexSuffixForNamespace( $newTitle->getNamespace() );
-		if ( $oldIndexSuffix !== $newIndexSuffix ) {
+		$oldIndexType = $conn->getIndexSuffixForNamespace( $title->getNamespace() );
+		$newIndexType = $conn->getIndexSuffixForNamespace( $newTitle->getNamespace() );
+		if ( $oldIndexType !== $newIndexType ) {
 			$title = Title::newFromLinkTarget( $title );
 			$job = new Job\DeletePages( $title, [
-				'indexSuffix' => $oldIndexSuffix,
+				'indexType' => $oldIndexType,
 				'docId' => self::getConfig()->makeId( $oldId )
 			] );
 			// Push the job after DB commit but cancel on rollback

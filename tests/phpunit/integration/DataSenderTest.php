@@ -143,7 +143,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
 			$tests[$testName] = [
 				$fixture['config'],
-				$fixture['indexSuffix'],
+				$fixture['indexType'],
 				$fixture['documents'],
 				$expectedFile,
 			];
@@ -154,7 +154,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider provideTestSendDataRequest
 	 */
-	public function testSendDataRequest( array $config, $indexSuffix, array $documents, $expectedFile ) {
+	public function testSendDataRequest( array $config, $indexType, array $documents, $expectedFile ) {
 		$minimalSetup = [
 			'CirrusSearchClusters' => [
 				'default' => [ 'localhost' ]
@@ -206,7 +206,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 			->method( 'getClient' )
 			->willReturn( $mockClient );
 		$sender = new DataSender( $mockCon, $searchConfig );
-		$sender->sendData( $indexSuffix, $documents );
+		$sender->sendData( $indexType, $documents );
 	}
 
 	public function provideTestSendDeletesRequest() {
@@ -217,7 +217,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
 			$tests[$testName] = [
 				$fixture['config'],
-				$fixture['indexSuffix'],
+				$fixture['indexType'],
 				$fixture['ids'],
 				$expectedFile,
 			];
@@ -228,7 +228,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider provideTestSendDeletesRequest
 	 */
-	public function testSendDeletesRequest( array $config, $indexSuffix, array $ids, $expectedFile ) {
+	public function testSendDeletesRequest( array $config, $indexType, array $ids, $expectedFile ) {
 		$minimalSetup = [
 			'CirrusSearchClusters' => [
 				'default' => [ 'localhost' ]
@@ -278,7 +278,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 			->method( 'getClient' )
 			->willReturn( $mockClient );
 		$sender = new DataSender( $mockCon, $searchConfig );
-		$sender->sendDeletes( $ids, $indexSuffix );
+		$sender->sendDeletes( $ids, $indexType );
 	}
 
 	public function provideTestSendOtherIndexUpdatesRequest() {
@@ -330,7 +330,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
 			$tests[$testName] = [
 				$fixture['config'],
-				$fixture['indexSuffix'],
+				$fixture['indexType'],
 				$fixture['batchSize'],
 				$fixture['docIds'],
 				$fixture['tagField'],
@@ -347,7 +347,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider provideUpdateWeightedTagsRequest
 	 * @param array $config
-	 * @param string $indexSuffix
+	 * @param string $indexType
 	 * @param int $batchSize
 	 * @param array $docIds
 	 * @param string $tagField
@@ -360,7 +360,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	 */
 	public function testUpdateWeightedTags(
 		array $config,
-		string $indexSuffix,
+		string $indexType,
 		int $batchSize,
 		array $docIds,
 		string $tagField,
@@ -381,7 +381,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockClient = $this->prepareClientMock( $expectedRequestCount ?? $count );
 
 		$sender = $this->prepareDataSender( $searchConfig, $mockClient );
-		$sender->sendUpdateWeightedTags( $indexSuffix, $docIds, $tagField, $tagPrefix,
+		$sender->sendUpdateWeightedTags( $indexType, $docIds, $tagField, $tagPrefix,
 			$tagNames, $tagWeights, $batchSize );
 
 		$this->assertFileContains(
@@ -399,7 +399,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
 			$tests[$testName] = [
 				$fixture['config'],
-				$fixture['indexSuffix'],
+				$fixture['indexType'],
 				$fixture['batchSize'],
 				$fixture['docIds'],
 				$fixture['tagField'],
@@ -413,7 +413,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider provideResetWeightedTagsRequest
 	 * @param array $config
-	 * @param string $indexSuffix
+	 * @param string $indexType
 	 * @param int $batchSize
 	 * @param array $docIds
 	 * @param string $tagField
@@ -423,7 +423,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	 */
 	public function testResetWeightedTags(
 		array $config,
-		string $indexSuffix,
+		string $indexType,
 		int $batchSize,
 		array $docIds,
 		string $tagField,
@@ -441,7 +441,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockClient = $this->prepareClientMock( $count );
 
 		$sender = $this->prepareDataSender( $searchConfig, $mockClient );
-		$sender->sendResetWeightedTags( $indexSuffix, $docIds, $tagField, $tagPrefix, $batchSize );
+		$sender->sendResetWeightedTags( $indexType, $docIds, $tagField, $tagPrefix, $batchSize );
 
 		$this->assertFileContains(
 			CirrusIntegrationTestCase::fixturePath( $expectedFile ),

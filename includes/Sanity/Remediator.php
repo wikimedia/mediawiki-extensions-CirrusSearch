@@ -50,16 +50,16 @@ interface Remediator {
 	 *
 	 * @param string $docId elasticsearch document id
 	 * @param WikiPage $page page in too many indexes
-	 * @param string $indexSuffix index suffix that the page is in but shouldn't be in
+	 * @param string $indexType index type that the page is in but shouldn't be in
 	 */
-	public function pageInWrongIndex( $docId, WikiPage $page, $indexSuffix );
+	public function pageInWrongIndex( $docId, WikiPage $page, $indexType );
 
 	/**
 	 * @param string $docId elasticsearch document id
 	 * @param WikiPage $page page with outdated document in index
-	 * @param string $indexSuffix index contgaining outdated document
+	 * @param string $indexType index contgaining outdated document
 	 */
-	public function oldVersionInIndex( $docId, WikiPage $page, $indexSuffix );
+	public function oldVersionInIndex( $docId, WikiPage $page, $indexType );
 
 	/**
 	 * @param WikiPage $page Page considered too old in index

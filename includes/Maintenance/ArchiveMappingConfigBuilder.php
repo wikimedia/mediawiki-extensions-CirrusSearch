@@ -2,13 +2,14 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\Connection;
 use CirrusSearch\Search\TextIndexField;
 
 class ArchiveMappingConfigBuilder extends MappingConfigBuilder {
 	public const VERSION = '1.0';
 
 	public function buildConfig() {
-		return [
+		return [ $this->getMainType() => [
 			'dynamic' => false,
 			'properties' => [
 				'namespace' => $this->searchIndexFieldFactory
@@ -20,14 +21,15 @@ class ArchiveMappingConfigBuilder extends MappingConfigBuilder {
 					->newKeywordField( 'wiki' )
 					->getMapping( $this->engine ),
 			],
-		];
+		] ];
 	}
 
 	/**
-	 * @inheritDoc
+	 * The elastic type name used by this index
+	 * @return string
 	 */
-	protected function isForPageIndexes(): bool {
-		return false;
+	public function getMainType() {
+		return Connection::ARCHIVE_TYPE_NAME;
 	}
 
 	/**

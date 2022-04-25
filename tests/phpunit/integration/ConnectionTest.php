@@ -24,6 +24,30 @@ namespace CirrusSearch;
  * @covers \CirrusSearch\Connection
  */
 class ConnectionTest extends CirrusIntegrationTestCase {
+	public static function provideNamespacesInIndexType() {
+		return [
+			// Standard:
+			[ [ NS_MAIN ], [ NS_MAIN => true ], [], 'content', 1 ],
+			[ [ NS_MAIN ], [ NS_MAIN => true ], [], 'general', false ],
+
+			// Commons:
+			[ [ NS_MAIN ], [ NS_MAIN => true ], [ NS_FILE => 'file' ], 'file', 1 ],
+
+			// Funky:
+			[ [ NS_MAIN ], [ NS_MAIN => true ], [ NS_FILE => 'file', NS_FILE_TALK => 'file' ], 'file', 2 ],
+			[ [ NS_MAIN ], [ NS_MAIN => true ], [ NS_FILE => 'file', NS_FILE_TALK => 'file' ], 'conent', false ],
+			[ [ NS_MAIN, NS_FILE ], [ NS_MAIN => true ], [], 'content', 2 ],
+			[ [ NS_MAIN, NS_FILE ], [ NS_MAIN => true ], [ NS_FILE => 'file' ], 'file', 1 ],
+			[ [ NS_MAIN, NS_FILE ], [ NS_MAIN => true ], [ NS_FILE => 'file' ], 'content', 1 ],
+			[ [ NS_MAIN, NS_FILE, NS_FILE_TALK ], [ NS_MAIN => true ], [ NS_FILE => 'file' ], 'content', 2 ],
+			[ [ NS_MAIN, NS_FILE, NS_FILE_TALK ], [ NS_MAIN => true ], [], 'content', 3 ],
+			[ [ NS_MAIN ], [ NS_MAIN => true, NS_FILE => true ], [ NS_FILE => 'file' ], 'content', 1 ],
+			[ [ NS_MAIN ], [ NS_MAIN => true, NS_FILE => true ], [ NS_FILE => 'file' ], 'file', 1 ],
+			[ [ NS_MAIN, NS_FILE ], [ NS_MAIN => true, NS_FILE => true ], [ NS_FILE => 'file' ], 'content', 1 ],
+			[ [ NS_MAIN, NS_FILE ], [ NS_MAIN => true, NS_FILE => true ], [ NS_FILE => 'file' ], 'file', 1 ],
+		];
+	}
+
 	public function extractIndexSuffixProvider() {
 		return [
 			'basic index name' => [
@@ -71,40 +95,40 @@ class ConnectionTest extends CirrusIntegrationTestCase {
 		$conn->extractIndexSuffix( 'testwiki_file_first' );
 	}
 
-	public function testGetAllIndexSuffixes() {
+	public function testGetAllIndexTypes() {
 		$con = new Connection( new HashSearchConfig( [
 			'CirrusSearchServers' => [ 'localhost' ],
 			'CirrusSearchNamespaceMappings' => []
 		] ) );
-		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_SUFFIX, Connection::GENERAL_INDEX_SUFFIX ],
-			$con->getAllIndexSuffixes() );
-		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_SUFFIX, Connection::GENERAL_INDEX_SUFFIX ],
-			$con->getAllIndexSuffixes( Connection::PAGE_DOC_TYPE ) );
-		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_SUFFIX, Connection::GENERAL_INDEX_SUFFIX, Connection::ARCHIVE_INDEX_SUFFIX ],
-			$con->getAllIndexSuffixes( null ) );
-		$this->assertArrayEquals( [ Connection::ARCHIVE_INDEX_SUFFIX ],
-			$con->getAllIndexSuffixes( Connection::ARCHIVE_DOC_TYPE ) );
+		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE ],
+			$con->getAllIndexTypes() );
+		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE ],
+			$con->getAllIndexTypes( Connection::PAGE_TYPE_NAME ) );
+		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE, Connection::ARCHIVE_INDEX_TYPE ],
+			$con->getAllIndexTypes( null ) );
+		$this->assertArrayEquals( [ Connection::ARCHIVE_INDEX_TYPE ],
+			$con->getAllIndexTypes( Connection::ARCHIVE_TYPE_NAME ) );
 
 		$con = new Connection( new HashSearchConfig( [
 			'CirrusSearchServers' => [ 'localhost' ],
 			'CirrusSearchNamespaceMappings' => [ NS_FILE => 'file' ]
 		] ) );
 
-		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_SUFFIX, Connection::GENERAL_INDEX_SUFFIX, 'file' ],
-			$con->getAllIndexSuffixes() );
-		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_SUFFIX, Connection::GENERAL_INDEX_SUFFIX, 'file' ],
-			$con->getAllIndexSuffixes( Connection::PAGE_DOC_TYPE ) );
+		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE, 'file' ],
+			$con->getAllIndexTypes() );
+		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE, 'file' ],
+			$con->getAllIndexTypes( Connection::PAGE_TYPE_NAME ) );
 		$this->assertArrayEquals(
 			[
-				Connection::CONTENT_INDEX_SUFFIX,
-				Connection::GENERAL_INDEX_SUFFIX,
-				Connection::ARCHIVE_INDEX_SUFFIX,
+				Connection::CONTENT_INDEX_TYPE,
+				Connection::GENERAL_INDEX_TYPE,
+				Connection::ARCHIVE_INDEX_TYPE,
 				'file'
 			],
-			$con->getAllIndexSuffixes( null )
+			$con->getAllIndexTypes( null )
 		);
-		$this->assertArrayEquals( [ Connection::ARCHIVE_INDEX_SUFFIX ],
-			$con->getAllIndexSuffixes( Connection::ARCHIVE_DOC_TYPE ) );
+		$this->assertArrayEquals( [ Connection::ARCHIVE_INDEX_TYPE ],
+			$con->getAllIndexTypes( Connection::ARCHIVE_TYPE_NAME ) );
 	}
 
 	public function providePoolCaching() {

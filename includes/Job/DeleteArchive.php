@@ -41,7 +41,8 @@ class DeleteArchive extends CirrusTitleJob {
 		$updater->deletePages(
 			[ $this->title ],
 			array_keys( $docs ),
-			Connection::ARCHIVE_INDEX_SUFFIX,
+			Connection::ARCHIVE_INDEX_TYPE,
+			Connection::ARCHIVE_TYPE_NAME,
 			[ 'private_data' => true ]
 		);
 

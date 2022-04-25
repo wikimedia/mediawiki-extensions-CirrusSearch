@@ -103,35 +103,31 @@ class IndexCreator {
 		$searchAllFields,
 		array $extraSettings
 	) {
-		$indexSettings = [
-			'number_of_shards' => $shardCount,
-			'auto_expand_replicas' => $replicaCount,
-			'refresh_interval' => $refreshInterval . 's',
-			'analysis' => $this->analysisConfig,
-			'routing' => [
-				'allocation.total_shards_per_node' => $maxShardsPerNode,
-			]
+		$args = [
+			'settings' => [
+				'number_of_shards' => $shardCount,
+				'auto_expand_replicas' => $replicaCount,
+				'analysis' => $this->analysisConfig,
+				'refresh_interval' => $refreshInterval . 's',
+				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
+			] + $extraSettings
 		];
 
 		if ( $mergeSettings ) {
-			$indexSettings['merge.policy'] = $mergeSettings;
+			$args['settings']['merge.policy'] = $mergeSettings;
 		}
 
 		$similarity = $this->similarityConfig;
 		if ( $similarity ) {
-			$indexSettings['similarity'] = $similarity;
+			$args['settings']['similarity'] = $similarity;
 		}
 
 		if ( $searchAllFields ) {
 			// Use our weighted all field as the default rather than _all which is disabled.
-			$indexSettings['query.default_field'] = 'all';
+			$args['settings']['index.query.default_field'] = 'all';
 		}
 
-		// ideally we should merge $extraSettings to $indexSettings
-		// but existing config might declare keys like "index.mapping.total_fields.limit"
-		// which would not work under the 'index' key.
-		$settings = [ 'index' => $indexSettings ] + $extraSettings;
-		return [ 'settings' => $settings ];
+		return $args;
 	}
 
 }

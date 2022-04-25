@@ -30,7 +30,7 @@ class SearchRequestBuilder {
 	/** @var string search timeout, string with time and unit, e.g. 20s for 20 seconds */
 	private $timeout;
 
-	/** @var Type|null Force the type when set, use {@link Connection::pickIndexSuffixForNamespaces}
+	/** @var Type|null Force the type when set, use {@link Connection::pickIndexTypeForNamespaces}
 	 * otherwise
 	 */
 	private $pageType;
@@ -262,7 +262,7 @@ class SearchRequestBuilder {
 			$indexBaseName = $this->indexBaseName;
 			$config = $this->searchContext->getConfig();
 			$hostConfig = $config->getHostWikiConfig();
-			$indexSuffix = $this->connection->pickIndexSuffixForNamespaces(
+			$indexType = $this->connection->pickIndexTypeForNamespaces(
 				$this->searchContext->getNamespaces() );
 			if ( $hostConfig->get( 'CirrusSearchCrossClusterSearch' ) ) {
 				$local = $hostConfig->getClusterAssignment()->getCrossClusterName();
@@ -271,7 +271,7 @@ class SearchRequestBuilder {
 					$indexBaseName = $current . ':' . $indexBaseName;
 				}
 			}
-			return $this->connection->getPageType( $indexBaseName, $indexSuffix );
+			return $this->connection->getPageType( $indexBaseName, $indexType );
 		}
 	}
 

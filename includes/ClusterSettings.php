@@ -40,48 +40,48 @@ class ClusterSettings {
 	}
 
 	/**
-	 * @param string $indexSuffix
+	 * @param string $indexType
 	 * @return int Number of shards the index should have
 	 */
-	public function getShardCount( $indexSuffix ) {
+	public function getShardCount( $indexType ) {
 		$settings = $this->config->get( 'CirrusSearchShardCount' );
-		if ( isset( $settings[$this->cluster][$indexSuffix] ) ) {
-			return $settings[$this->cluster][$indexSuffix];
-		} elseif ( isset( $settings[$indexSuffix] ) ) {
-			return $settings[$indexSuffix];
+		if ( isset( $settings[$this->cluster][$indexType] ) ) {
+			return $settings[$this->cluster][$indexType];
+		} elseif ( isset( $settings[$indexType] ) ) {
+			return $settings[$indexType];
 		}
 		throw new \Exception( "Could not find a shard count for "
-			. "{$indexSuffix}. Did you add an index to "
+			. "{$indexType}. Did you add an index to "
 			. "\$wgCirrusSearchNamespaceMappings but forget to "
 			. "add it to \$wgCirrusSearchShardCount?" );
 	}
 
 	/**
-	 * @param string $indexSuffix
+	 * @param string $indexType
 	 * @return string Number of replicas Elasticsearch can expand or contract to
 	 *  in the format of '0-2' for the minimum and maximum number of replicas. May
 	 *  also be the string 'false' when replicas are disabled.
 	 */
-	public function getReplicaCount( $indexSuffix ) {
+	public function getReplicaCount( $indexType ) {
 		$settings = $this->config->get( 'CirrusSearchReplicas' );
 		if ( !is_array( $settings ) ) {
 			return $settings;
-		} elseif ( isset( $settings[$this->cluster][$indexSuffix] ) ) {
-			return $settings[$this->cluster][$indexSuffix];
-		} elseif ( isset( $settings[$indexSuffix] ) ) {
-			return $settings[$indexSuffix];
+		} elseif ( isset( $settings[$this->cluster][$indexType] ) ) {
+			return $settings[$this->cluster][$indexType];
+		} elseif ( isset( $settings[$indexType] ) ) {
+			return $settings[$indexType];
 		}
 		throw new \Exception( "If \$wgCirrusSearchReplicas is " .
 			"an array it must contain all index types." );
 	}
 
 	/**
-	 * @param string $indexSuffix
+	 * @param string $indexType
 	 * @return int Number of shards per node, or 'unlimited'.
 	 */
-	public function getMaxShardsPerNode( $indexSuffix ) {
+	public function getMaxShardsPerNode( $indexType ) {
 		$settings = $this->config->get( 'CirrusSearchMaxShardsPerNode' );
-		$max = $settings[$this->cluster][$indexSuffix] ?? $settings[$indexSuffix] ?? -1;
+		$max = $settings[$this->cluster][$indexType] ?? $settings[$indexType] ?? -1;
 		// Allow convenience setting of 'unlimited' which translates to elasticsearch -1 (unbounded).
 		return $max === 'unlimited' ? -1 : $max;
 	}

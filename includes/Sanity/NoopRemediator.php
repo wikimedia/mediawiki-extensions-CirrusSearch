@@ -32,17 +32,17 @@ class NoopRemediator implements Remediator {
 	/**
 	 * @param string $docId
 	 * @param WikiPage $page
-	 * @param string $indexSuffix
+	 * @param string $indexType
 	 */
-	public function pageInWrongIndex( $docId, WikiPage $page, $indexSuffix ) {
+	public function pageInWrongIndex( $docId, WikiPage $page, $indexType ) {
 	}
 
 	/**
 	 * @param string $docId elasticsearch document id
 	 * @param WikiPage $page page with outdated document in index
-	 * @param string $indexSuffix index contgaining outdated document
+	 * @param string $indexType index contgaining outdated document
 	 */
-	public function oldVersionInIndex( $docId, WikiPage $page, $indexSuffix ) {
+	public function oldVersionInIndex( $docId, WikiPage $page, $indexType ) {
 	}
 
 	/**

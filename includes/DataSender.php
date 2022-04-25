@@ -62,7 +62,7 @@ class DataSender extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param string $indexSuffix
+	 * @param string $indexType
 	 * @param string[] $docIds
 	 * @param string $tagField
 	 * @param string $tagPrefix
@@ -76,7 +76,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @return Status
 	 */
 	public function sendUpdateWeightedTags(
-		string $indexSuffix,
+		string $indexType,
 		array $docIds,
 		string $tagField,
 		string $tagPrefix,
@@ -120,10 +120,12 @@ class DataSender extends ElasticsearchIntermediary {
 
 		$client = $this->connection->getClient();
 		$status = Status::newGood();
-		$pageIndex = $this->connection->getIndex( $this->indexBaseName, $indexSuffix );
+		$pageType =
+			$this->connection->getIndexType( $this->indexBaseName, $indexType,
+				Connection::PAGE_TYPE_NAME );
 		foreach ( array_chunk( $docIds, $batchSize ) as $docIdsChunk ) {
 			$bulk = new \Elastica\Bulk( $client );
-			$bulk->setType( $pageIndex->getType( '_doc' ) );
+			$bulk->setType( $pageType );
 			foreach ( $docIdsChunk as $docId ) {
 				$tags = [];
 				foreach ( $tagNames as $tagName ) {
@@ -190,7 +192,7 @@ class DataSender extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param string $indexSuffix
+	 * @param string $indexType
 	 * @param string[] $docIds
 	 * @param string $tagField
 	 * @param string $tagPrefix
@@ -198,14 +200,14 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @return Status
 	 */
 	public function sendResetWeightedTags(
-		string $indexSuffix,
+		string $indexType,
 		array $docIds,
 		string $tagField,
 		string $tagPrefix,
 		int $batchSize = 30
 	): Status {
 		return $this->sendUpdateWeightedTags(
-			$indexSuffix,
+			$indexType,
 			$docIds,
 			$tagField,
 			$tagPrefix,
@@ -216,11 +218,12 @@ class DataSender extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param string $indexSuffix suffix of index to which to send $documents
+	 * @param string $indexType type of index to which to send $documents
 	 * @param \Elastica\Document[] $documents documents to send
+	 * @param string $elasticType Mapping type to use for the document
 	 * @return Status
 	 */
-	public function sendData( $indexSuffix, array $documents ) {
+	public function sendData( $indexType, array $documents, $elasticType = Connection::PAGE_TYPE_NAME ) {
 		if ( !$documents ) {
 			return Status::newGood();
 		}
@@ -289,7 +292,9 @@ class DataSender extends ElasticsearchIntermediary {
 		$responseSet = null;
 		$justDocumentMissing = false;
 		try {
-			$pageIndex = $this->connection->getIndex( $this->indexBaseName, $indexSuffix );
+			$pageType = $this->connection->getIndexType(
+				$this->indexBaseName, $indexType, $elasticType
+			);
 
 			$this->start( new BulkUpdateRequestLog(
 				$this->connection->getClient(),
@@ -298,7 +303,7 @@ class DataSender extends ElasticsearchIntermediary {
 			) );
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
 			$bulk->setShardTimeout( $this->searchConfig->get( 'CirrusSearchUpdateShardTimeout' ) );
-			$bulk->setType( $pageIndex->getType( '_doc' ) );
+			$bulk->setType( $pageType );
 			if ( $this->searchConfig->getElement( 'CirrusSearchElasticQuirks', 'retry_on_conflict' ) ) {
 				$actions = [];
 				foreach ( $documents as $doc ) {
@@ -321,10 +326,10 @@ class DataSender extends ElasticsearchIntermediary {
 			$responseSet = $bulk->send();
 		} catch ( ResponseException $e ) {
 			$justDocumentMissing = $this->bulkResponseExceptionIsJustDocumentMissing( $e,
-				function ( $docId ) use ( $e, $indexSuffix ) {
+				function ( $docId ) use ( $e, $indexType ) {
 					$this->log->info(
 						"Updating a page that doesn't yet exist in Elasticsearch: {docId}",
-						[ 'docId' => $docId, 'indexSuffix' => $indexSuffix ]
+						[ 'docId' => $docId, 'indexType' => $indexType ]
 					);
 				}
 			);
@@ -341,7 +346,7 @@ class DataSender extends ElasticsearchIntermediary {
 			$this->success();
 			if ( $validResponse ) {
 				// @phan-suppress-next-line PhanTypeMismatchArgumentNullable responseset is not null
-				$this->reportUpdateMetrics( $responseSet, $indexSuffix, count( $documents ) );
+				$this->reportUpdateMetrics( $responseSet, $indexType, count( $documents ) );
 			}
 			return Status::newGood();
 		} else {
@@ -363,11 +368,11 @@ class DataSender extends ElasticsearchIntermediary {
 
 	/**
 	 * @param \Elastica\Bulk\ResponseSet $responseSet
-	 * @param string $indexSuffix
+	 * @param string $indexType
 	 * @param int $sent
 	 */
 	private function reportUpdateMetrics(
-		\Elastica\Bulk\ResponseSet $responseSet, $indexSuffix, $sent
+		\Elastica\Bulk\ResponseSet $responseSet, $indexType, $sent
 	) {
 		$updateStats = [
 			'sent' => $sent,
@@ -393,7 +398,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$metricsPrefix = "CirrusSearch.$cluster.updates";
 		foreach ( $updateStats as $what => $num ) {
 			$stats->updateCount(
-				"$metricsPrefix.details.{$this->indexBaseName}.$indexSuffix.$what", $num
+				"$metricsPrefix.details.{$this->indexBaseName}.$indexType.$what", $num
 			);
 			$stats->updateCount( "$metricsPrefix.all.$what", $num );
 		}
@@ -403,29 +408,35 @@ class DataSender extends ElasticsearchIntermediary {
 	 * Send delete requests to Elasticsearch.
 	 *
 	 * @param string[] $docIds elasticsearch document ids to delete
-	 * @param string|null $indexSuffix index from which to delete.  null means all.
+	 * @param string|null $indexType index from which to delete.  null means all.
+	 * @param string|null $elasticType Mapping type to use for the document. null means all types.
 	 * @return Status
 	 */
-	public function sendDeletes( $docIds, $indexSuffix = null ) {
-		if ( $indexSuffix === null ) {
-			$indexes = $this->connection->getAllIndexSuffixes( Connection::PAGE_DOC_TYPE );
+	public function sendDeletes( $docIds, $indexType = null, $elasticType = null ) {
+		if ( $indexType === null ) {
+			$indexes = $this->connection->getAllIndexTypes( Connection::PAGE_TYPE_NAME );
 		} else {
-			$indexes = [ $indexSuffix ];
+			$indexes = [ $indexType ];
+		}
+
+		if ( $elasticType === null ) {
+			$elasticType = Connection::PAGE_TYPE_NAME;
 		}
 
 		$idCount = count( $docIds );
 		if ( $idCount !== 0 ) {
 			try {
-				foreach ( $indexes as $indexSuffix ) {
+				foreach ( $indexes as $indexType ) {
 					$this->startNewLog(
-						'deleting {numIds} from {indexSuffix}',
+						'deleting {numIds} from {indexType}/{elasticType}',
 						'send_deletes', [
 							'numIds' => $idCount,
-							'indexSuffix' => $indexSuffix,
+							'indexType' => $indexType,
+							'elasticType' => $elasticType,
 						]
 					);
 					$this->connection
-						->getIndexType( $this->indexBaseName, $indexSuffix )
+						->getIndexType( $this->indexBaseName, $indexType, $elasticType )
 						->deleteIds( $docIds );
 					$this->success();
 				}
@@ -474,7 +485,7 @@ class DataSender extends ElasticsearchIntermediary {
 					'super_detect_noop'
 				);
 				$script->setId( $update['docId'] );
-				$script->setParam( '_type', '_doc' );
+				$script->setParam( '_type', 'page' );
 				$script->setParam( '_index', $indexName );
 				$bulk->addScript( $script, 'update' );
 				$titles[] = $title;

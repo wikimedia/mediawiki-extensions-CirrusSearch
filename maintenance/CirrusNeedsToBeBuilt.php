@@ -63,21 +63,21 @@ class CirrusNeedsToBeBuilt extends Maintenance {
 			sleep( 1 );
 		}
 
-		foreach ( $this->getConnection()->getAllIndexSuffixes() as $indexSuffix ) {
+		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
 			try {
 				$count = $this->getConnection()
-					->getPageType( $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ), $indexSuffix )
+					->getPageType( $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ), $indexType )
 					->count();
 			} catch ( \Elastica\Exception\ResponseException $e ) {
-				$this->output( "$indexSuffix doesn't exist.\n" );
+				$this->output( "$indexType doesn't exist.\n" );
 				$this->error( "true" );
 				return true;
 			}
-			if ( $indexSuffix === 'content' && $count === 0 ) {
+			if ( $indexType === 'content' && $count === 0 ) {
 				$this->output( "No pages in the content index.  Indexes were probably wiped.\n" );
 				return true;
 			}
-			$this->output( "Page count in $indexSuffix:  $count\n" );
+			$this->output( "Page count in $indexType:  $count\n" );
 		}
 		// This result in non-zero exit code, which makes puppet decide that it needs to run whatever is gated by this.
 		return false;

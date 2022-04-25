@@ -214,7 +214,6 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 		$type = $this->connection->getPageType( $indexPrefix );
 		$search = new Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
-		$search->addType( $type );
 		$search->setQuery( $bool );
 		$search->getQuery()->addParam( 'stats', 'link_count' );
 		$search->getQuery()->setSize( 0 );

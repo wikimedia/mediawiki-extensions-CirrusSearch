@@ -190,7 +190,7 @@ class SearchRequestBuilder {
 
 		$pageType = $this->getPageType();
 
-		$search = $pageType->createSearch( $query, $queryOptions );
+		$search = $pageType->getIndex()->createSearch( $query, $queryOptions );
 		$crossClusterName = $this->connection->getConfig()->getClusterAssignment()->getCrossClusterName();
 		foreach ( $extraIndexes as $i ) {
 			$search->addIndex( $i->getSearchIndex( $crossClusterName ) );

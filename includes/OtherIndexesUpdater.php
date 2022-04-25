@@ -106,7 +106,7 @@ class OtherIndexesUpdater extends Updater {
 				$searchIndex = $otherIndex->getSearchIndex( $readClusterName );
 				$type = $this->connection->getPageType( $searchIndex );
 				$query = $this->queryForTitle( $title );
-				$search = $type->createSearch( $query );
+				$search = $type->getIndex()->createSearch( $query );
 				$findIdsMultiSearch->addSearch( $search );
 				$findIdsClosures[] = static function ( $docId ) use ( $otherIndex, &$updates, $title ) {
 					// The searchIndex, including the cluster specified, is needed

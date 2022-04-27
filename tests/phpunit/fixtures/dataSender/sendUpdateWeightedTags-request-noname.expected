@@ -1,5 +1,5 @@
 {
-    "path": "myfixturewiki_myidxsuffix\/page\/_bulk",
+    "path": "myfixturewiki_myidxsuffix\/_doc\/_bulk",
     "method": "POST",
     "data": [
         [

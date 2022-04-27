@@ -70,15 +70,15 @@ class AllClustersQueueingRemediator implements Remediator {
 	/**
 	 * @inheritDoc
 	 */
-	public function pageInWrongIndex( $docId, WikiPage $page, $indexType ) {
-		$this->inner->pageInWrongIndex( $docId, $page, $indexType );
+	public function pageInWrongIndex( $docId, WikiPage $page, $indexSuffix ) {
+		$this->inner->pageInWrongIndex( $docId, $page, $indexSuffix );
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function oldVersionInIndex( $docId, WikiPage $page, $indexType ) {
-		$this->inner->oldVersionInIndex( $docId, $page, $indexType );
+	public function oldVersionInIndex( $docId, WikiPage $page, $indexSuffix ) {
+		$this->inner->oldVersionInIndex( $docId, $page, $indexSuffix );
 	}
 
 	/**

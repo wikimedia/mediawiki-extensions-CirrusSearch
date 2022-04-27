@@ -3,7 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\ClusterSettings;
-use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -39,7 +38,7 @@ class CopySearchIndex extends Maintenance {
 	/**
 	 * @var string
 	 */
-	private $indexType;
+	private $indexSuffix;
 
 	/**
 	 * @var string
@@ -55,7 +54,7 @@ class CopySearchIndex extends Maintenance {
 		parent::__construct();
 		$this->addDescription( "Copy index from one cluster to another.\n" .
 			"The index name and index type should be the same on both clusters." );
-		$this->addOption( 'indexType', 'Source index.  Either content or general.', true, true );
+		$this->addOption( 'indexSuffix', 'Source index.  Either content or general.', true, true );
 		$this->addOption( 'targetCluster', 'Target Cluster.', true, true );
 		$this->addOption( 'reindexChunkSize', 'Documents per shard to reindex in a batch.   ' .
 			'Note when changing the number of shards that the old shard size is used, not the new ' .
@@ -66,7 +65,7 @@ class CopySearchIndex extends Maintenance {
 	}
 
 	public function execute() {
-		$this->indexType = $this->getOption( 'indexType' );
+		$this->indexSuffix = $this->getOption( 'indexSuffix' );
 		$this->indexBaseName = $this->getOption( 'baseName',
 			$this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 
@@ -82,7 +81,7 @@ class CopySearchIndex extends Maintenance {
 		}
 		$clusterSettings = new ClusterSettings( $this->getSearchConfig(), $targetConnection->getClusterName() );
 
-		$targetIndexName = $targetConnection->getIndexName( $this->indexBaseName, $this->indexType );
+		$targetIndexName = $targetConnection->getIndexName( $this->indexBaseName, $this->indexSuffix );
 		$utils = new ConfigUtils( $targetConnection->getClient(), $this );
 		$indexIdentifier = $utils->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ),
 			$targetIndexName
@@ -93,10 +92,10 @@ class CopySearchIndex extends Maintenance {
 			$sourceConnection,
 			$targetConnection,
 			// Target Index
-			$targetConnection->getIndex( $this->indexBaseName, $this->indexType, $indexIdentifier )
-				->getType( Connection::PAGE_TYPE_NAME ),
+			$targetConnection->getIndex( $this->indexBaseName, $this->indexSuffix, $indexIdentifier )
+				->getType( '_doc' ),
 			// Source Index
-			$this->getConnection()->getPageType( $this->indexBaseName, $this->indexType ),
+			$this->getConnection()->getPageType( $this->indexBaseName, $this->indexSuffix ),
 			$this
 		);
 		$reindexer->reindex( $slices, 1, $reindexChunkSize );

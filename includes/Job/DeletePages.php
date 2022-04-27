@@ -6,8 +6,8 @@ use CirrusSearch\Updater;
 use Title;
 
 /**
- * Job wrapper around Updater::deletePages.  If indexType parameter is
- * specified then only deletes from that type of index.
+ * Job wrapper around Updater::deletePages.  If indexSuffix parameter is
+ * specified then only deletes from indices with a matching suffix.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,9 @@ class DeletePages extends CirrusTitleJob {
 	 */
 	protected function doJob() {
 		$updater = Updater::build( $this->getSearchConfig(), $this->params['cluster'] ?? null );
-		$indexType = $this->params[ 'indexType' ] ?? null;
-		$updater->deletePages( [ $this->title ], [ $this->params['docId'] ], $indexType );
+		// BC for rename from indexType to indexSuffix
+		$indexSuffix = $this->params['indexSuffix'] ?? $this->params['indexType'] ?? null;
+		$updater->deletePages( [ $this->title ], [ $this->params['docId'] ], $indexSuffix );
 
 		if ( $this->getSearchConfig()->get( 'CirrusSearchIndexDeletes' ) ) {
 			$updater->archivePages( [

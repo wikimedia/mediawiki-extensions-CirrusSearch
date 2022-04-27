@@ -29,7 +29,7 @@ class SettingsDump extends \ApiBase {
 	public function execute() {
 		$conn = $this->getCirrusConnection();
 		$indexPrefix = $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME );
-		foreach ( $conn->getAllIndexTypes() as $index ) {
+		foreach ( $conn->getAllIndexSuffixes() as $index ) {
 			$this->getResult()->addValue(
 				[ $index, 'page' ],
 				'index',
@@ -37,10 +37,14 @@ class SettingsDump extends \ApiBase {
 			);
 		}
 		if ( $this->getSearchConfig()->isCompletionSuggesterEnabled() ) {
-			$index = $conn->getIndex( $indexPrefix, Connection::TITLE_SUGGEST_TYPE );
+			$index = $conn->getIndex( $indexPrefix, Connection::TITLE_SUGGEST_INDEX_SUFFIX );
 			if ( $index->exists() ) {
 				$mapping = $index->getSettings()->get();
-				$this->getResult()->addValue( [ Connection::TITLE_SUGGEST_TYPE, Connection::TITLE_SUGGEST_TYPE ], 'index', $mapping );
+				$this->getResult()->addValue(
+					[ Connection::TITLE_SUGGEST_INDEX_SUFFIX, Connection::TITLE_SUGGEST_INDEX_SUFFIX ],
+					'index',
+					$mapping
+				);
 			}
 		}
 	}

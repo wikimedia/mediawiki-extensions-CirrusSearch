@@ -42,7 +42,7 @@ class DumpIndex extends Maintenance {
 	/**
 	 * @var string
 	 */
-	private $indexType;
+	private $indexSuffix;
 
 	/**
 	 * @var string
@@ -81,9 +81,9 @@ class DumpIndex extends Maintenance {
 			"\nThis always operates on a single cluster." .
 			"\n\nExamples :\n" .
 			" - Dump a general index :" .
-			"\n\tdumpIndex --indexType general\n" .
+			"\n\tdumpIndex --indexSuffix general\n" .
 			" - Dump a large content index into compressed chunks of 100000 documents :" .
-			"\n\tdumpIndex --indexType content | split -d -a 9 -l 100000  " .
+			"\n\tdumpIndex --indexSuffix content | split -d -a 9 -l 100000  " .
 			"--filter 'gzip -c > \$FILE.txt.gz' - \"\" \n" .
 			"\nYou can import the data with the following commands :\n" .
 			" - Import chunks of 2000 documents :" .
@@ -92,7 +92,8 @@ class DumpIndex extends Maintenance {
 			" - Import 3 chunks of 2000 documents in parallel :" .
 			"\n\tcat dump | parallel --pipe -L 2 -N 2000 -j3 'curl -s http://elastic:9200/{indexName}/_bulk " .
 			"--data-binary @- > /dev/null'" );
-		$this->addOption( 'indexType', 'Index to dump. Either content or general.', true, true );
+		$this->addOption( 'indexSuffix', 'Index to dump. Either content or general.', false, true );
+		$this->addOption( 'indexType', 'BC form of --indexSuffix.', false, true );
 		$this->addOption( 'baseName', 'What basename to use, ' .
 			'defaults to wiki id.', false, true );
 		$this->addOption( 'filter', 'Dump only the documents that match the filter query ' .
@@ -106,14 +107,14 @@ class DumpIndex extends Maintenance {
 	public function execute() {
 		$this->disablePoolCountersAndLogging();
 
-		$this->indexType = $this->getOption( 'indexType' );
+		$this->indexSuffix = $this->getBackCompatOption( 'indexSuffix', 'indexType' );
 		$this->indexBaseName = $this->getOption( 'baseName',
 			$this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 
-		$indexTypes = $this->getConnection()->getAllIndexTypes();
-		if ( !in_array( $this->indexType, $indexTypes ) ) {
-			$this->fatalError( 'indexType option must be one of ' .
-				implode( ', ', $indexTypes ) );
+		$indexSuffixes = $this->getConnection()->getAllIndexSuffixes();
+		if ( !in_array( $this->indexSuffix, $indexSuffixes ) ) {
+			$this->fatalError( 'indexSuffix option must be one of ' .
+				implode( ', ', $indexSuffixes ) );
 		}
 
 		$this->indexIdentifier = $this->getOption( 'indexIdentifier' );
@@ -206,9 +207,9 @@ class DumpIndex extends Maintenance {
 	 */
 	private function getIndex() {
 		if ( $this->indexIdentifier ) {
-			return $this->getConnection()->getIndex( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
+			return $this->getConnection()->getIndex( $this->indexBaseName, $this->indexSuffix, $this->indexIdentifier );
 		} else {
-			return $this->getConnection()->getIndex( $this->indexBaseName, $this->indexType );
+			return $this->getConnection()->getIndex( $this->indexBaseName, $this->indexSuffix );
 		}
 	}
 

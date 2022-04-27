@@ -4,6 +4,7 @@ namespace CirrusSearch\Api;
 
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Util;
 
 /**
  * Dumps CirrusSearch mappings for easy viewing.
@@ -29,15 +30,15 @@ class MappingDump extends \ApiBase {
 	public function execute() {
 		$conn = $this->getCirrusConnection();
 		$indexPrefix = $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME );
-		foreach ( $conn->getAllIndexTypes( null ) as $index ) {
-			$mapping = $conn->getIndex( $indexPrefix, $index )->getMapping();
+		foreach ( $conn->getAllIndexSuffixes( null ) as $index ) {
+			$mapping = Util::getIndexMapping( $conn->getIndex( $indexPrefix, $index ) );
 			$this->getResult()->addValue( null, $index, $mapping );
 		}
 		if ( $this->getSearchConfig()->isCompletionSuggesterEnabled() ) {
-			$index = $conn->getIndex( $indexPrefix, Connection::TITLE_SUGGEST_TYPE );
+			$index = $conn->getIndex( $indexPrefix, Connection::TITLE_SUGGEST_INDEX_SUFFIX );
 			if ( $index->exists() ) {
-				$mapping = $index->getMapping();
-				$this->getResult()->addValue( null, Connection::TITLE_SUGGEST_TYPE, $mapping );
+				$mapping = Util::getIndexMapping( $index );
+				$this->getResult()->addValue( null, Connection::TITLE_SUGGEST_INDEX_SUFFIX, $mapping );
 			}
 		}
 	}

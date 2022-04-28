@@ -1,7 +1,7 @@
 {
     "__main__": {
         "description": "archive search for 'Content'",
-        "path": "wiki_archive\/_doc\/_search",
+        "path": "wiki_archive\/_search",
         "params": {
             "timeout": "20s",
             "search_type": "dfs_query_then_fetch"

@@ -421,7 +421,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				// We use a search query instead of _get/_mget, these methods are
 				// theorically well suited for this kind of job but they are not
 				// supported on aliases with multiple indices (content/general)
-				$pageType = $connection->getPageType( $this->indexBaseName, $indexSuffix );
+				$index = $connection->getPageType( $this->indexBaseName, $indexSuffix )->getIndex();
 				$query = new \Elastica\Query( new \Elastica\Query\Ids( $docIds ) );
 				$query->setParam( '_source', $sourceFiltering );
 				$query->addParam( 'stats', 'get' );
@@ -430,7 +430,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				// the ids requested.
 				$query->setFrom( 0 );
 				$query->setSize( $size );
-				$resultSet = $pageType->search( $query, [ 'search_type' => 'query_then_fetch' ] );
+				$resultSet = $index->search( $query, [ 'search_type' => 'query_then_fetch' ] );
 				return $this->success( $resultSet->getResults(), $connection );
 			} catch ( \Elastica\Exception\NotFoundException $e ) {
 				// NotFoundException just means the field didn't exist.

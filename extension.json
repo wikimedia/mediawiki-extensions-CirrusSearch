@@ -128,7 +128,10 @@
 		"MediaWikiServices": "CirrusSearch\\Hooks::onMediaWikiServices",
 		"PrefixSearchExtractNamespace": "CirrusSearch\\Hooks::onPrefixSearchExtractNamespace",
 		"ResourceLoaderGetConfigVars": "CirrusSearch\\Hooks::onResourceLoaderGetConfigVars",
-		"SearchIndexFields": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onSearchIndexFields",
+		"SearchIndexFields": [
+			"CirrusSearch\\Wikimedia\\WeightedTagsHooks::onSearchIndexFields",
+			"CirrusSearch\\Hooks\\CustomPageFields::onSearchIndexFields"
+		],
 		"SearchGetNearMatch": "CirrusSearch\\Hooks::onSearchGetNearMatch",
 		"ShowSearchHitTitle": "CirrusSearch\\Hooks::onShowSearchHitTitle",
 		"SoftwareInfo": "CirrusSearch\\Hooks::onSoftwareInfo",
@@ -675,6 +678,10 @@
 		},
 		"CirrusSearchAutomationCIDRs": {
 			"description": "List of CIDR strings used to identify automated requests",
+			"value": []
+		},
+		"CirrusSearchCustomPageFields": {
+			"description": "Defines additional custom fields for page indexes",
 			"value": []
 		}
 	},

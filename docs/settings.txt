@@ -1599,3 +1599,18 @@ concurrency.
 
 Example:
   $wgCirrusSearchAutomationCIDRs = ['1.2.3.0/24', '1:2::/32'];
+
+; $wgCirrusSearchCustomPageFields
+
+Default:
+  $wgCirrusSearchCustomPageFields = [];
+
+Defines additional fields to be included in page index mappings, which can then
+be externally populated and referenced from custom search profiles. Contains a
+map from field name to SearchIndexField::INDEX_TYPE_* constant.
+
+Example:
+  $wgCirrusSearchCustomPageFields = [
+    'related_terms' => 'short_text',
+    'popularity' => 'number'
+  ];

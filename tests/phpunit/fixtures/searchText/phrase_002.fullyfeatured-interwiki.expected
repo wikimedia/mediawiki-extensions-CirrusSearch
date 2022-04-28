@@ -9,7 +9,7 @@
             "search_type": "dfs_query_then_fetch",
             "timeout": "20s"
         },
-        "path": "wiki\/_doc\/_search",
+        "path": "wiki\/_search",
         "query": {
             "_source": [
                 "namespace",
@@ -285,7 +285,7 @@
             "search_type": "dfs_query_then_fetch",
             "timeout": "20s"
         },
-        "path": "itwiktionary\/_doc\/_search",
+        "path": "itwiktionary\/_search",
         "query": {
             "_source": [
                 "namespace",
@@ -561,7 +561,7 @@
             "search_type": "dfs_query_then_fetch",
             "timeout": "20s"
         },
-        "path": "itwikibooks\/_doc\/_search",
+        "path": "itwikibooks\/_search",
         "query": {
             "_source": [
                 "namespace",
@@ -837,7 +837,7 @@
             "search_type": "dfs_query_then_fetch",
             "timeout": "20s"
         },
-        "path": "itwikivoyage\/_doc\/_search",
+        "path": "itwikivoyage\/_search",
         "query": {
             "_source": [
                 "namespace",

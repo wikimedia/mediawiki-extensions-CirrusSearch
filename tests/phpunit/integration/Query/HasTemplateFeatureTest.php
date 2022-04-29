@@ -53,6 +53,7 @@ class HasTemplateFeatureTest extends CirrusIntegrationTestCase {
 			'multiple templates' => [
 				[
 					'bool' => [
+						'minimum_should_match' => 1,
 						'should' => [
 							[
 								'match' => [

@@ -200,6 +200,7 @@
                                 "must": [
                                     {
                                         "bool": {
+                                            "minimum_should_match": 1,
                                             "should": [
                                                 {
                                                     "source_regex": {

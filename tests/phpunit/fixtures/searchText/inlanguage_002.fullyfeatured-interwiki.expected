@@ -152,6 +152,7 @@
                                 "must": [
                                     {
                                         "bool": {
+                                            "minimum_should_match": 1,
                                             "should": [
                                                 {
                                                     "match": {
@@ -409,6 +410,7 @@
                                 "must": [
                                     {
                                         "bool": {
+                                            "minimum_should_match": 1,
                                             "should": [
                                                 {
                                                     "match": {
@@ -666,6 +668,7 @@
                                 "must": [
                                     {
                                         "bool": {
+                                            "minimum_should_match": 1,
                                             "should": [
                                                 {
                                                     "match": {
@@ -923,6 +926,7 @@
                                 "must": [
                                     {
                                         "bool": {
+                                            "minimum_should_match": 1,
                                             "should": [
                                                 {
                                                     "match": {

@@ -45,6 +45,7 @@ class Filters {
 			foreach ( $queries as $query ) {
 				$bool->addShould( $query );
 			}
+			$bool->setMinimumShouldMatch( 1 );
 			return $bool;
 		}
 	}

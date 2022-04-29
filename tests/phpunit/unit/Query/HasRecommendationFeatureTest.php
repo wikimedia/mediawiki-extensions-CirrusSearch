@@ -30,23 +30,27 @@ class HasRecommendationFeatureTest extends CirrusTestCase {
 			'multiple' => [
 				'hasrecommendation:link|image',
 				[ 'recommendationflags' => [ 'link', 'image' ] ],
-				[ 'bool' => [ 'should' => [
-					[ 'match' => [ 'weighted_tags' => [ 'query' => 'recommendation.link/exists' ] ] ],
-					[ 'match' => [ 'weighted_tags' => [ 'query' => 'recommendation.image/exists' ] ] ],
-				] ] ],
+				[ 'bool' => [
+					'minimum_should_match' => 1,
+					'should' => [
+						[ 'match' => [ 'weighted_tags' => [ 'query' => 'recommendation.link/exists' ] ] ],
+						[ 'match' => [ 'weighted_tags' => [ 'query' => 'recommendation.image/exists' ] ] ],
+					] ] ],
 				[]
 			],
 			'too many' => [
 				'hasrecommendation:' . implode( '|', $tooMany ),
 				[ 'recommendationflags' => $actualrecFlags ],
-				[ 'bool' => [ 'should' => array_merge( ...array_map(
-					static function ( $l ) {
-						return [
-							[ 'match' => [ 'weighted_tags' => [ 'query' => "recommendation." . $l . '/exists' ] ] ],
-						];
-					},
-					range( 1, HasRecommendationFeature::QUERY_LIMIT )
-				) ) ] ],
+				[ 'bool' => [
+					'minimum_should_match' => 1,
+					'should' => array_merge( ...array_map(
+						static function ( $l ) {
+							return [
+								[ 'match' => [ 'weighted_tags' => [ 'query' => "recommendation." . $l . '/exists' ] ] ],
+							];
+						},
+						range( 1, HasRecommendationFeature::QUERY_LIMIT )
+					) ) ] ],
 				[ [ 'cirrussearch-feature-too-many-conditions', 'hasrecommendation',
 					HasRecommendationFeature::QUERY_LIMIT ] ]
 			],

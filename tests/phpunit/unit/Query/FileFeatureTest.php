@@ -166,6 +166,7 @@ class FileFeatureTest extends CirrusTestCase {
 				],
 				[
 					'bool' => [
+						'minimum_should_match' => 1,
 						'should' => [
 							[
 								'match' => [
@@ -195,6 +196,7 @@ class FileFeatureTest extends CirrusTestCase {
 				],
 				[
 					'bool' => [
+						'minimum_should_match' => 1,
 						'should' => [
 							[
 								'match' => [
@@ -223,6 +225,7 @@ class FileFeatureTest extends CirrusTestCase {
 				],
 				[
 					'bool' => [
+						'minimum_should_match' => 1,
 						'should' => [
 							[
 								'match' => [

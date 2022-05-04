@@ -55,11 +55,17 @@ class ConfigUtils {
 		}
 		$result = $result[ 'version' ][ 'number' ];
 		$this->output( "$result..." );
-		if ( strpos( $result, '6.8' ) !== 0 ) {
-			$this->output( "Not supported!\n" );
-			$this->fatalError( "Only Elasticsearch 6.8.x is supported.  Your version: $result." );
+		if ( strpos( $result, '7.10' ) !== 0 ) {
+			if ( strpos( $result, '6.8' ) == 0 ) {
+				$this->output( "partially supported\n" );
+				$this->error( "You use a version of elasticsearch that is partially supported, you should upgrade to 7.10.x\n" );
+			} else {
+				$this->output( "Not supported!\n" );
+				$this->fatalError( "Only Elasticsearch 7.10.x is supported.  Your version: $result." );
+			}
+		} else {
+			$this->output( "ok\n" );
 		}
-		$this->output( "ok\n" );
 	}
 
 	/**

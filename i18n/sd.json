@@ -6,5 +6,15 @@
 		]
 	},
 	"cirrussearch-too-busy-error": "ڳولا هن وقت هيڪاندي مصروف آهي. مھرباني ڪري بعد ۾ ٻيھر ڪوشش ڪريو.",
+	"prefs-completion": "ڳولا تڪميل",
+	"cirrussearch-pref-completion-profile-help": "پاڻمرادوتڪميل (ڳولا-جيئن-جيئن-لکو) جي صلاحن جو ورتاءُ مرتب ڪريو.\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester تڪميل دوران صلاح ڏيندڙ] ڳولا صلاحن لاءِ ھِجي جي بھتر درستگي ڪندڙ ۽ ڳولا مناسبت لاءِ ھڪ الگورٿم آھي. ڳولا اڳياڙي ڳولا-جيئن-جيئن-لکو صلاح الگورٿم جو تسلسل آھي.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "ڏنل (سفارش ڪيل)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "ٻن غلطين تائين ھجي کي درست ڪري ٿو. اھي چورڻو ھٽائي ٿو جيڪي مک عنوان سان بلڪل مشابھا آھن.",
+	"cirrussearch-completion-profile-strict-pref-name": "سخت موڊ (متقدم)",
+	"cirrussearch-completion-profile-strict-pref-desc": "نہ ھِجي درستگي. نہ ايڪسينٽ فولڊنگ. سخت ھڪجھڙائي.",
+	"cirrussearch-completion-profile-normal-pref-name": "چورڻو موڊ (متقدم)",
+	"cirrussearch-completion-profile-normal-pref-desc": "نہ ھجي درستگي. ويجهن چورڻن کي حل ڪري ٿو.",
+	"cirrussearch-completion-profile-classic-pref-name": "ڪلاسڪ اڳياڙي ڳولا",
+	"cirrussearch-completion-profile-classic-pref-desc": "نہ ھجي درستگي. عنوانن جي شروعات کي ملائي ٿو.",
 	"cirrussearch-article-words": "سڀني موادي صفحن ۾ لفظ"
 }

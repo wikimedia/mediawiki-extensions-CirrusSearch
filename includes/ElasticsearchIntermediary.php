@@ -223,6 +223,8 @@ abstract class ElasticsearchIntermediary {
 		$stats = Util::getStatsDataFactory();
 		$type = ElasticaErrorHandler::classifyError( $exception );
 		$clusterName = $connection->getClusterName();
+		$context['cirrussearch_error_type'] = $type;
+
 		$stats->increment( "CirrusSearch.$clusterName.backend_failure.$type" );
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->warning(

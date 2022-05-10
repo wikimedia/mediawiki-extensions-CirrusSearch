@@ -216,6 +216,9 @@
 		"CirrusSearchQueryStringMaxDeterminizedStates": {
 			"value": null
 		},
+		"CirrusSearchQueryStringMaxWildcards": {
+			"value": 3
+		},
 		"CirrusSearchNamespaceMappings": {
 			"value": [],
 			"merge_strategy": "array_plus"

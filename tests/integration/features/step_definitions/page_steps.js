@@ -279,6 +279,12 @@ Then( /^this error is reported by api: (.+)$/, function ( expected_error ) {
 	} );
 } );
 
+Then( /^this warning is reported by api: (.+)$/, function ( expected_error ) {
+	return withApi( this, () => {
+		expect( this.apiResponse.warnings.search.warnings ).to.equal( expected_error.trim() );
+	} );
+} );
+
 Then( /^there are no did you mean suggestions from the api$/, function () {
 	// TODO: This is actually a *did you mean* suggestion
 	return withApi( this, () => {

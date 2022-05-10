@@ -128,7 +128,7 @@ you may want to reattempt 2 or 3 times.
 ; $wgCirrusSearchShardCount
 
 Default:
-    $wgCirrusSearchShardCount = [ 'content' => 4, 'general' => 4, 'titlesuggest' => 4 ];
+    $wgCirrusSearchShardCount = [ 'content' => 1, 'general' => 1, 'titlesuggest' => 1 ];
 
 Number of shards for each index.
 

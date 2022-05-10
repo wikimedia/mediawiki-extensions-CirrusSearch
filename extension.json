@@ -183,10 +183,10 @@
 		},
 		"CirrusSearchShardCount": {
 			"value": {
-				"content": 4,
-				"general": 4,
-				"archive": 4,
-				"titlesuggest": 4
+				"content": 1,
+				"general": 1,
+				"archive": 1,
+				"titlesuggest": 1
 			}
 		},
 		"CirrusSearchReplicas": {

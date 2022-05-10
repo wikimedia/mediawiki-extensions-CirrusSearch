@@ -3,65 +3,52 @@
 namespace CirrusSearch\MetaStore;
 
 use CirrusSearch\CirrusIntegrationTestCase;
-use CirrusSearch\Connection;
-use MediaWiki\MediaWikiServices;
 
 /**
  * @covers \CirrusSearch\MetaStore\MetaSaneitizeJobStore
  */
 class MetaSaneitizeJobStoreTest extends CirrusIntegrationTestCase {
 	public function testCreate() {
-		list( $conn, $type ) = $this->mockConnection();
-		$type->expects( $this->once() )
-			->method( 'addDocument' );
-		$store = new MetaSaneitizeJobStore( $type, $conn );
+		$index = $this->mockIndex();
+		$index->expects( $this->once() )
+			->method( 'addDocuments' );
+		$store = new MetaSaneitizeJobStore( $index );
 		$doc = $store->create( 'foo', 2018 );
 		$this->assertEquals( MetaSaneitizeJobStore::METASTORE_TYPE, $doc->get( 'type' ) );
 	}
 
 	public function testGetMissing() {
-		list( $conn, $type ) = $this->mockConnection();
-		$type->expects( $this->once() )
-			->method( 'getDocument' )
-			->will( $this->throwException(
-				new \Elastica\Exception\NotFoundException() ) );
+		$index = $this->mockIndex(
+			$this->throwException( new \Elastica\Exception\NotFoundException() )
+		);
 
-		$store = new MetaSaneitizeJobStore( $type, $conn );
+		$store = new MetaSaneitizeJobStore( $index );
 		$this->assertNull( $store->get( 'foo' ) );
 	}
 
 	public function testGet() {
-		list( $conn, $type ) = $this->mockConnection();
-		$type->expects( $this->once() )
-			->method( 'getDocument' )
-			->willReturn( 'FOUND' );
-		$store = new MetaSaneitizeJobStore( $type, $conn );
+		$index = $this->mockIndex( $this->returnValue( 'FOUND' ) );
+		$store = new MetaSaneitizeJobStore( $index );
 		$this->assertEquals( 'FOUND', $store->get( 'foo' ) );
 	}
 
-	public function mockConnection() {
-		$config = MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
-		$conn = $this->getMockBuilder( Connection::class )
-			->setConstructorArgs( [ $config ] )
-			->onlyMethods( [ 'getIndex' ] )
-			->getMock();
-
+	public function mockIndex( $getBehavior = null ) {
 		$index = $this->getMockBuilder( \Elastica\Index::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$conn->method( 'getIndex' )
-			->with( MetaStoreIndex::INDEX_NAME )
-			->willReturn( $index );
 
-		$type = $this->getMockBuilder( \Elastica\Type::class )
-			->disableOriginalConstructor()
-			->getMock();
-		$index->method( 'getType' )
-			->with( MetaStoreIndex::INDEX_NAME )
-			->willReturn( $type );
+		if ( $getBehavior !== null ) {
+			// TODO: remove references to type (T308044)
+			$type = $this->getMockBuilder( \Elastica\Type::class )
+				->disableOriginalConstructor()
+				->getMock();
 
-		return [ $conn, $type ];
+			$type->expects( $this->once() )
+				->method( 'getDocument' )
+				->will( $getBehavior );
+			$index->method( 'getType' )->willReturn( $type );
+		}
+
+		return $index;
 	}
 }

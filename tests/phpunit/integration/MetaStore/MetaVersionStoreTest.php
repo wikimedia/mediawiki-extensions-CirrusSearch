@@ -24,9 +24,9 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 		$store = new MetaVersionStore( $type, $conn );
 		$doc = null;
 		$type->expects( $this->once() )
-			->method( 'addDocument' )
+			->method( 'addDocuments' )
 			->will( $this->returnCallback( static function ( $arg ) use ( &$doc ) {
-				$doc = $arg;
+				$doc = $arg[0];
 			} ) );
 
 		$store->update( 'unittest', 'general' );
@@ -36,8 +36,6 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 	public function testUpdateAll() {
 		list( $conn, $type ) = $this->mockConnection();
 		$store = new MetaVersionStore( $type, $conn );
-		$type->expects( $this->never() )
-			->method( 'addDocument' );
 		$type->expects( $this->once() )
 			->method( 'addDocuments' )
 			->will( $this->returnCallback( function ( $docs ) {
@@ -57,19 +55,21 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testFind() {
-		list( $conn, $type ) = $this->mockConnection();
+		$getBehavior = function ( $type ) {
+			$type->expects( $this->once() )
+				->method( 'getDocument' )
+				->with( 'version-unittest_content' );
+		};
+		list( $conn, $type ) = $this->mockConnection( $getBehavior );
 		$store = new MetaVersionStore( $type, $conn );
-		$type->expects( $this->once() )
-			->method( 'getDocument' )
-			->with( 'version-unittest_content' );
 		$store->find( 'unittest', 'content' );
 	}
 
 	public function testFindAll() {
-		list( $conn, $type ) = $this->mockConnection();
-		$store = new MetaVersionStore( $type, $conn );
+		list( $conn, $index ) = $this->mockConnection();
+		$store = new MetaVersionStore( $index, $conn );
 		$search = null;
-		$type->method( 'search' )
+		$index->method( 'search' )
 			->will( $this->returnCallback( static function ( $passed ) use ( &$search ) {
 				$search = $passed;
 			} ) );
@@ -84,7 +84,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 		$this->assertNotNull( $search );
 	}
 
-	private function mockConnection( $returnAll = false ) {
+	private function mockConnection( $getBehavior = null ) {
 		$config = MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
@@ -101,16 +101,19 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 			->with( MetaStoreIndex::INDEX_NAME )
 			->willReturn( $index );
 
-		$type = $this->getMockBuilder( \Elastica\Type::class )
-			->disableOriginalConstructor()
-			->getMock();
-		$index->method( 'getType' )
-			->with( MetaStoreIndex::INDEX_NAME )
-			->willReturn( $type );
-
-		$type->method( 'exists' )
+		$index->method( 'exists' )
 			->willReturn( true );
 
-		return [ $conn, $type ];
+		if ( $getBehavior !== null ) {
+			// TODO: remove references to type (T308044)
+			$type = $this->getMockBuilder( \Elastica\Type::class )
+				->disableOriginalConstructor()
+				->getMock();
+
+			$index->method( 'getType' )->willReturn( $type );
+			$getBehavior( $type );
+		}
+
+		return [ $conn, $index ];
 	}
 }

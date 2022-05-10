@@ -211,9 +211,9 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 		$bool->addFilter( new Terms( 'outgoing_link', $titles ) );
 
 		$indexPrefix = $this->config->get( SearchConfig::INDEX_BASE_NAME );
-		$type = $this->connection->getPageType( $indexPrefix );
-		$search = new Search( $type->getIndex()->getClient() );
-		$search->addIndex( $type->getIndex() );
+		$index = $this->connection->getIndex( $indexPrefix );
+		$search = new Search( $index->getClient() );
+		$search->addIndex( $index );
 		$search->setQuery( $bool );
 		$search->getQuery()->addParam( 'stats', 'link_count' );
 		$search->getQuery()->setSize( 0 );

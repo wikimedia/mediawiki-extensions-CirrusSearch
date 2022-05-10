@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\ClusterSettings;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -79,7 +78,6 @@ class CopySearchIndex extends Maintenance {
 		if ( $sourceConnection->getClusterName() == $targetConnection->getClusterName() ) {
 			$this->fatalError( 'Target cluster should be different from current cluster.' );
 		}
-		$clusterSettings = new ClusterSettings( $this->getSearchConfig(), $targetConnection->getClusterName() );
 
 		$targetIndexName = $targetConnection->getIndexName( $this->indexBaseName, $this->indexSuffix );
 		$utils = new ConfigUtils( $targetConnection->getClient(), $this );
@@ -92,10 +90,9 @@ class CopySearchIndex extends Maintenance {
 			$sourceConnection,
 			$targetConnection,
 			// Target Index
-			$targetConnection->getIndex( $this->indexBaseName, $this->indexSuffix, $indexIdentifier )
-				->getType( '_doc' ),
+			$targetConnection->getIndex( $this->indexBaseName, $this->indexSuffix, $indexIdentifier ),
 			// Source Index
-			$this->getConnection()->getPageType( $this->indexBaseName, $this->indexSuffix ),
+			$this->getConnection()->getIndex( $this->indexBaseName, $this->indexSuffix ),
 			$this
 		);
 		$reindexer->reindex( $slices, 1, $reindexChunkSize );

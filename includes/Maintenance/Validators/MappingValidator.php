@@ -82,6 +82,7 @@ class MappingValidator extends Validator {
 		}
 
 		if ( !$this->compareMappingToActual() ) {
+			// TODO: remove references to type (T308044)
 			$action = new Mapping( $this->index->getType( '_doc' ) );
 			foreach ( $this->mappingConfig as $key => $value ) {
 				$action->setParam( $key, $value );

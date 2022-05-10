@@ -142,6 +142,7 @@ class SearchRequestLog extends BaseRequestLog {
 	 */
 	protected function extractRequestVariables( $query ) {
 		if ( !is_array( $query ) ) {
+			// TODO: remove references to type (T308044)
 			// @todo log something? this means some request was not as expected. Often
 			// happens with multi-endpoints such as \Elastica\Type::deleteIds()
 			return [];

@@ -253,7 +253,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * by a previous update that failed.
 	 */
 	private function checkAndDeleteBrokenIndices() {
-		$indices = $this->utils->getAllIndicesByType( $this->getIndexTypeName() );
+		$indices = $this->utils->getAllIndicesByType( $this->getIndexAliasName() );
 		if ( count( $indices ) < 2 ) {
 			return;
 		}
@@ -263,7 +263,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		}
 
 		$status = new Status( $this->getClient() );
-		foreach ( $status->getIndicesWithAlias( $this->getIndexTypeName() ) as $aliased ) {
+		foreach ( $status->getIndicesWithAlias( $this->getIndexAliasName() ) as $aliased ) {
 			// do not try to delete indices that are used in aliases
 			unset( $indexByName[$aliased->getName()] );
 		}
@@ -286,13 +286,13 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	private function rebuild() {
 		$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption(
-			'current', $this->getIndexTypeName()
+			'current', $this->getIndexAliasName()
 		);
 		$this->oldIndex = $this->getConnection()->getIndex(
 			$this->indexBaseName, $this->indexSuffix, $oldIndexIdentifier
 		);
 		$this->indexIdentifier = $this->utils->pickIndexIdentifierFromOption(
-			'now', $this->getIndexTypeName()
+			'now', $this->getIndexAliasName()
 		);
 
 		$this->createIndex();
@@ -314,7 +314,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			return false;
 		}
 		$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption(
-			'current', $this->getIndexTypeName()
+			'current', $this->getIndexAliasName()
 		);
 		$oldIndex = $this->getConnection()->getIndex(
 			$this->indexBaseName, $this->indexSuffix, $oldIndexIdentifier
@@ -444,9 +444,11 @@ class UpdateSuggesterIndex extends Maintenance {
 			if ( empty( $docIds ) ) {
 				continue;
 			}
+
+			// TODO: remove references to type (T308044)
 			MWElasticUtils::withRetry( $this->indexRetryAttempts,
 				function () use ( $docIds ) {
-					$this->getType()->deleteIds( $docIds );
+					$this->getIndex()->getType( '_doc' )->deleteIds( $docIds );
 				}
 			);
 		}
@@ -534,7 +536,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			$scroll = new \Elastica\Scroll( $search, '15m' );
 
 			$docsDumped = 0;
-			$destinationType = $this->getIndex()->getType( '_doc' );
+			$destinationIndex = $this->getIndex();
 
 			foreach ( $scroll as $results ) {
 				if ( $totalDocsToDump === -1 ) {
@@ -561,8 +563,11 @@ class UpdateSuggesterIndex extends Maintenance {
 				}
 				$this->outputProgress( $docsDumped, $totalDocsToDump );
 				MWElasticUtils::withRetry( $this->indexRetryAttempts,
-					static function () use ( $destinationType, $suggestDocs ) {
-						$destinationType->addDocuments( $suggestDocs );
+					static function () use ( $destinationIndex, $suggestDocs ) {
+						foreach ( $suggestDocs as $doc ) {
+							$doc->setType( '_doc' );
+						}
+						$destinationIndex->addDocuments( $suggestDocs );
 					}
 				);
 			}
@@ -575,7 +580,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		// master_timeout. This is a copy of the Elastica\Index::addAlias() method
 		// $this->getIndex()->addAlias( $this->getIndexTypeName(), true );
 		$index = $this->getIndex();
-		$name = $this->getIndexTypeName();
+		$name = $this->getIndexAliasName();
 
 		$path = '_aliases';
 		$data = [ 'actions' => [] ];
@@ -752,13 +757,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	/**
-	 * @return \Elastica\Type
-	 */
-	public function getType() {
-		return $this->getIndex()->getType( '_doc' );
-	}
-
-	/**
 	 * @return Elastica\Client
 	 */
 	protected function getClient() {
@@ -768,7 +766,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	/**
 	 * @return string name of the index type being updated
 	 */
-	protected function getIndexTypeName() {
+	protected function getIndexAliasName() {
 		return $this->getConnection()->getIndexName( $this->indexBaseName, $this->indexSuffix );
 	}
 }

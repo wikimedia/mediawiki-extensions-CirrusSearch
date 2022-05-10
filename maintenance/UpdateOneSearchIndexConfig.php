@@ -253,7 +253,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 			$this->initAnalysisConfig();
 			$this->indexIdentifier = $utils->pickIndexIdentifierFromOption(
-				$this->getOption( 'indexIdentifier', 'current' ), $this->getIndexTypeName() );
+				$this->getOption( 'indexIdentifier', 'current' ), $this->getIndexAliasName() );
 			$this->validateIndex();
 			$this->validateAnalyzers();
 			$this->validateMapping();
@@ -409,15 +409,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getSearchConfig(),
 			$connection,
 			$connection,
-			$this->getType(),
-			$this->getOldType(),
+			$this->getIndex(),
+			$this->getOldIndex(),
 			$this,
 			array_filter( explode( ',', $this->getOption( 'fieldsToDelete', '' ) ) )
 		);
 
 		$validator = new \CirrusSearch\Maintenance\Validators\SpecificAliasValidator(
 			$this->getConnection()->getClient(),
-			$this->getIndexTypeName(),
+			$this->getIndexAliasName(),
 			$this->getSpecificIndexName(),
 			$this->startOver,
 			$reindexer,
@@ -442,7 +442,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getIndexName(),
 			$this->getSpecificIndexName(),
 			$this->startOver,
-			$this->getIndexTypeName(),
+			$this->getIndexAliasName(),
 			$this
 		);
 		$status = $validator->validate();
@@ -523,7 +523,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	/**
 	 * @return string name of the index type being updated
 	 */
-	protected function getIndexTypeName() {
+	protected function getIndexAliasName() {
 		return $this->getConnection()->getIndexName( $this->indexBaseName, $this->indexSuffix );
 	}
 
@@ -535,19 +535,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * Get the page type being updated by the search config.
-	 *
-	 * @return \Elastica\Type
+	 * @return \Elastica\Index
 	 */
-	protected function getType() {
-		return $this->getIndex()->getType( '_doc' );
-	}
-
-	/**
-	 * @return \Elastica\Type
-	 */
-	protected function getOldType() {
-		return $this->getConnection()->getIndexType( $this->indexBaseName, $this->indexSuffix );
+	protected function getOldIndex() {
+		return $this->getConnection()->getIndex( $this->indexBaseName, $this->indexSuffix );
 	}
 
 	/**

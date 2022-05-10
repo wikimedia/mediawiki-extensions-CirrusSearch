@@ -260,7 +260,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		if ( !isset( $results[self::MSEARCH_KEY_PREFIX] ) ) {
 			return 0;
 		}
-		$indexName = $this->prefixSearchRequestBuilder->getPageType()->getIndex()->getName();
+		$indexName = $this->prefixSearchRequestBuilder->getIndex()->getName();
 		$prefixResults = $results[self::MSEARCH_KEY_PREFIX];
 		$totalHits = $prefixResults->getTotalHits();
 		$log->addIndex( $indexName );

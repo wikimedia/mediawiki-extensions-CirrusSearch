@@ -424,8 +424,10 @@ class DataSender extends ElasticsearchIntermediary {
 							'indexSuffix' => $indexSuffix,
 						]
 					);
+					// TODO: remove references to type (T308044)
 					$this->connection
-						->getIndexType( $this->indexBaseName, $indexSuffix )
+						->getIndex( $this->indexBaseName, $indexSuffix )
+						->getType( '_doc' )
 						->deleteIds( $docIds );
 					$this->success();
 				}

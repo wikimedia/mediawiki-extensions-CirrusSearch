@@ -181,32 +181,12 @@ class Connection extends ElasticaConnection {
 	}
 
 	/**
-	 * Fetch the Elastica Type for pages.
+	 * Fetch the Elastica Index for archive.
 	 * @param mixed $name basename of index
-	 * @param mixed $type type of index (content or general or false to get all)
-	 * @return \Elastica\Type
+	 * @return \Elastica\Index
 	 */
-	public function getPageType( $name, $type = false ) {
-		return $this->getIndexType( $name, $type );
-	}
-
-	/**
-	 * Fetch the Elastica Type for pages.
-	 * @param mixed $name basename of index
-	 * @param string|bool $cirrusType type of index (content or general or false to get all)
-	 * @return \Elastica\Type
-	 */
-	public function getIndexType( $name, $cirrusType ) {
-		return $this->getIndex( $name, $cirrusType )->getType( '_doc' );
-	}
-
-	/**
-	 * Fetch the Elastica Type for archive.
-	 * @param mixed $name basename of index
-	 * @return \Elastica\Type
-	 */
-	public function getArchiveType( $name ) {
-		return $this->getIndex( $name, self::ARCHIVE_INDEX_SUFFIX )->getType( '_doc' );
+	public function getArchiveIndex( $name ) {
+		return $this->getIndex( $name, self::ARCHIVE_INDEX_SUFFIX );
 	}
 
 	/**

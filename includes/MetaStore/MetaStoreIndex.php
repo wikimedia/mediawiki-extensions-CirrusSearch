@@ -97,21 +97,21 @@ class MetaStoreIndex {
 	 * @return MetaVersionStore
 	 */
 	public function versionStore() {
-		return new MetaVersionStore( $this->elasticaType(), $this->connection );
+		return new MetaVersionStore( $this->elasticaIndex(), $this->connection );
 	}
 
 	/**
 	 * @return MetaNamespaceStore
 	 */
 	public function namespaceStore() {
-		return new MetaNamespaceStore( $this->elasticaType(), $this->config->getWikiId() );
+		return new MetaNamespaceStore( $this->elasticaIndex(), $this->config->getWikiId() );
 	}
 
 	/**
 	 * @return MetaSaneitizeJobStore
 	 */
 	public function saneitizeJobStore() {
-		return new MetaSaneitizeJobStore( $this->elasticaType() );
+		return new MetaSaneitizeJobStore( $this->elasticaIndex() );
 	}
 
 	/**
@@ -378,10 +378,6 @@ class MetaStoreIndex {
 		return $this->connection->getIndex( self::INDEX_NAME );
 	}
 
-	public function elasticaType(): \Elastica\Type {
-		return $this->elasticaIndex()->getType( '_doc' );
-	}
-
 	/**
 	 * Check if cirrus is ready by checking if the index has been created on this cluster
 	 * @return bool
@@ -396,7 +392,8 @@ class MetaStoreIndex {
 	 */
 	public function metastoreVersion() {
 		try {
-			$doc = $this->elasticaType()->getDocument( self::METASTORE_VERSION_DOCID );
+			// TODO: remove references to type (T308044)
+			$doc = $this->elasticaIndex()->getType( '_doc' )->getDocument( self::METASTORE_VERSION_DOCID );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
 			return 0;
 		} catch ( \Elastica\Exception\ResponseException $e ) {

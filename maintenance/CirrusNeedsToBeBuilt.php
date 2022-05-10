@@ -66,7 +66,7 @@ class CirrusNeedsToBeBuilt extends Maintenance {
 		foreach ( $this->getConnection()->getAllIndexSuffixes() as $indexSuffix ) {
 			try {
 				$count = $this->getConnection()
-					->getPageType( $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ), $indexSuffix )
+					->getIndex( $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ), $indexSuffix )
 					->count();
 			} catch ( \Elastica\Exception\ResponseException $e ) {
 				$this->output( "$indexSuffix doesn't exist.\n" );

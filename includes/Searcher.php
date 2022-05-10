@@ -120,9 +120,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 
 	/**
 	 * Indexing type we'll be using.
-	 * @var string|\Elastica\Type
+	 * @var string|\Elastica\Index
 	 */
-	private $pageType;
+	private $index;
 
 	/**
 	 * @var NamespacePrefixParser|null
@@ -421,7 +421,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				// We use a search query instead of _get/_mget, these methods are
 				// theorically well suited for this kind of job but they are not
 				// supported on aliases with multiple indices (content/general)
-				$index = $connection->getPageType( $this->indexBaseName, $indexSuffix )->getIndex();
+				$index = $connection->getIndex( $this->indexBaseName, $indexSuffix );
 				$query = new \Elastica\Query( new \Elastica\Query\Ids( $docIds ) );
 				$query->setParam( '_source', $sourceFiltering );
 				$query->addParam( 'stats', 'get' );
@@ -488,7 +488,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			$this->searchContext, $this->getOverriddenConnection(), $this->indexBaseName );
 		return $builder->setLimit( $this->limit )
 			->setOffset( $this->offset )
-			->setPageType( $this->pageType )
+			->setIndex( $this->index )
 			->setSort( $this->sort )
 			->setTimeout( $this->getTimeout( $this->searchContext->getSearchType() ) )
 			->build();
@@ -863,7 +863,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 
 		// This does not support cross-cluster search, but there is also no use case
 		// for cross-wiki archive search.
-		$this->pageType = $this->getOverriddenConnection()->getArchiveType( $this->indexBaseName );
+		$this->index = $this->getOverriddenConnection()->getArchiveIndex( $this->indexBaseName );
 
 		// Setup the search query
 		$query = new BoolQuery();

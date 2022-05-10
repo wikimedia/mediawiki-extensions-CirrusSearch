@@ -8,8 +8,8 @@ use CirrusSearch\Maintenance\ArchiveMappingConfigBuilder;
 use CirrusSearch\Maintenance\MappingConfigBuilder;
 use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
 use CirrusSearch\Maintenance\SuggesterMappingConfigBuilder;
+use Elastica\Index;
 use Elastica\Query\BoolQuery;
-use Elastica\Type;
 use GitInfo;
 use WikiMap;
 
@@ -19,11 +19,11 @@ class MetaVersionStore implements MetaStore {
 	/** @var Connection */
 	private $connection;
 
-	/** @var Type */
-	private $elasticaType;
+	/** @var Index */
+	private $index;
 
-	public function __construct( Type $elasticaType, Connection $connection ) {
-		$this->elasticaType = $elasticaType;
+	public function __construct( Index $index, Connection $connection ) {
+		$this->index = $index;
 		$this->connection = $connection;
 	}
 
@@ -62,7 +62,7 @@ class MetaVersionStore implements MetaStore {
 	 * @param string $typeName
 	 */
 	public function update( $baseName, $typeName ) {
-		$this->elasticaType->addDocument( self::buildDocument( $this->connection, $baseName, $typeName ) );
+		$this->index->addDocuments( [ self::buildDocument( $this->connection, $baseName, $typeName ) ] );
 	}
 
 	/**
@@ -73,7 +73,7 @@ class MetaVersionStore implements MetaStore {
 		foreach ( $this->connection->getAllIndexSuffixes( null ) as $typeName ) {
 			$docs[] = self::buildDocument( $this->connection, $baseName, $typeName );
 		}
-		$this->elasticaType->addDocuments( $docs );
+		$this->index->addDocuments( $docs );
 	}
 
 	/**
@@ -83,7 +83,8 @@ class MetaVersionStore implements MetaStore {
 	 */
 	public function find( $baseName, $typeName ) {
 		$docId = self::docId( $this->connection, $baseName, $typeName );
-		return $this->elasticaType->getDocument( $docId );
+		// TODO: remove references to type (T308044)
+		return $this->index->getType( '_doc' )->getDocument( $docId );
 	}
 
 	/**
@@ -106,7 +107,7 @@ class MetaVersionStore implements MetaStore {
 		$query = new \Elastica\Query( $filter );
 		// WHAT ARE YOU DOING TRACKING MORE THAN 5000 INDICES?!?
 		$query->setSize( 5000 );
-		return $this->elasticaType->search( $query );
+		return $this->index->search( $query );
 	}
 
 	/**
@@ -145,6 +146,6 @@ class MetaVersionStore implements MetaStore {
 			'cirrus_commit' => $cirrusInfo->getHeadSHA1(),
 		];
 
-		return new \Elastica\Document( $docId, $data );
+		return new \Elastica\Document( $docId, $data, '_doc' );
 	}
 }

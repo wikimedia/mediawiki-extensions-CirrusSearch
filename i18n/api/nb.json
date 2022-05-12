@@ -6,6 +6,7 @@
 	},
 	"apihelp-cirrus-config-dump-description": "Dump av CirrusSearch-konfigurasjon.",
 	"apihelp-cirrus-config-dump-summary": "Dump av CirrusSearch-konfigurasjon.",
+	"apihelp-cirrus-config-dump-param-prop": "Typen av konfigurasjonsvariabler som skal dumpes",
 	"apihelp-cirrus-config-dump-example": "Få en dump av CirrusSearch-konfigurasjonen.",
 	"apihelp-cirrus-mapping-dump-description": "Dump av CirrusSearch-mapping for denne wikien.",
 	"apihelp-cirrus-mapping-dump-summary": "Dump av CirrusSearch-mapping for denne wikien.",

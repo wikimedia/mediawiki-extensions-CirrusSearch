@@ -4,6 +4,7 @@ namespace CirrusSearch\Elastica;
 
 use Elastica\Client;
 use Elastica\Exception\ResponseException;
+use Elastica\Exception\RuntimeException;
 use Elastica\Request;
 use MediaWiki\Logger\LoggerFactory;
 
@@ -69,7 +70,7 @@ class ReindexTask {
 			throw new \Exception( 'Cannot delete in-progress task' );
 		}
 		$response =
-			$this->client->getIndex( '.tasks' )->getType( 'task' )->deleteById( $this->taskId );
+			$this->client->getIndex( '.tasks' )->deleteById( $this->taskId );
 
 		return $response->isOK();
 	}
@@ -98,7 +99,12 @@ class ReindexTask {
 
 		$response = $this->client->request( "_tasks/{$this->taskId}", Request::GET );
 		if ( !$response->isOK() ) {
-			throw new ResponseException( $this->client->getLastRequest(), $response );
+			$lastRequest = $this->client->getLastRequest();
+			if ( $lastRequest !== null ) {
+				throw new ResponseException( $lastRequest, $response );
+			} else {
+				throw new RuntimeException( "Client::getLastRequest() should not be null" );
+			}
 		}
 		$data = $response->getData();
 		$status = $data['task']['status'];

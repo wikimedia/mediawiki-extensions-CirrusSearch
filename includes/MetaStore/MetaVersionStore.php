@@ -83,8 +83,7 @@ class MetaVersionStore implements MetaStore {
 	 */
 	public function find( $baseName, $typeName ) {
 		$docId = self::docId( $this->connection, $baseName, $typeName );
-		// TODO: remove references to type (T308044)
-		return $this->index->getType( '_doc' )->getDocument( $docId );
+		return $this->index->getDocument( $docId );
 	}
 
 	/**

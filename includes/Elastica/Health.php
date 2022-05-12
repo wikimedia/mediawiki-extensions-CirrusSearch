@@ -22,7 +22,7 @@ class Health extends \Elastica\Cluster\Health {
 	}
 
 	/** @inheritDoc */
-	protected function _retrieveHealthData() {
+	protected function _retrieveHealthData(): array {
 		$endpoint = new \Elasticsearch\Endpoints\Cluster\Health();
 		if ( $this->index ) {
 			$endpoint->setIndex( $this->index );

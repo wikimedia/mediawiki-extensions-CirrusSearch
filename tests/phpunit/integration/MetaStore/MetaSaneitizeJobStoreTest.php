@@ -3,6 +3,7 @@
 namespace CirrusSearch\MetaStore;
 
 use CirrusSearch\CirrusIntegrationTestCase;
+use Elastica\Document;
 
 /**
  * @covers \CirrusSearch\MetaStore\MetaSaneitizeJobStore
@@ -27,9 +28,9 @@ class MetaSaneitizeJobStoreTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testGet() {
-		$index = $this->mockIndex( $this->returnValue( 'FOUND' ) );
+		$index = $this->mockIndex( $this->returnValue( new Document( 'FOUND' ) ) );
 		$store = new MetaSaneitizeJobStore( $index );
-		$this->assertEquals( 'FOUND', $store->get( 'foo' ) );
+		$this->assertEquals( new Document( 'FOUND' ), $store->get( 'foo' ) );
 	}
 
 	public function mockIndex( $getBehavior = null ) {
@@ -38,15 +39,9 @@ class MetaSaneitizeJobStoreTest extends CirrusIntegrationTestCase {
 			->getMock();
 
 		if ( $getBehavior !== null ) {
-			// TODO: remove references to type (T308044)
-			$type = $this->getMockBuilder( \Elastica\Type::class )
-				->disableOriginalConstructor()
-				->getMock();
-
-			$type->expects( $this->once() )
+			$index->expects( $this->once() )
 				->method( 'getDocument' )
 				->will( $getBehavior );
-			$index->method( 'getType' )->willReturn( $type );
 		}
 
 		return $index;

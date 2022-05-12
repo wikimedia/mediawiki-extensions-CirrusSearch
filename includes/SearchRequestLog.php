@@ -142,9 +142,7 @@ class SearchRequestLog extends BaseRequestLog {
 	 */
 	protected function extractRequestVariables( $query ) {
 		if ( !is_array( $query ) ) {
-			// TODO: remove references to type (T308044)
-			// @todo log something? this means some request was not as expected. Often
-			// happens with multi-endpoints such as \Elastica\Type::deleteIds()
+			// @todo log something and verify that this can still happen?
 			return [];
 		}
 
@@ -173,8 +171,14 @@ class SearchRequestLog extends BaseRequestLog {
 		if ( isset( $responseData['took'] ) ) {
 			$vars['elasticTookMs'] = $responseData['took'];
 		}
-		if ( isset( $responseData['hits']['total'] ) ) {
-			$vars['hitsTotal'] = $responseData['hits']['total'];
+		$hitsTotal = $responseData['hits']['total'] ?? null;
+		if ( $hitsTotal !== null ) {
+			// BC for ES6
+			if ( is_int( $hitsTotal ) ) {
+				$vars['hitsTotal'] = $hitsTotal;
+			} else {
+				Util::setIfDefined( $hitsTotal, 'value', $vars, 'hitsTotal' );
+			}
 		}
 		if ( isset( $responseData['hits']['max_score'] ) ) {
 			$vars['maxScore'] = $responseData['hits']['max_score'];

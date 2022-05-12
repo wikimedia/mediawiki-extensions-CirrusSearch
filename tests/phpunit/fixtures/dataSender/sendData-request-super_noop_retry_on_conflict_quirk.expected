@@ -1,5 +1,5 @@
 {
-    "path": "myfixturewiki_content\/_doc\/_bulk",
+    "path": "myfixturewiki_content\/_bulk",
     "method": "POST",
     "data": [
         {
@@ -52,7 +52,8 @@
                     "handlers": {
                         "version": "documentVersion",
                         "incoming_links": "within 20%"
-                    }
+                    },
+                    "retry_on_conflict": 5
                 },
                 "lang": "super_detect_noop"
             },

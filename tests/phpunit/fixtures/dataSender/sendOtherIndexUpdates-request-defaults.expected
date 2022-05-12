@@ -5,9 +5,8 @@
         [
             {
                 "update": {
-                    "_index": "myfixturetargetindex",
-                    "_type": "_doc",
-                    "_id": 1
+                    "_id": "1",
+                    "_index": "myfixturetargetindex"
                 }
             },
             {
@@ -22,7 +21,7 @@
                         "handlers": {
                             "local_sites_with_dupe": "set"
                         },
-                        "_id": 1,
+                        "_id": "1",
                         "_type": "_doc",
                         "_index": "myfixturetargetindex"
                     },
@@ -31,9 +30,8 @@
             },
             {
                 "update": {
-                    "_index": "myfixturetargetindex",
-                    "_type": "_doc",
-                    "_id": 2
+                    "_id": "2",
+                    "_index": "myfixturetargetindex"
                 }
             },
             {
@@ -48,7 +46,7 @@
                         "handlers": {
                             "local_sites_with_dupe": "set"
                         },
-                        "_id": 2,
+                        "_id": "2",
                         "_type": "_doc",
                         "_index": "myfixturetargetindex"
                     },
@@ -59,9 +57,8 @@
         [
             {
                 "update": {
-                    "_index": "myfixturetargetindex",
-                    "_type": "_doc",
-                    "_id": 3
+                    "_id": "3",
+                    "_index": "myfixturetargetindex"
                 }
             },
             {
@@ -76,7 +73,7 @@
                         "handlers": {
                             "local_sites_with_dupe": "set"
                         },
-                        "_id": 3,
+                        "_id": "3",
                         "_type": "_doc",
                         "_index": "myfixturetargetindex"
                     },

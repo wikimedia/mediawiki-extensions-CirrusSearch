@@ -446,10 +446,9 @@ class UpdateSuggesterIndex extends Maintenance {
 				continue;
 			}
 
-			// TODO: remove references to type (T308044)
 			MWElasticUtils::withRetry( $this->indexRetryAttempts,
 				function () use ( $docIds ) {
-					$this->getIndex()->getType( '_doc' )->deleteIds( $docIds );
+					$this->getIndex()->deleteByQuery( new Query\Ids( $docIds ) );
 				}
 			);
 		}
@@ -566,9 +565,6 @@ class UpdateSuggesterIndex extends Maintenance {
 				$this->outputProgress( $docsDumped, $totalDocsToDump );
 				MWElasticUtils::withRetry( $this->indexRetryAttempts,
 					static function () use ( $destinationIndex, $suggestDocs ) {
-						foreach ( $suggestDocs as $doc ) {
-							$doc->setType( '_doc' );
-						}
 						$destinationIndex->addDocuments( $suggestDocs );
 					}
 				);

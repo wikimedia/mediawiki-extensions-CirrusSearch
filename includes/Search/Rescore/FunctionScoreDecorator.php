@@ -17,16 +17,12 @@ class FunctionScoreDecorator extends FunctionScore {
 	/** @var int */
 	private $size = 0;
 
-	/**
-	 * @param string $functionType
-	 * @param array|float $functionParams
-	 * @param AbstractQuery|null $filter
-	 * @param float|null $weight
-	 * @return self
-	 */
-	public function addFunction( $functionType, $functionParams, AbstractQuery $filter = null,
-		$weight = null
-	) {
+	public function addFunction(
+		string $functionType,
+		$functionParams,
+		?AbstractQuery $filter = null,
+		?float $weight = null
+	): FunctionScore {
 		$this->size ++;
 
 		parent::addFunction( $functionType, $functionParams, $filter, $weight );

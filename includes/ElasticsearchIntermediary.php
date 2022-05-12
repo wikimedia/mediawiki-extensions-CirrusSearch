@@ -4,6 +4,8 @@ namespace CirrusSearch;
 
 use CirrusSearch\Search\SearchMetricsProvider;
 use Elastica\Exception\ExceptionInterface;
+use Elastica\Exception\ResponseException;
+use Elastica\Exception\RuntimeException;
 use Elastica\Multi\ResultSet as MultiResultSet;
 use Elastica\Multi\Search;
 use ISearchResultSet;
@@ -388,19 +390,22 @@ abstract class ElasticsearchIntermediary {
 		$this->start( $log );
 		try {
 			$multiResultSet = $search->search();
+			$lastRequest = $connection->getClient()->getLastRequest();
 			if ( !$multiResultSet->getResponse()->isOk() ) {
 				// bad response from server. Should elastica be throwing an exception for this?
-				return $this->failure( new \Elastica\Exception\ResponseException(
-					$connection->getClient()->getLastRequest(),
-					$multiResultSet->getResponse()
-				), $connection );
+				if ( $lastRequest !== null ) {
+					return $this->failure( new ResponseException( $lastRequest, $multiResultSet->getResponse() ), $connection );
+				} else {
+					return $this->failure( new RuntimeException( "Client::getLastRequest() should not be null" ), $connection );
+				}
 			}
 			foreach ( $multiResultSet->getResultSets() as $resultSet ) {
 				if ( $resultSet->getResponse()->hasError() ) {
-					return $this->failure( new \Elastica\Exception\ResponseException(
-						$connection->getClient()->getLastRequest(),
-						$resultSet->getResponse()
-					), $connection );
+					if ( $lastRequest !== null ) {
+						return $this->failure( new ResponseException( $lastRequest, $resultSet->getResponse() ), $connection );
+					} else {
+						return $this->failure( new RuntimeException( "Client::getLastRequest() should not be null" ), $connection );
+					}
 				}
 			}
 

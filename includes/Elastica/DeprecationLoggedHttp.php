@@ -20,7 +20,11 @@ class DeprecationLoggedHttp extends Http {
 		return substr( $str, 0, strlen( $prefix ) ) === $prefix;
 	}
 
-	protected function _setupCurl( $curlConnection ) {
+	/**
+	 * @param resource $curlConnection
+	 * @return void
+	 */
+	protected function _setupCurl( $curlConnection ): void {
 		parent::_setupCurl( $curlConnection );
 		// @phan-suppress-next-line PhanTypeMismatchArgumentInternal
 		curl_setopt( $curlConnection, CURLOPT_HEADERFUNCTION, function ( $curl, $header ) {

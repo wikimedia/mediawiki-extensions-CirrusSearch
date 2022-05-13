@@ -48,7 +48,6 @@ wfLoadExtension( 'Cite' );
 wfLoadExtension( 'SiteMatrix' );
 
 // Configuration
-$wgOggThumbLocation = '/usr/bin/oggThumb';
 $wgGroupPermissions['*']['deleterevision'] = true;
 $wgFileExtensions[] = 'pdf';
 $wgFileExtensions[] = 'svg';

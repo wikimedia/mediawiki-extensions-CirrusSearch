@@ -171,6 +171,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	 */
 	private function buildExpQuery( $queryString ) {
 		$query = new \Elastica\Query\BoolQuery();
+		$query->setMinimumShouldMatch( 0 );
 		$this->attachFilter( $this->filter, $queryString, $query );
 		$dismaxQueries = [];
 
@@ -270,6 +271,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	 */
 	private function buildSimpleAllFilter( $options, $query ) {
 		$filter = new \Elastica\Query\BoolQuery();
+		$filter->setMinimumShouldMatch( 1 );
 		// FIXME: We can't use solely the stem field here
 		// - Depending on languages it may lack stopwords,
 		// A dedicated field used for filtering would be nice
@@ -310,6 +312,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 			$minShouldMatch = $options['settings']['minimum_should_match'];
 		}
 		$titleFilter = new \Elastica\Query\BoolQuery();
+		$titleFilter->setMinimumShouldMatch( 1 );
 
 		foreach ( [ 'title', 'redirect.title' ] as $field ) {
 			$m = new \Elastica\Query\MatchQuery();

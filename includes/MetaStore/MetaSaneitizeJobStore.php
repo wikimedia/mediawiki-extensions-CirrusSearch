@@ -84,8 +84,9 @@ class MetaSaneitizeJobStore implements MetaStore {
 		}
 		$version = time();
 		$jobInfo->set( 'sanitize_job_updated', $version );
-		$jobInfo->setVersion( $version );
-		$jobInfo->setVersionType( 'external' );
+		// TODO: Use setVersion / setVersionType with Elastica 7.x
+		$jobInfo->setParam( 'version', $version );
+		$jobInfo->setParam( 'version_type', 'external' );
 		$this->index->addDocuments( [ $jobInfo ] );
 	}
 

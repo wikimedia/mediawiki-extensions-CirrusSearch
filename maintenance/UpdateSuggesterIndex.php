@@ -429,8 +429,8 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->log( "Deleting remaining docs from previous batch\n" );
 		foreach ( $scroll as $results ) {
 			if ( $totalDocsToDump === -1 ) {
-				// hack to support elastic7
-				$totalDocsToDump = $results->getResponse()->getData()['hits']['total']['value'] ?? $results->getTotalHits();
+				// hack to support ES6, switch to getTotalHits
+				$totalDocsToDump = $this->getTotalHits( $results );
 				if ( $totalDocsToDump === 0 ) {
 					break;
 				}
@@ -540,8 +540,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 			foreach ( $scroll as $results ) {
 				if ( $totalDocsToDump === -1 ) {
-					// quick hack to elasticsearch 7
-					$totalDocsToDump = $results->getResponse()->getData()['hits']['total']['value'] ?? $results->getTotalHits();
+					$totalDocsToDump = $this->getTotalHits( $results );
 					if ( $totalDocsToDump === 0 ) {
 						$this->log( "No documents to index from $sourceIndexSuffix\n" );
 						break;
@@ -766,6 +765,16 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	protected function getIndexAliasName() {
 		return $this->getConnection()->getIndexName( $this->indexBaseName, $this->indexSuffix );
+	}
+
+	/**
+	 * @param Elastica\ResultSet $results
+	 * @return mixed|string
+	 */
+	private function getTotalHits( Elastica\ResultSet $results ) {
+		// hack to support ES6, switch to getTotalHits
+		return $results->getResponse()->getData()["hits"]["total"]["value"] ??
+			   $results->getResponse()->getData()["hits"]["total"];
 	}
 }
 

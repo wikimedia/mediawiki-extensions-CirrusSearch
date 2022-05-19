@@ -429,7 +429,8 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->log( "Deleting remaining docs from previous batch\n" );
 		foreach ( $scroll as $results ) {
 			if ( $totalDocsToDump === -1 ) {
-				$totalDocsToDump = $results->getTotalHits();
+				// hack to support elastic7
+				$totalDocsToDump = $results->getResponse()->getData()['hits']['total']['value'] ?? $results->getTotalHits();
 				if ( $totalDocsToDump === 0 ) {
 					break;
 				}
@@ -540,7 +541,8 @@ class UpdateSuggesterIndex extends Maintenance {
 
 			foreach ( $scroll as $results ) {
 				if ( $totalDocsToDump === -1 ) {
-					$totalDocsToDump = $results->getTotalHits();
+					// quick hack to elasticsearch 7
+					$totalDocsToDump = $results->getResponse()->getData()['hits']['total']['value'] ?? $results->getTotalHits();
 					if ( $totalDocsToDump === 0 ) {
 						$this->log( "No documents to index from $sourceIndexSuffix\n" );
 						break;

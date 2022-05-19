@@ -153,7 +153,8 @@ class DumpIndex extends Maintenance {
 
 		foreach ( $scroll as $results ) {
 			if ( $totalDocsInIndex === -1 ) {
-				$totalDocsInIndex = $results->getTotalHits();
+				// Hack to support es7
+				$totalDocsInIndex = $results->getResponse()->getData()['hits']['total']['value'] ?? $results->getTotalHits();
 				$totalDocsToDump = $limit > 0 ? $limit : $totalDocsInIndex;
 				$this->output( "Dumping $totalDocsToDump documents ($totalDocsInIndex in the index)\n" );
 			}

@@ -7,8 +7,10 @@ use CirrusSearch\Query\CompSuggestQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
 use CirrusSearch\Search\CompletionResultsCollector;
 use CirrusSearch\Search\FancyTitleResultsType;
+use CirrusSearch\Search\MSearchRequests;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchRequestBuilder;
+use Closure;
 use Elastica\Index;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query;
@@ -140,9 +142,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string|bool $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
 	 * @param string|null $profileName force the profile to use otherwise SearchProfileService defaults will be used
+	 * @param CirrusDebugOptions|null $debugOptions
 	 */
 	public function __construct( Connection $conn, $limit, $offset = 0, SearchConfig $config = null, array $namespaces = null,
-		User $user = null, $index = false, $profileName = null ) {
+		User $user = null, $index = false, $profileName = null,
+								 CirrusDebugOptions $debugOptions = null ) {
 		if ( $config === null ) {
 			// @todo connection has an embedded config ... reuse that? somehow should
 			// at least ensure they are the same.
@@ -158,7 +162,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->completionIndex = $this->connection->getIndex( $this->indexBaseName,
 			Connection::TITLE_SUGGEST_INDEX_SUFFIX );
-		$this->searchContext = new SearchContext( $this->config, $namespaces );
+		$this->searchContext = new SearchContext( $this->config, $namespaces, $debugOptions );
 
 		$profileDefinition = $this->config->getProfileService()
 			->loadProfile( SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT, $profileName );
@@ -184,36 +188,52 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 */
 	public function suggest( $text, $variants = null ) {
 		$suggestSearch = $this->getSuggestSearchRequest( $text, $variants );
-		$msearch = new MultiSearch( $this->connection->getClient() );
+		$mSearchRequests = new MSearchRequests();
+
 		if ( $suggestSearch !== null ) {
-			$msearch->addSearch( $suggestSearch, self::MSEARCH_KEY_SUGGEST );
+			$mSearchRequests->addRequest( self::MSEARCH_KEY_SUGGEST, $suggestSearch );
 		}
 
 		$prefixSearch = $this->getPrefixSearchRequest( $text, $variants );
 		if ( $prefixSearch !== null ) {
-			$msearch->addSearch( $prefixSearch, self::MSEARCH_KEY_PREFIX );
+			$mSearchRequests->addRequest( self::MSEARCH_KEY_PREFIX, $prefixSearch );
 		}
 
-		if ( empty( $msearch->getSearches() ) ) {
+		if ( !$mSearchRequests->getRequests() ) {
 			return Status::newGood( SearchSuggestionSet::emptySuggestionSet() );
 		}
+		$description = "{queryType} search for '{query}'";
+
+		if ( $this->searchContext->getDebugOptions()->isCirrusDumpQuery() ) {
+			return $mSearchRequests->dumpQuery( $description );
+		}
+
+		$multiSearch = new MultiSearch( $this->connection->getClient() );
+		$multiSearch->addSearches( $mSearchRequests->getRequests() );
 
 		$this->connection->setTimeout( $this->getClientTimeout( self::SEARCH_TYPE ) );
-		return Util::doPoolCounterWork(
-			'CirrusSearch-Completion',
-			$this->user,
-			function () use( $msearch, $text ) {
-				$log = $this->newLog( "{queryType} search for '{query}'", self::SEARCH_TYPE, [
-					'query' => $text,
-					'offset' => $this->offset,
-				] );
-				return $this->runMSearch( $msearch, $log, $this->connection,
-					function ( \Elastica\Multi\ResultSet $results ) use ( $log ) {
-						return $this->processMSearchResponse( $results->getResultSets(), $log );
-					}
-				);
-			}
-		);
+
+		$status = Util::doPoolCounterWork( 'CirrusSearch-Completion', $this->user,
+				function () use ( $multiSearch, $text, $description ) {
+					$log = $this->newLog( $description, self::SEARCH_TYPE, [
+						'query' => $text,
+						'offset' => $this->offset,
+					] );
+
+					$resultsTransformer = $this->getResultsTransformer( $log );
+
+					return $this->runMSearch( $multiSearch, $log, $this->connection,
+						$resultsTransformer );
+				} );
+
+		if ( $status->isOk() && $this->searchContext->getDebugOptions()->isCirrusDumpResult() ) {
+			$resultSets = $status->getValue()->getResultSets();
+			$responses = $mSearchRequests->toMSearchResponses( $resultSets );
+
+			return $responses->dumpResults( $description );
+		}
+
+		return $status;
 	}
 
 	/**
@@ -255,6 +275,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @param ResultSet[] $results
 	 * @param CompletionRequestLog $log
 	 * @return int
+	 * @throws \Exception
 	 */
 	private function collectPrefixSearchResults( CompletionResultsCollector $collector, array $results, CompletionRequestLog $log ) {
 		if ( !isset( $results[self::MSEARCH_KEY_PREFIX] ) ) {
@@ -380,4 +401,20 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	public function getCompletionIndex() {
 		return $this->completionIndex;
 	}
+
+	/**
+	 * @param CompletionRequestLog $log
+	 * @return Closure|null
+	 */
+	private function getResultsTransformer( CompletionRequestLog $log ): ?Closure {
+		$resultsTransformer = null;
+		if ( !$this->searchContext->getDebugOptions()->isCirrusDumpResult() ) {
+			$resultsTransformer = function ( \Elastica\Multi\ResultSet $results ) use ( $log ) {
+				return $this->processMSearchResponse( $results->getResultSets(), $log );
+			};
+		}
+
+		return $resultsTransformer;
+	}
+
 }

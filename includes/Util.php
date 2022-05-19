@@ -599,4 +599,37 @@ class Util {
 		$mapping = array_shift( $data );
 		return $mapping['mappings'] ?? [];
 	}
+
+	/**
+	 * If we're supposed to create raw result, create and return it,
+	 * or output it and finish.
+	 * @param mixed $result Search result data
+	 * @param WebRequest $request Request context
+	 * @param CirrusDebugOptions $debugOptions
+	 * @return string The new raw result.
+	 */
+	public static function processSearchRawReturn( $result, WebRequest $request,
+												   CirrusDebugOptions $debugOptions ) {
+		if ( $debugOptions->getCirrusExplainFormat() !== null ) {
+			$header = 'Content-type: text/html; charset=UTF-8';
+			$printer = new ExplainPrinter( $debugOptions->getCirrusExplainFormat() );
+			$result = $printer->format( $result );
+		} else {
+			$header = 'Content-type: application/json; charset=UTF-8';
+			if ( $result === null ) {
+				$result = '{}';
+			} else {
+				$result = json_encode( $result, JSON_PRETTY_PRINT );
+			}
+		}
+
+		if ( $debugOptions->isDumpAndDie() ) {
+			// When dumping the query we skip _everything_ but echoing the query.
+			\RequestContext::getMain()->getOutput()->disable();
+			$request->response()->header( $header );
+			echo $result;
+			exit();
+		}
+		return $result;
+	}
 }

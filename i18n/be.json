@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Artsiom91",
-			"Tomato Cream"
+			"Tomato Cream",
+			"No Sleep till Krupki"
 		]
 	},
 	"cirrussearch-desc": "Пошук у MediaWiki з дапамогай ElasticSearch",
@@ -36,9 +37,9 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Ранжыраванне найперш паводле ўваходных спасылак",
 	"prefs-completion": "Дапаўненне пошуку",
 	"cirrussearch-pref-completion-section-desc": "Прапанова канчаткаў",
-	"cirrussearch-pref-completion-profile-help": "Задае паводзіны для прапаноў аўтадапаўнення (пошуку па меры набору).",
+	"cirrussearch-pref-completion-profile-help": "Задае паводзіны для прапановаў аўтазапаўнення (пошук падчас набору).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Прапановы аўтазапаўнення] — гэта алгарытм для прапановаў пошуку з лепшым выпраўленнем памылак і дакладнасці пошуку. Прэфіксавы пошук — гэта алгарытм прапановаў падчас набору тэксту.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Па змоўчанні (рэкамендуецца)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Выпраўляе да двух абдруковак. Падстаўляе адпаведныя перасылкі.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Выпраўляе да дзвюх абдруковак. Выдаляе перанакіраванні, якія вельмі падобныя да асноўнай назвы.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Супастаўленне падфразаў (рэкамэндуецца для доўгіх назваў старонак)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Выпраўляе да дзвюх абдруковак. Выпраўляе блізкія перанакіраванні. Супастаўляе падфразы ў загалоўках.",
 	"cirrussearch-completion-profile-strict-pref-name": "Дакладны рэжым (пашыраны)",

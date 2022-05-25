@@ -220,7 +220,9 @@ class Connection extends ElasticaConnection {
 			);
 		}
 
-		if ( !$this->getSettings()->isPrivateCluster() ) {
+		if ( !$this->getSettings()->isPrivateCluster()
+			|| !$this->config->get( 'CirrusSearchEnableArchive' )
+		) {
 			$indexSuffixes = array_filter( $indexSuffixes, static function ( $type ) {
 				return $type !== self::ARCHIVE_INDEX_SUFFIX;
 			} );

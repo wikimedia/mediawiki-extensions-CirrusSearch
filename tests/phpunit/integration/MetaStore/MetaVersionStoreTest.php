@@ -4,7 +4,7 @@ namespace CirrusSearch\MetaStore;
 
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Connection;
-use MediaWiki\MediaWikiServices;
+use CirrusSearch\HashSearchConfig;
 use WikiMap;
 
 /**
@@ -85,9 +85,19 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 	}
 
 	private function mockConnection( $getBehavior = null ) {
-		$config = MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
+		$config = new HashSearchConfig( [
+			'CirrusSearchReplicaGroup' => 'default',
+			'CirrusSearchClusters' => [ 'default' => [ 'localhost' ] ],
+			'CirrusSearchDefaultCluster' => 'default',
+			'CirrusSearchNamespaceMappings' => [],
+			'CirrusSearchShardCount' => [
+				'content' => 1,
+				'general' => 1,
+				'archive' => 1,
+				'titlesuggest' => 1,
+			],
+			'CirrusSearchEnableArchive' => true,
+		] );
 		$conn = $this->getMockBuilder( Connection::class )
 			->setConstructorArgs( [ $config ] )
 			// call real connection on unmocked methods

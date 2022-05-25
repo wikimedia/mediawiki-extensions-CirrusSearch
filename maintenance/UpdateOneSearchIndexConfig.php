@@ -222,11 +222,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->masterTimeout = $wgCirrusSearchMasterTimeout;
 		$this->refreshInterval = $wgCirrusSearchRefreshInterval;
 
-		if ( $this->indexSuffix === Connection::ARCHIVE_INDEX_SUFFIX &&
-			!$this->getConnection()->getSettings()->isPrivateCluster()
-		) {
-			$this->output( "Warning: Not allowing {$this->indexSuffix} on a non-private cluster\n" );
-			return true;
+		if ( $this->indexSuffix === Connection::ARCHIVE_INDEX_SUFFIX ) {
+			if ( !$this->getSearchConfig()->get( 'CirrusSearchEnableArchive' ) ) {
+				$this->output( "Warning: Not allowing {$this->indexSuffix}, archives are disabled\n" );
+				return true;
+			}
+			if ( !$this->getConnection()->getSettings()->isPrivateCluster() ) {
+				$this->output( "Warning: Not allowing {$this->indexSuffix} on a non-private cluster\n" );
+				return true;
+			}
 		}
 
 		$this->initMappingConfigBuilder();

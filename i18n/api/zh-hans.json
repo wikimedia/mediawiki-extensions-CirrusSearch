@@ -3,11 +3,13 @@
 		"authors": [
 			"Liuxinyu970226",
 			"Shizhao",
-			"佛壁灯"
+			"佛壁灯",
+			"StarrySky"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "CirrusSearch配置的转储。",
 	"apihelp-cirrus-config-dump-summary": "CirrusSearch配置的转储。",
+	"apihelp-cirrus-config-dump-param-prop": "要转储的配置变量类型",
 	"apihelp-cirrus-config-dump-example": "获取CirrusSearch配置的转储。",
 	"apihelp-cirrus-mapping-dump-description": "用于此wiki的CirrusSearch映射转储。",
 	"apihelp-cirrus-mapping-dump-summary": "用于此wiki的CirrusSearch映射转储。",

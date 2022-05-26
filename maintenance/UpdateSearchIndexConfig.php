@@ -61,15 +61,19 @@ class UpdateSearchIndexConfig extends Maintenance {
 
 			$this->outputIndented( "indexing namespaces...\n" );
 			$child = $this->runChild( IndexNamespaces::class );
-			$child->mOptions[ 'cluster' ] = $cluster;
+			$child->loadParamsAndArgs( null, [
+				'cluster' => $cluster,
+			] );
 			$child->execute();
 			$child->done();
 
 			foreach ( $conn->getAllIndexSuffixes( null ) as $indexSuffix ) {
 				$this->outputIndented( "$indexSuffix index...\n" );
 				$child = $this->runChild( UpdateOneSearchIndexConfig::class );
-				$child->mOptions[ 'cluster' ] = $cluster;
-				$child->mOptions[ 'indexSuffix' ] = $indexSuffix;
+				$child->loadParamsAndArgs( null, [
+					'cluster' => $cluster,
+					'indexSuffix' => $indexSuffix,
+				] );
 				$child->execute();
 				$child->done();
 			}

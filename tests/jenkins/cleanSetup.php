@@ -34,17 +34,19 @@ require_once __DIR__ . "/../../includes/Maintenance/Maintenance.php";
 class CleanSetup extends Maintenance {
 	public function execute() {
 		$child = $this->runChild( \CirrusSearch\Maintenance\Metastore::class );
-		$child->mOptions['upgrade'] = true;
+		$child->loadParamsAndArgs( null, [ 'upgrade' => true ] );
 		$child->execute();
 		$child = $this->runChild( \CirrusSearch\Maintenance\UpdateSearchIndexConfig::class );
-		$child->mOptions[ 'startOver' ] = true;
+		$child->loadParamsAndArgs( null, [ 'startOver' => true ] );
 		$child->execute();
 		$child = $this->runChild( \CirrusSearch\Maintenance\ForceSearchIndex::class );
-		$child->mOptions[ 'skipLinks' ] = true;
-		$child->mOptions[ 'indexOnSkip' ] = true;
+		$child->loadParamsAndArgs( null, [
+			'skipLinks' => true,
+			'indexOnSkip' => true,
+		] );
 		$child->execute();
 		$child = $this->runChild( \CirrusSearch\Maintenance\ForceSearchIndex::class );
-		$child->mOptions[ 'skipParse' ] = true;
+		$child->loadParamsAndArgs( null, [ 'skipParse' => true ] );
 		$child->execute();
 	}
 }

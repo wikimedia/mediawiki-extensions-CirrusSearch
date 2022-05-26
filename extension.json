@@ -115,6 +115,7 @@
 	"Hooks": {
 		"APIAfterExecute": "CirrusSearch\\Hooks::onAPIAfterExecute",
 		"ApiBeforeMain": "CirrusSearch\\Hooks::onApiBeforeMain",
+		"APIQuerySiteInfoStatisticsInfo": "CirrusSearch\\Hooks::onAPIQuerySiteInfoStatisticsInfo",
 		"ArticleDelete": "CirrusSearch\\Hooks::onArticleDelete",
 		"ArticleDeleteComplete": "CirrusSearch\\Hooks::onArticleDeleteComplete",
 		"ArticleRevisionVisibilitySet": "CirrusSearch\\Hooks::onRevisionDelete",

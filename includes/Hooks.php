@@ -774,6 +774,23 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 		] );
 	}
 
+	/**
+	 * @param array &$extraStats
+	 * @return void
+	 */
+	private static function addWordCount( array &$extraStats ): void {
+		$search = new CirrusSearch();
+
+		$status = $search->countContentWords();
+		if ( !$status->isOK() ) {
+			return;
+		}
+		$wordCount = $status->getValue();
+		if ( $wordCount !== null ) {
+			$extraStats['cirrussearch-article-words'] = $wordCount;
+		}
+	}
+
 	/** @inheritDoc */
 	public function onGetPreferences( $user, &$prefs ) {
 		$search = new CirrusSearch();
@@ -885,15 +902,10 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	}
 
 	public static function onSpecialStatsAddExtra( &$extraStats, $context ) {
-		$search = new CirrusSearch();
+		self::addWordCount( $extraStats );
+	}
 
-		$status = $search->countContentWords();
-		if ( !$status->isOK() ) {
-			return;
-		}
-		$wordCount = $status->getValue();
-		if ( $wordCount !== null ) {
-			$extraStats['cirrussearch-article-words'] = $wordCount;
-		}
+	public static function onAPIQuerySiteInfoStatisticsInfo( &$extraStats ) {
+		self::addWordCount( $extraStats );
 	}
 }

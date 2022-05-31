@@ -291,10 +291,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private function updateVersions() {
 		$child = $this->runChild( Metastore::class );
-		$child->loadParamsAndArgs( null, [
-			'index-version-basename' => $this->indexBaseName,
-			'update-index-version' => true
-		] );
+		$child->loadParamsAndArgs(
+			null,
+			array_merge( $this->parameters->getOptions(), [
+				'index-version-basename' => $this->indexBaseName,
+				'update-index-version' => true,
+			] ),
+			$this->parameters->getArgs()
+		);
 		$child->execute();
 		$child->done();
 	}

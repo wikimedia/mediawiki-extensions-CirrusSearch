@@ -135,9 +135,12 @@ class ElasticaErrorHandler {
 					'^search_parse_exception$',
 					'^query_shard_exception$',
 					'^illegal_argument_exception$',
-					'^too_many_clauses$'
+					'^too_many_clauses$',
+					'^parsing_exception$',
+					'^parse_exception$',
 				],
-				'msg_regexes' => [],
+				'msg_regexes' => [
+				],
 			],
 			'failed' => [
 				'type_regexes' => [
@@ -145,16 +148,20 @@ class ElasticaErrorHandler {
 					'^remote_transport_exception$',
 					'^search_context_missing_exception$',
 					'^null_pointer_exception$',
-					'^elasticsearch_timeout_exception$'
+					'^elasticsearch_timeout_exception$',
+					'^retry_on_primary_exception$',
+					'^index_not_found_exception$',
 				],
 				// These are exceptions thrown by elastica itself
 				'msg_regexes' => [
 					'^Couldn\'t connect to host',
 					'^No enabled connection',
 					'^Operation timed out',
+					'^Status code 503',
 				],
 			],
 		];
+
 		foreach ( $heuristics as $type => $heuristic ) {
 			$regex = implode( '|', $heuristic['type_regexes'] );
 			if ( $regex && preg_match( "/$regex/", $error['type'] ) ) {

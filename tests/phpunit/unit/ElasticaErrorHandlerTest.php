@@ -44,6 +44,29 @@ class ElasticaErrorHandlerTest extends CirrusTestCase {
 				'unknown',
 				null,
 			],
+			'parsing_exception: Required [regex]' => [
+				'rejected',
+				self::newResponseException( 'parsing_exception', 'Required [regex]' ),
+			],
+			'retry_on_primary_exception: shard is not in primary mode' => [
+				'failed',
+				self::newResponseException( 'retry_on_primary_exception', 'shard is not in primary mode' ),
+			],
+			'index_not_found_exception: no such index' => [
+				'failed',
+				self::newResponseException( 'index_not_found_exception', 'no such index' ),
+			],
+			'parse_exception: Encountered " <AND> "&& ""' => [
+				'rejected',
+				self::newResponseException( 'parse_exception', 'Encountered " <AND> "&& ""' ),
+			],
+			'test envoy 503' => [
+				'failed',
+				new ResponseException(
+					new Request( 'dummy' ),
+					new Response( 'Status code 503; upstream connect error or disconnect before headers', 503 )
+				),
+			],
 		];
 	}
 

@@ -143,19 +143,20 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 	 * @dataProvider fullTextHighlightingConfigurationTestCases
 	 */
 	public function testFullTextHighlightingConfiguration(
-		$useExperimentalHighlighter,
+		array $options,
 		$query,
 		array $expected
 	) {
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchUseExperimentalHighlighter' => $useExperimentalHighlighter,
+			'CirrusSearchUseExperimentalHighlighter' => in_array( 'experimental-highlighter', $options ),
 			'CirrusSearchFragmentSize' => 150,
 			'LanguageCode' => 'testlocale',
 			'CirrusSearchEnableRegex' => true,
 			'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ],
 			'CirrusSearchRegexMaxDeterminizedStates' => 20000,
 		] );
-		$fetchPhaseBuilder = new FetchPhaseConfigBuilder( $config, SearchQuery::SEARCH_TEXT );
+		$fetchPhaseBuilder = new FetchPhaseConfigBuilder(
+			$config, SearchQuery::SEARCH_TEXT, in_array( 'provide-all-snippets', $options ) );
 		$type = new FullTextResultsType( $fetchPhaseBuilder, $query !== null, $this->newTitleHelper() );
 		if ( $query ) {
 			// TODO: switch to new parser.
@@ -181,7 +182,7 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 
 		return [
 			'default configuration' => [
-				false,
+				[],
 				null,
 				[
 					'pre_tags' => [ json_decode( '"\uE000"' ) ],
@@ -240,7 +241,7 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 				]
 			],
 			'default configuration with experimental highlighter' => [
-				true,
+				[ 'experimental-highlighter' ],
 				null,
 				[
 					'pre_tags' => [ json_decode( '"\uE000"' ) ],
@@ -318,8 +319,82 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 					],
 				],
 			],
+			'can toggle skip_if_last_matched' => [
+				[ 'experimental-highlighter', 'provide-all-snippets' ],
+				null,
+				[
+					'pre_tags' => [ json_decode( '"\uE000"' ) ],
+					'post_tags' => [ json_decode( '"\uE001"' ) ],
+					'fields' => [
+						'title' => [
+							'number_of_fragments' => 1,
+							'type' => 'experimental',
+							'matched_fields' => [ 'title', 'title.plain' ],
+							'fragmenter' => 'none',
+						],
+						'redirect.title' => [
+							'number_of_fragments' => 1,
+							'type' => 'experimental',
+							'order' => 'score',
+							'matched_fields' => [ 'redirect.title', 'redirect.title.plain' ],
+							'fragmenter' => 'none',
+						],
+						'category' => [
+							'number_of_fragments' => 1,
+							'type' => 'experimental',
+							'order' => 'score',
+							'matched_fields' => [ 'category', 'category.plain' ],
+							'fragmenter' => 'none',
+						],
+						'heading' => [
+							'number_of_fragments' => 1,
+							'type' => 'experimental',
+							'order' => 'score',
+							'matched_fields' => [ 'heading', 'heading.plain' ],
+							'fragmenter' => 'none',
+						],
+						'text' => [
+							'number_of_fragments' => 1,
+							'fragment_size' => 150,
+							'type' => 'experimental',
+							'options' => [
+								'top_scoring' => true,
+								'boost_before' => $boostBefore,
+								'max_fragments_scored' => 5000,
+							],
+							'no_match_size' => 150,
+							'matched_fields' => [ 'text', 'text.plain' ],
+							'fragmenter' => 'scan',
+						],
+						'auxiliary_text' => [
+							'number_of_fragments' => 1,
+							'fragment_size' => 150,
+							'type' => 'experimental',
+							'options' => [
+								'top_scoring' => true,
+								'boost_before' => $boostBefore,
+								'max_fragments_scored' => 5000,
+							],
+							'matched_fields' => [ 'auxiliary_text', 'auxiliary_text.plain' ],
+							'fragmenter' => 'scan',
+						],
+						'file_text' => [
+							'number_of_fragments' => 1,
+							'fragment_size' => 150,
+							'type' => 'experimental',
+							'options' => [
+								'top_scoring' => true,
+								'boost_before' => $boostBefore,
+								'max_fragments_scored' => 5000,
+							],
+							'matched_fields' => [ 'file_text', 'file_text.plain' ],
+							'fragmenter' => 'scan',
+						],
+					],
+				],
+			],
 			'source configuration with experimental-highlighter' => [
-				true,
+				[ 'experimental-highlighter' ],
 				'insource:/(some|thing)/',
 				[
 					'pre_tags' => [ json_decode( '"\uE000"' ) ],

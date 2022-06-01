@@ -255,7 +255,8 @@ class CirrusSearch extends SearchEngine {
 			->setAllowRewrite( $this->isFeatureEnabled( 'rewrite' ) )
 			->addProfileContextParameter( ContextualProfileOverride::LANGUAGE,
 				$this->requestContext->getLanguage()->getCode() )
-			->setExtraFieldsToExtract( $this->features[self::EXTRA_FIELDS_TO_EXTRACT] ?? [] );
+			->setExtraFieldsToExtract( $this->features[self::EXTRA_FIELDS_TO_EXTRACT] ?? [] )
+			->setProvideAllSnippets( !empty( $this->features['snippets'] ) );
 
 		if ( $this->prefix !== '' ) {
 			$builder->addContextualFilter( 'prefix',

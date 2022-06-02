@@ -82,11 +82,7 @@ class MetaSaneitizeJobStore implements MetaStore {
 		if ( $jobInfo->get( 'type' ) != self::METASTORE_TYPE ) {
 			throw new \Exception( "Wrong document type" );
 		}
-		$version = time();
-		$jobInfo->set( 'sanitize_job_updated', $version );
-		// TODO: Use setVersion / setVersionType with Elastica 7.x
-		$jobInfo->setParam( 'version', $version );
-		$jobInfo->setParam( 'version_type', 'external' );
+		$jobInfo->set( 'sanitize_job_updated', time() );
 		$this->index->addDocuments( [ $jobInfo ] );
 	}
 

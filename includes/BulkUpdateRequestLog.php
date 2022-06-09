@@ -26,7 +26,7 @@ class BulkUpdateRequestLog extends BaseRequestLog {
 	 * @param \Elastica\Client $client
 	 * @param string $description
 	 * @param string $queryType
-	 * @param string[] $extra
+	 * @param array $extra
 	 */
 	public function __construct( \Elastica\Client $client, $description, $queryType, array $extra = [] ) {
 		parent::__construct( $description, $queryType, $extra );
@@ -63,28 +63,10 @@ class BulkUpdateRequestLog extends BaseRequestLog {
 	 * @return array
 	 */
 	public function getLogVariables() {
-		$vars = [
+		return [
 			'queryType' => $this->queryType,
 			'tookMs' => $this->getTookMs(),
 		] + $this->extra;
-
-		if ( $this->response ) {
-			$responseData = $this->response->getData();
-			if ( isset( $responseData['items'] ) ) {
-				$indices = [];
-				foreach ( $responseData['items'] as $item ) {
-					if ( isset( $item['update'] ) ) {
-						$indices[] = $item['update']['_index'];
-					}
-				}
-				$vars['numBulk'] = count( $responseData['items'] );
-				$vars['index'] = implode( ',', array_unique( $indices ) );
-			} else {
-				$vars['index'] = 'UNKNOWN';
-			}
-		}
-
-		return $vars;
 	}
 
 	/**

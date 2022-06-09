@@ -159,7 +159,9 @@ class DataSender extends ElasticsearchIntermediary {
 			try {
 				$this->start( new BulkUpdateRequestLog( $this->connection->getClient(),
 					'updating {numBulk} documents',
-					'send_data_reset_weighted_tags' ) );
+					'send_data_reset_weighted_tags',
+					[ 'numBulk' => count( $docIdsChunk ), 'index' => $pageIndex->getName() ]
+				) );
 				$bulk->send();
 			} catch ( ResponseException $e ) {
 				if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e ) ) {
@@ -292,7 +294,8 @@ class DataSender extends ElasticsearchIntermediary {
 			$this->start( new BulkUpdateRequestLog(
 				$this->connection->getClient(),
 				'sending {numBulk} documents to the {index} index(s)',
-				'send_data_write'
+				'send_data_write',
+				[ 'numBulk' => count( $documents ), 'index' => $pageIndex->getName() ]
 			) );
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
 			$bulk->setShardTimeout( $this->searchConfig->get( 'CirrusSearchUpdateShardTimeout' ) );
@@ -350,6 +353,12 @@ class DataSender extends ElasticsearchIntermediary {
 			$logContext = [ 'docId' => implode( ', ', $documentIds ) ];
 			if ( $exception ) {
 				$logContext['exception'] = $exception;
+			} else {
+				// we want to figure out error_massage from the responseData log, because
+				// error_message is currently not set when exception is null and response is not
+				// valid
+				$responseData = json_encode( $responseSet->getData() );
+				$logContext['error_message'] = mb_substr( $responseData, 0, 4096 );
 			}
 			$this->failedLog->warning(
 				'Failed to update documents {docId}',
@@ -486,8 +495,9 @@ class DataSender extends ElasticsearchIntermediary {
 				$this->start( new BulkUpdateRequestLog(
 					$this->connection->getClient(),
 					'updating {numBulk} documents in other indexes',
-					'send_data_other_idx_write'
-				) );
+					'send_data_other_idx_write',
+						[ 'numBulk' => count( $updates ), 'index' => $indexName ]
+					) );
 				$bulk->send();
 			} catch ( ResponseException $e ) {
 				if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e ) ) {

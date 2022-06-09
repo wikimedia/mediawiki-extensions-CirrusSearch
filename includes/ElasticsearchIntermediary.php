@@ -218,7 +218,13 @@ abstract class ElasticsearchIntermediary {
 			$logType = $log->getDescription();
 		}
 		list( $status, $message ) = ElasticaErrorHandler::extractMessageAndStatus( $exception );
-		$context['error_message'] = $message;
+		// This could be multiple MB if the failure is coming from an update
+		// script, as the whole update script is returned in the error
+		// including the parameters. Truncate to a reasonable level so
+		// downstream log processing doesn't truncate them (and then fail to
+		// parse the truncated json). Take the first 4k to leave plenty of room for
+		// whatever else.
+		$context['error_message'] = mb_substr( $message, 0, 4096 );
 
 		$stats = Util::getStatsDataFactory();
 		$type = ElasticaErrorHandler::classifyError( $exception );

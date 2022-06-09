@@ -287,6 +287,9 @@ class ElasticaErrorHandler {
 	/**
 	 * Takes an error and converts it into a useful message. Mostly this is to deal with
 	 * errors where the useful part is hidden inside a caused_by chain.
+	 * WARNING: In some circumstances, like bulk update failures, this could be multiple
+	 * megabytes.
+	 *
 	 * @param array $error An error array, such as the one returned by extractFullError().
 	 * @return string
 	 */

@@ -5,7 +5,7 @@ const TitlePage = require( './title_page' );
 class SpecialUndelete extends TitlePage {
 	constructor() {
 		// Haxing fuzzy into the url like this feels hacky.
-		super( 'Special:Undelete?fuzzy=1' );
+		super( 'Special:Undelete', 'fuzzy=1' );
 	}
 
 	set search_input( search ) {

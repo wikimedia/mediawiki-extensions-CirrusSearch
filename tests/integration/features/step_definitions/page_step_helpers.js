@@ -56,15 +56,18 @@ class StepHelpers {
 	editPage( title, text, options = {} ) {
 		return Promise.coroutine( function* () {
 			const client = yield this.apiPromise;
+			const isNullEdit = text === null;
 
-			if ( text[ 0 ] === '@' ) {
+			const fetchedText = yield this.getWikitext( title );
+			if ( isNullEdit ) {
+				text = fetchedText;
+			} else if ( text[ 0 ] === '@' ) {
 				text = fs.readFileSync( path.join( articlePath, text.slice( 1 ) ) ).toString();
 			}
-			const fetchedText = yield this.getWikitext( title );
 			if ( options.append ) {
 				text = fetchedText + text;
 			}
-			if ( text.trim() !== fetchedText.trim() ) {
+			if ( isNullEdit || text.trim() !== fetchedText.trim() ) {
 				const editResponse = yield client.edit( title, text );
 				if ( !options.skipWaitForOperation ) {
 					yield this.waitForOperation( 'edit', title, null, editResponse.edit.newrevid );

@@ -5,14 +5,16 @@ const Page = require( './page' );
 class SearchResultsPage extends Page {
 
 	/**
-	 * Open the Search results searching for search
+	 * Open the Search results searching for search.
+	 *
+	 * Does not do anything on it's own. Must be used with the world helper:
+	 *   world.visit( SearchResultsPage.search( 'catapult' ) );
 	 *
 	 * @param {string} search
-	 * @chainable
 	 * @return {SearchResultsPage}
 	 */
 	search( search ) {
-		this.url = `/w/index.php?title=Special:Search&search=${encodeURIComponent( search )}`;
+		this.url_params = `title=Special:Search&search=${encodeURIComponent( search )}`;
 		return this;
 	}
 

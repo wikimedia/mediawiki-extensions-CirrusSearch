@@ -1,4 +1,4 @@
-@clean @phantomjs
+@clean @phantomjs @file_text
 Feature: Full text search
   Background:
     Given I am at the search results page
@@ -47,7 +47,6 @@ Feature: Full text search
     When I search for Javascript findme
     Then the title still exists
 
-  @file_text
   Scenario: When you search for text that is in a file, you can find it!
     When I search for File:debian rhino
     Then File:Linux Distribution Timeline text version.pdf is the first search result and has an image link

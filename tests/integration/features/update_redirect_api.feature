@@ -6,6 +6,11 @@ Feature: Updating a page from or to a redirect
       And I api search for ToBeRedirect%{epoch}
      Then ToBeRedirect%{epoch} is the first api search result
      When a page named ToBeRedirect%{epoch} exists with contents #REDIRECT [[RedirectTarget]]
+     # TODO: Find a way to detect when this has landed. Without the wait sometimes ToBeRedirectNN
+     # hasn't (yet) been deleted from elasticsearch and is returned.
+      And I wait for RedirectTarget to include ToBeRedirect%{epoch} in redirect
+      And I wait for ToBeRedirect%{epoch} to include ToBeRedirect%{epoch} in redirect
+      And I wait 3 seconds
       And I api search for ToBeRedirect%{epoch}
      Then RedirectTarget is the first api search result
       And ToBeRedirect%{epoch} is not in the api search results

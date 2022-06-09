@@ -49,7 +49,7 @@ Then( /^(.+) is the first search result( and has an image link)?$/, function ( r
 		expect( SearchResultsPage.has_search_results(), msg ).to.equal( true );
 		expect( SearchResultsPage.get_result_at( 1 ), msg ).to.equal( result );
 		if ( imagelink ) {
-			expect( SearchResultsPage.get_result_image_link_at( 1 ), msg ).to.not.equal( null );
+			expect( SearchResultsPage.get_result_image_link_at( 1 ), `${msg} : imagelink must exist` ).to.not.equal( null );
 		}
 	}
 } );

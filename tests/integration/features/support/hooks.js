@@ -35,8 +35,8 @@ const waitForBatch = Promise.coroutine( function* ( wiki, batchJobs ) {
 	const stepHelpers = this.stepHelpers.onWiki( wiki );
 	const queue = [];
 	if ( Array.isArray( batchJobs ) ) {
-		for ( const job of batchJobs ) {
-			queue.push( [ job[ 0 ], job[ 1 ] ] );
+		for ( const jobDef of batchJobs ) {
+			queue.push( [ jobDef[ 0 ], jobDef[ 1 ] ] );
 		}
 	} else {
 		for ( const operation in batchJobs ) {
@@ -113,7 +113,7 @@ const job = {
 	},
 	upload: ( fileName, text ) => {
 		const pathToFile = articlePath + fileName;
-		return [ 'upload', fileName, pathToFile, '', { text: text } ];
+		return [ 'upload', fileName, pathToFile, '', { text: text, ignorewarnings: 1 } ];
 	},
 	uploadOverwrite: ( fileName, text ) => {
 		const pathToFile = articlePath + fileName;
@@ -161,30 +161,37 @@ BeforeOnce( { tags: '@accented_namespace' }, runBatchFn( {
 	}
 } ) );
 
-BeforeOnce( { tags: '@setup_main or @filters or @prefix or @bad_syntax or @wildcard or @exact_quotes or @phrase_prefix', timeout: 60000 }, runBatchFn( {
-	edit: {
-		'Template:Template Test': 'pickles [[Category:TemplateTagged]]',
-		'Catapult/adsf': 'catapult subpage [[Catapult|Catapults]]',
-		'Links To Catapult': '[[Catapult]]',
-		Catapult: '♙ asdf [[Category:Weaponry]]',
-		'Amazing Catapult': 'test [[Catapult]] [[Category:Weaponry]]',
-		'Category:Weaponry': 'Weaponry refers to any items designed or used to attack and kill or destroy other people and property.',
-		'Two Words': 'ffnonesenseword catapult {{Template_Test}} anotherword [[Category:TwoWords]] [[Category:Categorywith Twowords]] [[Category:Categorywith " Quote]]',
-		AlphaBeta: '[[Category:Alpha]] [[Category:Beta]]',
-		IHaveATwoWordCategory: '[[Category:CategoryWith ASpace]]',
-		'Functional programming': 'Functional programming is referential transparency.',
-		वाङ्मय: '\u0935\u093e\u0919\u094d\u092e\u092f',
-		वाङ्‍मय: '\u0935\u093e\u0919\u094d\u200d\u092e\u092f',
-		वाङ‍्मय: '\u0935\u093e\u0919\u200d\u094d\u092e\u092f',
-		वाङ्‌मय: '\u0935\u093e\u0919\u094d\u200c\u092e\u092f',
-		Wikitext: '{{#tag:somebug}}',
-		'Page with non ascii letters': 'ἄνθρωπος, широкий',
-		'Waffle Squash': articleText( 'wafflesquash.txt' ),
-		'Waffle Squash 2': 'waffle<br>squash'
-	}
+BeforeOnce( { tags: '@setup_main or @filters or @prefix or @bad_syntax or @wildcard or @exact_quotes or @phrase_prefix', timeout: 60000 }, Promise.coroutine( function* () {
+	yield runBatch( this, false, {
+		edit: {
+			'Template:Template Test': 'pickles [[Category:TemplateTagged]]',
+			'Catapult/adsf': 'catapult subpage [[Catapult|Catapults]]',
+			'Links To Catapult': '[[Catapult]]',
+			Catapult: '♙ asdf [[Category:Weaponry]]',
+			'Amazing Catapult': 'test [[Catapult]] [[Category:Weaponry]]',
+			'Category:Weaponry': 'Weaponry refers to any items designed or used to attack and kill or destroy other people and property.',
+			'Two Words': 'ffnonesenseword catapult {{Template_Test}} anotherword [[Category:TwoWords]] [[Category:Categorywith Twowords]] [[Category:Categorywith " Quote]]',
+			AlphaBeta: '[[Category:Alpha]] [[Category:Beta]]',
+			IHaveATwoWordCategory: '[[Category:CategoryWith ASpace]]',
+			'Functional programming': 'Functional programming is referential transparency.',
+			वाङ्मय: '\u0935\u093e\u0919\u094d\u092e\u092f',
+			वाङ्‍मय: '\u0935\u093e\u0919\u094d\u200d\u092e\u092f',
+			वाङ‍्मय: '\u0935\u093e\u0919\u200d\u094d\u092e\u092f',
+			वाङ्‌मय: '\u0935\u093e\u0919\u094d\u200c\u092e\u092f',
+			Wikitext: '{{#tag:somebug}}',
+			'Page with non ascii letters': 'ἄνθρωπος, широкий',
+			'Waffle Squash': articleText( 'wafflesquash.txt' ),
+			'Waffle Squash 2': 'waffle<br>squash'
+		}
+	} );
+
+	// Help incoming_links get counted when using the sql job queue. Ideally this should
+	// be at least CirrusSearchRefreshInterval seconds after the above finishes.
+	yield new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
+	yield this.stepHelpers.onWiki().editPage( 'Catapult', null );
 } ) );
 
-BeforeOnce( { tags: '@setup_main or @prefix or @bad_syntax' }, runBatchFn( [
+BeforeOnce( { tags: '@setup_main or @prefix or @bad_syntax or @filesearch' }, runBatchFn( [
 	job.edit( 'Rdir', '#REDIRECT [[Two Words]]' ),
 	job.edit( 'IHaveAVideo', '[[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]' ),
 	job.edit( 'IHaveASound', '[[File:Serenade for Strings -mvt-1- Elgar.ogg]]' ),
@@ -197,14 +204,22 @@ BeforeOnce( { tags: '@setup_main or @prefix or @go or @bad_syntax or @smoke' }, 
 	}
 } ) );
 
-BeforeOnce( { tags: '@boost_template' }, runBatchFn( {
-	edit: {
-		'Template:BoostTemplateHigh': 'BoostTemplateTest',
-		'Template:BoostTemplateLow': 'BoostTemplateTest',
-		'NoTemplates BoostTemplateTest': 'nothing important',
-		HighTemplate: '{{BoostTemplateHigh}}',
-		LowTemplate: '{{BoostTemplateLow}}'
-	}
+BeforeOnce( { tags: '@boost_template' }, Promise.coroutine( function* () {
+	yield runBatch( this, false, {
+		edit: {
+			'Template:BoostTemplateHigh': 'BoostTemplateTest',
+			'Template:BoostTemplateLow': 'BoostTemplateTest',
+			'NoTemplates BoostTemplateTest': 'nothing important'
+		}
+	} );
+	// Delay to ensure templates have been saved before the pages using
+	// them get rendered.
+	yield runBatch( this, false, {
+		edit: {
+			HighTemplate: '{{BoostTemplateHigh}}',
+			LowTemplate: '{{BoostTemplateLow}}'
+		}
+	} );
 } ) );
 
 BeforeOnce( { tags: '@did_you_mean', timeout: 240000 }, function () {
@@ -260,25 +275,6 @@ BeforeOnce( { tags: '@exact_quotes' }, runBatchFn( {
 		"Doesn't Actually Contain Stop Words": "Doesn't Actually Contain Stop Words",
 		'Pick*': 'Pick*'
 	}
-} ) );
-
-BeforeOnce( { tags: '@filesearch' }, Promise.coroutine( function* () {
-	// Unfortunatly the current deduplication between wikis requires a file
-	// be uploaded to commons before it's uploaded to any other wiki, or the
-	// other wiki isn't tagged.
-	yield runBatch( this, 'commons', [
-		job.upload( 'DuplicatedLocally.svg', 'File stored on commons and duplicated locally' ),
-		job.upload( 'OnCommons.svg', 'File stored on commons for test purposes' )
-	] );
-
-	yield runBatch( this, false, [
-		job.upload( 'No_SVG.svg', '[[Category:Red circle with left slash]]' ),
-		job.upload( 'Somethingelse_svg_SVG.svg', '[[Category:Red circle with left slash]]' ),
-		job.upload( 'Savepage-greyed.png', 'Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .' ),
-		job.upload( 'DuplicatedLocally.svg', 'Locally stored file duplicated on commons' ),
-		job.delete( 'File:Frozen.svg' )
-	] );
-
 } ) );
 
 BeforeOnce( { tags: '@redirect_loop' }, Promise.coroutine( function* () {
@@ -620,7 +616,7 @@ BeforeOnce( { tags: '@removed_text' }, runBatchFn( {
 	}
 } ) );
 
-BeforeOnce( { tags: '@setup_main or @commons' }, Promise.coroutine( function* () {
+BeforeOnce( { tags: '@setup_main or @commons or @filesearch' }, Promise.coroutine( function* () {
 	yield runBatch( this, 'commons', {
 		delete: [
 			'File:OnCommons.svg',
@@ -692,6 +688,18 @@ BeforeOnce( { tags: '@suggest', timeout: 120000 }, Promise.coroutine( function* 
 			'Sam Wilson': 'Warren Kenneth Worthington III: originally known as Angel and later as Archangel: ... Marvel Comics like [[Venom]]. {{DEFAULTSORTKEY:Wilson: Sam}}'
 		}
 	} );
+
+	// A couple null edits before building the suggest index to hopefully get the right incoming links counts.
+	// Necessary when using the sql job queue as it doesn't delay the link counting jobs after the edits.
+	const stepHelpers = this.stepHelpers.onWiki();
+	yield stepHelpers.editPage( 'PrefixRedirectRanking_1', null );
+	yield stepHelpers.editPage( 'TargetOfPrefixRedirectRanking_2', null );
+
+	// Null edits don't trigger any kind of waiting, they don't make a new
+	// revision id. so inject an arbitrary pause to hope the null edits make it
+	// to elasticsearch and refresh.
+	// TODO: Wait for specific incoming link count?
+	yield new Promise( ( resolve ) => setTimeout( resolve, 2000 ) );
 
 	const client = yield this.onWiki();
 	yield client.request( {

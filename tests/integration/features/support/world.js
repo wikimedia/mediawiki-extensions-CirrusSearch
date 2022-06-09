@@ -144,17 +144,17 @@ function World( { attach, parameters } ) {
 	// as well as a string, assumes the Page object
 	// has a url property
 	this.visit = function ( page, wiki = this.config.wikis.default ) {
-		let tmpUrl;
-		if ( page instanceof Page && page.url ) {
-			tmpUrl = page.url;
+		let params;
+		if ( page instanceof Page && page.url_params ) {
+			params = page.url_params;
 		}
 		if ( typeof page === 'string' && page ) {
-			tmpUrl = page;
+			params = 'title=' + page;
 		}
-		if ( !tmpUrl ) {
+		if ( !params ) {
 			throw new Error( `In "World.visit(page)" page is falsy: page=${page}` );
 		}
-		tmpUrl = this.config.wikis[ wiki ].baseUrl + tmpUrl;
+		const tmpUrl = this.config.wikis[ wiki ].baseUrl + '?' + params;
 		log( `[D] Visiting page: ${tmpUrl}`, this.tags.silentLog );
 		browser.url( tmpUrl );
 		// logs full URL in case of typos, misplaced backslashes.

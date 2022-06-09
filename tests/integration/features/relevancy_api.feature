@@ -20,7 +20,8 @@ Feature: Results are ordered from most relevant to least.
     Then Relevancylanguagetest/en is the first api search result
 
   Scenario: Redirects count as incoming links
-     When I wait for Relevancyredirecttest Larger to have incoming_links of 4
+     When I null edit Relevancyredirecttest Larger
+      And I wait for Relevancyredirecttest Larger to have incoming_links of 4
       And I api search for Relevancyredirecttest
      Then Relevancyredirecttest Larger is the first api search result
       And Relevancyredirecttest Smaller is the second api search result
@@ -52,7 +53,12 @@ Feature: Results are ordered from most relevant to least.
       And Relevancylanguagetest/ar is the third api search result
 
   Scenario: Incoming links count in page weight
-    When I api search for Relevancylinktest -intitle:link
+     # Null edits are necessary when using the sql jobqueue, with it the
+     # incoming_links counts are less reliably applied when links are created
+     # near the same time as the pages. The null edit ensures a recomputation.
+     When I null edit Relevancylinktest Larger Extraword
+      And I wait for Relevancylinktest Larger Extraword to have incoming_links of 4
+      And I api search for Relevancylinktest -intitle:link
      Then Relevancylinktest Larger Extraword is the first api search result
       And Relevancylinktest Smaller is the second api search result
       And I api search with query independent profile classic_noboostlinks for Relevancylinktest -intitle:link

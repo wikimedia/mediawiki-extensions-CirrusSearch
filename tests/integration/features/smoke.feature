@@ -9,7 +9,7 @@
 # CirrusSearch top-level directory and at
 # https://phabricator.wikimedia.org/diffusion/ECIR/browse/master/CREDITS
 #
-@clean @firefox @test2.wikipedia.org @phantomjs @smoke
+@clean @firefox @test2.wikipedia.org @phantomjs @smoke @suggest
 Feature: Smoke test
 
   @en.wikipedia.beta.wmflabs.org

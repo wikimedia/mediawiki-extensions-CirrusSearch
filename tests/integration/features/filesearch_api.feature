@@ -1,4 +1,4 @@
-@clean @api @filesearch
+@clean @api @filesearch @filenames
 Feature: Searches with the file size filters
 
   Scenario Outline: filesize finds files with given size

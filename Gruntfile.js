@@ -18,7 +18,9 @@ module.exports = function ( grunt ) {
 	grunt.loadNpmTasks( 'grunt-stylelint' );
 	grunt.loadNpmTasks( 'grunt-webdriver' );
 
-	if ( process.env.JENKINS_HOME ) {
+	if ( process.env.WEBDRIVER_IO_CONFIG_FILE ) {
+		WebdriverIOconfigFile = process.env.WEBDRIVER_IO_CONFIG_FILE;
+	} else if ( process.env.JENKINS_HOME ) {
 		WebdriverIOconfigFile = './tests/integration/config/wdio.conf.jenkins.js';
 	} else if ( process.env.MWV_LABS_HOSTNAME ) {
 		WebdriverIOconfigFile = './tests/integration/config/wdio.conf.mwvlabs.js';

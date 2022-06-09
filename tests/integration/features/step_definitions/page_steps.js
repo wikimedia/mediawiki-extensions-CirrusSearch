@@ -157,6 +157,10 @@ When( /^a page named (.+) exists(?: with contents (.+))?$/, function ( title, te
 	return this.stepHelpers.editPage( title, text || title );
 } );
 
+When( /^I null edit (.+)$/, function ( title ) {
+	return this.stepHelpers.editPage( title, null );
+} );
+
 When( /^I don't wait for a page named (.+) to exist(?: with contents (.+))?$/, function ( title, text ) {
 	return this.stepHelpers.editPage( title, text || title, {
 		skipWaitForOperation: true
@@ -316,8 +320,11 @@ Then( /^(.+) is( in)? the highlighted (.+) of the (.+) api search result$/, func
 			key = 'titlesnippet';
 		}
 		expect( this.apiResponse.query.search[ position ] ).to.include.keys( key );
-		const snippet = this.apiResponse.query.search[ position ][ key ].replace(
-			/<span class="searchmatch">(.+?)<\/span>/g, '*$1*' );
+		const snippet = ( this.apiResponse.query.search[ position ][ key ]
+			.replace( /<span class="searchmatch">(.+?)<\/span>/g, '*$1*' )
+			// single colons are encoded if running php >= 8.1
+			.replace( '&#039;', "'" ) );
+
 		if ( in_ok ) {
 			expect( snippet ).to.include( expected );
 		} else {
@@ -428,7 +435,7 @@ Then( /^deleted page search returns (.+) as first result$/, function ( title ) {
 } );
 
 When( /^I dump the cirrus data for (.+)$/, function ( title ) {
-	this.visit( new TitlePage( title + '?action=cirrusDump' ) );
+	this.visit( new TitlePage( title + '&action=cirrusDump' ) );
 } );
 
 Then( /^the page text contains (.+)$/, function ( text ) {
@@ -459,7 +466,11 @@ Then( /^I wait for (.+?)(?: on (.+))? to include (.+) in (.+)$/, function ( titl
 			stepHelpers = this.stepHelpers.onWiki( wiki );
 		}
 		return stepHelpers.waitForDocument( title, ( doc ) => {
-			expect( doc.source[ field ] ).to.include( value );
+			let source = doc.source[ field ];
+			if ( field === 'redirect' ) {
+				source = source.map( ( redirect ) => redirect.title );
+			}
+			expect( source ).to.include( value );
 		} );
 	} );
 } );

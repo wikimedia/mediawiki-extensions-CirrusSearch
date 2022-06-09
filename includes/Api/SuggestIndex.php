@@ -29,8 +29,13 @@ class SuggestIndex extends \ApiBase {
 		// FIXME: This is horrible, no good, very bad hack. Only for testing,
 		// and probably should be eventually replaced with something more sane.
 		$updaterScript = "extensions/CirrusSearch/maintenance/UpdateSuggesterIndex.php";
+		// detects between mediawiki-vagrant and mediawiki-docker-dev (mwcli/mwdd)
+		$php = '/usr/local/bin/mwscript';
+		if ( !file_exists( $php ) ) {
+			$php = '/usr/bin/php';
+		}
 		$this->getResult()->addValue( null, 'result',
-			wfShellExecWithStderr( "unset REQUEST_METHOD; /usr/local/bin/mwscript $updaterScript --wiki " . WikiMap::getCurrentWikiId() )
+			wfShellExecWithStderr( "unset REQUEST_METHOD; $php $updaterScript --wiki " . WikiMap::getCurrentWikiId() )
 		);
 	}
 }

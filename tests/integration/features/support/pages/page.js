@@ -74,20 +74,20 @@ class Page {
 		return texts;
 	}
 
-	get url() {
-		return this._url;
+	get url_params() {
+		// TODO: Why get/set and not a raw param?
+		return this._url_params;
 	}
 
-	set url( url ) {
-		this._url = url;
-		browser.url( url );
+	set url_params( url_params ) {
+		this._url_params = url_params;
 	}
 
 	login( world, wiki = false ) {
 		const config = wiki ?
 			world.config.wikis[ wiki ] :
 			world.config.wikis[ world.config.wikis.default ];
-		world.visit( '/wiki/Special:UserLogin' );
+		world.visit( 'Special:UserLogin' );
 		browser.$( '#wpName1' ).setValue( config.username );
 		browser.$( '#wpPassword1' ).setValue( config.password );
 		browser.$( '#wpLoginAttempt' ).click();

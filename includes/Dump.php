@@ -44,8 +44,8 @@ class Dump extends FormlessAction {
 		$docId = $config->makeId( $this->getTitle()->getArticleID() );
 		$esSources = $searcher->get( [ $docId ], true );
 		if ( !$esSources->isOK() ) {
-			// Exception has been logged
-			echo '{}';
+			// echo for consistency with below
+			echo '{"error": "exception has been logged"}';
 			return null;
 		}
 		$esSources = $esSources->getValue();
@@ -60,6 +60,8 @@ class Dump extends FormlessAction {
 				'_source' => $esSource->getData(),
 			];
 		}
+		// Echoing raw json to avoid any mangling that would prevent providing
+		// the resulting structures to elasticsearch.
 		echo json_encode( $result );
 		return null;
 	}

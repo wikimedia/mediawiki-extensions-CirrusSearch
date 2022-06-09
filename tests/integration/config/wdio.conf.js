@@ -38,7 +38,9 @@ exports.config = {
 		default: 'cirrustest',
 		cirrustest: {
 			username: 'Admin',
-			password: 'vagrant',
+			password: process.env.MEDIAWIKI_PASSWORD === undefined ?
+				'vagrant' :
+				process.env.MEDIAWIKI_PASSWORD,
 			botPassword: process.env.MEDIAWIKI_CIRRUSTEST_BOT_PASSWORD === undefined ?
 				'vagrant' :
 				process.env.MEDIAWIKI_CIRRUSTEST_BOT_PASSWORD,
@@ -47,7 +49,9 @@ exports.config = {
 		},
 		commons: {
 			username: 'Admin',
-			password: 'vagrant',
+			password: process.env.MEDIAWIKI_PASSWORD === undefined ?
+				'vagrant' :
+				process.env.MEDIAWIKI_PASSWORD,
 			botPassword: process.env.MEDIAWIKI_COMMONS_BOT_PASSWORD === undefined ?
 				'vagrant' :
 				process.env.MEDIAWIKI_COMMONS_BOT_PASSWORD,
@@ -56,7 +60,9 @@ exports.config = {
 		},
 		ru: {
 			username: 'Admin',
-			password: 'vagrant',
+			password: process.env.MEDIAWIKI_PASSWORD === undefined ?
+				'vagrant' :
+				process.env.MEDIAWIKI_PASSWORD,
 			botPassword: process.env.MEDIAWIKI_RU_BOT_PASSWORD === undefined ?
 				'vagrant' :
 				process.env.MEDIAWIKI_RU_BOT_PASSWORD,
@@ -136,7 +142,7 @@ exports.config = {
 		browserName: 'chrome',
 		// Since Chrome v57 https://bugs.chromium.org/p/chromedriver/issues/detail?id=1625
 		'goog:chromeOptions': {
-			args: [ '--enable-automation', '--remote-debugging-port=9222', '--headless', '--window-size=1200x800' ]
+			args: [ '--enable-automation', '--remote-debugging-port=9222', '--remote-debugging-address=0.0.0.0', '--headless', '--window-size=1200x800' ]
 		}
 	} ],
 	//
@@ -230,8 +236,11 @@ exports.config = {
 		return new Promise( ( resolve, reject ) => {
 			forkedTracker.on( 'message', ( msg ) => {
 				if ( msg.initialized ) {
+					console.log( 'initialized tracker' );
 					resolve();
 				} else {
+					console.log( 'failed to init tracker' );
+					console.log( msg.error );
 					reject( msg.error );
 				}
 			} );

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Profile;
 
 use Config;
+use ExtensionRegistry;
 
 /**
  * Profile repository backed by a Config object.
@@ -86,13 +87,25 @@ class ConfigProfileRepository implements SearchProfileRepository {
 		return $this->extractProfiles();
 	}
 
-	private function extractProfiles() {
+	private function extractProfiles(): array {
+		return $this->extractConfig() + $this->extractAttrib();
+	}
+
+	private function extractConfig(): array {
 		if ( !$this->config->has( $this->configEntry ) ) {
 			return [];
 		}
 		$profiles = $this->config->get( $this->configEntry );
 		if ( !is_array( $profiles ) ) {
 			throw new SearchProfileException( "Config entry {$this->configEntry} must be an array or unset" );
+		}
+		return $profiles;
+	}
+
+	private function extractAttrib(): array {
+		$profiles = ExtensionRegistry::getInstance()->getAttribute( $this->configEntry );
+		if ( !is_array( $profiles ) ) {
+			throw new SearchProfileException( "Attribute {$this->configEntry} must be an array or unset" );
 		}
 		return $profiles;
 	}

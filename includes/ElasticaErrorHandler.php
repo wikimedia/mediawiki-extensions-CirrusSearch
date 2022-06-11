@@ -138,6 +138,7 @@ class ElasticaErrorHandler {
 					'^too_many_clauses$',
 					'^parsing_exception$',
 					'^parse_exception$',
+					'^script_exception$',
 				],
 				'msg_regexes' => [
 				],
@@ -249,6 +250,16 @@ class ElasticaErrorHandler {
 			return [ Status::newFatal(
 				'cirrussearch-regex-too-complex-error' ),
 				$cause['reason']
+			];
+		}
+
+		if ( $cause['type'] === 'script_exception' ) {
+			// do not use $cause which won't contain the caused_by chain
+			$formattedMessage = self::formatMessage( $error['caused_by'] );
+			$formattedMessage .= "\n\t" . implode( "\n\t", $cause['script_stack'] ) . "\n";
+			return [
+				Status::newFatal( 'cirrussearch-backend-error' ),
+				$formattedMessage
 			];
 		}
 

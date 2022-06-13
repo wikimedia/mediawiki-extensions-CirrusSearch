@@ -88,24 +88,37 @@ class ConfigProfileRepository implements SearchProfileRepository {
 	}
 
 	private function extractProfiles(): array {
-		return $this->extractConfig() + $this->extractAttrib();
+		$configEntry = $this->configEntry;
+		$config = $this->config;
+		return self::extractConfig( $configEntry, $config ) + self::extractAttribute( $configEntry );
 	}
 
-	private function extractConfig(): array {
-		if ( !$this->config->has( $this->configEntry ) ) {
+	/**
+	 * @param string $configEntry
+	 * @param Config $config
+	 * @return array
+	 * @internal For use by CompletionSearchProfileRepository only.
+	 */
+	public static function extractConfig( string $configEntry, Config $config ): array {
+		if ( !$config->has( $configEntry ) ) {
 			return [];
 		}
-		$profiles = $this->config->get( $this->configEntry );
+		$profiles = $config->get( $configEntry );
 		if ( !is_array( $profiles ) ) {
-			throw new SearchProfileException( "Config entry {$this->configEntry} must be an array or unset" );
+			throw new SearchProfileException( "Config entry {$configEntry} must be an array or unset" );
 		}
 		return $profiles;
 	}
 
-	private function extractAttrib(): array {
-		$profiles = ExtensionRegistry::getInstance()->getAttribute( $this->configEntry );
+	/**
+	 * @param string $configEntry
+	 * @return array
+	 * @internal For use by CompletionSearchProfileRepository only.
+	 */
+	public static function extractAttribute( string $configEntry ): array {
+		$profiles = ExtensionRegistry::getInstance()->getAttribute( $configEntry );
 		if ( !is_array( $profiles ) ) {
-			throw new SearchProfileException( "Attribute {$this->configEntry} must be an array or unset" );
+			throw new SearchProfileException( "Attribute {configEntry} must be an array or unset" );
 		}
 		return $profiles;
 	}

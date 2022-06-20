@@ -13,6 +13,7 @@
 	"cirrussearch-completion-profile-fuzzy-pref-name": "預設（推薦）",
 	"cirrussearch-completion-profile-strict-pref-name": "嚴謹模式（高級）",
 	"cirrussearch-completion-profile-normal-pref-name": "跳轉模式（高級）",
+	"cirrussearch-completion-profile-classic-pref-name": "傳統字首搜尋",
 	"cirrussearch-explore-similar-related": "有關",
 	"cirrussearch-explore-similar-categories": "類",
 	"cirrussearch-explore-similar-languages": "話",

@@ -4,7 +4,7 @@
 			"Borichèt"
 		]
 	},
-	"cirrussearch-desc": "Arserca për Mediawiki sostnùa da Elasticsearch",
+	"cirrussearch-desc": "Arserca për MediaWiki sostnùa da Elasticsearch",
 	"cirrussearch-backend-error": "I l'oma nen podù livré soa arserca an rason d'un problema temporani. Për piasì, ch'a preuva torna pi tard.",
 	"cirrussearch-parse-error": "L,arcesta a l'é nen ëstàita capìa. Për piasì, ch'a la fasa pi sempia. L'arcesta a l'é stàita marcà për amelioré ël sistema d'arserca.",
 	"cirrussearch-too-busy-error": "L'arserca a l'é al moment tròp ocupà. Për piasì, ch'a preuva torna pi tard.",

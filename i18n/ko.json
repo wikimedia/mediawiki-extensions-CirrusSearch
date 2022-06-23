@@ -9,7 +9,8 @@
 			"Priviet",
 			"Revi",
 			"Ykhwong",
-			"아라"
+			"아라",
+			"Bluehill"
 		]
 	},
 	"cirrussearch-desc": "미디어위키용 Elasticsearch 검색",
@@ -38,7 +39,7 @@
 	"cirrussearch-qi-profile-popular-pv": "주로 페이지 뷰에 기반한 순위",
 	"prefs-completion": "검색 완성",
 	"cirrussearch-pref-completion-section-desc": "완성 제안 기능",
-	"cirrussearch-pref-completion-profile-help": "자동 완성 (입력하면서 검색) 제안을 위한 동작을 설정합니다.",
+	"cirrussearch-pref-completion-profile-help": "자동 완성 (입력하면서 검색) 제안을 위한 동작을 설정합니다.\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester 완성 제안]은 더 나은 오타 수정 및 검색 관련성을 가진 검색 제안 알고리즘입니다. 접두어 검색은 기존 입력하면서 검색 제안 알고리즘입니다.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "기본값 (권장)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "최대 2개의 오자를 교정합니다. 주 제목과 매우 유사한 넘겨주기는 제거합니다.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "하위 문구 일치 (긴 문서 제목에 권장)",

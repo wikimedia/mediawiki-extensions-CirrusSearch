@@ -161,13 +161,11 @@ class DataSender extends ElasticsearchIntermediary {
 					'updating {numBulk} documents',
 					'send_data_reset_weighted_tags' ) );
 				$bulk->send();
-			}
-			catch ( ResponseException $e ) {
+			} catch ( ResponseException $e ) {
 				if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e ) ) {
 					$exception = $e;
 				}
-			}
-			catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$exception = $e;
 			}
 			if ( $exception === null ) {

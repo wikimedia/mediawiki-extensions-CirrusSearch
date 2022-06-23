@@ -225,4 +225,22 @@ class InSourceTest extends CirrusTestCase {
 			],
 			[ [ 'cirrussearch-feature-not-available', 'insource regex' ] ] );
 	}
+
+	public function testEmptyRegex() {
+		$config = new HashSearchConfig( [
+			'CirrusSearchEnableRegex' => true,
+			'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ]
+		], [ HashSearchConfig::FLAG_INHERIT ] );
+		$feature = new InSourceFeature( $config );
+		$term = 'insource://';
+		$this->assertParsedValue( $feature, $term,
+			[
+				'type' => 'regex',
+				'pattern' => '',
+				'insensitive' => false,
+			],
+			[ [ 'cirrussearch-regex-empty-expression', 'insource' ] ] );
+
+		$this->assertNoResultsPossible( $feature, $term );
+	}
 }

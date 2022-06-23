@@ -109,9 +109,16 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			if ( !$this->enabled ) {
 				$warningCollector->addWarning( 'cirrussearch-feature-not-available', "$key regex" );
 			}
+
+			$pattern = trim( $quotedValue, '/' );
+
+			if ( empty( $pattern ) ) {
+				$warningCollector->addWarning( 'cirrussearch-regex-empty-expression', $key );
+			}
+
 			return [
 				'type' => 'regex',
-				'pattern' => trim( $quotedValue, '/' ),
+				'pattern' => $pattern,
 				'insensitive' => $suffix === 'i',
 			];
 		}
@@ -161,6 +168,12 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			'@phan-var array $parsedValue';
 			$pattern = $parsedValue['pattern'];
 			$insensitive = $parsedValue['insensitive'];
+
+			if ( empty( $pattern ) ) {
+				$context->setResultsPossible( false );
+
+				return [ null, false ];
+			}
 
 			$filter = $this->buildRegexQuery( $pattern, $insensitive );
 			if ( !$negated ) {

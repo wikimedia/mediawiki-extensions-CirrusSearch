@@ -386,7 +386,7 @@ class Updater extends ElasticsearchIntermediary {
 					// Skip redirects to nonexistent pages
 					continue;
 				}
-				$page = new WikiPage( $target );
+				$page = $wikiPageFactory->newFromTitle( $target );
 			}
 			if ( $page->isRedirect() ) {
 				// This is a redirect to a redirect which doesn't count in the search score any way.

@@ -530,7 +530,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @return string The set action to be performed. Either 'add' or 'remove'
 	 */
 	protected function decideRequiredSetAction( Title $title ) {
-		$page = new WikiPage( $title );
+		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
 		$page->loadPageData( WikiPage::READ_LATEST );
 		if ( $page->exists() ) {
 			return 'add';

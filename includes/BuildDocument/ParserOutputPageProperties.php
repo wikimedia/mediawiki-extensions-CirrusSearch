@@ -7,6 +7,7 @@ use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use ParserCache;
 use ParserOutput;
 use Sanitizer;
@@ -61,7 +62,7 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 	 * @throws BuildDocumentException
 	 */
 	public function finalize( Document $doc, Title $title ): void {
-		$page = new \WikiPage( $title );
+		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
 		// TODO: If parserCache is null here then we will parse for every
 		// cluster and every retry.  Maybe instead of forcing a parse, we could
 		// force a parser cache update during self::initialize?

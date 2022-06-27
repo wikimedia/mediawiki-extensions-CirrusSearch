@@ -9,6 +9,7 @@
 	"cirrussearch-backend-error": "Не можам наполно да го изведам пребарувањето поради привремен проблем. Обидете се подоцна.",
 	"cirrussearch-parse-error": "Не го разбрав барањето. Упростете го. Ова го заведувам за да го подобриме пребарувачкиот систем.",
 	"cirrussearch-too-busy-error": "Пребарувањето во моментов е презафатено. Обидете се подоцна.",
+	"cirrussearch-regex-empty-expression": "$1 очекува непразен регуларен израз.",
 	"cirrussearch-regex-syntax-error": "Синтаксна грешка на регуларниот израз во $2: $1",
 	"cirrussearch-regex-too-busy-error": "Во моментов има премногу пребарувања на регуларни изрази. Обидете се подоцна.",
 	"cirrussearch-regex-too-complex-error": "Регуларниот израз е пресложен. Дознајте повеќе за неговото упростување [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|тука]].",

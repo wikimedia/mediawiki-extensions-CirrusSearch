@@ -23,6 +23,7 @@
 	"cirrussearch-backend-error": "Nous n’avons pas pu mener à bien votre recherche à cause d’un problème temporaire. Veuillez réessayer ultérieurement.",
 	"cirrussearch-parse-error": "La demande n’a pas été comprise. Veuillez la simplifier. La requête a été tracée pour améliorer le système de recherche.",
 	"cirrussearch-too-busy-error": "Le service de recherche est actuellement saturé. Veuillez réessayer ultérieurement.",
+	"cirrussearch-regex-empty-expression": "$1 attend une expression rationnelle non vide.",
 	"cirrussearch-regex-syntax-error": "Erreur de syntaxe de l’expression rationnelle en position $2 : $1",
 	"cirrussearch-regex-too-busy-error": "Trop de recherches par expression rationnelle actuellement en cours. Veuillez réessayer ultérieurement.",
 	"cirrussearch-regex-too-complex-error": "L’expression rationnelle est trop complexe. En savoir plus sur sa simplification [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|ici]].",

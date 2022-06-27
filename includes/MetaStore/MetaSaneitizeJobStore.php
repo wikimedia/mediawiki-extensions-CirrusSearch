@@ -83,6 +83,11 @@ class MetaSaneitizeJobStore implements MetaStore {
 			throw new \Exception( "Wrong document type" );
 		}
 		$jobInfo->set( 'sanitize_job_updated', time() );
+		// Clear versioning info to prevent issues in the es 6->7 transition
+		$params = $jobInfo->getParams();
+		unset( $params['version'], $params['_version'] );
+		$jobInfo->setParams( $params );
+
 		$this->index->addDocuments( [ $jobInfo ] );
 	}
 

@@ -687,6 +687,10 @@
 		"CirrusSearchCustomPageFields": {
 			"description": "Defines additional custom fields for page indexes",
 			"value": []
+		},
+		"CirrusSearchExtraFieldsInSearchResults": {
+			"description": "Defines extra fields to add to each result",
+			"value": []
 		}
 	},
 	"SearchMappings": {

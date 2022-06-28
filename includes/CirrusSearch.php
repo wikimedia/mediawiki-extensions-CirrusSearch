@@ -189,6 +189,10 @@ class CirrusSearch extends SearchEngine {
 				return \Sanitizer::escapeIdForLink( $v );
 			}
 		);
+		$extraFieldsInSearchResults = $this->config->get( 'CirrusSearchExtraFieldsInSearchResults' );
+		if ( $extraFieldsInSearchResults ) {
+			$this->features[ self::EXTRA_FIELDS_TO_EXTRACT ] = $extraFieldsInSearchResults;
+		}
 	}
 
 	public function setConnection( Connection $connection ) {

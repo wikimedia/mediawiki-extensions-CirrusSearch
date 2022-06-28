@@ -1614,3 +1614,20 @@ Example:
     'related_terms' => 'short_text',
     'popularity' => 'number'
   ];
+
+; $wgCirrusSearchExtraFieldsInSearchResults
+
+Default:
+  $wgCirrusSearchExtraFieldsInSearchResults = [];
+
+Defines additional fields to be populated in query results by default (e.g. for example in native query=search API query).
+This fields would be populated in extensiondata prop, see here https://en.wikipedia.org/w/api.php?action=help&modules=query%2Bsearch, srprop
+You need to add those fields to the index, either by $wgCirrusSearchCustomPageFields or by SearchIndexFields hook
+
+Example:
+  $wgCirrusSearchExtraFieldsInSearchResults = [
+    'authors',
+    'last_editor',
+  ];
+
+

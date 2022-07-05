@@ -136,16 +136,22 @@ class ElasticaWrite extends CirrusGenericJob {
 		try {
 			$status = $sender->{$this->params['method']}( ...$arguments );
 		} catch ( \Exception $e ) {
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Exception thrown while running DataSender::{method} in cluster {cluster}: {errorMessage}",
-				[
-					'method' => $this->params['method'],
-					'cluster' => $conn->getClusterName(),
-					'errorMessage' => $e->getMessage(),
-					'exception' => $e,
-				]
-			);
-			$status = Status::newFatal( 'cirrussearch-send-failure' );
+			if ( stristr( $e->getMessage(), 'unwritable cluster cloudelastic' ) !== false ) {
+				// T309648: squelch errors relating to dropping cloudelastic. It has a 3 day
+				// backlog of jobs to drop. Pretend the jobs worked.
+				$status = Status::newGood();
+			} else {
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+					"Exception thrown while running DataSender::{method} in cluster {cluster}: {errorMessage}",
+					[
+						'method' => $this->params['method'],
+						'cluster' => $conn->getClusterName(),
+						'errorMessage' => $e->getMessage(),
+						'exception' => $e,
+					]
+				);
+				$status = Status::newFatal( 'cirrussearch-send-failure' );
+			}
 		}
 
 		$ok = true;

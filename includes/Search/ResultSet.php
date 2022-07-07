@@ -277,7 +277,7 @@ class ResultSet extends BaseSearchResultSet implements CirrusSearchResultSet {
 	 * The return value is cast to an integer.
 	 * @since 5.1.0
 	 */
-	public function count() {
+	public function count(): int {
 		return count( $this->extractResults() );
 	}
 

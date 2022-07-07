@@ -241,7 +241,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	 * The return value is cast to an integer.
 	 * @since 5.1.0
 	 */
-	final public function count() {
+	final public function count(): int {
 		return count( $this->extractResults() );
 	}
 

@@ -16,7 +16,7 @@ class Set implements \Countable {
 	/**
 	 * @return int Number of elements in the set
 	 */
-	public function count() {
+	public function count(): int {
 		return count( $this->elements );
 	}
 

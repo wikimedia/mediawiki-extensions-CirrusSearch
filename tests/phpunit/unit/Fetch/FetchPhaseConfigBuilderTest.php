@@ -17,6 +17,8 @@ use Elastica\Query\MatchAll;
  * @covers \CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder
  */
 class FetchPhaseConfigBuilderTest extends CirrusTestCase {
+	use CirrusTestCaseTrait;
+
 	public function testNewHighlightField() {
 		$configDef = $this->newHashSearchConfig( [ 'CirrusSearchUseExperimentalHighlighter' => false ] );
 		$configExp = $this->newHashSearchConfig( [ 'CirrusSearchUseExperimentalHighlighter' => true ] );
@@ -56,13 +58,13 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		foreach ( $factoryGroups as $factoryGroup => $fields ) {
 			foreach ( $fields as $field ) {
 				$tests["$factoryGroup-$field-base"] = [
-					CirrusTestCaseTrait::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-base.expected",
+					self::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-base.expected",
 					$factoryGroup,
 					$field,
 					$configBase
 				];
 				$tests["$factoryGroup-$field-exp"] = [
-					CirrusTestCaseTrait::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-exp.expected",
+					self::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-exp.expected",
 					$factoryGroup,
 					$field,
 					$configExp

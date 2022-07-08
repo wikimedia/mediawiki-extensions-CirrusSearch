@@ -16,6 +16,8 @@ use Elastica\Query\MatchAll;
  * @covers \CirrusSearch\Search\Fetch\ExperimentalHighlightedFieldBuilder
  */
 class HighlightedFieldBuilderTest extends CirrusTestCase {
+	use CirrusTestCaseTrait;
+
 	public function provideTestFactories() {
 		$tests = [];
 		$config = $this->newHashSearchConfig( [
@@ -39,14 +41,14 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 		foreach ( $factoryGroups as $factoryGroup => $fields ) {
 			foreach ( $fields as $field ) {
 				$tests["$factoryGroup-$field-base"] = [
-					CirrusTestCaseTrait::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-base.expected",
+					self::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-base.expected",
 					$baseFactories,
 					$factoryGroup,
 					$field,
 					$config
 				];
 				$tests["$factoryGroup-$field-exp"] = [
-					CirrusTestCaseTrait::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-exp.expected",
+					self::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-exp.expected",
 					$expFactories,
 					$factoryGroup,
 					$field,

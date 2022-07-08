@@ -89,7 +89,7 @@ class RunSearch extends Maintenance {
 	 * the options that change search ranking.  CirrusSearch has so many variables that enumerating
 	 * them and maintaining extra lists of them would be a tedious process.
 	 *
-	 * @return array Changeable global variables represented as the keys for an array, for
+	 * @return array<string,true> Changeable global variables represented as the keys for an array, for
 	 *  use with isset().
 	 */
 	private function loadChangeableConfigVars(): array {
@@ -100,7 +100,7 @@ class RunSearch extends Maintenance {
 				. 'list of changeable config vars' );
 		}
 		$changeable = [];
-		foreach ( array_keys( $config['config'] ) as $key ) {
+		foreach ( $config['config'] as $key => $_ ) {
 			$changeable['wg' . $key] = true;
 		}
 		return $changeable;
@@ -130,22 +130,7 @@ class RunSearch extends Maintenance {
 			$forceChange = $this->getOption( 'i-know-what-im-doing', false );
 			foreach ( $options as $key => $value ) {
 				if ( strpos( $key, '.' ) !== false ) {
-					// key path
-					$path = explode( '.', $key );
-					$pathel = array_shift( $path );
-					if ( !isset( $changeable[$pathel] ) ) {
-						$this->error( "\nERROR: $key is not a globally changeable variable\n" );
-					}
-
-					$cur =& $GLOBALS[$pathel];
-					foreach ( $path as $pathel ) {
-						if ( !array_key_exists( $pathel, $cur ) ) {
-							$this->error( "\nERROR: $key is not a valid global variable path\n" );
-							exit();
-						}
-						$cur =& $cur[$pathel];
-					}
-					$cur = $value;
+					$this->changeGlobalKeyPath( $key, $value, $changeable );
 				} elseif ( $forceChange || isset( $changeable[$key] ) ) {
 					// This is different from the keypath case above in that this can set
 					// variables that haven't been loaded yet. In particular at this point
@@ -154,11 +139,35 @@ class RunSearch extends Maintenance {
 					// loaded.
 					$GLOBALS[$key] = $value;
 				} else {
-					$this->error( "\nERROR: $key is not a globally changeable variable\n" );
-					exit();
+					$this->fatalError( "\nERROR: $key is not a globally changeable variable\n" );
 				}
 			}
 		}
+	}
+
+	/**
+	 * Navigate a key path to change a global variable.
+	 *
+	 * @param string $key the path
+	 * @param mixed $value what we want to set it to
+	 * @param array<string,true> $changeable the changeable variables
+	 */
+	private function changeGlobalKeyPath( string $key, $value, array $changeable ): void {
+		// key path
+		$path = explode( '.', $key );
+		$pathel = array_shift( $path );
+		if ( !isset( $changeable[$pathel] ) ) {
+			$this->fatalError( "\nERROR: $key is not a globally changeable variable\n" );
+		}
+
+		$cur =& $GLOBALS[$pathel];
+		foreach ( $path as $pathel ) {
+			if ( !is_array( $cur ) || !array_key_exists( $pathel, $cur ) ) {
+				$this->fatalError( "\nERROR: $key is not a valid global variable path\n" );
+			}
+			$cur =& $cur[$pathel];
+		}
+		$cur = $value;
 	}
 
 	/**

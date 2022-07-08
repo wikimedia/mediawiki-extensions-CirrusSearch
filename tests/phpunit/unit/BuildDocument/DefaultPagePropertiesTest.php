@@ -34,7 +34,7 @@ class DefaultPagePropertiesTest extends \MediaWikiUnitTestCase {
 		$db = $this->mock( IDatabase::class );
 		$title = $this->mock( Title::class );
 		$props = new DefaultPageProperties( $db );
-		$doc = new Document( null, [] );
+		$doc = new Document( '', [] );
 		$props->initialize( $doc, $page );
 		$props->finishInitializeBatch( [ $page ] );
 		$props->finalize( $doc, $title );

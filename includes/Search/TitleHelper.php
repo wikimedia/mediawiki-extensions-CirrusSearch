@@ -50,14 +50,14 @@ class TitleHelper {
 	 * @param \Elastica\Result $r int $namespace
 	 * @return Title
 	 */
-	public function makeTitle( \Elastica\Result $r ) {
-		$iwPrefix = $this->identifyInterwikiPrefix( $r ) ?? '';
+	public function makeTitle( \Elastica\Result $r ): Title {
+		$iwPrefix = $this->identifyInterwikiPrefix( $r );
 		if ( empty( $iwPrefix ) && $r->namespace !== null && $r->title !== null ) {
 			return Title::makeTitle( $r->namespace, $r->title );
-		} else {
-			$nsPrefix = $r->namespace_text ? $r->namespace_text . ':' : '';
-			return Title::makeTitle( 0, $nsPrefix . $r->title, '', $iwPrefix );
 		}
+
+		$nsPrefix = $r->namespace_text ? $r->namespace_text . ':' : '';
+		return Title::makeTitle( 0, $nsPrefix . $r->title, '', $iwPrefix ?? '' );
 	}
 
 	/**

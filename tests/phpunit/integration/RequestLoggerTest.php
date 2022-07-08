@@ -284,6 +284,12 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 	private function collectLogs( array $loggers ) {
 		$result = [];
 		foreach ( $loggers as $channel => $logger ) {
+			if ( !in_array( $channel, [ 'cirrussearch-request', 'CirrusSearchRequests' ] ) ) {
+				// Only look at the specific logging channels we are testing.
+				// Other logs may be generated but have nothing to do with
+				// structured request logging.
+				continue;
+			}
 			foreach ( $logger->getLogs() as $log ) {
 				// Doing this instead of $log['channel'] = ... allows
 				// channel to be at the top of the encoded output.

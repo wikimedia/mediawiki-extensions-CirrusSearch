@@ -54,10 +54,11 @@ class Util {
 	 * by gender if need be (using Title::getNsText()).
 	 *
 	 * @param Title $title The page title to use
-	 * @return string
+	 * @return string|false
 	 */
 	public static function getNamespaceText( Title $title ) {
-		return strtr( $title->getNsText(), '_', ' ' );
+		$ret = $title->getNsText();
+		return is_string( $ret ) ? strtr( $ret, '_', ' ' ) : $ret;
 	}
 
 	/**

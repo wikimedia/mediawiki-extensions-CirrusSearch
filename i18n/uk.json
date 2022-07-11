@@ -18,6 +18,7 @@
 	"cirrussearch-backend-error": "Нам не вдалося завершити ваш пошук через тимчасову проблему. Спробуйте ще раз пізніше.",
 	"cirrussearch-parse-error": "Запит не зрозуміли. Будь ласка, зробіть його простішим. Запит був записаний для поліпшення пошукової системи.",
 	"cirrussearch-too-busy-error": "Пошукова система перевантажена запитами. Спробуйте пізніше.",
+	"cirrussearch-regex-empty-expression": "$1 очікує непорожній регулярний вираз.",
 	"cirrussearch-regex-syntax-error": "Помилка синтаксису регулярних виразів у $2: $1",
 	"cirrussearch-regex-too-busy-error": "Пошукова система перевантажена запитами з регулярними виразами. Спробуйте пізніше.",
 	"cirrussearch-regex-too-complex-error": "Регулярний вираз надто складний. Дізнайтеся більше про його спрощення [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|тут]].",

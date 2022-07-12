@@ -145,7 +145,7 @@ Default:
 
 Number of replicas Elasticsearch can expand or contract to. This allows for
 easy development and deployment to a single node (0 replicas) to scale up to
-higher levels of replication. You if you need more redundancy you could
+higher levels of replication. If you need more redundancy you could
 adjust this to '0-10' or '0-all' or even 'false' (string, not boolean) to
 disable the behavior entirely. The default should be fine for most people.
 

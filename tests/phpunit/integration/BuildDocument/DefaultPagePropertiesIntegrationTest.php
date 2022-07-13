@@ -11,11 +11,6 @@ use WikiPage;
  * @covers \CirrusSearch\BuildDocument\DefaultPageProperties
  */
 class DefaultPagePropertiesIntegrationTest extends \MediaWikiIntegrationTestCase {
-	private function mock( $class ) {
-		return $this->getMockBuilder( $class )
-			->disableOriginalConstructor()
-			->getMock();
-	}
 
 	private function buildDoc( WikiPage $page ): ?Document {
 		$doc = new Document( null, [] );

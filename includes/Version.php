@@ -25,9 +25,10 @@ use Status;
 class Version extends ElasticsearchIntermediary {
 	/**
 	 * @param Connection $conn
+	 * @param RequestLogger|null $requestLogger
 	 */
-	public function __construct( Connection $conn ) {
-		parent::__construct( $conn, null, 0 );
+	public function __construct( Connection $conn, ?RequestLogger $requestLogger = null ) {
+		parent::__construct( $conn, null, 0, 0, $requestLogger );
 	}
 
 	/**

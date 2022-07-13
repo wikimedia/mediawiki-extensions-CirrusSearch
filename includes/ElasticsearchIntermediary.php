@@ -81,8 +81,15 @@ abstract class ElasticsearchIntermediary {
 	 *  intermediary needs to take before it counts as slow.  0 means none count
 	 *  as slow. Defaults to CirrusSearchSlowSearch config option.
 	 * @param int $extraBackendLatency artificial backend latency.
+	 * @param RequestLogger|null $requestLogger
 	 */
-	protected function __construct( Connection $connection, UserIdentity $user = null, $slowSeconds = null, $extraBackendLatency = 0 ) {
+	protected function __construct(
+		Connection $connection,
+		UserIdentity $user = null,
+		$slowSeconds = null,
+		$extraBackendLatency = 0,
+		?RequestLogger $requestLogger = null
+	) {
 		$this->connection = $connection;
 		if ( $user === null ) {
 			$user = RequestContext::getMain()->getUser();
@@ -91,7 +98,7 @@ abstract class ElasticsearchIntermediary {
 		$this->slowMillis = (int)( 1000 * ( $slowSeconds ?? $connection->getConfig()->get( 'CirrusSearchSlowSearch' ) ) );
 		$this->extraBackendLatency = $extraBackendLatency;
 		if ( self::$requestLogger === null ) {
-			self::$requestLogger = new RequestLogger;
+			self::$requestLogger = $requestLogger ?? new RequestLogger();
 		}
 		// This isn't explicitly used, but we need to make sure it is
 		// instantiated so it has the opportunity to override global

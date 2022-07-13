@@ -15,7 +15,7 @@ class VersionTest extends CirrusTestCase {
 			],
 		] ), 200 ) );
 		$conn = $this->mockConnection( $response );
-		$version = new Version( $conn );
+		$version = new Version( $conn, $this->createMock( RequestLogger::class ) );
 		$status = $version->get();
 		$this->assertTrue( $status->isGood() );
 		$this->assertEquals( '3.2.1', $status->getValue() );
@@ -26,7 +26,7 @@ class VersionTest extends CirrusTestCase {
 			new \Elastica\Exception\Connection\HttpException( CURLE_COULDNT_CONNECT )
 		);
 		$conn = $this->mockConnection( $response );
-		$version = new Version( $conn );
+		$version = new Version( $conn, $this->createMock( RequestLogger::class ) );
 		$status = $version->get();
 		$this->assertFalse( $status->isOK() );
 	}

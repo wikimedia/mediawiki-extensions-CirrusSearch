@@ -36,9 +36,25 @@ class ElasticsearchIntermediaryTest extends CirrusTestCase {
 	 */
 	public function testTimeouts( array $config, $searchType, $expectedClientTimeout, $expectedShardTimeout ) {
 		$connection = new DummyConnection( new HashSearchConfig( $config ) );
-		$intermediary = new class( $connection ) extends ElasticsearchIntermediary {
-			public function __construct( Connection $connection ) {
-				parent::__construct( $connection, new UserIdentityValue( 0, '' ) );
+		$requestLogger = $this->createMock( RequestLogger::class );
+		$user = new UserIdentityValue( 0, '' );
+		$slowSeconds = null;
+		$extraBackendLatency = 0;
+		$intermediary = new class(
+			$connection,
+			$user,
+			$slowSeconds,
+			$extraBackendLatency,
+			$requestLogger
+		) extends ElasticsearchIntermediary {
+			public function __construct(
+				Connection $connection,
+				$user,
+				$slowSeconds,
+				$extraBackendLatency,
+				$requestLogger
+			) {
+				parent::__construct( $connection, $user, $slowSeconds, $extraBackendLatency, $requestLogger );
 			}
 
 			protected function newLog( $description, $queryType, array $extra = [] ) {
@@ -60,9 +76,25 @@ class ElasticsearchIntermediaryTest extends CirrusTestCase {
 
 	public function testConcludeRequestTwice() {
 		$connection = new DummyConnection( new HashSearchConfig( [] ) );
-		$intermediary = new class( $connection ) extends ElasticsearchIntermediary {
-			public function __construct( Connection $connection ) {
-				parent::__construct( $connection );
+		$requestLogger = $this->createMock( RequestLogger::class );
+		$user = new UserIdentityValue( 0, '' );
+		$slowSeconds = null;
+		$extraBackendLatency = 0;
+		$intermediary = new class(
+			$connection,
+			$user,
+			$slowSeconds,
+			$extraBackendLatency,
+			$requestLogger
+		) extends ElasticsearchIntermediary {
+			public function __construct(
+				Connection $connection,
+				$user,
+				$slowSeconds,
+				$extraBackendLatency,
+				$requestLogger
+			) {
+				parent::__construct( $connection, $user, $slowSeconds, $extraBackendLatency, $requestLogger );
 			}
 
 			protected function newLog( $description, $queryType, array $extra = [] ) {

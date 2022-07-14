@@ -212,6 +212,12 @@ class InSourceTest extends CirrusTestCase {
 				'foo"bar',
 				true,
 			],
+			'if the last character of the pattern searched is "/"' => [
+				'insource:/\/Documentation\//',
+				'',
+				'\/Documentation\/',
+				false,
+			],
 		];
 	}
 

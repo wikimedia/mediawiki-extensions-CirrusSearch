@@ -7,6 +7,7 @@ use CirrusSearch\Elastica\ReindexRequest;
 use CirrusSearch\Elastica\ReindexResponse;
 use CirrusSearch\Elastica\ReindexTask;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Util;
 use Elastica\Client;
 use Elastica\Exception\Connection\HttpException;
 use Elastica\Index;
@@ -139,7 +140,11 @@ class Reindexer {
 		] );
 		$this->waitForGreen();
 
-		$request = new ReindexRequest( $this->oldIndex, $this->index, $chunkSize );
+		$request = new ReindexRequest(
+			Util::activeIndexType( $this->oldIndex ),
+			Util::activeIndexType( $this->index ),
+			$chunkSize
+		);
 		if ( $slices === null ) {
 			$request->setSlices( $this->estimateSlices( $this->oldIndex ) );
 		} else {

@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use Elastica\Index;
+use Elastica\Type;
 use Elasticsearch\Endpoints;
 use IBufferingStatsdDataFactory;
 use MediaWiki\Logger\LoggerFactory;
@@ -598,6 +599,12 @@ class Util {
 		// $data is single element array with the backing index name as key
 		$mapping = array_shift( $data );
 		return $mapping['mappings'] ?? [];
+	}
+
+	public static function activeIndexType( Index $index ): Type {
+		$mapping = self::getIndexMapping( $index, true );
+		$typeName = array_keys( $mapping )[0];
+		return new Type( $index, $typeName );
 	}
 
 	/**

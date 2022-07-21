@@ -357,8 +357,20 @@ class DataSender extends ElasticsearchIntermediary {
 				// we want to figure out error_massage from the responseData log, because
 				// error_message is currently not set when exception is null and response is not
 				// valid
-				$responseData = json_encode( $responseSet->getData() );
-				$logContext['error_message'] = mb_substr( $responseData, 0, 4096 );
+				$responseData = $responseSet->getData();
+				$responseDataString = json_encode( $responseData );
+
+				// in logstash some error_message seems to be empty we are assuming its due to
+				// non UTF-8 sequences in the response data causing the json_encode to return empty
+				// string,so we added a logic to validate the assumption
+				if ( json_last_error() === JSON_ERROR_UTF8 ) {
+					$responseDataString =
+						json_encode( $this->convertEncoding( $responseData ) );
+				} elseif ( json_last_error() !== JSON_ERROR_NONE ) {
+					$responseDataString = json_last_error_msg();
+				}
+
+				$logContext['error_message'] = mb_substr( $responseDataString, 0, 4096 );
 			}
 			$this->failedLog->warning(
 				'Failed to update documents {docId}',
@@ -648,4 +660,17 @@ class DataSender extends ElasticsearchIntermediary {
 		return $this->searchConfig->get(
 			'CirrusSearchUpdateConflictRetryCount' );
 	}
+
+	private function convertEncoding( $d ) {
+		if ( is_string( $d ) ) {
+			return mb_convert_encoding( $d, 'UTF-8', 'UTF-8' );
+		}
+
+		foreach ( $d as &$v ) {
+			$v = $this->convertEncoding( $v );
+		}
+
+		return $d;
+	}
+
 }

@@ -690,6 +690,13 @@ class AnalysisConfigBuilder {
 			break;
 
 		// customized languages
+		case 'bengali': // Unpack Bengali analyzer T294067
+			$config = ( new AnalyzerBuilder( $langName ) )->
+				withUnpackedAnalyzer()->
+				insertFiltersBefore( 'bengali_stop',
+					[ 'decimal_digit', 'indic_normalization' ] )->
+				build( $config );
+			break;
 		case 'bosnian':
 		case 'croatian':
 		case 'serbian':
@@ -1343,6 +1350,7 @@ class AnalysisConfigBuilder {
 		'ar' => 'arabic',
 		'hy' => 'armenian',
 		'eu' => 'basque',
+		'bn' => 'bengali',
 		'pt-br' => 'brazilian',
 		'bg' => 'bulgarian',
 		'ca' => 'catalan',
@@ -1387,6 +1395,7 @@ class AnalysisConfigBuilder {
 	 * can be enabled by default
 	 */
 	private $languagesWithIcuFolding = [
+		'bn' => true,
 		'bs' => true,
 		'ca' => true,
 		'cs' => true,

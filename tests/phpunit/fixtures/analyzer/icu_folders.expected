@@ -1,6 +1,6 @@
 {
     "analyzer": {
-        "bs_plain": {
+        "bn_plain": {
             "char_filter": [
                 "word_break_helper"
             ],
@@ -8,6 +8,62 @@
                 "icu_normalizer",
                 "preserve_original_recorder",
                 "icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "bn_plain_search": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "bn_text": {
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "decimal_digit",
+                "indic_normalization",
+                "bengali_stop",
+                "bengali_stemmer",
+                "icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "bn_text_search": {
+            "char_filter": [
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "decimal_digit",
+                "indic_normalization",
+                "bengali_stop",
+                "bengali_stemmer",
+                "icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "bs_plain": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "bs_icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -45,7 +101,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "ca_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -71,7 +127,7 @@
                 "icu_normalizer",
                 "catalan_stop",
                 "catalan_stemmer",
-                "ca_icu_folding",
+                "icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -86,7 +142,7 @@
                 "icu_normalizer",
                 "catalan_stop",
                 "catalan_stemmer",
-                "ca_icu_folding",
+                "icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -262,7 +318,7 @@
                 "lowercase",
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "el_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -309,7 +365,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "en-ca_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -336,7 +392,7 @@
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
-                "en-ca_icu_folding",
+                "icu_folding",
                 "remove_empty",
                 "kstem",
                 "custom_stem"
@@ -354,7 +410,7 @@
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
-                "en-ca_icu_folding",
+                "icu_folding",
                 "remove_empty",
                 "kstem",
                 "custom_stem"
@@ -369,7 +425,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "en-gb_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -396,7 +452,7 @@
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
-                "en-gb_icu_folding",
+                "icu_folding",
                 "remove_empty",
                 "kstem",
                 "custom_stem"
@@ -414,7 +470,7 @@
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
-                "en-gb_icu_folding",
+                "icu_folding",
                 "remove_empty",
                 "kstem",
                 "custom_stem"
@@ -429,7 +485,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "en_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -456,7 +512,7 @@
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
-                "en_icu_folding",
+                "icu_folding",
                 "remove_empty",
                 "kstem",
                 "custom_stem"
@@ -474,7 +530,7 @@
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
-                "en_icu_folding",
+                "icu_folding",
                 "remove_empty",
                 "kstem",
                 "custom_stem"
@@ -683,7 +739,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "fr_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -711,7 +767,7 @@
                 "french_stop",
                 "french_stemmer",
                 "preserve_original_recorder",
-                "fr_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -729,7 +785,7 @@
                 "french_stop",
                 "french_stemmer",
                 "preserve_original_recorder",
-                "fr_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -744,7 +800,7 @@
                 "ga_lowercase",
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "ga_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -773,7 +829,7 @@
                 "icu_normalizer",
                 "irish_stop",
                 "irish_stemmer",
-                "ga_icu_folding",
+                "icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -790,7 +846,7 @@
                 "icu_normalizer",
                 "irish_stop",
                 "irish_stemmer",
-                "ga_icu_folding",
+                "icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -855,7 +911,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "he_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -893,7 +949,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "hi_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -921,7 +977,7 @@
                 "hindi_normalization",
                 "hindi_stop",
                 "hindi_stemmer",
-                "hi_icu_folding",
+                "icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -938,7 +994,7 @@
                 "hindi_normalization",
                 "hindi_stop",
                 "hindi_stemmer",
-                "hi_icu_folding",
+                "icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -951,7 +1007,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "icu_folding",
+                "hr_icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -1041,7 +1097,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "nl_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -1067,7 +1123,7 @@
                 "dutch_stop",
                 "dutch_override",
                 "dutch_stemmer",
-                "nl_icu_folding",
+                "icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -1082,7 +1138,7 @@
                 "dutch_stop",
                 "dutch_override",
                 "dutch_stemmer",
-                "nl_icu_folding",
+                "icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -1147,7 +1203,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "pt_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -1172,7 +1228,7 @@
                 "icu_normalizer",
                 "portuguese_stop",
                 "portuguese_stemmer",
-                "pt_icu_folding",
+                "icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -1186,7 +1242,7 @@
                 "icu_normalizer",
                 "portuguese_stop",
                 "portuguese_stemmer",
-                "pt_icu_folding",
+                "icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -1199,7 +1255,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "icu_folding",
+                "sh_icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -1237,7 +1293,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "simple_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -1264,7 +1320,7 @@
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
-                "simple_icu_folding",
+                "icu_folding",
                 "remove_empty",
                 "kstem",
                 "custom_stem"
@@ -1282,7 +1338,7 @@
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
-                "simple_icu_folding",
+                "icu_folding",
                 "remove_empty",
                 "kstem",
                 "custom_stem"
@@ -1297,7 +1353,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "sk_icu_folding",
+                "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -1335,7 +1391,7 @@
             "filter": [
                 "icu_normalizer",
                 "preserve_original_recorder",
-                "icu_folding",
+                "sr_icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
@@ -1575,8 +1631,17 @@
             "stopwords": "_basque_",
             "type": "stop"
         },
-        "ca_icu_folding": {
-            "type": "icu_folding"
+        "bengali_stemmer": {
+            "language": "bengali",
+            "type": "stemmer"
+        },
+        "bengali_stop": {
+            "stopwords": "_bengali_",
+            "type": "stop"
+        },
+        "bs_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u0110\u0111\u017d\u017e\u0106\u0107\u0160\u0161\u010c\u010d]"
         },
         "catalan_elision": {
             "articles": [
@@ -1652,18 +1717,6 @@
             "stopwords": "_dutch_",
             "type": "stop"
         },
-        "el_icu_folding": {
-            "type": "icu_folding"
-        },
-        "en-ca_icu_folding": {
-            "type": "icu_folding"
-        },
-        "en-gb_icu_folding": {
-            "type": "icu_folding"
-        },
-        "en_icu_folding": {
-            "type": "icu_folding"
-        },
         "eo_icu_folding": {
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u0108\u0109\u011c\u011d\u0124\u0125\u0134\u0135\u015c\u015d\u016c\u016d]"
@@ -1687,9 +1740,6 @@
         "finnish_stop": {
             "stopwords": "_finnish_",
             "type": "stop"
-        },
-        "fr_icu_folding": {
-            "type": "icu_folding"
         },
         "french_elision": {
             "articles": [
@@ -1717,9 +1767,6 @@
         "french_stop": {
             "stopwords": "_french_",
             "type": "stop"
-        },
-        "ga_icu_folding": {
-            "type": "icu_folding"
         },
         "ga_lowercase": {
             "language": "irish",
@@ -1753,12 +1800,6 @@
             "stopwords": "_greek_",
             "type": "stop"
         },
-        "he_icu_folding": {
-            "type": "icu_folding"
-        },
-        "hi_icu_folding": {
-            "type": "icu_folding"
-        },
         "hindi_stemmer": {
             "language": "hindi",
             "type": "stemmer"
@@ -1767,9 +1808,12 @@
             "stopwords": "_hindi_",
             "type": "stop"
         },
-        "icu_folding": {
+        "hr_icu_folding": {
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u0110\u0111\u017d\u017e\u0106\u0107\u0160\u0161\u010c\u010d]"
+        },
+        "icu_folding": {
+            "type": "icu_folding"
         },
         "icu_normalizer": {
             "name": "nfkc_cf",
@@ -1809,9 +1853,6 @@
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u00c6\u00e6\u00d8\u00f8\u00c5\u00e5]"
         },
-        "nl_icu_folding": {
-            "type": "icu_folding"
-        },
         "nn_icu_folding": {
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u00c6\u00e6\u00d8\u00f8\u00c5\u00e5]"
@@ -1836,18 +1877,13 @@
             "language": "possessive_english",
             "type": "stemmer"
         },
-        "pt_icu_folding": {
-            "type": "icu_folding"
-        },
         "remove_empty": {
             "min": 1,
             "type": "length"
         },
-        "simple_icu_folding": {
-            "type": "icu_folding"
-        },
-        "sk_icu_folding": {
-            "type": "icu_folding"
+        "sh_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u0110\u0111\u017d\u017e\u0106\u0107\u0160\u0161\u010c\u010d]"
         },
         "spanish_stemmer": {
             "language": "light_spanish",
@@ -1856,6 +1892,10 @@
         "spanish_stop": {
             "stopwords": "_spanish_",
             "type": "stop"
+        },
+        "sr_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u0110\u0111\u017d\u017e\u0106\u0107\u0160\u0161\u010c\u010d]"
         },
         "sv_icu_folding": {
             "type": "icu_folding",

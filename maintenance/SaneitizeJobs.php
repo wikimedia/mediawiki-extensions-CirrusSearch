@@ -289,9 +289,13 @@ EOD
 	}
 
 	private function initProfile() {
-		$res =
-			$this->getDB( DB_REPLICA )
-				->select( 'page', [ 'MIN(page_id) as min_id', 'MAX(page_id) as max_id' ], [], __METHOD__ );
+		$res = $this->getDB( DB_REPLICA )
+			->newSelectQueryBuilder()
+			->table( 'page' )
+			->select( [ 'MIN(page_id) as min_id', 'MAX(page_id) as max_id' ] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
 		$row = $res->fetchObject();
 		$this->minId = $row->min_id;
 		$this->maxId = $row->max_id;

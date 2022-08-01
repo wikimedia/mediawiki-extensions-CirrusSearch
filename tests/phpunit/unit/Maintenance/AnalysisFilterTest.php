@@ -29,7 +29,7 @@ class AnalysisFilterTest extends CirrusTestCase {
 				'example_type' => [
 					'properties' => [
 						'title' => [
-							'analyzer' => 'world'
+							'search_analyzer' => 'world'
 						],
 					],
 				],
@@ -73,7 +73,7 @@ class AnalysisFilterTest extends CirrusTestCase {
 					],
 				],
 			] ],
-			'read subproperty analyzer' => [ [ 'filtered' ], [
+			'read subproperty search analyzer' => [ [ 'filtered' ], [
 				'example_type' => [
 					'properties' => [
 						'title' => [

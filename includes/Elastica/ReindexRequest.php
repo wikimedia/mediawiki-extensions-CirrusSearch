@@ -6,7 +6,6 @@ use Elastica\Client;
 use Elastica\Index;
 use Elastica\Request;
 use Elastica\Response;
-use Elastica\Type;
 use InvalidArgumentException;
 
 class ReindexRequest {
@@ -26,15 +25,15 @@ class ReindexRequest {
 	private $client;
 
 	/**
-	 * @param Index|Type $source
-	 * @param Index|Type $dest
+	 * @param Index $source
+	 * @param Index $dest
 	 * @param int $chunkSize
 	 */
-	public function __construct( $source, $dest, $chunkSize = 100 ) {
+	public function __construct( Index $source, Index $dest, $chunkSize = 100 ) {
 		$this->source = $this->asSourceDest( $source );
 		$this->source['size'] = $chunkSize;
 		$this->dest = $this->asSourceDest( $dest );
-		$this->client = ( $dest instanceof Type ? $dest->getIndex() : $dest )->getClient();
+		$this->client = $dest->getClient();
 	}
 
 	/**
@@ -140,17 +139,12 @@ class ReindexRequest {
 	}
 
 	/**
-	 * @param Index|Type $input
+	 * @param Index $input
 	 * @return array
 	 * @throws InvalidArgumentException
 	 */
-	private function asSourceDest( $input ) {
-		if ( $input instanceof Index ) {
-			return [ 'index' => $input->getName() ];
-		} elseif ( $input instanceof Type ) {
-			return [ 'index' => $input->getIndex()->getName(), 'type' => $input->getName() ];
-		} else {
-			throw new \InvalidArgumentException( '$input must be Index|Type, got ' . get_class( $input ) );
-		}
+	private function asSourceDest( Index $input ) {
+		return [ 'index' => $input->getName() ];
 	}
+
 }

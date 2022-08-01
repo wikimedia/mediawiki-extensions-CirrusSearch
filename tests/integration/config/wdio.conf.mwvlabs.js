@@ -17,6 +17,7 @@ exports.config = merge( wdioConf.config, {
 			}
 		]
 	],
+	baseUrl: 'https://cirrustest-' + process.env.MWV_LABS_HOSTNAME + '.wmflabs.org',
 	wikis: {
 		cirrustest: {
 			apiUrl: 'https://cirrustest-' + process.env.MWV_LABS_HOSTNAME + '.wmflabs.org/w/api.php',

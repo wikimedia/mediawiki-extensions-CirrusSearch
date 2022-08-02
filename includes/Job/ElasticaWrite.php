@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Job;
 
+use CirrusSearch\ClusterSettings;
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
 use MediaWiki\Logger\LoggerFactory;
@@ -41,18 +42,40 @@ class ElasticaWrite extends CirrusGenericJob {
 	];
 
 	/**
-	 * @param string $cluster
+	 * @param ClusterSettings $cluster
 	 * @param string $method
 	 * @param array $arguments
 	 * @param array $params
 	 * @return ElasticaWrite
 	 */
-	public static function build( string $cluster, string $method, array $arguments, array $params = [] ) {
+	public static function build( ClusterSettings $cluster, string $method, array $arguments, array $params = [] ) {
 		return new self( [
 			'method' => $method,
 			'arguments' => self::serde( $method, $arguments ),
-			'cluster' => $cluster,
+			'cluster' => $cluster->getName(),
+			// This does not directly partition the jobs, it only provides a value
+			// to use during partitioning. The job queue must be separately
+			// configured to utilize this value.
+			'jobqueue_partition' => self::partitioningKey( $cluster ),
 		] + $params );
+	}
+
+	/**
+	 * Generate a cluster specific partitioning key
+	 *
+	 * Some job queue implementations, such as cpjobqueue, can partition the
+	 * execution of jobs based on a parameter of the job. By default we
+	 * provide one partition per cluster, but allow to configure multiple
+	 * partitions per cluster if more throughput is necessary. Within a
+	 * single cluster jobs are distributed randomly.
+	 *
+	 * @param ClusterSettings $settings
+	 * @return string A value suitable for partitioning jobs per-cluster
+	 */
+	private static function partitioningKey( ClusterSettings $settings ): string {
+		$numPartitions = $settings->getElasticaWritePartitionCount();
+		$partition = mt_rand() % $numPartitions;
+		return "{$settings->getName()}-{$partition}";
 	}
 
 	private static function serde( $method, array $arguments, $serialize = true ) {

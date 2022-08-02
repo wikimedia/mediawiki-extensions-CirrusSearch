@@ -170,6 +170,10 @@
 		"CirrusSearchWriteIsolateClusters": {
 			"value": null
 		},
+		"CirrusSearchElasticaWritePartitionCounts": {
+			"description": "Mapping from writable cluster name to number of partitions. Defaults to 1 if not set.",
+			"value": []
+		},
 		"CirrusSearchPrivateClusters": {
 			"value": null
 		},

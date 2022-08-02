@@ -447,9 +447,7 @@ class ForceSearchIndex extends Maintenance {
 		$it = new BatchRowIterator( $dbr, $pageQuery['tables'], 'page_id', $this->getBatchSize() );
 		$it->setFetchColumns( $pageQuery['fields'] );
 		$it->addJoinConditions( $pageQuery['joins'] );
-		$it->addConditions( [
-			'page_id in (' . $dbr->makeList( $this->pageIds, LIST_COMMA ) . ')',
-		] );
+		$it->addConditions( [ 'page_id' => $this->pageIds ] );
 		$it->setCaller( __METHOD__ );
 		$this->attachPageConditions( $dbr, $it, 'page' );
 

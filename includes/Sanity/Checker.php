@@ -325,9 +325,9 @@ class Checker {
 		$pageQuery = WikiPage::getQueryInfo();
 
 		$res = $dbr->newSelectQueryBuilder()
-			->tables( $pageQuery['tables'] )
 			->select( $pageQuery['fields'] )
-			->where( 'page_id IN (' . $dbr->makeList( $pageIds ) . ')' )
+			->tables( $pageQuery['tables'] )
+			->where( [ 'page_id' => $pageIds ] )
 			->caller( __METHOD__ )
 			->joinConds( $pageQuery['joins'] )
 			->fetchResultSet();

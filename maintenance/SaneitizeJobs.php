@@ -291,8 +291,8 @@ EOD
 	private function initProfile() {
 		$res = $this->getDB( DB_REPLICA )
 			->newSelectQueryBuilder()
+			->select( [ 'min_id' => 'MIN(page_id)', 'max_id' => 'MAX(page_id)' ] )
 			->table( 'page' )
-			->select( [ 'MIN(page_id) as min_id', 'MAX(page_id) as max_id' ] )
 			->caller( __METHOD__ )
 			->fetchResultSet();
 

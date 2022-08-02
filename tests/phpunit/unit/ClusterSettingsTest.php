@@ -26,6 +26,12 @@ class ClusterSettingsTest extends CirrusTestCase {
 		];
 	}
 
+	public function testReturnsProvidedClusterName() {
+		$cluster = 'some-name';
+		$settings = new ClusterSettings( new HashSearchConfig( [] ), $cluster );
+		$this->assertEquals( $cluster, $settings->getName() );
+	}
+
 	/**
 	 * @dataProvider provideShardCount
 	 */
@@ -192,5 +198,72 @@ class ClusterSettingsTest extends CirrusTestCase {
 		] );
 		$settings = new ClusterSettings( $config, $cluster );
 		$this->assertEquals( $expected, $settings->isPrivateCluster() );
+	}
+
+	public function provideIsolation() {
+		return [
+			'null value isolates everything' => [
+				'expected' => true,
+				'cluster' => 'arbitrary-name',
+				'isolateClusters' => null
+			],
+			'When configured with no named clusters unnamed clusters are not isolated' => [
+				'expected' => false,
+				'cluster' => 'unnamed',
+				'isolateClusters' => []
+			],
+			'When configured with named clusters unnamed clusters are not isolated' => [
+				'expected' => false,
+				'cluster' => 'unnamed',
+				'isolateClusters' => [ 'arbitrary-name' ]
+			],
+			'Named clusters are write isolated' => [
+				'expected' => true,
+				'cluster' => 'arbitrary-name',
+				'isolateClusters' => [ 'arbitrary-name' ]
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideIsolation
+	 */
+	public function testIsIsolated( $expected, $cluster, $isolateClusters ) {
+		$config = new HashSearchConfig( [
+			'CirrusSearchWriteIsolateClusters' => $isolateClusters,
+		] );
+		$settings = new ClusterSettings( $config, $cluster );
+		$this->assertEquals( $expected, $settings->isIsolated() );
+	}
+
+	public function provideElasticaWritePartitionCount() {
+		return [
+			'unnamed clusters default to 1' => [
+				'expected' => 1,
+				'cluster' => 'unnamed-cluster',
+				'partitionCount' => []
+			],
+			'unnamed clusters default to 1 (part duex)' => [
+				'expected' => 1,
+				'cluster' => 'unnamed-cluster',
+				'partitionCount' => [ 'arbitrary-cluster' => 4 ]
+			],
+			'named clusters receive provided value' => [
+				'expected' => 3,
+				'cluster' => 'named-cluster',
+				'partitionCount' => [ 'named-cluster' => 3 ],
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideElasticaWritePartitionCount
+	 */
+	public function testElasticaWritePartitionCount( $expected, $cluster, $partitionCount ) {
+		$config = new HashSearchConfig( [
+			'CirrusSearchElasticaWritePartitionCounts' => $partitionCount,
+		] );
+		$settings = new ClusterSettings( $config, $cluster );
+		$this->assertEquals( $expected, $settings->getElasticaWritePartitionCount() );
 	}
 }

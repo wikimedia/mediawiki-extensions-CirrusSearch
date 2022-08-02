@@ -212,7 +212,7 @@ class Updater extends ElasticsearchIntermediary {
 
 		$count = 0;
 		foreach ( $allDocuments as $indexSuffix => $documents ) {
-			$this->pushElasticaWriteJobs( $documents, static function ( array $chunk, string $cluster ) use ( $indexSuffix ) {
+			$this->pushElasticaWriteJobs( $documents, static function ( array $chunk, ClusterSettings $cluster ) use ( $indexSuffix ) {
 				return Job\ElasticaWrite::build(
 					$cluster,
 					'sendData',
@@ -238,7 +238,7 @@ class Updater extends ElasticsearchIntermediary {
 		Assert::precondition( $page->exists(), "page must exist" );
 		$docId = $this->connection->getConfig()->makeId( $page->getId() );
 		$indexSuffix = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
-		$this->pushElasticaWriteJobs( [ $docId ], static function ( array $docIds, string $cluster ) use (
+		$this->pushElasticaWriteJobs( [ $docId ], static function ( array $docIds, ClusterSettings $cluster ) use (
 			$docId, $indexSuffix, $tagField, $tagPrefix, $tagNames, $tagWeights
 		) {
 			$tagWeights = ( $tagWeights === null ) ? null : [ $docId => $tagWeights ];
@@ -260,7 +260,7 @@ class Updater extends ElasticsearchIntermediary {
 		$docId = $this->connection->getConfig()->makeId( $page->getId() );
 		$indexSuffix = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
 		$this->pushElasticaWriteJobs( [ $docId ], static function (
-			array $docIds, string $cluster
+			array $docIds, ClusterSettings $cluster
 		) use ( $indexSuffix, $tagField, $tagPrefix ) {
 			return Job\ElasticaWrite::build(
 				$cluster,
@@ -289,7 +289,7 @@ class Updater extends ElasticsearchIntermediary {
 		$batchSize = 50;
 		$this->pushElasticaWriteJobs(
 			$docIds,
-			static function ( array $chunk, string $cluster ) use ( $indexSuffix, $writeJobParams ) {
+			static function ( array $chunk, ClusterSettings $cluster ) use ( $indexSuffix, $writeJobParams ) {
 				return Job\ElasticaWrite::build(
 					$cluster,
 					'sendDeletes',
@@ -314,7 +314,7 @@ class Updater extends ElasticsearchIntermediary {
 			return true;
 		}
 		$docs = $this->buildArchiveDocuments( $archived );
-		$this->pushElasticaWriteJobs( $docs, static function ( array $chunk, string $cluster ) {
+		$this->pushElasticaWriteJobs( $docs, static function ( array $chunk, ClusterSettings $cluster ) {
 			return Job\ElasticaWrite::build(
 				$cluster,
 				'sendData',
@@ -427,7 +427,7 @@ class Updater extends ElasticsearchIntermediary {
 		// Elasticsearch has a queue capacity of 50 so if $documents contains 50 pages it could bump up
 		// against the max.  So we chunk it and do them sequentially.
 		$jobs = [];
-		$isolate = $this->connection->getConfig()->get( 'CirrusSearchWriteIsolateClusters' );
+		$config = $this->connection->getConfig();
 		$clusters = $this->elasticaWriteClusters();
 
 		foreach ( array_chunk( $items, $batchSize ) as $chunked ) {
@@ -438,8 +438,9 @@ class Updater extends ElasticsearchIntermediary {
 			// be run in-process. Any failures will queue themselves for later
 			// execution.
 			foreach ( $clusters as $cluster ) {
-				$job = $factory( $chunked, $cluster );
-				if ( $isolate === null || in_array( $cluster, $isolate ) ) {
+				$clusterSettings = new ClusterSettings( $config, $cluster );
+				$job = $factory( $chunked, $clusterSettings );
+				if ( $clusterSettings->isIsolated() ) {
 					$jobs[] = $job;
 				} else {
 					$job->run();

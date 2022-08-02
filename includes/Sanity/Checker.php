@@ -329,7 +329,7 @@ class Checker {
 			->select( $pageQuery['fields'] )
 			->where( 'page_id IN (' . $dbr->makeList( $pageIds ) . ')' )
 			->caller( __METHOD__ )
-			->join( $pageQuery['joins'] )
+			->joinConds( $pageQuery['joins'] )
 			->fetchResultSet();
 
 		$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();

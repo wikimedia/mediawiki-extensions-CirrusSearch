@@ -1057,6 +1057,22 @@ class AnalysisConfigBuilder {
 		case 'turkish':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
 			break;
+		case 'nias':
+			$config[ 'char_filter' ][ 'apostrophe_norm' ] =
+				AnalyzerBuilder::mappingCharFilter( [
+					"‘=>'",
+					"’=>'",
+					"`=>'",
+					"ʼ=>'",
+					"ʿ=>'",
+					"ʾ=>'",
+				] );
+
+			$config = ( new AnalyzerBuilder( $langName ) )->
+				withFilters( [ 'lowercase' ] )->
+				withCharFilters( [ 'apostrophe_norm' ] )->
+				build( $config );
+			break;
 		default:
 			// do nothing--default config is already set up
 			break;
@@ -1378,6 +1394,7 @@ class AnalysisConfigBuilder {
 		'ms' => 'malay',
 		'mwl' => 'mirandese',
 		'nb' => 'norwegian',
+		'nia' => 'nias',
 		'nn' => 'norwegian',
 		'fa' => 'persian',
 		'pt' => 'portuguese',

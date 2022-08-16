@@ -8,6 +8,7 @@ use CirrusSearch\ExternalIndex;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -127,9 +128,10 @@ trait JobTraits {
 	 * @return bool
 	 */
 	public function run() {
-		if ( $this->getSearchConfig()->get( 'DisableSearchUpdate' ) ||
+		if ( $this->getSearchConfig()->get( MainConfigNames::DisableSearchUpdate ) ||
 			$this->getSearchConfig()->get( 'CirrusSearchDisableUpdate' )
 		) {
+			LoggerFactory::getInstance( 'CirrusSearch' )->debug( "Skipping job: search updates disabled by config" );
 			return true;
 		}
 

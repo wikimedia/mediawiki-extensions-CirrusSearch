@@ -81,8 +81,33 @@ clusters. If not set all clusters will be isolated from each other. Limiting
 isolation to only clusters that may have issues will result in reduced job
 queue load.
 
+Write Isolation also requires configuration of the chosen job queue to
+partition the created ElasticaWrite jobs by their `jobqueue_partition` job
+parameter. If the job queue is not configured for this purpose no write
+isolation will occur. Each unique value of `jobqueue_partition` should go
+into it's own partition. See CirrusSearchElasticaWritePartitionCounts for
+more information on expected values of `jobqueue_partition`.
+
 Default:
 	$wgCirrusSearchWriteIsolateClusters = null;
+
+; CirrusSearchElasticaWritePartitionCounts
+
+Defines the number of partitions to use when generating a partitioning key for
+the ElasticaWrite jobs that implement write isolation. This allows for
+increased throughput in cases where a single partition is not able to process
+all the jobs that are inserted into it.
+
+The array key must be set to the cluster name with the value as an integer
+specifying the number of partitions. If a cluster is not named it receives a
+value of 1. The resulting `jobqueue_partition` value will be formatted as
+`<cluster_name>-<partition_number>`. For example in a cluster named `aslan`
+configured with a partition count of 2 the possible values will be `aslan-0`
+and `aslan-1`. If the `aslan` cluster is not configured here it receives the
+default value of 1 which results in a `jobqueue_partition` of `aslan-0`.
+
+Default:
+    $wgCirrusSearchElasticaWritePartitionCounts = [];
 
 ; $wgCirrusSearchPrivateClusters
 
@@ -145,7 +170,7 @@ Default:
 
 Number of replicas Elasticsearch can expand or contract to. This allows for
 easy development and deployment to a single node (0 replicas) to scale up to
-higher levels of replication. You if you need more redundancy you could
+higher levels of replication. If you need more redundancy you could
 adjust this to '0-10' or '0-all' or even 'false' (string, not boolean) to
 disable the behavior entirely. The default should be fine for most people.
 
@@ -1614,3 +1639,20 @@ Example:
     'related_terms' => 'short_text',
     'popularity' => 'number'
   ];
+
+; $wgCirrusSearchExtraFieldsInSearchResults
+
+Default:
+  $wgCirrusSearchExtraFieldsInSearchResults = [];
+
+Defines additional fields to be populated in query results by default (e.g. for example in native query=search API query).
+This fields would be populated in extensiondata prop, see here https://en.wikipedia.org/w/api.php?action=help&modules=query%2Bsearch, srprop
+You need to add those fields to the index, either by $wgCirrusSearchCustomPageFields or by SearchIndexFields hook
+
+Example:
+  $wgCirrusSearchExtraFieldsInSearchResults = [
+    'authors',
+    'last_editor',
+  ];
+
+

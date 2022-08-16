@@ -159,15 +159,15 @@ class DataSender extends ElasticsearchIntermediary {
 			try {
 				$this->start( new BulkUpdateRequestLog( $this->connection->getClient(),
 					'updating {numBulk} documents',
-					'send_data_reset_weighted_tags' ) );
+					'send_data_reset_weighted_tags',
+					[ 'numBulk' => count( $docIdsChunk ), 'index' => $pageIndex->getName() ]
+				) );
 				$bulk->send();
-			}
-			catch ( ResponseException $e ) {
+			} catch ( ResponseException $e ) {
 				if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e ) ) {
 					$exception = $e;
 				}
-			}
-			catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$exception = $e;
 			}
 			if ( $exception === null ) {
@@ -294,7 +294,8 @@ class DataSender extends ElasticsearchIntermediary {
 			$this->start( new BulkUpdateRequestLog(
 				$this->connection->getClient(),
 				'sending {numBulk} documents to the {index} index(s)',
-				'send_data_write'
+				'send_data_write',
+				[ 'numBulk' => count( $documents ), 'index' => $pageIndex->getName() ]
 			) );
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
 			$bulk->setShardTimeout( $this->searchConfig->get( 'CirrusSearchUpdateShardTimeout' ) );
@@ -352,6 +353,24 @@ class DataSender extends ElasticsearchIntermediary {
 			$logContext = [ 'docId' => implode( ', ', $documentIds ) ];
 			if ( $exception ) {
 				$logContext['exception'] = $exception;
+			} else {
+				// we want to figure out error_massage from the responseData log, because
+				// error_message is currently not set when exception is null and response is not
+				// valid
+				$responseData = $responseSet->getData();
+				$responseDataString = json_encode( $responseData );
+
+				// in logstash some error_message seems to be empty we are assuming its due to
+				// non UTF-8 sequences in the response data causing the json_encode to return empty
+				// string,so we added a logic to validate the assumption
+				if ( json_last_error() === JSON_ERROR_UTF8 ) {
+					$responseDataString =
+						json_encode( $this->convertEncoding( $responseData ) );
+				} elseif ( json_last_error() !== JSON_ERROR_NONE ) {
+					$responseDataString = json_last_error_msg();
+				}
+
+				$logContext['error_message'] = mb_substr( $responseDataString, 0, 4096 );
 			}
 			$this->failedLog->warning(
 				'Failed to update documents {docId}',
@@ -488,8 +507,9 @@ class DataSender extends ElasticsearchIntermediary {
 				$this->start( new BulkUpdateRequestLog(
 					$this->connection->getClient(),
 					'updating {numBulk} documents in other indexes',
-					'send_data_other_idx_write'
-				) );
+					'send_data_other_idx_write',
+						[ 'numBulk' => count( $updates ), 'index' => $indexName ]
+					) );
 				$bulk->send();
 			} catch ( ResponseException $e ) {
 				if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e ) ) {
@@ -522,7 +542,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @return string The set action to be performed. Either 'add' or 'remove'
 	 */
 	protected function decideRequiredSetAction( Title $title ) {
-		$page = new WikiPage( $title );
+		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
 		$page->loadPageData( WikiPage::READ_LATEST );
 		if ( $page->exists() ) {
 			return 'add';
@@ -640,4 +660,17 @@ class DataSender extends ElasticsearchIntermediary {
 		return $this->searchConfig->get(
 			'CirrusSearchUpdateConflictRetryCount' );
 	}
+
+	private function convertEncoding( $d ) {
+		if ( is_string( $d ) ) {
+			return mb_convert_encoding( $d, 'UTF-8', 'UTF-8' );
+		}
+
+		foreach ( $d as &$v ) {
+			$v = $this->convertEncoding( $v );
+		}
+
+		return $d;
+	}
+
 }

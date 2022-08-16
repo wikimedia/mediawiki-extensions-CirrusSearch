@@ -5,7 +5,7 @@ namespace CirrusSearch;
 /**
  * @covers \CirrusSearch\Version
  */
-class VersionTest extends CirrusTestCase {
+class VersionTest extends CirrusIntegrationTestCase {
 	public function testHappyPath() {
 		$response = $this->returnValue( new \Elastica\Response( json_encode( [
 			'name' => 'testhost',

@@ -213,6 +213,7 @@
                                 "filter": [
                                     {
                                         "bool": {
+                                            "minimum_should_match": 1,
                                             "should": [
                                                 {
                                                     "match": {
@@ -234,6 +235,7 @@
                                         }
                                     }
                                 ],
+                                "minimum_should_match": 0,
                                 "should": [
                                     {
                                         "dis_max": {
@@ -689,6 +691,7 @@
                                 "filter": [
                                     {
                                         "bool": {
+                                            "minimum_should_match": 1,
                                             "should": [
                                                 {
                                                     "match": {
@@ -710,6 +713,7 @@
                                         }
                                     }
                                 ],
+                                "minimum_should_match": 0,
                                 "should": [
                                     {
                                         "dis_max": {
@@ -1125,6 +1129,7 @@
                                 "filter": [
                                     {
                                         "bool": {
+                                            "minimum_should_match": 1,
                                             "should": [
                                                 {
                                                     "match": {
@@ -1146,6 +1151,7 @@
                                         }
                                     }
                                 ],
+                                "minimum_should_match": 0,
                                 "should": [
                                     {
                                         "dis_max": {
@@ -1564,6 +1570,7 @@
                                             "must": [
                                                 {
                                                     "bool": {
+                                                        "minimum_should_match": 1,
                                                         "should": [
                                                             {
                                                                 "match": {
@@ -1586,6 +1593,7 @@
                                                 },
                                                 {
                                                     "bool": {
+                                                        "minimum_should_match": 1,
                                                         "should": [
                                                             {
                                                                 "match": {
@@ -1610,6 +1618,7 @@
                                         }
                                     }
                                 ],
+                                "minimum_should_match": 0,
                                 "should": [
                                     {
                                         "dis_max": {

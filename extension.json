@@ -115,6 +115,7 @@
 	"Hooks": {
 		"APIAfterExecute": "CirrusSearch\\Hooks::onAPIAfterExecute",
 		"ApiBeforeMain": "CirrusSearch\\Hooks::onApiBeforeMain",
+		"APIQuerySiteInfoStatisticsInfo": "CirrusSearch\\Hooks::onAPIQuerySiteInfoStatisticsInfo",
 		"ArticleDelete": "CirrusSearch\\Hooks::onArticleDelete",
 		"ArticleDeleteComplete": "CirrusSearch\\Hooks::onArticleDeleteComplete",
 		"ArticleRevisionVisibilitySet": "CirrusSearch\\Hooks::onRevisionDelete",
@@ -168,6 +169,10 @@
 		},
 		"CirrusSearchWriteIsolateClusters": {
 			"value": null
+		},
+		"CirrusSearchElasticaWritePartitionCounts": {
+			"description": "Mapping from writable cluster name to number of partitions. Defaults to 1 if not set.",
+			"value": []
 		},
 		"CirrusSearchPrivateClusters": {
 			"value": null
@@ -685,6 +690,10 @@
 		},
 		"CirrusSearchCustomPageFields": {
 			"description": "Defines additional custom fields for page indexes",
+			"value": []
+		},
+		"CirrusSearchExtraFieldsInSearchResults": {
+			"description": "Defines extra fields to add to each result",
 			"value": []
 		}
 	},

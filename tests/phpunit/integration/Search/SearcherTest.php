@@ -20,6 +20,7 @@ use Title;
  */
 class SearcherTest extends CirrusIntegrationTestCase {
 	use LinkCacheTestTrait;
+	use CirrusTestCaseTrait;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -241,7 +242,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'archiveSearch/*.query' ) as $queryFile ) {
 			$testName = substr( basename( $queryFile ), 0, -6 );
-			$query = file_get_contents( CirrusTestCaseTrait::$FIXTURE_DIR . $queryFile );
+			$query = file_get_contents( self::$FIXTURE_DIR . $queryFile );
 			// Remove trailing newline
 			$query = preg_replace( '/\n$/', '', $query );
 			$expectedFile = substr( $queryFile, 0, -5 ) . 'expected';

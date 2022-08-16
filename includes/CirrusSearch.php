@@ -189,6 +189,10 @@ class CirrusSearch extends SearchEngine {
 				return \Sanitizer::escapeIdForLink( $v );
 			}
 		);
+		$extraFieldsInSearchResults = $this->config->get( 'CirrusSearchExtraFieldsInSearchResults' );
+		if ( $extraFieldsInSearchResults ) {
+			$this->features[ self::EXTRA_FIELDS_TO_EXTRACT ] = $extraFieldsInSearchResults;
+		}
 	}
 
 	public function setConnection( Connection $connection ) {
@@ -255,7 +259,8 @@ class CirrusSearch extends SearchEngine {
 			->setAllowRewrite( $this->isFeatureEnabled( 'rewrite' ) )
 			->addProfileContextParameter( ContextualProfileOverride::LANGUAGE,
 				$this->requestContext->getLanguage()->getCode() )
-			->setExtraFieldsToExtract( $this->features[self::EXTRA_FIELDS_TO_EXTRACT] ?? [] );
+			->setExtraFieldsToExtract( $this->features[self::EXTRA_FIELDS_TO_EXTRACT] ?? [] )
+			->setProvideAllSnippets( !empty( $this->features['snippets'] ) );
 
 		if ( $this->prefix !== '' ) {
 			$builder->addContextualFilter( 'prefix',
@@ -357,15 +362,22 @@ class CirrusSearch extends SearchEngine {
 		}
 		$suggester = new CompletionSuggester( $connection, $this->limit,
 				$this->offset, $config, $this->namespaces, null,
-				false, $profile );
+				false, $profile, $this->debugOptions );
 
 		$response = $suggester->suggest( $search, $variants );
-		if ( $response->isOK() ) {
-			// Errors will be logged, let's try the exact db match
-			return $response->getValue();
-		} else {
+
+		if ( !$response->isOK() ) {
 			return SearchSuggestionSet::emptySuggestionSet();
 		}
+
+		$result = $response->getValue();
+
+		if ( $this->debugOptions->isReturnRaw() ) {
+			Util::processSearchRawReturn( $result, $this->request, $this->debugOptions );
+		}
+
+		// Errors will be logged, let's try the exact db match
+		return $result;
 	}
 
 	/**
@@ -476,6 +488,10 @@ class CirrusSearch extends SearchEngine {
 		// only sending results back if there are results and relying on the logging done at the status
 		// construction site to log errors.
 		if ( $status->isOK() ) {
+			if ( $this->debugOptions->isReturnRaw() ) {
+				Util::processSearchRawReturn( $status->getValue(), $this->request,
+					$this->debugOptions );
+			}
 			if ( !$search ) {
 				// No need to unpack the simple title matches from non-fancy TitleResultsType
 				return SearchSuggestionSet::fromTitles( $status->getValue() );

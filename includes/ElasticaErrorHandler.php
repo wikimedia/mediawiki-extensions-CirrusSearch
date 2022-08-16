@@ -135,9 +135,13 @@ class ElasticaErrorHandler {
 					'^search_parse_exception$',
 					'^query_shard_exception$',
 					'^illegal_argument_exception$',
-					'^too_many_clauses$'
+					'^too_many_clauses$',
+					'^parsing_exception$',
+					'^parse_exception$',
+					'^script_exception$',
 				],
-				'msg_regexes' => [],
+				'msg_regexes' => [
+				],
 			],
 			'failed' => [
 				'type_regexes' => [
@@ -145,16 +149,20 @@ class ElasticaErrorHandler {
 					'^remote_transport_exception$',
 					'^search_context_missing_exception$',
 					'^null_pointer_exception$',
-					'^elasticsearch_timeout_exception$'
+					'^elasticsearch_timeout_exception$',
+					'^retry_on_primary_exception$',
+					'^index_not_found_exception$',
 				],
 				// These are exceptions thrown by elastica itself
 				'msg_regexes' => [
 					'^Couldn\'t connect to host',
 					'^No enabled connection',
 					'^Operation timed out',
+					'^Status code 503',
 				],
 			],
 		];
+
 		foreach ( $heuristics as $type => $heuristic ) {
 			$regex = implode( '|', $heuristic['type_regexes'] );
 			if ( $regex && preg_match( "/$regex/", $error['type'] ) ) {
@@ -245,6 +253,16 @@ class ElasticaErrorHandler {
 			];
 		}
 
+		if ( $cause['type'] === 'script_exception' ) {
+			// do not use $cause which won't contain the caused_by chain
+			$formattedMessage = self::formatMessage( $error['caused_by'] );
+			$formattedMessage .= "\n\t" . implode( "\n\t", $cause['script_stack'] ) . "\n";
+			return [
+				Status::newFatal( 'cirrussearch-backend-error' ),
+				$formattedMessage
+			];
+		}
+
 		if ( preg_match( '/(^|_)regex_/', $cause['type'] ) ) {
 			$syntaxError = $cause['reason'];
 			$errorMessage = 'unknown';
@@ -280,6 +298,9 @@ class ElasticaErrorHandler {
 	/**
 	 * Takes an error and converts it into a useful message. Mostly this is to deal with
 	 * errors where the useful part is hidden inside a caused_by chain.
+	 * WARNING: In some circumstances, like bulk update failures, this could be multiple
+	 * megabytes.
+	 *
 	 * @param array $error An error array, such as the one returned by extractFullError().
 	 * @return string
 	 */

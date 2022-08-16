@@ -225,6 +225,7 @@
                                 "filter": [
                                     {
                                         "bool": {
+                                            "minimum_should_match": 1,
                                             "should": [
                                                 {
                                                     "match": {
@@ -246,6 +247,7 @@
                                         }
                                     }
                                 ],
+                                "minimum_should_match": 0,
                                 "should": [
                                     {
                                         "dis_max": {

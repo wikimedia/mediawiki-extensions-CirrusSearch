@@ -32,6 +32,7 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Не исправља грешке у куцању. Решава блиска преусмерења.",
 	"cirrussearch-completion-profile-classic-pref-name": "Класична претрага по префиксу",
 	"cirrussearch-completion-profile-classic-pref-desc": "Не исправља грешке у куцању. Тражи почетке наслова.",
+	"cirrussearch-regex-timed-out": "Истекло је време за извршење претраге с регуларним изразом. Доступан је само део резултата. Поједноставите израз да бисте видели више ставки.",
 	"cirrussearch-explore-similar-related": "Повезано",
 	"cirrussearch-explore-similar-categories": "Категорије",
 	"cirrussearch-explore-similar-languages": "Језици",

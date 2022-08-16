@@ -109,6 +109,11 @@ class SearchQuery {
 	private $extraFieldsToExtract;
 
 	/**
+	 * @var bool
+	 */
+	private $provideAllSnippets;
+
+	/**
 	 * @param ParsedQuery $parsedQuery
 	 * @param int[] $initialNamespaces
 	 * @param CrossSearchStrategy $initialCrosswikiStrategy
@@ -125,6 +130,7 @@ class SearchQuery {
 	 * @param bool $allowRewrite
 	 * @param string[] $profileContextParameters
 	 * @param string[] $extraFieldsToExtract
+	 * @param bool $provideAllSnippets
 	 * @see SearchQueryBuilder
 	 */
 	public function __construct(
@@ -143,7 +149,8 @@ class SearchQuery {
 		$withDYMSuggestion,
 		$allowRewrite,
 		array $profileContextParameters,
-		array $extraFieldsToExtract
+		array $extraFieldsToExtract,
+		bool $provideAllSnippets
 	) {
 		$this->parsedQuery = $parsedQuery;
 		$this->initialNamespaces = $initialNamespaces;
@@ -161,6 +168,7 @@ class SearchQuery {
 		$this->allowRewrite = $allowRewrite;
 		$this->profileContextParameters = $profileContextParameters;
 		$this->extraFieldsToExtract = $extraFieldsToExtract;
+		$this->provideAllSnippets = $provideAllSnippets;
 	}
 
 	/**
@@ -339,5 +347,12 @@ class SearchQuery {
 	 */
 	public function getExtraFieldsToExtract(): array {
 		return $this->extraFieldsToExtract;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function shouldProvideAllSnippets(): bool {
+		return $this->provideAllSnippets;
 	}
 }

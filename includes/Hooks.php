@@ -155,7 +155,7 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	 */
 	private static function overrideMinimumShouldMatch( &$dest, WebRequest $request, $name ) {
 		$val = $request->getVal( $name );
-		if ( self::isMinimumShouldMatch( $val ) ) {
+		if ( $val !== null && self::isMinimumShouldMatch( $val ) ) {
 			$dest = $val;
 		}
 	}
@@ -260,7 +260,7 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	 * @return bool True if $v is an integer percentage in the domain -100 <= $v <= 100, $v != 0
 	 * @todo minimum_should_match also supports combinations (3<90%) and multiple combinations
 	 */
-	private static function isMinimumShouldMatch( $v ) {
+	private static function isMinimumShouldMatch( string $v ) {
 		// specific integer count > 0
 		if ( ctype_digit( $v ) && $v != 0 ) {
 			return true;
@@ -774,6 +774,23 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 		] );
 	}
 
+	/**
+	 * @param array &$extraStats
+	 * @return void
+	 */
+	private static function addWordCount( array &$extraStats ): void {
+		$search = new CirrusSearch();
+
+		$status = $search->countContentWords();
+		if ( !$status->isOK() ) {
+			return;
+		}
+		$wordCount = $status->getValue();
+		if ( $wordCount !== null ) {
+			$extraStats['cirrussearch-article-words'] = $wordCount;
+		}
+	}
+
 	/** @inheritDoc */
 	public function onGetPreferences( $user, &$prefs ) {
 		$search = new CirrusSearch();
@@ -885,15 +902,10 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	}
 
 	public static function onSpecialStatsAddExtra( &$extraStats, $context ) {
-		$search = new CirrusSearch();
+		self::addWordCount( $extraStats );
+	}
 
-		$status = $search->countContentWords();
-		if ( !$status->isOK() ) {
-			return;
-		}
-		$wordCount = $status->getValue();
-		if ( $wordCount !== null ) {
-			$extraStats['cirrussearch-article-words'] = $wordCount;
-		}
+	public static function onAPIQuerySiteInfoStatisticsInfo( &$extraStats ) {
+		self::addWordCount( $extraStats );
 	}
 }

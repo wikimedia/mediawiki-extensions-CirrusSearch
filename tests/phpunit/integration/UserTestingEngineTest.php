@@ -7,7 +7,7 @@ namespace CirrusSearch;
  * @covers \CirrusSearch\UserTestingEngine
  * @group CirrusSearch
  */
-class UserTestingEngineTest extends CirrusTestCase {
+class UserTestingEngineTest extends CirrusIntegrationTestCase {
 	private const CONFIG = [
 		'some_test' => [
 			'buckets' => [

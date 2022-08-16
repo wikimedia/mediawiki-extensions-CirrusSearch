@@ -109,9 +109,16 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			if ( !$this->enabled ) {
 				$warningCollector->addWarning( 'cirrussearch-feature-not-available', "$key regex" );
 			}
+
+			$pattern = $this->trimFirstOccurrenceOfSlash( $quotedValue );
+
+			if ( empty( $pattern ) ) {
+				$warningCollector->addWarning( 'cirrussearch-regex-empty-expression', $key );
+			}
+
 			return [
 				'type' => 'regex',
-				'pattern' => trim( $quotedValue, '/' ),
+				'pattern' => $pattern,
 				'insensitive' => $suffix === 'i',
 			];
 		}
@@ -161,6 +168,12 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			'@phan-var array $parsedValue';
 			$pattern = $parsedValue['pattern'];
 			$insensitive = $parsedValue['insensitive'];
+
+			if ( empty( $pattern ) ) {
+				$context->setResultsPossible( false );
+
+				return [ null, false ];
+			}
 
 			$filter = $this->buildRegexQuery( $pattern, $insensitive );
 			if ( !$negated ) {
@@ -347,5 +360,21 @@ GROOVY;
 	private function isRegexQuery( array $parsedValue = null ) {
 		return is_array( $parsedValue ) && isset( $parsedValue['type'] ) &&
 			   $parsedValue['type'] === 'regex';
+	}
+
+	/**
+	 * @param string $quotedValue
+	 * @return false|string
+	 */
+	private function trimFirstOccurrenceOfSlash( string $quotedValue ) {
+		$pattern = $quotedValue;
+		if ( $pattern[0] == '/' ) {
+			$pattern = substr( $quotedValue, 1 );
+		}
+		if ( $pattern[strlen( $pattern ) - 1] == '/' ) {
+			$pattern = substr( $pattern, 0, strlen( $pattern ) - 1 );
+		}
+
+		return $pattern;
 	}
 }

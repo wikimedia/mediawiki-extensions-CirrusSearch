@@ -165,7 +165,7 @@ class Reindexer {
 		$task->delete();
 		if ( !$response->isSuccessful() ) {
 			$this->fatalError(
-				"Reindex task was not successfull: " . $response->getUnsuccessfulReason()
+				"Reindex task was not successful: " . $response->getUnsuccessfulReason()
 			);
 		}
 

@@ -110,6 +110,12 @@ final class SearchQueryBuilder {
 	private $extraFieldsToExtract = [];
 
 	/**
+	 * @var bool When false the engine will decide the best fields to highlight, when
+	 *  true all fields will be highlighted (with increased computational cost).
+	 */
+	private $provideAllSnippets = false;
+
+	/**
 	 * Construct a new FT (FullText) SearchQueryBuilder using the config
 	 * and query string provided.
 	 *
@@ -147,6 +153,7 @@ final class SearchQueryBuilder {
 		$builder->extraIndicesSearch = true;
 		$builder->withDYMSuggestion = true;
 		$builder->allowRewrite = false;
+		$builder->provideAllSnippets = false;
 		return $builder;
 	}
 
@@ -299,7 +306,8 @@ final class SearchQueryBuilder {
 			$this->withDYMSuggestion,
 			$this->allowRewrite,
 			$this->profileContextParameters,
-			$this->extraFieldsToExtract
+			$this->extraFieldsToExtract,
+			$this->provideAllSnippets
 		);
 	}
 
@@ -462,6 +470,11 @@ final class SearchQueryBuilder {
 	 */
 	public function setExtraFieldsToExtract( array $fields ): SearchQueryBuilder {
 		$this->extraFieldsToExtract = $fields;
+		return $this;
+	}
+
+	public function setProvideAllSnippets( bool $shouldProvide ): SearchQueryBuilder {
+		$this->provideAllSnippets = $shouldProvide;
 		return $this;
 	}
 }

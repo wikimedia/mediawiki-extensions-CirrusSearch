@@ -490,7 +490,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 				[
 					[
 						'weight' => 3.0,
-						'filter' => [ 'term' => [ 'statement_keywords' => 'P31=Q123' ] ]
+						'filter' => [ 'match' => [ 'statement_keywords' => 'P31=Q123' ] ]
 					]
 				]
 			],
@@ -513,7 +513,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 						'filter' => [
 							'bool' => [
 								'must_not' => [
-									[ 'term' => [ 'statement_keywords' => 'P31=Q1234' ] ]
+									[ 'match' => [ 'statement_keywords' => 'P31=Q1234' ] ]
 								]
 							]
 						]
@@ -523,7 +523,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 						'filter' => [
 							'bool' => [
 								'must_not' => [
-									[ 'term' => [ 'statement_keywords' => 'P279=Q345' ] ]
+									[ 'match' => [ 'statement_keywords' => 'P279=Q345' ] ]
 								]
 							]
 						]

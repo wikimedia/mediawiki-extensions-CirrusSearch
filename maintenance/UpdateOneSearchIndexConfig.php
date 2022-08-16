@@ -222,11 +222,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->masterTimeout = $wgCirrusSearchMasterTimeout;
 		$this->refreshInterval = $wgCirrusSearchRefreshInterval;
 
-		if ( $this->indexSuffix === Connection::ARCHIVE_INDEX_SUFFIX &&
-			!$this->getConnection()->getSettings()->isPrivateCluster()
-		) {
-			$this->output( "Warning: Not allowing {$this->indexSuffix} on a non-private cluster\n" );
-			return true;
+		if ( $this->indexSuffix === Connection::ARCHIVE_INDEX_SUFFIX ) {
+			if ( !$this->getSearchConfig()->get( 'CirrusSearchEnableArchive' ) ) {
+				$this->output( "Warning: Not allowing {$this->indexSuffix}, archives are disabled\n" );
+				return true;
+			}
+			if ( !$this->getConnection()->getSettings()->isPrivateCluster() ) {
+				$this->output( "Warning: Not allowing {$this->indexSuffix} on a non-private cluster\n" );
+				return true;
+			}
 		}
 
 		$this->initMappingConfigBuilder();
@@ -287,10 +291,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private function updateVersions() {
 		$child = $this->runChild( Metastore::class );
-		$child->loadParamsAndArgs( null, [
-			'index-version-basename' => $this->indexBaseName,
-			'update-index-version' => true
-		] );
+		$child->done();
+		$child->loadParamsAndArgs(
+			null,
+			array_merge( $this->parameters->getOptions(), [
+				'index-version-basename' => $this->indexBaseName,
+				'update-index-version' => true,
+			] ),
+			$this->parameters->getArgs()
+		);
 		$child->execute();
 		$child->done();
 	}

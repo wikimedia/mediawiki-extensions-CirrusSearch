@@ -843,7 +843,11 @@ class SearchContext implements WarningCollector, FilterBuilder {
 			$query->getNamespaces(),
 			$query->getDebugOptions(),
 			$fallbackRunner,
-			new FetchPhaseConfigBuilder( $query->getSearchConfig(), $query->getSearchEngineEntryPoint() ),
+			new FetchPhaseConfigBuilder(
+				$query->getSearchConfig(),
+				$query->getSearchEngineEntryPoint(),
+				$query->shouldProvideAllSnippets()
+			),
 			$cirrusSearchHookRunner
 		);
 

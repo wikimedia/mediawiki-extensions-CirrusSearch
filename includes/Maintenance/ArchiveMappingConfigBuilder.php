@@ -24,13 +24,6 @@ class ArchiveMappingConfigBuilder extends MappingConfigBuilder {
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	protected function isForPageIndexes(): bool {
-		return false;
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function canOptimizeAnalysisConfig() {

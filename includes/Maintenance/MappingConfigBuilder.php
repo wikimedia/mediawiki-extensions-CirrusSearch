@@ -11,7 +11,6 @@ use CirrusSearch\Search\TextIndexField;
 use CirrusSearch\SearchConfig;
 use MediaWiki\MediaWikiServices;
 use SearchIndexField;
-use Wikimedia\Assert\Assert;
 
 /**
  * Builds elasticsearch mapping configuration arrays.
@@ -267,18 +266,6 @@ class MappingConfigBuilder {
 			$page = $this->setupCopyTo( $page, $nearMatchFields, 'all_near_match' );
 		}
 
-		if ( $this->isForPageIndexes() ) {
-			// Only trigger the hook when building mapping for indexes of
-			// pages. Maintains compatability with hook impl from when only
-			// pages were run through here and before the mapping type was
-			// renamed to _doc.
-			$mappingConfig = [ 'page' => $page ];
-			$this->cirrusSearchHookRunner->onCirrusSearchMappingConfig( $mappingConfig, $this );
-			Assert::postcondition( count( $mappingConfig ) === 1,
-				'CirrusSearchMappingConfig implementations must not add a new mapping type' );
-			$page = $mappingConfig['page'];
-		}
-
 		return $page;
 	}
 
@@ -352,18 +339,5 @@ class MappingConfigBuilder {
 	 */
 	public function canOptimizeAnalysisConfig() {
 		return false;
-	}
-
-	/**
-	 * If page index hooks should be run
-	 *
-	 * Extending classes used for other kinds of indexes will want to return
-	 * false here to avoid modifications from hooks expecting to adjust the
-	 * mapping for pages.
-	 *
-	 * @return bool
-	 */
-	protected function isForPageIndexes(): bool {
-		return true;
 	}
 }

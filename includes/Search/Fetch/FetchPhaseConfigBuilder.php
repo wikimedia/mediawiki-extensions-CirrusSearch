@@ -27,12 +27,23 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 	private $factoryGroup;
 
 	/**
+	 * @var bool
+	 */
+	private $provideAllSnippets;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param string|null $factoryGroup
+	 * @param bool $provideAllSnippets
 	 */
-	public function __construct( SearchConfig $config, $factoryGroup = null ) {
+	public function __construct(
+		SearchConfig $config,
+		$factoryGroup = null,
+		bool $provideAllSnippets = false
+	) {
 		$this->config = $config;
 		$this->factoryGroup = $factoryGroup;
+		$this->provideAllSnippets = $provideAllSnippets;
 	}
 
 	/**
@@ -129,7 +140,11 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 	public function buildHLConfig( AbstractQuery $mainHLQuery = null ): array {
 		$fields = [];
 		foreach ( $this->highlightedFields as $field ) {
-			$fields[$field->getFieldName()] = $field->toArray();
+			$arr = $field->toArray();
+			if ( $this->provideAllSnippets ) {
+				$arr = $this->clearSkipIfLastMatched( $arr );
+			}
+			$fields[$field->getFieldName()] = $arr;
 		}
 		$config = [
 			'pre_tags' => [ Searcher::HIGHLIGHT_PRE_MARKER ],
@@ -195,5 +210,13 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 
 		$field = $this->newHighlightField( 'file_text', HighlightedField::TARGET_MAIN_SNIPPET );
 		$this->addHLField( $field->skipIfLastMatched() );
+	}
+
+	private function clearSkipIfLastMatched( array $arr ) {
+		unset( $arr['options']['skip_if_last_matched'] );
+		if ( empty( $arr['options'] ) ) {
+			unset( $arr['options'] );
+		}
+		return $arr;
 	}
 }

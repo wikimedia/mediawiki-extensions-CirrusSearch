@@ -826,29 +826,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @return string The new raw result.
 	 */
 	public function processRawReturn( $result, WebRequest $request ) {
-		$header = null;
-
-		if ( $this->searchContext->getDebugOptions()->getCirrusExplainFormat() !== null ) {
-			$header = 'Content-type: text/html; charset=UTF-8';
-			$printer = new ExplainPrinter( $this->searchContext->getDebugOptions()->getCirrusExplainFormat() );
-			$result = $printer->format( $result );
-		} else {
-			$header = 'Content-type: application/json; charset=UTF-8';
-			if ( $result === null ) {
-				$result = '{}';
-			} else {
-				$result = json_encode( $result, JSON_PRETTY_PRINT );
-			}
-		}
-
-		if ( $this->searchContext->getDebugOptions()->isDumpAndDie() ) {
-			// When dumping the query we skip _everything_ but echoing the query.
-			RequestContext::getMain()->getOutput()->disable();
-			$request->response()->header( $header );
-			echo $result;
-			exit();
-		}
-		return $result;
+		return Util::processSearchRawReturn( $result, $request,
+			$this->searchContext->getDebugOptions() );
 	}
 
 	/**

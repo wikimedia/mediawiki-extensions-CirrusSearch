@@ -10,7 +10,7 @@ use PHPUnit\Framework\AssertionFailedError;
 /**
  * @covers \CirrusSearch\ElasticsearchIntermediary
  */
-class ElasticsearchIntermediaryTest extends CirrusTestCase {
+class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 
 	public function provideTestTimeouts() {
 		return [

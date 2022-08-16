@@ -12,10 +12,9 @@ use WikiPage;
  */
 class DefaultPagePropertiesTest extends \MediaWikiUnitTestCase {
 	public function testExpectedFields() {
-		$page = $this->mock( WikiPage::class );
-		$title = $this->mock( Title::class );
+		$page = $this->createMock( WikiPage::class );
 		$page->method( 'getTitle' )
-			->willReturn( $title );
+			->willReturn( $this->createMock( Title::class ) );
 		$page->method( 'getId' )
 			->willReturn( 2 );
 		$doc = $this->buildDoc( $page );
@@ -31,19 +30,12 @@ class DefaultPagePropertiesTest extends \MediaWikiUnitTestCase {
 	}
 
 	private function buildDoc( WikiPage $page ): Document {
-		$db = $this->mock( IDatabase::class );
-		$title = $this->mock( Title::class );
-		$props = new DefaultPageProperties( $db );
-		$doc = new Document( null, [] );
+		$props = new DefaultPageProperties( $this->createMock( IDatabase::class ) );
+		$doc = new Document( '', [] );
 		$props->initialize( $doc, $page );
 		$props->finishInitializeBatch( [ $page ] );
-		$props->finalize( $doc, $title );
+		$props->finalize( $doc, $this->createMock( Title::class ) );
 		return $doc;
 	}
 
-	private function mock( $class ) {
-		return $this->getMockBuilder( $class )
-			->disableOriginalConstructor()
-			->getMock();
-	}
 }

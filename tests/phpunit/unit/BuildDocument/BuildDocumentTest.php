@@ -22,23 +22,20 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 	private function mockBuilder( Title $title ) {
 		// Would be nice if we could pass the makeId function instead of a whole SearchConfig
 		$config = new SearchConfig;
-		$connection = $this->mock( Connection::class );
+		$connection = $this->createMock( Connection::class );
 		$connection->method( 'getConfig' )
 			->willReturn( $config );
-		$db = $this->mock( IDatabase::class );
-		$parserCache = $this->mock( ParserCache::class );
-		$revStore = $this->mock( RevisionStore::class );
+		$revStore = $this->createMock( RevisionStore::class );
 		$revStore->method( 'getTitle' )
 			->willReturn( $title );
-		$backlinkCacheFactory = $this->mock( BacklinkCacheFactory::class );
 
 		return new class(
 			$connection,
-			$db,
-			$parserCache,
+			$this->createMock( IDatabase::class ),
+			$this->createMock( ParserCache::class ),
 			$revStore,
 			$this->createCirrusSearchHookRunner(),
-			$backlinkCacheFactory
+			$this->createMock( BacklinkCacheFactory::class )
 		) extends BuildDocument {
 			// Override create builders to avoid testing those implementations
 			protected function createBuilders( int $flags ): array {
@@ -63,11 +60,11 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 	}
 
 	public function testHappyPath() {
-		$title = $this->mock( Title::class );
+		$title = $this->createMock( Title::class );
 		$title->method( 'getLatestRevID' )->willReturn( 42 );
 		$pages = [];
 		foreach ( range( 0, 1 ) as $pageId ) {
-			$page = $this->mock( WikiPage::class );
+			$page = $this->createMock( WikiPage::class );
 			$page->method( 'getId' )->willReturn( $pageId );
 			$page->method( 'getTitle' )->willReturn( $title );
 			$page->method( 'getLatest' )->willReturn( 42 );
@@ -92,9 +89,4 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 		$this->assertTrue( $doc->get( 'phpunit_finalize' ) );
 	}
 
-	private function mock( $class ) {
-		return $this->getMockBuilder( $class )
-			->disableOriginalConstructor()
-			->getMock();
-	}
 }

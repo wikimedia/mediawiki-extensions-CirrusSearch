@@ -71,10 +71,23 @@ class ConnectionTest extends CirrusIntegrationTestCase {
 		$conn->extractIndexSuffix( 'testwiki_file_first' );
 	}
 
+	public function testCanRemoveArchiveFromAllIndexSuffixes() {
+		$con = new Connection( new HashSearchConfig( [
+			'CirrusSearchServers' => [ 'localhost' ],
+			'CirrusSearchNamespaceMappings' => [],
+			'CirrusSearchEnableArchive' => false,
+			'CirrusSearchPrivateClusters' => null,
+		] ) );
+		$this->assertNotContains( Connection::ARCHIVE_INDEX_SUFFIX, $con->getAllIndexSuffixes( null ) );
+		$this->assertArrayEquals( [], $con->getAllIndexSuffixes( Connection::ARCHIVE_DOC_TYPE ) );
+	}
+
 	public function testGetAllIndexSuffixes() {
 		$con = new Connection( new HashSearchConfig( [
 			'CirrusSearchServers' => [ 'localhost' ],
-			'CirrusSearchNamespaceMappings' => []
+			'CirrusSearchNamespaceMappings' => [],
+			'CirrusSearchEnableArchive' => true,
+			'CirrusSearchPrivateClusters' => null,
 		] ) );
 		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_SUFFIX, Connection::GENERAL_INDEX_SUFFIX ],
 			$con->getAllIndexSuffixes() );
@@ -87,7 +100,9 @@ class ConnectionTest extends CirrusIntegrationTestCase {
 
 		$con = new Connection( new HashSearchConfig( [
 			'CirrusSearchServers' => [ 'localhost' ],
-			'CirrusSearchNamespaceMappings' => [ NS_FILE => 'file' ]
+			'CirrusSearchNamespaceMappings' => [ NS_FILE => 'file' ],
+			'CirrusSearchEnableArchive' => true,
+			'CirrusSearchPrivateClusters' => null,
 		] ) );
 
 		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_SUFFIX, Connection::GENERAL_INDEX_SUFFIX, 'file' ],

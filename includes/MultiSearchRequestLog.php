@@ -36,6 +36,7 @@ class MultiSearchRequestLog extends SearchRequestLog {
 		// actual query.
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentInternal getData() actually returns array|string */
 		$lines = explode( "\n", trim( $this->request->getData(), "\n" ) );
+		// @phan-suppress-next-line PhanImpossibleCondition
 		if ( !empty( $lines ) ) {
 			$vars += $this->extractRequestVariables(
 				array_slice( $lines, 0, 2 )

@@ -10,7 +10,7 @@ use HtmlArmor;
  */
 class ResultSetTest extends CirrusTestCase {
 	public function testSuggestionSnippetHtmlEscape() {
-		$results = new ResultSet( false, null, $this->mock( TitleHelper::class ) );
+		$results = new ResultSet( false, null, $this->createMock( TitleHelper::class ) );
 		$query = 'foo<script>';
 
 		$results->setSuggestionQuery( $query );
@@ -25,7 +25,7 @@ class ResultSetTest extends CirrusTestCase {
 	}
 
 	public function testRewrittenQuerySnippetHtmlEscape() {
-		$results = new ResultSet( false, null, $this->mock( TitleHelper::class ) );
+		$results = new ResultSet( false, null, $this->createMock( TitleHelper::class ) );
 		$query = 'foo<script>';
 
 		$results->setRewrittenQuery( $query );
@@ -39,9 +39,4 @@ class ResultSetTest extends CirrusTestCase {
 		$this->assertSame( $highlight, $results->getQueryAfterRewriteSnippet() );
 	}
 
-	private function mock( $className ) {
-		return $this->getMockBuilder( $className )
-			->disableOriginalConstructor()
-			->getMock();
-	}
 }

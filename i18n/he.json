@@ -9,6 +9,7 @@
 	"cirrussearch-backend-error": "לא הצלחנו להשלים את החיפוש שלך בשל בעיה זמנית. נא לנסות שוב מאוחר יותר.",
 	"cirrussearch-parse-error": "השאילתה לא הובנה. נא לפשט אותה. השאילתה נרשמה ביומן כדי לשפר את מערכת החיפוש.",
 	"cirrussearch-too-busy-error": "החיפוש עמוס מדי כרגע. נא לנסות שוב מאוחר יותר.",
+	"cirrussearch-regex-empty-expression": "$1 מצפה לביטוי רגולרי לא ריק.",
 	"cirrussearch-regex-syntax-error": "במקום $2 בביטוי הרגולרי יש שגיאת תחביר: $1",
 	"cirrussearch-regex-too-busy-error": "יותר מדי חיפושים של ביטויים רגולריים פועלים כעת. נא לנסות שוב מאוחר יותר.",
 	"cirrussearch-regex-too-complex-error": "הביטוי הרגולרי מורכב מדי. אפשר ללמוד איך לפשט אותו [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|כאן]].",

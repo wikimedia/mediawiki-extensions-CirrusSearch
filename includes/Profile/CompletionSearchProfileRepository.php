@@ -39,13 +39,9 @@ class CompletionSearchProfileRepository implements SearchProfileRepository {
 	 * @return CompletionSearchProfileRepository
 	 */
 	public static function fromConfig( $repoType, $repoName, $configEntry, SearchConfig $config ) {
-		// TODO: find a construct that reuses ConfigProfileRepository
 		return new self( $repoType, $repoName, $config, static function () use ( $configEntry, $config ) {
-			$profiles = $config->get( $configEntry );
-			if ( $profiles === null ) {
-				return [];
-			}
-			return $profiles;
+			return ConfigProfileRepository::extractConfig( $configEntry, $config )
+				+ ConfigProfileRepository::extractAttribute( $configEntry );
 		} );
 	}
 

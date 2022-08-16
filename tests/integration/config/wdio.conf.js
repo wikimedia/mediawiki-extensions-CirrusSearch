@@ -33,6 +33,7 @@ exports.config = {
 	botPassword: process.env.MEDIAWIKI_BOT_PASSWORD === undefined ?
 		'vagrant' :
 		process.env.MEDIAWIKI_BOT_PASSWORD,
+	baseUrl: 'http://cirrustest.wiki.local.wmftest.net:8080',
 	wikis: {
 		default: 'cirrustest',
 		cirrustest: {

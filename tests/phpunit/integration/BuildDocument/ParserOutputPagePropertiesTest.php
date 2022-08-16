@@ -106,7 +106,7 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 
 	private function buildDoc( WikiPage $page ) {
 		$doc = new Document( null, [] );
-		$cache = $this->mock( ParserCache::class );
+		$cache = $this->createMock( ParserCache::class );
 		$builder = new ParserOutputPageProperties( $cache, false, new HashSearchConfig( [] ) );
 		$builder->finalizeReal( $doc, $page, null, new CirrusSearch );
 		return $doc;
@@ -116,7 +116,7 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 	 * @dataProvider displayTitleProvider
 	 */
 	public function testDisplayTitle( $expected, Title $title, $displayTitle ) {
-		$parserOutput = $this->mock( ParserOutput::class );
+		$parserOutput = $this->createMock( ParserOutput::class );
 		$parserOutput->method( 'getDisplayTitle' )
 			->willReturn( $displayTitle );
 
@@ -134,20 +134,14 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 		$this->buildDoc( $page );
 	}
 
-	private function mock( $className ) {
-		return $this->getMockBuilder( $className )
-			->disableOriginalConstructor()
-			->getMock();
-	}
-
 	private function pageWithMockParserOutput( Title $title, ?ParserOutput $parserOutput ) {
-		$contentHandler = $this->mock( ContentHandler::class );
+		$contentHandler = $this->createMock( ContentHandler::class );
 		$contentHandler->method( 'getParserOutputForIndexing' )
 			->willReturn( $parserOutput );
 		$contentHandler->method( 'getDataForSearchIndex' )
 			->willReturn( [] );
 
-		$page = $this->mock( WikiPage::class );
+		$page = $this->createMock( WikiPage::class );
 		$page->method( 'getTitle' )
 			->willReturn( $title );
 		$page->method( 'getContentHandler' )

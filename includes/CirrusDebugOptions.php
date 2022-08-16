@@ -144,7 +144,10 @@ class CirrusDebugOptions {
 	 * @return string|null The formatting to apply, or null to return raw explains
 	 */
 	public function getCirrusExplainFormat() {
-		return $this->cirrusExplain === 'raw' ? null : $this->cirrusExplain;
+		if ( $this->cirrusExplain === 'raw' || $this->cirrusDumpQuery || $this->cirrusDumpQueryAST ) {
+			return null;
+		}
+		return $this->cirrusExplain;
 	}
 
 	/**

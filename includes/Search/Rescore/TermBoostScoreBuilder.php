@@ -4,6 +4,7 @@ namespace CirrusSearch\Search\Rescore;
 
 use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
+use Elastica\Query\MatchQuery;
 
 /**
  * Boost score when certain field is matched with certain term.
@@ -26,7 +27,7 @@ class TermBoostScoreBuilder extends FunctionScoreBuilder {
 		$weights = [];
 		foreach ( $profile as $field => $matches ) {
 			foreach ( $matches as $match => $matchWeight ) {
-				$queries[] = new \Elastica\Query\Term( [ $field => $match ] );
+				$queries[] = new MatchQuery( $field, $match );
 				$weights[] = $matchWeight * $this->weight;
 			}
 		}

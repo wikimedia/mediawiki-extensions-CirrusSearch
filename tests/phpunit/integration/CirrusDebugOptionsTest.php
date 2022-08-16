@@ -27,13 +27,24 @@ class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 		] );
 		$debugOptions = CirrusDebugOptions::fromRequest( $request );
 		$this->assertEquals( 'my_model', $debugOptions->getCirrusMLRModel() );
-		$this->assertEquals( 'pretty', $debugOptions->getCirrusExplainFormat() );
 		$this->assertTrue( $debugOptions->isCirrusDumpQuery() );
 		$this->assertTrue( $debugOptions->isCirrusDumpQueryAST() );
 		$this->assertTrue( $debugOptions->isCirrusDumpResult() );
 		$this->assertEquals( [ 'foo', 'bar' ], $debugOptions->getCirrusCompletionVariant() );
 		$this->assertTrue( $debugOptions->isReturnRaw() );
 		$this->assertTrue( $debugOptions->isDumpAndDie() );
+		// cirrusExplain should be ignored when cirrusDumpQuery or cirrusDumpQueryAST is set
+		$this->assertNull( $debugOptions->getCirrusExplainFormat() );
+
+		$request = new \FauxRequest( [
+			'cirrusMLRModel' => 'my_model',
+			'cirrusSuppressSuggest' => '',
+			'cirrusCompletionVariant' => [ 'foo', 'bar' ],
+			'cirrusDumpResult' => '',
+			'cirrusExplain' => 'pretty'
+		] );
+		$debugOptions = CirrusDebugOptions::fromRequest( $request );
+		$this->assertSame( 'pretty', $debugOptions->getCirrusExplainFormat() );
 	}
 
 	public function testNone() {

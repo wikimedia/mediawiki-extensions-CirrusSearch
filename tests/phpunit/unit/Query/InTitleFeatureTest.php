@@ -190,6 +190,13 @@ class InTitleFeatureTest extends CirrusTestCase {
 				'foo\\/bar',
 				true,
 			],
+			'if the last character of the pattern searched is "/"' => [
+				'intitle:/\/Documentation\//',
+				'',
+				false,
+				'\/Documentation\/',
+				false,
+			],
 		];
 	}
 
@@ -209,4 +216,5 @@ class InTitleFeatureTest extends CirrusTestCase {
 			],
 			[ [ 'cirrussearch-feature-not-available', 'intitle regex' ] ] );
 	}
+
 }

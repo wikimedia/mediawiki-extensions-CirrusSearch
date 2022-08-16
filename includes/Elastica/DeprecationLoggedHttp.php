@@ -22,6 +22,7 @@ class DeprecationLoggedHttp extends Http {
 
 	protected function _setupCurl( $curlConnection ) {
 		parent::_setupCurl( $curlConnection );
+		// @phan-suppress-next-line PhanTypeMismatchArgumentInternal
 		curl_setopt( $curlConnection, CURLOPT_HEADERFUNCTION, function ( $curl, $header ) {
 			// Elasticsearch sends Warning, but seeing lowercase coming in from curl. Didn't
 			// find docs confirming this is standard, do lowercase to have an expectation.

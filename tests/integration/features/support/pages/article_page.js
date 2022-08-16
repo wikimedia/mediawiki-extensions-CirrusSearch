@@ -36,7 +36,7 @@ class ArticlePage extends TitlePage {
 	}
 
 	get_search_suggestions() {
-		const selector = '.wvui-typeahead-suggestion__title';
+		const selector = '.cdx-search-result-title';
 		browser.waitUntil(
 			() => browser.$( selector ).isExisting(),
 			{ timeout: 10000 }

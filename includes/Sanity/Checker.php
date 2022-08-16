@@ -322,16 +322,16 @@ class Checker {
 			return $cache->getArrayCopy();
 		}
 		$dbr = $this->getDB();
-		$where = 'page_id IN (' . $dbr->makeList( $pageIds ) . ')';
 		$pageQuery = WikiPage::getQueryInfo();
-		$res = $dbr->select(
-			$pageQuery['tables'],
-			$pageQuery['fields'],
-			$where,
-			__METHOD__,
-			[],
-			$pageQuery['joins']
-		);
+
+		$res = $dbr->newSelectQueryBuilder()
+			->select( $pageQuery['fields'] )
+			->tables( $pageQuery['tables'] )
+			->where( [ 'page_id' => $pageIds ] )
+			->caller( __METHOD__ )
+			->joinConds( $pageQuery['joins'] )
+			->fetchResultSet();
+
 		$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();
 		foreach ( $res as $row ) {
 			$page = $wikiPageFactory->newFromRow( $row );

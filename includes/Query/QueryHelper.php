@@ -31,4 +31,26 @@ class QueryHelper {
 
 		return $match;
 	}
+
+	/**
+	 * Builds a match query against $field for $name. $name is munged to make
+	 * category matching better more intuitive for users.
+	 *
+	 * @param string $field field containing the title
+	 * @param string $name title query text to match against
+	 *  spaces. Defaults to false.
+	 * @return \Elastica\Query\MatchQuery For matching $title to $field
+	 */
+	public static function matchCategory( $field, $name ): \Elastica\Query\MatchQuery {
+		$c = \Category::newFromName( $name );
+		if ( $c ) {
+			$name = $c->getName();
+		}
+
+		$name = str_replace( '_', ' ', $name );
+		$match = new \Elastica\Query\MatchQuery();
+		$match->setFieldQuery( $field, $name );
+
+		return $match;
+	}
 }

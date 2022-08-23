@@ -59,6 +59,7 @@
 	"cirrussearch-feature-not-available": "No se ha activado en esta wiki la palabra clave de búsqueda «$1».",
 	"cirrussearch-feature-too-many-conditions": "Demasiadas condiciones dadas a '$1', truncando a $2.",
 	"cirrussearch-feature-deepcat-invalid-title": "La categoría proporcionada no es válida.",
+	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|El identificador de página|Los identificadores de páginas}} $1 no {{PLURAL:$2|es válido|son válidos}}",
 	"cirrussearch-incategory-feature-no-valid-categories": "No se proporcionó ninguna categoría válida en «$1».",
 	"cirrussearch-mlt-feature-no-valid-titles": "No se proporcionó ningún título válido en «$1».",
 	"cirrussearch-mlt-not-configured": "La funcionalidad «$1» está mal configurada. Solicita a un administrador que arregle $wgCirrusSearchMoreLikeThisFields",

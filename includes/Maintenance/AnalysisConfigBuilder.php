@@ -73,6 +73,11 @@ class AnalysisConfigBuilder {
 	private $cirrusSearchHookRunner;
 
 	/**
+	 * @var GlobalCustomFilter[]
+	 */
+	public $globalCustomFilters;
+
+	/**
 	 * @param string $langCode The language code to build config for
 	 * @param string[] $plugins list of plugins installed in Elasticsearch
 	 * @param SearchConfig|null $config
@@ -84,6 +89,8 @@ class AnalysisConfigBuilder {
 		SearchConfig $config = null,
 		CirrusSearchHookRunner $cirrusSearchHookRunner = null
 	) {
+		$this->globalCustomFilters = $this->buildGlobalCustomFilters();
+
 		$this->defaultLanguage = $langCode;
 		$this->plugins = $plugins;
 		foreach ( $this->elasticsearchLanguageAnalyzersFromPlugins as $pluginSpec => $extra ) {
@@ -183,7 +190,7 @@ class AnalysisConfigBuilder {
 		}
 		$config = $this->customize( $this->defaults( $language ), $language );
 		$this->cirrusSearchHookRunner->onCirrusSearchAnalysisConfig( $config, $this );
-		$config = $this->enableHomoglyphPlugin( $config, $language );
+		$config = $this->enableGlobalCustomFilters( $config, $language );
 		if ( $this->shouldActivateIcuTokenization( $language ) ) {
 			$config = $this->enableICUTokenizer( $config );
 		}
@@ -597,6 +604,14 @@ class AnalysisConfigBuilder {
 						'_=>\u0020',       // Mediawiki loves _ and people are used to it but
 										   // it usually means space
 						'-=>\u0020',       // Useful for finding hyphenated names unhyphenated
+					],
+				],
+				// map narrow no-break space to plain space to compensate for ES6.x+
+				// analyzers generally not doing so
+				'nnbsp_norm' => [
+					'type' => 'mapping',
+					'mappings' => [
+						'\u202F=>\u0020',
 					],
 				],
 				// Converts things that don't always count as word breaks into spaces which always
@@ -1317,39 +1332,52 @@ class AnalysisConfigBuilder {
 	}
 
 	/**
-	 * update languages with homoglyph plugin
+	 * update languages with global custom filters (e.g., homoglyph & nnbsp filters)
 	 * @param mixed[] $config
 	 * @param string $language language to add plugin to
 	 * @return mixed[] updated config
 	 */
-	public function enableHomoglyphPlugin( array $config, string $language ) {
-		$inDenyList = $this->homoglyphPluginDenyList[$language] ?? false;
-		if ( in_array( 'extra-analysis-homoglyph', $this->plugins ) && !$inDenyList ) {
-			$config = $this->insertHomoglyphFilter( $config, 'text' );
-			$config = $this->insertHomoglyphFilter( $config, 'text_search' );
+	public function enableGlobalCustomFilters( array $config, string $language ) {
+		foreach ( $this->globalCustomFilters as $gcf => $gcfInfo ) {
+			if ( $gcfInfo->filterIsUsable( $language, $this->plugins ) ) {
+				foreach ( $gcfInfo->applyTo as $analyzer ) {
+					$config = $this->insertGlobalCustomFilter( $config, $analyzer,
+						$gcf, $gcfInfo );
+				}
+			}
 		}
+
 		return $config;
 	}
 
-	private function insertHomoglyphFilter( array $config, string $analyzer ) {
+	/**
+	 * insert one of the global custom filters into the right spot in the analysis chain
+	 * @param mixed[] $config the analysis config we are modifying
+	 * @param string $analyzer the specifc analyzer we are modifying
+	 * @param string $filterName filter to add
+	 * @param GlobalCustomFilter $filterInfo includes filter type & incompatible filters
+	 * @return mixed[] updated config
+	 */
+	private function insertGlobalCustomFilter( array $config, string $analyzer,
+		string $filterName, GlobalCustomFilter $filterInfo ) {
 		if ( !array_key_exists( $analyzer, $config['analyzer'] ) ) {
 			return $config;
 		}
 
 		if ( $config['analyzer'][$analyzer]['type'] == 'custom' ) {
-			$filters = $config['analyzer'][$analyzer]['filter'] ?? [];
+			$filters = $config['analyzer'][$analyzer][$filterInfo->type] ?? [];
 
 			$lastBadFilter = -1;
-			foreach ( $this->homoglyphIncompatibleFilters as $badFilter ) {
+			foreach ( $filterInfo->incompatibleFilters as $badFilter ) {
 				$badFilterIdx = array_keys( $filters, $badFilter );
 				$badFilterIdx = end( $badFilterIdx );
 				if ( $badFilterIdx !== false && $badFilterIdx > $lastBadFilter ) {
 					$lastBadFilter = $badFilterIdx;
 				}
 			}
-			array_splice( $filters, $lastBadFilter + 1, 0, 'homoglyph_norm' );
+			array_splice( $filters, $lastBadFilter + 1, 0, $filterName );
 
-			$config['analyzer'][$analyzer]['filter'] = $filters;
+			$config['analyzer'][$analyzer][$filterInfo->type] = $filters;
 		}
 		return $config;
 	}
@@ -1505,15 +1533,20 @@ class AnalysisConfigBuilder {
 	];
 
 	/**
-	 * @var bool[] indexed by language code, languages that will not have the homoglyph
-	 * plugin included in the analysis chain
+	 * Set up global custom filters
+	 *
+	 * @return array
 	 */
-	public $homoglyphPluginDenyList = [];
-
-	/**
-	 * @var string[] list of token-splitting token filters that interact poorly with the
-	 * homoglyph filter. see T268730
-	 */
-	public $homoglyphIncompatibleFilters = [ 'aggressive_splitting' ];
+	private static function buildGlobalCustomFilters(): array {
+		$gcf = [
+			'homoglyph_norm' => new GlobalCustomFilter( 'filter',
+				[ 'extra-analysis-homoglyph' ], [ 'aggressive_splitting' ] ),
+			'nnbsp_norm' => new GlobalCustomFilter( 'char_filter', [], [],
+				[ 'text', 'text_search', 'plain', 'plain_search' ] ),
+		];
+		// reverse the array so that items are ordered (approximately, modulo incompatible
+		// filters) in the order specified here
+		return array_reverse( $gcf );
+	}
 
 }

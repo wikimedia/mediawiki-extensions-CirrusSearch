@@ -2,10 +2,11 @@
     "analyzer": {
         "text": {
             "type": "custom",
+            "tokenizer": "standard",
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "homoglyph_norm",
                 "catalan_elision",
@@ -18,6 +19,7 @@
         "plain": {
             "type": "custom",
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "tokenizer": "standard",
@@ -28,6 +30,7 @@
         "plain_search": {
             "type": "custom",
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "tokenizer": "standard",
@@ -172,10 +175,11 @@
         },
         "text_search": {
             "type": "custom",
+            "tokenizer": "standard",
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "homoglyph_norm",
                 "catalan_elision",
@@ -221,14 +225,6 @@
             "type": "length",
             "min": 1
         },
-        "catalan_stop": {
-            "type": "stop",
-            "stopwords": "_catalan_"
-        },
-        "catalan_stemmer": {
-            "type": "stemmer",
-            "language": "catalan"
-        },
         "catalan_elision": {
             "type": "elision",
             "articles_case": true,
@@ -240,6 +236,14 @@
                 "s",
                 "t"
             ]
+        },
+        "catalan_stop": {
+            "type": "stop",
+            "stopwords": "_catalan_"
+        },
+        "catalan_stemmer": {
+            "type": "stemmer",
+            "language": "catalan"
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -269,6 +273,12 @@
                 "\\u02BC=>\\u0020",
                 "_=>\\u0020",
                 "-=>\\u0020"
+            ]
+        },
+        "nnbsp_norm": {
+            "type": "mapping",
+            "mappings": [
+                "\\u202F=>\\u0020"
             ]
         },
         "word_break_helper": {

@@ -2,6 +2,7 @@
     "analyzer": {
         "el_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -17,6 +18,7 @@
         },
         "el_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -28,6 +30,7 @@
         },
         "ga_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -43,6 +46,7 @@
         },
         "ga_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -54,6 +58,7 @@
         },
         "tr_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -65,6 +70,7 @@
         },
         "tr_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -76,6 +82,12 @@
         }
     },
     "char_filter": {
+        "nnbsp_norm": {
+            "mappings": [
+                "\\u202F=>\\u0020"
+            ],
+            "type": "mapping"
+        },
         "word_break_helper": {
             "mappings": [
                 "_=>\\u0020",

@@ -2,6 +2,7 @@
     "analyzer": {
         "bn_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -16,6 +17,7 @@
         },
         "bn_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -26,6 +28,7 @@
         },
         "bn_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -42,6 +45,7 @@
         },
         "bn_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -58,6 +62,7 @@
         },
         "bs_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -72,6 +77,7 @@
         },
         "bs_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -81,6 +87,9 @@
             "type": "custom"
         },
         "bs_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -88,6 +97,9 @@
             "type": "custom"
         },
         "bs_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -96,6 +108,7 @@
         },
         "ca_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -110,6 +123,7 @@
         },
         "ca_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -120,6 +134,7 @@
         },
         "ca_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -135,6 +150,7 @@
         },
         "ca_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -150,6 +166,7 @@
         },
         "cs_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -164,6 +181,7 @@
         },
         "cs_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -174,6 +192,7 @@
         },
         "cs_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -188,6 +207,7 @@
         },
         "cs_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -202,6 +222,7 @@
         },
         "da_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -216,6 +237,7 @@
         },
         "da_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -226,6 +248,7 @@
         },
         "da_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -240,6 +263,7 @@
         },
         "da_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -254,6 +278,7 @@
         },
         "de_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "german_charfilter"
             ],
@@ -269,6 +294,7 @@
         },
         "de_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "german_charfilter"
             ],
@@ -280,6 +306,7 @@
         },
         "de_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix",
                 "german_charfilter"
             ],
@@ -296,6 +323,7 @@
         },
         "de_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix",
                 "german_charfilter"
             ],
@@ -312,6 +340,7 @@
         },
         "el_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -327,6 +356,7 @@
         },
         "el_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -337,6 +367,9 @@
             "type": "custom"
         },
         "el_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "lowercase",
                 "icu_normalizer",
@@ -348,6 +381,9 @@
             "type": "custom"
         },
         "el_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "lowercase",
                 "icu_normalizer",
@@ -360,6 +396,7 @@
         },
         "en-ca_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -374,6 +411,7 @@
         },
         "en-ca_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -384,6 +422,7 @@
         },
         "en-ca_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -402,6 +441,7 @@
         },
         "en-ca_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -420,6 +460,7 @@
         },
         "en-gb_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -434,6 +475,7 @@
         },
         "en-gb_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -444,6 +486,7 @@
         },
         "en-gb_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -462,6 +505,7 @@
         },
         "en-gb_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -480,6 +524,7 @@
         },
         "en_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -494,6 +539,7 @@
         },
         "en_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -504,6 +550,7 @@
         },
         "en_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -522,6 +569,7 @@
         },
         "en_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -540,6 +588,7 @@
         },
         "eo_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -554,6 +603,7 @@
         },
         "eo_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -563,6 +613,9 @@
             "type": "custom"
         },
         "eo_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -570,6 +623,9 @@
             "type": "custom"
         },
         "eo_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -578,6 +634,7 @@
         },
         "es_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -592,6 +649,7 @@
         },
         "es_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -602,6 +660,7 @@
         },
         "es_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -616,6 +675,7 @@
         },
         "es_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -630,6 +690,7 @@
         },
         "eu_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -644,6 +705,7 @@
         },
         "eu_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -654,6 +716,7 @@
         },
         "eu_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -668,6 +731,7 @@
         },
         "eu_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -682,6 +746,7 @@
         },
         "fi_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -696,6 +761,7 @@
         },
         "fi_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -706,6 +772,7 @@
         },
         "fi_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -720,6 +787,7 @@
         },
         "fi_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -734,6 +802,7 @@
         },
         "fr_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -748,6 +817,7 @@
         },
         "fr_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -758,6 +828,7 @@
         },
         "fr_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix",
                 "french_charfilter"
             ],
@@ -776,6 +847,7 @@
         },
         "fr_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix",
                 "french_charfilter"
             ],
@@ -794,6 +866,7 @@
         },
         "ga_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -809,6 +882,7 @@
         },
         "ga_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -820,6 +894,7 @@
         },
         "ga_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "irish_charfilter"
             ],
             "filter": [
@@ -837,6 +912,7 @@
         },
         "ga_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "irish_charfilter"
             ],
             "filter": [
@@ -854,6 +930,7 @@
         },
         "gl_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -868,6 +945,7 @@
         },
         "gl_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -878,6 +956,7 @@
         },
         "gl_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -892,6 +971,7 @@
         },
         "gl_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -906,6 +986,7 @@
         },
         "he_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -920,6 +1001,7 @@
         },
         "he_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -929,6 +1011,9 @@
             "type": "custom"
         },
         "he_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -936,6 +1021,9 @@
             "type": "custom"
         },
         "he_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -944,6 +1032,7 @@
         },
         "hi_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -958,6 +1047,7 @@
         },
         "hi_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -968,6 +1058,7 @@
         },
         "hi_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -985,6 +1076,7 @@
         },
         "hi_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -1002,6 +1094,7 @@
         },
         "hr_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1016,6 +1109,7 @@
         },
         "hr_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1025,6 +1119,9 @@
             "type": "custom"
         },
         "hr_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -1032,6 +1129,9 @@
             "type": "custom"
         },
         "hr_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -1040,6 +1140,7 @@
         },
         "nb_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1054,6 +1155,7 @@
         },
         "nb_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1064,6 +1166,7 @@
         },
         "nb_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -1078,6 +1181,7 @@
         },
         "nb_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -1092,6 +1196,7 @@
         },
         "nl_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1106,6 +1211,7 @@
         },
         "nl_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1116,6 +1222,7 @@
         },
         "nl_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -1131,6 +1238,7 @@
         },
         "nl_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -1146,6 +1254,7 @@
         },
         "nn_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1160,6 +1269,7 @@
         },
         "nn_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1170,6 +1280,7 @@
         },
         "nn_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -1184,6 +1295,7 @@
         },
         "nn_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -1198,6 +1310,7 @@
         },
         "pt_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1212,6 +1325,7 @@
         },
         "pt_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1222,6 +1336,7 @@
         },
         "pt_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -1236,6 +1351,7 @@
         },
         "pt_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -1250,6 +1366,7 @@
         },
         "sh_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1264,6 +1381,7 @@
         },
         "sh_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1273,6 +1391,9 @@
             "type": "custom"
         },
         "sh_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -1280,6 +1401,9 @@
             "type": "custom"
         },
         "sh_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -1288,6 +1412,7 @@
         },
         "simple_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1302,6 +1427,7 @@
         },
         "simple_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1312,6 +1438,7 @@
         },
         "simple_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -1330,6 +1457,7 @@
         },
         "simple_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -1348,6 +1476,7 @@
         },
         "sk_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1362,6 +1491,7 @@
         },
         "sk_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1371,6 +1501,9 @@
             "type": "custom"
         },
         "sk_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -1378,6 +1511,9 @@
             "type": "custom"
         },
         "sk_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -1386,6 +1522,7 @@
         },
         "sr_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1400,6 +1537,7 @@
         },
         "sr_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1409,6 +1547,9 @@
             "type": "custom"
         },
         "sr_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -1416,6 +1557,9 @@
             "type": "custom"
         },
         "sr_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -1424,6 +1568,7 @@
         },
         "sv_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1438,6 +1583,7 @@
         },
         "sv_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -1447,6 +1593,9 @@
             "type": "custom"
         },
         "sv_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer",
                 "swedish_stop",
@@ -1460,6 +1609,9 @@
             "type": "custom"
         },
         "sv_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer",
                 "swedish_stop",
@@ -1604,6 +1756,12 @@
                 "\\u3094=>\\u30f4",
                 "\\u3095=>\\u30f5",
                 "\\u3096=>\\u30f6"
+            ],
+            "type": "mapping"
+        },
+        "nnbsp_norm": {
+            "mappings": [
+                "\\u202F=>\\u0020"
             ],
             "type": "mapping"
         },

@@ -2,6 +2,7 @@
     "analyzer": {
         "ch_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -12,6 +13,7 @@
         },
         "ch_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -21,6 +23,9 @@
             "type": "custom"
         },
         "ch_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -28,6 +33,9 @@
             "type": "custom"
         },
         "ch_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -36,6 +44,7 @@
         },
         "fy_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -46,6 +55,7 @@
         },
         "fy_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -55,6 +65,9 @@
             "type": "custom"
         },
         "fy_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -62,6 +75,9 @@
             "type": "custom"
         },
         "fy_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -70,6 +86,7 @@
         },
         "kab_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -80,6 +97,7 @@
         },
         "kab_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -89,6 +107,9 @@
             "type": "custom"
         },
         "kab_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -96,6 +117,9 @@
             "type": "custom"
         },
         "kab_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -104,6 +128,7 @@
         },
         "ti_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -114,6 +139,7 @@
         },
         "ti_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -123,6 +149,9 @@
             "type": "custom"
         },
         "ti_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -130,6 +159,9 @@
             "type": "custom"
         },
         "ti_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -138,6 +170,7 @@
         },
         "xmf_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -148,6 +181,7 @@
         },
         "xmf_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -157,6 +191,9 @@
             "type": "custom"
         },
         "xmf_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -164,6 +201,9 @@
             "type": "custom"
         },
         "xmf_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer"
             ],
@@ -172,6 +212,12 @@
         }
     },
     "char_filter": {
+        "nnbsp_norm": {
+            "mappings": [
+                "\\u202F=>\\u0020"
+            ],
+            "type": "mapping"
+        },
         "word_break_helper": {
             "mappings": [
                 "_=>\\u0020",

@@ -6,12 +6,14 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Maintenance\AnalyzerBuilder;
+use CirrusSearch\Maintenance\GlobalCustomFilter;
 use Normalizer;
 
 /**
  * @group CirrusSearch
  * @covers \CirrusSearch\Maintenance\AnalysisConfigBuilder
  * @covers \CirrusSearch\Maintenance\AnalyzerBuilder
+ * @covers \CirrusSearch\Maintenance\GlobalCustomFilter
  */
 class AnalysisConfigBuilderTest extends CirrusTestCase {
 
@@ -108,8 +110,15 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$config = $this->buildConfig( [] );
 		$plugins = [ 'extra', 'extra-analysis-homoglyph' ];
 		$builder = new AnalysisConfigBuilder( 'xx', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
-		$builder->homoglyphIncompatibleFilters = [ 'badfilter1', 'badfilter2' ];
-		$result = $builder->enableHomoglyphPlugin( $input, 'xx' );
+
+		// keep things simple and only enable homoglyph_norm for testing
+		// specify badfilter[12] as incompatible
+		$builder->globalCustomFilters = [
+			'homoglyph_norm' => new GlobalCustomFilter( 'filter',
+				[ 'extra-analysis-homoglyph' ], [ 'badfilter1', 'badfilter2' ] ),
+		];
+
+		$result = $builder->enableGlobalCustomFilters( $input, 'xx' );
 
 		$this->assertEquals( $expected[ 'analyzer' ], $result[ 'analyzer' ] );
 		if ( isset( $expected[ 'filter' ] ) ) {
@@ -119,8 +128,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		}
 
 		// disable homoglyphs for language 'xx'
-		$builder->homoglyphPluginDenyList = [ 'xx' => 'true' ];
-		$result = $builder->enableHomoglyphPlugin( $input, 'xx' );
+		$builder->globalCustomFilters[ 'homoglyph_norm' ]->denyList = [ 'xx' ];
+		$result = $builder->enableGlobalCustomFilters( $input, 'xx' );
 		$this->assertEquals( $input[ 'analyzer' ], $result[ 'analyzer' ] );
 	}
 

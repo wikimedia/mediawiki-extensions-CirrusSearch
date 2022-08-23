@@ -2,6 +2,7 @@
     "analyzer": {
         "el_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -17,6 +18,7 @@
         },
         "el_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -27,6 +29,9 @@
             "type": "custom"
         },
         "el_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "lowercase",
                 "icu_normalizer",
@@ -38,6 +43,9 @@
             "type": "custom"
         },
         "el_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "lowercase",
                 "icu_normalizer",
@@ -50,6 +58,7 @@
         },
         "ga_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -65,6 +74,7 @@
         },
         "ga_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -76,6 +86,7 @@
         },
         "ga_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "irish_charfilter"
             ],
             "filter": [
@@ -93,6 +104,7 @@
         },
         "ga_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "irish_charfilter"
             ],
             "filter": [
@@ -110,6 +122,7 @@
         },
         "tr_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -121,6 +134,7 @@
         },
         "tr_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -165,6 +179,12 @@
                 "\u1e56=>PH",
                 "\u1e60=>SH",
                 "\u1e6a=>TH"
+            ],
+            "type": "mapping"
+        },
+        "nnbsp_norm": {
+            "mappings": [
+                "\\u202F=>\\u0020"
             ],
             "type": "mapping"
         },

@@ -199,7 +199,7 @@ class AnalyzerBuilder {
 		return $this;
 	}
 
-	private function unpackedCheck() {
+	private function unpackedCheck(): void {
 		if ( !$this->unpacked ) {
 			$caller = debug_backtrace()[1]['function'];
 			throw new \ConfigException( "$caller() is only compatible with unpacked analyzers;" .

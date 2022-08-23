@@ -4,6 +4,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "char_filter": [
+                "nnbsp_norm",
                 "apostrophe_norm"
             ],
             "filter": [
@@ -14,6 +15,7 @@
         "plain": {
             "type": "custom",
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "tokenizer": "standard",
@@ -24,6 +26,7 @@
         "plain_search": {
             "type": "custom",
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "tokenizer": "standard",
@@ -170,6 +173,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "char_filter": [
+                "nnbsp_norm",
                 "apostrophe_norm"
             ],
             "filter": [
@@ -241,6 +245,12 @@
                 "\\u02BC=>\\u0020",
                 "_=>\\u0020",
                 "-=>\\u0020"
+            ]
+        },
+        "nnbsp_norm": {
+            "type": "mapping",
+            "mappings": [
+                "\\u202F=>\\u0020"
             ]
         },
         "word_break_helper": {

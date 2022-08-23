@@ -9,11 +9,15 @@
                 "greek_stop",
                 "greek_stemmer",
                 "remove_empty"
+            ],
+            "char_filter": [
+                "nnbsp_norm"
             ]
         },
         "plain": {
             "type": "custom",
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "tokenizer": "standard",
@@ -24,6 +28,7 @@
         "plain_search": {
             "type": "custom",
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "tokenizer": "standard",
@@ -175,6 +180,9 @@
                 "greek_stop",
                 "greek_stemmer",
                 "remove_empty"
+            ],
+            "char_filter": [
+                "nnbsp_norm"
             ]
         }
     },
@@ -250,6 +258,12 @@
                 "\\u02BC=>\\u0020",
                 "_=>\\u0020",
                 "-=>\\u0020"
+            ]
+        },
+        "nnbsp_norm": {
+            "type": "mapping",
+            "mappings": [
+                "\\u202F=>\\u0020"
             ]
         },
         "word_break_helper": {

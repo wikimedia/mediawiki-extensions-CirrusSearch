@@ -2,6 +2,7 @@
     "analyzer": {
         "en_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -16,6 +17,7 @@
         },
         "en_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -26,6 +28,7 @@
         },
         "en_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -44,6 +47,7 @@
         },
         "en_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -62,6 +66,7 @@
         },
         "sv_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -76,6 +81,7 @@
         },
         "sv_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -85,6 +91,9 @@
             "type": "custom"
         },
         "sv_text": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer",
                 "swedish_stop",
@@ -98,6 +107,9 @@
             "type": "custom"
         },
         "sv_text_search": {
+            "char_filter": [
+                "nnbsp_norm"
+            ],
             "filter": [
                 "icu_normalizer",
                 "swedish_stop",
@@ -112,6 +124,7 @@
         },
         "zh_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -123,6 +136,7 @@
         },
         "zh_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -134,6 +148,7 @@
         },
         "zh_text": {
             "char_filter": [
+                "nnbsp_norm",
                 "stconvertfix",
                 "tsconvert"
             ],
@@ -146,6 +161,7 @@
         },
         "zh_text_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "stconvertfix",
                 "tsconvert"
             ],
@@ -246,6 +262,12 @@
                 "\\u3094=>\\u30f4",
                 "\\u3095=>\\u30f5",
                 "\\u3096=>\\u30f6"
+            ],
+            "type": "mapping"
+        },
+        "nnbsp_norm": {
+            "mappings": [
+                "\\u202F=>\\u0020"
             ],
             "type": "mapping"
         },

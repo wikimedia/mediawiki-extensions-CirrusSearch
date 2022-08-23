@@ -2,6 +2,7 @@
     "analyzer": {
         "de_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "german_charfilter"
             ],
@@ -17,6 +18,7 @@
         },
         "de_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "german_charfilter"
             ],
@@ -28,6 +30,7 @@
         },
         "en_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -42,6 +45,7 @@
         },
         "en_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -52,6 +56,7 @@
         },
         "es_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -66,6 +71,7 @@
         },
         "es_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -76,6 +82,7 @@
         },
         "ko_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -86,6 +93,7 @@
         },
         "ko_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -96,6 +104,7 @@
         },
         "ru_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "russian_charfilter"
             ],
@@ -107,6 +116,7 @@
         },
         "ru_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper",
                 "russian_charfilter"
             ],
@@ -118,6 +128,7 @@
         },
         "zh_plain": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -129,6 +140,7 @@
         },
         "zh_plain_search": {
             "char_filter": [
+                "nnbsp_norm",
                 "word_break_helper"
             ],
             "filter": [
@@ -143,6 +155,12 @@
         "german_charfilter": {
             "mappings": [
                 "\u1e9e=>\u00df"
+            ],
+            "type": "mapping"
+        },
+        "nnbsp_norm": {
+            "mappings": [
+                "\\u202F=>\\u0020"
             ],
             "type": "mapping"
         },

@@ -12,6 +12,7 @@ use Config;
 use Elastica\Query\AbstractQuery;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\PageRecord;
+use MediaWiki\Page\PageStore;
 
 /**
  * Filters by one or more categories, specified either by name or by category
@@ -35,12 +36,18 @@ class InCategoryFeature extends SimpleKeywordFeature implements FilterQueryFeatu
 	 * @var int
 	 */
 	private $maxConditions;
+	/**
+	 * @var PageStore|null
+	 */
+	private $pageStore;
 
 	/**
 	 * @param Config $config
+	 * @param PageStore|null $pageStore
 	 */
-	public function __construct( Config $config ) {
+	public function __construct( Config $config, PageStore $pageStore = null ) {
 		$this->maxConditions = $config->get( 'CirrusSearchMaxIncategoryOptions' );
+		$this->pageStore = $pageStore;
 	}
 
 	/**
@@ -153,8 +160,8 @@ class InCategoryFeature extends SimpleKeywordFeature implements FilterQueryFeatu
 		$names = $parsedValue['names'];
 		$pageIds = $parsedValue['pageIds'];
 
-		$titles = MediaWikiServices::getInstance()
-			->getPageStore()
+		$pageStore = $this->pageStore ?? MediaWikiServices::getInstance()->getPageStore();
+		$titles = $pageStore
 			->newSelectQueryBuilder()
 			->wherePageIds( $pageIds )
 			->caller( __METHOD__ )

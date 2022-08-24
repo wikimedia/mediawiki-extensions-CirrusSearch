@@ -16,7 +16,7 @@
 	"cirrussearch-pref-label": "Nova pretraga",
 	"cirrussearch-pref-desc": "Probajte naš novi način pretrage koji podržava veliki broj jezika, dava aktualnije i navremenije ishodne stavke, pa čak i pronalazi tekst u predložcima.",
 	"cirrussearch-give-feedback": "Dajte nam Vaše mišljenje",
-	"cirrussearch-query-too-long": "Zatraženo je dulje od dopuštenoga. ($1 > $2)",
+	"cirrussearch-query-too-long": "Zatraženo je dulje od dopuštenoga. (Aktualno: $1; dopušteno: $2)",
 	"cirrussearch-completion-profile-strict": "Strogi profil prema kojem se uklanja nekoliko interpunkcijskih znakova, ali će dijakritički znakovi i naglasci biti zadržani.",
 	"cirrussearch-completion-profile-classic": "Klasičan prefiks, uklanja se nekoliko interpunkcijskih i dijakritičkih znakova.",
 	"cirrussearch-completion-profile-normal": "Nekoliko interpunkcijskih znakova, neki dijakritički znakovi i bučne riječi.",

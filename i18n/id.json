@@ -8,7 +8,8 @@
 			"Kenrick95",
 			"Rachmat.Wahidi",
 			"Rachmat04",
-			"Sumbukompor"
+			"Sumbukompor",
+			"Veracious"
 		]
 	},
 	"cirrussearch-desc": "Mesin pencarian yang didorong oleh Elasticsearch untuk MediaWiki",
@@ -44,6 +45,8 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Kata kunci pencarian '$1' tidak mengizinkan lebih dari satu argumen dan tanda dengan '$2'.",
 	"cirrussearch-feature-not-available": "Kata kunci pencarian '$1' belum diaktifkan di wiki ini.",
 	"cirrussearch-feature-too-many-conditions": "Terlalu banyak kondisi diberikan untuk '$1', menyingkati menjadi $2.",
+	"cirrussearch-feature-deepcat-invalid-title": "Kategori yang diberikan tidak valid.",
+	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|ID|ID}} halaman tidak valid: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Tidak ada kategori valid yang diberikan untuk '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Tidak ada judul valid yang diberikan untuk '$1'.",
 	"cirrussearch-explore-similar-related": "Terkait",

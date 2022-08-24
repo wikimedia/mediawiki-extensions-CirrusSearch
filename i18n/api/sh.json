@@ -6,6 +6,7 @@
 	},
 	"apihelp-cirrus-config-dump-description": "Rezervno spremište postavki CirrusSearcha.",
 	"apihelp-cirrus-config-dump-summary": "Rezervno spremište postavki CirrusSearcha.",
+	"apihelp-cirrus-config-dump-param-prop": "Vrsta konfiguracijskih varijabli za rezerviranje",
 	"apihelp-cirrus-config-dump-example": "Daj rezervno spremište postavki CirrusSearcha.",
 	"apihelp-cirrus-mapping-dump-description": "Rezervno spremište sličivanja CirrusSearcha za ovaj wiki.",
 	"apihelp-cirrus-mapping-dump-summary": "Rezervno spremište sličivanja CirrusSearcha za ovaj wiki.",
@@ -22,5 +23,9 @@
 	"apihelp-query+cirrusdoc-example": "Daj rezervno skladište pojedinačnom CirrusSearch članku koji je trenutno indeksiran u pretraživanju.",
 	"apihelp-query+cirrusbuilddoc-summary": "Rezervno skladište za dokument članka CirrusSearch-a iz baznih servera",
 	"apihelp-query+cirrusbuilddoc-example": "Daja rezervno skladište pojedinačnog članka CirrusSearch-a stvorenog iz baze podataka.",
-	"apierror-cirrus-requesttoolong": "Zatraženo s prefiksom je dulje od dopuštene duljine. ($1 &gt; $2)"
+	"apierror-cirrus-requesttoolong": "Zatraženo s prefiksom je dulje od dopuštene duljine. ($1 &gt; $2)",
+	"apihelp-query+compsuggestbuilddoc-param-method": "Koju metodu bodovanja treba koristiti",
+	"apierror-compsuggestbuilddoc-bad-method": "Nepoznata metoda bodovanja",
+	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Rezerv dokumenta što koristi sugerator završetka",
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Nabavi rezerv dokumenta što koristi sugerator završetka"
 }

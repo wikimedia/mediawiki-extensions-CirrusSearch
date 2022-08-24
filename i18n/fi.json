@@ -8,7 +8,8 @@
 			"Pyscowicz",
 			"Stryn",
 			"Valtlait",
-			"Veikk0.ma"
+			"Veikk0.ma",
+			"Kyykaarme"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-käyttöinen haku MediaWikille",
@@ -26,7 +27,7 @@
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Oletus (suositeltu)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Korjaa enintään kaksi kirjoitusvirhettä. Poistaa ohjaukset, jotka ovat hyvin samankaltaisia pääotsikon kanssa.",
 	"cirrussearch-completion-profile-strict-pref-name": "Tiukka tila (edistynyt)",
-	"cirrussearch-completion-profile-strict-pref-desc": "Ei kirjoitusvirheiden korjausta. Ei korostuksen taittamista. Tiukka vastaavuus.",
+	"cirrussearch-completion-profile-strict-pref-desc": "Ei kirjoitusvirheiden korjausta. Ei ohita aksenttimerkkejä. Tiukka vastaavuus.",
 	"cirrussearch-completion-profile-normal-pref-name": "Uudelleenohjaustila (edistynyt)",
 	"cirrussearch-completion-profile-normal-pref-desc": "Ei kirjoitusvirheiden korjausta. Ratkaisee läheiset uudelleenohjaukset.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klassinen etuliitehaku",

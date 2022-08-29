@@ -37,6 +37,9 @@ class AnalyzerBuilder {
 	/** @var string[]|null list of char_filters */
 	private $charFilters;
 
+	/** @var string|null name of tokenizer */
+	private $tokenizer = 'standard';
+
 	/** @var string[]|null list of filters */
 	private $filters;
 
@@ -95,6 +98,9 @@ class AnalyzerBuilder {
 	/** @var string|null */
 	private $aggressiveSplitting;
 
+	/** @var bool */
+	private $useStemmer = true;
+
 	/** @var string|null */
 	private $stemmerName;
 
@@ -119,6 +125,15 @@ class AnalyzerBuilder {
 	 */
 	public function withCharFilters( array $charFilters ): self {
 		$this->charFilters = $charFilters;
+		return $this;
+	}
+
+	/**
+	 * @param string $tokenizer
+	 * @return self
+	 */
+	public function withTokenizer( string $tokenizer ): self {
+		$this->tokenizer = $tokenizer;
 		return $this;
 	}
 
@@ -248,6 +263,13 @@ class AnalyzerBuilder {
 	}
 
 	/** @return self */
+	public function omitStemmer(): self {
+		$this->unpackedCheck();
+		$this->useStemmer = false;
+		return $this;
+	}
+
+	/** @return self */
 	public function withAsciifoldingPreserve(): self {
 		$this->unpackedCheck();
 		$this->asciifolding = 'asciifolding_preserve';
@@ -296,7 +318,11 @@ class AnalyzerBuilder {
 			// char_filter: dotted_I_fix, lang_charfilter, lang_numbers, word_break_helper
 			// filter: elision, aggressive_splitting, lowercase, stopwords, lang_norm,
 			//         stemmer_override, stemmer, asciifolding, remove_empty
-			$this->stemmerName = $this->stemmerName ?? $this->langName;
+			if ( $this->useStemmer ) {
+				$this->stemmerName = $this->stemmerName ?? $this->langName;
+			} else {
+				$langStem = '';
+			}
 			$this->withStop( $this->customStop ?? "_{$this->langName}_" );
 
 			// build up the char_filter list--everything is optional
@@ -347,7 +373,7 @@ class AnalyzerBuilder {
 
 		$config[ 'analyzer' ][ $this->analyzerName ] = [
 			'type' => 'custom',
-			'tokenizer' => 'standard',
+			'tokenizer' => $this->tokenizer,
 		];
 
 		if ( $this->charMapName ) {
@@ -387,12 +413,23 @@ class AnalyzerBuilder {
 			$config[ 'analyzer' ][ $this->analyzerName ][ 'filter' ] = $this->filters;
 		}
 
-		if ( $this->stemmerName ) {
+		if ( $this->stemmerName && $this->useStemmer ) {
 			$config[ 'filter' ][ $langStem ] =
 				$this->stemmerFilter( $this->stemmerName );
 		}
 
 		return $config;
+	}
+
+	/**
+	 * Create a pattern_replace character filter with the mappings provided.
+	 *
+	 * @param string $pat
+	 * @param string $repl
+	 * @return mixed[] character filter
+	 */
+	public static function patternCharFilter( string $pat, string $repl ): array {
+		return [ 'type' => 'pattern_replace', 'pattern' => $pat, 'replacement' => $repl ];
 	}
 
 	/**

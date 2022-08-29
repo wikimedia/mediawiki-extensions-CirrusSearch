@@ -2,18 +2,18 @@
     "analyzer": {
         "text": {
             "type": "custom",
-            "tokenizer": "standard",
+            "tokenizer": "icu_tokenizer",
             "char_filter": [
                 "nnbsp_norm",
-                "dotted_I_fix"
+                "thai_repl_pat",
+                "dotted_I_fix",
+                "thai_charfilter"
             ],
             "filter": [
                 "homoglyph_norm",
-                "lowercase",
+                "icu_normalizer",
                 "decimal_digit",
-                "arabic_stop",
-                "arabic_normalization",
-                "arabic_stemmer",
+                "thai_stop",
                 "asciifolding"
             ]
         },
@@ -25,7 +25,7 @@
             ],
             "tokenizer": "standard",
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ]
         },
         "plain_search": {
@@ -36,14 +36,14 @@
             ],
             "tokenizer": "standard",
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ]
         },
         "short_text": {
             "type": "custom",
             "tokenizer": "whitespace",
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "aggressive_splitting",
                 "asciifolding_preserve",
                 "dedup_asciifolding"
@@ -53,7 +53,7 @@
             "type": "custom",
             "tokenizer": "whitespace",
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "aggressive_splitting"
             ]
         },
@@ -61,7 +61,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "char_filter": [
                 "word_break_helper_source_text"
@@ -74,14 +74,14 @@
             ],
             "tokenizer": "standard",
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ]
         },
         "suggest": {
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "suggest_shingle"
             ]
         },
@@ -89,7 +89,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "suggest_shingle",
                 "reverse"
             ]
@@ -108,7 +108,7 @@
             ],
             "tokenizer": "no_splitting",
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ]
         },
         "near_match_asciifolding": {
@@ -119,7 +119,7 @@
             "tokenizer": "no_splitting",
             "filter": [
                 "truncate_keyword",
-                "lowercase",
+                "icu_normalizer",
                 "asciifolding"
             ]
         },
@@ -130,7 +130,7 @@
             ],
             "tokenizer": "prefix",
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ]
         },
         "prefix_asciifolding": {
@@ -140,7 +140,7 @@
             ],
             "tokenizer": "prefix",
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "asciifolding"
             ]
         },
@@ -148,7 +148,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "prefix_ngram_filter"
             ]
         },
@@ -164,30 +164,30 @@
             "tokenizer": "no_splitting",
             "filter": [
                 "truncate_keyword",
-                "lowercase"
+                "icu_normalizer"
             ]
         },
         "trigram": {
             "type": "custom",
             "tokenizer": "trigram",
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ]
         },
         "text_search": {
             "type": "custom",
-            "tokenizer": "standard",
+            "tokenizer": "icu_tokenizer",
             "char_filter": [
                 "nnbsp_norm",
-                "dotted_I_fix"
+                "thai_repl_pat",
+                "dotted_I_fix",
+                "thai_charfilter"
             ],
             "filter": [
                 "homoglyph_norm",
-                "lowercase",
+                "icu_normalizer",
                 "decimal_digit",
-                "arabic_stop",
-                "arabic_normalization",
-                "arabic_stemmer",
+                "thai_stop",
                 "asciifolding"
             ]
         }
@@ -227,13 +227,13 @@
             "type": "length",
             "min": 1
         },
-        "arabic_stop": {
-            "type": "stop",
-            "stopwords": "_arabic_"
+        "icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf"
         },
-        "arabic_stemmer": {
-            "type": "stemmer",
-            "language": "arabic"
+        "thai_stop": {
+            "type": "stop",
+            "stopwords": "_thai_"
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -294,6 +294,30 @@
             "type": "mapping",
             "mappings": [
                 "\u0130=>I"
+            ]
+        },
+        "thai_repl_pat": {
+            "type": "pattern_replace",
+            "pattern": "(?<=\\p{Nd})([\u0e01-\u0e4f])|(?<=[\u0e01-\u0e4f])(\\p{Nd})|(?<=[\u0e01-\u0e4f])\\.([\u0e01-\u0e4f])",
+            "replacement": " $1$2$3"
+        },
+        "thai_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "_=>\\u0020",
+                ";=>\\u0020",
+                ":=>\\u0020",
+                "\u00b7=>\\u0020",
+                "\u2027=>\\u0020",
+                "\u0e03=>\u0e02",
+                "\u0e05=>\u0e04",
+                "\\u0e4d\\u0e32=>\\u0e33",
+                "\\u0e4d\\u0e48\\u0e32=>\\u0e48\\u0e33",
+                "\\u0e4d\\u0e49\\u0e32=>\\u0e49\\u0e33",
+                "\\u0e33\\u0e48=>\\u0e48\\u0e33",
+                "\\u0e33\\u0e49=>\\u0e49\\u0e33",
+                "\\u0E34\\u0E4D=>\\u0E36",
+                "\\u0E4D\\u0E34=>\\u0E36"
             ]
         }
     }

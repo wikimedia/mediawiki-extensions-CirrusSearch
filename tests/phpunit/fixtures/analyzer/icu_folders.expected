@@ -1,5 +1,65 @@
 {
     "analyzer": {
+        "ar_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ar_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ar_text": {
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "decimal_digit",
+                "arabic_stop",
+                "arabic_normalization",
+                "arabic_stemmer",
+                "icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ar_text_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "decimal_digit",
+                "arabic_stop",
+                "arabic_normalization",
+                "arabic_stemmer",
+                "icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "bn_plain": {
             "char_filter": [
                 "nnbsp_norm",
@@ -1623,6 +1683,66 @@
             ],
             "tokenizer": "standard",
             "type": "custom"
+        },
+        "th_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "th_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "th_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "th_text": {
+            "char_filter": [
+                "nnbsp_norm",
+                "thai_repl_pat",
+                "dotted_I_fix",
+                "thai_charfilter"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "decimal_digit",
+                "thai_stop",
+                "th_icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "icu_tokenizer",
+            "type": "custom"
+        },
+        "th_text_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "thai_repl_pat",
+                "dotted_I_fix",
+                "thai_charfilter"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "decimal_digit",
+                "thai_stop",
+                "th_icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "icu_tokenizer",
+            "type": "custom"
         }
     },
     "char_filter": {
@@ -1765,6 +1885,30 @@
             ],
             "type": "mapping"
         },
+        "thai_charfilter": {
+            "mappings": [
+                "_=>\\u0020",
+                ";=>\\u0020",
+                ":=>\\u0020",
+                "\u00b7=>\\u0020",
+                "\u2027=>\\u0020",
+                "\u0e03=>\u0e02",
+                "\u0e05=>\u0e04",
+                "\\u0e4d\\u0e32=>\\u0e33",
+                "\\u0e4d\\u0e48\\u0e32=>\\u0e48\\u0e33",
+                "\\u0e4d\\u0e49\\u0e32=>\\u0e49\\u0e33",
+                "\\u0e33\\u0e48=>\\u0e48\\u0e33",
+                "\\u0e33\\u0e49=>\\u0e49\\u0e33",
+                "\\u0E34\\u0E4D=>\\u0E36",
+                "\\u0E4D\\u0E34=>\\u0E36"
+            ],
+            "type": "mapping"
+        },
+        "thai_repl_pat": {
+            "pattern": "(?<=\\p{Nd})([\u0e01-\u0e4f])|(?<=[\u0e01-\u0e4f])(\\p{Nd})|(?<=[\u0e01-\u0e4f])\\.([\u0e01-\u0e4f])",
+            "replacement": " $1$2$3",
+            "type": "pattern_replace"
+        },
         "word_break_helper": {
             "mappings": [
                 "_=>\\u0020",
@@ -1780,6 +1924,14 @@
             "preserve_original": false,
             "stem_english_possessive": false,
             "type": "word_delimiter"
+        },
+        "arabic_stemmer": {
+            "language": "arabic",
+            "type": "stemmer"
+        },
+        "arabic_stop": {
+            "stopwords": "_arabic_",
+            "type": "stop"
         },
         "basque_stemmer": {
             "language": "basque",
@@ -2065,6 +2217,14 @@
         },
         "swedish_stop": {
             "stopwords": "_swedish_",
+            "type": "stop"
+        },
+        "th_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\\u0E47-\\u0E4E]"
+        },
+        "thai_stop": {
+            "stopwords": "_thai_",
             "type": "stop"
         }
     },

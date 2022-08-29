@@ -668,6 +668,10 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			'extra-analysis-esperanto', 'analysis-nori',
 			'extra-analysis-homoglyph', 'extra-analysis-khmer',
 		];
+		if ( array_key_exists( 'withICU', $extraConfig ) && $extraConfig[ 'withICU' ] ) {
+			$plugins[] = 'analysis-icu';
+		}
+
 		$builder = new AnalysisConfigBuilder( $langCode, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		if ( is_string( $expected ) ) {
 			// generate fixture

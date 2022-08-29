@@ -1,9 +1,19 @@
 {
     "analyzer": {
         "text": {
-            "type": "thai",
+            "type": "custom",
+            "tokenizer": "thai",
             "char_filter": [
-                "word_break_helper"
+                "nnbsp_norm",
+                "dotted_I_fix",
+                "thai_charfilter"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "decimal_digit",
+                "thai_stop",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -164,9 +174,19 @@
             ]
         },
         "text_search": {
-            "type": "thai",
+            "type": "custom",
+            "tokenizer": "thai",
             "char_filter": [
-                "word_break_helper"
+                "nnbsp_norm",
+                "dotted_I_fix",
+                "thai_charfilter"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "decimal_digit",
+                "thai_stop",
+                "asciifolding"
             ]
         }
     },
@@ -204,6 +224,10 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "thai_stop": {
+            "type": "stop",
+            "stopwords": "_thai_"
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -264,6 +288,33 @@
             "type": "mapping",
             "mappings": [
                 "\u0130=>I"
+            ]
+        },
+        "thai_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "_=>\\u0020",
+                ";=>\\u0020",
+                ":=>\\u0020",
+                "\u00b7=>\\u0020",
+                "\u2027=>\\u0020",
+                "\u0e03=>\u0e02",
+                "\u0e05=>\u0e04",
+                "\\u0e4d\\u0e32=>\\u0e33",
+                "\\u0e4d\\u0e48\\u0e32=>\\u0e48\\u0e33",
+                "\\u0e4d\\u0e49\\u0e32=>\\u0e49\\u0e33",
+                "\\u0e33\\u0e48=>\\u0e48\\u0e33",
+                "\\u0e33\\u0e49=>\\u0e49\\u0e33",
+                "\\u0E34\\u0E4D=>\\u0E36",
+                "\\u0E4D\\u0E34=>\\u0E36",
+                "\\u200B=>",
+                "-=>\\u0020",
+                "\u2010=>\\u0020",
+                "\u2013=>\\u0020",
+                "\u2014=>\\u0020",
+                "\u2015=>\\u0020",
+                "\uff0d=>\\u0020",
+                "\"=>\\u0020"
             ]
         }
     }

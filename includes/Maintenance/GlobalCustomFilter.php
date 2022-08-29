@@ -33,7 +33,9 @@ class GlobalCustomFilter {
 	}
 
 	/**
-	 * check to see if the filter is compatible with a given language and set of installed plugins
+	 * check to see if the filter is compatible with a given language and set of
+	 * installed plugins
+	 *
 	 * @param string $language
 	 * @param string[] $installedPlugins
 	 * @return bool
@@ -49,5 +51,4 @@ class GlobalCustomFilter {
 		}
 		return true;
 	}
-
 }

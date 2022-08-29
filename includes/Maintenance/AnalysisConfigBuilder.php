@@ -391,6 +391,8 @@ class AnalysisConfigBuilder {
 			return '[^Йй]';
 		case 'sv':
 			return '[^ÅåÄäÖö]';
+		case 'th':
+			return '[^\u0E47-\u0E4E]';
 		default:
 			return null;
 		}
@@ -705,6 +707,14 @@ class AnalysisConfigBuilder {
 			break;
 
 		// customized languages
+		case 'arabic':
+			// Unpack Arabic analyzer T294147
+			$config = ( new AnalyzerBuilder( $langName ) )->
+				withUnpackedAnalyzer()->
+				insertFiltersBefore( 'arabic_stop', [ 'decimal_digit' ] )->
+				insertFiltersBefore( 'arabic_stemmer', [ 'arabic_normalization' ] )->
+				build( $config );
+			break;
 		case 'bengali': // Unpack Bengali analyzer T294067
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
@@ -1067,6 +1077,70 @@ class AnalysisConfigBuilder {
 				withUnpackedAnalyzer()->
 				omitDottedI()->
 				withAsciifoldingPreserve()->
+				build( $config );
+			break;
+		case 'thai':
+			// Unpack and improve Thai analyzer: T294147
+			$thCharMap = [
+				'_=>\u0020', // split tokens on underscore ..
+				';=>\u0020', // .. semicolon
+				':=>\u0020', // .. colon
+				'·=>\u0020', // .. middle dot
+				'‧=>\u0020', // .. & hyphenation point
+				'ฃ=>ข',     // replace obsolete ฃ
+				'ฅ=>ค',     // replace obsolete ฅ
+				'\u0e4d\u0e32=>\u0e33',  // compose nikhahit + sara aa = sara am
+				'\u0e4d\u0e48\u0e32=>\u0e48\u0e33', // recompose sara am split around..
+				'\u0e4d\u0e49\u0e32=>\u0e49\u0e33', // .. other diacritics
+				'\u0e33\u0e48=>\u0e48\u0e33', // sara am should consistently..
+				'\u0e33\u0e49=>\u0e49\u0e33', // .. come after other diacritics
+				'\u0E34\u0E4D=>\u0E36', // compose sara i + nikhahit = sara ue..
+				'\u0E4D\u0E34=>\u0E36', // .. in either order
+			];
+
+			// by default use the Thai tokenizer
+			$thaiTokenizer = 'thai';
+			$thCharPatReplFilters = [];
+
+			if ( $this->isIcuAvailable() ) {
+				// ICU tokenizer is preferred in general. If it is available, also
+				// add char pattern_replace filter to accommodate some of its weaknesses
+				$thaiTokenizer = 'icu_tokenizer';
+
+				$thaiLetterPat = '[ก-๏]'; // Thai characters, except for digits.
+
+				$config[ 'char_filter' ][ 'thai_repl_pat' ] =
+					// break between any digits and Thai letters, or vice versa
+					// break *Thai* tokens on periods (by making them spaces)
+					// (regex look-behind is okay, but look-ahead breaks offsets)
+					AnalyzerBuilder::patternCharFilter( "(?<=\\p{Nd})($thaiLetterPat)" .
+						"|(?<=$thaiLetterPat)(\\p{Nd})" .
+						"|(?<=$thaiLetterPat)\.($thaiLetterPat)",
+						' $1$2$3' );
+				$thCharPatReplFilters = [ 'thai_repl_pat' ];
+			} else {
+				// if we have to settle for the Thai tokenizer, add some additional
+				// character filters to accommodate some of its weaknesses
+				$thThaiTokSplits = [
+					'\u200B=>',  // delete zero width space
+					'-=>\u0020', // split tokens on hyphen-minus ..
+					'‐=>\u0020', // .. hyphen
+					'–=>\u0020', // .. en dash
+					'—=>\u0020', // .. em dash
+					'―=>\u0020', // .. horizontal bar
+					'－=>\u0020', // .. fullwidth hyphen
+					'"=>\u0020', // .. & double quote
+				];
+				array_push( $thCharMap, ...$thThaiTokSplits );
+			}
+
+			$config = ( new AnalyzerBuilder( $langName ) )->
+				withUnpackedAnalyzer()->
+				withCharFilters( $thCharPatReplFilters )->
+				withCharMap( $thCharMap )->
+				withTokenizer( $thaiTokenizer )->
+				omitStemmer()->
+				insertFiltersBefore( 'thai_stop', [ 'decimal_digit' ] )->
 				build( $config );
 			break;
 		case 'turkish':
@@ -1440,6 +1514,7 @@ class AnalysisConfigBuilder {
 	 * can be enabled by default
 	 */
 	private $languagesWithIcuFolding = [
+		'ar' => true,
 		'bn' => true,
 		'bs' => true,
 		'ca' => true,
@@ -1469,6 +1544,7 @@ class AnalysisConfigBuilder {
 		'sk' => true,
 		'sr' => true,
 		'sv' => true,
+		'th' => true,
 	];
 
 	/**

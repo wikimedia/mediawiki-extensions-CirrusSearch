@@ -8,7 +8,8 @@
 			"Rachmat.Wahidi",
 			"Rachmat04",
 			"Sumbukompor",
-			"Daud I.F. Argana"
+			"Daud I.F. Argana",
+			"Veracious"
 		]
 	},
 	"cirrussearch-desc": "Mesin pencarian yang didorong oleh Elasticsearch untuk MediaWiki",
@@ -44,6 +45,7 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Kata kunci pencarian '$1' tidak mengizinkan lebih dari satu argumen dan tanda dengan '$2'.",
 	"cirrussearch-feature-not-available": "Kata kunci pencarian '$1' belum diaktifkan di wiki ini.",
 	"cirrussearch-feature-too-many-conditions": "Terlalu banyak kondisi diberikan untuk '$1', menyingkati menjadi $2.",
+	"cirrussearch-feature-deepcat-invalid-title": "Kategori yang diberikan tidak valid.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Tidak ada kategori valid yang diberikan untuk '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Tidak ada judul valid yang diberikan untuk '$1'.",
 	"cirrussearch-explore-similar-related": "Terkait",

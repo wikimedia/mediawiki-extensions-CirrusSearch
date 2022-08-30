@@ -29,7 +29,7 @@ class DummySearchResultSet extends BaseCirrusSearchResultSet {
 			$results[] = new \Elastica\Result( [] );
 		}
 		$this->resultSet = new \Elastica\ResultSet(
-			new \Elastica\Response( [ "hits" => [ "total" => $totalHits ] ] ),
+			new \Elastica\Response( [ "hits" => [ "total" => [ "value" => $totalHits ] ] ] ),
 			new \Elastica\Query(),
 			$results
 		);

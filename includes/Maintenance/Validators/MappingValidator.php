@@ -7,7 +7,7 @@ use CirrusSearch\Maintenance\Printer;
 use CirrusSearch\Util;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
-use Elastica\Type\Mapping;
+use Elastica\Mapping;
 use RawMessage;
 use Status;
 use Wikimedia\Assert\Assert;
@@ -82,16 +82,13 @@ class MappingValidator extends Validator {
 		}
 
 		if ( !$this->compareMappingToActual() ) {
-			// TODO: remove references to type (T308044)
-			$action = new Mapping( $this->index->getType( '_doc' ) );
-			foreach ( $this->mappingConfig as $key => $value ) {
-				$action->setParam( $key, $value );
-			}
+			$action = new Mapping( $this->mappingConfig['properties'] );
+			$action->setParam( "dynamic", false );
 
 			try {
-				$action->send( [
+				$action->send( $this->index, [
 					'master_timeout' => $this->masterTimeout,
-					'include_type_name' => 'true',
+					'include_type_name' => 'false',
 				] );
 				$this->output( "corrected\n" );
 			} catch ( ExceptionInterface $e ) {

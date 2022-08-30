@@ -428,7 +428,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 				'status' => 200,
 				'responses' => [
 					[
-						'hits' => [ 'total' => 123456, 'max_score' => 0.0, 'hits' => [] ]
+						'hits' => [ 'total' => [ 'value' => 123456, 'relation' => 'eq' ], 'max_score' => 0.0, 'hits' => [] ]
 					]
 			] ] )
 		);

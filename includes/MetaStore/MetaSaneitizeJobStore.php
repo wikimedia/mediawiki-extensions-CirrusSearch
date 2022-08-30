@@ -63,9 +63,7 @@ class MetaSaneitizeJobStore implements MetaStore {
 	 */
 	public function get( $jobName ) {
 		try {
-			// Try to fetch the JobInfo from one of the metastore
-			// TODO: remove references to type (T308044)
-			return $this->index->getType( '_doc' )->getDocument( self::docId( $jobName ) );
+			return $this->index->getDocument( self::docId( $jobName ) );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
 			return null;
 		}
@@ -95,8 +93,7 @@ class MetaSaneitizeJobStore implements MetaStore {
 	 * @param string $jobName
 	 */
 	public function delete( $jobName ) {
-		// TODO: remove references to type (T308044)
-		$this->index->getType( '_doc' )->deleteById( self::docId( $jobName ) );
+		$this->index->deleteById( self::docId( $jobName ) );
 	}
 
 	/**

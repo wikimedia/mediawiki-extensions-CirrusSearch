@@ -1,11 +1,11 @@
 {
-    "path": "myfixturewiki_content\/_doc\/_bulk",
+    "path": "myfixturewiki_content\/_bulk",
     "method": "POST",
     "data": [
         {
             "update": {
                 "_id": "1",
-                "_retry_on_conflict": 5
+                "retry_on_conflict": 5
             }
         },
         {

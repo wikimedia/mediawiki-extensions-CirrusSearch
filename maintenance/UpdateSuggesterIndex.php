@@ -435,8 +435,8 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->log( "Deleting remaining docs from previous batch\n" );
 		foreach ( $scroll as $results ) {
 			if ( $totalDocsToDump === -1 ) {
-				// hack to support elastic7
-				$totalDocsToDump = $results->getResponse()->getData()['hits']['total']['value'] ?? $results->getTotalHits();
+				// hack to support ES6, switch to getTotalHits
+				$totalDocsToDump = $this->getTotalHits( $results );
 				if ( $totalDocsToDump === 0 ) {
 					break;
 				}
@@ -452,10 +452,9 @@ class UpdateSuggesterIndex extends Maintenance {
 				continue;
 			}
 
-			// TODO: remove references to type (T308044)
 			MWElasticUtils::withRetry( $this->indexRetryAttempts,
 				function () use ( $docIds ) {
-					$this->getIndex()->getType( '_doc' )->deleteIds( $docIds );
+					$this->getIndex()->deleteByQuery( new Query\Ids( $docIds ) );
 				}
 			);
 		}
@@ -547,8 +546,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 			foreach ( $scroll as $results ) {
 				if ( $totalDocsToDump === -1 ) {
-					// quick hack to elasticsearch 7
-					$totalDocsToDump = $results->getResponse()->getData()['hits']['total']['value'] ?? $results->getTotalHits();
+					$totalDocsToDump = $this->getTotalHits( $results );
 					if ( $totalDocsToDump === 0 ) {
 						$this->log( "No documents to index from $sourceIndexSuffix\n" );
 						break;
@@ -572,9 +570,6 @@ class UpdateSuggesterIndex extends Maintenance {
 				$this->outputProgress( $docsDumped, $totalDocsToDump );
 				MWElasticUtils::withRetry( $this->indexRetryAttempts,
 					static function () use ( $destinationIndex, $suggestDocs ) {
-						foreach ( $suggestDocs as $doc ) {
-							$doc->setType( '_doc' );
-						}
 						$destinationIndex->addDocuments( $suggestDocs );
 					}
 				);
@@ -776,6 +771,16 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	protected function getIndexAliasName() {
 		return $this->getConnection()->getIndexName( $this->indexBaseName, $this->indexSuffix );
+	}
+
+	/**
+	 * @param Elastica\ResultSet $results
+	 * @return mixed|string
+	 */
+	private function getTotalHits( Elastica\ResultSet $results ) {
+		// hack to support ES6, switch to getTotalHits
+		return $results->getResponse()->getData()["hits"]["total"]["value"] ??
+			   $results->getResponse()->getData()["hits"]["total"];
 	}
 }
 

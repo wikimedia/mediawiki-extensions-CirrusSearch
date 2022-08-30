@@ -354,7 +354,7 @@ class MetaStoreIndex {
 	 * @param \Elastica\Index $index new index
 	 */
 	private function storeMetastoreVersion( $index ) {
-		$index->getType( '_doc' )->addDocument(
+		$index->addDocument(
 			new \Elastica\Document(
 				self::METASTORE_VERSION_DOCID,
 				[
@@ -392,8 +392,7 @@ class MetaStoreIndex {
 	 */
 	public function metastoreVersion() {
 		try {
-			// TODO: remove references to type (T308044)
-			$doc = $this->elasticaIndex()->getType( '_doc' )->getDocument( self::METASTORE_VERSION_DOCID );
+			$doc = $this->elasticaIndex()->getDocument( self::METASTORE_VERSION_DOCID );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
 			return 0;
 		} catch ( \Elastica\Exception\ResponseException $e ) {

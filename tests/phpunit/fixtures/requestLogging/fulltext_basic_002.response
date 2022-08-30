@@ -10,7 +10,10 @@
                     "failed": 0
                 },
                 "hits": {
-                    "total": 2,
+                    "total": {
+                        "value": 2,
+                        "relation": "eq"
+                    },
                     "max_score": 7.9185534,
                     "hits": [
                         {

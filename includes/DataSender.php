@@ -6,6 +6,7 @@ use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\BuildDocument\BuildDocumentException;
 use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Bulk\Action\AbstractDocument;
+use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -123,7 +124,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$pageIndex = $this->connection->getIndex( $this->indexBaseName, $indexSuffix );
 		foreach ( array_chunk( $docIds, $batchSize ) as $docIdsChunk ) {
 			$bulk = new \Elastica\Bulk( $client );
-			$bulk->setType( $pageIndex->getType( '_doc' ) );
+			$bulk->setIndex( $pageIndex );
 			foreach ( $docIdsChunk as $docId ) {
 				$tags = [];
 				foreach ( $tagNames as $tagName ) {
@@ -299,7 +300,7 @@ class DataSender extends ElasticsearchIntermediary {
 			) );
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
 			$bulk->setShardTimeout( $this->searchConfig->get( 'CirrusSearchUpdateShardTimeout' ) );
-			$bulk->setType( $pageIndex->getType( '_doc' ) );
+			$bulk->setIndex( $pageIndex );
 			if ( $this->searchConfig->getElement( 'CirrusSearchElasticQuirks', 'retry_on_conflict' ) ) {
 				$actions = [];
 				foreach ( $documents as $doc ) {
@@ -348,7 +349,7 @@ class DataSender extends ElasticsearchIntermediary {
 		} else {
 			$this->failure( $exception );
 			$documentIds = array_map( static function ( $d ) {
-				return $d->getId();
+				return (string)( $d->getId() );
 			}, $documents );
 			$logContext = [ 'docId' => implode( ', ', $documentIds ) ];
 			if ( $exception ) {
@@ -443,11 +444,15 @@ class DataSender extends ElasticsearchIntermediary {
 							'indexSuffix' => $indexSuffix,
 						]
 					);
-					// TODO: remove references to type (T308044)
 					$this->connection
 						->getIndex( $this->indexBaseName, $indexSuffix )
-						->getType( '_doc' )
-						->deleteIds( $docIds );
+						->deleteDocuments(
+							array_map(
+								static function ( $id ) {
+									return new Document( $id );
+								}, $docIds
+							)
+						);
 					$this->success();
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {

@@ -1,20 +1,23 @@
 {
-    "path": "myfixturewiki_content\/_doc\/_bulk",
+    "path": "_bulk",
     "method": "POST",
     "data": [
         {
             "delete": {
-                "_id": "1"
+                "_id": "1",
+                "_index": "myfixturewiki_content"
             }
         },
         {
             "delete": {
-                "_id": "2"
+                "_id": "2",
+                "_index": "myfixturewiki_content"
             }
         },
         {
             "delete": {
-                "_id": "3"
+                "_id": "3",
+                "_index": "myfixturewiki_content"
             }
         }
     ],

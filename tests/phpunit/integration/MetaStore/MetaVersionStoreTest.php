@@ -5,6 +5,9 @@ namespace CirrusSearch\MetaStore;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Connection;
 use CirrusSearch\HashSearchConfig;
+use Elastica\Query;
+use Elastica\Response;
+use Elastica\ResultSet;
 use WikiMap;
 
 /**
@@ -72,6 +75,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 		$index->method( 'search' )
 			->will( $this->returnCallback( static function ( $passed ) use ( &$search ) {
 				$search = $passed;
+				return new ResultSet( new Response( [] ), new Query(), [] );
 			} ) );
 		// What can we really test? Feels more like integration
 		// testing that needs the elasticsearch cluster. Or we
@@ -115,13 +119,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 			->willReturn( true );
 
 		if ( $getBehavior !== null ) {
-			// TODO: remove references to type (T308044)
-			$type = $this->getMockBuilder( \Elastica\Type::class )
-				->disableOriginalConstructor()
-				->getMock();
-
-			$index->method( 'getType' )->willReturn( $type );
-			$getBehavior( $type );
+			$getBehavior( $index );
 		}
 
 		return [ $conn, $index ];

@@ -10,7 +10,10 @@
                     "failed": 0
                 },
                 "hits": {
-                    "total": 1,
+                    "total": {
+                        "value": 1,
+                        "relation": "eq"
+                    },
                     "max_score": 6.937646,
                     "hits": [
                         {
@@ -55,7 +58,10 @@
                     "failed": 0
                 },
                 "hits": {
-                    "total": 1,
+                    "total": {
+                        "value": 1,
+                        "relation": "eq"
+                    },
                     "max_score": 3.138195,
                     "hits": [
                         {
@@ -81,7 +87,10 @@
                     "failed": 0
                 },
                 "hits": {
-                    "total": 7,
+                    "total": {
+                        "value": 7,
+                        "relation": "eq"
+                    },
                     "max_score": 9.647443,
                     "hits": [
                         {

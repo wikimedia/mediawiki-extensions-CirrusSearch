@@ -1,9 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"पर्वत सुबेदी"
+			"पर्वत सुबेदी",
+			"Bada Kaji"
 		]
 	},
+	"cirrussearch-explore-similar-related": "सम्बन्धित",
+	"cirrussearch-explore-similar-categories": "श्रेणीहरू",
 	"cirrussearch-explore-similar-languages": "भाषाहरू",
 	"cirrussearch-explore-similar-languages-none": "अन्य भाषाहरूमा उपलब्ध छैन।"
 }

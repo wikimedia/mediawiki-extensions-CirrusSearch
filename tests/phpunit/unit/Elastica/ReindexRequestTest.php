@@ -7,7 +7,6 @@ use Elastica\Client;
 use Elastica\Index;
 use Elastica\Request;
 use Elastica\Response;
-use Elastica\Type;
 
 /**
  * @covers \CirrusSearch\Elastica\ReindexRequest
@@ -28,27 +27,6 @@ class ReindexRequestTest extends CirrusTestCase {
 			],
 			'dest' => [
 				'index' => 'dest_idx',
-			],
-		], $req->toArray() );
-	}
-
-	public function testAcceptsTypeSourceAndDest() {
-		$client = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->getMock();
-		$sourceType = new Type( new Index( $client, 'source_idx' ), 'source_type' );
-		$destType = new Type( new Index( $client, 'dest_idx' ), 'dest_type' );
-
-		$req = new ReindexRequest( $sourceType, $destType );
-		$this->assertEquals( [
-			'source' => [
-				'index' => 'source_idx',
-				'type' => 'source_type',
-				'size' => 100,
-			],
-			'dest' => [
-				'index' => 'dest_idx',
-				'type' => 'dest_type',
 			],
 		], $req->toArray() );
 	}

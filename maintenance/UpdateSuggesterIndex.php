@@ -155,6 +155,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			'Set index.routing.allocation.exclude.tag on the created index. Useful if you want ' .
 			'to force the suggester index not to be allocated on a specific set of nodes.',
 			false, true );
+		$this->addOption( 'recreate', "Force the creation of a new index." );
 	}
 
 	public function execute() {
@@ -313,6 +314,11 @@ class UpdateSuggesterIndex extends Maintenance {
 		if ( !$wgCirrusSearchRecycleCompletionSuggesterIndex ) {
 			return false;
 		}
+
+		if ( $this->getOption( "recreate", false ) ) {
+			return false;
+		}
+
 		$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption(
 			'current', $this->getIndexAliasName()
 		);

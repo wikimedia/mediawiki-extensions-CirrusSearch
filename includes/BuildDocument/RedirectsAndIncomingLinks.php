@@ -9,6 +9,7 @@ use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\SearchRequestLog;
 use Elastica\Document;
+use Elastica\Exception\ResponseException;
 use Elastica\Multi\ResultSet;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query\BoolQuery;
@@ -140,6 +141,11 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 				'query' => $linkCountClosureCount,
 			] );
 			$result = $this->linkCountMultiSearch->search();
+
+			if ( $result->count() <= 0 ) {
+				$this->raiseResponseException();
+			}
+
 			$foundNull = false;
 			for ( $index = 0; $index < $linkCountClosureCount; $index++ ) {
 				if ( $result[$index] === null ) {
@@ -234,5 +240,19 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 			$queryType,
 			$extra
 		);
+	}
+
+	/**
+	 * @throws ResponseException
+	 * @return void
+	 */
+	private function raiseResponseException(): void {
+		$client = $this->connection->getClient();
+		$request = $client->getLastRequest();
+		$response = $client->getLastResponse();
+
+		if ( $request && $response ) {
+			throw new ResponseException( $request, $response );
+		}
 	}
 }

@@ -53,7 +53,7 @@ class ElasticaErrorHandlerTest extends CirrusTestCase {
 				self::newResponseException( 'retry_on_primary_exception', 'shard is not in primary mode' ),
 			],
 			'index_not_found_exception: no such index' => [
-				'failed',
+				'config_issue',
 				self::newResponseException( 'index_not_found_exception', 'no such index' ),
 			],
 			'parse_exception: Encountered " <AND> "&& ""' => [

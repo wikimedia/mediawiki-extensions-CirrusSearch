@@ -151,7 +151,6 @@ class ElasticaErrorHandler {
 					'^null_pointer_exception$',
 					'^elasticsearch_timeout_exception$',
 					'^retry_on_primary_exception$',
-					'^index_not_found_exception$',
 				],
 				// These are exceptions thrown by elastica itself
 				'msg_regexes' => [
@@ -161,6 +160,16 @@ class ElasticaErrorHandler {
 					'^Status code 503',
 				],
 			],
+			'config_issue' => [
+				'type_regexes' => [
+					'^index_not_found_exception$',
+				],
+				'msg_regexes' => [
+					// for 'bulk' errors index_not_found_exception is set
+					// in message and not type
+					'index_not_found_exception',
+				],
+			]
 		];
 
 		foreach ( $heuristics as $type => $heuristic ) {

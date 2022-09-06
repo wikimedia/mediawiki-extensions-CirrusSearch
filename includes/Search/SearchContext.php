@@ -554,7 +554,9 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		}
 		$filters = $this->filters;
 		if ( $this->getNamespaces() ) {
-			$filters[] = new \Elastica\Query\Terms( 'namespace', $this->getNamespaces() );
+			// We must take an array_values here, or it can be json-encoded into an object instead
+			// of a list which elasticsearch will interpret as terms lookup.
+			$filters[] = new \Elastica\Query\Terms( 'namespace', array_values( $this->getNamespaces() ) );
 		}
 
 		// Wrap $mainQuery in a filtered query if there are any filters

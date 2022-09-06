@@ -151,6 +151,7 @@ class ElasticaErrorHandler {
 					'^null_pointer_exception$',
 					'^elasticsearch_timeout_exception$',
 					'^retry_on_primary_exception$',
+					'^circuit_breaking_exception$',
 				],
 				// These are exceptions thrown by elastica itself
 				'msg_regexes' => [
@@ -169,7 +170,13 @@ class ElasticaErrorHandler {
 					// in message and not type
 					'index_not_found_exception',
 				],
-			]
+			],
+			'memory_issue' => [
+				'type_regexes' => [
+					'^circuit_breaking_exception$',
+				],
+				'msg_regexes' => [],
+			],
 		];
 
 		foreach ( $heuristics as $type => $heuristic ) {

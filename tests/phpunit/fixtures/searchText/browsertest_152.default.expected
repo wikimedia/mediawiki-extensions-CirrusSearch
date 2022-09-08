@@ -323,7 +323,8 @@
                     }
                 },
                 "text": "amazing"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

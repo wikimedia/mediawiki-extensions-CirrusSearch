@@ -325,7 +325,8 @@
                     }
                 },
                 "text": "Africa test"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

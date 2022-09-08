@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "Waffle Squash"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

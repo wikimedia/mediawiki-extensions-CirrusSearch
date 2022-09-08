@@ -338,7 +338,8 @@
                     }
                 },
                 "text": "pictures local:"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

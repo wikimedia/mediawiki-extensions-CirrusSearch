@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "The Rose Trellis Egg"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

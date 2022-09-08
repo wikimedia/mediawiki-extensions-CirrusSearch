@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "superduperfrozen yields FrozenTest as the first result"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

@@ -449,7 +449,8 @@
                     }
                 },
                 "text": "DeleteMeRedirect"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

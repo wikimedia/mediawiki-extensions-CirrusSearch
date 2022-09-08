@@ -303,7 +303,8 @@
                     }
                 },
                 "text": "PascalCase"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

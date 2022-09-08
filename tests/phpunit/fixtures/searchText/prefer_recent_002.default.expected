@@ -319,7 +319,8 @@
                     }
                 },
                 "text": "other"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

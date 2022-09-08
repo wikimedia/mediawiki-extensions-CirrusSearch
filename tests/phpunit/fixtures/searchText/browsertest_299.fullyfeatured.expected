@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "StemmerTest alias"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

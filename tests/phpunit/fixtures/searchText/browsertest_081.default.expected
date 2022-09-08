@@ -325,7 +325,8 @@
                     }
                 },
                 "text": "crazy rdir"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

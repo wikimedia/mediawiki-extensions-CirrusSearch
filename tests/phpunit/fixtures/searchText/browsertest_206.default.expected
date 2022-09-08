@@ -325,7 +325,8 @@
                     }
                 },
                 "text": "nabel prize"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

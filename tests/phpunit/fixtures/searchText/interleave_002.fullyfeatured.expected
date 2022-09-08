@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "change completed unrelated variable"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

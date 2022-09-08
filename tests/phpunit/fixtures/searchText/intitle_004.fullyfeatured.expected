@@ -485,7 +485,8 @@
                     }
                 },
                 "text": "abc"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

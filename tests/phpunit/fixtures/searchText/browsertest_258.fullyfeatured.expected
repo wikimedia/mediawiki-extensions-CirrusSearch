@@ -474,7 +474,8 @@
                     }
                 },
                 "text": "prefix test aaaa"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

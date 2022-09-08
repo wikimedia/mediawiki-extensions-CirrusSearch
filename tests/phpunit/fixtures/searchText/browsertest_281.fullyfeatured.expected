@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "Relevancytwo Wordtest"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

@@ -450,7 +450,8 @@
                     }
                 },
                 "text": "pictures"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

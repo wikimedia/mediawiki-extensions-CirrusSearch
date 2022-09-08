@@ -303,7 +303,8 @@
                     }
                 },
                 "text": "amazing~\u25c6~catapult"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

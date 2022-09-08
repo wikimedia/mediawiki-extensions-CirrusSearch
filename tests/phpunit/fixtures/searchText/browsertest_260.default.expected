@@ -325,7 +325,8 @@
                     }
                 },
                 "text": "prefix test prefix:"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

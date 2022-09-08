@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "popular cultur"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

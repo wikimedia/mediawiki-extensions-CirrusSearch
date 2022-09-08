@@ -214,6 +214,11 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $cirrusSearchHookRunner;
 
 	/**
+	 * @var bool
+	 */
+	private $trackTotalHits = true;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces
 	 * @param CirrusDebugOptions|null $options
@@ -893,5 +898,16 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 */
 	public function getFallbackRunner(): FallbackRunner {
 		return $this->fallbackRunner;
+	}
+
+	public function setTrackTotalHits( bool $trackTotalHits ): void {
+		if ( $trackTotalHits !== $this->trackTotalHits ) {
+			$this->isDirty = true;
+			$this->trackTotalHits = $trackTotalHits;
+		}
+	}
+
+	public function getTrackTotalHits(): bool {
+		return $this->trackTotalHits;
 	}
 }

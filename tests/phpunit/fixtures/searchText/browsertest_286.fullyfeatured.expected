@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "Rrrrtest Foorr Barr"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

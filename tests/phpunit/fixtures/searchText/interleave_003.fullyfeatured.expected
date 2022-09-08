@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "change rescore profile"
-            }
+            },
+            "track_total_hits": true
         }
     },
     "__interleaved__": {
@@ -931,7 +932,8 @@
                     }
                 },
                 "text": "change rescore profile"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "Reference foo bar baz Highlight Test"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

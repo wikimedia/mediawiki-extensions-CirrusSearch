@@ -325,7 +325,8 @@
                     }
                 },
                 "text": "mo:some text"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

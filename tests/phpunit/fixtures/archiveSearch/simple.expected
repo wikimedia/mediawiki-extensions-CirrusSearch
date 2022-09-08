@@ -56,7 +56,8 @@
             "stats": [
                 "archive"
             ],
-            "size": 20
+            "size": 20,
+            "track_total_hits": true
         },
         "options": {
             "timeout": "20s",

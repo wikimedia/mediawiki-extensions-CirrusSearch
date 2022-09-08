@@ -471,7 +471,8 @@
                     }
                 },
                 "text": "words"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

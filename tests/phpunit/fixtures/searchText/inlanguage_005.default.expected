@@ -317,7 +317,8 @@
                     }
                 },
                 "text": "bar"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

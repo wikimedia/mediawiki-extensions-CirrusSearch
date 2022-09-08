@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "catapult ! amazing"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

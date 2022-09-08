@@ -449,7 +449,8 @@
                     }
                 },
                 "text": "superduperchangedme"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

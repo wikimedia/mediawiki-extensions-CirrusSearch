@@ -469,7 +469,8 @@
                     }
                 },
                 "text": "Many Redirects Test"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

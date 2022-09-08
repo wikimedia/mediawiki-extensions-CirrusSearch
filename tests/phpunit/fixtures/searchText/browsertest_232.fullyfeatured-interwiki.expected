@@ -263,7 +263,8 @@
             ],
             "stored_fields": [
                 "text.word_count"
-            ]
+            ],
+            "track_total_hits": true
         }
     },
     "wikt": {
@@ -530,7 +531,8 @@
             ],
             "stored_fields": [
                 "text.word_count"
-            ]
+            ],
+            "track_total_hits": true
         }
     },
     "b": {
@@ -797,7 +799,8 @@
             ],
             "stored_fields": [
                 "text.word_count"
-            ]
+            ],
+            "track_total_hits": true
         }
     },
     "voy": {
@@ -1080,7 +1083,8 @@
             ],
             "stored_fields": [
                 "text.word_count"
-            ]
+            ],
+            "track_total_hits": true
         }
     }
 }

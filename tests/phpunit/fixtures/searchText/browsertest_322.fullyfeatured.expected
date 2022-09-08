@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "the once and future king"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

@@ -449,7 +449,8 @@
                     }
                 },
                 "text": "namespaceAliases"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

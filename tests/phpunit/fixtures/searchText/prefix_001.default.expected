@@ -328,7 +328,8 @@
                     }
                 },
                 "text": "something"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

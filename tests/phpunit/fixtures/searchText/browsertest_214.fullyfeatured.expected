@@ -469,7 +469,8 @@
                     }
                 },
                 "text": "noble"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

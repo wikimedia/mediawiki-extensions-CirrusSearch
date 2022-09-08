@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "Waffle Squash 2"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

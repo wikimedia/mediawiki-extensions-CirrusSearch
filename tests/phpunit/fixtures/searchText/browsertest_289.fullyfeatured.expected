@@ -449,7 +449,8 @@
                     }
                 },
                 "text": "Savepage-greyed.png"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

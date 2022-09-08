@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "stemming multiword"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

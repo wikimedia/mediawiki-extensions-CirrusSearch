@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "Reference Text Highlight Test"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

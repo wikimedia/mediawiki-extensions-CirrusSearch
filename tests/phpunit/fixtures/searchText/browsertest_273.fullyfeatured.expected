@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "Relevancyclosetest Foo"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

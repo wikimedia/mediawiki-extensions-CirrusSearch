@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "awards suggest1 suggest4"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

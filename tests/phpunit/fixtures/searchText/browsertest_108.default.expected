@@ -303,7 +303,8 @@
                     }
                 },
                 "text": "foobarbaz"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

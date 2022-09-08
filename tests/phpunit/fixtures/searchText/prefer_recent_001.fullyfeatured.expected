@@ -465,7 +465,8 @@
                     }
                 },
                 "text": "documentation"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

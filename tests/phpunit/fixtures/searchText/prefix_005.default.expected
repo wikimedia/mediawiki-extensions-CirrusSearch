@@ -330,7 +330,8 @@
                     }
                 },
                 "text": "zomg"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

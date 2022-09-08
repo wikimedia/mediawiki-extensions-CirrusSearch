@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "two words catapult pickles"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

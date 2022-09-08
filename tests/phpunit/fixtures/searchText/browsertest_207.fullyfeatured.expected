@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "namespace aliases"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

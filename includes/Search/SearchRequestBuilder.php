@@ -52,6 +52,7 @@ class SearchRequestBuilder {
 		$resultsType = $this->searchContext->getResultsType();
 
 		$query = new Query();
+		$query->setTrackTotalHits( $this->searchContext->getTrackTotalHits() );
 		$query->setSource( $resultsType->getSourceFiltering() );
 		$query->setStoredFields( $resultsType->getStoredFields() );
 

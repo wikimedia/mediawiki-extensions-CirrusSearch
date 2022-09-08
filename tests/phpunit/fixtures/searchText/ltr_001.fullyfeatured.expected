@@ -446,7 +446,8 @@
                     }
                 },
                 "text": "test some ltr"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

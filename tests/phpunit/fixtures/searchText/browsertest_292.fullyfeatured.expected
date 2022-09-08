@@ -449,7 +449,8 @@
                     }
                 },
                 "text": "smoosh"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

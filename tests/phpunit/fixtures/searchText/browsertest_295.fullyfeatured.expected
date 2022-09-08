@@ -449,7 +449,8 @@
                     }
                 },
                 "text": "snakeCase"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "Pascal Case"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

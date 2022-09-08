@@ -304,7 +304,8 @@
                     }
                 },
                 "text": "music"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

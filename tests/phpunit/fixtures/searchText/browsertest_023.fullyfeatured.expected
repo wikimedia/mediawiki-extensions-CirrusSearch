@@ -460,7 +460,8 @@
                     }
                 },
                 "text": "noble prize"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

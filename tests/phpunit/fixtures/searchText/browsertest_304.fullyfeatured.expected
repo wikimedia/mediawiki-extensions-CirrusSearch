@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "StemmerTest used"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

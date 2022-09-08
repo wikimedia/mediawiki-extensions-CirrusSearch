@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "Noble Gasses"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

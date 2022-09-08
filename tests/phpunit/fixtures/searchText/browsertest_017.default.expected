@@ -303,7 +303,8 @@
                     }
                 },
                 "text": "amazing+catapult"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "DontExistWord Two Words"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

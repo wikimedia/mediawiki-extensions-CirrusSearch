@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "something morelike:Some page"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

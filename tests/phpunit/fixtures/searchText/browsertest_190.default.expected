@@ -325,7 +325,8 @@
                     }
                 },
                 "text": "Javascript findme"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

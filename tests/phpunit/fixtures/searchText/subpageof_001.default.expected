@@ -265,7 +265,8 @@
             ],
             "stored_fields": [
                 "text.word_count"
-            ]
+            ],
+            "track_total_hits": true
         }
     }
 }

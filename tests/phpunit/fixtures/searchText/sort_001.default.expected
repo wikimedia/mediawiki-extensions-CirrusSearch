@@ -270,7 +270,8 @@
                     }
                 },
                 "text": "random sort"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

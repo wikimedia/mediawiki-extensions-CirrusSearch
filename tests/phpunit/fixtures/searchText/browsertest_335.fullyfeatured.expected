@@ -449,7 +449,8 @@
                     }
                 },
                 "text": "wafflesquash"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

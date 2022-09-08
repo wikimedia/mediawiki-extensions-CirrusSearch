@@ -467,7 +467,8 @@
                     }
                 },
                 "text": "Savepage png"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

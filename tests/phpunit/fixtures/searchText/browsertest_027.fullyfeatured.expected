@@ -449,7 +449,8 @@
                     }
                 },
                 "text": "catapult"
-            }
+            },
+            "track_total_hits": true
         }
     }
 }

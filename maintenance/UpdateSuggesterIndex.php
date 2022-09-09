@@ -424,6 +424,8 @@ class UpdateSuggesterIndex extends Maintenance {
 		$query->setSize( $this->indexChunkSize );
 		$query->setSource( false );
 		$query->setSort( [ '_doc' ] );
+		// Explicitly ask for accurate total_hits even-though we use a scroll request
+		$query->setTrackTotalHits( true );
 		$search = new \Elastica\Search( $this->getClient() );
 		$search->setQuery( $query );
 		$search->addIndex( $this->getIndex() );
@@ -531,6 +533,8 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$query->setQuery( $bool );
 		$query->setSort( [ '_doc' ] );
+		// Explicitly ask for accurate total_hits even-though we use a scroll request
+		$query->setTrackTotalHits( true );
 
 		foreach ( $sourceIndexSuffixes as $sourceIndexSuffix ) {
 			$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexSuffix );
@@ -615,7 +619,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		}
 		$this->lastProgressPrinted = $pctDone;
 		if ( ( $pctDone % 2 ) == 0 ) {
-			$this->outputIndented( "\t$pctDone% done...\n" );
+			$this->outputIndented( "    $pctDone% done...\n" );
 		}
 	}
 

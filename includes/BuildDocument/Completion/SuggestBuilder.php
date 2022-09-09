@@ -527,6 +527,7 @@ class SuggestBuilder {
 				$connection->getIndex( $indexBaseName, $sourceIndexSuffix )
 			);
 			$search->getQuery()->setSize( 0 );
+			$search->getQuery()->setTrackTotalHits( true );
 			$mSearch->addSearch( $search );
 		}
 

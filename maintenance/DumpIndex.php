@@ -130,6 +130,7 @@ class DumpIndex extends Maintenance {
 		$query->setStoredFields( [ '_id', '_type', '_source' ] );
 		$query->setSize( $this->inputChunkSize );
 		$query->setSort( [ '_doc' ] );
+		$query->setTrackTotalHits( true );
 		if ( $this->hasOption( 'sourceFields' ) ) {
 			$sourceFields = explode( ',', $this->getOption( 'sourceFields' ) );
 			$query->setSource( [ 'include' => $sourceFields ] );

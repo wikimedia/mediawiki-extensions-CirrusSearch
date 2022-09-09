@@ -245,7 +245,7 @@ class ConfigUtils {
 		$statuses = MWElasticUtils::waitForGreen(
 			$this->client, $indexName, $timeout );
 		foreach ( $statuses as $message ) {
-			$this->outputIndented( $message );
+			$this->outputIndented( $message . "\n" );
 		}
 		return $statuses->getReturn();
 	}

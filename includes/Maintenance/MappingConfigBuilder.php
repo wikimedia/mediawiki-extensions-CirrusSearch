@@ -226,6 +226,15 @@ class MappingConfigBuilder {
 			}
 		}
 
+		// Unclear how this would otherwise fit into the process to construct the mapping.
+		// Not used directly in cirrus, supports queries from 'add-a-link' (T301096).
+		if ( isset( $page['properties']['outgoing_link'] ) ) {
+			$page['properties']['outgoing_link']['fields']['token_count'] = [
+				'type' => 'token_count',
+				'analyzer' => 'keyword',
+			];
+		}
+
 		if ( $wgCirrusSearchAllFields[ 'build' ] ) {
 			// Now layer all the fields into the all field once per weight.  Querying it isn't strictly the
 			// same as querying each field - in some ways it is better!  In others it is worse....

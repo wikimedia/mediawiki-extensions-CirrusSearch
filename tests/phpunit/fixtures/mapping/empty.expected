@@ -349,7 +349,13 @@
             "type": "text",
             "analyzer": "keyword",
             "norms": false,
-            "index_options": "docs"
+            "index_options": "docs",
+            "fields": {
+                "token_count": {
+                    "type": "token_count",
+                    "analyzer": "keyword"
+                }
+            }
         },
         "template": {
             "type": "text",

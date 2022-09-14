@@ -255,7 +255,7 @@ class SearchQueryTest extends CirrusTestCase {
 			->addForcedProfile( SearchProfileService::RESCORE, 'test' )
 			->setOffset( 10 )
 			->setLimit( 100 )
-			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) )
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
 			->setSort( 'random' )
 			->setRandomSeed( 123 )
 			->setWithDYMSuggestion( false )
@@ -277,7 +277,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( 123, $custom->getRandomSeed() );
 		$this->assertEquals( 10, $custom->getOffset() );
 		$this->assertEquals( 100, $custom->getLimit() );
-		$this->assertEquals( CirrusDebugOptions::forDumpingQueriesInUnitTests( false ), $custom->getDebugOptions() );
+		$this->assertEquals( CirrusDebugOptions::forDumpingQueriesInUnitTests(), $custom->getDebugOptions() );
 		$this->assertEquals( $config, $custom->getSearchConfig() );
 		$this->assertEmpty( $custom->getContextualFilters() );
 		$this->assertFalse( $custom->isWithDYMSuggestion() );
@@ -393,13 +393,13 @@ class SearchQueryTest extends CirrusTestCase {
 			->addForcedProfile( SearchProfileService::RESCORE, 'foo' )
 			->setInitialNamespaces( [ NS_MAIN, NS_HELP, 100 ] )
 			->setSort( 'size' )
-			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) )
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
 			->build();
 		$crossSearchQuery = SearchQueryBuilder::forCrossProjectSearch( $targetWikiConfig,
 			$hostWikiQuery )->build();
 		$this->copyForCrossSearchAssertions( $hostWikiQuery, $crossSearchQuery, $targetWikiConfig,
 			[ NS_MAIN, NS_HELP ], [ NS_MAIN, NS_HELP ], 'size', 0, $nbRes,
-			CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) );
+			CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 
 		// Test that forced profiles do not propagate to the cross search query if they do not exist
 		// on the target wiki. Forced profiles are only set using official API params, cirrus debug
@@ -409,7 +409,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$crossSearchQuery = SearchQueryBuilder::forCrossProjectSearch( $targetWikiConfig, $hostWikiQuery )->build();
 		$this->copyForCrossSearchAssertions( $hostWikiQuery, $crossSearchQuery, $targetWikiConfig,
 			[ NS_MAIN, NS_HELP ], [ NS_MAIN, NS_HELP ], 'size', 0, $nbRes,
-			CirrusDebugOptions::forDumpingQueriesInUnitTests( false ), 'common' );
+			CirrusDebugOptions::forDumpingQueriesInUnitTests(), 'common' );
 	}
 
 	public function testForCrossLanguageSearch() {
@@ -441,21 +441,21 @@ class SearchQueryTest extends CirrusTestCase {
 			->addForcedProfile( SearchProfileService::RESCORE, 'foo' )
 			->setInitialNamespaces( [ NS_MAIN, NS_HELP, 100 ] )
 			->setSort( 'size' )
-			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) )
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
 			->build();
 
 		$crossSearchQuery = SearchQueryBuilder::forCrossLanguageSearch( $targetWikiConfig,
 			$hostWikiQuery )->build();
 		$this->copyForCrossSearchAssertions( $hostWikiQuery, $crossSearchQuery, $targetWikiConfig,
 			[ NS_MAIN, NS_HELP ], [ NS_MAIN, NS_HELP ], 'size', 10, 100,
-			CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) );
+			CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 
 		$hostWikiQuery = $builder->addForcedProfile( SearchProfileService::RESCORE, 'common' )
 			->build();
 		$crossSearchQuery = SearchQueryBuilder::forCrossLanguageSearch( $targetWikiConfig, $hostWikiQuery )->build();
 		$this->copyForCrossSearchAssertions( $hostWikiQuery, $crossSearchQuery, $targetWikiConfig,
 			[ NS_MAIN, NS_HELP ], [ NS_MAIN, NS_HELP ], 'size', 10, 100,
-			CirrusDebugOptions::forDumpingQueriesInUnitTests( false ), 'common' );
+			CirrusDebugOptions::forDumpingQueriesInUnitTests(), 'common' );
 	}
 
 	private function copyForCrossSearchAssertions(
@@ -509,7 +509,7 @@ class SearchQueryTest extends CirrusTestCase {
 			->setSort( 'size' )
 			->setAllowRewrite( true )
 			->setInitialNamespaces( [ NS_HELP, NS_FILE ] )
-			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) )
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
 			->addProfileContextParameter( 'foo', 'bar' );
 		$query = $builder->build();
 

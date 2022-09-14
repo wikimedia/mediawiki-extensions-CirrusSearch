@@ -641,11 +641,6 @@ class Util {
 			exit();
 		}
 
-		// TODO: Remove once all tests are compatible
-		if ( $debugOptions->isBackwardCompatible() && $debugOptions->getCirrusExplainFormat() === null ) {
-			$result = json_encode( $result, JSON_PRETTY_PRINT );
-		}
-
 		return $result;
 	}
 }

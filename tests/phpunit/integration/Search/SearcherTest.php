@@ -114,7 +114,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$this->addGoodLinkObject( 12345, Title::newFromText( 'Some page' ) );
 		$this->addGoodLinkObject( 23456, Title::newFromText( 'Other page' ) );
 
-		$engine = new CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) );
+		$engine = new CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		// Set some default namespaces, otherwise installed extensions will change
 		// the generated query
 		$engine->setNamespaces( [
@@ -270,7 +270,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			$termMain = $query;
 		}
 
-		$engine = new CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) );
+		$engine = new CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		$engine->setLimitOffset( 20, 0 );
 		$engine->setNamespaces( [ $ns ] );
 		$elasticQuery = $engine->searchArchiveTitle( $termMain )->getValue();
@@ -339,7 +339,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( $expected, $searcher->getOffsetLimit() );
 		$searcher = new Searcher( new DummyConnection( $conf ), 0, 20, $conf );
 		$query = $this->getNewFTSearchQueryBuilder( $conf, 'test' )
-			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) )
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
 			->setOffset( $offset )
 			->setLimit( $limit );
 		$searcher->search( $query->build() );
@@ -371,7 +371,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$engine = new CirrusSearch( new HashSearchConfig( $config + [
 					'CirrusSearchPhraseSuggestReverseField' => [ 'use' => false ],
 				], [ HashSearchConfig::FLAG_INHERIT ] ),
-				CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) );
+				CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		$engine->setShowSuggestion( $withDym );
 		$engine->setNamespaces( $namespaces );
 		$engine->setLimitOffset( 20, $offset );
@@ -444,7 +444,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		 */
 		$resultSet = $engine->searchText( $query )->getValue();
 
-		$engine = new CirrusSearch( $config, CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) );
+		$engine = new CirrusSearch( $config, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		$engine->setFeatureData( 'rewrite', true );
 		$engine->setShowSuggestion( true );
 		$query = $engine->searchText( $query )->getValue();

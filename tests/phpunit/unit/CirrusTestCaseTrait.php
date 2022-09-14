@@ -109,8 +109,12 @@ trait CirrusTestCaseTrait {
 		return is_file( self::$FIXTURE_DIR . $testFile );
 	}
 
+	public static function loadTextFixture( $testFile, $errorMessage = "fixture config" ) {
+		return file_get_contents( self::$FIXTURE_DIR . $testFile );
+	}
+
 	public static function loadFixture( $testFile, $errorMessage = "fixture config" ) {
-		$decoded = json_decode( file_get_contents( self::$FIXTURE_DIR . $testFile ), true );
+		$decoded = json_decode( self::loadTextFixture( $testFile ), true );
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			throw new \RuntimeException( "Failed decoding {$errorMessage}: $testFile" );
 		}

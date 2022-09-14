@@ -359,7 +359,7 @@
                                         "constant_score": {
                                             "boost": 100000,
                                             "filter": {
-                                                "match_all": []
+                                                "match_all": {}
                                             }
                                         }
                                     },

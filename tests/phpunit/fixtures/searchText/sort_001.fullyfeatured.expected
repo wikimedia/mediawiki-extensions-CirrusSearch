@@ -357,11 +357,11 @@
                             "function_score": {
                                 "functions": [
                                     {
-                                        "random_score": []
+                                        "random_score": {}
                                     }
                                 ],
                                 "query": {
-                                    "match_all": []
+                                    "match_all": {}
                                 }
                             }
                         }

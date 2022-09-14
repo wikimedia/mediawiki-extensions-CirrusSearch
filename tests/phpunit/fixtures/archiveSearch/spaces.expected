@@ -1,47 +1,24 @@
 {
     "__main__": {
         "description": "archive search for 'Two And two'",
-        "path": "wiki_archive\/_search",
-        "params": {
-            "timeout": "20s",
-            "search_type": "dfs_query_then_fetch"
+        "options": {
+            "search_type": "dfs_query_then_fetch",
+            "timeout": "20s"
         },
+        "params": {
+            "search_type": "dfs_query_then_fetch",
+            "timeout": "20s"
+        },
+        "path": "wiki_archive\/_search",
         "query": {
             "_source": [
                 "namespace",
-                "title",
                 "namespace_text",
+                "title",
                 "wiki"
             ],
-            "stored_fields": [],
             "query": {
                 "bool": {
-                    "should": [
-                        {
-                            "multi_match": {
-                                "type": "best_fields",
-                                "tie_breaker": 0,
-                                "query": "Two And two",
-                                "fields": [
-                                    "title.near_match^100",
-                                    "title.near_match_asciifolding^75",
-                                    "title.plain^50",
-                                    "title^25"
-                                ],
-                                "operator": "AND"
-                            }
-                        },
-                        {
-                            "match": {
-                                "title.plain": {
-                                    "query": "Two And two",
-                                    "fuzziness": "AUTO",
-                                    "operator": "AND"
-                                }
-                            }
-                        }
-                    ],
-                    "minimum_should_match": 1,
                     "filter": [
                         {
                             "terms": {
@@ -50,18 +27,41 @@
                                 ]
                             }
                         }
+                    ],
+                    "minimum_should_match": 1,
+                    "should": [
+                        {
+                            "match": {
+                                "title.plain": {
+                                    "fuzziness": "AUTO",
+                                    "operator": "AND",
+                                    "query": "Two And two"
+                                }
+                            }
+                        },
+                        {
+                            "multi_match": {
+                                "fields": [
+                                    "title.near_match^100",
+                                    "title.near_match_asciifolding^75",
+                                    "title.plain^50",
+                                    "title^25"
+                                ],
+                                "operator": "AND",
+                                "query": "Two And two",
+                                "tie_breaker": 0,
+                                "type": "best_fields"
+                            }
+                        }
                     ]
                 }
             },
+            "size": 20,
             "stats": [
                 "archive"
             ],
-            "size": 20,
+            "stored_fields": [],
             "track_total_hits": true
-        },
-        "options": {
-            "timeout": "20s",
-            "search_type": "dfs_query_then_fetch"
         }
     }
 }

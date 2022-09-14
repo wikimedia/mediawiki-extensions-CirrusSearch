@@ -138,7 +138,7 @@
                     "bool": {
                         "should": [
                             {
-                                "match_all": []
+                                "match_all": {}
                             },
                             {
                                 "query_string": {

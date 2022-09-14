@@ -613,26 +613,39 @@ class Util {
 	 */
 	public static function processSearchRawReturn( $result, WebRequest $request,
 												   CirrusDebugOptions $debugOptions ) {
+		$output = null;
+		$header = null;
 		if ( $debugOptions->getCirrusExplainFormat() !== null ) {
 			$header = 'Content-type: text/html; charset=UTF-8';
 			$printer = new ExplainPrinter( $debugOptions->getCirrusExplainFormat() );
-			$result = $printer->format( $result );
-		} else {
-			$header = 'Content-type: application/json; charset=UTF-8';
-			if ( $result === null ) {
-				$result = '{}';
-			} else {
-				$result = json_encode( $result, JSON_PRETTY_PRINT );
-			}
+			$output = $printer->format( $result );
 		}
 
+		// This should always be true, except in the case of the test suite which wants the actual
+		// objects returned.
 		if ( $debugOptions->isDumpAndDie() ) {
+			if ( $output === null ) {
+				$header = 'Content-type: application/json; charset=UTF-8';
+				if ( $result === null ) {
+					$output = '{}';
+				} else {
+					$output = json_encode( $result, JSON_PRETTY_PRINT );
+				}
+			}
+
 			// When dumping the query we skip _everything_ but echoing the query.
 			\RequestContext::getMain()->getOutput()->disable();
+			// @phan-suppress-next-line PhanTypeMismatchArgumentNullable $header can't be null here
 			$request->response()->header( $header );
-			echo $result;
+			echo $output;
 			exit();
 		}
+
+		// TODO: Remove once all tests are compatible
+		if ( $debugOptions->isBackwardCompatible() && $debugOptions->getCirrusExplainFormat() === null ) {
+			$result = json_encode( $result, JSON_PRETTY_PRINT );
+		}
+
 		return $result;
 	}
 }

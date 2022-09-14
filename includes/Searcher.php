@@ -324,7 +324,17 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$description = "{$this->searchContext->getSearchType()} search for '{$this->searchContext->getOriginalSearchTerm()}'";
 
 		if ( !$this->searchContext->areResultsPossible() ) {
-			return $this->emptyResultSet();
+			if ( $this->searchContext->getDebugOptions()->isCirrusDumpQuery() ) {
+				// return the empty array to suggest that no query will be run
+				return Status::newGood( [] );
+			}
+			$status = $this->emptyResultSet();
+			if ( $this->searchContext->getDebugOptions()->isCirrusDumpResult() ) {
+				return Status::newGood(
+					( new MSearchResponses( [ $status->getValue() ], [] ) )->dumpResults( $description )
+				);
+			}
+			return $status;
 		}
 
 		if ( $interleaveSearcher !== null ) {

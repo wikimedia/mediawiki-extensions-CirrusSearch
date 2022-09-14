@@ -135,7 +135,7 @@
                     }
                 },
                 "highlight_query": {
-                    "match_all": []
+                    "match_all": {}
                 },
                 "post_tags": [
                     "\ue001"
@@ -174,7 +174,7 @@
                     ],
                     "must": [
                         {
-                            "match_all": []
+                            "match_all": {}
                         }
                     ]
                 }
@@ -381,7 +381,7 @@
                     }
                 },
                 "highlight_query": {
-                    "match_all": []
+                    "match_all": {}
                 },
                 "post_tags": [
                     "\ue001"
@@ -420,7 +420,7 @@
                     ],
                     "must": [
                         {
-                            "match_all": []
+                            "match_all": {}
                         }
                     ]
                 }
@@ -627,7 +627,7 @@
                     }
                 },
                 "highlight_query": {
-                    "match_all": []
+                    "match_all": {}
                 },
                 "post_tags": [
                     "\ue001"
@@ -666,7 +666,7 @@
                     ],
                     "must": [
                         {
-                            "match_all": []
+                            "match_all": {}
                         }
                     ]
                 }
@@ -873,7 +873,7 @@
                     }
                 },
                 "highlight_query": {
-                    "match_all": []
+                    "match_all": {}
                 },
                 "post_tags": [
                     "\ue001"
@@ -912,7 +912,7 @@
                     ],
                     "must": [
                         {
-                            "match_all": []
+                            "match_all": {}
                         }
                     ]
                 }

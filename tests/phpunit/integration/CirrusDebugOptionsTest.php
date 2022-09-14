@@ -52,7 +52,7 @@ class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testUnitTests() {
-		$debugOptions = CirrusDebugOptions::forDumpingQueriesInUnitTests();
+		$debugOptions = CirrusDebugOptions::forDumpingQueriesInUnitTests( false );
 		$this->assertNull( $debugOptions->getCirrusMLRModel() );
 		$this->assertNull( $debugOptions->getCirrusExplainFormat() );
 		$this->assertTrue( $debugOptions->isCirrusDumpQuery() );

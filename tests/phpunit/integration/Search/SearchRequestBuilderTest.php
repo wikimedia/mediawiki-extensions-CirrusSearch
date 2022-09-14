@@ -27,7 +27,7 @@ class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
 		$this->setMwGlobals( self::prefixArrayKeys( $hostOverrides, 'wg' ) );
 		$otherWikiConfig = new HashSearchConfig( $otherOverride + $hostOverrides );
 
-		$context = new SearchContext( $otherWikiConfig, null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$context = new SearchContext( $otherWikiConfig, null, CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) );
 		$conn = new Connection( new SearchConfig() );
 		$indexBaseName = 'trebuchet';
 		return new SearchRequestBuilder( $context, $conn, $indexBaseName );

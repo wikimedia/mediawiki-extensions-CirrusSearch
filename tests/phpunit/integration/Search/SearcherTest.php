@@ -50,16 +50,12 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			$querySettings = CirrusIntegrationTestCase::loadFixture( $queryFile );
 			foreach ( $configs as $configName => $config ) {
 				$expectedFile = substr( $queryFile, 0, -5 ) . $configName . '.expected';
-				$expected = CirrusIntegrationTestCase::hasFixture( $expectedFile )
-					? CirrusIntegrationTestCase::loadFixture( $expectedFile )
-					// Flags test to generate a new fixture
-					: $expectedFile;
 				if ( isset( $querySettings['config'] ) ) {
 					$config = $querySettings['config'] + $config;
 				}
 				$tests["{$testName}-{$configName}"] = [
 					$config,
-					$expected,
+					$expectedFile,
 					$querySettings['query'],
 					$querySettings['sort'] ?? 'relevance'
 				];
@@ -72,7 +68,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider searchTextProvider
 	 */
-	public function testSearchText( array $config, $expected, $queryString, $sort ) {
+	public function testSearchText( array $config, $expectedFile, $queryString, $sort ) {
 		// Override some config for parsing purposes
 		$this->setMwGlobals( $config + [
 			// We want to override the wikiid for consistent output, but this might break everything else...
@@ -118,7 +114,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$this->addGoodLinkObject( 12345, Title::newFromText( 'Some page' ) );
 		$this->addGoodLinkObject( 23456, Title::newFromText( 'Other page' ) );
 
-		$engine = new CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$engine = new CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) );
 		// Set some default namespaces, otherwise installed extensions will change
 		// the generated query
 		$engine->setNamespaces( [
@@ -128,8 +124,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$engine->setLimitOffset( 20, 0 );
 		$engine->setSort( $sort );
 
-		$encodedQuery = $engine->searchText( $queryString )->getValue();
-		$elasticQuery = json_decode( $encodedQuery, true );
+		$elasticQuery = $engine->searchText( $queryString )->getValue();
 		// Drop the keys to keep fixture clean
 		// For extra fun, prefer-recent queries include a 'now' timestamp. We need to normalize that so
 		// the output is actually the same.
@@ -141,16 +136,11 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		// writing, so that the diff's from phpunit are also as minimal as possible.
 		$elasticQuery = $this->normalizeOrdering( $elasticQuery );
 
-		if ( is_string( $expected ) ) {
-			// Flag to generate a new fixture.
-			CirrusIntegrationTestCase::saveFixture( $expected, $elasticQuery );
-		} else {
-			// Repeat normalizations applied to $elasticQuery
-			$expected = $this->normalizeNow( $expected );
-
-			// Finally compare some things
-			$this->assertEquals( $expected, $elasticQuery, $encodedQuery );
-		}
+		$this->assertFileContains(
+			CirrusIntegrationTestCase::fixturePath( $expectedFile ),
+			CirrusIntegrationTestCase::encodeFixture( $elasticQuery ),
+			self::canRebuildFixture()
+		);
 		$this->assertConfigIsExported();
 	}
 
@@ -169,6 +159,9 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		'CirrusSearchInterwikiHTTPTimeout' // Needed to fetch crosswiki config
 	];
 
+	/**
+	 * Verifies configuration used by the test case is exported by config dump
+	 */
 	private function assertConfigIsExported() {
 		try {
 			$notInApi = [];
@@ -242,16 +235,12 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'archiveSearch/*.query' ) as $queryFile ) {
 			$testName = substr( basename( $queryFile ), 0, -6 );
-			$query = file_get_contents( self::$FIXTURE_DIR . $queryFile );
+			$query = self::loadTextFixture( $queryFile );
 			// Remove trailing newline
 			$query = preg_replace( '/\n$/', '', $query );
 			$expectedFile = substr( $queryFile, 0, -5 ) . 'expected';
-			$expected = CirrusIntegrationTestCase::hasFixture( $expectedFile )
-					? CirrusIntegrationTestCase::loadFixture( $expectedFile )
-					// Flags test to generate a new fixture
-					: $expectedFile;
 			$tests[$testName] = [
-				$expected,
+				$expectedFile,
 				$query,
 			];
 
@@ -261,10 +250,10 @@ class SearcherTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @dataProvider archiveFixtureProvider
-	 * @param mixed $expected
+	 * @param mixed $expectedFile
 	 * @param array $query
 	 */
-	public function testArchiveQuery( $expected, $query ) {
+	public function testArchiveQuery( $expectedFile, $query ) {
 		$this->setMwGlobals( [
 				'wgCirrusSearchIndexBaseName' => 'wiki',
 				'wgCirrusSearchQueryStringMaxDeterminizedStates' => 500,
@@ -281,19 +270,16 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			$termMain = $query;
 		}
 
-		$engine = new CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$engine = new CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) );
 		$engine->setLimitOffset( 20, 0 );
 		$engine->setNamespaces( [ $ns ] );
 		$elasticQuery = $engine->searchArchiveTitle( $termMain )->getValue();
-		$decodedQuery = json_decode( $elasticQuery, true );
-		if ( is_string( $expected ) ) {
-			// Flag to generate a new fixture.
-			CirrusIntegrationTestCase::saveFixture( $expected, $decodedQuery );
-		} else {
-
-			// Finally compare some things
-			$this->assertEquals( $expected, $decodedQuery, $elasticQuery );
-		}
+		$elasticQuery = $this->normalizeOrdering( $elasticQuery );
+		$this->assertFileContains(
+			CirrusIntegrationTestCase::fixturePath( $expectedFile ),
+			CirrusIntegrationTestCase::encodeFixture( $elasticQuery ),
+			self::canRebuildFixture()
+		);
 	}
 
 	public function testImpossibleQueryResults() {
@@ -353,7 +339,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( $expected, $searcher->getOffsetLimit() );
 		$searcher = new Searcher( new DummyConnection( $conf ), 0, 20, $conf );
 		$query = $this->getNewFTSearchQueryBuilder( $conf, 'test' )
-			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) )
 			->setOffset( $offset )
 			->setLimit( $limit );
 		$searcher->search( $query->build() );
@@ -385,12 +371,12 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$engine = new CirrusSearch( new HashSearchConfig( $config + [
 					'CirrusSearchPhraseSuggestReverseField' => [ 'use' => false ],
 				], [ HashSearchConfig::FLAG_INHERIT ] ),
-				CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+				CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) );
 		$engine->setShowSuggestion( $withDym );
 		$engine->setNamespaces( $namespaces );
 		$engine->setLimitOffset( 20, $offset );
 		$status = $engine->searchText( $query );
-		$res = json_decode( $status->getValue(), JSON_OBJECT_AS_ARRAY );
+		$res = $status->getValue();
 		$q = null;
 		if ( isset( $res[Searcher::MAINSEARCH_MSEARCH_KEY]['query']['suggest'] ) ) {
 			$q = [ 'suggest' => $res[Searcher::MAINSEARCH_MSEARCH_KEY]['query']['suggest'] ];
@@ -458,10 +444,10 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		 */
 		$resultSet = $engine->searchText( $query )->getValue();
 
-		$engine = new CirrusSearch( $config, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$engine = new CirrusSearch( $config, CirrusDebugOptions::forDumpingQueriesInUnitTests( false ) );
 		$engine->setFeatureData( 'rewrite', true );
 		$engine->setShowSuggestion( true );
-		$query = json_decode( $engine->searchText( $query )->getValue(), JSON_OBJECT_AS_ARRAY );
+		$query = $engine->searchText( $query )->getValue();
 
 		if ( $approxScore > 0 ) {
 			$this->assertArrayHasKey( 'suggest', $query[Searcher::MAINSEARCH_MSEARCH_KEY]['query'] );

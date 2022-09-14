@@ -44,6 +44,12 @@ class CirrusDebugOptions {
 	 */
 	private $dumpAndDie = false;
 
+	/**
+	 * @var bool used by unit tests when cross-repo dependencies need to preserve compatiblity
+	 *  until all patches are merged.
+	 */
+	private $backCompat = true;
+
 	private function __construct() {
 	}
 
@@ -74,12 +80,15 @@ class CirrusDebugOptions {
 	/**
 	 * Dump the query but not die.
 	 * Only useful in Unit tests.
+	 * @param bool $backCompat used by unit tests when cross-repo dependencies
+	 *  need to preserve compatiblity until all patches are merged.
 	 * @return CirrusDebugOptions
 	 */
-	public static function forDumpingQueriesInUnitTests() {
+	public static function forDumpingQueriesInUnitTests( $backCompat = true ) {
 		$options = new self();
 		$options->cirrusDumpQuery = true;
 		$options->dumpAndDie = false;
+		$options->backCompat = $backCompat;
 		return $options;
 	}
 
@@ -188,5 +197,9 @@ class CirrusDebugOptions {
 	 */
 	public function mustNeverBeCached() {
 		return $this->isReturnRaw() || $this->cirrusExplain !== null;
+	}
+
+	public function isBackwardCompatible(): bool {
+		return $this->backCompat;
 	}
 }

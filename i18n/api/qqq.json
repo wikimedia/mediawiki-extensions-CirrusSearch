@@ -34,6 +34,7 @@
 	"apihelp-query+cirrusdoc-param-includes": "{{doc-apihelp-example|query+cirrusdoc|includes}}",
 	"apihelp-query+cirrusbuilddoc-summary": "{{doc-apihelp-summary|query+cirrusbuilddoc}}",
 	"apihelp-query+cirrusbuilddoc-example": "{{doc-apihelp-example|query+cirrusbuilddoc}}",
+	"apihelp-query+cirrusbuilddoc-param-builders": "{{doc-apihelp-param|query+cirrusbuilddoc|builders}}",
 	"apierror-cirrus-requesttoolong": "{{doc-apierror}}\n\nParameters:\n* $1 - Submitted request length\n* $2 - Maximum allowed request length",
 	"apihelp-query+compsuggestbuilddoc-param-method": "{{doc-apihelp-param|query+compsuggestbuilddoc|method}}",
 	"apierror-compsuggestbuilddoc-bad-method": "{{doc-apierror}} Invalid value for param method",

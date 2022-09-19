@@ -10,10 +10,10 @@ use Elastica\Document;
 use MediaWiki\Cache\BacklinkCacheFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Revision\RevisionAccessException;
+use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use ParserCache;
 use ParserOutput;
-use Wikimedia\Assert\Assert;
 use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 
@@ -106,16 +106,23 @@ class BuildDocument {
 	}
 
 	/**
-	 * @param \WikiPage[] $pages List of pages to build documents for. These
+	 * @param \WikiPage[]|RevisionRecord[] $pagesOrRevs List of pages to build documents for. These
 	 *  pages must represent concrete pages with content. It is expected that
 	 *  redirects and non-existent pages have been resolved.
 	 * @param int $flags Bitfield of class constants
 	 * @return \Elastica\Document[] List of created documents indexed by page id.
 	 */
-	public function initialize( array $pages, int $flags ): array {
+	public function initialize( array $pagesOrRevs, int $flags ): array {
 		$documents = [];
 		$builders = $this->createBuilders( $flags );
-		foreach ( $pages as $page ) {
+		foreach ( $pagesOrRevs as $pageOrRev ) {
+			if ( $pageOrRev instanceof RevisionRecord ) {
+				$revision = $pageOrRev;
+				$page = new WikiPage( $revision->getPage() );
+			} else {
+				$revision = $pageOrRev->getRevisionRecord();
+				$page = $pageOrRev;
+			}
 			if ( !$page->exists() ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
@@ -125,7 +132,16 @@ class BuildDocument {
 				continue;
 			}
 
-			$documents[$page->getId()] = $this->initializeDoc( $page, $builders, $flags );
+			if ( $revision == null ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+					'Attempted to build a document for a page that doesn\'t have a revision. This should be caught ' .
+					"earlier but wasn't.  Page: {title}",
+					[ 'title' => (string)$page->getTitle() ]
+				);
+				continue;
+			}
+
+			$documents[$page->getId()] = $this->initializeDoc( $page, $builders, $flags, $revision );
 
 			// Use of this hook is deprecated, integration should happen through content handler
 			// interfaces.
@@ -156,25 +172,45 @@ class BuildDocument {
 	 * should happen here.
 	 *
 	 * @param Document $doc
+	 * @param bool $enforceLatest
+	 * @param RevisionRecord|null $revision
 	 * @return bool True when the document update can proceed
 	 * @throws BuildDocumentException
 	 */
-	public function finalize( Document $doc ): bool {
+	public function finalize( Document $doc, bool $enforceLatest = true, RevisionRecord $revision = null ): bool {
 		$flags = CirrusIndexField::getHint( $doc, self::HINT_FLAGS );
 		if ( $flags !== null ) {
-			try {
-				$title = $this->revStore->getTitle( null, $doc->get( 'version' ) );
-			} catch ( RevisionAccessException $e ) {
-				$title = null;
+			$docRevision = $doc->get( 'version' );
+			if ( $revision !== null && $docRevision !== $revision->getId() ) {
+				throw new \RuntimeException( "Revision id mismatch: {$revision->getId()} != $docRevision" );
 			}
-			if ( $title === null || $title->getLatestRevID() !== $doc->get( 'version' ) ) {
+			try {
+				$title = null;
+				$revision = $revision ?? $this->revStore->getRevisionById( $docRevision );
+				if ( $revision !== null ) {
+					$title = \Title::castFromPageIdentity( $revision->getPage() );
+				}
+			} catch ( RevisionAccessException $e ) {
+				$revision = null;
+			}
+			if ( $title == null || $revision == null ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )
+					->warning( 'Ignoring a page/revision that no longer exists {rev_id}',
+						[ 'rev_id' => $docRevision ] );
+
+				return false;
+			}
+			if ( $enforceLatest && $title->getLatestRevID() !== $docRevision ) {
 				// Something has changed since the job was enqueued, this is no longer
 				// a valid update.
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+					'Skipping a page/revision update for revision {rev} because a new one is available',
+					[ 'rev' => $docRevision ] );
 				return false;
 			}
 			$builders = $this->createBuilders( $flags );
 			foreach ( $builders as $builder ) {
-				$builder->finalize( $doc, $title );
+				$builder->finalize( $doc, $title, $revision );
 			}
 			$this->documentSizeLimiter->resize( $doc );
 		}
@@ -234,23 +270,21 @@ class BuildDocument {
 	 * @param WikiPage $page
 	 * @param PagePropertyBuilder[] $builders
 	 * @param int $flags
+	 * @param RevisionRecord $revision
 	 * @return Document
 	 */
-	private function initializeDoc( WikiPage $page, array $builders, int $flags ): Document {
+	private function initializeDoc( WikiPage $page, array $builders, int $flags, RevisionRecord $revision ): Document {
 		$docId = $this->config->makeId( $page->getId() );
 		$doc = new \Elastica\Document( $docId, [] );
 		// allow self::finalize to recreate the same set of builders
 		CirrusIndexField::setHint( $doc, self::HINT_FLAGS, $flags );
 		$doc->setDocAsUpsert( $this->canUpsert( $flags ) );
-		// While it would make plenty of sense for a builder to provide the version (revision id),
-		// we need to use it in self::finalize to ensure the revision is still the latest.
-		Assert::precondition( (bool)$page->getLatest(), "Must have a latest revision for docId $docId" );
-		$doc->set( 'version', $page->getLatest() );
+		$doc->set( 'version', $revision->getId() );
 		CirrusIndexField::addNoopHandler(
 			$doc, 'version', 'documentVersion' );
 
 		foreach ( $builders as $builder ) {
-			$builder->initialize( $doc, $page );
+			$builder->initialize( $doc, $page, $revision );
 		}
 
 		return $doc;

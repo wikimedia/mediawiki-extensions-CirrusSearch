@@ -3,6 +3,7 @@
 namespace CirrusSearch\BuildDocument;
 
 use Elastica\Document;
+use MediaWiki\Revision\RevisionRecord;
 use Title;
 use WikiPage;
 
@@ -20,8 +21,9 @@ interface PagePropertyBuilder {
 	 *
 	 * @param Document $doc The document to be populated
 	 * @param WikiPage $page The page to scope operation to
+	 * @param RevisionRecord $revision The page revision to use
 	 */
-	public function initialize( Document $doc, WikiPage $page ): void;
+	public function initialize( Document $doc, WikiPage $page, RevisionRecord $revision ): void;
 
 	/**
 	 * Called after a batch of pages have been passed to self::initialize.
@@ -43,7 +45,8 @@ interface PagePropertyBuilder {
 	 *
 	 * @param Document $doc
 	 * @param Title $title
+	 * @param RevisionRecord $revision
 	 * @throws BuildDocumentException
 	 */
-	public function finalize( Document $doc, Title $title ): void;
+	public function finalize( Document $doc, Title $title, RevisionRecord $revision ): void;
 }

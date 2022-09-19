@@ -4,6 +4,7 @@ namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\Util;
 use Elastica\Document;
+use MediaWiki\Revision\RevisionRecord;
 use MWTimestamp;
 use Title;
 use WikiMap;
@@ -30,7 +31,7 @@ class DefaultPageProperties implements PagePropertyBuilder {
 	 * @param Document $doc The document to be populated
 	 * @param WikiPage $page The page to scope operation to
 	 */
-	public function initialize( Document $doc, WikiPage $page ): void {
+	public function initialize( Document $doc, WikiPage $page, RevisionRecord $revision ): void {
 		$title = $page->getTitle();
 		$doc->set( 'wiki', WikiMap::getCurrentWikiId() );
 		$doc->set( 'namespace',
@@ -39,7 +40,7 @@ class DefaultPageProperties implements PagePropertyBuilder {
 			Util::getNamespaceText( $title ) );
 		$doc->set( 'title', $title->getText() );
 		$doc->set( 'timestamp',
-			wfTimestamp( TS_ISO_8601, $page->getTimestamp() ) );
+			wfTimestamp( TS_ISO_8601, $revision->getTimestamp() ) );
 		$createTs = $this->loadCreateTimestamp(
 			$page->getId(), TS_ISO_8601 );
 		if ( $createTs !== false ) {
@@ -56,11 +57,8 @@ class DefaultPageProperties implements PagePropertyBuilder {
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @param Document $doc
-	 * @param Title $title
 	 */
-	public function finalize( Document $doc, Title $title ): void {
+	public function finalize( Document $doc, Title $title, RevisionRecord $revision ): void {
 		// NOOP
 	}
 

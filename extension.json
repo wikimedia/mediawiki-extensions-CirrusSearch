@@ -52,6 +52,7 @@
 	},
 	"TestAutoloadClasses": {
 		"CirrusSearch\\CirrusIntegrationTestCase": "tests/phpunit/integration/CirrusIntegrationTestCase.php",
+		"CirrusSearch\\CirrusIntegrationTestCaseTrait": "tests/phpunit/integration/CirrusIntegrationTestCaseTrait.php",
 		"CirrusSearch\\CirrusTestCase": "tests/phpunit/unit/CirrusTestCase.php",
 		"CirrusSearch\\CirrusTestCaseTrait": "tests/phpunit/unit/CirrusTestCaseTrait.php",
 		"CirrusSearch\\Query\\SimpleKeywordFeatureTestTrait": "tests/phpunit/unit/Query/SimpleKeywordFeatureTestTrait.php",

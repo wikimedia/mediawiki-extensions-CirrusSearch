@@ -17,6 +17,7 @@ use Elastica\Query\Terms;
 use Elastica\Search;
 use MediaWiki\Cache\BacklinkCacheFactory;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Revision\RevisionRecord;
 use Title;
 use WikiPage;
 
@@ -83,11 +84,8 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @param Document $doc The document to be populated
-	 * @param WikiPage $page The page to scope operation to
 	 */
-	public function initialize( Document $doc, WikiPage $page ): void {
+	public function initialize( Document $doc, WikiPage $page, RevisionRecord $revision ): void {
 		$title = $page->getTitle();
 		$this->pageIds[] = $page->getId();
 		$outgoingLinksToCount = [ $title->getPrefixedDBkey() ];
@@ -172,11 +170,8 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @param Document $doc
-	 * @param Title $title
 	 */
-	public function finalize( Document $doc, Title $title ): void {
+	public function finalize( Document $doc, Title $title, RevisionRecord $revision ): void {
 		// NOOP
 	}
 

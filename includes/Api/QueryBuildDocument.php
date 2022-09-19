@@ -2,12 +2,15 @@
 
 namespace CirrusSearch\Api;
 
+use ApiBase;
 use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Search\CirrusIndexField;
 use Mediawiki\MediaWikiServices;
+use Wikimedia\ParamValidator\ParamValidator;
 
 /**
  * Generate CirrusSearch document for page.
@@ -37,14 +40,31 @@ class QueryBuildDocument extends \ApiQueryBase {
 	public function execute() {
 		$result = $this->getResult();
 		$services = MediaWikiServices::getInstance();
-		$engine = $services->getSearchEngineFactory()
-			->create( 'cirrus' );
+		$engine = $services->getSearchEngineFactory()->create();
+
+		$builders = $this->getParameter( 'builders' );
+		$flags = 0;
+		if ( !in_array( 'content', $builders ) ) {
+			$flags |= BuildDocument::SKIP_PARSE;
+		}
+		if ( !in_array( 'links', $builders ) ) {
+			$flags |= BuildDocument::SKIP_LINKS;
+		}
 
 		if ( $engine instanceof CirrusSearch ) {
 			$pages = [];
 			$wikiPageFactory = $services->getWikiPageFactory();
-			foreach ( $this->getPageSet()->getGoodTitles() as $pageId => $title ) {
-				$pages[] = $wikiPageFactory->newFromTitle( $title );
+			$revisionStore = $services->getRevisionStore();
+			$revisionBased = false;
+			if ( $this->getPageSet()->getRevisionIDs() ) {
+				$revisionBased = true;
+				foreach ( $this->getPageSet()->getRevisionIDs() as $revId => $pageId ) {
+					$pages[$revId] = $revisionStore->getRevisionById( $revId );
+				}
+			} else {
+				foreach ( $this->getPageSet()->getGoodPages() as $pageId => $title ) {
+					$pages[$pageId] = $wikiPageFactory->newFromTitle( $title );
+				}
 			}
 
 			$builder = new BuildDocument(
@@ -57,13 +77,28 @@ class QueryBuildDocument extends \ApiQueryBase {
 				new DocumentSizeLimiter( $engine->getConfig()->getProfileService()
 					->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER ) )
 			);
-			$docs = $builder->initialize( $pages, BuildDocument::INDEX_EVERYTHING );
+			$baseMetadata = [];
+			$clusterGroup = $engine->getConfig()->getClusterAssignment()->getCrossClusterName();
+			if ( $clusterGroup !== null ) {
+				$baseMetadata['cluster_group'] = $clusterGroup;
+			}
+			$docs = $builder->initialize( $pages, $flags );
 			foreach ( $docs as $pageId => $doc ) {
-				if ( $builder->finalize( $doc ) ) {
+				$revisionId = $doc->get( 'version' );
+				$revision = $revisionBased ? $pages[$revisionId] : null;
+				if ( $builder->finalize( $doc, false, $revision ) ) {
 					$result->addValue(
 						[ 'query', 'pages', $pageId ],
 						'cirrusbuilddoc', $doc->getData()
 					);
+					$hints = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
+					$metadata = [];
+					if ( $hints !== null ) {
+						$metadata = $baseMetadata + [ 'noop_hints' => $hints ];
+					}
+
+					$result->addValue( [ 'query', 'pages', $pageId ],
+						'cirrusbuilddoc_metadata', $metadata );
 				}
 			}
 		} else {
@@ -72,7 +107,18 @@ class QueryBuildDocument extends \ApiQueryBase {
 	}
 
 	public function getAllowedParams() {
-		return [];
+		return [
+			'builders' => [
+				ParamValidator::PARAM_DEFAULT => [ 'content', 'links' ],
+				ParamValidator::PARAM_ISMULTI => true,
+				ParamValidator::PARAM_ALLOW_DUPLICATES => false,
+				ParamValidator::PARAM_TYPE => [
+					'content',
+					'links',
+				],
+				ApiBase::PARAM_HELP_MSG => 'apihelp-query+cirrusbuilddoc-param-builders',
+			],
+		];
 	}
 
 	/**

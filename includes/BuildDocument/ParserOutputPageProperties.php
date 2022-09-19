@@ -8,6 +8,7 @@ use CirrusSearch\SearchConfig;
 use Elastica\Document;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\RevisionRecord;
 use ParserCache;
 use ParserOutput;
 use Sanitizer;
@@ -39,11 +40,8 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @param Document $doc The document to be populated
-	 * @param WikiPage $page The page to scope operation to
 	 */
-	public function initialize( Document $doc, WikiPage $page ): void {
+	public function initialize( Document $doc, WikiPage $page, RevisionRecord $revision ): void {
 		// NOOP
 	}
 
@@ -56,18 +54,14 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @param Document $doc
-	 * @param Title $title
-	 * @throws BuildDocumentException
 	 */
-	public function finalize( Document $doc, Title $title ): void {
+	public function finalize( Document $doc, Title $title, RevisionRecord $revision ): void {
 		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
 		// TODO: If parserCache is null here then we will parse for every
 		// cluster and every retry.  Maybe instead of forcing a parse, we could
 		// force a parser cache update during self::initialize?
 		$cache = $this->forceParse ? null : $this->parserCache;
-		$this->finalizeReal( $doc, $page, $cache, new CirrusSearch );
+		$this->finalizeReal( $doc, $page, $cache, new CirrusSearch, $revision );
 	}
 
 	/**
@@ -75,24 +69,31 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 	 *
 	 * @param Document $doc Document to finalize
 	 * @param WikiPage $page WikiPage to scope operation to
-	 * @param ?ParserCache $parserCache Cache to fetch parser output from. When null the
-	 *  wikitext parser will be invoked.
+	 * @param ParserCache|null $cache Cache to fetch parser output from. When null the
+	 * wikitext parser will be invoked.
 	 * @param CirrusSearch $engine SearchEngine implementation
+	 * @param RevisionRecord $revision The page revision to use
 	 * @throws BuildDocumentException
 	 */
-	public function finalizeReal( Document $doc, WikiPage $page, ?ParserCache $parserCache, CirrusSearch $engine ): void {
+	public function finalizeReal(
+		Document $doc,
+		WikiPage $page,
+		?ParserCache $cache,
+		CirrusSearch $engine,
+		RevisionRecord $revision
+	): void {
 		$contentHandler = $page->getContentHandler();
 		// TODO: Should see if we can change content handler api to avoid
 		// the WikiPage god object, but currently parser cache is still
 		// tied to WikiPage as well.
-		$output = $contentHandler->getParserOutputForIndexing( $page, $parserCache );
+		$output = $contentHandler->getParserOutputForIndexing( $page, $cache, $revision );
 
 		if ( !$output ) {
 			throw new BuildDocumentException( "ParserOutput cannot be obtained." );
 		}
 
 		$fieldDefinitions = $engine->getSearchIndexFields();
-		$fieldContent = $contentHandler->getDataForSearchIndex( $page, $output, $engine );
+		$fieldContent = $contentHandler->getDataForSearchIndex( $page, $output, $engine, $revision );
 		$fieldContent = self::fixAndFlagInvalidUTF8InSource( $fieldContent, $page->getId() );
 		$fieldContent = $this->truncateFileContent( $fieldContent );
 		foreach ( $fieldContent as $field => $fieldData ) {

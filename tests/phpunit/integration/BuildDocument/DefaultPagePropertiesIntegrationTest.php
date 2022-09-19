@@ -3,6 +3,7 @@
 namespace CirrusSearch\BuildDocument;
 
 use Elastica\Document;
+use MediaWiki\Revision\RevisionRecord;
 use Title;
 use WikiPage;
 
@@ -12,14 +13,16 @@ use WikiPage;
  */
 class DefaultPagePropertiesIntegrationTest extends \MediaWikiIntegrationTestCase {
 
-	private function buildDoc( WikiPage $page ): ?Document {
+	private function buildDoc( WikiPage $page, RevisionRecord $revision ): ?Document {
 		$doc = new Document( null, [] );
 		// Using the real database here to test integration from
 		// editing real pages.
-		$props = new DefaultPageProperties( wfGetDB( DB_REPLICA ) );
-		$props->initialize( $doc, $page );
-		$props->finishInitializeBatch( [ $page ] );
-		$props->finalize( $doc, $page->getTitle() );
+		$props = new DefaultPageProperties(
+			$this->getServiceContainer()->getDBLoadBalancer()->getConnection( DB_REPLICA )
+		);
+		$props->initialize( $doc, $page, $revision );
+		$props->finishInitializeBatch();
+		$props->finalize( $doc, $page->getTitle(), $revision );
 		return $doc;
 	}
 
@@ -42,14 +45,15 @@ class DefaultPagePropertiesIntegrationTest extends \MediaWikiIntegrationTestCase
 			);
 			// Double check we are actually controlling the clock
 			$this->assertEquals( wfTimestamp( TS_ISO_8601, $currentTime ), $created );
-			$doc = $this->buildDoc( $page );
+			$doc = $this->buildDoc( $page, $this->createMock( RevisionRecord::class ) );
 			$this->assertEquals( $created, $doc->get( 'create_timestamp' ) );
 
 			// With a second revision the create timestamp should still be the old one.
 			$currentTime += 42;
 			$status = $this->editPage( $pageName, 'phpunit and maybe other things' );
+			$revision = $status->getValue()['revision-record'];
 			$this->assertTrue( $status->isOk() );
-			$doc = $this->buildDoc( $page );
+			$doc = $this->buildDoc( $page, $revision );
 			$this->assertEquals( $created, $doc->get( 'create_timestamp' ) );
 		} finally {
 			\MWTimestamp::setFakeTime( null );

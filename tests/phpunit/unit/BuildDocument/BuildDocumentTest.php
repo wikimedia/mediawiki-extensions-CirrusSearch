@@ -7,6 +7,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
 use MediaWiki\Cache\BacklinkCacheFactory;
+use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use ParserCache;
 use Title;
@@ -19,21 +20,36 @@ use WikiPage;
 class BuildDocumentTest extends \MediaWikiUnitTestCase {
 	use CirrusTestCaseTrait;
 
+	private $revStore;
+	private $revision;
+
+	protected function setUp(): void {
+		parent::setUp();
+		$this->revision = $this->createMock( RevisionRecord::class );
+		$this->revision->method( 'getId' )->willReturn( 42 );
+		$this->revStore = $this->createMock( RevisionStore::class );
+
+		$this->revStore->method( 'getRevisionById' )
+			->with( 42 )
+			->willReturn( $this->revision );
+	}
+
 	private function mockBuilder( Title $title ) {
 		// Would be nice if we could pass the makeId function instead of a whole SearchConfig
 		$config = new SearchConfig;
 		$connection = $this->createMock( Connection::class );
 		$connection->method( 'getConfig' )
 			->willReturn( $config );
-		$revStore = $this->createMock( RevisionStore::class );
-		$revStore->method( 'getTitle' )
+		$this->revStore->method( 'getTitle' )
+			->willReturn( $title );
+		$this->revision->method( 'getPage' )
 			->willReturn( $title );
 
 		return new class(
 			$connection,
 			$this->createMock( IDatabase::class ),
 			$this->createMock( ParserCache::class ),
-			$revStore,
+			$this->revStore,
 			$this->createCirrusSearchHookRunner(),
 			$this->createMock( BacklinkCacheFactory::class ),
 			new DocumentSizeLimiter( [] )
@@ -43,7 +59,7 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 				return [ new class() implements PagePropertyBuilder {
 					private $doc;
 
-					public function initialize( Document $doc, WikiPage $page ): void {
+					public function initialize( Document $doc, WikiPage $page, ?RevisionRecord $revision ): void {
 						$this->doc = $doc;
 						$doc->set( 'phpunit_page_id', $page->getId() );
 					}
@@ -52,7 +68,7 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 						$this->doc->set( 'phpunit_finish_batch', true );
 					}
 
-					public function finalize( Document $doc, Title $title ): void {
+					public function finalize( Document $doc, Title $title, ?RevisionRecord $revision ): void {
 						$doc->set( 'phpunit_finalize', true );
 					}
 				} ];
@@ -64,11 +80,15 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 		$title = $this->createMock( Title::class );
 		$title->method( 'getLatestRevID' )->willReturn( 42 );
 		$pages = [];
+		// simulates 2 pages
+		// id: 0 -> does not exist
+		// id: 1 -> exist with revision 42
 		foreach ( range( 0, 1 ) as $pageId ) {
 			$page = $this->createMock( WikiPage::class );
 			$page->method( 'getId' )->willReturn( $pageId );
 			$page->method( 'getTitle' )->willReturn( $title );
 			$page->method( 'getLatest' )->willReturn( 42 );
+			$page->method( 'getRevisionRecord' )->willReturn( $this->revStore->getRevisionById( 42 ) );
 			// $pageId == 0 does not exist
 			$page->method( 'exists' )->willReturn( (bool)$pageId );
 			$pages[] = $page;

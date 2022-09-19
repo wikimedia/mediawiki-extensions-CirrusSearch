@@ -6,6 +6,7 @@ use CirrusSearch\CirrusSearch;
 use CirrusSearch\HashSearchConfig;
 use ContentHandler;
 use Elastica\Document;
+use MediaWiki\Revision\RevisionRecord;
 use ParserCache;
 use ParserOutput;
 use Title;
@@ -108,7 +109,7 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 		$doc = new Document( null, [] );
 		$cache = $this->createMock( ParserCache::class );
 		$builder = new ParserOutputPageProperties( $cache, false, new HashSearchConfig( [] ) );
-		$builder->finalizeReal( $doc, $page, null, new CirrusSearch );
+		$builder->finalizeReal( $doc, $page, null, new CirrusSearch, $page->getRevisionRecord() );
 		return $doc;
 	}
 
@@ -147,9 +148,14 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 		$page->method( 'getContentHandler' )
 			->willReturn( $contentHandler );
 		$page->method( 'getContent' )
-			->willReturn( new \WikitextContent( 'TEST_CONTENT' ) );
+			->willThrowException( new \AssertionError( "getContent should not be called on the page" ) );
 		$page->method( 'getId' )
 			->willReturn( 2 );
+
+		$revision = $this->createMock( RevisionRecord::class );
+		$revision->method( 'getContent' )->willReturn( new \WikitextContent( 'TEST_CONTENT' ) );
+		$page->method( 'getRevisionRecord' )
+			->willReturn( $revision );
 
 		return $page;
 	}

@@ -17,6 +17,7 @@
                 "title",
                 "wiki"
             ],
+            "fields": [],
             "query": {
                 "bool": {
                     "filter": [
@@ -60,7 +61,6 @@
             "stats": [
                 "archive"
             ],
-            "stored_fields": [],
             "track_total_hits": true
         }
     }

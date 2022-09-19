@@ -331,7 +331,6 @@ class MappingConfigBuilder {
 			'fields' => [
 				'word_count' => [
 					'type' => 'token_count',
-					'store' => true,
 					'analyzer' => 'plain',
 				]
 			]

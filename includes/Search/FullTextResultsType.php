@@ -60,8 +60,12 @@ final class FullTextResultsType extends BaseResultsType {
 	/**
 	 * @return array
 	 */
-	public function getStoredFields() {
+	public function getFields() {
 		return [ "text.word_count" ]; // word_count is only a stored field and isn't part of the source.
+	}
+
+	public function getStoredFields() {
+		return $this->getFields();
 	}
 
 	/**

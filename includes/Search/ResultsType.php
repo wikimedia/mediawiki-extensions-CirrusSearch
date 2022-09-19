@@ -36,6 +36,15 @@ interface ResultsType {
 	 *
 	 * @return array corresponding to Elasticsearch fields syntax
 	 */
+	public function getFields();
+
+	/**
+	 * Get the fields to load.  Most of the time we'll use source filtering instead but
+	 * some fields aren't part of the source.
+	 *
+	 * @deprecated use self::getFields() instead
+	 * @return array corresponding to Elasticsearch fields syntax
+	 */
 	public function getStoredFields();
 
 	/**

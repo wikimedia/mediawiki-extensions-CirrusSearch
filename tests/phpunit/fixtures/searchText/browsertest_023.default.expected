@@ -20,6 +20,9 @@
                 "title",
                 "wiki"
             ],
+            "fields": [
+                "text.word_count"
+            ],
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -281,9 +284,6 @@
                 "full_text",
                 "full_text_querystring",
                 "suggest"
-            ],
-            "stored_fields": [
-                "text.word_count"
             ],
             "suggest": {
                 "suggest": {

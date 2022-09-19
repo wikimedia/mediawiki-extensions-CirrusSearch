@@ -21,8 +21,12 @@ class TitleResultsType extends BaseResultsType {
 	/**
 	 * @return array corresponding to Elasticsearch fields syntax
 	 */
-	public function getStoredFields() {
+	public function getFields() {
 		return [];
+	}
+
+	public function getStoredFields() {
+		return $this->getFields();
 	}
 
 	/**

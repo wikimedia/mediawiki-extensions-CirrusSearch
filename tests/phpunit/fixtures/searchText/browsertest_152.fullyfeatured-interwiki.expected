@@ -20,6 +20,9 @@
                 "title",
                 "wiki"
             ],
+            "fields": [
+                "text.word_count"
+            ],
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -428,9 +431,6 @@
                 "incategory",
                 "suggest"
             ],
-            "stored_fields": [
-                "text.word_count"
-            ],
             "suggest": {
                 "suggest": {
                     "phrase": {
@@ -494,6 +494,9 @@
                 "title",
                 "wiki"
             ],
+            "fields": [
+                "text.word_count"
+            ],
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -900,9 +903,6 @@
                 "full_text",
                 "full_text_simple_match",
                 "incategory"
-            ],
-            "stored_fields": [
-                "text.word_count"
             ],
             "track_total_hits": true
         }
@@ -928,6 +928,9 @@
                 "title",
                 "wiki"
             ],
+            "fields": [
+                "text.word_count"
+            ],
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -1335,9 +1338,6 @@
                 "full_text_simple_match",
                 "incategory"
             ],
-            "stored_fields": [
-                "text.word_count"
-            ],
             "track_total_hits": true
         }
     },
@@ -1361,6 +1361,9 @@
                 "timestamp",
                 "title",
                 "wiki"
+            ],
+            "fields": [
+                "text.word_count"
             ],
             "highlight": {
                 "fields": {
@@ -1812,9 +1815,6 @@
                 "full_text",
                 "full_text_simple_match",
                 "incategory"
-            ],
-            "stored_fields": [
-                "text.word_count"
             ],
             "track_total_hits": true
         }

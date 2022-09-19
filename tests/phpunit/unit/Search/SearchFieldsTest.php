@@ -23,6 +23,10 @@ class SearchFieldsTest extends CirrusTestCase {
 		];
 	}
 
+	public function getStoredFields() {
+		return $this->getFields();
+	}
+
 	/**
 	 * @dataProvider getFields
 	 * @param int $type Generic type

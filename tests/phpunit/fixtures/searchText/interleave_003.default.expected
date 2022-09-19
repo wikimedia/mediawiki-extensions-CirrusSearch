@@ -20,6 +20,9 @@
                 "title",
                 "wiki"
             ],
+            "fields": [
+                "text.word_count"
+            ],
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -293,9 +296,6 @@
                 "simple_bag_of_words",
                 "suggest"
             ],
-            "stored_fields": [
-                "text.word_count"
-            ],
             "suggest": {
                 "suggest": {
                     "phrase": {
@@ -349,6 +349,9 @@
                 "timestamp",
                 "title",
                 "wiki"
+            ],
+            "fields": [
+                "text.word_count"
             ],
             "highlight": {
                 "fields": {
@@ -615,9 +618,6 @@
                 "full_text_querystring",
                 "simple_bag_of_words",
                 "suggest"
-            ],
-            "stored_fields": [
-                "text.word_count"
             ],
             "suggest": {
                 "suggest": {

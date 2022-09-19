@@ -20,6 +20,9 @@
                 "title",
                 "wiki"
             ],
+            "fields": [
+                "text.word_count"
+            ],
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -259,9 +262,6 @@
                 "full_text",
                 "incategory"
             ],
-            "stored_fields": [
-                "text.word_count"
-            ],
             "track_total_hits": true
         }
     },
@@ -285,6 +285,9 @@
                 "timestamp",
                 "title",
                 "wiki"
+            ],
+            "fields": [
+                "text.word_count"
             ],
             "highlight": {
                 "fields": {
@@ -524,9 +527,6 @@
                 "filter_only",
                 "full_text",
                 "incategory"
-            ],
-            "stored_fields": [
-                "text.word_count"
             ],
             "track_total_hits": true
         }
@@ -552,6 +552,9 @@
                 "title",
                 "wiki"
             ],
+            "fields": [
+                "text.word_count"
+            ],
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -791,9 +794,6 @@
                 "full_text",
                 "incategory"
             ],
-            "stored_fields": [
-                "text.word_count"
-            ],
             "track_total_hits": true
         }
     },
@@ -817,6 +817,9 @@
                 "timestamp",
                 "title",
                 "wiki"
+            ],
+            "fields": [
+                "text.word_count"
             ],
             "highlight": {
                 "fields": {
@@ -1072,9 +1075,6 @@
                 "filter_only",
                 "full_text",
                 "incategory"
-            ],
-            "stored_fields": [
-                "text.word_count"
             ],
             "track_total_hits": true
         }

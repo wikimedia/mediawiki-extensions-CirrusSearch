@@ -20,6 +20,9 @@
                 "title",
                 "wiki"
             ],
+            "fields": [
+                "text.word_count"
+            ],
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -235,9 +238,6 @@
                 "filemime",
                 "filter_only",
                 "full_text"
-            ],
-            "stored_fields": [
-                "text.word_count"
             ],
             "track_total_hits": true
         }

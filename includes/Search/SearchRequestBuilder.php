@@ -54,7 +54,7 @@ class SearchRequestBuilder {
 		$query = new Query();
 		$query->setTrackTotalHits( $this->searchContext->getTrackTotalHits() );
 		$query->setSource( $resultsType->getSourceFiltering() );
-		$query->setStoredFields( $resultsType->getStoredFields() );
+		$query->setParam( "fields", $resultsType->getFields() );
 
 		$extraIndexes = $this->searchContext->getExtraIndices();
 

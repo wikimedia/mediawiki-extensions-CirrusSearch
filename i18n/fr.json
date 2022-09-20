@@ -70,7 +70,7 @@
 	"cirrussearch-file-numeric-feature-not-a-number": "Le terme recherché « $1 » nécessite des valeurs numériques, mais « $2 » a été fourni.",
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Le terme recherché « $1 » n’autorise pas de fournir de multiples arguments et un signe avec « $2 ».",
 	"cirrussearch-feature-not-available": "Le mot-clé de recherche « $1 » n’est pas activé sur ce wiki.",
-	"cirrussearch-feature-too-many-conditions": "Trop de conditions fournies à « $1 », troncature à $2.",
+	"cirrussearch-feature-too-many-conditions": "Trop de conditions fournies à « $1 », troncation à $2.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint doit être positionné avec une cible SPARQL valide pour utiliser la recherche de catégorie en profondeur.",
 	"cirrussearch-feature-deepcat-exception": "La requête SPARQL de recherche de catégorie en profondeur a échoué",
 	"cirrussearch-feature-deepcat-toomany": "La requête profonde de catégorie a renvoyé trop de catégories",

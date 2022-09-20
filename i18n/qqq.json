@@ -68,6 +68,7 @@
 	"cirrussearch-feature-too-many-conditions": "Warning shown to users when more conditions than are allowed were provided to a keyword feature.",
 	"cirrussearch-feature-deepcat-endpoint": "Warning shown when SPARQL endpoint for deepcat search is not defined.",
 	"cirrussearch-feature-deepcat-exception": "Warning shown when SPARQL query for deepcat search has failed.",
+	"cirrussearch-feature-deepcat-timeout": "Warning shown when SPARQL endpoint for deepcat times out without returning any results.",
 	"cirrussearch-feature-deepcat-toomany": "Warning shown when SPARQL query for deepcat search returns more categories than can be inserted in ElasticSearch query.",
 	"cirrussearch-feature-deepcat-invalid-title": "Warning shown when cateogry provided to deepcat: search keyword is not a valid mediawiki page name.",
 	"cirrussearch-feature-pageid-invalid-id": "Warning shown when parameters to pageid: search keyword are not valid IDs (integers).\n\nParameters:\n* $1 - comma-separated list of IDs.\n* $2 - Number of invalid IDs.",

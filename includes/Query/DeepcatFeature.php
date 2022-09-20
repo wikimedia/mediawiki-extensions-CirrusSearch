@@ -150,13 +150,25 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 			$categories = $this->fetchCategories( $value, $warningCollector );
 		} catch ( SparqlException $e ) {
 			// Not publishing exception here because it can contain too many details including IPs, etc.
-			$warningCollector->addWarning( 'cirrussearch-feature-deepcat-exception' );
+			$warningCollector->addWarning( $this->decideUiWarning( $e ) );
 			LoggerFactory::getInstance( 'CirrusSearch' )
 				->warning( 'Deepcat SPARQL Exception: ' . $e->getMessage() );
 			$categories = [ $value ];
 		}
 		$this->logRequest( $startQueryTime );
 		return $categories;
+	}
+
+	private function decideUiWarning( SparqlException $e ): string {
+		$message = $e->getMessage();
+		// This could alternatively be a 500 error if blazegraph timed out
+		// prior to the http client timing out, but that doesn't happen due
+		// to http and blazegraph timeouts being set to the same value.
+		if ( strpos( $message, 'HTTP request timed out.' ) !== false ) {
+			return 'cirrussearch-feature-deepcat-timeout';
+		} else {
+			return 'cirrussearch-feature-deepcat-exception';
+		}
 	}
 
 	/**

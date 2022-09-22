@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Alex Great",
+			"Deltaspace",
 			"Facenapalm",
 			"Gamliel Fishkin",
 			"Happy13241",
@@ -76,6 +77,7 @@
 	"cirrussearch-feature-too-many-conditions": "Слишком много условий передано в '$1', обрезано до '$2'.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint должен быть установлен на действительную конечную точку SPARQL для использования поиска глубокой категории.",
 	"cirrussearch-feature-deepcat-exception": "Не удалось получить запрос SPARQL с глубокой категорией",
+	"cirrussearch-feature-deepcat-timeout": "Глубокий поиск по категориям достиг тайм-аута, скорее всего, в категории слишком много подкатегорий",
 	"cirrussearch-feature-deepcat-toomany": "Запрос по категории и рекурсивно по подкатегориям  возвратил слишком много категорий",
 	"cirrussearch-feature-deepcat-invalid-title": "Указанная категория недействительна.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Неверный ID страницы|Неверные ID страниц}}: $1",

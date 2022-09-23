@@ -59,6 +59,7 @@
 	"cirrussearch-feature-too-many-conditions": "Troppo de conditiones fornite a '$1', truncante a $2.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint debe esser mittite a un puncto final SPARQL valide pro usar le recerca de categoria in profunditate.",
 	"cirrussearch-feature-deepcat-exception": "Le consulta SPARQL de recerca de categoria in profunditate ha fallite",
+	"cirrussearch-feature-deepcat-timeout": "Le recerca profunde de categorias ha expirate. Le categoria probabilemente ha troppo de subcategorias.",
 	"cirrussearch-feature-deepcat-toomany": "Le consulta de categoria in profunditate ha retornate troppo de categorias",
 	"cirrussearch-feature-deepcat-invalid-title": "Le categoria fornite non es valide.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|ID|IDs}} de pagina invalide: $1",

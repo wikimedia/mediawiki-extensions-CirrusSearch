@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\Elastica\SearchAfter;
 use CirrusSearch\Maintenance\Exception\IndexDumperException;
 use CirrusSearch\SearchConfig;
 use Elastica;
@@ -129,7 +130,14 @@ class DumpIndex extends Maintenance {
 		$query = new Query();
 		$query->setStoredFields( [ '_id', '_type', '_source' ] );
 		$query->setSize( $this->inputChunkSize );
-		$query->setSort( [ '_doc' ] );
+		// Elasticsearch docs (mapping-id-field.html) say that sorting by _id is restricted
+		// from use, but at least on 7.10.2 this works as one would expect. The _id comes
+		// from fielddata, this would be more efficient with a doc-values enabled field.
+		// Additionally the cluster setting 'indices.id_field_data.enabled=false' breaks
+		// this.
+		$query->setSort( [
+			[ '_id' => 'asc' ],
+		] );
 		$query->setTrackTotalHits( true );
 		if ( $this->hasOption( 'sourceFields' ) ) {
 			$sourceFields = explode( ',', $this->getOption( 'sourceFields' ) );
@@ -144,7 +152,7 @@ class DumpIndex extends Maintenance {
 		$search = new \Elastica\Search( $this->getClient() );
 		$search->setQuery( $query );
 		$search->addIndex( $this->getIndex() );
-		$scroll = new \Elastica\Scroll( $search, '15m' );
+		$searchAfter = new SearchAfter( $search );
 
 		$totalDocsInIndex = -1;
 		$totalDocsToDump = -1;
@@ -152,7 +160,7 @@ class DumpIndex extends Maintenance {
 
 		$this->logToStderr = true;
 
-		foreach ( $scroll as $results ) {
+		foreach ( $searchAfter as $results ) {
 			if ( $totalDocsInIndex === -1 ) {
 				$totalDocsInIndex = $this->getTotalHits( $results );
 				$totalDocsToDump = $limit > 0 ? $limit : $totalDocsInIndex;

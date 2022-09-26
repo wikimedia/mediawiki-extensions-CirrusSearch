@@ -71,7 +71,7 @@ class IndexCreator {
 		);
 
 		try {
-			$response = $this->index->create( $args, $rebuild );
+			$response = $this->index->create( $args, [ 'recreate' => $rebuild ] );
 
 			if ( $response->hasError() === true ) {
 				return Status::newFatal( $response->getError() );

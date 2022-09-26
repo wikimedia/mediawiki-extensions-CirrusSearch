@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
+			"~aanzx",
 			"ಮಲ್ನಾಡಾಚ್ ಕೊಂಕ್ಣೊ"
 		]
 	},
+	"cirrussearch-feature-deepcat-timeout": "ಆಳವಾದ ವರ್ಗದ ಹುಡುಕಾಟದ ಅವಧಿ ಮೀರಿದೆ. ಹೆಚ್ಚಾಗಿ ಈ ವರ್ಗವು ಹಲವಾರು ಉಪವರ್ಗಗಳನ್ನು ಹೊಂದಿದೆ",
 	"cirrussearch-explore-similar-related": "ಸಂಬಂಧಿತ",
 	"cirrussearch-explore-similar-categories": "ವರ್ಗಗಳು",
 	"cirrussearch-explore-similar-languages": "ಭಾಷೆಗಳು",

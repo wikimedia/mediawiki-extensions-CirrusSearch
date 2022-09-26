@@ -4,7 +4,8 @@
 			"Amire80",
 			"Artsiom91",
 			"No Sleep till Krupki",
-			"Tomato Cream"
+			"Tomato Cream",
+			"Tīgelika"
 		]
 	},
 	"cirrussearch-desc": "Пошук у MediaWiki з дапамогай ElasticSearch",
@@ -62,6 +63,7 @@
 	"cirrussearch-feature-too-many-conditions": "Для «$1» пададзена зашмат умоў, абрэзана да $2.",
 	"cirrussearch-feature-deepcat-endpoint": "У зменнай $wgCirrusSearchCategoryEndpoint павінна быць усталяваная слушная канчатковая кропка SPARQL для выкарыстання глыбокага пошуку па катэгорыях.",
 	"cirrussearch-feature-deepcat-exception": "Збой запыту SPARQL на глыбокі пошук па катэгорыях",
+	"cirrussearch-feature-deepcat-timeout": "Час чакання глыбокага пошуку па катэгорыях скончыўся. Хутчэй за ўсё, катэгорыя мае занадта шмат падкатэгорыяў",
 	"cirrussearch-feature-deepcat-toomany": "Запыт глыбокай катэгорыі вярнуў занадта шмат катэгорыяў",
 	"cirrussearch-feature-deepcat-invalid-title": "Указаная катэгорыя неслушная.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Няслушны ідэнтыфікатар|Няслушныя ідэнтыфікатары}} старонкі: $1",

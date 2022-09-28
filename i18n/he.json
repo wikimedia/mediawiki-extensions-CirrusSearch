@@ -51,7 +51,7 @@
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "ללא תיקון שגיאות הקלדה. פתרון הפניות קרובות. התאמת תת־משפט בכותרות.",
 	"cirrussearch-completion-profile-classic-pref-name": "חיפוש תחילית קלאסי",
 	"cirrussearch-completion-profile-classic-pref-desc": "ללא תיקון שגיאות הקלדה. התאמת התחלות של כותרות.",
-	"cirrussearch-timed-out": "זמן ההמתנה של החיפוש עבר. התוצאות המוצגות להלן הן חלקיות.",
+	"cirrussearch-timed-out": "זמן ההמתנה של החיפוש פג, אז מוצגות רק תוצאות חלקיות.",
 	"cirrussearch-regex-timed-out": "זמן ההמתנה של חיפוש הביטוי הרגולרי עבר. התוצאות המוצגות להלן הן חלקיות. {{GENDER:|נסה|נסי|נסו}} לפשט את הביטוי הרגולרי כדי לקבל תוצאות שלמות.",
 	"cirrussearch-file-numeric-feature-not-a-number": "מילת החיפוש \"$1\" דורשת ערכים מספריים, אבל ניתן הערך \"$2\".",
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "מילת החיפוש \"$1\" אינה מאפשרת אספקת פרמטרים מרובים וסימן עם \"$2\".",

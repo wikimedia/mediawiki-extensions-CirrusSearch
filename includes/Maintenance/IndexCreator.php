@@ -28,14 +28,34 @@ class IndexCreator {
 	private $mapping;
 
 	/**
+	 * @var ConfigUtils
+	 */
+	private $utils;
+
+	/**
+	 * @var int How long to wait for index to become green, in seconds
+	 */
+	private $greenTimeout;
+
+	/**
 	 * @param Index $index
+	 * @param ConfigUtils $utils
 	 * @param array $analysisConfig
 	 * @param array|null $similarityConfig
+	 * @param int $greenTimeout How long to wait for index to become green, in seconds
 	 */
-	public function __construct( Index $index, array $analysisConfig, array $similarityConfig = null ) {
+	public function __construct(
+		Index $index,
+		ConfigUtils $utils,
+		array $analysisConfig,
+		array $similarityConfig = null,
+		$greenTimeout = 120
+	) {
 		$this->index = $index;
+		$this->utils = $utils;
 		$this->analysisConfig = $analysisConfig;
 		$this->similarityConfig = $similarityConfig;
+		$this->greenTimeout = $greenTimeout;
 	}
 
 	/**
@@ -78,6 +98,13 @@ class IndexCreator {
 			}
 		} catch ( \Elastica\Exception\InvalidException | \Elastica\Exception\ResponseException $ex ) {
 			return Status::newFatal( $ex->getMessage() );
+		}
+
+		// On wikis with particularly large mappings, such as wikibase, sometimes we
+		// see a race where elastic says it created the index, but then a quick followup
+		// request 404's. Wait for green to ensure it's really ready.
+		if ( !$this->utils->waitForGreen( $this->index->getName(), $this->greenTimeout ) ) {
+			return Status::newFatal( 'Created index did not reach green state.' );
 		}
 
 		return Status::newGood();

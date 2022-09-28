@@ -306,9 +306,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	private function validateIndex() {
 		if ( $this->startOver ) {
-			$this->createIndex( true, "Blowing away index to start over..." );
+			$this->createIndex( true, "Blowing away index to start over...\n" );
 		} elseif ( !$this->getIndex()->exists() ) {
-			$this->createIndex( false, "Creating index..." );
+			$this->createIndex( false, "Creating index...\n" );
 		}
 
 		$this->validateIndexSettings();
@@ -321,8 +321,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function createIndex( $rebuild, $msg ) {
 		global $wgCirrusSearchAllFields, $wgCirrusSearchExtraIndexSettings;
 
+		$index = $this->getIndex();
 		$indexCreator = new \CirrusSearch\Maintenance\IndexCreator(
-			$this->getIndex(),
+			$index,
+			new ConfigUtils( $index->getClient(), $this ),
 			$this->analysisConfig,
 			$this->similarityConfig
 		);
@@ -343,7 +345,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( !$status->isOK() ) {
 			$this->fatalError( $status->getMessage()->text() );
 		} else {
-			$this->output( "ok\n" );
+			$this->outputIndented( "Index created.\n" );
 		}
 	}
 

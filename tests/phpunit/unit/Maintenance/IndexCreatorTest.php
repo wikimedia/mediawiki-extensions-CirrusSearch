@@ -3,6 +3,7 @@
 namespace CirrusSearch\Tests\Maintenance;
 
 use CirrusSearch\CirrusTestCase;
+use CirrusSearch\Maintenance\ConfigUtils;
 use CirrusSearch\Maintenance\IndexCreator;
 use Elastica\Index;
 use Elastica\Response;
@@ -35,8 +36,13 @@ class IndexCreatorTest extends CirrusTestCase {
 	 */
 	public function testCreateIndex( $rebuild, $maxShardsPerNode, Response $response ) {
 		$index = $this->getIndex( $response );
+		$utils = $this->getMockBuilder( ConfigUtils::class )
+			->disableOriginalConstructor()
+			->getMock();
+		$utils->method( 'waitForGreen' )
+			->willReturn( $this->arrayAsGenerator( [], true ) );
 
-		$indexCreator = new IndexCreator( $index, [], [] );
+		$indexCreator = new IndexCreator( $index, $utils, [], [] );
 
 		$status = $indexCreator->createIndex(
 			$rebuild,
@@ -50,6 +56,13 @@ class IndexCreatorTest extends CirrusTestCase {
 		);
 
 		$this->assertInstanceOf( Status::class, $status );
+	}
+
+	private function arrayAsGenerator( array $array, $retval ) {
+		foreach ( $array as $value ) {
+			yield $value;
+		}
+		return $retval;
 	}
 
 	public function createIndexProvider() {

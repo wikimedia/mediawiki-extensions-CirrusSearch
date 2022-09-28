@@ -9,7 +9,6 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\InterwikiResolverFactory;
 use CirrusSearch\SiteMatrixInterwikiResolver;
-use ExtensionRegistry;
 use MediaWiki\MediaWikiServices;
 use MockHttpTrait;
 use Wikimedia\AtEase\AtEase;
@@ -76,9 +75,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	 */
 	public function testSiteMatrixResolver( $wiki, $what, $arg, $expected,
 			$blockList = [], $overrides = [] ) {
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
-			$this->markTestSkipped( 'SiteMatrix not available.' );
-		}
+		$this->markTestSkippedIfExtensionNotLoaded( 'SiteMatrix' );
 
 		$resolver = $this->getSiteMatrixInterwikiResolver( $wiki, $blockList, $overrides );
 		switch ( $what ) {
@@ -246,9 +243,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 
 	public function testLoadConfigForCrossProject() {
 		$this->setMwGlobals( [ 'wgCirrusSearchRescoreProfile' => 'test_inheritance' ] );
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
-			$this->markTestSkipped( 'SiteMatrix not available.' );
-		}
+		$this->markTestSkippedIfExtensionNotLoaded( 'SiteMatrix' );
 		$fixtureFile = 'configDump/enwiki_sisterproject_configs.json';
 		if ( !CirrusIntegrationTestCase::hasFixture( $fixtureFile ) ) {
 			if ( self::canRebuildFixture() ) {
@@ -305,9 +300,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	 * @throws \MWException
 	 */
 	public function testLoadConfigForCrossLang( $valid ) {
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
-			$this->markTestSkipped( 'SiteMatrix not available.' );
-		}
+		$this->markTestSkippedIfExtensionNotLoaded( 'SiteMatrix' );
 		$this->setMwGlobals( [ 'wgCirrusSearchRescoreProfile' => 'test_inheritance' ] );
 		$fixtureFile = 'configDump/enwiki_crosslang_frwiki' . ( !$valid ? '_invalid' : '' ) . '_config.json';
 		if ( !CirrusIntegrationTestCase::hasFixture( $fixtureFile ) ) {

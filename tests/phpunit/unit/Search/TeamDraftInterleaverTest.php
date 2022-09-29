@@ -69,8 +69,7 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 				);
 			}
 		);
-		$cscrMockTeamA = $this->getMockBuilder( CirrusSearchResultSet::class )
-			->getMock();
+		$cscrMockTeamA = $this->createMock( CirrusSearchResultSet::class );
 		/** @var \ReflectionMethod $method */
 		$allParams = [];
 		foreach ( $interleavedRsetMethods as $method ) {

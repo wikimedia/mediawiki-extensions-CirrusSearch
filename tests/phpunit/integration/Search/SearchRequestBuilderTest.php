@@ -43,9 +43,7 @@ class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
 
 	public function testCanOverridePageType() {
 		$builder = $this->searchRequestBuilder();
-		$index = $this->getMockBuilder( \Elastica\Index::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$index = $this->createMock( \Elastica\Index::class );
 		$builder->setIndex( $index );
 		$this->assertSame( $index, $builder->getIndex() );
 	}

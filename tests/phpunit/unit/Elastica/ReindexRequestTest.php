@@ -13,9 +13,7 @@ use Elastica\Response;
  */
 class ReindexRequestTest extends CirrusTestCase {
 	public function testAcceptsIndexSourceAndDest() {
-		$client = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$client = $this->createMock( Client::class );
 		$sourceIndex = new Index( $client, 'source_idx' );
 		$destIndex = new Index( $client, 'dest_idx' );
 
@@ -32,9 +30,7 @@ class ReindexRequestTest extends CirrusTestCase {
 	}
 
 	public function testOneSliceByDefault() {
-		$client = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$client = $this->createMock( Client::class );
 		$sourceIndex = new Index( $client, 'source_idx' );
 		$destIndex = new Index( $client, 'dest_idx' );
 		$req = new ReindexRequest( $sourceIndex, $destIndex );
@@ -51,9 +47,7 @@ class ReindexRequestTest extends CirrusTestCase {
 	}
 
 	public function testSlicesAreConfigurable() {
-		$client = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$client = $this->createMock( Client::class );
 		$sourceIndex = new Index( $client, 'source_idx' );
 		$destIndex = new Index( $client, 'dest_idx' );
 		$req = new ReindexRequest( $sourceIndex, $destIndex );
@@ -71,9 +65,7 @@ class ReindexRequestTest extends CirrusTestCase {
 	}
 
 	public function setRequestsPerSecondIsConfigurable() {
-		$client = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$client = $this->createMock( Client::class );
 		$sourceIndex = new Index( $client, 'source_idx' );
 		$destIndex = new Index( $client, 'dest_idx' );
 		$req = new ReindexRequest( $sourceIndex, $destIndex );
@@ -91,9 +83,7 @@ class ReindexRequestTest extends CirrusTestCase {
 	}
 
 	public function testReindexTask() {
-		$client = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$client = $this->createMock( Client::class );
 		$sourceIndex = new Index( $client, 'source_idx' );
 		$destIndex = new Index( $client, 'dest_idx' );
 		$req = new ReindexRequest( $sourceIndex, $destIndex );
@@ -113,9 +103,7 @@ class ReindexRequestTest extends CirrusTestCase {
 	}
 
 	public function testProvideScript() {
-		$client = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$client = $this->createMock( Client::class );
 		$sourceIndex = new Index( $client, 'source_idx' );
 		$destIndex = new Index( $client, 'dest_idx' );
 		$req = new ReindexRequest( $sourceIndex, $destIndex );
@@ -140,9 +128,7 @@ class ReindexRequestTest extends CirrusTestCase {
 	}
 
 	public function setProvideRemoteInfo() {
-		$client = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$client = $this->createMock( Client::class );
 		$sourceIndex = new Index( $client, 'source_idx' );
 		$destIndex = new Index( $client, 'dest_idx' );
 		$req = new ReindexRequest( $sourceIndex, $destIndex );
@@ -164,12 +150,8 @@ class ReindexRequestTest extends CirrusTestCase {
 	}
 
 	public function testPerformsRequestAgainstDestinationCluster() {
-		$sourceClient = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->getMock();
-		$destClient = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$sourceClient = $this->createMock( Client::class );
+		$destClient = $this->createMock( Client::class );
 
 		$sourceClient->expects( $this->never() )->method( 'request' );
 		$destClient->expects( $this->once() )

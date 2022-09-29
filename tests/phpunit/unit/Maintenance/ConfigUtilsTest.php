@@ -41,9 +41,7 @@ class ConfigUtilsTest extends CirrusTestCase {
 	 * @dataProvider scanAvailablePluginsProvider
 	 */
 	public function testScanAvailablePlugins( array $expectedPlugins, array $bannedPlugins, array $nodeResponse ) {
-		$client = $this->getMockBuilder( \Elastica\Client::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$client = $this->createMock( \Elastica\Client::class );
 		$client->method( 'request' )
 			->with( '_nodes' )
 			->willReturn( new \Elastica\Response( [

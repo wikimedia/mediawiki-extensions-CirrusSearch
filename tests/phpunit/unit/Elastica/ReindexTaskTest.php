@@ -107,9 +107,7 @@ class ReindexTaskTest extends CirrusTestCase {
 	];
 
 	public function testUnslicedTaskBasicStatus() {
-		$client = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$client = $this->createMock( Client::class );
 
 		$client->expects( $this->once() )
 			->method( 'request' )
@@ -128,9 +126,7 @@ class ReindexTaskTest extends CirrusTestCase {
 	}
 
 	public function testSlicedTaskBasicStatus() {
-		$client = $this->getMockBuilder( Client::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$client = $this->createMock( Client::class );
 
 		$client->expects( $this->exactly( 2 ) )
 			->method( 'request' )

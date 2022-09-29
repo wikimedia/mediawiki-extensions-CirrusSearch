@@ -24,8 +24,7 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 		/**
 		 * @var SparqlClient $client
 		 */
-		$client = $this->getMockBuilder( SparqlClient::class )
-			->disableOriginalConstructor()->getMock();
+		$client = $this->createMock( SparqlClient::class );
 		// 2 calls we still test old and new parsing behaviors
 		$client->expects( $this->atMost( 2 ) )->method( 'query' )->willReturnCallback(
 			function ( $sparql ) use ( $expectInQuery, $result ) {
@@ -159,12 +158,7 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 			$expectedData = [];
 			$warnings = [ [ 'cirrussearch-feature-deepcat-toomany' ] ];
 		} else {
-			$expectedData = array_map(
-				static function ( $data ) {
-					return $data['out'];
-				},
-				$result
-			);
+			$expectedData = array_column( $result, 'out' );
 			$warnings = [];
 		}
 		$client = $this->getSparqlClient( $sparqlQuery, $result );
@@ -235,8 +229,7 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 			'CirrusSearchCategoryMax' => 100,
 			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'
 		] );
-		$client = $this->getMockBuilder( SparqlClient::class )
-			->disableOriginalConstructor()->getMock();
+		$client = $this->createMock( SparqlClient::class );
 		// 3 runs:
 		// 1: for asserting expandData
 		// 2: for asserting old & new parsing techniques

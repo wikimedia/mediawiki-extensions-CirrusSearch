@@ -362,18 +362,14 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 		$service->registerDefaultProfile( SearchProfileService::COMPLETION,
 			SearchProfileService::CONTEXT_DEFAULT, 'fuzzy' );
 		$service->registerArrayRepository( SearchProfileService::COMPLETION, 'phpunit', $profiles );
-		$factory = $this->getMockBuilder( SearchProfileServiceFactory::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$factory = $this->createMock( SearchProfileServiceFactory::class );
 		$factory->method( 'loadService' )
 			->willReturn( $service );
 		$this->setService( SearchProfileServiceFactory::SERVICE_NAME, $factory );
 
 		$prefs = [];
 		$hooks = new Hooks(
-			$this->getMockBuilder( ConfigFactory::class )
-				->disableOriginalConstructor()
-				->getMock()
+			$this->createMock( ConfigFactory::class )
 		);
 		$hooks->onGetPreferences( new User(), $prefs );
 		return $prefs;

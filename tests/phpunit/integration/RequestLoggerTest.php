@@ -47,7 +47,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		] );
 		$logger = new RequestLogger();
 		$this->assertFalse( $logger->hasQueryLogs() );
-		$log = $this->getMockBuilder( RequestLog::class )->getMock();
+		$log = $this->createMock( RequestLog::class );
 		foreach ( [ 'getLogVariables', 'getRequests' ] as $fn ) {
 			$log->method( $fn )
 				->willReturn( [] );
@@ -251,9 +251,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			$transport = new PassThruTransport( $innerTransport );
 		} else {
 			// Build up an elastica transport that will return our faked response
-			$transport = $this->getMockBuilder( AbstractTransport::class )
-				->disableOriginalConstructor()
-				->getMock();
+			$transport = $this->createMock( AbstractTransport::class );
 			$transport->method( 'exec' )
 				->will( $this->onConsecutiveCalls(
 					...array_map( static function ( $response ) {

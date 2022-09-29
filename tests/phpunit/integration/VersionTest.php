@@ -32,9 +32,7 @@ class VersionTest extends CirrusIntegrationTestCase {
 	}
 
 	public function mockConnection( $responseAction ) {
-		$client = $this->getMockBuilder( \Elastica\Client::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$client = $this->createMock( \Elastica\Client::class );
 		$client->method( 'request' )
 			->will( $responseAction );
 
@@ -43,9 +41,7 @@ class VersionTest extends CirrusIntegrationTestCase {
 				'default' => 5
 			] ]
 		);
-		$conn = $this->getMockBuilder( Connection::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$conn = $this->createMock( Connection::class );
 		$conn->method( 'getClient' )
 			->willReturn( $client );
 		$conn->expects( ( $this->any() ) )

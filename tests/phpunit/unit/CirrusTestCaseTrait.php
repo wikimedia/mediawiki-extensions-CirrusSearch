@@ -148,9 +148,7 @@ trait CirrusTestCaseTrait {
 	 * @return \Elastica\Transport\AbstractTransport
 	 */
 	public function mockTransportWithResponse( ...$responses ) {
-		$transport = $this->getMockBuilder( \Elastica\Transport\AbstractTransport::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$transport = $this->createMock( \Elastica\Transport\AbstractTransport::class );
 		$transport->method( 'exec' )
 			->willReturnOnConsecutiveCalls( ...$responses );
 		return $transport;

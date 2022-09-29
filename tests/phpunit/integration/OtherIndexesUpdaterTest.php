@@ -107,9 +107,7 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 			] ]
 		] );
 		$response = new \Elastica\Response( $responseString, 200 );
-		$transport = $this->getMockBuilder( \Elastica\Transport\AbstractTransport::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$transport = $this->createMock( \Elastica\Transport\AbstractTransport::class );
 		$transport->method( 'exec' )
 			->willReturn( $response );
 

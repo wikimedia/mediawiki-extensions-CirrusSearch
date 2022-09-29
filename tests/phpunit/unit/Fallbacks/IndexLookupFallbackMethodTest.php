@@ -69,7 +69,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		$fallback = new IndexLookupFallbackMethod( $query, 'lookup_index', [],
 			'lookup_suggestion_field', [], [], [] );
 		$this->assertNotNull( $fallback->getSearchRequest(
-			$this->getMockBuilder( Client::class )->disableOriginalConstructor()->getMock() ) );
+			$this->createMock( Client::class ) ) );
 		$initialResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), $rewritten ? 0 : 1 );
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory, $this->namespacePrefixParser(),
 			$this->createCirrusSearchHookRunner() );
@@ -147,9 +147,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		$searchQuery = null;
 		if ( $method !== null ) {
 			$query = $method->getSearchRequest(
-				$this->getMockBuilder( Client::class )
-					->disableOriginalConstructor()
-					->getMock()
+				$this->createMock( Client::class )
 			);
 			if ( $query !== null ) {
 				$searchQuery = [

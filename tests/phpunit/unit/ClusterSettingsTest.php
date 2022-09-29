@@ -36,9 +36,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	 * @dataProvider provideShardCount
 	 */
 	public function testShardCount( $shardCounts, $cluster, $indexSuffix, $expect ) {
-		$config = $this->getMockBuilder( SearchConfig::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$config = $this->createMock( SearchConfig::class );
 		$config->method( 'get' )
 			->with( 'CirrusSearchShardCount' )
 			->willReturn( $shardCounts );
@@ -76,9 +74,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	 * @dataProvider provideReplicaCounts
 	 */
 	public function testReplicaCount( $replicas, $cluster, $indexSuffix, $expect ) {
-		$config = $this->getMockBuilder( SearchConfig::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$config = $this->createMock( SearchConfig::class );
 		$config->method( 'get' )
 			->with( 'CirrusSearchReplicas' )
 			->willReturn( $replicas );
@@ -158,9 +154,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	 * @dataProvider provideMaxShardsPerNode
 	 */
 	public function testGetMaxShardsPerNode( $maxShardsPerNode, $cluster, $indexSuffix, $expect ) {
-		$config = $this->getMockBuilder( SearchConfig::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$config = $this->createMock( SearchConfig::class );
 		$config->method( 'get' )
 			->with( 'CirrusSearchMaxShardsPerNode' )
 			->willReturn( $maxShardsPerNode );

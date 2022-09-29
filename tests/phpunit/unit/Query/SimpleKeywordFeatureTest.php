@@ -177,9 +177,7 @@ class SimpleKeywordFeatureTest extends CirrusTestCase {
 	 * @dataProvider applyProvider
 	 */
 	public function testApply( $expectedArgs, $expectedTerm, $term ) {
-		$context = $this->getMockBuilder( SearchContext::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$context = $this->createMock( SearchContext::class );
 
 		$feature = new MockSimpleKeywordFeature();
 		$this->assertEquals(

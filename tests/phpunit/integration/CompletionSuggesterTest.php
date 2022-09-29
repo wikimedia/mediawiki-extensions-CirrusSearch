@@ -263,9 +263,7 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 			$config->getProfileService()->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' ),
 			$limit, $offset );
 		$builder->build( "ignored", null );
-		$log = $this->getMockBuilder( CompletionRequestLog::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$log = $this->createMock( CompletionRequestLog::class );
 		if ( $builder->areResultsPossible() ) {
 			$collector = new CompletionResultsCollector( $builder->getLimit(), $offset );
 			$builder->postProcess( $collector, $results, "wiki_titlesuggest" );

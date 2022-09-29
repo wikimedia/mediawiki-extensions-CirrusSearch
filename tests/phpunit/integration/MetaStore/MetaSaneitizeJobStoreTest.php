@@ -34,9 +34,7 @@ class MetaSaneitizeJobStoreTest extends CirrusIntegrationTestCase {
 	}
 
 	public function mockIndex( $getBehavior = null ) {
-		$index = $this->getMockBuilder( \Elastica\Index::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$index = $this->createMock( \Elastica\Index::class );
 
 		if ( $getBehavior !== null ) {
 			$index->expects( $this->once() )

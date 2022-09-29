@@ -314,9 +314,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		}
 
 		$apiResponse = CirrusIntegrationTestCase::loadFixture( $fixtureFile );
-		$client = $this->getMockBuilder( \MultiHttpClient::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$client = $this->createMock( \MultiHttpClient::class );
 		$client->method( 'runMulti' )
 			->willReturn( $apiResponse );
 		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [], [], $client );

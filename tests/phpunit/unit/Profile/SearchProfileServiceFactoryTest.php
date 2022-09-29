@@ -89,8 +89,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 		$userOption = [];
 
 		// Don't use TestUser it may have been polluted with default config from other tests.
-		$user = $this->getMockBuilder( \User::class )
-			->getMock();
+		$user = $this->createMock( \User::class );
 		$user->method( 'getOption' )
 			->willReturn( null );
 

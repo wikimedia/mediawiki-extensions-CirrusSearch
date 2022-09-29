@@ -160,7 +160,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	 * @return MessageCache
 	 */
 	private function getMockCache() {
-		$mock = $this->getMockBuilder( \MessageCache::class )->disableOriginalConstructor()->getMock();
+		$mock = $this->createMock( \MessageCache::class );
 		$mock->method( 'get' )->willReturnCallback( static function ( $key, $useDB, Language $lang ) {
 			return "This is $key in {$lang->getCode()}|100%";
 		} );

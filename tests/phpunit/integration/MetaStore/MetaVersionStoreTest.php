@@ -108,9 +108,7 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 			->onlyMethods( [ 'getIndex' ] )
 			->getMock();
 
-		$index = $this->getMockBuilder( \Elastica\Index::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$index = $this->createMock( \Elastica\Index::class );
 		$conn->method( 'getIndex' )
 			->with( MetaStoreIndex::INDEX_NAME )
 			->willReturn( $index );

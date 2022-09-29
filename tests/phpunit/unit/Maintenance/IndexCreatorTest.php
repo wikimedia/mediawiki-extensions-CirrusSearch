@@ -80,9 +80,7 @@ class IndexCreatorTest extends CirrusTestCase {
 	}
 
 	private function getIndex( $response ) {
-		$index = $this->getMockBuilder( Index::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$index = $this->createMock( Index::class );
 
 		$index->method( 'create' )
 			->willReturn( $response );

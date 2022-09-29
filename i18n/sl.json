@@ -6,6 +6,7 @@
 			"Janezdrilc"
 		]
 	},
+	"cirrussearch-desc": "Iskanje za MediaWiki, ki ga poganja Elasticsearch",
 	"cirrussearch-backend-error": "Zaradi začasne težave nam ni uspelo izvesti vašega iskanja. Prosimo, poskusite kasneje.",
 	"cirrussearch-too-busy-error": "Iskanje je trenutno preobremenjeno. Prosimo, poskusi ponovno kasneje.",
 	"cirrussearch-now-using": "Ta wiki uporablja nov iskalnik.([[mw:Special:MyLanguage/Help:CirrusSearch|Poizvedi več]])",
@@ -30,8 +31,8 @@
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Ne popravlja zatipkanj. Predlaga najbližje preusmeritve. Zahteva ujemanje podizrazov v naslovih.",
 	"cirrussearch-completion-profile-classic-pref-name": "Navadno iskanje po predponi",
 	"cirrussearch-completion-profile-classic-pref-desc": "Ne popravlja zatipkanj. Zadostuje ujemanje začetnih delov naslova.",
-	"cirrussearch-timed-out": "Čas iskanja je potekal, na voljo so samo delni rezultati.",
-	"cirrussearch-regex-timed-out": "Iskanje z regularnimi izrazi je poteklo, na voljo so samo delni rezultati. Za izpis celotnih rezultatov pokusi poenostaviti regularni izraz.",
+	"cirrussearch-timed-out": "Čas iskanja je potekal, zato so na voljo samo delni zadetki.",
+	"cirrussearch-regex-timed-out": "Iskanje z regularnimi izrazi je poteklo, na voljo so samo delni zadetki. Za izpis vseh zadetkov pokusite poenostaviti regularni izraz.",
 	"cirrussearch-feature-not-available": "Iskane knjučne besede '$1' ni bilo mogoče najti na tem wikiju.",
 	"cirrussearch-feature-deepcat-exception": "Iskalni niz SPARQL za globinsko iskanje kategorij je spodletel",
 	"cirrussearch-feature-deepcat-toomany": "Iskalni niz za globinsko iskanje kategorij je vrnil preveč kategorij.",

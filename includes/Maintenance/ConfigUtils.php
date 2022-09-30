@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use Elastica\Client;
+use Elastica\Exception\ResponseException;
 use Elasticsearch\Endpoints;
 use MediaWiki\Extension\Elastica\MWElasticUtils;
 use Status;
@@ -296,5 +297,66 @@ class ConfigUtils {
 				. $response->getError() );
 		}
 		return Status::newGood( array_keys( $response->getData() ) );
+	}
+
+	/**
+	 * Returns true is this is an index thats never been unsed
+	 *
+	 * Used as a pre-check when deleting indices. This checks that there are no
+	 * aliases pointing at it, as all traffic flows through aliases. It
+	 * additionally checks the index stats to verify it's never been queried.
+	 *
+	 * $indexName should be an index and it should exist. If it is an alias or
+	 * the index does not exist a fatal status will be returned.
+	 *
+	 * @param string $indexName The specific name of the index
+	 * @return Status When ok, contains true if the index is unused or false otherwise.
+	 *   When not good indicates some sort of communication error with elasticsearch.
+	 */
+	public function isIndexLive( $indexName ): Status {
+		try {
+			// primary check, verify no aliases point at our index. This invokes
+			// the endpoint directly, rather than Index::getAliases, as that method
+			// does not check http status codes and can incorrectly report no aliases.
+			$aliasResponse = $this->client->requestEndpoint( ( new Endpoints\Indices\GetAlias() )
+				->setIndex( $indexName ) );
+			// secondary check, verify no queries have previously run through this index.
+			$stats = $this->client->getIndex( $indexName )->getStats();
+		} catch ( ResponseException $e ) {
+			// Would have expected a NotFoundException? in testing we get ResponseException instead
+			if ( $e->getResponse()->getStatus() === 404 ) {
+				// We could return an "ok" and false, but since we use this as a check against deletion
+				// seems best to return a fatal indicating the calling code should do nothing.
+				return Status::newFatal( "Index {$indexName} does not exist" );
+			}
+			throw $e;
+		}
+		if ( !$aliasResponse->isOK() ) {
+			return Status::newFatal( "Received error response from elasticsearch for GetAliases on $indexName" );
+		}
+		$aliases = $aliasResponse->getData();
+		if ( !isset( $aliases[$indexName] ) ) {
+			// Can happen if $indexName is actually an alias and not a real index.
+			$keys = count( $aliases ) ? implode( ', ', array_keys( $aliases ) ) : 'empty response';
+			return Status::newFatal( "Unexpected aliases response from elasticsearch for $indexName, " .
+				"recieved: $keys" );
+		}
+		if ( $aliases[$indexName]['aliases'] !== [] ) {
+			// Any index with aliases is likely to be live
+			return Status::newGood( true );
+		}
+		// On a newly created and promoted index this would only trigger on
+		// indices with volume, some low volume indices might be promoted but
+		// not recieve a query between promotion and this check.
+		$searchStats = $stats->get( '_all', 'total', 'search' );
+		if ( $searchStats['query_total'] !== 0 || $searchStats['suggest_total'] !== 0 ) {
+			// Something has run through here, it might not be live now (no aliases) but
+			// it was used at some point. Call it live-enough to not delete automatically.
+			$status = Status::newGood( true );
+			$status->warning( "Broken index {$indexName} appears to be in use, " .
+				"please check and delete." );
+			return $status;
+		}
+		return Status::newGood( false );
 	}
 }

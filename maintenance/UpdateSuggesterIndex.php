@@ -259,28 +259,14 @@ class UpdateSuggesterIndex extends Maintenance {
 			return;
 		}
 		$indexByName = [];
-		foreach ( $indices as $name ) {
-			$indexByName[$name] = $this->getConnection()->getIndex( $name );
-		}
-
-		$status = new Status( $this->getClient() );
-		foreach ( $status->getIndicesWithAlias( $this->getIndexAliasName() ) as $aliased ) {
-			// do not try to delete indices that are used in aliases
-			unset( $indexByName[$aliased->getName()] );
-		}
-		foreach ( $indexByName as $name => $index ) {
-			# double check with stats
-			$stats = $index->getStats()->getData();
-			// Extra check: if stats report usages we should not try to fix things
-			// automatically.
-			if ( $stats['_all']['total']['search']['suggest_total'] == 0 ) {
-				$this->log( "Deleting broken index {$index->getName()}\n" );
-				$this->deleteIndex( $index );
-			} else {
-				$this->log( "Broken index {$index->getName()} appears to be in use, " .
-					"please check and delete.\n" );
+		foreach ( $indices as $indexName ) {
+			$status = $this->utils->isIndexLive( $indexName );
+			if ( !$status->isGood() ) {
+				$this->log( (string)$status );
+			} elseif ( $status->getValue() === false ) {
+				$this->log( "Deleting broken index {$indexName}\n" );
+				$this->deleteIndex( $indexName );
 			}
-
 		}
 		# If something went wrong the process will fail when calling pickIndexIdentifierFromOption
 	}

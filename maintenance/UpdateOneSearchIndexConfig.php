@@ -144,6 +144,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private $safeToOptimizeAnalysisConfig;
 
+	/** @var bool State flag indicating if we should attempt deleting the index we created */
+	private $canCleanupCreatedIndex = false;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Update the configuration or contents of one search index. This always " .
@@ -321,6 +324,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function createIndex( $rebuild, $msg ) {
 		global $wgCirrusSearchAllFields, $wgCirrusSearchExtraIndexSettings;
 
+		$this->canCleanupCreatedIndex = true;
 		$index = $this->getIndex();
 		$indexCreator = new \CirrusSearch\Maintenance\IndexCreator(
 			$index,
@@ -392,6 +396,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		// Since validate the specific alias first as that can cause reindexing
 		// and we want the all index to stay with the old index during reindexing
 		$this->validateSpecificAlias();
+		// At this point the index is live and under no circumstances should it be
+		// automatically deleted.
+		$this->canCleanupCreatedIndex = false;
 
 		if ( $this->indexSuffix !== Connection::ARCHIVE_INDEX_SUFFIX ) {
 			// Do not add the archive index to the global alias
@@ -578,6 +585,34 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				->filterAnalysis( $this->analysisConfig, $this->mapping );
 		}
 		$this->similarityConfig = $analysisConfigBuilder->buildSimilarityConfig();
+	}
+
+	/**
+	 * Output a message and terminate the current script.
+	 *
+	 * @param string $msg Error Message
+	 * @param int $exitCode PHP exit status. Should be in range 1-254
+	 * @return never
+	 */
+	protected function fatalError( $msg, $exitCode = 1 ) {
+		// @phan-suppress-previous-line PhanTypeMissingReturn core declares a non-existent never return value
+		try {
+			if ( $this->canCleanupCreatedIndex && $this->getIndex()->exists() ) {
+				$utils = new ConfigUtils( $this->getConnection()->getClient(), $this );
+				$indexName = $this->getSpecificIndexName();
+				$status = $utils->isIndexLive( $indexName );
+				if ( !$status->isGood() ) {
+					$this->output( (string)$status );
+				} elseif ( $status->getValue() === false ) {
+					$this->output( "Cleaning up incomplete index {$indexName}\n" );
+					$this->getIndex()->delete();
+				}
+			}
+		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			$this->output( "Exception thrown while cleaning up created index: $e\n" );
+		} finally {
+			parent::fatalError( $msg, $exitCode );
+		}
 	}
 }
 

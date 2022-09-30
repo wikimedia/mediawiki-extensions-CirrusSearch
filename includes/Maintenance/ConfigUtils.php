@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use Elastica\Client;
 use Elasticsearch\Endpoints;
 use MediaWiki\Extension\Elastica\MWElasticUtils;
+use Status;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -42,16 +43,16 @@ class ConfigUtils {
 		$this->out = $out;
 	}
 
-	public function checkElasticsearchVersion() {
+	public function checkElasticsearchVersion(): Status {
 		$this->outputIndented( 'Fetching Elasticsearch version...' );
 		$response = $this->client->request( '' );
 		if ( !$response->isOK() ) {
-			$this->fatalError( "Cannot fetch elasticsearch version: "
+			return Status::newFatal( "Cannot fetch elasticsearch version: "
 				. $response->getError() );
 		}
 		$result = $response->getData();
 		if ( !isset( $result['version']['number'] ) ) {
-			$this->fatalError( 'unable to determine, aborting.' );
+			return Status::newFatal( 'unable to determine, aborting.' );
 		}
 		$result = $result[ 'version' ][ 'number' ];
 		$this->output( "$result..." );
@@ -61,11 +62,12 @@ class ConfigUtils {
 				$this->error( "You use a version of elasticsearch that is partially supported, you should upgrade to 7.10.x\n" );
 			} else {
 				$this->output( "Not supported!\n" );
-				$this->fatalError( "Only Elasticsearch 7.10.x is supported.  Your version: $result." );
+				return Status::newFatal( "Only Elasticsearch 7.10.x is supported.  Your version: $result." );
 			}
 		} else {
 			$this->output( "ok\n" );
 		}
+		return Status::newGood();
 	}
 
 	/**
@@ -76,20 +78,26 @@ class ConfigUtils {
 	 *          'current'    => if there is just one index for this type then use its identifier
 	 *          other string => that string back
 	 * @param string $typeName
-	 * @return string index identifier to use
+	 * @return Status holds string index identifier to use
 	 */
-	public function pickIndexIdentifierFromOption( $option, $typeName ) {
+	public function pickIndexIdentifierFromOption( $option, $typeName ): Status {
 		if ( $option === 'now' ) {
 			$identifier = strval( time() );
 			$this->outputIndented( "Setting index identifier...${typeName}_${identifier}\n" );
-			return $identifier;
+			return Status::newGood( $identifier );
 		}
 		if ( $option === 'current' ) {
 			$this->outputIndented( 'Inferring index identifier...' );
-			$found = $this->getAllIndicesByType( $typeName );
+			$foundStatus = $this->getAllIndicesByType( $typeName );
+			if ( !$foundStatus->isGood() ) {
+				return $foundStatus;
+			}
+			$found = $foundStatus->getValue();
+
 			if ( count( $found ) > 1 ) {
 				$this->output( "error\n" );
-				$this->fatalError( "Looks like the index has more than one identifier. You should delete all\n" .
+				return Status::newFatal(
+					"Looks like the index has more than one identifier. You should delete all\n" .
 					"but the one of them currently active. Here is the list: " . implode( ',', $found ) );
 			}
 			if ( $found ) {
@@ -103,9 +111,9 @@ class ConfigUtils {
 				$identifier = 'first';
 			}
 			$this->output( "${typeName}_${identifier}\n" );
-			return $identifier;
+			return Status::newGood( $identifier );
 		}
-		return $option;
+		return Status::newGood( $option );
 	}
 
 	/**
@@ -113,27 +121,27 @@ class ConfigUtils {
 	 * type $typeName
 	 *
 	 * @param string $typeName the type to filter with
-	 * @return string[] the list of indices
+	 * @return Status holds string[] with list of indices
 	 */
-	public function getAllIndicesByType( $typeName ) {
+	public function getAllIndicesByType( $typeName ): Status {
 		$response = $this->client->requestEndpoint( ( new Endpoints\Indices\Get() )
 			->setIndex( $typeName . '*' )
 			->setParams( [ 'include_type_name' => 'false' ] ) );
 		if ( !$response->isOK() ) {
-			$this->fatalError( "Cannot fetch index names for $typeName: "
+			return Status::newFatal( "Cannot fetch index names for $typeName: "
 				. $response->getError() );
 		}
-		return array_keys( $response->getData() );
+		return Status::newGood( array_keys( $response->getData() ) );
 	}
 
 	/**
 	 * @param string $what generally plugins or modules
-	 * @return string[] list of modules or plugins
+	 * @return Status holds string[] list of modules or plugins
 	 */
-	private function scanModulesOrPlugins( $what ) {
+	private function scanModulesOrPlugins( $what ): Status {
 		$response = $this->client->request( '_nodes' );
 		if ( !$response->isOK() ) {
-			$this->fatalError( "Cannot fetch node state from cluster: "
+			return Status::newFatal( "Cannot fetch node state from cluster: "
 				. $response->getError() );
 		}
 		$result = $response->getData();
@@ -149,16 +157,21 @@ class ConfigUtils {
 				$availables = array_intersect( $availables, $plugins );
 			}
 		}
-		return $availables;
+		return Status::newGood( $availables );
 	}
 
 	/**
 	 * @param string[] $bannedPlugins
-	 * @return string[]
+	 * @return Status holds string[]
 	 */
-	public function scanAvailablePlugins( array $bannedPlugins = [] ) {
+	public function scanAvailablePlugins( array $bannedPlugins = [] ): Status {
 		$this->outputIndented( "Scanning available plugins..." );
-		$availablePlugins = $this->scanModulesOrPlugins( 'plugins' );
+		$availablePluginsStatus = $this->scanModulesOrPlugins( 'plugins' );
+		if ( !$availablePluginsStatus->isGood() ) {
+			return $availablePluginsStatus;
+		}
+		$availablePlugins = $availablePluginsStatus->getValue();
+
 		if ( $availablePlugins === [] ) {
 			$this->output( 'none' );
 		}
@@ -171,15 +184,20 @@ class ConfigUtils {
 			$this->outputIndented( "\t$plugins\n" );
 		}
 
-		return $availablePlugins;
+		return Status::newGood( $availablePlugins );
 	}
 
 	/**
-	 * @return string[]
+	 * @return Status holds string[]
 	 */
-	public function scanAvailableModules() {
+	public function scanAvailableModules(): Status {
 		$this->outputIndented( "Scanning available modules..." );
-		$availableModules = $this->scanModulesOrPlugins( 'modules' );
+		$availableModulesStatus = $this->scanModulesOrPlugins( 'modules' );
+		if ( !$availableModulesStatus->isGood() ) {
+			return $availableModulesStatus;
+		}
+		$availableModules = $availableModulesStatus->getValue();
+
 		if ( $availableModules === [] ) {
 			$this->output( 'none' );
 		}
@@ -189,7 +207,7 @@ class ConfigUtils {
 			$this->outputIndented( "\t$modules\n" );
 		}
 
-		return $availableModules;
+		return Status::newGood( $availableModules );
 	}
 
 	// @todo: bring below options together in some abstract class where Validator & Reindexer also extend from
@@ -223,18 +241,6 @@ class ConfigUtils {
 	}
 
 	/**
-	 * @param string $message
-	 * @param int $exitCode
-	 * @return never
-	 */
-	private function fatalError( $message, $exitCode = 1 ) {
-		if ( $this->out ) {
-			$this->out->error( $message );
-		}
-		exit( $exitCode );
-	}
-
-	/**
 	 * Wait for the index to go green
 	 *
 	 * @param string $indexName
@@ -253,42 +259,42 @@ class ConfigUtils {
 	/**
 	 * Checks if this is an index (not an alias)
 	 * @param string $indexName
-	 * @return bool true if this is an index, false if it's an alias or if unknown
+	 * @return Status holds true if this is an index, false if it's an alias or if unknown
 	 */
-	public function isIndex( $indexName ) {
+	public function isIndex( $indexName ): Status {
 		// We must emit a HEAD request before calling the _alias
 		// as it may return an error if the index/alias is missing
 		if ( !$this->client->getIndex( $indexName )->exists() ) {
-			return false;
+			return Status::newGood( false );
 		}
 
 		$response = $this->client->request( $indexName . '/_alias' );
 		if ( !$response->isOK() ) {
-			$this->fatalError( "Cannot determine if $indexName is an index: "
+			return Status::newFatal( "Cannot determine if $indexName is an index: "
 				. $response->getError() );
 		}
 		// Only index names are listed as top level keys So if
 		// HEAD /$indexName returns HTTP 200 but $indexName is
 		// not a top level json key then it's an alias
-		return isset( $response->getData()[$indexName] );
+		return Status::newGood( isset( $response->getData()[$indexName] ) );
 	}
 
 	/**
 	 * Return a list of index names that points to $aliasName
 	 * @param string $aliasName
-	 * @return string[] index names
+	 * @return Status holds string[] with index names
 	 */
-	public function getIndicesWithAlias( $aliasName ) {
+	public function getIndicesWithAlias( $aliasName ): Status {
 		// We must emit a HEAD request before calling the _alias
 		// as it may return an error if the index/alias is missing
 		if ( !$this->client->getIndex( $aliasName )->exists() ) {
-			return [];
+			return Status::newGood( [] );
 		}
 		$response = $this->client->request( $aliasName . '/_alias' );
 		if ( !$response->isOK() ) {
-			$this->fatalError( "Cannot fetch indices with alias $aliasName: "
+			return Status::newFatal( "Cannot fetch indices with alias $aliasName: "
 				. $response->getError() );
 		}
-		return array_keys( $response->getData() );
+		return Status::newGood( array_keys( $response->getData() ) );
 	}
 }

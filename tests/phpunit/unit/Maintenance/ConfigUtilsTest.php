@@ -52,6 +52,7 @@ class ConfigUtilsTest extends CirrusTestCase {
 
 		$utils = new ConfigUtils( $client, new NoopPrinter() );
 		$availablePlugins = $utils->scanAvailablePlugins( $bannedPlugins );
-		$this->assertEquals( $expectedPlugins, $availablePlugins );
+		$this->assertTrue( $availablePlugins->isGood() );
+		$this->assertEquals( $expectedPlugins, $availablePlugins->getValue() );
 	}
 }

@@ -81,9 +81,10 @@ class CopySearchIndex extends Maintenance {
 
 		$targetIndexName = $targetConnection->getIndexName( $this->indexBaseName, $this->indexSuffix );
 		$utils = new ConfigUtils( $targetConnection->getClient(), $this );
-		$indexIdentifier = $utils->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ),
+		$indexIdentifier = $this->unwrap( $utils->pickIndexIdentifierFromOption(
+			$this->getOption( 'indexIdentifier', 'current' ),
 			$targetIndexName
-		);
+		) );
 
 		$reindexer = new Reindexer(
 			$this->getSearchConfig(),

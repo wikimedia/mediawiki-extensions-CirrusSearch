@@ -242,8 +242,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					implode( ', ', $indexSuffixes ) );
 			}
 
-			$utils->checkElasticsearchVersion();
-			$this->availablePlugins = $utils->scanAvailablePlugins( $this->bannedPlugins );
+			$this->unwrap( $utils->checkElasticsearchVersion() );
+			$this->availablePlugins = $this->unwrap( $utils->scanAvailablePlugins( $this->bannedPlugins ) );
 
 			if ( $this->getOption( 'justAllocation', false ) ) {
 				$this->validateShardAllocation();
@@ -256,8 +256,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 
 			$this->initAnalysisConfig();
-			$this->indexIdentifier = $utils->pickIndexIdentifierFromOption(
-				$this->getOption( 'indexIdentifier', 'current' ), $this->getIndexAliasName() );
+			$this->indexIdentifier = $this->unwrap( $utils->pickIndexIdentifierFromOption(
+				$this->getOption( 'indexIdentifier', 'current' ), $this->getIndexAliasName() ) );
 			$this->validateIndex();
 			$this->validateAnalyzers();
 			$this->validateMapping();
@@ -331,7 +331,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$this->outputIndented( $msg );
 
-		$status = $indexCreator->createIndex(
+		$this->unwrap( $indexCreator->createIndex(
 			$rebuild,
 			$this->getMaxShardsPerNode(),
 			$this->getShardCount(),
@@ -340,13 +340,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getMergeSettings(),
 			$wgCirrusSearchAllFields['build'],
 			$wgCirrusSearchExtraIndexSettings
-		);
+		) );
 
-		if ( !$status->isOK() ) {
-			$this->fatalError( $status->getMessage()->text() );
-		} else {
-			$this->outputIndented( "Index created.\n" );
-		}
+		$this->outputIndented( "Index created.\n" );
 	}
 
 	/**
@@ -367,10 +363,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateIndexSettings() {
 		$validators = $this->getIndexSettingsValidators();
 		foreach ( $validators as $validator ) {
-			$status = $validator->validate();
-			if ( !$status->isOK() ) {
-				$this->fatalError( $status->getMessage()->text() );
-			}
+			$this->unwrap( $validator->validate() );
 		}
 	}
 
@@ -378,10 +371,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$validator = new \CirrusSearch\Maintenance\Validators\AnalyzersValidator(
 			$this->getIndex(), $this->analysisConfig, $this );
 		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );
-		$status = $validator->validate();
-		if ( !$status->isOK() ) {
-			$this->fatalError( $status->getMessage()->text() );
-		}
+		$this->unwrap( $validator->validate() );
 	}
 
 	private function validateMapping() {
@@ -394,10 +384,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this
 		);
 		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );
-		$status = $validator->validate();
-		if ( !$status->isOK() ) {
-			$this->fatalError( $status->getMessage()->text() );
-		}
+		$this->unwrap( $validator->validate() );
 	}
 
 	private function validateAlias() {
@@ -443,10 +430,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->reindexAndRemoveOk,
 			$this
 		);
-		$status = $validator->validate();
-		if ( !$status->isOK() ) {
-			$this->fatalError( $status->getMessage()->text() );
-		}
+		$this->unwrap( $validator->validate() );
 	}
 
 	public function validateAllAlias() {
@@ -458,10 +442,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getIndexAliasName(),
 			$this
 		);
-		$status = $validator->validate();
-		if ( !$status->isOK() ) {
-			$this->fatalError( $status->getMessage()->text() );
-		}
+		$this->unwrap( $validator->validate() );
 	}
 
 	/**
@@ -474,11 +455,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	protected function validateShardAllocation() {
-		$validator = $this->getShardAllocationValidator();
-		$status = $validator->validate();
-		if ( !$status->isOK() ) {
-			$this->fatalError( $status->getMessage()->text() );
-		}
+		$this->unwrap( $this->getShardAllocationValidator()->validate() );
 	}
 
 	/**

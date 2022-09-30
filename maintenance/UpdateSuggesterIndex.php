@@ -198,11 +198,11 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->langCode = $wgLanguageCode;
 		$this->bannedPlugins = $wgCirrusSearchBannedPlugins;
 
-		$this->availablePlugins = $this->utils->scanAvailablePlugins( $this->bannedPlugins );
+		$this->availablePlugins = $this->unwrap( $this->utils->scanAvailablePlugins( $this->bannedPlugins ) );
 		$this->analysisConfig = $this->pickAnalyzer( $this->langCode, $this->availablePlugins )
 			->buildConfig();
 
-		$this->utils->checkElasticsearchVersion();
+		$this->unwrap( $this->utils->checkElasticsearchVersion() );
 
 		try {
 			$this->requireCirrusReady();
@@ -254,7 +254,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * by a previous update that failed.
 	 */
 	private function checkAndDeleteBrokenIndices() {
-		$indices = $this->utils->getAllIndicesByType( $this->getIndexAliasName() );
+		$indices = $this->unwrap( $this->utils->getAllIndicesByType( $this->getIndexAliasName() ) );
 		if ( count( $indices ) < 2 ) {
 			return;
 		}
@@ -286,15 +286,15 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function rebuild() {
-		$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption(
+		$oldIndexIdentifier = $this->unwrap( $this->utils->pickIndexIdentifierFromOption(
 			'current', $this->getIndexAliasName()
-		);
+		) );
 		$this->oldIndex = $this->getConnection()->getIndex(
 			$this->indexBaseName, $this->indexSuffix, $oldIndexIdentifier
 		);
-		$this->indexIdentifier = $this->utils->pickIndexIdentifierFromOption(
+		$this->indexIdentifier = $this->unwrap( $this->utils->pickIndexIdentifierFromOption(
 			'now', $this->getIndexAliasName()
-		);
+		) );
 
 		$this->createIndex();
 		$this->indexData();
@@ -319,9 +319,9 @@ class UpdateSuggesterIndex extends Maintenance {
 			return false;
 		}
 
-		$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption(
+		$oldIndexIdentifier = $this->unwrap( $this->utils->pickIndexIdentifierFromOption(
 			'current', $this->getIndexAliasName()
-		);
+		) );
 		$oldIndex = $this->getConnection()->getIndex(
 			$this->indexBaseName, $this->indexSuffix, $oldIndexIdentifier
 		);

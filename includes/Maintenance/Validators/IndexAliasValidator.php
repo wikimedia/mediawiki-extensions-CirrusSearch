@@ -61,15 +61,16 @@ abstract class IndexAliasValidator extends Validator {
 		$this->configUtils = new ConfigUtils( $client, $out );
 	}
 
-	/**
-	 * @return Status
-	 */
-	public function validate() {
+	public function validate(): Status {
 		// arrays of aliases to be added/removed
 		$add = $remove = [];
 
 		$this->outputIndented( "\tValidating $this->aliasName alias..." );
-		if ( $this->configUtils->isIndex( $this->aliasName ) ) {
+		$sv = $this->configUtils->isIndex( $this->aliasName );
+		if ( !$sv->isGood() ) {
+			return $sv;
+		}
+		if ( $sv->getValue() ) {
 			$this->output( "is an index..." );
 			if ( $this->startOver ) {
 				$this->client->getIndex( $this->aliasName )->delete();
@@ -83,7 +84,11 @@ abstract class IndexAliasValidator extends Validator {
 					"script with --startOver and it'll remove the index and continue.\n" ) );
 			}
 		} else {
-			foreach ( $this->configUtils->getIndicesWithAlias( $this->aliasName ) as $indexName ) {
+			$sv = $this->configUtils->getIndicesWithAlias( $this->aliasName );
+			if ( !$sv->isGood() ) {
+				return $sv;
+			}
+			foreach ( $sv->getValue() as $indexName ) {
 				if ( $indexName === $this->specificIndexName ) {
 					$this->output( "ok\n" );
 					return Status::newGood();

@@ -158,12 +158,15 @@ class MetaStoreIndex {
 	}
 
 	private function buildIndexConfiguration() {
-		$plugins = $this->configUtils->scanAvailablePlugins(
+		$pluginsStatus = $this->configUtils->scanAvailablePlugins(
 			$this->config->get( 'CirrusSearchBannedPlugins' ) );
+		if ( !$pluginsStatus->isGood() ) {
+			throw new \RuntimeException( (string)$pluginsStatus );
+		}
 		$filter = new AnalysisFilter();
 		list( $analysis, $mappings ) = $filter->filterAnalysis(
 			// Why 'aa'? It comes first? Hoping it receives generic language treatment.
-			( new AnalysisConfigBuilder( 'aa', $plugins ) )->buildConfig(),
+			( new AnalysisConfigBuilder( 'aa', $pluginsStatus->getValue() ) )->buildConfig(),
 			$this->buildMapping()
 		);
 
@@ -309,8 +312,11 @@ class MetaStoreIndex {
 	}
 
 	private function upgradeIndexVersion() {
-		$plugins = $this->configUtils->scanAvailableModules();
-		if ( !array_search( 'reindex', $plugins ) ) {
+		$pluginsStatus = $this->configUtils->scanAvailableModules();
+		if ( !$pluginsStatus->isGood() ) {
+			throw new \RuntimeException( (string)$pluginsStatus );
+		}
+		if ( !array_search( 'reindex', $pluginsStatus->getValue() ) ) {
 			throw new \Exception( "The reindex module is mandatory to upgrade the metastore" );
 		}
 		$index = $this->createNewIndex( (string)time() );

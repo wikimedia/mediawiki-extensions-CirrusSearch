@@ -16,6 +16,7 @@
 	"cirrussearch-backend-error": "Kami tidak dapat menyelesaikan pencarian Anda karena suatu kendala sementara. Silakan coba lagi nanti.",
 	"cirrussearch-parse-error": "Kueri tidak dipahami. Tolong sederhanakan. Kueri itu telah dicatat untuk memperbaiki sistem pencarian.",
 	"cirrussearch-too-busy-error": "Pencarian sedang terlalu sibuk. Mohon coba lagi nanti.",
+	"cirrussearch-regex-empty-expression": "$1 mengharapkan ekspresi reguler yang tidak kosong.",
 	"cirrussearch-regex-syntax-error": "Galat sintaksis ekspresi reguler di $2: $1",
 	"cirrussearch-regex-too-busy-error": "Terlalu banyak pencarian ekspresi reguler sedang dijalankan. Silakan mencoba lagi nanti.",
 	"cirrussearch-regex-too-complex-error": "Ekspresi reguler terlalu rumit. Pelajari lebih tentang cara menyederhanakannya [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|di sini]].",
@@ -26,6 +27,9 @@
 	"cirrussearch-completion-profile-classic": "Awalan klasik, beberapa karakter pemisah dan diakritik dihapus.",
 	"cirrussearch-completion-profile-normal": "Beberapa karakter pemisah, diakritik dan kata henti dihapus.",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Peringkat menurut beberapa templat, bahasa halaman dan kebaruan ketika diaktifkan di wiki ini.",
+	"cirrussearch-qi-profile-empty": "Pemeringkatan hanya berdasarkan fitur yang bergantung pada kueri (hanya untuk awakutu).",
+	"cirrussearch-qi-profile-popular-pv": "Peringkat berdasarkan jumlah tampilan halaman",
+	"cirrussearch-qi-profile-popular-inclinks": "Peringkat berdasarkan jumlah tautan masuk",
 	"prefs-completion": "Penyempurnaan penelusuran",
 	"cirrussearch-pref-completion-section-desc": "Saranan penyempurnaan",
 	"cirrussearch-pref-completion-profile-help": "Tetapkan perilaku untuk saran lengkap otomatis (cari-saat-Anda-ketik).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Saran lanjutan] adalah algoritma untuk saran pencarian dengan koreksi kesalahan ketik yang lebih baik dengan relevansi pencarian. Pencarian awalan adalah cara lama algoritma saran cari-saat-Anda-ketik.",
@@ -57,5 +61,7 @@
 	"cirrussearch-explore-similar-related-none": "Tidak tersedia halaman terkait",
 	"cirrussearch-explore-similar-categories-none": "Tidak ada kategori yang tersedia",
 	"cirrussearch-explore-similar-languages-none": "Tidak tersedia dalam bahasa lain",
-	"cirrussearch-article-words": "Kata-kata di semua halaman konten"
+	"cirrussearch-article-words": "Kata-kata di semua halaman konten",
+	"cirrussearch-autoselect-profile": "Biarkan mesin pencari memutuskan profil yang terbaik untuk digunakan.",
+	"cirrussearch-offset-not-allowed-with-random-sort": "Mengabaikan permintaan untuk membuat nomor halaman hasil pengurutan secara acak."
 }

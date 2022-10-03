@@ -6,6 +6,7 @@
 			"Eleassar"
 		]
 	},
+	"cirrussearch-desc": "Iskanje za MediaWiki, ki ga poganja Elasticsearch",
 	"cirrussearch-backend-error": "Zaradi začasne težave nam ni uspelo izvesti vašega iskanja. Prosimo, poskusite kasneje.",
 	"cirrussearch-too-busy-error": "Iskanje je trenutno preobremenjeno. Prosimo, poskusi ponovno kasneje.",
 	"cirrussearch-now-using": "Ta wiki uporablja nov iskalnik.([[mw:Special:MyLanguage/Help:CirrusSearch|Poizvedi več]])",

@@ -4,7 +4,6 @@ namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\Maintenance\Printer;
-use CirrusSearch\Util;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
 use Elastica\Mapping;
@@ -88,7 +87,6 @@ class MappingValidator extends Validator {
 			try {
 				$action->send( $this->index, [
 					'master_timeout' => $this->masterTimeout,
-					'include_type_name' => 'false',
 				] );
 				$this->output( "corrected\n" );
 			} catch ( ExceptionInterface $e ) {
@@ -108,7 +106,7 @@ class MappingValidator extends Validator {
 	 * @return bool is the mapping good enough for us?
 	 */
 	private function compareMappingToActual() {
-		$actualMappings = Util::getIndexMapping( $this->index );
+		$actualMappings = $this->index->getMapping();
 		$this->output( "\n" );
 		$this->outputIndented( "\tValidating mapping..." );
 		if ( $this->checkConfig( $actualMappings, $this->mappingConfig ) ) {

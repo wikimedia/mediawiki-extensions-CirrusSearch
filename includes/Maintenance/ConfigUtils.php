@@ -58,13 +58,8 @@ class ConfigUtils {
 		$result = $result[ 'version' ][ 'number' ];
 		$this->output( "$result..." );
 		if ( strpos( $result, '7.10' ) !== 0 ) {
-			if ( strpos( $result, '6.8' ) == 0 ) {
-				$this->output( "partially supported\n" );
-				$this->error( "You use a version of elasticsearch that is partially supported, you should upgrade to 7.10.x\n" );
-			} else {
-				$this->output( "Not supported!\n" );
-				return Status::newFatal( "Only Elasticsearch 7.10.x is supported.  Your version: $result." );
-			}
+			$this->output( "Not supported!\n" );
+			return Status::newFatal( "Only Elasticsearch 7.10.x is supported.  Your version: $result." );
 		} else {
 			$this->output( "ok\n" );
 		}
@@ -126,8 +121,7 @@ class ConfigUtils {
 	 */
 	public function getAllIndicesByType( $typeName ): Status {
 		$response = $this->client->requestEndpoint( ( new Endpoints\Indices\Get() )
-			->setIndex( $typeName . '*' )
-			->setParams( [ 'include_type_name' => 'false' ] ) );
+			->setIndex( $typeName . '*' ) );
 		if ( !$response->isOK() ) {
 			return Status::newFatal( "Cannot fetch index names for $typeName: "
 				. $response->getError() );
@@ -229,15 +223,6 @@ class ConfigUtils {
 	protected function outputIndented( $message ) {
 		if ( $this->out ) {
 			$this->out->outputIndented( $message );
-		}
-	}
-
-	/**
-	 * @param string $message
-	 */
-	private function error( $message ) {
-		if ( $this->out ) {
-			$this->out->error( $message );
 		}
 	}
 

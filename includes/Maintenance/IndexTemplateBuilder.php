@@ -116,7 +116,7 @@ class IndexTemplateBuilder {
 			}
 
 			public function create( array $args = [] ) {
-				return $this->request( \Elastica\Request::PUT, $args, [ 'include_type_name' => 'false' ] );
+				return $this->request( \Elastica\Request::PUT, $args );
 			}
 		};
 	}

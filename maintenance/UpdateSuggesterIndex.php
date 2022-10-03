@@ -423,8 +423,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->log( "Deleting remaining docs from previous batch\n" );
 		foreach ( $scroll as $results ) {
 			if ( $totalDocsToDump === -1 ) {
-				// hack to support ES6, switch to getTotalHits
-				$totalDocsToDump = $this->getTotalHits( $results );
+				$totalDocsToDump = $results->getTotalHits();
 				if ( $totalDocsToDump === 0 ) {
 					break;
 				}
@@ -536,7 +535,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 			foreach ( $scroll as $results ) {
 				if ( $totalDocsToDump === -1 ) {
-					$totalDocsToDump = $this->getTotalHits( $results );
+					$totalDocsToDump = $results->getTotalHits();
 					if ( $totalDocsToDump === 0 ) {
 						$this->log( "No documents to index from $sourceIndexSuffix\n" );
 						break;
@@ -672,7 +671,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			'',
 			Request::PUT,
 			$args,
-			[ 'master_timeout' => $this->masterTimeout, 'include_type_name' => 'false' ]
+			[ 'master_timeout' => $this->masterTimeout ]
 		);
 
 		// Index create is async, we have to make sure that the index is ready
@@ -761,16 +760,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	protected function getIndexAliasName() {
 		return $this->getConnection()->getIndexName( $this->indexBaseName, $this->indexSuffix );
-	}
-
-	/**
-	 * @param Elastica\ResultSet $results
-	 * @return mixed|string
-	 */
-	private function getTotalHits( Elastica\ResultSet $results ) {
-		// hack to support ES6, switch to getTotalHits
-		return $results->getResponse()->getData()["hits"]["total"]["value"] ??
-			   $results->getResponse()->getData()["hits"]["total"];
 	}
 }
 

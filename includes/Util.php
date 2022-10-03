@@ -2,8 +2,6 @@
 
 namespace CirrusSearch;
 
-use Elastica\Index;
-use Elasticsearch\Endpoints\Indices\GetMapping;
 use IBufferingStatsdDataFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -576,27 +574,6 @@ class Util {
 
 		// Default assumption that requests are interactive
 		return false;
-	}
-
-	/**
-	 * Recreation of Index::getMapping but with support for include_type_name.
-	 *
-	 * Should be removed once 7.x is the minimum supported version and all
-	 * callers have transitioned to includeTypeName === false.
-	 *
-	 * @param Index $index
-	 * @return array
-	 */
-	public static function getIndexMapping( Index $index ) {
-		// $index->getMapping() does not support passing include_type_name so we rely on low-level
-		// elasticsearch/elasticsearch endpoints
-		// It should be fine to remove this while we no longer support es6 which defaults this value
-		// to true.
-		$response = $index->requestEndpoint( ( new GetMapping() )->setParams( [ 'include_type_name' => 'false' ] ) );
-		$data = $response->getData();
-		// $data is single element array with the backing index name as key
-		$mapping = array_shift( $data );
-		return $mapping['mappings'] ?? [];
 	}
 
 	/**

@@ -50,7 +50,6 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 			$this->createMock( IDatabase::class ),
 			$this->createMock( ParserCache::class ),
 			$this->revStore,
-			$this->createCirrusSearchHookRunner(),
 			$this->createMock( BacklinkCacheFactory::class ),
 			new DocumentSizeLimiter( [] )
 		) extends BuildDocument {

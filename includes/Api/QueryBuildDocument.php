@@ -6,7 +6,6 @@ use ApiBase;
 use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\CirrusSearch;
-use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusIndexField;
 use Mediawiki\MediaWikiServices;
@@ -72,7 +71,6 @@ class QueryBuildDocument extends \ApiQueryBase {
 				$this->getDB(),
 				$services->getParserCache(),
 				$services->getRevisionStore(),
-				new CirrusSearchHookRunner( $services->getHookContainer() ),
 				$services->getBacklinkCacheFactory(),
 				new DocumentSizeLimiter( $engine->getConfig()->getProfileService()
 					->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER ) )

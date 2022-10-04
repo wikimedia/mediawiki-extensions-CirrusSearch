@@ -23,12 +23,6 @@ really been settled.
    namespaces.
  $builder - instance of MappingConfigBuilder, for easier use of utility methods to build fields.
 
-'CirrusSearchBuildDocumentParse': Allows extensions to modify ElasticSearch document produced from a page
- $doc - \Elastica\Document object representing the page. Extensions can modify it.
- $title - Title object for the page being parsed.
- $content - Content object for the page.
- $parserOutput - ParserOutput for the page, if exists, or null.
-
 'CirrusSearchAddQueryFeatures': Allows extensions to add query parser features
  &$config - SearchConfig object which holds current search configuration
  &$extraFeatures - array holding feature objects. This is where the extension should add its features.

@@ -6,11 +6,7 @@ use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Maintenance\MappingConfigBuilder;
 use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
-use Content;
-use Elastica\Document;
 use MediaWiki\HookContainer\HookContainer;
-use ParserOutput;
-use Title;
 
 /**
  * @internal
@@ -40,26 +36,6 @@ class CirrusSearchHookRunner {
 	 */
 	public function onCirrusSearchAddQueryFeatures( SearchConfig $config, array &$extraFeatures ): void {
 		$this->hookContainer->run( 'CirrusSearchAddQueryFeatures', [ $config, &$extraFeatures ] );
-	}
-
-	/**
-	 * Use of this hook is deprecated, integration should happen through content handler
-	 * interfaces.
-	 *
-	 * @param Document $document
-	 * @param Title $title
-	 * @param Content|null $content
-	 * @param ParserOutput $parserOutput
-	 * @param Connection $connection
-	 */
-	public function onCirrusSearchBuildDocumentParse(
-		Document $document,
-		Title $title,
-		?Content $content,
-		ParserOutput $parserOutput,
-		Connection $connection
-	): void {
-		$this->hookContainer->run( 'CirrusSearchBuildDocumentParse', [ $document, $title, $content, $parserOutput, $connection ] );
 	}
 
 	/**

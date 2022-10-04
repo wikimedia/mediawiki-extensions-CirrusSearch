@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\BuildDocument;
 
-use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Connection;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
@@ -13,7 +12,6 @@ use MediaWiki\Revision\RevisionAccessException;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use ParserCache;
-use ParserOutput;
 use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 
@@ -70,8 +68,6 @@ class BuildDocument {
 	private $parserCache;
 	/** @var RevisionStore */
 	private $revStore;
-	/** @var CirrusSearchHookRunner */
-	private $cirrusSearchHookRunner;
 	/** @var BacklinkCacheFactory */
 	private $backlinkCacheFactory;
 	/** @var DocumentSizeLimiter */
@@ -82,7 +78,6 @@ class BuildDocument {
 	 * @param IDatabase $db Wiki database connection to read page properties from
 	 * @param ParserCache $parserCache Cache to read parser output from
 	 * @param RevisionStore $revStore Store for retrieving revisions by id
-	 * @param CirrusSearchHookRunner $cirrusSearchHookRunner
 	 * @param BacklinkCacheFactory $backlinkCacheFactory
 	 * @param DocumentSizeLimiter $docSizeLimiter
 	 */
@@ -91,7 +86,6 @@ class BuildDocument {
 		IDatabase $db,
 		ParserCache $parserCache,
 		RevisionStore $revStore,
-		CirrusSearchHookRunner $cirrusSearchHookRunner,
 		BacklinkCacheFactory $backlinkCacheFactory,
 		DocumentSizeLimiter $docSizeLimiter
 	) {
@@ -100,7 +94,6 @@ class BuildDocument {
 		$this->db = $db;
 		$this->parserCache = $parserCache;
 		$this->revStore = $revStore;
-		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner;
 		$this->backlinkCacheFactory = $backlinkCacheFactory;
 		$this->documentSizeLimiter = $docSizeLimiter;
 	}
@@ -142,19 +135,6 @@ class BuildDocument {
 			}
 
 			$documents[$page->getId()] = $this->initializeDoc( $page, $builders, $flags, $revision );
-
-			// Use of this hook is deprecated, integration should happen through content handler
-			// interfaces.
-			$this->cirrusSearchHookRunner->onCirrusSearchBuildDocumentParse(
-				$documents[$page->getId()],
-				$page->getTitle(),
-				$page->getContent(),
-				// Intentionally pass a bogus parser output, restoring this
-				// hook is a temporary hack for WikibaseMediaInfo, which does
-				// not use the parser output.
-				new ParserOutput( null ),
-				$this->connection
-			);
 		}
 
 		foreach ( $builders as $builder ) {

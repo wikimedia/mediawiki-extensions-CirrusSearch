@@ -94,7 +94,10 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 							Searcher::HIGHLIGHT_PRE_MARKER . 'title' . Searcher::HIGHLIGHT_POST_MARKER . ' <match'
 						]
 					] ], self::$MINIMAL_HIT ),
-				[ 'titleSnippet' => 'Template:' . Searcher::HIGHLIGHT_PRE . 'title' . Searcher::HIGHLIGHT_POST . ' &lt;match' ]
+				[
+					'titleSnippet' => 'Template:' . Searcher::HIGHLIGHT_PRE . 'title' . Searcher::HIGHLIGHT_POST . ' &lt;match',
+					'titleSnippetField' => 'title'
+				]
 			],
 			'titleSnippet (intitle:// prefers title.plain)' => [
 				array_merge_recursive( [ 'highlight' => [
@@ -105,7 +108,10 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 						Searcher::HIGHLIGHT_PRE_MARKER . 'regex match' . Searcher::HIGHLIGHT_POST_MARKER . ' <match'
 					],
 				] ], self::$MINIMAL_HIT ),
-				[ 'titleSnippet' => 'Template:' . Searcher::HIGHLIGHT_PRE . 'regex match' . Searcher::HIGHLIGHT_POST . ' &lt;match' ],
+				[
+					'titleSnippet' => 'Template:' . Searcher::HIGHLIGHT_PRE . 'regex match' . Searcher::HIGHLIGHT_POST . ' &lt;match',
+					'titleSnippetField' => 'title.plain'
+				],
 			],
 			'redirectSnippet' => [
 				array_replace_recursive( self::$MINIMAL_HIT, [
@@ -122,7 +128,10 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 						]
 					]
 				] ),
-				[ 'redirectSnippet' => Searcher::HIGHLIGHT_PRE . 'redirect' . Searcher::HIGHLIGHT_POST . ' &lt;match' ]
+				[
+					'redirectSnippet' => Searcher::HIGHLIGHT_PRE . 'redirect' . Searcher::HIGHLIGHT_POST . ' &lt;match',
+					'redirectSnippetField' => 'redirect.title'
+				]
 			],
 			'redirectSnippet (intitle:// prefers redirect.title.plain)' => [
 				array_merge_recursive( [
@@ -146,7 +155,10 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 						],
 					],
 				], self::$MINIMAL_HIT ),
-				[ 'redirectSnippet' => Searcher::HIGHLIGHT_PRE . 'regex redir' . Searcher::HIGHLIGHT_POST . ' &lt;match' ]
+				[
+					'redirectSnippet' => Searcher::HIGHLIGHT_PRE . 'regex redir' . Searcher::HIGHLIGHT_POST . ' &lt;match',
+					'redirectSnippetField' => 'redirect.title.plain'
+				]
 			],
 			'redirectSnippet no redirect when no redirect.title is found' => [
 				array_merge_recursive( [
@@ -161,7 +173,10 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 						]
 					]
 				], self::$MINIMAL_HIT ),
-				[ 'redirectSnippet' => null ]
+				[
+					'redirectSnippet' => null,
+					'redirectSnippetField' => ''
+				]
 			],
 			'redirectTitle' => [
 				array_merge_recursive( [
@@ -178,7 +193,10 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 						]
 					]
 				], self::$MINIMAL_HIT ),
-				[ 'redirectTitle' => \Title::makeTitle( NS_MAIN, 'redirect <match' ) ]
+				[
+					'redirectTitle' => \Title::makeTitle( NS_MAIN, 'redirect <match' ),
+					'redirectSnippetField' => 'redirect.title'
+				]
 			],
 			'redirectTitle (interwiki support when namespace matches)' => [
 				array_replace_recursive( self::$MINIMAL_HIT, [
@@ -197,7 +215,10 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 						]
 					]
 				] ),
-				[ 'redirectTitle' => \Title::makeTitle( NS_MAIN, 'Šablona:redirect <match', '', 'cs' ) ]
+				[
+					'redirectTitle' => \Title::makeTitle( NS_MAIN, 'Šablona:redirect <match', '', 'cs' ),
+					'redirectSnippetField' => 'redirect.title'
+				]
 			],
 			'redirectTitle (interwiki support when namespace does not match)' => [
 				array_replace_recursive( self::$MINIMAL_HIT, [
@@ -216,7 +237,10 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 						]
 					]
 				] ),
-				[ 'redirectTitle' => null ]
+				[
+					'redirectTitle' => null,
+					'redirectSnippetField' => ''
+				]
 			],
 			'source_text matches preferred' => [
 				array_replace_recursive( self::$MINIMAL_HIT, [
@@ -237,6 +261,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 				] ),
 				[
 					'textSnippet' => Searcher::HIGHLIGHT_PRE . 'source_text.plain matches' . Searcher::HIGHLIGHT_POST . ' &lt;match',
+					'textSnippetField' => 'source_text.plain',
 					'fileMatch' => false
 				]
 			],
@@ -259,6 +284,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 				] ),
 				[
 					'textSnippet' => Searcher::HIGHLIGHT_PRE . 'text matches' . Searcher::HIGHLIGHT_POST . ' &lt;match',
+					'textSnippetField' => 'text',
 					'fileMatch' => false
 				]
 			],
@@ -281,6 +307,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 				] ),
 				[
 					'textSnippet' => Searcher::HIGHLIGHT_PRE . 'auxiliary_text matches' . Searcher::HIGHLIGHT_POST . ' &lt;match',
+					'textSnippetField' => 'auxiliary_text',
 					'fileMatch' => false
 				]
 			],
@@ -303,6 +330,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 				] ),
 				[
 					'textSnippet' => Searcher::HIGHLIGHT_PRE . 'file_text matches' . Searcher::HIGHLIGHT_POST . ' &lt;match',
+					'textSnippetField' => 'file_text',
 					'fileMatch' => true
 				]
 			],
@@ -325,6 +353,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 				] ),
 				[
 					'textSnippet' => 'text no matches &lt;match',
+					'textSnippetField' => 'text',
 					'fileMatch' => false
 				]
 			],
@@ -340,6 +369,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 				] ),
 				[
 					'sectionSnippet' => 'The ' . Searcher::HIGHLIGHT_PRE . 'matched' . Searcher::HIGHLIGHT_POST . ' &lt;section',
+					'sectionSnippetField' => 'heading',
 					'sectionTitle' => Title::makeTitle( NS_TEMPLATE, 'Main Page' )
 						->createFragmentTarget( $this->sanitizeLinkFragment( 'The matched <section' ) )
 				]
@@ -356,6 +386,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 				] ),
 				[
 					'categorySnippet' => 'The ' . Searcher::HIGHLIGHT_PRE . 'matched' . Searcher::HIGHLIGHT_POST . ' &lt;category',
+					'categorySnippetField' => 'category'
 				]
 			],
 		];

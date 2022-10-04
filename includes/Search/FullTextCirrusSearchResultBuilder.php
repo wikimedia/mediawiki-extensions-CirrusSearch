@@ -92,9 +92,11 @@ class FullTextCirrusSearchResultBuilder {
 		$matched = false;
 		foreach ( $this->highligtedFields[ArrayCirrusSearchResult::TITLE_SNIPPET] as $hlField ) {
 			if ( isset( $highlights[$hlField->getFieldName()] ) ) {
-				$nstext = $title->getNamespace() === 0 ? '' :
-					$this->titleHelper->getNamespaceText( $title ) . ':';
-				$this->builder->titleSnippet( $nstext . $this->escapeHighlightedText( $highlights[ $hlField->getFieldName() ][ 0 ] ) );
+				$nstext = $title->getNamespace() === 0 ? '' : $this->titleHelper->getNamespaceText( $title ) . ':';
+				$snippet = $nstext . $this->escapeHighlightedText( $highlights[ $hlField->getFieldName() ][ 0 ] );
+				$this->builder
+					->titleSnippet( $snippet )
+					->titleSnippetField( $hlField->getFieldName() );
 				$matched = true;
 				break;
 			}
@@ -113,8 +115,10 @@ class FullTextCirrusSearchResultBuilder {
 				}
 				$redirTitle = $this->findRedirectTitle( $result, $highlights[$hlField->getFieldName()][0] );
 				if ( $redirTitle !== null ) {
-					$this->builder->redirectTitle( $redirTitle )
-						->redirectSnippet( $this->escapeHighlightedText( $highlights[$hlField->getFieldName()][0] ) );
+					$this->builder
+						->redirectTitle( $redirTitle )
+						->redirectSnippet( $this->escapeHighlightedText( $highlights[$hlField->getFieldName()][0] ) )
+						->redirectSnippetField( $hlField->getFieldName() );
 					break;
 				}
 			}
@@ -127,8 +131,10 @@ class FullTextCirrusSearchResultBuilder {
 			if ( isset( $highlights[$hlField->getFieldName()][0] ) ) {
 				$snippet = $highlights[$hlField->getFieldName()][0];
 				if ( $this->containsMatches( $snippet ) ) {
-					$this->builder->textSnippet( $this->escapeHighlightedText( $snippet ) )->
-						fileMatch( $hlField->getFieldName() === 'file_text' );
+					$this->builder
+						->textSnippet( $this->escapeHighlightedText( $snippet ) )
+						->textSnippetField( $hlField->getFieldName() )
+						->fileMatch( $hlField->getFieldName() === 'file_text' );
 					$hasTextSnippet = true;
 					break;
 				}
@@ -138,7 +144,9 @@ class FullTextCirrusSearchResultBuilder {
 		// Hardcode the fallback to the "text" highlight, it generally contains the beginning of the
 		// text content if nothing has matched.
 		if ( !$hasTextSnippet && isset( $highlights['text'][0] ) ) {
-			$this->builder->textSnippet( $this->escapeHighlightedText( $highlights['text'][0] ) );
+			$this->builder
+				->textSnippet( $this->escapeHighlightedText( $highlights['text'][0] ) )
+				->textSnippetField( 'text' );
 		}
 	}
 
@@ -148,7 +156,9 @@ class FullTextCirrusSearchResultBuilder {
 		}
 		foreach ( $this->highligtedFields[ArrayCirrusSearchResult::SECTION_SNIPPET] as $hlField ) {
 			if ( isset( $highlights[$hlField->getFieldName()] ) ) {
-				$this->builder->sectionSnippet( $this->escapeHighlightedText( $highlights[$hlField->getFieldName()][0] ) )
+				$this->builder
+					->sectionSnippet( $this->escapeHighlightedText( $highlights[$hlField->getFieldName()][0] ) )
+					->sectionSnippetField( $hlField->getFieldName() )
 					->sectionTitle( $this->findSectionTitle( $highlights[$hlField->getFieldName()][0], $title ) );
 				break;
 			}
@@ -161,7 +171,9 @@ class FullTextCirrusSearchResultBuilder {
 		}
 		foreach ( $this->highligtedFields[ArrayCirrusSearchResult::CATEGORY_SNIPPET] as $hlField ) {
 			if ( isset( $highlights[$hlField->getFieldName()] ) ) {
-				$this->builder->categorySnippet( $this->escapeHighlightedText( $highlights[$hlField->getFieldName()][0] ) );
+				$this->builder
+					->categorySnippet( $this->escapeHighlightedText( $highlights[$hlField->getFieldName()][0] ) )
+					->categorySnippetField( $hlField->getFieldName() );
 			}
 			break;
 		}

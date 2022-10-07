@@ -8,6 +8,8 @@ use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Bulk\Action\AbstractDocument;
 use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
+use Elastica\JSON;
+use Liuggio\StatsdClient\Factory\StatsdDataFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use Status;
@@ -50,12 +52,16 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	private $searchConfig;
 
+	private $stats;
+
 	/**
 	 * @param Connection $conn
 	 * @param SearchConfig $config
+	 * @param StatsdDataFactory|null $stats
 	 */
-	public function __construct( Connection $conn, SearchConfig $config ) {
+	public function __construct( Connection $conn, SearchConfig $config, StatsdDataFactory $stats = null ) {
 		parent::__construct( $conn, null, 0 );
+		$this->stats = $stats ?? MediaWikiServices::getInstance()->getStatsdDataFactory();
 		$this->log = LoggerFactory::getInstance( 'CirrusSearch' );
 		$this->failedLog = LoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
 		$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
@@ -252,6 +258,7 @@ class DataSender extends ElasticsearchIntermediary {
 					// queue and should no longer be written to elastic.
 					unset( $documents[$i] );
 				}
+				$this->reportDocSize( $doc );
 			}
 		} catch ( BuildDocumentException $be ) {
 			$this->failedLog->warning(
@@ -408,14 +415,13 @@ class DataSender extends ElasticsearchIntermediary {
 				$updateStats[$opRes] = 1;
 			}
 		}
-		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 		$cluster = $this->connection->getClusterName();
 		$metricsPrefix = "CirrusSearch.$cluster.updates";
 		foreach ( $updateStats as $what => $num ) {
-			$stats->updateCount(
+			$this->stats->updateCount(
 				"$metricsPrefix.details.{$this->indexBaseName}.$indexSuffix.$what", $num
 			);
-			$stats->updateCount( "$metricsPrefix.all.$what", $num );
+			$this->stats->updateCount( "$metricsPrefix.all.$what", $num );
 		}
 	}
 
@@ -676,6 +682,21 @@ class DataSender extends ElasticsearchIntermediary {
 		}
 
 		return $d;
+	}
+
+	private function reportDocSize( Document $doc ): void {
+		$cluster = $this->connection->getClusterName();
+		$metricsPrefix = "CirrusSearch.$cluster.updates.all.doc_size";
+		try {
+			// Use the same JSON output that Elastica uses, it might be the options MW uses
+			// to populate event-gate (esp. regarding escaping UTF-8) but hopefully it's close
+			// to what we will be using.
+			$len = strlen( JSON::stringify( $doc, \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES ) );
+			// Use a timing stat as we'd like to have some min, max and percentiles calculated
+			$this->stats->timing( $metricsPrefix, $len );
+		} catch ( \JsonException $e ) {
+			$this->log->warning( "Cannot estimate CirrusSearch doc size", [ "exception" => $e ] );
+		}
 	}
 
 }

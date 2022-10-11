@@ -30,6 +30,8 @@
 	"apihelp-query+cirrusdoc-description": "{{doc-apihelp-description|query+cirrusdoc}}",
 	"apihelp-query+cirrusdoc-summary": "{{doc-apihelp-summary|query+cirrusdoc}}",
 	"apihelp-query+cirrusdoc-example": "{{doc-apihelp-example|query+cirrusdoc}}",
+	"apihelp-query+cirrusdoc-example-2": "{{doc-apihelp-example|query+cirrusdoc}}",
+	"apihelp-query+cirrusdoc-param-includes": "{{doc-apihelp-example|query+cirrusdoc|includes}}",
 	"apihelp-query+cirrusbuilddoc-summary": "{{doc-apihelp-summary|query+cirrusbuilddoc}}",
 	"apihelp-query+cirrusbuilddoc-example": "{{doc-apihelp-example|query+cirrusbuilddoc}}",
 	"apierror-cirrus-requesttoolong": "{{doc-apierror}}\n\nParameters:\n* $1 - Submitted request length\n* $2 - Maximum allowed request length",

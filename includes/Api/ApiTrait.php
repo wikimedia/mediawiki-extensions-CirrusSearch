@@ -42,9 +42,10 @@ trait ApiTrait {
 
 	/**
 	 * @param Title $title
+	 * @param string[]|bool $sourceFiltering source filtering to apply
 	 * @return array
 	 */
-	public function loadDocuments( Title $title ) {
+	public function loadDocuments( Title $title, $sourceFiltering = true ) {
 		list( $docId, $hasRedirects ) = $this->determineCirrusDocId( $title );
 		if ( $docId === null ) {
 			return [];
@@ -52,7 +53,7 @@ trait ApiTrait {
 		// could be optimized by implementing multi-get but not
 		// expecting much usage except debugging/tests.
 		$searcher = new Searcher( $this->getCirrusConnection(), 0, 0, $this->getSearchConfig(), [], $this->getUser() );
-		$esSources = $searcher->get( [ $docId ], true );
+		$esSources = $searcher->get( [ $docId ], $sourceFiltering );
 		$result = [];
 		if ( $esSources->isOK() ) {
 			foreach ( $esSources->getValue() as $esSource ) {

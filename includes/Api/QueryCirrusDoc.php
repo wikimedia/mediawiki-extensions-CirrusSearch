@@ -3,6 +3,7 @@
 namespace CirrusSearch\Api;
 
 use Title;
+use Wikimedia\ParamValidator\ParamValidator;
 
 /**
  * Dump stored CirrusSearch document for page.
@@ -40,14 +41,15 @@ class QueryCirrusDoc extends \ApiQueryBase {
 	}
 
 	public function execute() {
+		$sourceFiltering = $this->generateSourceFiltering();
 		foreach ( $this->getPageSet()->getGoodTitles() as $origPageId => $title ) {
-			$this->addByPageId( $origPageId, $title );
+			$this->addByPageId( $origPageId, $title, $sourceFiltering );
 		}
 
 		// Not 100% sure we need deletedhistory, but better safe than sorry
 		if ( $this->getUser()->isAllowed( 'deletedhistory' ) ) {
 			foreach ( $this->getPageSet()->getMissingTitles() as $resultPageId => $title ) {
-				$this->addByPageId( $resultPageId, $title );
+				$this->addByPageId( $resultPageId, $title, $sourceFiltering );
 			}
 		}
 	}
@@ -57,16 +59,38 @@ class QueryCirrusDoc extends \ApiQueryBase {
 	 *  This may be negative for missing pages. If those pages were recently
 	 *  deleted they could still be in the elastic index.
 	 * @param Title $title The requested title
+	 * @param string[]|bool $sourceFiltering source filtering to apply
 	 */
-	private function addByPageId( $resultPageId, Title $title ) {
+	private function addByPageId( $resultPageId, Title $title, $sourceFiltering ) {
 		$this->getResult()->addValue(
 			[ 'query', 'pages', $resultPageId ],
-			'cirrusdoc', $this->loadDocuments( $title )
+			'cirrusdoc', $this->loadDocuments( $title, $sourceFiltering )
 		);
 	}
 
+	/**
+	 * @return array|bool
+	 */
+	private function generateSourceFiltering() {
+		$params = $this->extractRequestParams();
+		$sourceFiltering = (array)$params['includes'];
+		$includeAll = in_array( 'all', $sourceFiltering );
+
+		if ( empty( $sourceFiltering ) || $includeAll ) {
+			return true;
+		} else {
+			return $sourceFiltering;
+		}
+	}
+
 	public function getAllowedParams() {
-		return [];
+		return [
+			'includes' => [
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_DEFAULT => 'all',
+				ParamValidator::PARAM_ISMULTI => true,
+			],
+		];
 	}
 
 	/**
@@ -76,7 +100,9 @@ class QueryCirrusDoc extends \ApiQueryBase {
 	protected function getExamplesMessages() {
 		return [
 			'action=query&prop=cirrusdoc&titles=Main_Page' =>
-				'apihelp-query+cirrusdoc-example'
+				'apihelp-query+cirrusdoc-example',
+			'action=query&prop=cirrusdoc&titles=Main_Page&cdincludes=categories' =>
+				'apihelp-query+cirrusdoc-example-2'
 		];
 	}
 

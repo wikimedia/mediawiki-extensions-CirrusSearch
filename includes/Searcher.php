@@ -433,7 +433,13 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				// supported on aliases with multiple indices (content/general)
 				$index = $connection->getIndex( $this->indexBaseName, $indexSuffix );
 				$query = new \Elastica\Query( new \Elastica\Query\Ids( $docIds ) );
-				$query->setParam( '_source', $sourceFiltering );
+				if ( is_array( $sourceFiltering ) ) {
+					// The title is a required field in the ApiTrait
+					if ( !in_array( "title", $sourceFiltering ) ) {
+						array_push( $sourceFiltering, "title" );
+					}
+					$query->setParam( '_source', $sourceFiltering );
+				}
 				$query->addParam( 'stats', 'get' );
 				// We ignore limits provided to the searcher
 				// otherwize we could return fewer results than

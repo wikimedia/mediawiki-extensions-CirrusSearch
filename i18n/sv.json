@@ -8,7 +8,8 @@
 			"Lokal Profil",
 			"Sabelöga",
 			"Skalman",
-			"WikiPhoenix"
+			"WikiPhoenix",
+			"Lejonel"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-driven sökning för MediaWiki",
@@ -52,7 +53,7 @@
 	"cirrussearch-completion-profile-strict-pref-name": "Strikt läge (avancerat)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Ingen korrigering av stavfel. Diakritiska tecken tas inte bort. Strikt matchning.",
 	"cirrussearch-completion-profile-normal-pref-name": "Omdirigeringsläge (avancerat)",
-	"cirrussearch-completion-profile-normal-pref-desc": "Ingen korrigering av stavfel. Löser stängda omdirigeringar.",
+	"cirrussearch-completion-profile-normal-pref-desc": "Ingen korrigering av stavfel. Följer närliggande omdirigeringar.",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Omdirigeringsläge med matchade underfraser (avancerat)",
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Ingen korrigering av stavfel. Löser stängda omdirigeringar. Matchande underfraser i titlar.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klassisk prefixsökning",

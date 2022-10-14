@@ -522,7 +522,7 @@ class RescoreBuilderTest extends CirrusIntegrationTestCase {
 			$this->assertTrue( $fScore->isEmptyFunction() );
 		} else {
 			$this->assertFalse( $fScore->isEmptyFunction() );
-			$this->assertEquals( $functions, $array['function_score']['functions'] );
+			$this->assertEqualsWithDelta( $functions, $array['function_score']['functions'], 0.01 );
 		}
 	}
 

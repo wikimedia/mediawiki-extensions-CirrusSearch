@@ -25,6 +25,8 @@
 	"apihelp-query+cirrusdoc-description": "Vidage d’un document article CirrusSearch",
 	"apihelp-query+cirrusdoc-summary": "Vidage d’un document article CirrusSearch depuis les serveurs de recherche",
 	"apihelp-query+cirrusdoc-example": "Obtenir le vidage d’un article unique CirrusSearch tel qu’il est actuellement indexé dans la recherche.",
+	"apihelp-query+cirrusdoc-example-2": "Obtenir un vidage des paramètres de CirrusSearch pour ce wiki avec uniquement les catégories sélectionnées à l’aide du paramètre « includes ».",
+	"apihelp-query+cirrusdoc-param-includes": "Définir quels champs doivent être renvoyés par la recherche.",
 	"apihelp-query+cirrusbuilddoc-summary": "Vidage du document d’un article de CirrusSearch depuis les serveurs de base de données",
 	"apihelp-query+cirrusbuilddoc-example": "Obtenir le vidage d’un unique article de CirrusSearch généré depuis la base de données.",
 	"apierror-cirrus-requesttoolong": "La requête de recherche de préfixe a dépassé la longueur maximale autorisée ($1 &gt; $2).",

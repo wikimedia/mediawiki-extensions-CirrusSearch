@@ -21,6 +21,8 @@
 	"apihelp-query+cirrusdoc-description": "Instantaneo del documento de un articulo CirrusSearch",
 	"apihelp-query+cirrusdoc-summary": "Instantaneo del documento de un articulo CirrusSearch ab le servitores de recerca",
 	"apihelp-query+cirrusdoc-example": "Obtener un instantaneo de un articulo CirrusSearch individual como actualmente indexate in le motor de recerca.",
+	"apihelp-query+cirrusdoc-example-2": "Obtener un copia del parametros de CirrusSearch pro iste wiki con solmente le categorias que ha essite seligite usante le parametro 'includes'",
+	"apihelp-query+cirrusdoc-param-includes": "Definir qual campos debe esser restituite per le recerca.",
 	"apihelp-query+cirrusbuilddoc-summary": "Copia del documento de un articulo CirrusSearch ab le servitores de base de datos",
 	"apihelp-query+cirrusbuilddoc-example": "Obtener un copia de un sol articulo CirrusSearch generate ab le base de datos.",
 	"apierror-cirrus-requesttoolong": "Le requesta de recerca per prefixo es plus longe que le dimension permittite. ($1 &gt; $2)",

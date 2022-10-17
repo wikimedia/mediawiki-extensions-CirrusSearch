@@ -21,6 +21,8 @@
 	"apihelp-query+cirrusdoc-description": "Склад за статиски документ на CirrusSearch",
 	"apihelp-query+cirrusdoc-summary": "Складиштен извадок од статиски документ на CirrusSearch од пребарувачките опслужвачи",
 	"apihelp-query+cirrusdoc-example": "Дај складиштен извадок од поединечна статија на CirrusSearch тековно индексирани во пребарувањето.",
+	"apihelp-query+cirrusdoc-example-2": "Добијте резервен склад од поставки за CirrusSearch за ова вики само со категориите избрани со параметарот „includes“",
+	"apihelp-query+cirrusdoc-param-includes": "Укажете кои полиња да се дадат во пребарувањето.",
 	"apihelp-query+cirrusbuilddoc-summary": "складиштен извадок од статиски документ на CirrusSearch од базните опслужвачи",
 	"apihelp-query+cirrusbuilddoc-example": "Дај складиштен извадок од поединечна статија на CirrusSearch создаден од базата.",
 	"apierror-cirrus-requesttoolong": "Пребараното со претставка ја надмина допуштената должина. ($1 &gt; $2)",

@@ -3,7 +3,10 @@
 		"authors": [
 			"Artsiom91",
 			"Tomato Cream",
-			"No Sleep till Krupki"
+			"No Sleep till Krupki",
+			"Amire80",
+			"Plaga med",
+			"Tīgelika"
 		]
 	},
 	"cirrussearch-desc": "Пошук у MediaWiki з дапамогай ElasticSearch",
@@ -65,7 +68,7 @@
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Няслушны ідэнтыфікатар|Няслушныя ідэнтыфікатары}} старонкі: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Для «$1» не зададзены слушныя катэгорыі.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Для «$1» не зададзены слушныя назвы.",
-	"cirrussearch-mlt-not-configured": "Функцыя «$1» няправільна настроена. Папрасіце адміністратара выправіць $wgCirrusSearchMoreLikeThisFields",
+	"cirrussearch-mlt-not-configured": "Функцыя «$1» няправільна сканфігуравана. Папрасіце адміністратара выправіць $wgCirrusSearchMoreLikeThisFields",
 	"cirrussearch-explore-similar-related": "Звязанае",
 	"cirrussearch-explore-similar-categories": "Катэгорыі",
 	"cirrussearch-explore-similar-languages": "Мовы",

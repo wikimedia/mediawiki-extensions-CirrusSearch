@@ -26,5 +26,7 @@
 	"apihelp-query+cirrusbuilddoc-example": "Ruft einen Auszug eines einzelnen CirrusSearch-Artikels ab, der von der Datenbank erzeugt wurde.",
 	"apierror-cirrus-requesttoolong": "Die Präfixsuchenanfrage dauerte länger als die maximal erlaubte Länge. ($1 &gt; $2)",
 	"apihelp-query+compsuggestbuilddoc-param-method": "Die zu verwendende Scoring-Methode",
-	"apierror-compsuggestbuilddoc-bad-method": "Unbekannte Scoring-Methode"
+	"apierror-compsuggestbuilddoc-bad-method": "Unbekannte Scoring-Methode",
+	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Dump des Dokuments, das vom Vervollständigungsvorschlag verwendet wird",
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Abruf eines Dumps aus dem vom Vervollständigungsvorschlag verwendeten Dokument"
 }

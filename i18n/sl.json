@@ -33,7 +33,7 @@
 	"cirrussearch-completion-profile-classic-pref-desc": "Ne popravlja zatipkanj. Zadostuje ujemanje začetnih delov naslova.",
 	"cirrussearch-timed-out": "Čas iskanja je potekal, zato so na voljo samo delni zadetki.",
 	"cirrussearch-regex-timed-out": "Iskanje z regularnimi izrazi je poteklo, na voljo so samo delni zadetki. Za izpis vseh zadetkov pokusite poenostaviti regularni izraz.",
-	"cirrussearch-feature-not-available": "Iskane knjučne besede '$1' ni bilo mogoče najti na tem wikiju.",
+	"cirrussearch-feature-not-available": "Iskane ključne besede »$1« v tem vikiju ni bilo mogoče najti.",
 	"cirrussearch-feature-deepcat-exception": "Iskalni niz SPARQL za globinsko iskanje kategorij je spodletel",
 	"cirrussearch-feature-deepcat-timeout": "Časovna omejitev za globoko iskanje po kategorijah je potekla. Najverjetneje ima kategorija preveč podkategorij",
 	"cirrussearch-feature-deepcat-toomany": "Iskalni niz za globinsko iskanje kategorij je vrnil preveč kategorij.",

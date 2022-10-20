@@ -708,10 +708,21 @@ class AnalysisConfigBuilder {
 
 		// customized languages
 		case 'arabic':
+		case 'arabic-egyptian':
+		case 'arabic-moroccan':
+			$arPreStopFilters = [ 'decimal_digit' ];
+			if ( $langName == 'arabic-egyptian' || $langName == 'arabic-moroccan' ) {
+				# load extra stopwords for Arabic varieties
+				$arStopwords = require __DIR__ . '/AnalysisLanguageData/arabicStopwords.php';
+				$config[ 'filter' ][ 'arz_ary_stop' ] =
+					AnalyzerBuilder::stopFilter( $arStopwords );
+				$arPreStopFilters[] = 'arz_ary_stop';
+			}
+
 			// Unpack Arabic analyzer T294147
-			$config = ( new AnalyzerBuilder( $langName ) )->
+			$config = ( new AnalyzerBuilder( 'arabic' ) )->
 				withUnpackedAnalyzer()->
-				insertFiltersBefore( 'arabic_stop', [ 'decimal_digit' ] )->
+				insertFiltersBefore( 'arabic_stop', $arPreStopFilters )->
 				insertFiltersBefore( 'arabic_stemmer', [ 'arabic_normalization' ] )->
 				build( $config );
 			break;
@@ -1466,6 +1477,8 @@ class AnalysisConfigBuilder {
 	 */
 	private $elasticsearchLanguageAnalyzers = [
 		'ar' => 'arabic',
+		'ary' => 'arabic-moroccan',
+		'arz' => 'arabic-egyptian',
 		'hy' => 'armenian',
 		'eu' => 'basque',
 		'bn' => 'bengali',
@@ -1515,6 +1528,8 @@ class AnalysisConfigBuilder {
 	 */
 	private $languagesWithIcuFolding = [
 		'ar' => true,
+		'ary' => true,
+		'arz' => true,
 		'bn' => true,
 		'bs' => true,
 		'ca' => true,

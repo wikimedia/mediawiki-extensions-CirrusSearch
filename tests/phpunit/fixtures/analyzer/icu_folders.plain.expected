@@ -26,6 +26,58 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "ary_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ary_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "arz_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "arz_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "bn_plain": {
             "char_filter": [
                 "nnbsp_norm",

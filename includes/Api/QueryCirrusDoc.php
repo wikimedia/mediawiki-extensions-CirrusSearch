@@ -101,7 +101,7 @@ class QueryCirrusDoc extends \ApiQueryBase {
 		return [
 			'action=query&prop=cirrusdoc&titles=Main_Page' =>
 				'apihelp-query+cirrusdoc-example',
-			'action=query&prop=cirrusdoc&titles=Main_Page&cdincludes=categories' =>
+			'action=query&prop=cirrusdoc&titles=Main_Page&cdincludes=category' =>
 				'apihelp-query+cirrusdoc-example-2'
 		];
 	}

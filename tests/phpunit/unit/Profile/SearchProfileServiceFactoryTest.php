@@ -64,6 +64,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			'completion' => [ SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT ],
 			'fallback' => [ SearchProfileService::FALLBACKS, SearchProfileService::CONTEXT_DEFAULT ],
 			'fulltext query builder' => [ SearchProfileService::FT_QUERY_BUILDER, SearchProfileService::CONTEXT_DEFAULT ],
+			'document size limiter' => [ SearchProfileService::DOCUMENT_SIZE_LIMITER, SearchProfileService::CONTEXT_DEFAULT ],
 		];
 	}
 

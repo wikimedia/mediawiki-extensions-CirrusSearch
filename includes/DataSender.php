@@ -4,6 +4,8 @@ namespace CirrusSearch;
 
 use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\BuildDocument\BuildDocumentException;
+use CirrusSearch\BuildDocument\DocumentSizeLimiter;
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Bulk\Action\AbstractDocument;
 use Elastica\Document;
@@ -53,19 +55,31 @@ class DataSender extends ElasticsearchIntermediary {
 	private $searchConfig;
 
 	private $stats;
+	/**
+	 * @var DocumentSizeLimiter
+	 */
+	private $docSizeLimiter;
 
 	/**
 	 * @param Connection $conn
 	 * @param SearchConfig $config
 	 * @param StatsdDataFactory|null $stats
+	 * @param DocumentSizeLimiter|null $docSizeLimiter
 	 */
-	public function __construct( Connection $conn, SearchConfig $config, StatsdDataFactory $stats = null ) {
+	public function __construct(
+		Connection $conn,
+		SearchConfig $config,
+		StatsdDataFactory $stats = null,
+		DocumentSizeLimiter $docSizeLimiter = null
+	) {
 		parent::__construct( $conn, null, 0 );
 		$this->stats = $stats ?? MediaWikiServices::getInstance()->getStatsdDataFactory();
 		$this->log = LoggerFactory::getInstance( 'CirrusSearch' );
 		$this->failedLog = LoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
 		$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->searchConfig = $config;
+		$this->docSizeLimiter = $docSizeLimiter ?? new DocumentSizeLimiter(
+			$config->getProfileService()->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER ) );
 	}
 
 	/**
@@ -249,7 +263,8 @@ class DataSender extends ElasticsearchIntermediary {
 			$services->getParserCache(),
 			$services->getRevisionStore(),
 			new CirrusSearchHookRunner( $services->getHookContainer() ),
-			$services->getBacklinkCacheFactory()
+			$services->getBacklinkCacheFactory(),
+			$this->docSizeLimiter
 		);
 		try {
 			foreach ( $documents as $i => $doc ) {

@@ -35,7 +35,8 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 			$this->createMock( ParserCache::class ),
 			$revStore,
 			$this->createCirrusSearchHookRunner(),
-			$this->createMock( BacklinkCacheFactory::class )
+			$this->createMock( BacklinkCacheFactory::class ),
+			new DocumentSizeLimiter( [] )
 		) extends BuildDocument {
 			// Override create builders to avoid testing those implementations
 			protected function createBuilders( int $flags ): array {

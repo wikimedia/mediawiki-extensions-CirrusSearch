@@ -3,8 +3,10 @@
 namespace CirrusSearch\Api;
 
 use CirrusSearch\BuildDocument\BuildDocument;
+use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\CirrusSearchHookRunner;
+use CirrusSearch\Profile\SearchProfileService;
 use Mediawiki\MediaWikiServices;
 
 /**
@@ -51,7 +53,9 @@ class QueryBuildDocument extends \ApiQueryBase {
 				$services->getParserCache(),
 				$services->getRevisionStore(),
 				new CirrusSearchHookRunner( $services->getHookContainer() ),
-				$services->getBacklinkCacheFactory()
+				$services->getBacklinkCacheFactory(),
+				new DocumentSizeLimiter( $engine->getConfig()->getProfileService()
+					->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER ) )
 			);
 			$docs = $builder->initialize( $pages, BuildDocument::INDEX_EVERYTHING );
 			foreach ( $docs as $pageId => $doc ) {

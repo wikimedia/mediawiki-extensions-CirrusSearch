@@ -3,6 +3,8 @@
 namespace CirrusSearch;
 
 use CirrusSearch\BuildDocument\BuildDocument;
+use CirrusSearch\BuildDocument\DocumentSizeLimiter;
+use CirrusSearch\Profile\SearchProfileService;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\ProperPageIdentity;
@@ -195,13 +197,16 @@ class Updater extends ElasticsearchIntermediary {
 
 		$allDocuments = array_fill_keys( $this->connection->getAllIndexSuffixes(), [] );
 		$services = MediaWikiServices::getInstance();
+		$docSizeLimiter = new DocumentSizeLimiter(
+			$this->connection->getConfig()->getProfileService()->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER ) );
 		$builder = new BuildDocument(
 			$this->connection,
 			$services->getDBLoadBalancer()->getConnection( DB_REPLICA ),
 			$services->getParserCache(),
 			$services->getRevisionStore(),
 			new CirrusSearchHookRunner( $services->getHookContainer() ),
-			$services->getBacklinkCacheFactory()
+			$services->getBacklinkCacheFactory(),
+			$docSizeLimiter
 		);
 		foreach ( $builder->initialize( $pages, $flags ) as $document ) {
 			// This isn't really a property of the connection, so it doesn't matter

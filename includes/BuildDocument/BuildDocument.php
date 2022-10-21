@@ -74,6 +74,8 @@ class BuildDocument {
 	private $cirrusSearchHookRunner;
 	/** @var BacklinkCacheFactory */
 	private $backlinkCacheFactory;
+	/** @var DocumentSizeLimiter */
+	private $documentSizeLimiter;
 
 	/**
 	 * @param Connection $connection Cirrus connection to read page properties from
@@ -82,6 +84,7 @@ class BuildDocument {
 	 * @param RevisionStore $revStore Store for retrieving revisions by id
 	 * @param CirrusSearchHookRunner $cirrusSearchHookRunner
 	 * @param BacklinkCacheFactory $backlinkCacheFactory
+	 * @param DocumentSizeLimiter $docSizeLimiter
 	 */
 	public function __construct(
 		Connection $connection,
@@ -89,7 +92,8 @@ class BuildDocument {
 		ParserCache $parserCache,
 		RevisionStore $revStore,
 		CirrusSearchHookRunner $cirrusSearchHookRunner,
-		BacklinkCacheFactory $backlinkCacheFactory
+		BacklinkCacheFactory $backlinkCacheFactory,
+		DocumentSizeLimiter $docSizeLimiter
 	) {
 		$this->config = $connection->getConfig();
 		$this->connection = $connection;
@@ -98,6 +102,7 @@ class BuildDocument {
 		$this->revStore = $revStore;
 		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner;
 		$this->backlinkCacheFactory = $backlinkCacheFactory;
+		$this->documentSizeLimiter = $docSizeLimiter;
 	}
 
 	/**
@@ -171,6 +176,7 @@ class BuildDocument {
 			foreach ( $builders as $builder ) {
 				$builder->finalize( $doc, $title );
 			}
+			$this->documentSizeLimiter->resize( $doc );
 		}
 		return true;
 	}

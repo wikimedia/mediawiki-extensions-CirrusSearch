@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Profile;
 
+use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\Dispatch\BasicSearchQueryRoute;
 use CirrusSearch\Dispatch\CirrusDefaultSearchQueryRoute;
 use CirrusSearch\Dispatch\DefaultSearchQueryDispatchService;
@@ -97,6 +98,12 @@ class SearchProfileService {
 	 * @see \CirrusSearch\Maintenance\SaneitizeJobs
 	 */
 	public const SANEITIZER = 'saneitizer';
+
+	/**
+	 * Profile type used by the document size limiter
+	 * @see DocumentSizeLimiter
+	 */
+	public const DOCUMENT_SIZE_LIMITER = 'document_size_limiter';
 
 	/**
 	 * Profiles used for building fulltext search queries

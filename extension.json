@@ -634,6 +634,12 @@
 		"CirrusSearchFiletypeAliases": {
 			"value": []
 		},
+		"CirrusSearchDocumentSizeLimiterProfile": {
+			"value": "default"
+		},
+		"CirrusSearchDocumentSizeLimiterProfiles": {
+			"value": []
+		},
 		"CirrusSearchMaxFileTextLength": {
 			"value": -1
 		},

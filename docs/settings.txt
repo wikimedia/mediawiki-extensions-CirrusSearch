@@ -1508,6 +1508,20 @@ Values:
  - strictly negative value to keep the full content and disable this feature (default)
  - positive value to truncate the content the expected size (0 will remove everything)
 
+; $wgCirrusSearchDocumentSizeLimiterProfile
+
+Default:
+    $wgCirrusSearchDocumentSizeLimiterProfile = "default"
+
+Set the profile for the document size limiter, see profiles/DocumentSizeLimiterProfiles.config.php
+
+; $wgCirrusSearchDocumentSizeLimiterProfiles
+
+Default:
+    $wgCirrusSearchDocumentSizeLimiterProfiles = []
+
+Add extra limiter profiles.
+
 ; $wgCirrusSearchElasticQuirks
 
 Default:

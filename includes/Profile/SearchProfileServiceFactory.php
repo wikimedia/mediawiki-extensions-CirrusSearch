@@ -146,6 +146,7 @@ class SearchProfileServiceFactory {
 		$this->loadPhraseSuggesterProfiles( $service, $config );
 		$this->loadIndexLookupFallbackProfiles( $service, $config );
 		$this->loadSaneitizerProfiles( $service );
+		$this->loadDocumentSizeLimiterProfiles( $service, $config );
 		$this->loadFullTextQueryProfiles( $service, $config );
 		$this->loadInterwikiOverrides( $service, $config );
 		$this->loadFallbackProfiles( $service, $config );
@@ -273,6 +274,21 @@ class SearchProfileServiceFactory {
 		$service->registerFileRepository( SearchProfileService::SANEITIZER, self::CIRRUS_BASE,
 			__DIR__ . '/../../profiles/SaneitizeProfiles.config.php' );
 		// no name resolver, profile is automatically chosen based on wiki
+	}
+
+	/**
+	 * @param SearchProfileService $service
+	 * @param SearchConfig $config
+	 */
+	private function loadDocumentSizeLimiterProfiles( SearchProfileService $service, SearchConfig $config ) {
+		$service->registerFileRepository( SearchProfileService::DOCUMENT_SIZE_LIMITER, self::CIRRUS_BASE,
+			__DIR__ . '/../../profiles/DocumentSizeLimiterProfiles.config.php' );
+		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::DOCUMENT_SIZE_LIMITER,
+			self::CIRRUS_CONFIG, 'CirrusSearchDocumentSizeLimiterProfiles', $config ) );
+		$service->registerDefaultProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER,
+			SearchProfileService::CONTEXT_DEFAULT, "default" );
+		$service->registerConfigOverride( SearchProfileService::DOCUMENT_SIZE_LIMITER,
+			SearchProfileService::CONTEXT_DEFAULT, $config, "CirrusSearchDocumentSizeLimiterProfile" );
 	}
 
 	/**

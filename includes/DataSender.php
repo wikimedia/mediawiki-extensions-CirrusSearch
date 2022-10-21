@@ -691,7 +691,7 @@ class DataSender extends ElasticsearchIntermediary {
 			// Use the same JSON output that Elastica uses, it might be the options MW uses
 			// to populate event-gate (esp. regarding escaping UTF-8) but hopefully it's close
 			// to what we will be using.
-			$len = strlen( JSON::stringify( $doc, \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES ) );
+			$len = strlen( JSON::stringify( $doc->getData(), \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES ) );
 			// Use a timing stat as we'd like to have some min, max and percentiles calculated
 			$this->stats->timing( $metricsPrefix, $len );
 		} catch ( \JsonException $e ) {

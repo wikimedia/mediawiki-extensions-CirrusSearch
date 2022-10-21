@@ -12,6 +12,8 @@ use MediaWiki\Logger\LoggerFactory;
 use RuntimeException;
 
 class SearchAfter implements \Iterator {
+	private const MAX_BACKOFF_SEC = 120;
+	private const MICROSEC_PER_SEC = 1_000_000;
 	/** @var Search */
 	private $search;
 	/** @var Query */
@@ -20,20 +22,25 @@ class SearchAfter implements \Iterator {
 	private $currentResultSet;
 	/** @var ?int */
 	private $currentPage;
-	/** @var int The number of retries to perform on each iteration */
-	private $numRetries;
+	/** @var float[] Sequence of second length backoffs to use for retries */
+	private $backoff;
 
 	/**
 	 * @param Search $search
 	 * @param int $numRetries The number of retries to perform on each iteration
+	 * @param float $backoffFactor Scales the backoff duration, backoff calculated as
+	 *   {backoffFactor} * 2^({retry} - 1) which gives, with no scaling, [1, 2, 4, 8, ...]
 	 */
-	public function __construct( Search $search, int $numRetries = 5 ) {
+	public function __construct( Search $search, int $numRetries = 5, float $backoffFactor = 1. ) {
 		$this->search = $search;
 		$this->baseQuery = clone $search->getQuery();
 		if ( !$this->baseQuery->hasParam( 'sort' ) ) {
 			throw new InvalidArgumentException( 'ScrollAfter query must have a sort' );
 		}
-		$this->numRetries = $numRetries;
+		if ( $numRetries < 0 ) {
+			throw new InvalidArgumentException( '$numRetries must be >= 0' );
+		}
+		$this->backoff = $this->calcBackoff( $numRetries, $backoffFactor );
 	}
 
 	public function current(): ResultSet {
@@ -65,21 +72,22 @@ class SearchAfter implements \Iterator {
 	}
 
 	private function runSearch() {
-		$retry = 0;
-		while ( true ) {
+		foreach ( $this->backoff as $backoffSec ) {
 			try {
 				return $this->search->search();
 			} catch ( ElasticaExceptionInterface $e ) {
-				if ( $retry >= $this->numRetries ) {
-					throw $e;
-				}
-				$retry++;
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					"Exception thrown during SearchAfter iteration. Retrying.",
-					[ 'exception' => $e ]
+					"Exception thrown during SearchAfter iteration. Retrying in {backoffSec}s.",
+					[
+						'exception' => $e,
+						'backoffSec' => $backoffSec,
+					]
 				);
+				usleep( (int)( $backoffSec * self::MICROSEC_PER_SEC ) );
 			}
 		}
+		// Final attempt after exhausting retries.
+		return $this->search->search();
 	}
 
 	public function rewind(): void {
@@ -93,5 +101,13 @@ class SearchAfter implements \Iterator {
 
 	public function valid(): bool {
 		return count( $this->currentResultSet ?? [] ) > 0;
+	}
+
+	private function calcBackoff( int $maxRetries, float $backoffFactor ): array {
+		$backoff = [];
+		for ( $retry = 0; $retry < $maxRetries; $retry++ ) {
+			$backoff[$retry] = min( $backoffFactor * pow( 2, $retry - 1 ), self::MAX_BACKOFF_SEC );
+		}
+		return $backoff;
 	}
 }

@@ -20,19 +20,20 @@ abstract class CirrusSearchResult extends SearchResult {
 	private $title;
 
 	/**
-	 * @var File
+	 * @var ?File
 	 */
 	private $file;
+
+	/**
+	 * @var bool
+	 */
+	private $checkedForFile = false;
 
 	/**
 	 * @param Title $title
 	 */
 	public function __construct( Title $title ) {
 		$this->title = $title;
-		if ( $this->getTitle()->getNamespace() === NS_FILE ) {
-			$this->file = MediaWikiServices::getInstance()->getRepoGroup()
-				->findFile( $this->title );
-		}
 	}
 
 	/**
@@ -84,6 +85,11 @@ abstract class CirrusSearchResult extends SearchResult {
 	 * @return File|null
 	 */
 	final public function getFile() {
+		if ( !$this->checkedForFile && $this->getTitle()->getNamespace() === NS_FILE ) {
+			$this->checkedForFile = true;
+			$this->file = MediaWikiServices::getInstance()->getRepoGroup()
+				->findFile( $this->title );
+		}
 		return $this->file;
 	}
 

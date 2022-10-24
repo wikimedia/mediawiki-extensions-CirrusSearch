@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
+			"Cakkaparla",
 			"RARJINDA",
 			"ReyLon Mrat"
 		]
 	},
-	"apihelp-query+cirrusdoc-example-2": "ပါဝင္ေရ`ပါရာမီတာကိုအသုံးျၿပီးေက႐ြီးခ်ယ္ထားေရအမ်ိဳးစားတိရာဟိမ့္ေရေဒဝီကီ\nအတြက္Cirrussearch ဆက္တင္တိကို အ ႈက္ပုံတစ္ပုံရယူလိုက္။",
+	"apihelp-query+cirrusdoc-example-2": "'ပါဝင်ရေ' ပါရာမီတာကို အသုံးပြုပနာ ရွေးချယ်ထားရေ အမျိုးအစားတိသာဟိန့်ရေဝီကီအတွက် CirrusSearch ဆက်တင်တိကို အမှိုက်ပုံတစ်ပုံရယူပါ။",
 	"apihelp-query+cirrusdoc-param-includes": "ရှာဖွေမှုကနီ ဇာ‌နီရာကို‌ရောက်ပြန်ရောက်သင့်လေ ပြောပြပါ"
 }

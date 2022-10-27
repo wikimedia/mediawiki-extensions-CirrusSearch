@@ -17,19 +17,19 @@ exports.config = merge( wdioConf.config, {
 			}
 		]
 	],
-	baseUrl: 'https://cirrustest-' + process.env.MWV_LABS_HOSTNAME + '.wmflabs.org',
+	baseUrl: 'https://cirrustest-' + process.env.MWV_LABS_HOSTNAME + '.wmcloud.org',
 	wikis: {
 		cirrustest: {
-			apiUrl: 'https://cirrustest-' + process.env.MWV_LABS_HOSTNAME + '.wmflabs.org/w/api.php',
-			baseUrl: 'https://cirrustest-' + process.env.MWV_LABS_HOSTNAME + '.wmflabs.org'
+			apiUrl: 'https://cirrustest-' + process.env.MWV_LABS_HOSTNAME + '.wmcloud.org/w/api.php',
+			baseUrl: 'https://cirrustest-' + process.env.MWV_LABS_HOSTNAME + '.wmcloud.org'
 		},
 		commons: {
-			apiUrl: 'https://commons-' + process.env.MWV_LABS_HOSTNAME + '.wmflabs.org/w/api.php',
-			baseUrl: 'https://commons-' + process.env.MWV_LABS_HOSTNAME + '.wmflabs.org'
+			apiUrl: 'https://commons-' + process.env.MWV_LABS_HOSTNAME + '.wmcloud.org/w/api.php',
+			baseUrl: 'https://commons-' + process.env.MWV_LABS_HOSTNAME + '.wmcloud.org'
 		},
 		ru: {
-			apiUrl: 'https://ru-' + process.env.MWV_LABS_HOSTNAME + '.wmflabs.org/w/api.php',
-			baseUrl: 'https://ru-' + process.env.MWV_LABS_HOSTNAME + '.wmflabs.org'
+			apiUrl: 'https://ru-' + process.env.MWV_LABS_HOSTNAME + '.wmcloud.org/w/api.php',
+			baseUrl: 'https://ru-' + process.env.MWV_LABS_HOSTNAME + '.wmcloud.org'
 		}
 	}
 // overwrite so new reporters override previous instead of merging into combined reporters

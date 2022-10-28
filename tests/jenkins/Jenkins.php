@@ -52,7 +52,6 @@ $wgGroupPermissions['*']['deleterevision'] = true;
 $wgFileExtensions[] = 'pdf';
 $wgFileExtensions[] = 'svg';
 $wgCapitalLinks = false;
-$wgUseInstantCommons = true;
 $wgEnableUploads = true;
 $wgJobTypeConf['default'] = [
 	'class' => 'JobQueueRedis',

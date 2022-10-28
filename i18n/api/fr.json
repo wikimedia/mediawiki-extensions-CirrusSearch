@@ -29,6 +29,7 @@
 	"apihelp-query+cirrusdoc-param-includes": "Définir quels champs doivent être renvoyés par la recherche.",
 	"apihelp-query+cirrusbuilddoc-summary": "Vidage du document d’un article de CirrusSearch depuis les serveurs de base de données",
 	"apihelp-query+cirrusbuilddoc-example": "Obtenir le vidage d’un unique article de CirrusSearch généré depuis la base de données.",
+	"apihelp-query+cirrusbuilddoc-param-builders": "Type de données à extraire",
 	"apierror-cirrus-requesttoolong": "La requête de recherche de préfixe a dépassé la longueur maximale autorisée ($1 &gt; $2).",
 	"apihelp-query+compsuggestbuilddoc-param-method": "La méthode de notation à utiliser",
 	"apierror-compsuggestbuilddoc-bad-method": "Méthode de notation inconnue",

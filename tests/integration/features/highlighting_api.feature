@@ -52,7 +52,7 @@ Feature: Highlighting
 
   Scenario: Words are not found in image captions unless there are no matches in the page
     When I api search for The Rose Trellis Egg
-    Then *The* *Rose* *Trellis* Faberge *Egg* is a jewelled enameled imperial Easter *egg* made in St. Petersburg, Russia under *the* supervision of *the* jeweler Peter Carl is the highlighted snippet of the first api search result
+    Then *Rose* *Trellis* Faberge *Egg* is a jewelled enameled imperial Easter *egg* is in the highlighted snippet of the first api search result
 
   @headings
   Scenario: Found words are highlighted in headings even if they contain both a phrase and a non-phrase

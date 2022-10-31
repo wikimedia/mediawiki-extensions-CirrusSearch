@@ -54,7 +54,9 @@ class SearchResultsPage extends Page {
 	}
 
 	get_result_element_at( nth ) {
-		const resultLink = this.results_block().$( `a[data-serp-pos="${nth - 1}"]` );
+		// Needs to use xpath to access an arbitrary parent from the child anchor
+		const resultLink = browser.$(
+			`//a[@data-serp-pos="${nth - 1}"]//ancestor::li[contains(@class, "mw-search-result")]` );
 		if ( !resultLink.isExisting() ) {
 			return null;
 		}
@@ -66,19 +68,7 @@ class SearchResultsPage extends Page {
 		if ( resElem === null ) {
 			return null;
 		}
-		// Image links are inside a table
-		// move to the tr parent to switch the td holding the images
-		// <tbody>
-		//  <tr>
-		//    <td>[THUMB IMAGE LINK BLOCK]</td>
-		//    <td>[RESULT ELEMENT BLOCK] position returned by get_result_element_at</td>
-		//  </tr>
-		// </tbody>
-		const tr = resElem.$( '..' );
-		if ( tr.getTagName() !== 'tr' ) {
-			return null;
-		}
-		const imageTag = tr.$( 'td a.image img' );
+		const imageTag = resElem.$( '.searchResultImage-thumbnail img' );
 		if ( imageTag.isExisting() ) {
 			return imageTag.getAttribute( 'src' );
 		}

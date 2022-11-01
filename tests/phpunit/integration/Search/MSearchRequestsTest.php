@@ -88,10 +88,6 @@ class MSearchRequestsTest extends CirrusIntegrationTestCase {
 				return [];
 			}
 
-			public function getStoredFields() {
-				return $this->getFields();
-			}
-
 			public function getHighlightingConfiguration( array $extraHighlightFields = [] ) {
 				return [];
 			}

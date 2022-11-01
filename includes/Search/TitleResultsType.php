@@ -25,10 +25,6 @@ class TitleResultsType extends BaseResultsType {
 		return [];
 	}
 
-	public function getStoredFields() {
-		return $this->getFields();
-	}
-
 	/**
 	 * @param array $extraHighlightFields
 	 * @return array|null

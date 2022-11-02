@@ -29,14 +29,6 @@ use User;
  * @covers \CirrusSearch\Hooks
  */
 class HooksIntegrationTest extends CirrusIntegrationTestCase {
-	public function testHooksAreArrays() {
-		global $wgHooks;
-
-		foreach ( $wgHooks as $name => $array ) {
-			$this->assertThat( $array, $this->isType( 'array' ),
-				"The $name hook should be an array." );
-		}
-	}
 
 	public function provideOverrides() {
 		return [

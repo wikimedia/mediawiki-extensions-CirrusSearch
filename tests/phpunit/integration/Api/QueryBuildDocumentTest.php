@@ -57,7 +57,7 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 			'cluster_group' => 'my_group',
 			'noop_hints' => [
 				'version' => 'documentVersion',
-			]
+			],
 		];
 
 		$this->getNonexistingTestPage( 'QueryBuildDocumentTest_Page' );
@@ -84,6 +84,11 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 		$doc = array_intersect_key( $doc, $expectedDoc );
 		$this->assertEquals( $expectedDoc, $doc );
 		$cirrusMetadata = $data[0]["query"]["pages"][$pageId]["cirrusbuilddoc_metadata"];
+
+		$this->assertArrayHasKey( 'size_limiter_stats', $cirrusMetadata );
+		// remove the stats as they depend on the doc size which might vary depending on the extensions
+		// being present while testing
+		unset( $cirrusMetadata['size_limiter_stats'] );
 		$this->assertEquals( $expectedMetadata, $cirrusMetadata );
 
 		// Case 2: test first using revids
@@ -99,6 +104,9 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 		$doc = array_intersect_key( $doc, $expectedDoc );
 		$this->assertEquals( $expectedDoc, $doc );
 		$cirrusMetadata = $data[0]["query"]["pages"][$pageId]["cirrusbuilddoc_metadata"];
+
+		$this->assertArrayHasKey( 'size_limiter_stats', $cirrusMetadata );
+		unset( $cirrusMetadata['size_limiter_stats'] );
 		$this->assertEquals( $expectedMetadata, $cirrusMetadata );
 	}
 

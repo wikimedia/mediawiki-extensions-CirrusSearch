@@ -42,6 +42,7 @@ class QueryBuildDocument extends \ApiQueryBase {
 		$engine = $services->getSearchEngineFactory()->create();
 
 		$builders = $this->getParameter( 'builders' );
+		$profile = $this->getParameter( 'limiterprofile' );
 		$flags = 0;
 		if ( !in_array( 'content', $builders ) ) {
 			$flags |= BuildDocument::SKIP_PARSE;
@@ -73,7 +74,7 @@ class QueryBuildDocument extends \ApiQueryBase {
 				$services->getRevisionStore(),
 				$services->getBacklinkCacheFactory(),
 				new DocumentSizeLimiter( $engine->getConfig()->getProfileService()
-					->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER ) )
+					->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER, SearchProfileService::CONTEXT_DEFAULT, $profile ) )
 			);
 			$baseMetadata = [];
 			$clusterGroup = $engine->getConfig()->getClusterAssignment()->getCrossClusterName();
@@ -93,6 +94,10 @@ class QueryBuildDocument extends \ApiQueryBase {
 					$metadata = [];
 					if ( $hints !== null ) {
 						$metadata = $baseMetadata + [ 'noop_hints' => $hints ];
+					}
+					$limiterStats = CirrusIndexField::getHint( $doc, DocumentSizeLimiter::HINT_DOC_SIZE_LIMITER_STATS );
+					if ( $limiterStats !== null ) {
+						$metadata += [ 'size_limiter_stats' => $limiterStats ];
 					}
 
 					$result->addValue( [ 'query', 'pages', $pageId ],
@@ -115,6 +120,9 @@ class QueryBuildDocument extends \ApiQueryBase {
 					'links',
 				],
 				ApiBase::PARAM_HELP_MSG => 'apihelp-query+cirrusbuilddoc-param-builders',
+			],
+			'limiterprofile' => [
+				ParamValidator::PARAM_TYPE => 'string'
 			],
 		];
 	}

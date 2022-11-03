@@ -8,6 +8,7 @@
 	},
 	"apihelp-cirrus-config-dump-description": "مخزن ضبط CirrusSearch.",
 	"apihelp-cirrus-config-dump-summary": "نسخة من ضبط CirrusSearch.",
+	"apihelp-cirrus-config-dump-param-prop": "نوع متغيرات التكوين للتفريغ",
 	"apihelp-cirrus-config-dump-example": "الحصول على تخرين لضبط CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "مخزن خرائط CirrusSearch لهذه الويكي.",
 	"apihelp-cirrus-mapping-dump-summary": "نسخة من خريطة CirrusSearch لهذه الويكي.",

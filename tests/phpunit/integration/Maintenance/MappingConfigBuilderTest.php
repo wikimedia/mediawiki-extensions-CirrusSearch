@@ -33,13 +33,14 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 		// The set of installed extensions might have extra content models
 		// which provide extra fields, but we only want the default values
 		// from core.
-		$this->setMwGlobals( [
-			'wgContentHandlers' => MainConfigSchema::ContentHandlers['default'],
-		] );
-		$this->mergeMwGlobalArrayValue( 'wgHooks', [
-			'CirrusSearchMappingConfig' => [],
-			'GetContentModels' => [],
-			'SearchIndexFields' => [],
+		$this->overrideConfigValue(
+			'ContentHandlers',
+			MainConfigSchema::ContentHandlers['default']
+		);
+		$this->clearHooks( [
+			'CirrusSearchMappingConfig',
+			'GetContentModels',
+			'SearchIndexFields',
 		] );
 		$scopedCallback = ExtensionRegistry::getInstance()->setAttributeForTest( 'Hooks', [] );
 

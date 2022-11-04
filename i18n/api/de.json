@@ -27,6 +27,7 @@
 	"apihelp-query+cirrusbuilddoc-summary": "Auszug eines CirrusSearch-Artikeldokuments von den Datenbankservern",
 	"apihelp-query+cirrusbuilddoc-example": "Ruft einen Auszug eines einzelnen CirrusSearch-Artikels ab, der von der Datenbank erzeugt wurde.",
 	"apihelp-query+cirrusbuilddoc-param-builders": "Art der zu extrahierenden Daten",
+	"apihelp-query+cirrusbuilddoc-param-limiterprofile": "Zu verwendendes Profil, wenn die Größe des Dokuments begrenzt wird",
 	"apierror-cirrus-requesttoolong": "Die Präfixsuchenanfrage dauerte länger als die maximal erlaubte Länge. ($1 &gt; $2)",
 	"apihelp-query+compsuggestbuilddoc-param-method": "Die zu verwendende Scoring-Methode",
 	"apierror-compsuggestbuilddoc-bad-method": "Unbekannte Scoring-Methode",

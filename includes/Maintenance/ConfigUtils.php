@@ -81,7 +81,7 @@ class ConfigUtils {
 	public function pickIndexIdentifierFromOption( $option, $typeName ) {
 		if ( $option === 'now' ) {
 			$identifier = strval( time() );
-			$this->outputIndented( "Setting index identifier...${typeName}_${identifier}\n" );
+			$this->outputIndented( "Setting index identifier...{$typeName}_{$identifier}\n" );
 			return $identifier;
 		}
 		if ( $option === 'current' ) {
@@ -102,7 +102,7 @@ class ConfigUtils {
 			} else {
 				$identifier = 'first';
 			}
-			$this->output( "${typeName}_${identifier}\n" );
+			$this->output( "{$typeName}_{$identifier}\n" );
 			return $identifier;
 		}
 		return $option;

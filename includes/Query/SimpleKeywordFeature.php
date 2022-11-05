@@ -249,7 +249,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 			// If we allow empty values we don't allow spaces between
 			// the keyword and its value, a space would mean "empty value"
 			$spacesAfterSep = $this->allowEmptyValue() ? '' : '\s*';
-			$valueSideRegex = "${spacesAfterSep}{$valueRegex}\\s?";
+			$valueSideRegex = "{$spacesAfterSep}{$valueRegex}\\s?";
 		}
 
 		$callback = function ( $match ) use ( $context ) {
@@ -301,7 +301,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 		};
 
 		return preg_replace_callback(
-			"/{$begin}{$keywordRegex}:${valueSideRegex}/",
+			"/{$begin}{$keywordRegex}:{$valueSideRegex}/",
 			$callback,
 			$term
 		);

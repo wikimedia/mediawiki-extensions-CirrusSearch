@@ -174,7 +174,7 @@ class ElasticaWrite extends CirrusGenericJob {
 		$ok = true;
 		if ( !$status->isOK() ) {
 			$action = $this->requeueError( $conn ) ? "Requeued" : "Dropped";
-			$this->setLastError( "ElasticaWrite job failed: ${action}" );
+			$this->setLastError( "ElasticaWrite job failed: {$action}" );
 			$ok = false;
 		}
 

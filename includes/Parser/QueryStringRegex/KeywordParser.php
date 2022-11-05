@@ -61,10 +61,10 @@ class KeywordParser implements WarningCollector {
 			// If we allow empty values we don't allow spaces between
 			// the keyword and its value, a space would mean "empty value"
 			$spacesAfterSep = $feature->allowEmptyValue() ? '' : '[\pZ\pC]*';
-			$valueSideRegex = "${spacesAfterSep}{$valueRegex}";
+			$valueSideRegex = "{$spacesAfterSep}{$valueRegex}";
 		}
 		$matches = [];
-		preg_match_all( "/{$begin}{$keywordRegex}(?<colon>:)${valueSideRegex}/u",
+		preg_match_all( "/{$begin}{$keywordRegex}(?<colon>:){$valueSideRegex}/u",
 			$query, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, $offset );
 		$output = [];
 		foreach ( $matches as $match ) {

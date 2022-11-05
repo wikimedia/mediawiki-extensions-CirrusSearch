@@ -417,14 +417,14 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			if ( $fieldSuffix === '.near_match' ) {
 				// The near match fields can't shard a root field because field fields need it -
 				// thus no suffix all.
-				return [ "all_near_match^${weight}" ];
+				return [ "all_near_match^{$weight}" ];
 			}
 			if ( $fieldSuffix === '.near_match_asciifolding' ) {
 				// The near match fields can't shard a root field because field fields need it -
 				// thus no suffix all.
-				return [ "all_near_match.asciifolding^${weight}" ];
+				return [ "all_near_match.asciifolding^{$weight}" ];
 			}
-			return [ "all${fieldSuffix}^${weight}" ];
+			return [ "all{$fieldSuffix}^{$weight}" ];
 		}
 
 		$fields = [];
@@ -432,26 +432,26 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$titleWeight = $weight * $searchWeights[ 'title' ];
 		$redirectWeight = $weight * $searchWeights[ 'redirect' ];
 		if ( $fieldSuffix === '.near_match' || $fieldSuffix === '.near_match_asciifolding' ) {
-			$fields[] = "title${fieldSuffix}^${titleWeight}";
-			$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";
+			$fields[] = "title{$fieldSuffix}^{$titleWeight}";
+			$fields[] = "redirect.title{$fieldSuffix}^{$redirectWeight}";
 			return $fields;
 		}
-		$fields[] = "title${fieldSuffix}^${titleWeight}";
-		$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";
+		$fields[] = "title{$fieldSuffix}^{$titleWeight}";
+		$fields[] = "redirect.title{$fieldSuffix}^{$redirectWeight}";
 		$categoryWeight = $weight * $searchWeights[ 'category' ];
 		$headingWeight = $weight * $searchWeights[ 'heading' ];
 		$openingTextWeight = $weight * $searchWeights[ 'opening_text' ];
 		$textWeight = $weight * $searchWeights[ 'text' ];
 		$auxiliaryTextWeight = $weight * $searchWeights[ 'auxiliary_text' ];
-		$fields[] = "category${fieldSuffix}^${categoryWeight}";
-		$fields[] = "heading${fieldSuffix}^${headingWeight}";
-		$fields[] = "opening_text${fieldSuffix}^${openingTextWeight}";
-		$fields[] = "text${fieldSuffix}^${textWeight}";
-		$fields[] = "auxiliary_text${fieldSuffix}^${auxiliaryTextWeight}";
+		$fields[] = "category{$fieldSuffix}^{$categoryWeight}";
+		$fields[] = "heading{$fieldSuffix}^{$headingWeight}";
+		$fields[] = "opening_text{$fieldSuffix}^{$openingTextWeight}";
+		$fields[] = "text{$fieldSuffix}^{$textWeight}";
+		$fields[] = "auxiliary_text{$fieldSuffix}^{$auxiliaryTextWeight}";
 		$namespaces = $context->getNamespaces();
 		if ( !$namespaces || in_array( NS_FILE, $namespaces ) ) {
 			$fileTextWeight = $weight * $searchWeights[ 'file_text' ];
-			$fields[] = "file_text${fieldSuffix}^${fileTextWeight}";
+			$fields[] = "file_text{$fieldSuffix}^{$fileTextWeight}";
 		}
 		return $fields;
 	}

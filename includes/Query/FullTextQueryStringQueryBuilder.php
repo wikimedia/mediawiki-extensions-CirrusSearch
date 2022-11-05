@@ -369,7 +369,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		if ( $context->getConfig()->getElement( 'CirrusSearchAllFields', 'use' ) ) {
 			$titleWeight = $context->getConfig()->getElement( 'CirrusSearchWeights', 'title' );
 			$fields = [];
-			$fields[] = "title.plain:$term^${titleWeight}";
+			$fields[] = "title.plain:$term^{$titleWeight}";
 			$fields[] = "all.plain:$term";
 			$exact = implode( ' OR ', $fields );
 			return "($exact)";

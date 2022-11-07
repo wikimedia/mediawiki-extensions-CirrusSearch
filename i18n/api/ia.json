@@ -26,6 +26,7 @@
 	"apihelp-query+cirrusbuilddoc-summary": "Copia del documento de un articulo CirrusSearch ab le servitores de base de datos",
 	"apihelp-query+cirrusbuilddoc-example": "Obtener un copia de un sol articulo CirrusSearch generate ab le base de datos.",
 	"apihelp-query+cirrusbuilddoc-param-builders": "Typo de datos a extraher",
+	"apihelp-query+cirrusbuilddoc-param-limiterprofile": "Profilo a usar al limitar le grandor del documento",
 	"apierror-cirrus-requesttoolong": "Le requesta de recerca per prefixo es plus longe que le dimension permittite. ($1 &gt; $2)",
 	"apihelp-query+compsuggestbuilddoc-param-method": "Le methodo de punctage a usar",
 	"apierror-compsuggestbuilddoc-bad-method": "Methodo de punctage incognite",

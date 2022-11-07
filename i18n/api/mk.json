@@ -26,6 +26,7 @@
 	"apihelp-query+cirrusbuilddoc-summary": "складиштен извадок од статиски документ на CirrusSearch од базните опслужвачи",
 	"apihelp-query+cirrusbuilddoc-example": "Дај складиштен извадок од поединечна статија на CirrusSearch создаден од базата.",
 	"apihelp-query+cirrusbuilddoc-param-builders": "Вид на податоци за извлекување",
+	"apihelp-query+cirrusbuilddoc-param-limiterprofile": "Профил за употреба при ограничување на големината на документ",
 	"apierror-cirrus-requesttoolong": "Пребараното со претставка ја надмина допуштената должина. ($1 &gt; $2)",
 	"apihelp-query+compsuggestbuilddoc-param-method": "Кој начин на оценување да се користи",
 	"apierror-compsuggestbuilddoc-bad-method": "Непознат начин на оценување",

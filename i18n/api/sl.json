@@ -8,5 +8,6 @@
 	"apihelp-query+cirrusdoc-example-2": "Pridobite izpis nastavitev CirrusSearch za ta viki samo s kategorijami, ki so bile izbrane s parametrom »includes«",
 	"apihelp-query+cirrusdoc-param-includes": "Določite, katera polja naj vrne iskanje.",
 	"apihelp-query+cirrusbuilddoc-param-builders": "Vrsta podatkov za ekstrahiranje",
+	"apihelp-query+cirrusbuilddoc-param-limiterprofile": "Profil za uporabo pri omejevanju velikosti dokumenta",
 	"apierror-cirrus-requesttoolong": "Vnešeno geslo za iskanje po predponi je bilo predolgo. ($1 &gt; $2)"
 }

@@ -18,26 +18,6 @@ use MediaWiki\User\UserIdentityValue;
  */
 class SearchProfileServiceFactoryTest extends CirrusTestCase {
 	/**
-	 * @var array
-	 */
-	private static $i18nMessages;
-
-	public static function setUpBeforeClass(): void {
-		parent::setUpBeforeClass();
-
-		$jsonQQQQ = file_get_contents( __DIR__ . "/../../../../i18n/qqq.json" );
-
-		if ( $jsonQQQQ === false ) {
-			self::fail( "cannot load qqq.json" );
-		}
-		self::$i18nMessages = json_decode( $jsonQQQQ, true );
-
-		if ( self::$i18nMessages === false ) {
-			self::fail( "cannot parse qqq.json" );
-		}
-	}
-
-	/**
 	 * @dataProvider provideTypeAndContext
 	 * @param string $type
 	 * @param string $context
@@ -165,42 +145,6 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 				SearchProfileService::FT_QUERY_BUILDER, SearchProfileService::CONTEXT_DEFAULT,
 				'config', 'CirrusSearchFullTextQueryBuilderProfile', [ 'unittest' => [] ],
 			],
-		];
-	}
-
-	/**
-	 * @dataProvider provideExposedProfileType
-	 * @throws \Exception
-	 * @throws \FatalError
-	 * @throws \MWException
-	 */
-	public function testExportedProfilesWithI18N( $type, array $must_have ) {
-		$factory = $this->getFactory( [], null, [] );
-		$service = $factory->loadService( new HashSearchConfig( [] ) );
-		$profiles = $service->listExposedProfiles( $type );
-
-		$seen = [];
-		foreach ( $profiles as $name => $profile ) {
-			$this->assertArrayHasKey( 'i18n_msg', $profile, "Profile $name in $type has i18n_msg key" );
-			$this->assertArrayHasKey( $profile['i18n_msg'], self::$i18nMessages,
-				"Profile $name in $type has i18n message set" );
-			$seen[] = $name;
-		}
-		$missing = array_diff( $must_have, $seen );
-		$this->assertEmpty( $missing, "Profiles of type $type must include all must_have profiles" );
-	}
-
-	public static function provideExposedProfileType() {
-		return [
-			'rescore' => [
-				SearchProfileService::RESCORE,
-				[ 'classic', 'empty', 'classic_noboostlinks', 'wsum_inclinks',
-				  'wsum_inclinks_pv', 'popular_inclinks_pv', 'popular_inclinks' ]
-			],
-			'completion' => [
-				SearchProfileService::COMPLETION,
-				[ 'classic', 'fuzzy', 'normal', 'strict' ]
-			]
 		];
 	}
 

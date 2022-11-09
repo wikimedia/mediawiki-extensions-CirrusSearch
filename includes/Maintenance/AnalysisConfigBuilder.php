@@ -108,11 +108,8 @@ class AnalysisConfigBuilder {
 			}
 		}
 		$this->icu = in_array( 'analysis-icu', $plugins );
-		if ( $config === null ) {
-			$config = MediaWikiServices::getInstance()
-				->getConfigFactory()
-				->makeConfig( 'CirrusSearch' );
-		}
+		$config ??= MediaWikiServices::getInstance()->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
 		$similarity = $config->getProfileService()->loadProfile( SearchProfileService::SIMILARITY );
 		if ( !array_key_exists( 'similarity', $similarity ) ) {
 			$similarity['similarity'] = [];
@@ -185,9 +182,7 @@ class AnalysisConfigBuilder {
 	 * @return array the analysis config
 	 */
 	public function buildConfig( $language = null ) {
-		if ( $language === null ) {
-			$language = $this->defaultLanguage;
-		}
+		$language ??= $this->defaultLanguage;
 		$config = $this->customize( $this->defaults( $language ), $language );
 		$this->cirrusSearchHookRunner->onCirrusSearchAnalysisConfig( $config, $this );
 		$config = $this->enableGlobalCustomFilters( $config, $language );

@@ -73,10 +73,7 @@ class RescoreBuilder {
 	 */
 	public function __construct( SearchContext $context, CirrusSearchHookRunner $cirrusSearchHookRunner, $profile = null ) {
 		$this->context = $context;
-		if ( $profile === null ) {
-			$profile = $context->getRescoreProfile();
-		}
-		$this->profile = $this->getSupportedProfile( $profile );
+		$this->profile = $this->getSupportedProfile( $profile ?? $context->getRescoreProfile() );
 		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner;
 	}
 

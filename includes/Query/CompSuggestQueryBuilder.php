@@ -291,10 +291,7 @@ class CompSuggestQueryBuilder {
 	 */
 	public static function computeHardLimit( $limit, $offset, SearchConfig $config ) {
 		$limit += $offset;
-		$hardLimit = $config->get( 'CirrusSearchCompletionSuggesterHardLimit' );
-		if ( $hardLimit === null ) {
-			$hardLimit = 50;
-		}
+		$hardLimit = $config->get( 'CirrusSearchCompletionSuggesterHardLimit' ) ?? 50;
 		if ( $limit > $hardLimit ) {
 			return $hardLimit;
 		}

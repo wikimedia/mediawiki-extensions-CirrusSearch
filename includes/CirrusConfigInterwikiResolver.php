@@ -25,18 +25,9 @@ class CirrusConfigInterwikiResolver extends BaseInterwikiResolver {
 	}
 
 	protected function loadMatrix() {
-		$sisterProjects = $this->config->get( 'CirrusSearchInterwikiSources' );
-		if ( $sisterProjects === null ) {
-			$sisterProjects = [];
-		}
-		$languageMap = $this->config->get( 'CirrusSearchLanguageToWikiMap' );
-		if ( $languageMap === null ) {
-			$languageMap = [];
-		}
-		$crossLanguage = $this->config->get( 'CirrusSearchWikiToNameMap' );
-		if ( $crossLanguage === null ) {
-			$crossLanguage = [];
-		}
+		$sisterProjects = $this->config->get( 'CirrusSearchInterwikiSources' ) ?? [];
+		$languageMap = $this->config->get( 'CirrusSearchLanguageToWikiMap' ) ?? [];
+		$crossLanguage = $this->config->get( 'CirrusSearchWikiToNameMap' ) ?? [];
 		$crossLanguage = array_filter( $crossLanguage, function ( $entry ) {
 			return $entry !== $this->config->getWikiId();
 		} );

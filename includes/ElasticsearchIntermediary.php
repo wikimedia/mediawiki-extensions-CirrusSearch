@@ -86,9 +86,6 @@ abstract class ElasticsearchIntermediary {
 	 */
 	protected function __construct( Connection $connection, UserIdentity $user = null, $slowSeconds = null, $extraBackendLatency = 0 ) {
 		$this->connection = $connection;
-		if ( $user === null ) {
-			$user = RequestContext::getMain()->getUser();
-		}
 		$this->user = $user ?? RequestContext::getMain()->getUser();
 		$this->slowMillis = (int)( 1000 * ( $slowSeconds ?? $connection->getConfig()->get( 'CirrusSearchSlowSearch' ) ) );
 		$this->extraBackendLatency = $extraBackendLatency;
@@ -206,9 +203,7 @@ abstract class ElasticsearchIntermediary {
 	 * @return Status representing a backend failure
 	 */
 	public function failure( ExceptionInterface $exception = null, Connection $connection = null ) {
-		if ( $connection === null ) {
-			$connection = $this->connection;
-		}
+		$connection ??= $this->connection;
 		$log = $this->finishRequest( $connection );
 		if ( $log === null ) {
 			// Request was never started, likely trying to close a request

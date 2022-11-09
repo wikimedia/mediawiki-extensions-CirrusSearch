@@ -240,9 +240,7 @@ class Util {
 	 * @return float[]
 	 */
 	public static function getDefaultBoostTemplates( SearchConfig $config = null ) {
-		if ( $config === null ) {
-			$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
-		}
+		$config ??= MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
 
 		$fromConfig = $config->get( 'CirrusSearchBoostTemplates' );
 		if ( $config->get( 'CirrusSearchIgnoreOnWikiBoostTemplates' ) ) {
@@ -456,13 +454,11 @@ class Util {
 
 		Assert::postcondition( $normalizer !== null,
 			'Failed to load Transliterator with method ' . $method );
-		if ( $language === null ) {
-			$language = MediaWikiServices::getInstance()->getContentLanguage();
-		}
 		$namespace = $normalizer->transliterate( $namespace );
 		if ( $namespace === '' ) {
 			return false;
 		}
+		$language ??= MediaWikiServices::getInstance()->getContentLanguage();
 		foreach ( $language->getNamespaceIds() as $candidate => $nsId ) {
 			if ( $normalizer->transliterate( $candidate ) === $namespace ) {
 				return $nsId;

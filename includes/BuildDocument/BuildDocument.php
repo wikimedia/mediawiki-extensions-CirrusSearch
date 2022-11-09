@@ -165,15 +165,12 @@ class BuildDocument {
 				throw new \RuntimeException( "Revision id mismatch: {$revision->getId()} != $docRevision" );
 			}
 			try {
-				$title = null;
-				$revision = $revision ?? $this->revStore->getRevisionById( $docRevision );
-				if ( $revision !== null ) {
-					$title = \Title::castFromPageIdentity( $revision->getPage() );
-				}
+				$revision ??= $this->revStore->getRevisionById( $docRevision );
+				$title = $revision ? \Title::castFromPageIdentity( $revision->getPage() ) : null;
 			} catch ( RevisionAccessException $e ) {
 				$revision = null;
 			}
-			if ( $title == null || $revision == null ) {
+			if ( !$title || !$revision ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )
 					->warning( 'Ignoring a page/revision that no longer exists {rev_id}',
 						[ 'rev_id' => $docRevision ] );

@@ -224,10 +224,7 @@ EOD
 		$this->initMetaStores();
 
 		$jobName = $this->getOption( 'job-name', 'default' );
-		$jobInfo = $this->getJobInfo( $jobName );
-		if ( $jobInfo === null ) {
-			$jobInfo = $this->createNewJob( $jobName );
-		}
+		$jobInfo = $this->getJobInfo( $jobName ) ?? $this->createNewJob( $jobName );
 
 		$pushJobFreq = $this->getOption( 'refresh-freq', 2 * 3600 );
 		$loop = new SaneitizeLoop(

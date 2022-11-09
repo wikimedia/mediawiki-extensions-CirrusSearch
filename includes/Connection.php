@@ -103,9 +103,7 @@ class Connection extends ElasticaConnection {
 	 */
 	public static function getPool( SearchConfig $config, $cluster = null ) {
 		$assignment = $config->getClusterAssignment();
-		if ( $cluster === null ) {
-			$cluster = $assignment->getSearchCluster();
-		}
+		$cluster ??= $assignment->getSearchCluster();
 		$wiki = $config->getWikiId();
 		$clusterId = $assignment->uniqueId( $cluster );
 		return self::$pool[$wiki][$clusterId] ?? new self( $config, $cluster );

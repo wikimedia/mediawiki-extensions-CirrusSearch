@@ -291,9 +291,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	 * @return array the analysis config
 	 */
 	public function buildConfig( $language = null ) {
-		if ( $language === null ) {
-			$language = $this->defaultLanguage;
-		}
+		$language ??= $this->defaultLanguage;
 		return $this->customize( $this->defaults( $language ), $language );
 	}
 

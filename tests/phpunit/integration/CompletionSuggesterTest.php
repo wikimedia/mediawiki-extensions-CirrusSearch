@@ -199,7 +199,7 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider provideMinMaxQueries
 	 */
-	public function testMinMaxDefaultProfile( $len, $query ) {
+	public function testMinMaxDefaultProfile( int $len, string $query ) {
 		$config = new HashSearchConfig( [
 			'CirrusSearchCompletionSettings' => 'fuzzy',
 		], [ HashSearchConfig::FLAG_INHERIT ] );
@@ -222,17 +222,15 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 		if ( $len < 3 ) {
 			// We do not run fuzzy for small queries
 			$this->assertCount( 2, $suggest );
-			foreach ( $suggest as $key => $value ) {
+			foreach ( $suggest as $value ) {
 				$this->assertArrayNotHasKey( 'fuzzy', $value );
 			}
 		}
 		foreach ( $suggest as $key => $value ) {
 			// Make sure the query is truncated otherwise elastic won't send results
-			$this->assertTrue( mb_strlen( $value['prefix'] ) < SuggestBuilder::MAX_INPUT_LENGTH );
-		}
-		foreach ( array_keys( $suggest ) as $sug ) {
+			$this->assertLessThan( SuggestBuilder::MAX_INPUT_LENGTH, mb_strlen( $value['prefix'] ) );
 			// Makes sure we have the corresponding profile
-			$this->assertArrayHasKey( $sug, $profiles );
+			$this->assertArrayHasKey( $key, $profiles );
 		}
 	}
 
@@ -240,11 +238,8 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 		// The completion should not count extra spaces
 		// This is to avoid enbling costly fuzzy profiles
 		// by cheating with spaces
-		$query = '  ';
-		for ( $i = 0; $i < 100; $i++ ) {
-			yield "Query length {$i}" => [ $i, $query . '   ' ];
-			// FIXME: Is this meant to be a space?
-			$query .= '';
+		foreach ( [ 0, 1, 2, 3, 10, 99 ] as $i ) {
+			yield "Query length $i" => [ $i, '  ' . str_repeat( 'x', $i ) . '   ' ];
 		}
 	}
 

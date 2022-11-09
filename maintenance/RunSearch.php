@@ -132,11 +132,12 @@ class RunSearch extends Maintenance {
 				if ( strpos( $key, '.' ) !== false ) {
 					// key path
 					$path = explode( '.', $key );
-					if ( !isset( $changeable[$path[0]] ) ) {
+					$pathel = array_shift( $path );
+					if ( !isset( $changeable[$pathel] ) ) {
 						$this->error( "\nERROR: $key is not a globally changeable variable\n" );
 					}
 
-					$cur =& $GLOBALS;
+					$cur =& $GLOBALS[$pathel];
 					foreach ( $path as $pathel ) {
 						if ( !array_key_exists( $pathel, $cur ) ) {
 							$this->error( "\nERROR: $key is not a valid global variable path\n" );

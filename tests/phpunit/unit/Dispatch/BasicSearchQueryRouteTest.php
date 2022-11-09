@@ -141,10 +141,9 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 	}
 
 	public function provideTestNamespacesAndQueryClassRouting() {
-		$testCases = [];
 		foreach ( $this->provideTestNamespacesRouting() as $nsTest => $nsOptions ) {
 			foreach ( $this->provideTestQueryClassRouting() as $clTest => $clOptions ) {
-				$testCases[$nsTest . ' + ' . $clTest] = [
+				yield $nsTest . ' + ' . $clTest => [
 					$nsOptions[0],
 					$clOptions[0],
 					$nsOptions[1],
@@ -153,7 +152,6 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 				];
 			}
 		}
-		return $testCases;
 	}
 
 	/**

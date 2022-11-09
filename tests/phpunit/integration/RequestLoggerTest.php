@@ -57,8 +57,6 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 	}
 
 	public function requestLoggingProvider() {
-		$tests = [];
-
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'requestLogging/*.request' ) as $requestFile ) {
 			$testBase = substr( $requestFile, 0, -8 );
 			$testName = basename( $testBase );
@@ -77,18 +75,16 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 				}
 				$responses = CirrusIntegrationTestCase::loadFixture( $responseFile, "response fixture" );
 				$expectedLogs = CirrusIntegrationTestCase::loadFixture( $expectedLogsFile, "expected logs fixture" );
-				$tests[$testName] = [ $request, $responses, $expectedLogs ];
+				yield $testName => [ $request, $responses, $expectedLogs ];
 			} elseif ( CirrusIntegrationTestCase::hasFixture( $responseFile ) ) {
 				// have response but no expected logs, regenerate expected logs fixture
 				$responses = CirrusIntegrationTestCase::loadFixture( $responseFile, "response fixture" );
-				$tests[$testName] = [ $request, $responses, $expectedLogsFile ];
+				yield $testName => [ $request, $responses, $expectedLogsFile ];
 			} else {
 				// have neither response or expected logs, generate both fixtures
-				$tests[$testName] = [ $request, $responseFile, $expectedLogsFile ];
+				yield $testName => [ $request, $responseFile, $expectedLogsFile ];
 			}
 		}
-
-		return $tests;
 	}
 
 	private function runFixture( array $query, $responses, $expectedLogs, \Closure $test ) {

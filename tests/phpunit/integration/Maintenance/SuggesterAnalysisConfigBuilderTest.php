@@ -13,15 +13,13 @@ use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
 class SuggesterAnalysisConfigBuilderTest extends CirrusIntegrationTestCase {
 
 	public function provideLanguageAnalysis() {
-		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'languageAnalysisCompSuggest/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$extraConfig = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$langCode = $extraConfig['LangCode'] ?? $testName;
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
-			$tests[ $testName ] = [ $expectedFile, $langCode, $extraConfig ];
+			yield $testName => [ $expectedFile, $langCode, $extraConfig ];
 		}
-		return $tests;
 	}
 
 	/**

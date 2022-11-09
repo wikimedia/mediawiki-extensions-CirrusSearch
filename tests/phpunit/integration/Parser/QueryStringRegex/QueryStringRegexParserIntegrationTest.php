@@ -84,19 +84,17 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 			CirrusIntegrationTestCase::saveFixture( $file, $ntests );
 			return [];
 		}
-		$unittests = [];
 		foreach ( $tests as $test => $data ) {
 			if ( !isset( $data['expected'] ) ) {
 				$this->fail( "Expected data not found for test $test, please regenerate this fixture " .
 					"file by setting REGEN_PARSER_TESTS=$filename" );
 			}
-			$unittests[$test] = [
+			yield $test => [
 				$data['expected'],
 				$data['query'],
 				$data['config'] ?? []
 			];
 		}
-		return $unittests;
 	}
 
 	private function parse( $query, $config ) {

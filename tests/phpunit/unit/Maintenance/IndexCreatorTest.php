@@ -36,9 +36,7 @@ class IndexCreatorTest extends CirrusTestCase {
 	 */
 	public function testCreateIndex( $rebuild, $maxShardsPerNode, Response $response ) {
 		$index = $this->getIndex( $response );
-		$utils = $this->getMockBuilder( ConfigUtils::class )
-			->disableOriginalConstructor()
-			->getMock();
+		$utils = $this->createMock( ConfigUtils::class );
 		$utils->method( 'waitForGreen' )
 			->willReturn( $this->arrayAsGenerator( [], true ) );
 

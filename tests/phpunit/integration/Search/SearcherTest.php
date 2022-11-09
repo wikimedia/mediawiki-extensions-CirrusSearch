@@ -232,20 +232,17 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	}
 
 	public function archiveFixtureProvider() {
-		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'archiveSearch/*.query' ) as $queryFile ) {
 			$testName = substr( basename( $queryFile ), 0, -6 );
 			$query = self::loadTextFixture( $queryFile );
 			// Remove trailing newline
 			$query = preg_replace( '/\n$/', '', $query );
 			$expectedFile = substr( $queryFile, 0, -5 ) . 'expected';
-			$tests[$testName] = [
+			yield $testName => [
 				$expectedFile,
 				$query,
 			];
-
 		}
-		return $tests;
 	}
 
 	/**
@@ -347,12 +344,11 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	}
 
 	public function provideTestSuggestQueries() {
-		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'phraseSuggest/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
-			$tests[$testName] = [
+			yield $testName => [
 				$expectedFile,
 				$fixture['query'],
 				$fixture['namespaces'],
@@ -361,7 +357,6 @@ class SearcherTest extends CirrusIntegrationTestCase {
 				$fixture['config']
 			];
 		}
-		return $tests;
 	}
 
 	/**
@@ -389,11 +384,10 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	}
 
 	public function providePhraseSuggestResponse() {
-		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'phraseSuggestResponses/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
-			$tests[$testName] = [
+			yield $testName => [
 				$fixture['query'],
 				$fixture['response'],
 				$fixture['approxScore'],
@@ -401,7 +395,6 @@ class SearcherTest extends CirrusIntegrationTestCase {
 				$fixture['suggestionSnippet'],
 			];
 		}
-		return $tests;
 	}
 
 	/**

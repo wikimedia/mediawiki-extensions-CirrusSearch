@@ -16,12 +16,11 @@ use HtmlArmor;
 class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 
 	public function provideTest() {
-		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'phraseSuggestResponses/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$resultSet = $this->newResultSet( $fixture['response'] );
-			$tests[$testName] = [
+			 yield $testName => [
 				$fixture['query'],
 				$resultSet,
 				$fixture['approxScore'],
@@ -30,8 +29,6 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 				$fixture['rewritten']
 			];
 		}
-
-		return $tests;
 	}
 
 	/**
@@ -86,12 +83,11 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 	}
 
 	public function provideTestSuggestQueries() {
-		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'phraseSuggest/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
-			$tests[$testName] = [
+			yield $testName => [
 				$expectedFile,
 				$fixture['query'],
 				$fixture['namespaces'],
@@ -101,7 +97,6 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 				$fixture['config']
 			];
 		}
-		return $tests;
 	}
 
 	/**

@@ -75,12 +75,10 @@ class ResultTest extends CirrusTestCase {
 					// to join combining mark; post combining marks should move to highlight
 					'wtf' => [ [ 'Q̃̓', '̧̑', '̫̯' ], [ '', 'Q̧̫̯̃̓̑', '' ], '' ],
 				];
-		$testCases = [];
 		foreach ( $originalTestCases as $name => $case ) {
-			$testCases["$name (Using Result constructor)"] = $case;
-			$testCases["$name (Using Result FullTextCirrusSearchResultBuilder)"] = array_merge( $case, [ true ] );
+			yield "$name (Using Result constructor)" => $case;
+			yield "$name (Using Result FullTextCirrusSearchResultBuilder)" => array_merge( $case, [ true ] );
 		}
-		return $testCases;
 	}
 
 	/**

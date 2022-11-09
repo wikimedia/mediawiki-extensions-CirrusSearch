@@ -20,13 +20,12 @@ use HtmlArmor;
 class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 
 	public function provideTest() {
-		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'indexLookupFallbackMethodResponses/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$resp = new Response( $fixture['response'], 200 );
 			$resultSet = ( new DefaultBuilder() )->buildResultSet( $resp, new Query() );
-			$tests[$testName] = [
+			yield $testName => [
 				$fixture['query'],
 				$resultSet,
 				$fixture['approxScore'],
@@ -35,8 +34,6 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 				$fixture['rewritten'] ?? false,
 			];
 		}
-
-		return $tests;
 	}
 
 	/**
@@ -95,12 +92,11 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 	}
 
 	public function provideTestLookupQueries() {
-		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'indexLookupFallbackMethod/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
-			$tests[$testName] = [
+			yield $testName => [
 				$expectedFile,
 				$fixture['query'],
 				$fixture['namespaces'],
@@ -110,7 +106,6 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 				$fixture['profile_params'] ?? [],
 			];
 		}
-		return $tests;
 	}
 
 	/**

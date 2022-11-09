@@ -46,13 +46,12 @@ class KeywordFeatureAssertions {
 		$context = $this->testCase->getMockBuilder( SearchContext::class )
 			->disableOriginalConstructor()
 			->getMock();
-		if ( $config == null ) {
-			$config = new SearchConfig();
-		}
-		$context->expects( $this->testCase->any() )->method( 'getConfig' )->willReturn( $config );
-		$fetchPhaseConfigBuilder = $fetchPhaseConfigBuilder ?? new FetchPhaseConfigBuilder( $config );
-		$context->method( 'getFetchPhaseBuilder' )->willReturn( $fetchPhaseConfigBuilder );
-		$context->expects( $this->testCase->any() )->method( 'escaper' )
+		$config ??= new SearchConfig();
+		$context->method( 'getConfig' )
+			->willReturn( $config );
+		$context->method( 'getFetchPhaseBuilder' )
+			->willReturn( $fetchPhaseConfigBuilder ?? new FetchPhaseConfigBuilder( $config ) );
+		$context->method( 'escaper' )
 			->willReturn( new Escaper( 'en', true ) );
 
 		return $context;
@@ -153,8 +152,7 @@ class KeywordFeatureAssertions {
 	public function assertWarnings( KeywordFeature $feature, $expected, $term ) {
 		$warnings = [];
 		$context = $this->mockContext();
-		$context->expects( $this->testCase->any() )
-			->method( 'addWarning' )
+		$context->method( 'addWarning' )
 			->will( $this->testCase->returnCallback( static function () use ( &$warnings ) {
 				$warnings[] = array_filter( func_get_args() );
 			} ) );

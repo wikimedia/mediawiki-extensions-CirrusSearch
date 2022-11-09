@@ -2,8 +2,6 @@
 
 namespace CirrusSearch\Maintenance;
 
-// phpcs:disable MediaWiki.Usage.ForbiddenFunctions.escapeshellarg
-// phpcs:disable MediaWiki.Usage.ForbiddenFunctions.exec
 use CirrusSearch\CirrusIntegrationTestCase;
 
 /**
@@ -15,26 +13,30 @@ use CirrusSearch\CirrusIntegrationTestCase;
 class ScriptsRunnableTest extends CirrusIntegrationTestCase {
 	public function scriptPathProvider() {
 		$it = new \DirectoryIterator( __DIR__ . '/../../../../maintenance/' );
-		$tests = [];
 		/** @var \SplFileInfo $fileInfo */
 		foreach ( $it as $fileInfo ) {
 			if ( $fileInfo->getExtension() === 'php' ) {
-				$tests[] = [ $fileInfo->getPathname() ];
+				yield $fileInfo->getFilename() => [ $fileInfo->getPathname() ];
 			}
 		}
-		return $tests;
 	}
 
 	/**
 	 * @dataProvider scriptPathProvider
 	 */
-	public function testScriptCanBeLoaded( $path ) {
-		$preload = escapeshellarg( __DIR__ . '/ScriptsRunnablePreload.php' );
-		$cmd = implode( ' ', [ PHP_BINARY, $preload, escapeshellarg( $path ) ] );
+	public function testScriptCanBeLoaded( string $path ) {
+		// phpcs:disable MediaWiki.Usage.ForbiddenFunctions
+		$cmd = PHP_BINARY . ' ' .
+			escapeshellarg( __DIR__ . '/ScriptsRunnablePreload.php' ) . ' ' .
+			escapeshellarg( $path );
 		exec( $cmd, $output, $retCode );
+		// phpcs:enable
+
 		// return code isn't useful, getting the help message returns 1
 		// just like an error. Instead look for a message we know should
 		// be in the help text.
-		$this->assertSame( 0, $retCode );
+		$this->assertSame( 0, $retCode,
+			'Output (' . count( $output ) . ' lines): ' . implode( "\n", $output )
+		);
 	}
 }

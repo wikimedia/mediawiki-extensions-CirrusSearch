@@ -99,9 +99,7 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 							if ( !( $param->getType() instanceof ReflectionNamedType ) ) {
 								$this->fail( "Invalid param type " . $param->getName() );
 							}
-							$params[] = $this->getMockBuilder( $param->getType()->getName() )
-								->disableOriginalConstructor()
-								->getMock();
+							$params[] = $this->createMock( $param->getType()->getName() );
 					}
 				} else {
 					$params[] = $paramId;

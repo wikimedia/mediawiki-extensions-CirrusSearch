@@ -633,7 +633,6 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 	}
 
 	public function provideLanguageAnalysis() {
-		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'languageAnalysis/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$extraConfig = CirrusIntegrationTestCase::loadFixture( $testFile );
@@ -644,9 +643,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			} else {
 				$expected = $expectedFile;
 			}
-			$tests[ $testName ] = [ $expected, $langCode, $extraConfig ];
+			yield $testName => [ $expected, $langCode, $extraConfig ];
 		}
-		return $tests;
 	}
 
 	/**
@@ -851,11 +849,9 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$functionsToTest = [ 'omitAsciifolding', 'omitDottedI', 'withAggressiveSplitting',
 			'withAsciifoldingPreserve', 'withLightStemmer', 'withRemoveEmpty',
 			'withWordBreakHelper' ];
-		$ret = [];
 		foreach ( $functionsToTest as $func ) {
-			$ret[ $func ] = [ $func ];
+			yield $func => [ $func ];
 		}
-		return $ret;
 	}
 
 	/**

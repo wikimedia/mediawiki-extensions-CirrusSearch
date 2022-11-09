@@ -23,8 +23,6 @@ class ExternalIndexTest extends CirrusTestCase {
 	}
 
 	public function getWriteClustersProvider() {
-		$tests = [];
-
 		// Current wiki writes to cluster `1` in datacenters `a` and `b`
 		$config = [
 			'CirrusSearchClusters' => [
@@ -62,10 +60,8 @@ class ExternalIndexTest extends CirrusTestCase {
 		];
 
 		foreach ( $assertions as $testCase ) {
-			$tests[] = [ $config, $testCase['source'], $testCase['target'] ];
+			yield [ $config, $testCase['source'], $testCase['target'] ];
 		}
-
-		return $tests;
 	}
 
 	/**

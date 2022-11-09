@@ -19,7 +19,6 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 	use CirrusTestCaseTrait;
 
 	public function provideTestFactories() {
-		$tests = [];
 		$config = $this->newHashSearchConfig( [
 			'CirrusSearchFragmentSize' => 350,
 		] );
@@ -40,14 +39,14 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 
 		foreach ( $factoryGroups as $factoryGroup => $fields ) {
 			foreach ( $fields as $field ) {
-				$tests["$factoryGroup-$field-base"] = [
+				yield "$factoryGroup-$field-base" => [
 					self::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-base.expected",
 					$baseFactories,
 					$factoryGroup,
 					$field,
 					$config
 				];
-				$tests["$factoryGroup-$field-exp"] = [
+				yield "$factoryGroup-$field-exp" => [
 					self::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-exp.expected",
 					$expFactories,
 					$factoryGroup,
@@ -56,7 +55,6 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 				];
 			}
 		}
-		return $tests;
 	}
 
 	/**

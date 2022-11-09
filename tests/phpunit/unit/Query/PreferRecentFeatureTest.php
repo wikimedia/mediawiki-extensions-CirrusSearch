@@ -80,21 +80,18 @@ class PreferRecentFeatureTest extends CirrusTestCase {
 		$defaultHalfLife = 160;
 		$defaultDecay = 0.6;
 
-		if ( $expectedDecay === null ) {
-			$expectedDecay = $defaultDecay;
-		}
-		if ( $expectedHalfLife === null ) {
-			$expectedHalfLife = $defaultHalfLife;
-		}
-
 		$config = new HashSearchConfig( [
 			'CirrusSearchPreferRecentDefaultHalfLife' => $defaultHalfLife,
 			'CirrusSearchPreferRecentUnspecifiedDecayPortion' => $defaultDecay,
 		] );
 		$feature = new PreferRecentFeature( $config );
+		$builder = new PreferRecentFunctionScoreBuilder(
+			$config,
+			1,
+			$expectedHalfLife ?? $defaultHalfLife,
+			$expectedDecay ?? $defaultDecay
+		);
 
-		$this->assertBoost( $feature, $term,
-			new PreferRecentFunctionScoreBuilder( $config, 1, $expectedHalfLife, $expectedDecay ),
-			[], $config );
+		$this->assertBoost( $feature, $term, $builder, [], $config );
 	}
 }

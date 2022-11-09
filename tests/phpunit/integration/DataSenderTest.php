@@ -136,19 +136,17 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	}
 
 	public function provideTestSendDataRequest() {
-		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendData-*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
-			$tests[$testName] = [
+			yield $testName => [
 				$fixture['config'],
 				$fixture['indexSuffix'],
 				$fixture['documents'],
 				$expectedFile,
 			];
 		}
-		return $tests;
 	}
 
 	/**
@@ -210,19 +208,17 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	}
 
 	public function provideTestSendDeletesRequest() {
-		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendDeletes-request-*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
-			$tests[$testName] = [
+			yield $testName => [
 				$fixture['config'],
 				$fixture['indexSuffix'],
 				$fixture['ids'],
 				$expectedFile,
 			];
 		}
-		return $tests;
 	}
 
 	/**
@@ -282,12 +278,11 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	}
 
 	public function provideTestSendOtherIndexUpdatesRequest() {
-		$tests = [];
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendOtherIndexUpdates-request-*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
-			$tests[$testName] = [
+			yield $testName => [
 				$fixture['config'],
 				$fixture['localSite'],
 				$fixture['indexName'],
@@ -296,7 +291,6 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 				$expectedFile,
 			];
 		}
-		return $tests;
 	}
 
 	/**
@@ -322,13 +316,12 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		);
 	}
 
-	public function provideUpdateWeightedTagsRequest(): array {
-		$tests = [];
+	public function provideUpdateWeightedTagsRequest() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendUpdateWeightedTags-request-*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
-			$tests[$testName] = [
+			yield $testName => [
 				$fixture['config'],
 				$fixture['indexSuffix'],
 				$fixture['batchSize'],
@@ -341,7 +334,6 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 				$fixture['expectedRequestCount'] ?? null,
 			];
 		}
-		return $tests;
 	}
 
 	/**
@@ -391,13 +383,12 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		);
 	}
 
-	public function provideResetWeightedTagsRequest(): array {
-		$tests = [];
+	public function provideResetWeightedTagsRequest() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendResetWeightedTags-request-*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
-			$tests[$testName] = [
+			yield $testName => [
 				$fixture['config'],
 				$fixture['indexSuffix'],
 				$fixture['batchSize'],
@@ -407,7 +398,6 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 				$expectedFile,
 			];
 		}
-		return $tests;
 	}
 
 	/**

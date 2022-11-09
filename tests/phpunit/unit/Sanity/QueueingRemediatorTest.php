@@ -17,7 +17,6 @@ class QueueingRemediatorTest extends CirrusTestCase {
 		$wp->method( 'getTitle' )->willReturn( $title );
 		$wrongIndex = 'wrongType';
 		$docId = '123';
-		$allCases = [];
 		foreach ( [ null, 'c1' ] as $cluster ) {
 			$linksUpdateJob = new LinksUpdate( $title, [
 				'addedLinks' => [],
@@ -37,17 +36,19 @@ class QueueingRemediatorTest extends CirrusTestCase {
 			] );
 
 			$baseCaseName = $cluster === null ? 'for all clusters' : 'for some cluster';
-			$allCases += [
-				$baseCaseName . 'oldDocument' => [ 'oldDocument', [ $wp ], [ $linksUpdateJob ], $cluster ],
-				$baseCaseName . 'pageNotInIndex' => [ 'pageNotInIndex', [ $wp ], [ $linksUpdateJob ], $cluster ],
-				$baseCaseName . 'redirectInIndex' => [ 'redirectInIndex', [ $wp ], [ $linksUpdateJob ], $cluster ],
-				$baseCaseName . 'oldVersionInIndex' => [ 'oldVersionInIndex', [ $docId, $wp, $wrongIndex ], [ $linksUpdateJob ], $cluster ],
-				$baseCaseName . 'pageInWrongIndex' => [ 'pageInWrongIndex', [ $docId, $wp, $wrongIndex ],
-														[ $wrongIndexDelete, $linksUpdateJob ], $cluster ],
-				$baseCaseName . 'ghostPageInIndex' => [ 'ghostPageInIndex', [ $docId, $title, $wrongIndex ], [ $deletePageJob ], $cluster ],
-			];
+			yield $baseCaseName . 'oldDocument' =>
+				[ 'oldDocument', [ $wp ], [ $linksUpdateJob ], $cluster ];
+			yield $baseCaseName . 'pageNotInIndex' =>
+				[ 'pageNotInIndex', [ $wp ], [ $linksUpdateJob ], $cluster ];
+			yield $baseCaseName . 'redirectInIndex' =>
+				[ 'redirectInIndex', [ $wp ], [ $linksUpdateJob ], $cluster ];
+			yield $baseCaseName . 'oldVersionInIndex' =>
+				[ 'oldVersionInIndex', [ $docId, $wp, $wrongIndex ], [ $linksUpdateJob ], $cluster ];
+			yield $baseCaseName . 'pageInWrongIndex' =>
+				[ 'pageInWrongIndex', [ $docId, $wp, $wrongIndex ], [ $wrongIndexDelete, $linksUpdateJob ], $cluster ];
+			yield $baseCaseName . 'ghostPageInIndex' =>
+				[ 'ghostPageInIndex', [ $docId, $title, $wrongIndex ], [ $deletePageJob ], $cluster ];
 		}
-		return $allCases;
 	}
 
 	/**

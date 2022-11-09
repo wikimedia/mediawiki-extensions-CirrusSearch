@@ -33,7 +33,6 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 	}
 
 	public function provideNewHighlightFieldWithFactory() {
-		$tests = [];
 		$configBase = $this->newHashSearchConfig( [
 			'CirrusSearchFragmentSize' => 350,
 			'CirrusSearchUseExperimentalHighlighter' => false
@@ -57,13 +56,13 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 
 		foreach ( $factoryGroups as $factoryGroup => $fields ) {
 			foreach ( $fields as $field ) {
-				$tests["$factoryGroup-$field-base"] = [
+				yield "$factoryGroup-$field-base" => [
 					self::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-base.expected",
 					$factoryGroup,
 					$field,
 					$configBase
 				];
-				$tests["$factoryGroup-$field-exp"] = [
+				yield "$factoryGroup-$field-exp" => [
 					self::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-exp.expected",
 					$factoryGroup,
 					$field,
@@ -71,7 +70,6 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 				];
 			}
 		}
-		return $tests;
 	}
 
 	/**

@@ -8,7 +8,7 @@
  *
  * @param string $path
  */
-function wfCirrusUnitTestScriptsRunablePreload( $path ) {
+function wfCirrusUnitTestScriptsRunablePreload( string $path ): void {
 	include $path;
 	exit( 0 );
 }

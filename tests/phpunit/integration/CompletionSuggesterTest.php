@@ -237,17 +237,15 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 	}
 
 	public function provideMinMaxQueries() {
-		$queries = [];
 		// The completion should not count extra spaces
 		// This is to avoid enbling costly fuzzy profiles
 		// by cheating with spaces
 		$query = '  ';
 		for ( $i = 0; $i < 100; $i++ ) {
-			$test = "Query length {$i}";
-			$queries[$test] = [ $i, $query . '   ' ];
+			yield "Query length {$i}" => [ $i, $query . '   ' ];
+			// FIXME: Is this meant to be a space?
 			$query .= '';
 		}
-		return $queries;
 	}
 
 	/**

@@ -7,9 +7,9 @@
 		]
 	},
 	"cirrussearch-desc": "Iskanje za MediaWiki, ki ga poganja Elasticsearch",
-	"cirrussearch-backend-error": "Zaradi začasne težave nam ni uspelo izvesti vašega iskanja. Prosimo, poskusite kasneje.",
+	"cirrussearch-backend-error": "Zaradi začasne težave nam ni uspelo izvesti vašega iskanja. Prosimo, poskusite pozneje.",
 	"cirrussearch-too-busy-error": "Iskanje je trenutno preobremenjeno. Prosimo, poskusi znova pozneje.",
-	"cirrussearch-now-using": "Ta wiki uporablja nov iskalnik.([[mw:Special:MyLanguage/Help:CirrusSearch|Poizvedi več]])",
+	"cirrussearch-now-using": "Ta viki uporablja nov iskalnik.([[mw:Special:MyLanguage/Help:CirrusSearch|Več o tem]])",
 	"cirrussearch-pref-label": "Novo iskanje",
 	"cirrussearch-give-feedback": "Sporočite nam svoje mnenje",
 	"cirrussearch-query-too-long": "Vneseno geslo je predolgo. (Dolžina: $1; dovoljeno: $2)",

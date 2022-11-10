@@ -2,9 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"Satdeep gill",
-			"Tow"
+			"Tow",
+			"Bgo eiu"
 		]
 	},
 	"cirrussearch-pref-label": "ਨਵੀੰ ਖੋਜ",
-	"cirrussearch-give-feedback": "ਸਾਡੇ ਨਾਲ ਆਪਣੇ ਵਿਚਾਰ ਸਾਂਝੇ ਕਰੋ"
+	"cirrussearch-give-feedback": "ਸਾਡੇ ਨਾਲ ਆਪਣੇ ਵਿਚਾਰ ਸਾਂਝੇ ਕਰੋ",
+	"cirrussearch-explore-similar-categories": "ਸ਼੍ਰੇਣੀਆਂ"
 }

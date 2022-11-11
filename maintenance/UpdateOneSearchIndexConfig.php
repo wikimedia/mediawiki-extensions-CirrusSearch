@@ -595,7 +595,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return never
 	 */
 	protected function fatalError( $msg, $exitCode = 1 ) {
-		// @phan-suppress-previous-line PhanTypeMissingReturn core declares a non-existent never return value
 		try {
 			if ( $this->canCleanupCreatedIndex && $this->getIndex()->exists() ) {
 				$utils = new ConfigUtils( $this->getConnection()->getClient(), $this );

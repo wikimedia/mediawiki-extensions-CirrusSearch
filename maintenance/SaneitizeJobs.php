@@ -410,7 +410,6 @@ EOD
 	 * @return never
 	 */
 	public function fatalError( $msg, $exitCode = 1 ) {
-		// @phan-suppress-previous-line PhanTypeMissingReturn T240141
 		$date = new \DateTime();
 		parent::fatalError( $date->format( 'Y-m-d H:i:s' ) . " " . $msg, $exitCode );
 	}

@@ -702,6 +702,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	/**
 	 * @return array[] Array of arrays. Each sub array is a set of values
 	 *  suitable for creating an i18n message.
+	 * @phan-return non-empty-array[]
 	 */
 	public function getWarnings() {
 		return $this->warnings;

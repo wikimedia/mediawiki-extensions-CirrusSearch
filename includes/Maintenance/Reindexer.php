@@ -458,7 +458,6 @@ class Reindexer {
 				. "Indexed: {$status->getCreated()} / {$status->getTotal()} "
 				. "Complete: $estCompletion\n"
 			);
-			// @phan-suppress-next-line PhanPluginRedundantAssignmentInLoop False positive
 			if ( !$status->isComplete() ) {
 				sleep( $sleepSeconds->current() );
 				$sleepSeconds->next();

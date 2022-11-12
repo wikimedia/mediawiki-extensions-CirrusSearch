@@ -11,6 +11,7 @@ use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use ParserCache;
 use Title;
+use TitleFormatter;
 use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 
@@ -51,7 +52,8 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 			$this->createMock( ParserCache::class ),
 			$this->revStore,
 			$this->createMock( BacklinkCacheFactory::class ),
-			new DocumentSizeLimiter( [] )
+			new DocumentSizeLimiter( [] ),
+			$this->createMock( TitleFormatter::class )
 		) extends BuildDocument {
 			// Override create builders to avoid testing those implementations
 			protected function createBuilders( int $flags ): array {

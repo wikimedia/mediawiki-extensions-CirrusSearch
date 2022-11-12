@@ -12,6 +12,7 @@ use MediaWiki\Revision\RevisionAccessException;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use ParserCache;
+use TitleFormatter;
 use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 
@@ -72,6 +73,8 @@ class BuildDocument {
 	private $backlinkCacheFactory;
 	/** @var DocumentSizeLimiter */
 	private $documentSizeLimiter;
+	/** @var TitleFormatter */
+	private $titleFormatter;
 
 	/**
 	 * @param Connection $connection Cirrus connection to read page properties from
@@ -80,6 +83,7 @@ class BuildDocument {
 	 * @param RevisionStore $revStore Store for retrieving revisions by id
 	 * @param BacklinkCacheFactory $backlinkCacheFactory
 	 * @param DocumentSizeLimiter $docSizeLimiter
+	 * @param TitleFormatter $titleFormatter
 	 */
 	public function __construct(
 		Connection $connection,
@@ -87,7 +91,8 @@ class BuildDocument {
 		ParserCache $parserCache,
 		RevisionStore $revStore,
 		BacklinkCacheFactory $backlinkCacheFactory,
-		DocumentSizeLimiter $docSizeLimiter
+		DocumentSizeLimiter $docSizeLimiter,
+		TitleFormatter $titleFormatter
 	) {
 		$this->config = $connection->getConfig();
 		$this->connection = $connection;
@@ -96,6 +101,7 @@ class BuildDocument {
 		$this->revStore = $revStore;
 		$this->backlinkCacheFactory = $backlinkCacheFactory;
 		$this->documentSizeLimiter = $docSizeLimiter;
+		$this->titleFormatter = $titleFormatter;
 	}
 
 	/**
@@ -211,7 +217,11 @@ class BuildDocument {
 			$builders[] = new ParserOutputPageProperties( $this->parserCache, (bool)$forceParse, $this->config );
 		}
 		if ( !$skipLinks ) {
-			$builders[] = new RedirectsAndIncomingLinks( $this->connection, $this->backlinkCacheFactory );
+			$builders[] = new RedirectsAndIncomingLinks(
+				$this->connection,
+				$this->backlinkCacheFactory,
+				$this->titleFormatter
+			);
 		}
 		return $builders;
 	}

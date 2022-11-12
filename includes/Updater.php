@@ -205,7 +205,8 @@ class Updater extends ElasticsearchIntermediary {
 			$services->getParserCache(),
 			$services->getRevisionStore(),
 			$services->getBacklinkCacheFactory(),
-			$docSizeLimiter
+			$docSizeLimiter,
+			$services->getTitleFormatter()
 		);
 		foreach ( $builder->initialize( $pages, $flags ) as $document ) {
 			// This isn't really a property of the connection, so it doesn't matter

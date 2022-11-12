@@ -17,8 +17,10 @@ use Elastica\Query\Terms;
 use Elastica\Search;
 use MediaWiki\Cache\BacklinkCacheFactory;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Page\PageIdentity;
 use MediaWiki\Revision\RevisionRecord;
 use Title;
+use TitleFormatter;
 use WikiPage;
 
 /**
@@ -69,17 +71,25 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 	private $backlinkCacheFactory;
 
 	/**
+	 * @var TitleFormatter
+	 */
+	private $titleFormatter;
+
+	/**
 	 * @param Connection $conn
 	 * @param BacklinkCacheFactory $backlinkCacheFactory
+	 * @param TitleFormatter $titleFormatter
 	 */
 	public function __construct(
 		Connection $conn,
-		BacklinkCacheFactory $backlinkCacheFactory
+		BacklinkCacheFactory $backlinkCacheFactory,
+		TitleFormatter $titleFormatter
 	) {
 		parent::__construct( $conn, null, 0 );
 		$this->config = $conn->getConfig();
 		$this->linkCountMultiSearch = new MultiSearch( $this->connection->getClient() );
 		$this->backlinkCacheFactory = $backlinkCacheFactory;
+		$this->titleFormatter = $titleFormatter;
 	}
 
 	/**
@@ -91,18 +101,18 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 		$outgoingLinksToCount = [ $title->getPrefixedDBkey() ];
 
 		// Gather redirects to this page
-		$redirectTitles = $this->backlinkCacheFactory->getBacklinkCache( $title )
-			->getLinks( 'redirect', false, false, $this->config->get( 'CirrusSearchIndexedRedirects' ) );
+		$redirectPageIdentities = $this->backlinkCacheFactory->getBacklinkCache( $title )
+			->getLinkPages( 'redirect', false, false, $this->config->get( 'CirrusSearchIndexedRedirects' ) );
 		$redirects = [];
-		/** @var Title $redirect */
-		foreach ( $redirectTitles as $redirect ) {
+		/** @var PageIdentity $redirect */
+		foreach ( $redirectPageIdentities as $redirect ) {
 			// If the redirect is in main OR the same namespace as the article the index it
 			if ( $redirect->getNamespace() === NS_MAIN || $redirect->getNamespace() === $title->getNamespace() ) {
 				$redirects[] = [
 					'namespace' => $redirect->getNamespace(),
-					'title' => $redirect->getText()
+					'title' => $this->titleFormatter->getText( $redirect )
 				];
-				$outgoingLinksToCount[] = $redirect->getPrefixedDBkey();
+				$outgoingLinksToCount[] = $this->titleFormatter->getPrefixedDBkey( $redirect );
 			}
 		}
 		$doc->set( 'redirect', $redirects );

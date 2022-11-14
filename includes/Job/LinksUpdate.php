@@ -55,7 +55,17 @@ class LinksUpdate extends CirrusTitleJob {
 			return $res;
 		}
 
-		// Queue IncomingLinkCount jobs when pages are newly linked or unlinked
+		if ( $this->getSearchConfig()->get( 'CirrusSearchEnableIncomingLinkCounting' ) ) {
+			$this->queueIncomingLinksJobs();
+		}
+
+		return $res;
+	}
+
+	/**
+	 * Queue IncomingLinkCount jobs when pages are newly linked or unlinked
+	 */
+	private function queueIncomingLinksJobs() {
 		$titleKeys = array_merge( $this->params[ 'addedLinks' ],
 			$this->params[ 'removedLinks' ] );
 		$refreshInterval = $this->getSearchConfig()->get( 'CirrusSearchRefreshInterval' );
@@ -76,9 +86,6 @@ class LinksUpdate extends CirrusTitleJob {
 			] + self::buildJobDelayOptions( IncomingLinkCount::class, $delay ) );
 		}
 		MediaWikiServices::getInstance()->getJobQueueGroup()->push( $jobs );
-
-		// All done
-		return $res;
 	}
 
 	/**

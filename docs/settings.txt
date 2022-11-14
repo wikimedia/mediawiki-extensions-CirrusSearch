@@ -1669,4 +1669,17 @@ Example:
     'last_editor',
   ];
 
+; $wgCirrusSearchEnableIncomingLinkCounting
+
+Default:
+  $wgCirrusSearchEnableIncomingLinkCounting = true
+
+Setting to false will stop Cirrus from performing link counting queries and
+updating the incoming_links value of the search documents. These queries can be
+quite frequent, somewhat expensive, and often don't result in actually updating
+the document (the value doesn't change frequently).
+
+The incoming_links values will still be used as part of relevance scoring. This
+should only be disabled if an external process has been configured to update
+the incoming_links field on a scheduled basis separate from the edit pipeline.
 

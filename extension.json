@@ -702,6 +702,10 @@
 		"CirrusSearchExtraFieldsInSearchResults": {
 			"description": "Defines extra fields to add to each result",
 			"value": []
+		},
+		"CirrusSearchEnableIncomingLinkCounting": {
+			"description": "Enables queries used for counting of incoming links. Disable if an external service is updating these.",
+			"value": true
 		}
 	},
 	"SearchMappings": {

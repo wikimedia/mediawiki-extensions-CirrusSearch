@@ -117,6 +117,10 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 		}
 		$doc->set( 'redirect', $redirects );
 
+		if ( !$this->config->get( 'CirrusSearchEnableIncomingLinkCounting' ) ) {
+			return;
+		}
+
 		// Count links
 		// Incoming links is the sum of:
 		// #1 Number of redirects to the page

@@ -11,6 +11,7 @@
 			"Piramidion",
 			"Similartothissimilartothat",
 			"SimondR",
+			"Vlad5250",
 			"Ата"
 		]
 	},
@@ -69,6 +70,7 @@
 	"cirrussearch-feature-too-many-conditions": "Надто багато умов надано для «$1», обрізаємо до $2.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint має бути встановлено як дійсна кінцева точка SPARQL для використання глибокого пошуку категорії.",
 	"cirrussearch-feature-deepcat-exception": "Запит SPARQL на пошук глибокої категорії зазнав невдачі",
+	"cirrussearch-feature-deepcat-timeout": "Час очікування глибокого пошуку за категоріями скінчився. Швидше за все, категорія має забагато підкатегорій",
 	"cirrussearch-feature-deepcat-toomany": "Запит глибокої категорії повернув надто багато категорій",
 	"cirrussearch-feature-deepcat-invalid-title": "Некоректно вказана категорія.",
 	"cirrussearch-feature-pageid-invalid-id": "Неправильні {{PLURAL:$2|ідентифікатори|1=ідентифікатор}}: $1",

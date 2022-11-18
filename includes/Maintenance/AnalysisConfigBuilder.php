@@ -1006,6 +1006,22 @@ class AnalysisConfigBuilder {
 				withFilters( $mwlFilters )->
 				build( $config );
 			break;
+		case 'nias':
+			$config[ 'char_filter' ][ 'apostrophe_norm' ] =
+				AnalyzerBuilder::mappingCharFilter( [
+					"‘=>'",
+					"’=>'",
+					"`=>'",
+					"ʼ=>'",
+					"ʿ=>'",
+					"ʾ=>'",
+				] );
+
+			$config = ( new AnalyzerBuilder( $langName ) )->
+				withFilters( [ 'lowercase' ] )->
+				withCharFilters( [ 'apostrophe_norm' ] )->
+				build( $config );
+			break;
 		case 'polish':
 			// these are real stop words for Polish
 			$config[ 'filter' ][ 'polish_stop' ] = AnalyzerBuilder::stopFilter( require __DIR__ .
@@ -1152,20 +1168,27 @@ class AnalysisConfigBuilder {
 		case 'turkish':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
 			break;
-		case 'nias':
-			$config[ 'char_filter' ][ 'apostrophe_norm' ] =
-				AnalyzerBuilder::mappingCharFilter( [
-					"‘=>'",
-					"’=>'",
-					"`=>'",
-					"ʼ=>'",
-					"ʿ=>'",
-					"ʾ=>'",
-				] );
-
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withFilters( [ 'lowercase' ] )->
-				withCharFilters( [ 'apostrophe_norm' ] )->
+		case 'ukrainian-unpacked':
+			$this->languagesWithIcuFolding['uk'] = true;
+			$ukCharMap = [ '‘=>\'',    // normalize apostrophes
+						   '’=>\'',
+						   '`=>\'',
+						   '´=>\'',
+						   'ʼ=>\'',
+						   '\u0301=>', // delete combining acute and soft hyphen
+						   '\u00AD=>',
+						   'ґ=>г',     // normalize ghe with upturn
+						   'Ґ=>Г',
+			];
+			// lowercase twice because stopwords are case sensitive, and the stemmer
+			// generates some output with uppercase initial letters, even for
+			// lowercase input (usually proper names)
+			$ukFilters = [ 'lowercase', 'ukrainian_stop', 'ukrainian_stemmer',
+					'lowercase', 'remove_duplicates', 'asciifolding' ];
+			$config = ( new AnalyzerBuilder( 'ukrainian' ) )->
+				withCharMap( $ukCharMap )->
+				withCharFilters( [ 'dotted_I_fix', 'ukrainian_charfilter' ] )->
+				withFilters( $ukFilters )->
 				build( $config );
 			break;
 		default:
@@ -1463,10 +1486,11 @@ class AnalysisConfigBuilder {
 	}
 
 	/**
-	 * Languages for which elasticsearch provides a built in analyzer.  All
-	 * other languages default to the default analyzer which isn't too good.  Note
-	 * that this array is sorted alphabetically by value and sourced from
-	 * http://www.elasticsearch.org/guide/reference/index-modules/analysis/lang-analyzer/
+	 * Languages for which we have a custom analysis chain (Elastic built-in or our
+	 * own custom analysis). All other languages default to the default analyzer which
+	 * isn't too good. Note that this array is sorted alphabetically by value. The
+	 * Elastic list is sourced from
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html
 	 *
 	 * @var string[]
 	 */
@@ -1590,8 +1614,9 @@ class AnalysisConfigBuilder {
 	 * @var array[]
 	 */
 	private $elasticsearchLanguageAnalyzersFromPlugins = [
-		// multiple plugin requirement can be comma separated
 		/**
+		 * multiple plugin requirement can be comma separated
+		 *
 		 * Polish: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T154517
 		 * Ukrainian: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160106
 		 * Chinese: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
@@ -1603,6 +1628,9 @@ class AnalysisConfigBuilder {
 		 * Esperanto: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
 		 * Korean: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T206874
 		 * Khmer: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T185721
+		 *
+		 * extra-analysis-ukrainian should follow analysis-ukrainian, so that
+		 * ukrainian-unpacked can overwrite value for uk if both are present.
 		 */
 
 		'analysis-stempel' => [ 'pl' => 'polish' ],
@@ -1610,6 +1638,7 @@ class AnalysisConfigBuilder {
 		'analysis-stconvert,analysis-smartcn' => [ 'zh' => 'chinese' ],
 		'analysis-hebrew' => [ 'he' => 'hebrew' ],
 		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],
+		'extra-analysis-ukrainian' => [ 'uk' => 'ukrainian-unpacked' ],
 		'extra-analysis-esperanto' => [ 'eo' => 'esperanto' ],
 		'extra-analysis-serbian' => [ 'bs' => 'bosnian', 'hr' => 'croatian',
 			'sh' => 'serbo-croatian', 'sr' => 'serbian' ],

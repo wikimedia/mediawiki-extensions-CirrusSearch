@@ -66,7 +66,7 @@
 	"cirrussearch-feature-too-many-conditions": "Foram fornecidas demasiadas condições a '$1'; a truncar para '$2'.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint deve ser definido com um ponto final SPARQL válido, para utilizar a pesquisa de categorias em profundidade.",
 	"cirrussearch-feature-deepcat-exception": "A consulta SPARQL de pesquisa de categorias em profundidade falhou",
-	"cirrussearch-feature-deepcat-timeout": "A pesquisa de categorias em profundidade ultrapassou o tempo limite; é provável que a categoria tenha demasiadas subcategorias",
+	"cirrussearch-feature-deepcat-timeout": "A pesquisa de categorias em profundidade ultrapassou o tempo limite. É provável que a categoria tenha demasiadas subcategorias",
 	"cirrussearch-feature-deepcat-toomany": "A consulta de categorias em profundidade devolveu demasiadas categorias",
 	"cirrussearch-feature-deepcat-invalid-title": "A categoria fornecida é inválida.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Identificador de página inválido|Identificadores de página inválidos}}: $1",

@@ -1,10 +1,7 @@
 {
     "analyzer": {
         "text": {
-            "type": "ukrainian",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "ukrainian"
         },
         "plain": {
             "type": "custom",
@@ -164,10 +161,7 @@
             ]
         },
         "text_search": {
-            "type": "ukrainian",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "ukrainian"
         }
     },
     "filter": {

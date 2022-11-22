@@ -1,10 +1,7 @@
 {
     "analyzer": {
         "text": {
-            "type": "armenian",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "armenian"
         },
         "plain": {
             "type": "custom",
@@ -164,10 +161,7 @@
             ]
         },
         "text_search": {
-            "type": "armenian",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "armenian"
         }
     },
     "filter": {

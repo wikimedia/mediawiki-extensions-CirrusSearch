@@ -243,7 +243,11 @@
                 "russian_charfilter"
             ],
             "filter": [
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "ru_icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -269,7 +273,9 @@
             "filter": [
                 "icu_normalizer",
                 "russian_stop",
-                "russian_stemmer"
+                "russian_stemmer",
+                "ru_icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -283,7 +289,9 @@
             "filter": [
                 "icu_normalizer",
                 "russian_stop",
-                "russian_stemmer"
+                "russian_stemmer",
+                "ru_icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -567,6 +575,10 @@
         "remove_empty": {
             "min": 1,
             "type": "length"
+        },
+        "ru_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u0419\u0439]"
         },
         "russian_stemmer": {
             "language": "russian",

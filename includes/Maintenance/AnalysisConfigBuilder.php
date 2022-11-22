@@ -423,11 +423,7 @@ class AnalysisConfigBuilder {
 		$defaults = [
 			'analyzer' => [
 				'text' => [
-					// These defaults are not applied to non-custom
-					// analysis chains, i.e., those that use the
-					// default language analyzers on 'text'
 					'type' => $this->getDefaultTextAnalyzerType( $language ),
-					'char_filter' => [ 'word_break_helper' ],
 				],
 				// text_search is not configured here because it will be copied from text
 				'plain' => [
@@ -462,9 +458,9 @@ class AnalysisConfigBuilder {
 				],
 				'source_text_plain' => [
 					'type' => 'custom',
+					'char_filter' => [ 'word_break_helper_source_text' ],
 					'tokenizer' => 'standard',
 					'filter' => [ 'lowercase' ],
-					'char_filter' => [ 'word_break_helper_source_text' ],
 				],
 				'source_text_plain_search' => [
 					'type' => 'custom',
@@ -710,7 +706,7 @@ class AnalysisConfigBuilder {
 				# load extra stopwords for Arabic varieties
 				$arStopwords = require __DIR__ . '/AnalysisLanguageData/arabicStopwords.php';
 				$config[ 'filter' ][ 'arz_ary_stop' ] =
-					AnalyzerBuilder::stopFilter( $arStopwords );
+					AnalyzerBuilder::stopFilterFromList( $arStopwords );
 				$arPreStopFilters[] = 'arz_ary_stop';
 			}
 
@@ -763,7 +759,7 @@ class AnalysisConfigBuilder {
 				'convert_type' => 't2s',
 			];
 			// SmartCN converts lots of punctuation to ',' but we don't want to index it
-			$config[ 'filter' ][ 'smartcn_stop' ] = AnalyzerBuilder::stopFilter( [ ',' ] );
+			$config[ 'filter' ][ 'smartcn_stop' ] = AnalyzerBuilder::stopFilterFromList( [ ',' ] );
 
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
@@ -896,7 +892,7 @@ class AnalysisConfigBuilder {
 			$gaElision = [ 'd', 'm', 'b' ];
 			$gaHyphenStop = [ 'h', 'n', 't' ];
 			$config[ 'filter' ][ 'irish_hyphenation' ] =
-				AnalyzerBuilder::stopFilter( $gaHyphenStop, true );
+				AnalyzerBuilder::stopFilterFromList( $gaHyphenStop, true );
 
 			// Unpack Irish analyzer T289612
 			// See also https://www.mediawiki.org/wiki/User:TJones_(WMF)/T217602
@@ -1024,7 +1020,7 @@ class AnalysisConfigBuilder {
 			break;
 		case 'polish':
 			// these are real stop words for Polish
-			$config[ 'filter' ][ 'polish_stop' ] = AnalyzerBuilder::stopFilter( require __DIR__ .
+			$config[ 'filter' ][ 'polish_stop' ] = AnalyzerBuilder::stopFilterFromList( require __DIR__ .
 				'/AnalysisLanguageData/polishStopwords.php' );
 
 			// Stempel is statistical, and certain stems are really terrible, so we filter them
@@ -1038,7 +1034,7 @@ class AnalysisConfigBuilder {
 			];
 
 			// Stempel-specific stop words--additional unreliable stems
-			$config[ 'filter' ][ 'stempel_stop' ] = AnalyzerBuilder::stopFilter( [ 'ować', 'iwać',
+			$config[ 'filter' ][ 'stempel_stop' ] = AnalyzerBuilder::stopFilterFromList( [ 'ować', 'iwać',
 				'obić', 'snąć', 'ywać', 'ium', 'my', 'um' ] );
 
 			// unpacked Stempel
@@ -1063,7 +1059,6 @@ class AnalysisConfigBuilder {
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
 				withCharMap( $ruCharMap )->
-				omitAsciifolding()->
 				build( $config );
 
 			// add Russian character mappings to near_space_flattener
@@ -1574,6 +1569,7 @@ class AnalysisConfigBuilder {
 		'nl' => true,
 		'nn' => true,
 		'pt' => true,
+		'ru' => true,
 		'sh' => true,
 		'sk' => true,
 		'sr' => true,

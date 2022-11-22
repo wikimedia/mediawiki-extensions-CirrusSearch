@@ -12,7 +12,8 @@
                 "homoglyph_norm",
                 "lowercase",
                 "russian_stop",
-                "russian_stemmer"
+                "russian_stemmer",
+                "asciifolding"
             ]
         },
         "plain": {
@@ -59,12 +60,12 @@
         },
         "source_text_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper_source_text"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper_source_text"
             ]
         },
         "source_text_plain_search": {
@@ -192,7 +193,8 @@
                 "homoglyph_norm",
                 "lowercase",
                 "russian_stop",
-                "russian_stemmer"
+                "russian_stemmer",
+                "asciifolding"
             ]
         }
     },

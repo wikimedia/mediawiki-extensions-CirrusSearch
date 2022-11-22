@@ -708,6 +708,34 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "ru_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper",
+                "russian_charfilter"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "ru_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ru_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper",
+                "russian_charfilter"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "sh_plain": {
             "char_filter": [
                 "nnbsp_norm",
@@ -878,6 +906,16 @@
             ],
             "type": "mapping"
         },
+        "russian_charfilter": {
+            "mappings": [
+                "\\u0301=>",
+                "\\u0435\\u0308=>\\u0435",
+                "\\u0415\\u0308=>\\u0415",
+                "\\u0451=>\\u0435",
+                "\\u0401=>\\u0415"
+            ],
+            "type": "mapping"
+        },
         "word_break_helper": {
             "mappings": [
                 "_=>\\u0020",
@@ -960,6 +998,10 @@
         "remove_empty": {
             "min": 1,
             "type": "length"
+        },
+        "ru_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u0419\u0439]"
         },
         "sh_icu_folding": {
             "type": "icu_folding",

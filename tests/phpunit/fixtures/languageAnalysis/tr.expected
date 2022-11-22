@@ -1,10 +1,7 @@
 {
     "analyzer": {
         "text": {
-            "type": "turkish",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "turkish"
         },
         "plain": {
             "type": "custom",
@@ -164,10 +161,7 @@
             ]
         },
         "text_search": {
-            "type": "turkish",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "turkish"
         }
     },
     "filter": {

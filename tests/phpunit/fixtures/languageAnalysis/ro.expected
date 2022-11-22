@@ -1,10 +1,7 @@
 {
     "analyzer": {
         "text": {
-            "type": "romanian",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "romanian"
         },
         "plain": {
             "type": "custom",
@@ -164,10 +161,7 @@
             ]
         },
         "text_search": {
-            "type": "romanian",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "romanian"
         }
     },
     "filter": {

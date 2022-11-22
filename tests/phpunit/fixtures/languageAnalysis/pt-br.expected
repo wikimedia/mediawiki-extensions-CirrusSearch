@@ -1,10 +1,7 @@
 {
     "analyzer": {
         "text": {
-            "type": "brazilian",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "brazilian"
         },
         "plain": {
             "type": "custom",
@@ -164,10 +161,7 @@
             ]
         },
         "text_search": {
-            "type": "brazilian",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "brazilian"
         }
     },
     "filter": {

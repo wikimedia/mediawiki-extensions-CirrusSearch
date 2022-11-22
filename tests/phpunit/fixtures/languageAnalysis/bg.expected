@@ -1,10 +1,7 @@
 {
     "analyzer": {
         "text": {
-            "type": "bulgarian",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "bulgarian"
         },
         "plain": {
             "type": "custom",
@@ -164,10 +161,7 @@
             ]
         },
         "text_search": {
-            "type": "bulgarian",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "bulgarian"
         }
     },
     "filter": {

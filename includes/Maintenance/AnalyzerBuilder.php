@@ -68,7 +68,7 @@ class AnalyzerBuilder {
 	private $langLowercase = false;
 
 	/** @var mixed|null stopword _list_ or array of stopwords */
-	private $customStop;
+	private $customStopList;
 
 	/** @var string|null */
 	private $stopName;
@@ -174,7 +174,7 @@ class AnalyzerBuilder {
 	public function withElision( array $articles, bool $articleCase = true ): self {
 		$this->elisionArticleCase = $articleCase;
 		$this->elisionArticles = $articles;
-		$this->elisionName = "{$this->langName}_elision"; // $this->langName . '_elision';
+		$this->elisionName = "{$this->langName}_elision";
 		return $this;
 	}
 
@@ -189,7 +189,7 @@ class AnalyzerBuilder {
 	 * @return self
 	 */
 	public function withStop( $stop ): self {
-		$this->customStop = $stop;
+		$this->customStopList = $stop;
 		$this->stopName = "{$this->langName}_stop";
 		return $this;
 	}
@@ -323,7 +323,7 @@ class AnalyzerBuilder {
 			} else {
 				$langStem = '';
 			}
-			$this->withStop( $this->customStop ?? "_{$this->langName}_" );
+			$this->withStop( $this->customStopList ?? "_{$this->langName}_" );
 
 			// build up the char_filter list--everything is optional
 			$this->charFilters[] = $this->dottedIFix;
@@ -402,7 +402,7 @@ class AnalyzerBuilder {
 
 		if ( $this->stopName ) {
 			$config[ 'filter' ][ $this->stopName ] =
-				$this->stopFilter( $this->customStop );
+				$this->stopFilterFromList( $this->customStopList );
 		}
 
 		if ( $this->charFilters ) {
@@ -478,7 +478,7 @@ class AnalyzerBuilder {
 	 * @param bool|null $ignoreCase
 	 * @return mixed[] token filter
 	 */
-	public static function stopFilter( $stopwords, bool $ignoreCase = null ): array {
+	public static function stopFilterFromList( $stopwords, bool $ignoreCase = null ): array {
 		$retArray = [ 'type' => 'stop', 'stopwords' => $stopwords ];
 		if ( isset( $ignoreCase ) ) {
 			$retArray['ignore_case'] = $ignoreCase;

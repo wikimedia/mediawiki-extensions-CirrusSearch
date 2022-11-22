@@ -145,15 +145,9 @@
             "type": "custom"
         },
         "tr_text": {
-            "char_filter": [
-                "word_break_helper"
-            ],
             "type": "turkish"
         },
         "tr_text_search": {
-            "char_filter": [
-                "word_break_helper"
-            ],
             "type": "turkish"
         }
     },

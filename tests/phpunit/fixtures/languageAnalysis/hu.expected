@@ -1,10 +1,7 @@
 {
     "analyzer": {
         "text": {
-            "type": "hungarian",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "hungarian"
         },
         "plain": {
             "type": "custom",
@@ -164,10 +161,7 @@
             ]
         },
         "text_search": {
-            "type": "hungarian",
-            "char_filter": [
-                "word_break_helper"
-            ]
+            "type": "hungarian"
         }
     },
     "filter": {

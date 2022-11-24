@@ -45,7 +45,7 @@ class BufferedRemediatorTest extends CirrusTestCase {
 		$remediator->ghostPageInIndex( $docId, $title );
 		$this->assertNotEmpty( $remediator->getActions() );
 		$remediator->resetActions();
-		$this->assertEmpty( $remediator->getActions() );
+		$this->assertSame( [], $remediator->getActions() );
 	}
 
 	public function testReplayOn() {

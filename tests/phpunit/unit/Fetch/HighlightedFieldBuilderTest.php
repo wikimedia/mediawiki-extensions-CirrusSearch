@@ -89,7 +89,7 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 			$field->setHighlightQuery( new MatchAll() );
 			$this->assertEquals( new MatchAll(), $field->getHighlightQuery() );
 
-			$this->assertEmpty( $field->getOptions() );
+			$this->assertSame( [], $field->getOptions() );
 			$field->setOptions( [ 'foo' => 'bar', 'baz' => 'bat' ] );
 			$field->addOption( 'foo', 'overwrittenBar' );
 			$this->assertEquals( [ 'foo' => 'overwrittenBar', 'baz' => 'bat' ], $field->getOptions() );
@@ -110,7 +110,7 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 			$field->setFragmentSize( 45 );
 			$this->assertEquals( 45, $field->getFragmentSize() );
 
-			$this->assertEmpty( $field->getMatchedFields() );
+			$this->assertSame( [], $field->getMatchedFields() );
 			$field->addMatchedField( 'foo' );
 			$field->addMatchedField( 'bar' );
 			$this->assertEquals( [ 'foo', 'bar' ], $field->getMatchedFields() );
@@ -125,7 +125,7 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 		$this->assertEquals( [ 'skip_if_last_matched' => true ], $expField->getOptions() );
 
 		$baseField->skipIfLastMatched();
-		$this->assertEmpty( $baseField->getOptions() );
+		$this->assertSame( [], $baseField->getOptions() );
 	}
 
 	public function testRegex() {

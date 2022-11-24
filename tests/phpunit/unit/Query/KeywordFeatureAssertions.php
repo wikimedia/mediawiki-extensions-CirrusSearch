@@ -408,7 +408,7 @@ class KeywordFeatureAssertions {
 					$this->assertHLField( $value[0], $value[1], $fetchPhaseConfig, $useExp );
 				}
 			} else {
-				$this->testCase->assertEmpty( $fetchPhaseConfig->buildHLConfig()['fields'] );
+				$this->testCase->assertSame( [], $fetchPhaseConfig->buildHLConfig()['fields'] );
 			}
 		}
 		// New parsing:
@@ -449,7 +449,7 @@ class KeywordFeatureAssertions {
 				$hlField = $hlFieldsPerName[$fieldName];
 				$this->assertHighlightField( $fieldName, $hlQuery, $useExp, $hlField );
 			}
-			$this->testCase->assertEmpty( array_diff_key( $hlFieldsPerName, array_flip( $highlightField ?: [] ) ) );
+			$this->testCase->assertSame( [], array_diff_key( $hlFieldsPerName, array_flip( $highlightField ?: [] ) ) );
 		}
 	}
 
@@ -480,7 +480,7 @@ class KeywordFeatureAssertions {
 		$this->testCase->assertEquals( $term, $feature->apply( $context, $term ) );
 		$parser = new KeywordParser();
 		$nodes = $parser->parse( $term, $feature, new OffsetTracker() );
-		$this->testCase->assertEmpty( $nodes );
+		$this->testCase->assertSame( [], $nodes );
 	}
 
 	/**

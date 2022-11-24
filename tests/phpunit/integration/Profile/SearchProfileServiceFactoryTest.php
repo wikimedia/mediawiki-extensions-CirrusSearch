@@ -36,7 +36,7 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 			$seen[] = $name;
 		}
 		$missing = array_diff( $must_have, $seen );
-		$this->assertEmpty( $missing, "Profiles of type $type must include all must_have profiles" );
+		$this->assertSame( [], $missing, "Profiles of type $type must include all must_have profiles" );
 	}
 
 	public static function provideExposedProfileType() {

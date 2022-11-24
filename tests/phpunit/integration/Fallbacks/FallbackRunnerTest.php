@@ -346,7 +346,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		);
 		$this->assertEquals( 2, $newResults->getTotalHits() );
 		$iwResults = $newResults->getInterwikiResults( \ISearchResultSet::INLINE_RESULTS );
-		$this->assertEmpty( $iwResults );
+		$this->assertSame( [], $iwResults );
 
 		// LangDetect wins and runs its fallback query
 		$runner = FallbackRunner::create( $query, $this->newManualInterwikiResolver( $config ) );
@@ -408,7 +408,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$runner = new FallbackRunner( [ $this->mockElasticSearchRequestFallbackMethod( $query, 0.0, $resp, null ) ] );
 		$requests = new MSearchRequests();
 		$runner->attachSearchRequests( $requests, $client );
-		$this->assertEmpty( $requests->getRequests() );
+		$this->assertSame( [], $requests->getRequests() );
 		$mresponses = $requests->failure( \Status::newFatal( 'error' ) );
 		$this->assertSame( $inital, $runner->run( $this->createMock( SearcherFactory::class ), $inital, $mresponses,
 			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() ) );

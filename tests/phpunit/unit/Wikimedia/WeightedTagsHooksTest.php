@@ -120,7 +120,7 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 		] );
 		$extraFeatures = [];
 		WeightedTagsHooks::onCirrusSearchAddQueryFeatures( $config, $extraFeatures );
-		$this->assertEmpty( $extraFeatures );
+		$this->assertSame( [], $extraFeatures );
 
 		$config = new HashSearchConfig( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [

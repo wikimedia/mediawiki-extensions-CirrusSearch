@@ -235,11 +235,11 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( 10, $defaults->getLimit() );
 		$this->assertEquals( CirrusDebugOptions::defaultOptions(), $defaults->getDebugOptions() );
 		$this->assertEquals( $config, $defaults->getSearchConfig() );
-		$this->assertEmpty( $defaults->getContextualFilters() );
+		$this->assertSame( [], $defaults->getContextualFilters() );
 		$this->assertTrue( $defaults->isWithDYMSuggestion() );
 		$this->assertFalse( $defaults->isAllowRewrite() );
-		$this->assertEmpty( $defaults->getProfileContextParameters() );
-		$this->assertEmpty( $defaults->getExtraFieldsToExtract() );
+		$this->assertSame( [], $defaults->getProfileContextParameters() );
+		$this->assertSame( [], $defaults->getExtraFieldsToExtract() );
 	}
 
 	public function testBuilder() {
@@ -279,7 +279,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( 100, $custom->getLimit() );
 		$this->assertEquals( CirrusDebugOptions::forDumpingQueriesInUnitTests(), $custom->getDebugOptions() );
 		$this->assertEquals( $config, $custom->getSearchConfig() );
-		$this->assertEmpty( $custom->getContextualFilters() );
+		$this->assertSame( [], $custom->getContextualFilters() );
 		$this->assertFalse( $custom->isWithDYMSuggestion() );
 		$this->assertTrue( $custom->isAllowRewrite() );
 		$this->assertEquals( [ 'foo' => 'bar' ], $custom->getProfileContextParameters() );
@@ -309,13 +309,13 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( $config, $context->getConfig() );
 		$this->assertEquals( [ NS_MAIN ], $context->getNamespaces() );
 		$this->assertFalse( $context->getLimitSearchToLocalWiki() );
-		$this->assertEmpty( $context->getFilters() );
+		$this->assertSame( [], $context->getFilters() );
 		$this->assertEquals( $config->getProfileService()->getProfileName( SearchProfileService::RESCORE ),
 			$context->getRescoreProfile() );
 		$this->assertEquals( $config->getProfileService()->getProfileName( SearchProfileService::FT_QUERY_BUILDER ),
 			$context->getFulltextQueryBuilderProfile() );
 		$this->assertEquals( 'test', $context->getOriginalSearchTerm() );
-		$this->assertEmpty( $context->getProfileContextParams() );
+		$this->assertSame( [], $context->getProfileContextParams() );
 		$this->assertSame( FallbackRunner::noopRunner(), $context->getFallbackRunner() );
 		$this->assertFalse( $context->isSpecialKeywordUsed() );
 		$this->assertTrue( $context->isSyntaxUsed( BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ) );
@@ -482,7 +482,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( $options ?? CirrusDebugOptions::defaultOptions(),
 			$crossSearchQuery->getDebugOptions() );
 		$this->assertEquals( $targetWikiConfig, $crossSearchQuery->getSearchConfig() );
-		$this->assertEmpty( $crossSearchQuery->getContextualFilters() );
+		$this->assertSame( [], $crossSearchQuery->getContextualFilters() );
 		$this->assertFalse( $crossSearchQuery->isWithDYMSuggestion() );
 		$this->assertFalse( $crossSearchQuery->isAllowRewrite() );
 		$this->assertEquals( $offset, $crossSearchQuery->getOffset() );
@@ -493,7 +493,7 @@ class SearchQueryTest extends CirrusTestCase {
 		} else {
 			$this->assertFalse( $crossSearchQuery->hasForcedProfile() );
 		}
-		$this->assertEmpty( $crossSearchQuery->getExtraFieldsToExtract() );
+		$this->assertSame( [], $crossSearchQuery->getExtraFieldsToExtract() );
 	}
 
 	public function testforRewrittenQuery() {

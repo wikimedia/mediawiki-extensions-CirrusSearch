@@ -223,7 +223,7 @@ class PrefixFeatureTest extends CirrusTestCase {
 		} else {
 			$this->assertContains( $namespace, $context->getNamespaces() );
 		}
-		$this->assertEmpty( $context->getWarnings() );
+		$this->assertSame( [], $context->getWarnings() );
 	}
 
 	public function testEmpty() {

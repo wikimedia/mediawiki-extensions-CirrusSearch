@@ -37,7 +37,7 @@ class PrefixSearchQueryBuilderTest extends CirrusTestCase {
 			'CirrusSearchPrefixWeights' => self::$WEIGHTS,
 		] );
 		$context = $this->getSearchContext( $config );
-		$this->assertEmpty( $context->getFilters() );
+		$this->assertSame( [], $context->getFilters() );
 		$qb->build( $context, 'per word prefix' );
 		$context->assertCount( 1, $context->getFilters() );
 		$filter = $context->getFilters()[0];

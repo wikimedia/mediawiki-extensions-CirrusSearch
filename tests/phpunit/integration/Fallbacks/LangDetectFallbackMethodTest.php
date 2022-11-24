@@ -157,7 +157,7 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 				$this->assertSame( $expectedRewrittenResults, $crossRes[$targetWikiConfig->getWikiId()] );
 			} else {
 				$this->assertSame( FallbackStatus::NO_ACTION, $status->getAction() );
-				$this->assertEmpty( $rewrittenResults->getInterwikiResults( ISearchResultSet::INLINE_RESULTS ) );
+				$this->assertSame( [], $rewrittenResults->getInterwikiResults( ISearchResultSet::INLINE_RESULTS ) );
 			}
 		}
 	}

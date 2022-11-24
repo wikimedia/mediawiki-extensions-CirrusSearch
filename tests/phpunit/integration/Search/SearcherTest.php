@@ -179,9 +179,9 @@ class SearcherTest extends CirrusIntegrationTestCase {
 					}
 				}
 			}
-			$this->assertEmpty( $notInApi, implode( ',', $notInApi ) .
+			$this->assertSame( [], $notInApi, implode( ',', $notInApi ) .
 				" are exported from \CirrusSearch\Api\ConfigDump" );
-			$this->assertEmpty( $notInSearchConfig, implode( ',', $notInSearchConfig ) .
+			$this->assertSame( [], $notInSearchConfig, implode( ',', $notInSearchConfig ) .
 				" are allowed in SearchConfig::getNonCirrusConfigVarNames()" );
 		} finally {
 			SearchConfigUsageDecorator::resetUsedConfigKeys();

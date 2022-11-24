@@ -21,7 +21,7 @@ class QueryBuilderTraitsTest extends CirrusTestCase {
 		$term = 'some example query';
 		$this->assertTrue( $qb->checkTitleSearchRequestLength( $term, $context ) );
 		$this->assertTrue( $context->areResultsPossible() );
-		$this->assertEmpty( $context->getWarnings() );
+		$this->assertSame( [], $context->getWarnings() );
 
 		$term .= str_repeat( 'a', CirrusSearch::MAX_TITLE_SEARCH );
 		$this->assertFalse( $qb->checkTitleSearchRequestLength( $term, $context ) );

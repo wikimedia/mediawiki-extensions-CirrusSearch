@@ -14,6 +14,26 @@ class ConfigDumpTest extends \CirrusSearch\CirrusIntegrationTestCase {
 		$context = new RequestContext();
 		$context->setRequest( $request );
 		$main = new ApiMain( $context );
+		$this->overrideConfigValues( [
+			"CirrusSearchDefaultCluster" => "my_replica",
+			"CirrusSearchClusters" => [
+				"my_replica-cluster_group1" => [
+					"group" => "cluster_group1",
+					"replica" => "my_replica",
+				],
+				"my_replica-cluster_group2" => [
+					"group" => "cluster_group2",
+					"replica" => "my_replica",
+				],
+			],
+			"CirrusSearchReplicaGroup" => [
+				"type" => "roundrobin",
+				"groups" => [
+					"cluster_group1",
+					"cluster_group2",
+				],
+			],
+		] );
 
 		$api = new ConfigDump( $main, 'name', '' );
 		$api->execute();
@@ -30,5 +50,9 @@ class ConfigDumpTest extends \CirrusSearch\CirrusIntegrationTestCase {
 		foreach ( [ NS_MAIN, NS_TALK, NS_HELP ] as $ns ) {
 			$this->assertArrayHasKey( $ns, $namespaceMap );
 		}
+
+		$clusterGroup = $result->getResultData( [ 'CirrusSearchConcreteReplicaGroup' ] );
+		$this->assertNotNull( $clusterGroup );
+		$this->assertContains( $clusterGroup, [ 'cluster_group1', 'cluster_group2' ] );
 	}
 }

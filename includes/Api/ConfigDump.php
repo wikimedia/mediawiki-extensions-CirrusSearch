@@ -157,6 +157,9 @@ class ConfigDump extends ApiBase {
 		if ( isset( $props['profiles'] ) ) {
 			$this->addProfiles( $result );
 		}
+		if ( isset( $props['replicagroup'] ) ) {
+			$this->addReplicaGroup( $result );
+		}
 		if ( isset( $props['usertesting'] ) ) {
 			$this->addUserTesting( $result );
 		}
@@ -188,6 +191,11 @@ class ConfigDump extends ApiBase {
 			$indexName = $conn->getIndexName( $indexBaseName, $indexSuffix );
 			$result->addValue( 'CirrusSearchConcreteNamespaceMap', $ns, $indexName );
 		}
+	}
+
+	private function addReplicaGroup( ApiResult $result ) {
+		$result->addValue( null, 'CirrusSearchConcreteReplicaGroup',
+			$this->getCirrusConnection()->getConfig()->getClusterAssignment()->getCrossClusterName() );
 	}
 
 	/**
@@ -231,11 +239,12 @@ class ConfigDump extends ApiBase {
 	public function getAllowedParams() {
 		return [
 			'prop' => [
-				ParamValidator::PARAM_DEFAULT => 'globals|namespacemap|profiles',
+				ParamValidator::PARAM_DEFAULT => 'globals|namespacemap|profiles|replicagroup',
 				ParamValidator::PARAM_TYPE => [
 					'globals',
 					'namespacemap',
 					'profiles',
+					'replicagroup',
 					'usertesting',
 				],
 				ParamValidator::PARAM_ISMULTI => true,

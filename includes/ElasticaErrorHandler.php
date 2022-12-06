@@ -151,7 +151,6 @@ class ElasticaErrorHandler {
 					'^null_pointer_exception$',
 					'^elasticsearch_timeout_exception$',
 					'^retry_on_primary_exception$',
-					'^circuit_breaking_exception$',
 				],
 				// These are exceptions thrown by elastica itself
 				'msg_regexes' => [

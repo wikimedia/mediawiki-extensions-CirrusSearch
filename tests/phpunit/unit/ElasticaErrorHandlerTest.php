@@ -40,7 +40,7 @@ class ElasticaErrorHandlerTest extends CirrusTestCase {
 				'failed',
 				new \Elastica\Exception\Connection\HttpException( 28 ),
 			],
-			'null is unkown' => [
+			'null is unknown' => [
 				'unknown',
 				null,
 			],
@@ -66,6 +66,10 @@ class ElasticaErrorHandlerTest extends CirrusTestCase {
 					new Request( 'dummy' ),
 					new Response( 'Status code 503; upstream connect error or disconnect before headers', 503 )
 				),
+			],
+			'test circuit breaking' => [
+				'memory_issue',
+				self::newResponseException( 'circuit_breaking_exception', '[parent] Data too large, ...' )
 			],
 		];
 	}

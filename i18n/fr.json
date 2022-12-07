@@ -75,7 +75,7 @@
 	"cirrussearch-feature-deepcat-exception": "La requête SPARQL de recherche de catégorie en profondeur a échoué",
 	"cirrussearch-feature-deepcat-toomany": "La requête profonde de catégorie a renvoyé trop de catégories",
 	"cirrussearch-feature-deepcat-invalid-title": "La catégorie fournie n’est pas valide.",
-	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|ID de page non valide|IDs de page non valides}} : $1",
+	"cirrussearch-feature-pageid-invalid-id": "Identifiant{{PLURAL:$2||s}} de page non valide{{PLURAL:$2||s}} : $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Aucune catégorie valide fournie à « $1 ».",
 	"cirrussearch-mlt-feature-no-valid-titles": "Aucun titre valide fourni à « $1 ».",
 	"cirrussearch-mlt-not-configured": "La fonctionnalité « $1 » est mal configurée. Demandez à un administrateur de corriger $wgCirrusSearchMoreLikeThisFields",

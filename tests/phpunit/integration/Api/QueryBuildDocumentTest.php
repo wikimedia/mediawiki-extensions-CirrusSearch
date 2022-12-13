@@ -38,6 +38,7 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 			MainConfigNames::RestrictDisplayTitle => false,
 			'CirrusSearchWikimediaExtraPlugin' => [ 'documentVersion' ],
 			'CirrusSearchDefaultCluster' => 'my_replica',
+			'CirrusSearchIndexBaseName' => 'my_index_name',
 			'CirrusSearchReplicaGroup' => 'my_group',
 			'CirrusSearchClusters' => [
 				[
@@ -55,6 +56,7 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 	public function test_content_extraction() {
 		$expectedMetadata = [
 			'cluster_group' => 'my_group',
+			'index_name' => 'my_index_name_content',
 			'noop_hints' => [
 				'version' => 'documentVersion',
 			],

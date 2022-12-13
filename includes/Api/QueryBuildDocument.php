@@ -8,6 +8,7 @@ use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusIndexField;
+use CirrusSearch\SearchConfig;
 use Mediawiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -101,6 +102,11 @@ class QueryBuildDocument extends \ApiQueryBase {
 					if ( $limiterStats !== null ) {
 						$metadata += [ 'size_limiter_stats' => $limiterStats ];
 					}
+					$indexName = $this->getCirrusConnection()->getIndexName( $this->getConfig()->get( SearchConfig::INDEX_BASE_NAME ),
+						$this->getCirrusConnection()->getIndexSuffixForNamespace( $doc->get( 'namespace' ) ) );
+					$metadata += [
+						'index_name' => $indexName
+					];
 
 					$result->addValue( [ 'query', 'pages', $pageId ],
 						'cirrusbuilddoc_metadata', $metadata );

@@ -11,6 +11,7 @@
 	"cirrussearch-pref-label": "ရှာဖွေမှုအသစ်",
 	"cirrussearch-give-feedback": "ကျွန်ုပ်တို့ကို သင်၏အကြံပြုချက် ပေးပါ",
 	"cirrussearch-query-too-long": "ရှာဖွေခြင်း တောင်းဆိုမှုသည် ခွင့်ပြုထားသော အများဆုံးပမာဏထက် ကျော်လွန်နေသည်။ (အမှန်တကယ် $1; ခွင့်ပြု $2)",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "နဂိုအတိုင်း (အကြံပြုထားသည်)",
 	"cirrussearch-explore-similar-related": "ဆက်နွယ်သော",
 	"cirrussearch-explore-similar-categories": "ကဏ္ဍများ",
 	"cirrussearch-explore-similar-languages": "ဘာသာစကားများ",

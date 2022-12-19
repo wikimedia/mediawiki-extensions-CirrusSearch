@@ -156,6 +156,7 @@ class UpdateWeightedTags extends Maintenance {
 	private function readLineBatch( SplFileObject $file, bool $useIds ) {
 		$titleParser = MediaWikiServices::getInstance()->getTitleParser();
 		$pageStore = MediaWikiServices::getInstance()->getPageStore();
+		$linkBatchFactory = MediaWikiServices::getInstance()->getLinkBatchFactory();
 		$batchSize = $this->getBatchSize();
 		$identifiers = [];
 		$logNext = true;
@@ -165,8 +166,7 @@ class UpdateWeightedTags extends Maintenance {
 					yield $pageStore->newSelectQueryBuilder()->wherePageIds( $identifiers )
 						->fetchPageRecordArray();
 				} else {
-					$linkBatch = MediaWikiServices::getInstance()->getLinkBatchFactory()
-						->newLinkBatch( $identifiers );
+					$linkBatch = $linkBatchFactory->newLinkBatch( $identifiers );
 					$linkBatch->execute();
 					yield $linkBatch->getPageIdentities();
 				}

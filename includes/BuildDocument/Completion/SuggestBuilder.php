@@ -5,7 +5,7 @@ namespace CirrusSearch\BuildDocument\Completion;
 use CirrusSearch\Connection;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Search;
-use LinkBatch;
+use MediaWiki\MediaWikiServices;
 use Title;
 
 /**
@@ -191,7 +191,7 @@ class SuggestBuilder {
 		// Build cross ns suggestions
 		if ( !empty( $crossNsTitles ) ) {
 			$titles = array_column( $crossNsTitles, 'title' );
-			$lb = new LinkBatch( $titles );
+			$lb = MediaWikiServices::getInstance()->getLinkBatchFactory()->newLinkBatch( $titles );
 			$lb->setCaller( __METHOD__ );
 			$lb->execute();
 			// This is far from perfect:

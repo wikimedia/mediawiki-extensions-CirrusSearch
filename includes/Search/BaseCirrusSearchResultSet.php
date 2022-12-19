@@ -4,7 +4,7 @@ namespace CirrusSearch\Search;
 
 use BaseSearchResultSet;
 use HtmlArmor;
-use LinkBatch;
+use MediaWiki\MediaWikiServices;
 use SearchResult;
 use SearchResultSetTrait;
 use Title;
@@ -88,7 +88,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	 */
 	private function preCacheContainedTitles( \Elastica\ResultSet $resultSet ) {
 		// We can only pull in information about the local wiki
-		$lb = new LinkBatch;
+		$lb = MediaWikiServices::getInstance()->getLinkBatchFactory()->newLinkBatch();
 		foreach ( $resultSet->getResults() as $result ) {
 			if ( !$this->getTitleHelper()->isExternal( $result )
 				&& isset( $result->namespace )

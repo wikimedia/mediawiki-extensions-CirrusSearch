@@ -12,7 +12,8 @@
 			"Liuxinyu970226",
 			"Waihorace",
 			"Xiplus",
-			"Zhxy 519"
+			"Zhxy 519",
+			"捍粵者"
 		]
 	},
 	"cirrussearch-desc": "以 Elasticsearch 為基礎的 MediaWiki 搜尋工具",
@@ -20,7 +21,7 @@
 	"cirrussearch-parse-error": "無法理解查詢條件，請簡化查詢條件。該查詢會被記錄以改進搜尋系統。",
 	"cirrussearch-too-busy-error": "搜尋引擎目前過於忙碌，請稍候再試。",
 	"cirrussearch-regex-syntax-error": "正規表示法語法錯誤於 $2：$1",
-	"cirrussearch-regex-too-busy-error": "太多正規表示法搜尋動作正在進行，請稍候再試。",
+	"cirrussearch-regex-too-busy-error": "搜尋中的規律表示式太多，請稍後再試。",
 	"cirrussearch-regex-too-complex-error": "正則表達式過於複雜。請前往[[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|此處]]瞭解如何簡化正則表達式。",
 	"cirrussearch-now-using": "此 Wiki 使用了新的搜尋引擎。 ([[mw:Special:MyLanguage/Help:CirrusSearch|瞭解更多]])",
 	"cirrussearch-ignored-headings": " #<!-- leave this line exactly as it is --> <pre>\n# 在搜尋中要忽略的標題。\n# 更該此檔案以快速對己列入索引的頁面標題生效。\n# 您可以編輯時不變更內容以強制頁面重新索引。\n# 語法如下：\n#   * 任何以 \"#\" 字元開頭的行至結尾會做為註解。\n#   * 任何非空白行代表要忽略的標題。\n參考文獻\n外部連結\n參見\n #</pre> <!-- leave this line exactly as it is -->",

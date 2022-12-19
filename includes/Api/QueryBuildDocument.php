@@ -75,7 +75,8 @@ class QueryBuildDocument extends \ApiQueryBase {
 				$services->getBacklinkCacheFactory(),
 				new DocumentSizeLimiter( $engine->getConfig()->getProfileService()
 					->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER, SearchProfileService::CONTEXT_DEFAULT, $profile ) ),
-				$services->getTitleFormatter()
+				$services->getTitleFormatter(),
+				$services->getWikiPageFactory()
 			);
 			$baseMetadata = [];
 			$clusterGroup = $engine->getConfig()->getClusterAssignment()->getCrossClusterName();

@@ -8,6 +8,7 @@ use CirrusSearch\SearchConfig;
 use Elastica\Document;
 use MediaWiki\Cache\BacklinkCacheFactory;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionAccessException;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
@@ -75,6 +76,8 @@ class BuildDocument {
 	private $documentSizeLimiter;
 	/** @var TitleFormatter */
 	private $titleFormatter;
+	/** @var WikiPageFactory */
+	private $wikiPageFactory;
 
 	/**
 	 * @param Connection $connection Cirrus connection to read page properties from
@@ -84,6 +87,7 @@ class BuildDocument {
 	 * @param BacklinkCacheFactory $backlinkCacheFactory
 	 * @param DocumentSizeLimiter $docSizeLimiter
 	 * @param TitleFormatter $titleFormatter
+	 * @param WikiPageFactory $wikiPageFactory
 	 */
 	public function __construct(
 		Connection $connection,
@@ -92,7 +96,8 @@ class BuildDocument {
 		RevisionStore $revStore,
 		BacklinkCacheFactory $backlinkCacheFactory,
 		DocumentSizeLimiter $docSizeLimiter,
-		TitleFormatter $titleFormatter
+		TitleFormatter $titleFormatter,
+		WikiPageFactory $wikiPageFactory
 	) {
 		$this->config = $connection->getConfig();
 		$this->connection = $connection;
@@ -102,6 +107,7 @@ class BuildDocument {
 		$this->backlinkCacheFactory = $backlinkCacheFactory;
 		$this->documentSizeLimiter = $docSizeLimiter;
 		$this->titleFormatter = $titleFormatter;
+		$this->wikiPageFactory = $wikiPageFactory;
 	}
 
 	/**
@@ -117,7 +123,7 @@ class BuildDocument {
 		foreach ( $pagesOrRevs as $pageOrRev ) {
 			if ( $pageOrRev instanceof RevisionRecord ) {
 				$revision = $pageOrRev;
-				$page = new WikiPage( $revision->getPage() );
+				$page = $this->wikiPageFactory->newFromTitle( $revision->getPage() );
 			} else {
 				$revision = $pageOrRev->getRevisionRecord();
 				$page = $pageOrRev;

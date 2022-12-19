@@ -7,6 +7,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
 use MediaWiki\Cache\BacklinkCacheFactory;
+use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use ParserCache;
@@ -53,7 +54,8 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 			$this->revStore,
 			$this->createMock( BacklinkCacheFactory::class ),
 			new DocumentSizeLimiter( [] ),
-			$this->createMock( TitleFormatter::class )
+			$this->createMock( TitleFormatter::class ),
+			$this->createMock( WikiPageFactory::class )
 		) extends BuildDocument {
 			// Override create builders to avoid testing those implementations
 			protected function createBuilders( int $flags ): array {

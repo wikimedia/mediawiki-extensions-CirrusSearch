@@ -264,7 +264,8 @@ class DataSender extends ElasticsearchIntermediary {
 			$services->getRevisionStore(),
 			$services->getBacklinkCacheFactory(),
 			$this->docSizeLimiter,
-			$services->getTitleFormatter()
+			$services->getTitleFormatter(),
+			$services->getWikiPageFactory()
 		);
 		try {
 			foreach ( $documents as $i => $doc ) {

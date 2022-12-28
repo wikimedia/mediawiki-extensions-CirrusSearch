@@ -4,6 +4,7 @@ namespace CirrusSearch\Jenkins;
 
 use DatabaseUpdater;
 use Language;
+use MediaWiki\MediaWikiServices;
 use Title;
 
 /**
@@ -102,7 +103,7 @@ class Jenkins {
 	public static function setLanguage( $title, &$pageLang, $wgLang ) {
 		$matches = [];
 		if ( preg_match( '/\/..$/', $title->getText(), $matches ) ) {
-			$pageLang = Language::factory( substr( $matches[0], 1 ) );
+			$pageLang = MediaWikiServices::getInstance()->getLanguageFactory()->getLanguage( substr( $matches[0], 1 ) );
 		}
 	}
 }

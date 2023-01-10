@@ -29,9 +29,9 @@ class SearchAfter implements \Iterator {
 	 * @param Search $search
 	 * @param int $numRetries The number of retries to perform on each iteration
 	 * @param float $backoffFactor Scales the backoff duration, backoff calculated as
-	 *   {backoffFactor} * 2^({retry} - 1) which gives, with no scaling, [1, 2, 4, 8, ...]
+	 *   {backoffFactor} * 2^({retry} - 1) which gives, with no scaling, [0.5, 1, 2, 4, 8, ...]
 	 */
-	public function __construct( Search $search, int $numRetries = 5, float $backoffFactor = 1. ) {
+	public function __construct( Search $search, int $numRetries = 12, float $backoffFactor = 1. ) {
 		$this->search = $search;
 		$this->baseQuery = clone $search->getQuery();
 		if ( !$this->baseQuery->hasParam( 'sort' ) ) {

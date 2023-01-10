@@ -34,7 +34,6 @@
 		"restify": "8.5.1",
 		"semlog": "0.6.10",
 		"stylelint-config-wikimedia": "0.11.1",
-		"wdio-mediawiki": "1.2.0",
-		"webdriverio": "5.23.0"
+		"wdio-mediawiki": "1.2.0"
 	}
 }

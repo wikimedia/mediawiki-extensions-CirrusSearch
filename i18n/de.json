@@ -32,8 +32,8 @@
 	"cirrussearch-completion-profile-fuzzy": "Bis zu zwei Tippfehler werden korrigiert.",
 	"cirrussearch-completion-profile-fast-fuzzy": "Experimentelles Fuzzy-Profil (kann jederzeit entfernt werden)",
 	"cirrussearch-completion-profile-fuzzy-subphrases": "Bis zu zwei Tippfehler werden korrigiert. Berücksichtigt dem ersten Wort im Seitennamen folgende Ausdrücke und ggf. Unterseiten.",
-	"cirrussearch-qi-profile-classic": "Platzierung basierend auf der Anzahl der Rückverweise, einige Vorlagen, Seitensprache und Neuheit (Vorlagen/Sprache/Neuheit könnten nicht auf diesem Wiki aktiviert sein).",
-	"cirrussearch-qi-profile-classic-noboostlinks": "Platzierung basierend auf einige Vorlagen, Seitensprache und Neuheit, falls auf diesem Wiki aktiviert.",
+	"cirrussearch-qi-profile-classic": "Platzierung basierend auf der Anzahl der Rückverweise, einigen Vorlagen, Seitensprache und Neuheit (Vorlagen/Sprache/Neuheit könnten auf diesem Wiki nicht aktiviert sein).",
+	"cirrussearch-qi-profile-classic-noboostlinks": "Platzierung basierend auf einigen Vorlagen, Seitensprache und Neuheit, falls auf diesem Wiki aktiviert.",
 	"cirrussearch-qi-profile-empty": "Platzierung basierend ausschließlich auf anfrageabhängiger Funktionen (nur zur Fehlerbehebung).",
 	"cirrussearch-qi-profile-wsum-inclinks-pv": "Gewichtete Summe basierend auf Rückverweisen und wöchentlichen Seitenaufrufen",
 	"cirrussearch-qi-profile-wsum-inclinks": "Gewichtete Summe basierend auf Rückverweisen",
@@ -78,7 +78,7 @@
 	"cirrussearch-keyword-prefix-ns-mismatch": "Der im Suchbegriff gefundene Namensraum <code>prefix:</code> ist nicht mit den angeforderten Namensräumen kompatibel. Du kannst diesen Fehler beheben, indem du deiner Anfrage das Präfix <code>all:</code> hinzufügst.",
 	"cirrussearch-autoselect-profile": "Lass die Suchmaschine über das beste zu verwendende Profil entscheiden.",
 	"cirrussearch-offset-too-large": "Die Ergebnisse konnten nicht abgerufen werden. Es werden bis zu $1 Ergebnisse unterstützt, es wurden jedoch Ergebnisse beginnend ab $2 angefordert.",
-	"cirrussearch-offset-not-allowed-with-random-sort": "Die Anfrage nach Folgeseiten wird bei zufallsgesteuerten Ergebnisausgabe ignoriert.",
+	"cirrussearch-offset-not-allowed-with-random-sort": "Die Anfrage nach Folgeseiten wird bei zufallsgesteuerter Ergebnisausgabe ignoriert.",
 	"cirrussearch-articletopic-invalid-topic": "Nicht {{PLURAL:$2|erkannter Topic-Name|erkannte Topic-Namen}} für das <kbd>articletopic:</kbd>-Stichwort: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Die Verwendung eines Kommas als Trennzeichen für das Schlüsselwort inlanguage ist veraltet. Bitte verwende | (Pipe), um Sprachen zu trennen."
 }

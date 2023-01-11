@@ -19,6 +19,7 @@
 	"cirrussearch-give-feedback": "Sporočite nam svoje mnenje",
 	"cirrussearch-query-too-long": "Vneseno geslo je predolgo. (Dolžina: $1; dovoljeno: $2)",
 	"cirrussearch-completion-profile-fuzzy": "Podobno normalnemu s popravki zatipkanj (podprti dve zatipkanji)",
+	"cirrussearch-completion-profile-fuzzy-subphrases": "Podobno običajnemu s popravkom tipkarskih napak (tolerirata se dve tipkarski napaki). Najdene bodo tudi podfraze (lahko so podfraze ali podstrani, odvisno od notranje konfiguracije vikija).",
 	"cirrussearch-qi-profile-popular-pv": "Uvrstitev na podlagi ogledov strani",
 	"cirrussearch-qi-profile-popular-inclinks": "Uvrstitev na podlagi števila dohodnih povezav",
 	"prefs-completion": "Samodejno dopolnjevanje izrazov iskanja",

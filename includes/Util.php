@@ -547,22 +547,24 @@ class Util {
 	/**
 	 * @param SearchConfig $config Configuration of the check
 	 * @param string $ip The address to check against, ipv4 or ipv6.
-	 * @param string $userAgent Http user agent of the request
+	 * @param string[] $headers Map from http header name to value. All names must be uppercased.
 	 * @return bool True when the parameters appear to be a non-interactive use case.
 	 */
-	public static function looksLikeAutomation( SearchConfig $config, string $ip, string $userAgent ): bool {
-		// Does the user agent have an automation-like user agent, such as
-		// HeadlessChrome or a popular http client package for various
-		// languages?
-		$uaPattern = $config->get( 'CirrusSearchAutomationUserAgentRegex' );
-		if ( $uaPattern !== null ) {
-			$ret = preg_match( $uaPattern, $userAgent );
+	public static function looksLikeAutomation( SearchConfig $config, string $ip, array $headers ): bool {
+		// Is there an http header that can be matched with regex to flag automation,
+		// such as the user-agent or a flag applied by some infrastructure?
+		$automationHeaders = $config->get( 'CirrusSearchAutomationHeaderRegexes' ) ?? [];
+		foreach ( $automationHeaders as $name => $pattern ) {
+			$name = strtoupper( $name );
+			if ( !isset( $headers[$name] ) ) {
+				continue;
+			}
+			$ret = preg_match( $pattern, $headers[$name] );
 			if ( $ret === 1 ) {
 				return true;
 			} elseif ( $ret === false ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					'Invalid regex provided in `CirrusSearchAutomationUserAgentRegex`.' );
-				return false;
+					"Invalid regex provided for header `$name` in `CirrusSearchAutomationHeaderRegexes`." );
 			}
 		}
 

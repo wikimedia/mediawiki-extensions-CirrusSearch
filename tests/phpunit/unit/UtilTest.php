@@ -137,25 +137,35 @@ class UtilTest extends CirrusTestCase {
 	public function lookslikeAutomationProvider() {
 		return [
 			'no config, no problem' => [
-				false, null, [], '1.2.3.4', 'some ua'
+				false, null, [], '1.2.3.4', [],
 			],
 			'ua match' => [
-				true, '/HeadlessChrome/', [], '1.2.3.4', 'Mozilla/1.2 HeadlessChrome/8.7.6'
+				true, [ 'user-agent' => '/HeadlessChrome/' ], [], '1.2.3.4',
+				[ 'USER-AGENT' => 'Mozilla/1.2 HeadlessChrome/8.7.6' ]
 			],
 			'no ua match' => [
-				false, '/HeadlessChrome/', [], '1.2.3.4', 'Mozilla/3.4 Chrome/5.4.3'
+				false, [ 'user-agent' => '/HeadlessChrome/' ], [], '1.2.3.4',
+				[ 'USER-AGENT' => 'Mozilla/3.4 Chrome/5.4.3' ]
+			],
+			'arbitrary header match' => [
+				true, [ 'X-Public-Cloud' => '/^abc$/' ], [], '1.2.3.4',
+				[ 'X-PUBLIC-CLOUD' => 'abc' ],
+			],
+			'arbitrary header no-match' => [
+				false, [ 'X-Public-Cloud' => '/^abc$/' ], [], '1.2.3.4',
+				[ 'X-PUBLIC-CLOUD' => 'xyz' ],
 			],
 			'cidr ipv4 match' => [
-				true, null, [ '1.0.0.0/8' ], '1.2.3.4', 'another ua'
+				true, null, [ '1.0.0.0/8' ], '1.2.3.4', [],
 			],
 			'cidr ipv4 no match' => [
-				false, null, [ '1.0.0.0/8' ], '4.3.2.1', 'another ua'
+				false, null, [ '1.0.0.0/8' ], '4.3.2.1', [],
 			],
 			'cidr ipv6 match' => [
-				true, null, [ '1:2::/32' ], '1:2:3::4', 'another ua'
+				true, null, [ '1:2::/32' ], '1:2:3::4', [],
 			],
 			'cidr ipv6 no match' => [
-				false, null, [ '1:2::/32' ], '4:3:2::1', 'another ua'
+				false, null, [ '1:2::/32' ], '4:3:2::1', [],
 			],
 		];
 	}
@@ -163,11 +173,17 @@ class UtilTest extends CirrusTestCase {
 	/**
 	 * @dataProvider looksLikeAutomationProvider
 	 */
-	public function testLooksLikeAutomation( bool $expect, ?string $uaPattern, array $ranges, string $ip, string $ua ) {
+	public function testLooksLikeAutomation(
+		bool $expect,
+		?array $headerRegexes,
+		array $ranges,
+		string $ip,
+		array $headers
+	) {
 		$config = new HashSearchConfig( [
-			'CirrusSearchAutomationUserAgentRegex' => $uaPattern,
+			'CirrusSearchAutomationHeaderRegexes' => $headerRegexes,
 			'CirrusSearchAutomationCIDRs' => $ranges,
 		] );
-		$this->assertSame( $expect, Util::looksLikeAutomation( $config, $ip, $ua ) );
+		$this->assertSame( $expect, Util::looksLikeAutomation( $config, $ip, $headers ) );
 	}
 }

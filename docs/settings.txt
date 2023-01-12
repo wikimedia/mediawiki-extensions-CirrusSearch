@@ -1615,17 +1615,17 @@ Method to use for namespace name resolution, can be:
 - 'utr30': using a more aggressive folding technique
    based on the UTR30 specs (specs used but lucene but withdrawn by Unicode)
 
-; $wgCirrusSearchAutomationUserAgentRegex
+; $wgCirrusSearchAutomationHeaderRegexes
 
 Default:
-  $wgCirrusSearchAutomationUserAgentRegex = null;
+  $wgCirrusSearchAutomationHeaderRegexes = null;
 
-A regular expression to be applied against an http user agent. When matching
-the related request will be considered an automated request and use the
-appropriate pool counter to limit concurrency.
+A map from http header to regular expression to be applied against that header
+value. When matching the related request will be considered an automated
+request and use the appropriate pool counter to limit concurrency.
 
 Example:
-  $wgCirrusSearchAutomationUserAgentRegex = '/HeadlessChrome/';
+  $wgCirrusSearchAutomationHeaderRegexes = [ 'user-agent' => '/HeadlessChrome/' ];
 
 ; $wgCirrusSearchAutomationCIDRs
 

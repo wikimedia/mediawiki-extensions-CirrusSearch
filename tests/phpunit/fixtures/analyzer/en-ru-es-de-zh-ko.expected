@@ -305,7 +305,7 @@
                 "smartcn_stop",
                 "icu_normalizer"
             ],
-            "tokenizer": "standard",
+            "tokenizer": "icu_tokenizer",
             "type": "custom"
         },
         "zh_plain_search": {
@@ -317,7 +317,7 @@
                 "smartcn_stop",
                 "icu_normalizer"
             ],
-            "tokenizer": "standard",
+            "tokenizer": "icu_tokenizer",
             "type": "custom"
         },
         "zh_text": {

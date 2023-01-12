@@ -604,6 +604,32 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "ja_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "ja_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "icu_tokenizer",
+            "type": "custom"
+        },
+        "ja_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "icu_tokenizer",
+            "type": "custom"
+        },
         "nb_plain": {
             "char_filter": [
                 "nnbsp_norm",
@@ -878,7 +904,7 @@
                 "preserve_original",
                 "remove_empty"
             ],
-            "tokenizer": "standard",
+            "tokenizer": "icu_tokenizer",
             "type": "custom"
         },
         "th_plain_search": {
@@ -889,7 +915,7 @@
             "filter": [
                 "icu_normalizer"
             ],
-            "tokenizer": "standard",
+            "tokenizer": "icu_tokenizer",
             "type": "custom"
         }
     },
@@ -982,6 +1008,10 @@
         "icu_normalizer": {
             "name": "nfkc_cf",
             "type": "icu_normalizer"
+        },
+        "ja_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u304c-\u30fe]"
         },
         "lowercase": {
             "language": "greek",

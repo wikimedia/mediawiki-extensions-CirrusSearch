@@ -44,6 +44,11 @@ class AnalysisConfigBuilder {
 	private const KEYWORD_IGNORE_ABOVE = 5000;
 
 	/**
+	 * Temporary magic value to prevent enabling ICU tokenizer in specific analyzers
+	 */
+	private const STANDARD_TOKENIZER_ONLY = 'std_only';
+
+	/**
 	 * @var bool is the icu plugin available?
 	 */
 	private $icu;
@@ -193,6 +198,7 @@ class AnalysisConfigBuilder {
 			$config = $this->enableICUFolding( $config, $language );
 		}
 		$config = $this->fixAsciiFolding( $config );
+		$config = $this->standardTokenizerOnlyCleanup( $config );
 
 		return $config;
 	}
@@ -216,6 +222,26 @@ class AnalysisConfigBuilder {
 			}
 			if ( isset( $value[ 'tokenizer' ] ) && $value[ 'tokenizer' ] === 'standard' ) {
 				$value[ 'tokenizer' ] = 'icu_tokenizer';
+			}
+		}
+		return $config;
+	}
+
+	/**
+	 * replace STANDARD_TOKENIZER_ONLY with the actual standard tokenizer
+	 * @param mixed[] $config
+	 * @return mixed[] update config
+	 */
+	public function standardTokenizerOnlyCleanup( array $config ) {
+		foreach ( $config[ 'analyzer' ] as $name => &$value ) {
+			if ( isset( $value[ 'type' ] ) && $value[ 'type' ] != 'custom' ) {
+				continue;
+			}
+			if ( isset( $value[ 'tokenizer' ] ) &&
+					$value[ 'tokenizer' ] === self::STANDARD_TOKENIZER_ONLY ) {
+				// if we blocked upgrades/changes to the standard tokenizer,
+				// replace the magic value with the actual standard tokenizer
+				$value[ 'tokenizer' ] = 'standard';
 			}
 		}
 		return $config;
@@ -357,6 +383,10 @@ class AnalysisConfigBuilder {
 		 * For Basque (eu) and Danish (da), see T283366
 		 * For Czech (cs), Finnish (fi), and Galician (gl), see T284578
 		 * For Norwegian (nb, nn), see T289612
+		 *
+		 * Exceptions are generally listed as Unicode characters for ease of
+		 *   inspection. However, combining characters (such as for Thai (th))
+		 *   are \u encoded to prevent problems with display or editing
 		 */
 		case 'bs':
 		case 'hr':
@@ -379,6 +409,12 @@ class AnalysisConfigBuilder {
 			return '[^ÅåÄäÖö]';
 		case 'gl':
 			return '[^Ññ]';
+		case 'ja':
+			// This range includes characters that don't currently get ICU folded, in
+			// order to keep the overall regex a lot simpler. The specific targets are
+			// characters with dakuten and handakuten, the separate (han)dakuten
+			// characters (regular and combining) and the prolonged sound mark (chōonpu).
+			return '[^が-ヾ]';
 		case 'nb':
 		case 'nn':
 			return '[^ÆæØøÅå]';
@@ -703,7 +739,7 @@ class AnalysisConfigBuilder {
 		case 'arabic-moroccan':
 			$arPreStopFilters = [ 'decimal_digit' ];
 			if ( $langName == 'arabic-egyptian' || $langName == 'arabic-moroccan' ) {
-				# load extra stopwords for Arabic varieties
+				// load extra stopwords for Arabic varieties
 				$arStopwords = require __DIR__ . '/AnalysisLanguageData/arabicStopwords.php';
 				$config[ 'filter' ][ 'arz_ary_stop' ] =
 					AnalyzerBuilder::stopFilterFromList( $arStopwords );
@@ -771,6 +807,26 @@ class AnalysisConfigBuilder {
 			$config[ 'analyzer' ][ 'plain' ][ 'filter' ] = [ 'smartcn_stop', 'lowercase' ];
 			$config[ 'analyzer' ][ 'plain_search' ][ 'filter' ] =
 				$config[ 'analyzer' ][ 'plain' ][ 'filter' ];
+			break;
+		case 'cjk':
+			// Unpack CJK analyzer T326822
+
+			// map (han)dakuten to combining forms or icu_normalizer will add spaces
+			$dakutenMap = [ '゛=>\u3099', '゜=>\u309a' ];
+
+			// cjk_bigram negates the benefits of the icu_tokenizer for CJK text. The
+			// icu_tokenizer also has a few bad side effects, so don't use it for cjk.
+			// Default cjk stop words are almost the same as _english_ (add s & t; drop
+			// an). Stop words are searchable via 'plain' anyway, so just use _english_
+			$config = ( new AnalyzerBuilder( 'cjk' ) )->
+				withUnpackedAnalyzer()->
+				omitStemmer()->
+				withTokenizer( self::STANDARD_TOKENIZER_ONLY )->
+				withCharMap( $dakutenMap )->
+				withStop( '_english_' )->
+				insertFiltersBefore( 'lowercase', [ 'cjk_width' ] )->
+				insertFiltersBefore( 'cjk_stop', [ 'cjk_bigram' ] )->
+				build( $config );
 			break;
 		case 'dutch':
 			// Unpack Dutch analyzer T281379
@@ -1565,6 +1621,7 @@ class AnalysisConfigBuilder {
 		'he' => true,
 		'hi' => true,
 		'hr' => true,
+		'ja' => true,
 		'nb' => true,
 		'nl' => true,
 		'nn' => true,

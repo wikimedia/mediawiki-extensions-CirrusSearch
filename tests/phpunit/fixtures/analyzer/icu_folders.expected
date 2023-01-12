@@ -1322,6 +1322,66 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "ja_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "ja_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "icu_tokenizer",
+            "type": "custom"
+        },
+        "ja_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "icu_tokenizer",
+            "type": "custom"
+        },
+        "ja_text": {
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix",
+                "cjk_charfilter"
+            ],
+            "filter": [
+                "cjk_width",
+                "icu_normalizer",
+                "cjk_bigram",
+                "cjk_stop",
+                "ja_icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ja_text_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix",
+                "cjk_charfilter"
+            ],
+            "filter": [
+                "cjk_width",
+                "icu_normalizer",
+                "cjk_bigram",
+                "cjk_stop",
+                "ja_icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "nb_plain": {
             "char_filter": [
                 "nnbsp_norm",
@@ -1880,7 +1940,7 @@
                 "preserve_original",
                 "remove_empty"
             ],
-            "tokenizer": "standard",
+            "tokenizer": "icu_tokenizer",
             "type": "custom"
         },
         "th_plain_search": {
@@ -1891,7 +1951,7 @@
             "filter": [
                 "icu_normalizer"
             ],
-            "tokenizer": "standard",
+            "tokenizer": "icu_tokenizer",
             "type": "custom"
         },
         "th_text": {
@@ -1930,6 +1990,13 @@
         }
     },
     "char_filter": {
+        "cjk_charfilter": {
+            "mappings": [
+                "\u309b=>\\u3099",
+                "\u309c=>\\u309a"
+            ],
+            "type": "mapping"
+        },
         "dotted_I_fix": {
             "mappings": [
                 "\u0130=>I"
@@ -2301,6 +2368,10 @@
             "stopwords": "_catalan_",
             "type": "stop"
         },
+        "cjk_stop": {
+            "stopwords": "_english_",
+            "type": "stop"
+        },
         "cs_icu_folding": {
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u00c1\u00e1\u010c\u010d\u010e\u010f\u00c9\u00e9\u011a\u011b\u00cd\u00ed\u0147\u0148\u00d3\u00f3\u0158\u0159\u0160\u0161\u0164\u0165\u00da\u00fa\u016e\u016f\u00dd\u00fd\u017d\u017e]"
@@ -2482,6 +2553,10 @@
         "irish_stop": {
             "stopwords": "_irish_",
             "type": "stop"
+        },
+        "ja_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u304c-\u30fe]"
         },
         "lowercase": {
             "language": "greek",

@@ -726,7 +726,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$reflACB = new \ReflectionClass( AnalysisConfigBuilder::class );
 
 		return [
-			"some languages" => [
+			"en-ru-es-de-zh-ko" => [
 				[ 'en', 'ru', 'es', 'de', 'zh', 'ko' ],
 				$emptyConfig,
 				$allPlugins,
@@ -739,19 +739,19 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				$allPlugins,
 				'en-zh-sv',
 			],
-			"with plugins" => [
+			"he-uk with plugins" => [
 				[ 'he', 'uk' ],
 				$emptyConfig,
 				$allPlugins,
 				'he-uk',
 			],
-			"without language plugins" => [
+			"he-uk without language plugins" => [
 				[ 'he', 'uk' ],
 				$emptyConfig,
 				[ 'extra', 'analysis-icu' ],
 				'he-uk-nolang',
 			],
-			"without any plugins" => [
+			"he-uk without any plugins" => [
 				[ 'he', 'uk' ],
 				$emptyConfig,
 				[],
@@ -768,6 +768,12 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				$emptyConfig,
 				[ 'extra', 'analysis-icu' ],
 				'icu_folders',
+			],
+			"icu tokenizing languages" => [
+				array_keys( $reflACB->getDefaultProperties()[ 'languagesWithIcuTokenization' ] ),
+				$emptyConfig,
+				[ 'extra', 'analysis-icu' ],
+				'icu_tokenizers',
 			],
 			"language-specific lowercasing" => [
 				[ 'el', 'ga', 'tr' ],
@@ -788,7 +794,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 	public function testAnalysisConfig( $languages, $oldConfig, $plugins, $expectedConfig ) {
 		// We use these static settings because we rely on tests in main
 		// AnalysisConfigBuilderTest to handle variations
-		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => 'default' ] );
+		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => 'default',
+			'CirrusSearchUseIcuTokenizer' => 'default' ] );
 
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		$prevConfig = $oldConfig;

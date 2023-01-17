@@ -36,8 +36,6 @@ class ElasticaErrorHandler {
 	 * Extract an error message from an exception thrown by Elastica.
 	 * @param \Elastica\Exception\ExceptionInterface $exception exception from which to extract a message
 	 * @return array structuerd error from the exception
-	 * @suppress PhanUndeclaredMethod ExceptionInterface doesn't declare any methods
-	 *  so we have to suppress those warnings.
 	 */
 	public static function extractFullError( \Elastica\Exception\ExceptionInterface $exception ): array {
 		if ( $exception instanceof BulkResponseException ) {

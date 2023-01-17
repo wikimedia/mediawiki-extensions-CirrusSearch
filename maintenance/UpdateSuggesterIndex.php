@@ -265,7 +265,7 @@ class UpdateSuggesterIndex extends Maintenance {
 				$this->log( (string)$status );
 			} elseif ( $status->getValue() === false ) {
 				$this->log( "Deleting broken index {$indexName}\n" );
-				$this->deleteIndex( $indexName );
+				$this->deleteIndex( $this->getConnection()->getIndex( $indexName ) );
 			}
 		}
 		# If something went wrong the process will fail when calling pickIndexIdentifierFromOption

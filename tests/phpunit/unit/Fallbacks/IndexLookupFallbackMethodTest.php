@@ -8,6 +8,7 @@ use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummySearchResultSet;
 use Elastica\Client;
+use Elastica\Index;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet\DefaultBuilder;
@@ -141,9 +142,11 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 			[ 'profile' => 'my_profile', 'profile_params' => $profileParams ] );
 		$searchQuery = null;
 		if ( $method !== null ) {
-			$query = $method->getSearchRequest(
-				$this->createMock( Client::class )
-			);
+			$client = $this->createMock( Client::class );
+			$client->method( 'getIndex' )->will( $this->returnCallback( static function ( $index ) use ( $client ) {
+				return new Index( $client, $index );
+			} ) );
+			$query = $method->getSearchRequest( $client );
 			if ( $query !== null ) {
 				$searchQuery = [
 					'path' => $query->getPath(),

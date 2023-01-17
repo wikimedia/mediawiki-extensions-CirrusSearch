@@ -97,7 +97,7 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 			->setStoredFields( $this->storedFields );
 		$search = new Search( $client );
 		$search->setQuery( $query )
-			->addIndex( $this->index );
+			->addIndex( $client->getIndex( $this->index ) );
 		return $search;
 	}
 

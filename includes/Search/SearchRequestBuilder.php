@@ -192,7 +192,7 @@ class SearchRequestBuilder {
 		$search = $this->getIndex()->createSearch( $query, $queryOptions );
 		$crossClusterName = $this->connection->getConfig()->getClusterAssignment()->getCrossClusterName();
 		foreach ( $extraIndexes as $i ) {
-			$search->addIndex( $i->getSearchIndex( $crossClusterName ) );
+			$search->addIndex( $this->connection->getIndex( $i->getSearchIndex( $crossClusterName ) ) );
 		}
 
 		$this->searchContext->getDebugOptions()->applyDebugOptions( $query );

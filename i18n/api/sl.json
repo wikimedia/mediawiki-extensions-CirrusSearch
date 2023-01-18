@@ -1,8 +1,32 @@
 {
 	"@metadata": {
 		"authors": [
-			"Janezdrilc"
+			"Janezdrilc",
+			"Eleassar"
 		]
 	},
-	"apierror-cirrus-requesttoolong": "Vnešeno geslo za iskanje po predponi je bilo predolgo. ($1 &gt; $2)"
+	"apihelp-cirrus-config-dump-description": "Izpis konfiguracije CirrusSearch.",
+	"apihelp-cirrus-config-dump-summary": "Izpis konfiguracije CirrusSearch.",
+	"apihelp-cirrus-config-dump-param-prop": "Vrsta konfiguracijskih spremenljivk za izpis",
+	"apihelp-cirrus-config-dump-example": "Pridobi izpis konfiguracije CirrusSearch.",
+	"apihelp-cirrus-mapping-dump-description": "Izpis preslikave CirrusSearch za ta viki.",
+	"apihelp-cirrus-mapping-dump-summary": "Izpis preslikave CirrusSearch za ta viki.",
+	"apihelp-cirrus-mapping-dump-example": "Pridobitev izpisa preslikave CirrusSearch za ta viki.",
+	"apihelp-cirrus-settings-dump-description": "Izpis nastavitev CirrusSearch za ta viki.",
+	"apihelp-cirrus-settings-dump-summary": "Izpis nastavitev CirrusSearch za ta viki.",
+	"apihelp-cirrus-settings-dump-example": "Pridobitev izpisa nastavitev CirrusSearch za ta viki.",
+	"apihelp-cirrus-profiles-dump-description": "Izpis profilov CirrusSearch za ta viki.",
+	"apihelp-cirrus-profiles-dump-summary": "Izpis profilov CirrusSearch za ta viki.",
+	"apihelp-cirrus-profiles-dump-example": "Pridobitev izpisa profilov CirrusSearch za ta viki.",
+	"apihelp-cirrus-profiles-dump-param-verbose": "Izpis vsebine profilov",
+	"apihelp-query+cirrusdoc-description": "Izpis dokumenta članka CirrusSearch",
+	"apihelp-query+cirrusdoc-summary": "Izpis dokumenta članka CirrusSerach iz iskalnih strežnikov",
+	"apihelp-query+cirrusdoc-example": "Pridobitev izpisa enega članka CirrusSearch, kot je trenutno indeksiran v iskalniku.",
+	"apihelp-query+cirrusbuilddoc-summary": "Izpis dokumenta članka CirrusSearch iz podatkovnih strežnikov",
+	"apihelp-query+cirrusbuilddoc-example": "Pridobi izpis enega članka CirrusSerach, ustvarjenega iz podatkovne zbirke",
+	"apierror-cirrus-requesttoolong": "Vnešeno geslo za iskanje po predponi je bilo predolgo. ($1 &gt; $2)",
+	"apihelp-query+compsuggestbuilddoc-param-method": "Metoda ocenjevanja, ki naj se uporabi",
+	"apierror-compsuggestbuilddoc-bad-method": "Neznana metoda točkovanja",
+	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Izpis dokumenta, ki ga je uporabil predlagatelj dokončanja",
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Pridobi izpis dokumenta, ki ga uporablja predlagatelj dokončanja"
 }

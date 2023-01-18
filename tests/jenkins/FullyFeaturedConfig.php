@@ -61,14 +61,14 @@ $wgCirrusSearchFullTextQueryBuilderProfile = 'browser_tests';
 if ( is_dir( "$IP/extensions/PoolCounter" ) ) {
 	// If the pool counter is around set up prod like pool counter settings
 	$wgPoolCounterConf[ 'CirrusSearch-Search' ] = [
-		'class' => 'MediaWiki\Extension\PoolCounter\Client',
+		'class' => 'MediaWiki\PoolCounter\PoolCounterClient',
 		'timeout' => 15,
 		'workers' => 432,
 		'maxqueue' => 600,
 	];
 	// Super common and mostly fast
 	$wgPoolCounterConf[ 'CirrusSearch-Prefix' ] = [
-		'class' => 'MediaWiki\Extension\PoolCounter\Client',
+		'class' => 'MediaWiki\PoolCounter\PoolCounterClient',
 		'timeout' => 15,
 		'workers' => 432,
 		'maxqueue' => 600,
@@ -76,14 +76,14 @@ if ( is_dir( "$IP/extensions/PoolCounter" ) ) {
 	// Regex searches are much heavier then regular searches so we limit the
 	// concurrent number.
 	$wgPoolCounterConf[ 'CirrusSearch-Regex' ] = [
-		'class' => 'MediaWiki\Extension\PoolCounter\Client',
+		'class' => 'MediaWiki\PoolCounter\PoolCounterClient',
 		'timeout' => 60,
 		'workers' => 10,
 		'maxqueue' => 20,
 	];
 	// These should be very very fast and reasonably rare
 	$wgPoolCounterConf[ 'CirrusSearch-NamespaceLookup' ] = [
-		'class' => 'MediaWiki\Extension\PoolCounter\Client',
+		'class' => 'MediaWiki\PoolCounter\PoolCounterClient',
 		'timeout' => 5,
 		'workers' => 50,
 		'maxqueue' => 200,
@@ -91,7 +91,7 @@ if ( is_dir( "$IP/extensions/PoolCounter" ) ) {
 	// Very expensive full text search. Needs to be limited separate
 	// from primary full text Search due to the expense.
 	$wgPoolCounterConf[ 'CirrusSearch-MoreLike' ] = [
-		'class' => 'MediaWiki\Extension\PoolCounter\Client',
+		'class' => 'MediaWiki\PoolCounter\PoolCounterClient',
 		'timeout' => 5,
 		'workers' => 50,
 		'maxqueue' => 200,

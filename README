@@ -106,7 +106,7 @@ LocalSettings.php like so:
  wfLoadExtension( 'PoolCounter');
  // Configuration for standard searches.
  $wgPoolCounterConf[ 'CirrusSearch-Search' ] = [
-	'class' => 'MediaWiki\Extension\PoolCounter\Client',
+	'class' => 'MediaWiki\PoolCounter\PoolCounterClient',
 	'timeout' => 30,
 	'workers' => 25,
 	'maxqueue' => 50,
@@ -114,7 +114,7 @@ LocalSettings.php like so:
  // Configuration for prefix searches.  These are usually quite quick and
  // plentiful.
  $wgPoolCounterConf[ 'CirrusSearch-Prefix' ] = [
-	'class' => 'MediaWiki\Extension\PoolCounter\Client',
+	'class' => 'MediaWiki\PoolCounter\PoolCounterClient',
 	'timeout' => 10,
 	'workers' => 50,
 	'maxqueue' => 100,
@@ -122,7 +122,7 @@ LocalSettings.php like so:
  // Configuration for regex searches.  These are slow and use lots of resources
  // so we only allow a few at a time.
  $wgPoolCounterConf[ 'CirrusSearch-Regex' ] = [
-	'class' => 'MediaWiki\Extension\PoolCounter\Client',
+	'class' => 'MediaWiki\PoolCounter\PoolCounterClient',
 	'timeout' => 30,
 	'workers' => 10,
 	'maxqueue' => 10,
@@ -130,7 +130,7 @@ LocalSettings.php like so:
  // Configuration for funky namespace lookups.  These should be reasonably fast
  // and reasonably rare.
  $wgPoolCounterConf[ 'CirrusSearch-NamespaceLookup' ] = [
-		'class' => 'MediaWiki\Extension\PoolCounter\Client',
+		'class' => 'MediaWiki\PoolCounter\PoolCounterClient',
 		'timeout' => 10,
 		'workers' => 20,
 		'maxqueue' => 20,

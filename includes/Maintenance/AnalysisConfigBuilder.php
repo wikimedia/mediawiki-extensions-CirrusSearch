@@ -371,58 +371,53 @@ class AnalysisConfigBuilder {
 		}
 		switch ( $language ) {
 		/* @todo: complete the default filters per language
-		 * For Swedish (sv), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
-		 * For Serbian (sr), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
-		 * For Bosnian (bs), Croatian (hr), and Serbo-Croatian (sh),
-		 *   see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
-		 * For Esperanto (eo), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
+		 *
 		 * For Slovak (sk)—which has no folding configured here!—see:
 		 *   https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
-		 * For Spanish (es), see T277699
-		 * For German (de), see T281379
-		 * For Basque (eu) and Danish (da), see T283366
-		 * For Czech (cs), Finnish (fi), and Galician (gl), see T284578
-		 * For Norwegian (nb, nn), see T289612
 		 *
 		 * Exceptions are generally listed as Unicode characters for ease of
 		 *   inspection. However, combining characters (such as for Thai (th))
 		 *   are \u encoded to prevent problems with display or editing
 		 */
-		case 'bs':
-		case 'hr':
-		case 'sh':
-		case 'sr':
+		case 'bs': // T192395
+		case 'hr': // T192395
+		case 'sh': // T192395
+		case 'sr': // T183015
 			return '[^ĐđŽžĆćŠšČč]';
-		case 'cs':
+		case 'cs': // T284578
 			return '[^ÁáČčĎďÉéĚěÍíŇňÓóŘřŠšŤťÚúŮůÝýŽž]';
-		case 'da':
+		case 'da': // T283366
 			return '[^ÆæØøÅå]';
-		case 'de':
+		case 'de': // T281379
 			return '[^ÄäÖöÜüẞß]';
-		case 'eo':
+		case 'eo': // T202173
 			return '[^ĈĉĜĝĤĥĴĵŜŝŬŭ]';
-		case 'es':
+		case 'es': // T277699
 			return '[^Ññ]';
-		case 'eu':
+		case 'eu': // T283366
 			return '[^Ññ]';
-		case 'fi':
+		case 'fi': // T284578
 			return '[^ÅåÄäÖö]';
-		case 'gl':
+		case 'gl': // T284578
 			return '[^Ññ]';
-		case 'ja':
+		case 'hu': // T325089
+			return '[^ÁáÉéÍíÓóÖöŐőÚúÜüŰű]';
+		case 'ja': // T326822
 			// This range includes characters that don't currently get ICU folded, in
 			// order to keep the overall regex a lot simpler. The specific targets are
 			// characters with dakuten and handakuten, the separate (han)dakuten
 			// characters (regular and combining) and the prolonged sound mark (chōonpu).
 			return '[^が-ヾ]';
-		case 'nb':
-		case 'nn':
+		case 'lv': // T325089
+			return '[^ĀāČčĒēĢģĪīĶķĻļŅņŠšŪūŽž]';
+		case 'nb': // T289612
+		case 'nn': // T289612
 			return '[^ÆæØøÅå]';
 		case 'ru':
 			return '[^Йй]';
-		case 'sv':
+		case 'sv': // T160562
 			return '[^ÅåÄäÖö]';
-		case 'th':
+		case 'th': // T294147
 			return '[^\u0E47-\u0E4E]';
 		default:
 			return null;
@@ -718,6 +713,8 @@ class AnalysisConfigBuilder {
 		case 'danish':    // Unpack Danish analyzer T283366
 		case 'finnish':   // Unpack Finnish analyzer T284578
 		case 'galician':  // Unpack Galician analyzer T284578
+		case 'hungarian': // Unpack Hungarian analyzer T325089
+		case 'latvian':   // Unpack Latvian analyzer T325089
 		case 'norwegian': // Unpack Norwegian analyzer T289612
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
@@ -751,6 +748,15 @@ class AnalysisConfigBuilder {
 				withUnpackedAnalyzer()->
 				insertFiltersBefore( 'arabic_stop', $arPreStopFilters )->
 				insertFiltersBefore( 'arabic_stemmer', [ 'arabic_normalization' ] )->
+				build( $config );
+			break;
+		case 'armenian':  // Unpack Armenian analyzer T325089
+			// stopwords նաև & և get normalized to նաեւ & եւ, so pick those up, too.
+			$config[ 'filter' ][ 'armenian_norm_stop' ] =
+				AnalyzerBuilder::stopFilterFromList( [ 'նաեւ', 'եւ' ] );
+			$config = ( new AnalyzerBuilder( $langName ) )->
+				withUnpackedAnalyzer()->
+				insertFiltersBefore( 'armenian_stop', [ 'armenian_norm_stop' ] )->
 				build( $config );
 			break;
 		case 'bengali': // Unpack Bengali analyzer T294067
@@ -1621,7 +1627,10 @@ class AnalysisConfigBuilder {
 		'he' => true,
 		'hi' => true,
 		'hr' => true,
+		'hu' => true,
+		'hy' => true,
 		'ja' => true,
+		'lv' => true,
 		'nb' => true,
 		'nl' => true,
 		'nn' => true,

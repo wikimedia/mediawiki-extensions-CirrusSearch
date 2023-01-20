@@ -1,7 +1,20 @@
 {
     "analyzer": {
         "text": {
-            "type": "armenian"
+            "type": "custom",
+            "tokenizer": "standard",
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "armenian_norm_stop",
+                "armenian_stop",
+                "armenian_stemmer",
+                "asciifolding"
+            ]
         },
         "plain": {
             "type": "custom",
@@ -45,12 +58,12 @@
         },
         "source_text_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper_source_text"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper_source_text"
             ]
         },
         "source_text_plain_search": {
@@ -161,7 +174,20 @@
             ]
         },
         "text_search": {
-            "type": "armenian"
+            "type": "custom",
+            "tokenizer": "standard",
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "armenian_norm_stop",
+                "armenian_stop",
+                "armenian_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -198,6 +224,21 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "armenian_norm_stop": {
+            "type": "stop",
+            "stopwords": [
+                "\u0576\u0561\u0565\u0582",
+                "\u0565\u0582"
+            ]
+        },
+        "armenian_stop": {
+            "type": "stop",
+            "stopwords": "_armenian_"
+        },
+        "armenian_stemmer": {
+            "type": "stemmer",
+            "language": "armenian"
         },
         "dedup_asciifolding": {
             "type": "unique",

@@ -1,7 +1,19 @@
 {
     "analyzer": {
         "text": {
-            "type": "hungarian"
+            "type": "custom",
+            "tokenizer": "standard",
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "hungarian_stop",
+                "hungarian_stemmer",
+                "asciifolding"
+            ]
         },
         "plain": {
             "type": "custom",
@@ -45,12 +57,12 @@
         },
         "source_text_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper_source_text"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper_source_text"
             ]
         },
         "source_text_plain_search": {
@@ -161,7 +173,19 @@
             ]
         },
         "text_search": {
-            "type": "hungarian"
+            "type": "custom",
+            "tokenizer": "standard",
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "hungarian_stop",
+                "hungarian_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -198,6 +222,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "hungarian_stop": {
+            "type": "stop",
+            "stopwords": "_hungarian_"
+        },
+        "hungarian_stemmer": {
+            "type": "stemmer",
+            "language": "hungarian"
         },
         "dedup_asciifolding": {
             "type": "unique",

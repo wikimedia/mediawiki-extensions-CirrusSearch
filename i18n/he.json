@@ -77,5 +77,5 @@
 	"cirrussearch-offset-too-large": "לא היה אפשר לאחזר את התוצאות. נתמכות עד $1 תוצאות חיפוש, אבל התבקשו תוצאות שמתחילות ב־$2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "אין התייחסות לבקשה לחלק לדפים תוצאות ממוינות אקראית.",
 	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|שם נושא|שמות נושאים}} עבור מילת המפתח <kbd>articletopic:</kbd> {{PLURAL:$2|אינו מוכר|אינם מוכר}}: $1",
-	"cirrussearch-inlanguage-deprecate-comma": "שימוש בפסיק בתור מפריד למילת המפתח inlanguage הוכרז בתור מיושן. נא להשתמש בתו | (מקל) להפרדת שפות."
+	"cirrussearch-inlanguage-deprecate-comma": "שימוש בפסיק בתור מפריד למילת המפתח inlanguage הוכרז בתור מיושן. נא להשתמש בתו | (קו ניצב) להפרדת שפות."
 }

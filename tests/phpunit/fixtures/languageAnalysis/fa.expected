@@ -1,7 +1,22 @@
 {
     "analyzer": {
         "text": {
-            "type": "persian"
+            "type": "custom",
+            "tokenizer": "standard",
+            "char_filter": [
+                "nnbsp_norm",
+                "zero_width_spaces",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "decimal_digit",
+                "arabic_normalization",
+                "persian_normalization",
+                "persian_stop",
+                "asciifolding"
+            ]
         },
         "plain": {
             "type": "custom",
@@ -45,12 +60,12 @@
         },
         "source_text_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper_source_text"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper_source_text"
             ]
         },
         "source_text_plain_search": {
@@ -161,7 +176,22 @@
             ]
         },
         "text_search": {
-            "type": "persian"
+            "type": "custom",
+            "tokenizer": "standard",
+            "char_filter": [
+                "nnbsp_norm",
+                "zero_width_spaces",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "decimal_digit",
+                "arabic_normalization",
+                "persian_normalization",
+                "persian_stop",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -198,6 +228,10 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "persian_stop": {
+            "type": "stop",
+            "stopwords": "_persian_"
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -258,6 +292,12 @@
             "type": "mapping",
             "mappings": [
                 "\u0130=>I"
+            ]
+        },
+        "zero_width_spaces": {
+            "type": "mapping",
+            "mappings": [
+                "\\u200C=>\\u0020"
             ]
         }
     }

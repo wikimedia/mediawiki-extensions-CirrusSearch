@@ -379,6 +379,8 @@ class AnalysisConfigBuilder {
 		 *   inspection. However, combining characters (such as for Thai (th))
 		 *   are \u encoded to prevent problems with display or editing
 		 */
+		case 'bg': // T325090
+			return '[^Йй]';
 		case 'bs': // T192395
 		case 'hr': // T192395
 		case 'sh': // T192395
@@ -408,6 +410,8 @@ class AnalysisConfigBuilder {
 			// characters with dakuten and handakuten, the separate (han)dakuten
 			// characters (regular and combining) and the prolonged sound mark (chōonpu).
 			return '[^が-ヾ]';
+		case 'lt': // T325090
+			return '[^ĄąČčĘęĖėĮįŠšŲųŪūŽž]';
 		case 'lv': // T325089
 			return '[^ĀāČčĒēĢģĪīĶķĻļŅņŠšŪūŽž]';
 		case 'nb': // T289612
@@ -709,12 +713,14 @@ class AnalysisConfigBuilder {
 
 		// usual unpacked languages
 		case 'basque':    // Unpack Basque analyzer T283366
+		case 'bulgarian': // Unpack Bulgarian analyzer T325090
 		case 'czech':     // Unpack Czech analyzer T284578
 		case 'danish':    // Unpack Danish analyzer T283366
 		case 'finnish':   // Unpack Finnish analyzer T284578
 		case 'galician':  // Unpack Galician analyzer T284578
 		case 'hungarian': // Unpack Hungarian analyzer T325089
 		case 'latvian':   // Unpack Latvian analyzer T325089
+		case 'lithuanian': // Unpack Lithuanian analyzer T325090
 		case 'norwegian': // Unpack Norwegian analyzer T289612
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
@@ -1078,6 +1084,18 @@ class AnalysisConfigBuilder {
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withFilters( [ 'lowercase' ] )->
 				withCharFilters( [ 'apostrophe_norm' ] )->
+				build( $config );
+			break;
+		case 'persian': // Unpack Persian analyzer T325090
+			$config[ 'char_filter' ][ 'zero_width_spaces' ] =
+				AnalyzerBuilder::mappingCharFilter( [ "\u200C=>\u0020" ] );
+
+			$faPreStopFilters = [ 'decimal_digit', 'arabic_normalization', 'persian_normalization' ];
+			$config = ( new AnalyzerBuilder( $langName ) )->
+				withUnpackedAnalyzer()->
+				omitStemmer()->
+				withCharFilters( [ 'zero_width_spaces' ] )->
+				insertFiltersBefore( 'persian_stop', $faPreStopFilters )->
 				build( $config );
 			break;
 		case 'polish':
@@ -1606,6 +1624,7 @@ class AnalysisConfigBuilder {
 		'ar' => true,
 		'ary' => true,
 		'arz' => true,
+		'bg' => true,
 		'bn' => true,
 		'bs' => true,
 		'ca' => true,
@@ -1620,6 +1639,7 @@ class AnalysisConfigBuilder {
 		'eo' => true,
 		'es' => true,
 		'eu' => true,
+		'fa' => true,
 		'fi' => true,
 		'fr' => true,
 		'ga' => true,
@@ -1630,6 +1650,7 @@ class AnalysisConfigBuilder {
 		'hu' => true,
 		'hy' => true,
 		'ja' => true,
+		'lt' => true,
 		'lv' => true,
 		'nb' => true,
 		'nl' => true,

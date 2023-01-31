@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Afalau"
+		]
+	},
+	"cirrussearch-desc": "Chwiliadau Elasticsearch ar gyfer MediaWici",
+	"cirrussearch-regex-too-complex-error": "Mae'ch regex yn rhy gymhleth. Dysgwch fwy am symleiddio regex [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|yma]].",
+	"cirrussearch-now-using": "Mae'r wici hwn yn defnyddio peiriant chwilio newydd. ([[mw:Special:MyLanguage/Help:CirrusSearch|Dysgu mwy]])",
+	"cirrussearch-ignored-headings": " #<!-- cadwch y llinell hwn fel ag y mae --> <pre>\n# Penawdau a gaiff eu hanwybyddu gan Chwilio.\n# Bydd newidiadau yn digwydd cyn gynted ag y bydd y pennawd wedi cael ei fynegeio.\n# Gallwch gorfodi ail-fynegeio tudalen trwy wneud \"dim golygiad\".\n# Dyma'r gystrawen:\n#   * Mae popeth o'r nod \"#\" i ddiwedd y llinell yn sylw.\n#   * Mae pob llinell nad yw'n wag yw'r union deitl i'w hanwybyddu, cas a phopeth.\nCyfeiriadau\nDolenni allanol\nGweler hefyd\n #<!-- cadwch y llinell hwn fel ag y mae --> <pre>",
+	"cirrussearch-pref-label": "Chwiliad newydd",
+	"cirrussearch-give-feedback": "Rhowch eich adborth i ni",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Rhagosodedig (argymhellir)",
+	"cirrussearch-completion-profile-strict-pref-name": "Modd llym (uwch)",
+	"cirrussearch-explore-similar-related": "Perthnasol",
+	"cirrussearch-explore-similar-categories": "Categorïau",
+	"cirrussearch-explore-similar-languages": "Ieithoedd",
+	"cirrussearch-explore-similar-categories-none": "Dim categorïau ar gael"
+}

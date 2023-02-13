@@ -94,6 +94,7 @@ class ConfigDump extends ApiBase {
 		'CirrusSearchRescoreFunctionChains',
 		'CirrusSearchCompletionProfiles',
 		'CirrusSearchCompletionSettings',
+		'CirrusSearchCompletionSuggesterUseDefaultSort',
 		// All the config below was added when moving this data
 		// from CirrusSearch config to a static array in this class
 		'CirrusSearchDevelOptions',

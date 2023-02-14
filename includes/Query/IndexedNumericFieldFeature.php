@@ -20,17 +20,10 @@ use Wikimedia\Assert\Assert;
  */
 class IndexedNumericFieldFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/**
-	 * @return string[]
-	 */
-	protected function getKeywords() {
-		return [ 'filesize', 'filebits', 'fileh', 'filew', 'fileheight', 'filewidth', 'fileres' ];
-	}
-
-	/**
 	 * Map from feature names to keys
 	 * @var string[]
 	 */
-	private $keyTable = [
+	private const KEY_TABLE = [
 		'filesize' => 'file_size',
 		'filebits' => 'file_bits',
 		'fileh' => 'file_height',
@@ -38,7 +31,15 @@ class IndexedNumericFieldFeature extends SimpleKeywordFeature implements FilterQ
 		'fileheight' => 'file_height',
 		'filewidth' => 'file_width',
 		'fileres' => 'file_resolution',
+		'textbytes' => 'text_bytes'
 	];
+
+	/**
+	 * @return string[]
+	 */
+	protected function getKeywords() {
+		return array_keys( self::KEY_TABLE );
+	}
 
 	/**
 	 * @param KeywordFeatureNode $node
@@ -83,7 +84,7 @@ class IndexedNumericFieldFeature extends SimpleKeywordFeature implements FilterQ
 	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
 		$parsedValue = [];
 
-		$field = $this->keyTable[$key];
+		$field = self::KEY_TABLE[$key];
 		$parsedValue['field'] = $field;
 		list( $sign, $number ) = $this->extractSign( $value );
 		// filesize treats no sign as >, since exact file size matches make no sense

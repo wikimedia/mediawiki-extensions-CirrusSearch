@@ -3292,7 +3292,7 @@
 			}
 		}
 	},
-	"keyword: filenumeric filebits (assuming same behavior for fileh, filew, fileheight, filewidth, fileres)": {
+	"keyword: filenumeric filebits (assuming same behavior for fileh, filew, fileheight, filewidth, fileres, textbytes)": {
 		"query": "filebits:30 filebits:>30 filebits:<30 filebits:30,50 filebits:ab",
 		"expected": {
 			"query": "filebits:30 filebits:>30 filebits:<30 filebits:30,50 filebits:ab",

@@ -13,7 +13,7 @@ class IndexedNumericFieldFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
 	public function parseProviderNumeric() {
-		return [
+		$fixtures = [
 			'numeric with no sign - same as >' => [
 				[ 'range' => [
 					'file_size' => [
@@ -119,6 +119,34 @@ class IndexedNumericFieldFeatureTest extends CirrusTestCase {
 				'fileheight:notevenclose,100',
 			],
 		];
+
+		$keywordsAndFields = [
+			// filesize is not here because it does not support exact match
+			'filebits' => 'file_bits',
+			'fileh' => 'file_height',
+			'filew' => 'file_width',
+			'fileheight' => 'file_height',
+			'filewidth' => 'file_width',
+			'fileres' => 'file_resolution',
+			'textbytes' => 'text_bytes'
+		];
+		foreach ( $keywordsAndFields as $k => $f ) {
+			$fixtures["parse $k"] = [
+				[ 'match' => [
+					$f => [
+						'query' => '16',
+					],
+				] ],
+				[
+					'sign' => 0,
+					'value' => 16,
+					'field' => $f,
+				],
+				[],
+				"$k:16",
+			];
+		}
+		return $fixtures;
 	}
 
 	/**

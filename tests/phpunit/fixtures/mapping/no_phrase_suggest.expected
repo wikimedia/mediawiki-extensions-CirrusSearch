@@ -157,8 +157,7 @@
             ]
         },
         "text_bytes": {
-            "type": "long",
-            "index": false
+            "type": "long"
         },
         "source_text": {
             "index": false,

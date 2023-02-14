@@ -175,7 +175,6 @@ class MappingConfigBuilder {
 				'text' => $this->getTextFieldMapping(),
 				'text_bytes' => $this->searchIndexFieldFactory
 					->newLongField( 'text_bytes' )
-					->setFlag( SearchIndexField::FLAG_NO_INDEX )
 					->getMapping( $this->engine ),
 				'source_text' => $this->buildSourceTextStringField( 'source_text' )
 					->setMappingFlags( $this->flags )->getMapping( $this->engine ),

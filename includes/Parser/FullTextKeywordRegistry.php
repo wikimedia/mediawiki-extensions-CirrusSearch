@@ -6,10 +6,10 @@ use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Query\BoostTemplatesFeature;
 use CirrusSearch\Query\ContentModelFeature;
 use CirrusSearch\Query\DeepcatFeature;
-use CirrusSearch\Query\FileNumericFeature;
 use CirrusSearch\Query\FileTypeFeature;
 use CirrusSearch\Query\HasTemplateFeature;
 use CirrusSearch\Query\InCategoryFeature;
+use CirrusSearch\Query\IndexedNumericFieldFeature;
 use CirrusSearch\Query\InSourceFeature;
 use CirrusSearch\Query\InTitleFeature;
 use CirrusSearch\Query\KeywordFeature;
@@ -80,7 +80,7 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			// File mime types
 			new TextFieldFilterFeature( 'filemime', 'file_mime' ),
 			// File numeric characteristics - size, resolution, etc.
-			new FileNumericFeature(),
+			new IndexedNumericFieldFeature(),
 			// Content model feature
 			new ContentModelFeature(),
 			// subpageof keyword

@@ -13,7 +13,7 @@ use CirrusSearch\Parser\AST\WordsQueryNode;
 use CirrusSearch\Parser\KeywordRegistry;
 use CirrusSearch\Parser\ParsedQueryClassifiersRepository;
 use CirrusSearch\Parser\QueryParser;
-use CirrusSearch\Query\FileNumericFeature;
+use CirrusSearch\Query\IndexedNumericFieldFeature;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\SearchConfig;
 
@@ -68,7 +68,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 		$parser = new QueryStringRegexParser(
 			new class () implements KeywordRegistry {
 				public function getKeywords() {
-					return [ new FileNumericFeature() ];
+					return [ new IndexedNumericFieldFeature() ];
 				}
 			},
 			$this->createMock( Escaper::class ),

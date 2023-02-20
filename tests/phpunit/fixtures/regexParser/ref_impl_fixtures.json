@@ -3214,7 +3214,7 @@
 								"keyword": {
 									"startOffset": 0,
 									"endOffset": 12,
-									"keyword": "CirrusSearch\\Query\\FileNumericFeature",
+									"keyword": "CirrusSearch\\Query\\IndexedNumericFieldFeature",
 									"key": "filesize",
 									"value": ">30",
 									"quotedValue": ">30",
@@ -3234,7 +3234,7 @@
 								"keyword": {
 									"startOffset": 13,
 									"endOffset": 25,
-									"keyword": "CirrusSearch\\Query\\FileNumericFeature",
+									"keyword": "CirrusSearch\\Query\\IndexedNumericFieldFeature",
 									"key": "filesize",
 									"value": "<30",
 									"quotedValue": "<30",
@@ -3254,7 +3254,7 @@
 								"keyword": {
 									"startOffset": 26,
 									"endOffset": 40,
-									"keyword": "CirrusSearch\\Query\\FileNumericFeature",
+									"keyword": "CirrusSearch\\Query\\IndexedNumericFieldFeature",
 									"key": "filesize",
 									"value": "30,50",
 									"quotedValue": "30,50",
@@ -3277,7 +3277,7 @@
 								"keyword": {
 									"startOffset": 41,
 									"endOffset": 52,
-									"keyword": "CirrusSearch\\Query\\FileNumericFeature",
+									"keyword": "CirrusSearch\\Query\\IndexedNumericFieldFeature",
 									"key": "filesize",
 									"value": "ab",
 									"quotedValue": "ab",
@@ -3324,7 +3324,7 @@
 								"keyword": {
 									"startOffset": 0,
 									"endOffset": 11,
-									"keyword": "CirrusSearch\\Query\\FileNumericFeature",
+									"keyword": "CirrusSearch\\Query\\IndexedNumericFieldFeature",
 									"key": "filebits",
 									"value": "30",
 									"quotedValue": "30",
@@ -3344,7 +3344,7 @@
 								"keyword": {
 									"startOffset": 12,
 									"endOffset": 24,
-									"keyword": "CirrusSearch\\Query\\FileNumericFeature",
+									"keyword": "CirrusSearch\\Query\\IndexedNumericFieldFeature",
 									"key": "filebits",
 									"value": ">30",
 									"quotedValue": ">30",
@@ -3364,7 +3364,7 @@
 								"keyword": {
 									"startOffset": 25,
 									"endOffset": 37,
-									"keyword": "CirrusSearch\\Query\\FileNumericFeature",
+									"keyword": "CirrusSearch\\Query\\IndexedNumericFieldFeature",
 									"key": "filebits",
 									"value": "<30",
 									"quotedValue": "<30",
@@ -3384,7 +3384,7 @@
 								"keyword": {
 									"startOffset": 38,
 									"endOffset": 52,
-									"keyword": "CirrusSearch\\Query\\FileNumericFeature",
+									"keyword": "CirrusSearch\\Query\\IndexedNumericFieldFeature",
 									"key": "filebits",
 									"value": "30,50",
 									"quotedValue": "30,50",
@@ -3407,7 +3407,7 @@
 								"keyword": {
 									"startOffset": 53,
 									"endOffset": 64,
-									"keyword": "CirrusSearch\\Query\\FileNumericFeature",
+									"keyword": "CirrusSearch\\Query\\IndexedNumericFieldFeature",
 									"key": "filebits",
 									"value": "ab",
 									"quotedValue": "ab",

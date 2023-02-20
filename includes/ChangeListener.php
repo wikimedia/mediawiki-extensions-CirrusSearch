@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Job\LinksUpdate;
 use ConfigFactory;
 use JobQueueGroup;
 use LoadBalancer;
@@ -111,13 +112,14 @@ class ChangeListener implements
 
 		// non recursive LinksUpdate can go to the non prioritized queue
 		if ( $linksUpdate->isRecursive() ) {
-			$params[ 'prioritize' ] = true;
-			$delay = $updateDelay['prioritized'];
+			$job = LinksUpdate::newPageChangeUpdate(
+				$linksUpdate->getTitle(),
+				$linksUpdate->getRevisionRecord(),
+				$params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class,  $updateDelay['prioritized'], $this->jobQueue ) );
 		} else {
-			$delay = $updateDelay['default'];
+			$job = LinksUpdate::newPageRefreshUpdate( $linksUpdate->getTitle(),
+				$params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class,  $updateDelay['default'], $this->jobQueue ) );
 		}
-		$params += Job\LinksUpdate::buildJobDelayOptions( Job\LinksUpdate::class, $delay, $this->jobQueue );
-		$job = new Job\LinksUpdate( $linksUpdate->getTitle(), $params );
 
 		$this->jobQueue->lazyPush( $job );
 	}

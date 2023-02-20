@@ -5,6 +5,7 @@ namespace CirrusSearch\Job;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\ClusterSettings;
 use CirrusSearch\HashSearchConfig;
+use Liuggio\StatsdClient\Factory\StatsdDataFactoryInterface;
 
 /**
  * @covers \CirrusSearch\Job\ElasticaWrite
@@ -34,4 +35,23 @@ class ElasticaWriteTest extends CirrusIntegrationTestCase {
 			'Saw expected set of partitioning keys'
 		);
 	}
+
+	public function testReportUpdateLog() {
+		$statsD = $this->createMock( StatsdDataFactoryInterface::class );
+		$statsD->expects( $this->once() )->method( 'timing' )->with( "CirrusSearch.my_cluster.updates.all.lag.my_update_kind", 10 );
+		$myJob = new ElasticaWrite( [
+			CirrusTitleJob::UPDATE_KIND => "my_update_kind",
+			CirrusTitleJob::ROOT_EVENT_TIME => 0
+		] );
+		\MWTimestamp::setFakeTime( 10 );
+		$myJob->reportUpdateLag( "my_cluster", $statsD );
+	}
+
+	public function testNoLagReportedWithoutEventTime() {
+		$statsD = $this->createMock( StatsdDataFactoryInterface::class );
+		$statsD->expects( $this->never() )->method( 'timing' );
+		$myJob = new ElasticaWrite( [] );
+		$myJob->reportUpdateLag( "my_cluster", $statsD );
+	}
+
 }

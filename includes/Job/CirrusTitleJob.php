@@ -28,6 +28,14 @@ use Title;
 abstract class CirrusTitleJob extends Job {
 	use JobTraits;
 
+	// TODO: move these constants to JobTraits once we support php 8.2
+	public const UPDATE_KIND = 'update_kind';
+	public const ROOT_EVENT_TIME = 'root_event_time';
+	/** a change made to the page, new revision/delete/restore */
+	public const PAGE_CHANGE = 'page_change';
+	/** a change that could possibly change the rendered output of the page */
+	public const PAGE_REFRESH = 'page_refresh';
+
 	/**
 	 * @var SearchConfig|null (lazy loaded by getSearchConfig())
 	 */
@@ -38,7 +46,11 @@ abstract class CirrusTitleJob extends Job {
 	 * @param array $params
 	 */
 	public function __construct( $title, $params ) {
-		$params += [ 'cluster' => null ];
+		$params += [
+			'cluster' => null,
+			self::UPDATE_KIND => 'unknown',
+			self::ROOT_EVENT_TIME => null
+		];
 		// eg: DeletePages -> cirrusSearchDeletePages
 		$jobName = self::buildJobName( static::class );
 

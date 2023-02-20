@@ -71,13 +71,17 @@ class Updater extends ElasticsearchIntermediary {
 	/**
 	 * Update a single page.
 	 * @param Title $title
+	 * @param string|null $updateKind kind of update to perform (used for monitoring)
+	 * @param int|null $rootEventTime the time of MW event that caused this update (used for monitoring)
 	 */
-	public function updateFromTitle( $title ): void {
+	public function updateFromTitle( $title, ?string $updateKind, ?int $rootEventTime ): void {
 		list( $page, $redirects ) = $this->traceRedirects( $title );
 		if ( $page ) {
 			$this->updatePages(
 				[ $page ],
-				BuildDocument::INDEX_EVERYTHING
+				BuildDocument::INDEX_EVERYTHING,
+				$updateKind,
+				$rootEventTime
 			);
 		}
 
@@ -175,9 +179,11 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param WikiPage[] $pages pages to update
 	 * @param int $flags Bit field containing instructions about how the document should be built
 	 *   and sent to Elasticsearch.
+	 * @param string|null $updateKind the kind of update to perform (used for monitoring)
+	 * @param int|null $rootEventTime the time of MW event that caused this update (used for monitoring)
 	 * @return int Number of documents updated
 	 */
-	public function updatePages( $pages, $flags ): int {
+	public function updatePages( $pages, $flags, string $updateKind = null, int $rootEventTime = null ): int {
 		// Don't update the same page twice. We shouldn't, but meh
 		$pageIds = [];
 		$pages = array_filter( $pages, static function ( WikiPage $page ) use ( &$pageIds ) {
@@ -214,13 +220,17 @@ class Updater extends ElasticsearchIntermediary {
 
 		$count = 0;
 		foreach ( $allDocuments as $indexSuffix => $documents ) {
-			$this->pushElasticaWriteJobs( $documents, static function ( array $chunk, ClusterSettings $cluster ) use ( $indexSuffix ) {
-				return Job\ElasticaWrite::build(
-					$cluster,
-					'sendData',
-					[ $indexSuffix, $chunk ]
-				);
-			} );
+			$this->pushElasticaWriteJobs( $documents,
+				static function ( array $chunk, ClusterSettings $cluster ) use ( $indexSuffix, $updateKind, $rootEventTime ) {
+					return Job\ElasticaWrite::build(
+						$cluster,
+						'sendData',
+						[ $indexSuffix, $chunk ],
+						[],
+						$updateKind,
+						$rootEventTime
+					);
+				} );
 			$count += count( $documents );
 		}
 

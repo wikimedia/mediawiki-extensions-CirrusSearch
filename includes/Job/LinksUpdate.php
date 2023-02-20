@@ -4,6 +4,7 @@ namespace CirrusSearch\Job;
 
 use CirrusSearch\Updater;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\RevisionRecord;
 use Title;
 
 /**
@@ -44,11 +45,51 @@ class LinksUpdate extends CirrusTitleJob {
 	}
 
 	/**
+	 * Prepare a page update for when this page is directly updated (new revision/delete/restore)
+	 *
+	 * @param Title $title
+	 * @param RevisionRecord|null $revisionRecord
+	 * @param array $params
+	 * @return LinksUpdate
+	 */
+	public static function newPageChangeUpdate( Title $title, ?RevisionRecord $revisionRecord, array $params ): LinksUpdate {
+		if ( $revisionRecord !== null && $revisionRecord->getTimestamp() !== null ) {
+			$ts = (int)\MWTimestamp::convert( TS_UNIX, $revisionRecord->getTimestamp() );
+		} else {
+			$ts = \MWTimestamp::time();
+		}
+		$params += [
+			'prioritized' => true,
+			self::UPDATE_KIND => self::PAGE_CHANGE,
+			self::ROOT_EVENT_TIME => $ts,
+		];
+
+		return new self( $title, $params );
+	}
+
+	/**
+	 * Prepare a page update for when the rendered output of the page might have changed due to a
+	 * change not directly related to this page (e.g. template update).
+	 *
+	 * @param Title $title
+	 * @param array $params
+	 * @return LinksUpdate
+	 */
+	public static function newPageRefreshUpdate( Title $title, array $params ): LinksUpdate {
+		$params += [
+			'prioritized' => false,
+			self::UPDATE_KIND => self::PAGE_REFRESH,
+			self::ROOT_EVENT_TIME => \MWTimestamp::time(),
+		];
+		return new self( $title, $params );
+	}
+
+	/**
 	 * @return bool
 	 */
 	protected function doJob() {
 		$updater = Updater::build( $this->getSearchConfig(), $this->params['cluster'] ?? null );
-		$updater->updateFromTitle( $this->title );
+		$updater->updateFromTitle( $this->title, $this->params[self::UPDATE_KIND], $this->params[self::ROOT_EVENT_TIME] );
 
 		if ( $this->getSearchConfig()->get( 'CirrusSearchEnableIncomingLinkCounting' ) ) {
 			$this->queueIncomingLinksJobs();

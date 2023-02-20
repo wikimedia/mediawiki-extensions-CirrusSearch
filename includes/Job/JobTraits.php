@@ -166,5 +166,4 @@ trait JobTraits {
 	public static function buildJobName( $clazz ) {
 		return 'cirrusSearch' . str_replace( 'CirrusSearch\\Job\\', '', $clazz );
 	}
-
 }

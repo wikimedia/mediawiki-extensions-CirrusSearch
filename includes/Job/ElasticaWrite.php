@@ -5,6 +5,7 @@ namespace CirrusSearch\Job;
 use CirrusSearch\ClusterSettings;
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
+use Liuggio\StatsdClient\Factory\StatsdDataFactoryInterface;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use Status;
@@ -31,6 +32,7 @@ use Wikimedia\Assert\Assert;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class ElasticaWrite extends CirrusGenericJob {
+
 	private const MAX_ERROR_RETRY = 4;
 
 	/**
@@ -46,9 +48,18 @@ class ElasticaWrite extends CirrusGenericJob {
 	 * @param string $method
 	 * @param array $arguments
 	 * @param array $params
+	 * @param string|null $updateKind the kind of update to perform (used for monitoring)
+	 * @param int|null $rootEventTime the time of MW event that caused this update (used for monitoring)
 	 * @return ElasticaWrite
 	 */
-	public static function build( ClusterSettings $cluster, string $method, array $arguments, array $params = [] ) {
+	public static function build(
+		ClusterSettings $cluster,
+		string $method,
+		array $arguments,
+		array $params = [],
+		string $updateKind = null,
+		int $rootEventTime = null
+	) {
 		return new self( [
 			'method' => $method,
 			'arguments' => self::serde( $method, $arguments ),
@@ -57,6 +68,8 @@ class ElasticaWrite extends CirrusGenericJob {
 			// to use during partitioning. The job queue must be separately
 			// configured to utilize this value.
 			'jobqueue_partition' => self::partitioningKey( $cluster ),
+			CirrusTitleJob::UPDATE_KIND => $updateKind,
+			CirrusTitleJob::ROOT_EVENT_TIME => $rootEventTime
 		] + $params );
 	}
 
@@ -106,6 +119,8 @@ class ElasticaWrite extends CirrusGenericJob {
 			'errorCount' => 0,
 			'retryCount' => 0,
 			'cluster' => null,
+			CirrusTitleJob::UPDATE_KIND => null,
+			CirrusTitleJob::ROOT_EVENT_TIME => null
 		] );
 	}
 
@@ -174,6 +189,8 @@ class ElasticaWrite extends CirrusGenericJob {
 			$action = $this->requeueError( $conn ) ? "Requeued" : "Dropped";
 			$this->setLastError( "ElasticaWrite job failed: {$action}" );
 			$ok = false;
+		} else {
+			$this->reportUpdateLag( $conn->getClusterName() );
 		}
 
 		return $ok;
@@ -214,6 +231,23 @@ class ElasticaWrite extends CirrusGenericJob {
 			);
 			$jobQueue->push( $job );
 			return true;
+		}
+	}
+
+	/**
+	 * Report the update lag based on stored params if set.
+	 * @param string $cluster
+	 * @param StatsdDataFactoryInterface|null $statsdDataFactory
+	 * @return void
+	 */
+	public function reportUpdateLag( string $cluster, StatsdDataFactoryInterface $statsdDataFactory = null ): void {
+		$params = $this->getParams();
+		$updateKind = $params[CirrusTitleJob::UPDATE_KIND] ?? null;
+		$eventTime = $params[CirrusTitleJob::ROOT_EVENT_TIME] ?? null;
+		if ( $updateKind !== null && $eventTime !== null ) {
+			$now = \MWTimestamp::time();
+			$statsdDataFactory = $statsdDataFactory ?? MediaWikiServices::getInstance()->getStatsdDataFactory();
+			$statsdDataFactory->timing( "CirrusSearch.$cluster.updates.all.lag.$updateKind", $now - $eventTime );
 		}
 	}
 }

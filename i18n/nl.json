@@ -26,6 +26,7 @@
 	"cirrussearch-backend-error": "Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooid. Probeer het later opnieuw.",
 	"cirrussearch-parse-error": "De zoekopdracht is niet begrepen. Maak het eenvoudiger. De zoekopdracht is bewaard om het zoeksysteem te verbeteren.",
 	"cirrussearch-too-busy-error": "De zoekfunctie heeft het op dit moment heel druk. Probeer het later opnieuw.",
+	"cirrussearch-regex-empty-expression": "$1 verwacht een niet-lege reguliere expressie.",
 	"cirrussearch-regex-syntax-error": "Reguliere expressie-syntaxfout op $2: $1",
 	"cirrussearch-regex-too-busy-error": "Te veel reguliere expressie-zoekopdrachten worden momenteel worden uitgevoerd. Probeer het later opnieuw.",
 	"cirrussearch-regex-too-complex-error": "Een reguliere expressie is te complex. [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|Meer informatie over vereenvoudigen]].",

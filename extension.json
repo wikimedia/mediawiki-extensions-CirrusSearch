@@ -117,16 +117,16 @@
 		"APIAfterExecute": "CirrusSearch\\Hooks::onAPIAfterExecute",
 		"ApiBeforeMain": "CirrusSearch\\Hooks::onApiBeforeMain",
 		"APIQuerySiteInfoStatisticsInfo": "CirrusSearch\\Hooks::onAPIQuerySiteInfoStatisticsInfo",
-		"ArticleDelete": "CirrusSearch\\Hooks::onArticleDelete",
-		"ArticleDeleteComplete": "CirrusSearch\\Hooks::onArticleDeleteComplete",
-		"ArticleRevisionVisibilitySet": "CirrusSearch\\Hooks::onRevisionDelete",
-		"ArticleUndelete": "CirrusSearch\\Hooks::onArticleUndelete",
+		"ArticleDelete": "changelistener",
+		"ArticleDeleteComplete": "changelistener",
+		"ArticleRevisionVisibilitySet": "changelistener",
+		"ArticleUndelete": "changelistener",
 		"BeforeInitialize": "CirrusSearch\\Hooks::onBeforeInitialize",
 		"CirrusSearchAddQueryFeatures": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAddQueryFeatures",
 		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAnalysisConfig",
 		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchSimilarityConfig",
 		"GetPreferences": "default",
-		"LinksUpdateComplete": "CirrusSearch\\Hooks::onLinksUpdateCompleted",
+		"LinksUpdateComplete": "changelistener",
 		"MediaWikiServices": "CirrusSearch\\Hooks::onMediaWikiServices",
 		"PrefixSearchExtractNamespace": "CirrusSearch\\Hooks::onPrefixSearchExtractNamespace",
 		"ResourceLoaderGetConfigVars": "CirrusSearch\\Hooks::onResourceLoaderGetConfigVars",
@@ -140,15 +140,26 @@
 		"SpecialSearchResults": "CirrusSearch\\Hooks::onSpecialSearchResults",
 		"SpecialSearchResultsAppend": "CirrusSearch\\Hooks::onSpecialSearchResultsAppend",
 		"SpecialStatsAddExtra": "CirrusSearch\\Hooks::onSpecialStatsAddExtra",
-		"TitleMove": "CirrusSearch\\Hooks::onTitleMove",
-		"PageMoveComplete": "CirrusSearch\\Hooks::onPageMoveComplete",
-		"UploadComplete": "CirrusSearch\\Hooks::onUploadComplete",
+		"TitleMove": "changelistener",
+		"PageMoveComplete": "changelistener",
+		"UploadComplete": "changelistener",
 		"UserGetDefaultOptions": "default"
 	},
 	"HookHandlers": {
 		"default": {
 			"class": "CirrusSearch\\Hooks",
-			"services": [ "ConfigFactory" ]
+			"services": [
+				"ConfigFactory"
+			]
+		},
+		"changelistener": {
+			"class": "CirrusSearch\\ChangeListener",
+			"factory": "CirrusSearch\\ChangeListener::create",
+			"services": [
+				"JobQueueGroup",
+				"ConfigFactory",
+				"DBLoadBalancer"
+			]
 		}
 	},
 	"config": {

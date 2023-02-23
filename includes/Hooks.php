@@ -8,24 +8,17 @@ use ApiOpenSearch;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
 use ConfigFactory;
-use DeferredUpdates;
 use Html;
 use ISearchResultSet;
-use LinksUpdate;
-use MediaWiki\Linker\LinkTarget;
-use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Preferences\Hook\GetPreferencesHook;
-use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\User\Hook\UserGetDefaultOptionsHook;
-use MediaWiki\User\UserIdentity;
 use OutputPage;
 use RequestContext;
 use SpecialSearch;
 use Title;
 use User;
 use WebRequest;
-use WikiPage;
 use Xml;
 
 /**
@@ -47,11 +40,6 @@ use Xml;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
-	/**
-	 * @var string[] Destination of titles being moved (the ->getPrefixedDBkey() form).
-	 */
-	private static $movingTitles = [];
-
 	/** @var ConfigFactory */
 	private $configFactory;
 
@@ -311,65 +299,6 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	}
 
 	/**
-	 * Hook to call before an article is deleted
-	 * @param WikiPage $page The page we're deleting
-	 */
-	public static function onArticleDelete( $page ) {
-		// We use this to pick up redirects so we can update their targets.
-		// Can't re-use ArticleDeleteComplete because the page info's
-		// already gone
-		// If we abort or fail deletion it's no big deal because this will
-		// end up being a no-op when it executes.
-		$target = $page->getRedirectTarget();
-		if ( $target ) {
-			// DeferredUpdate so we don't end up racing our own page deletion
-			DeferredUpdates::addCallableUpdate( static function () use ( $target ) {
-				MediaWikiServices::getInstance()->getJobQueueGroup()->push(
-					new Job\LinksUpdate( $target, [
-						'addedLinks' => [],
-						'removedLinks' => [],
-					] )
-				);
-			} );
-		}
-	}
-
-	/**
-	 * Hook to call after an article is deleted
-	 * @param WikiPage $page The page we're deleting
-	 * @param User $user The user deleting the page
-	 * @param string $reason Reason the page is being deleted
-	 * @param int $pageId Page id being deleted
-	 */
-	public static function onArticleDeleteComplete( $page, $user, $reason, $pageId ) {
-		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
-		// load it from the title because the page row has already been deleted.
-		MediaWikiServices::getInstance()->getJobQueueGroup()->push(
-			new Job\DeletePages( $page->getTitle(), [
-				'docId' => self::getConfig()->makeId( $pageId )
-			] )
-		);
-	}
-
-	/**
-	 * Called when a revision is deleted. In theory, we shouldn't need to to this since
-	 * you can't delete the current text of a page (so we should've already updated when
-	 * the page was updated last). But we're paranoid, because deleted revisions absolutely
-	 * should not be in the index.
-	 *
-	 * @param Title $title The page title we've had a revision deleted on
-	 */
-	public static function onRevisionDelete( $title ) {
-		MediaWikiServices::getInstance()->getJobQueueGroup()->push(
-			new Job\LinksUpdate( $title, [
-				'addedLinks' => [],
-				'removedLinks' => [],
-				'prioritize' => true
-			] )
-		);
-	}
-
-	/**
 	 * Hook called to include Elasticsearch version info on Special:Version
 	 * @param array &$software Array of wikitext and version numbers
 	 */
@@ -414,61 +343,6 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 		);
 		$block = Html::rawElement( 'div', [], $anchor );
 		$out->addHTML( $block );
-	}
-
-	/**
-	 * Hooked to update the search index when pages change directly or when templates that
-	 * they include change.
-	 * @param LinksUpdate $linksUpdate source of all links update information
-	 */
-	public static function onLinksUpdateCompleted( $linksUpdate ) {
-		global $wgCirrusSearchLinkedArticlesToUpdate,
-			$wgCirrusSearchUnlinkedArticlesToUpdate,
-			$wgCirrusSearchUpdateDelay;
-
-		// Titles that are created by a move don't need their own job.
-		if ( in_array( $linksUpdate->getTitle()->getPrefixedDBkey(), self::$movingTitles ) ) {
-			return;
-		}
-
-		$params = [
-			'addedLinks' => self::prepareTitlesForLinksUpdate(
-				$linksUpdate->getAddedLinks(), $wgCirrusSearchLinkedArticlesToUpdate ),
-			// We exclude links that contains invalid UTF-8 sequences, reason is that page created
-			// before T13143 was fixed might sill have bad links the pagelinks table
-			// and thus will cause LinksUpdate to believe that these links are removed.
-			'removedLinks' => self::prepareTitlesForLinksUpdate(
-				$linksUpdate->getRemovedLinks(), $wgCirrusSearchUnlinkedArticlesToUpdate, true ),
-		];
-		// non recursive LinksUpdate can go to the non prioritized queue
-		if ( $linksUpdate->isRecursive() ) {
-			$params[ 'prioritize' ] = true;
-			$delay = $wgCirrusSearchUpdateDelay['prioritized'];
-		} else {
-			$delay = $wgCirrusSearchUpdateDelay['default'];
-		}
-		$params += Job\LinksUpdate::buildJobDelayOptions( Job\LinksUpdate::class, $delay );
-		$job = new Job\LinksUpdate( $linksUpdate->getTitle(), $params );
-
-		MediaWikiServices::getInstance()->getJobQueueGroup()->lazyPush( $job );
-	}
-
-	/**
-	 * Hook into UploadComplete, overwritten files do not seem to trigger LinksUpdateComplete.
-	 * Since files do contain indexed metadata we need to refresh the search index when a file
-	 * is overwritten on an existing title.
-	 * @param \UploadBase $uploadBase
-	 */
-	public static function onUploadComplete( \UploadBase $uploadBase ) {
-		if ( $uploadBase->getTitle()->exists() ) {
-			MediaWikiServices::getInstance()->getJobQueueGroup()->push(
-				new Job\LinksUpdate( $uploadBase->getTitle(), [
-					'addedLinks' => [],
-					'removedLinks' => [],
-					'prioritize' => true
-				] )
-			);
-		}
 	}
 
 	/**
@@ -562,110 +436,6 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 		}
 		// Didn't find a result so let Mediawiki have a crack at it.
 		return true;
-	}
-
-	/**
-	 * Before we've moved a title from $title to $newTitle.
-	 * @param Title $title old title
-	 * @param Title $newTitle
-	 * @param User $user User who made the move
-	 */
-	public static function onTitleMove( Title $title, Title $newTitle, $user ) {
-		self::$movingTitles[] = $title->getPrefixedDBkey();
-	}
-
-	/**
-	 * When we've moved a Title from A to B.
-	 * @param LinkTarget $title The old title
-	 * @param LinkTarget $newTitle
-	 * @param UserIdentity $user User who made the move
-	 * @param int $oldId The page id of the old page.
-	 * @param int $redirId
-	 * @param string $reason
-	 * @param RevisionRecord $revisionRecord
-	 */
-	public static function onPageMoveComplete(
-		LinkTarget $title,
-		LinkTarget $newTitle,
-		UserIdentity $user,
-		int $oldId,
-		int $redirId,
-		string $reason,
-		RevisionRecord $revisionRecord
-	) {
-		// When a page is moved the update and delete hooks are good enough to catch
-		// almost everything.  The only thing they miss is if a page moves from one
-		// index to another.  That only happens if it switches namespace.
-		if ( $title->getNamespace() === $newTitle->getNamespace() ) {
-			return;
-		}
-
-		$conn = self::getConnection();
-		$oldIndexSuffix = $conn->getIndexSuffixForNamespace( $title->getNamespace() );
-		$newIndexSuffix = $conn->getIndexSuffixForNamespace( $newTitle->getNamespace() );
-		if ( $oldIndexSuffix !== $newIndexSuffix ) {
-			$title = Title::newFromLinkTarget( $title );
-			$job = new Job\DeletePages( $title, [
-				'indexSuffix' => $oldIndexSuffix,
-				'docId' => self::getConfig()->makeId( $oldId )
-			] );
-			// Push the job after DB commit but cancel on rollback
-			wfGetDB( DB_PRIMARY )->onTransactionCommitOrIdle( static function () use ( $job ) {
-				MediaWikiServices::getInstance()->getJobQueueGroup()->lazyPush( $job );
-			}, __METHOD__ );
-		}
-	}
-
-	/**
-	 * Take a list of titles either linked or unlinked and prepare them for Job\LinksUpdate.
-	 * This includes limiting them to $max titles.
-	 * @param Title[] $titles titles to prepare
-	 * @param int $max maximum number of titles to return
-	 * @param bool $excludeBadUTF exclude links that contains invalid UTF sequences
-	 * @return array
-	 */
-	public static function prepareTitlesForLinksUpdate( $titles, $max, $excludeBadUTF = false ) {
-		$titles = self::pickFromArray( $titles, $max );
-		$dBKeys = [];
-		foreach ( $titles as $title ) {
-			$key = $title->getPrefixedDBkey();
-			if ( $excludeBadUTF ) {
-				$fixedKey = mb_convert_encoding( $key, 'UTF-8', 'UTF-8' );
-				if ( $fixedKey !== $key ) {
-					LoggerFactory::getInstance( 'CirrusSearch' )
-						->warning( "Ignoring title {title} with invalid UTF-8 sequences.",
-							[ 'title' => $fixedKey ] );
-					continue;
-				}
-			}
-			$dBKeys[] = $title->getPrefixedDBkey();
-		}
-		return $dBKeys;
-	}
-
-	/**
-	 * Pick $num random entries from $array.
-	 * @param array $array Array to pick from
-	 * @param int $num Number of entries to pick
-	 * @return array of entries from $array
-	 */
-	private static function pickFromArray( $array, $num ) {
-		if ( $num > count( $array ) ) {
-			return $array;
-		}
-		if ( $num < 1 ) {
-			return [];
-		}
-		$chosen = array_rand( $array, $num );
-		// If $num === 1 then array_rand will return a key rather than an array of keys.
-		if ( !is_array( $chosen ) ) {
-			return [ $array[ $chosen ] ];
-		}
-		$result = [];
-		foreach ( $chosen as $key ) {
-			$result[] = $array[ $key ];
-		}
-		return $result;
 	}
 
 	/**
@@ -878,26 +648,6 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 					$serviceContainer->getUserOptionsLookup()
 				);
 			}
-		);
-	}
-
-	/**
-	 * When article is undeleted - check the archive for other instances of the title,
-	 * if not there - drop it from the archive.
-	 * @param Title $title
-	 * @param bool $create
-	 * @param string $comment
-	 * @param string $oldPageId
-	 * @param array $restoredPages
-	 */
-	public static function onArticleUndelete( Title $title, $create, $comment, $oldPageId, $restoredPages ) {
-		global $wgCirrusSearchIndexDeletes;
-		if ( !$wgCirrusSearchIndexDeletes ) {
-			// Not indexing, thus nothing to remove here.
-			return;
-		}
-		MediaWikiServices::getInstance()->getJobQueueGroup()->push(
-			new Job\DeleteArchive( $title, [ 'docIds' => $restoredPages ] )
 		);
 	}
 

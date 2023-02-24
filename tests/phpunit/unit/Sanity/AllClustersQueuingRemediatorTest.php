@@ -36,8 +36,6 @@ class AllClustersQueuingRemediatorTest extends CirrusTestCase {
 		$wrongIndex = 'wrongType';
 		$docId = '123';
 		$linksUpdateJob = new LinksUpdate( $title, [
-			'addedLinks' => [],
-			'removedLinks' => [],
 			'cluster' => null,
 		] );
 

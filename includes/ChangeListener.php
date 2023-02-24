@@ -77,8 +77,6 @@ class ChangeListener implements
 	public function onArticleRevisionVisibilitySet( $title, $ids, $visibilityChangeMap ) {
 		$this->jobQueue->push(
 			new Job\LinksUpdate( $title, [
-				'addedLinks' => [],
-				'removedLinks' => [],
 				'prioritize' => true
 			] )
 		);
@@ -100,16 +98,17 @@ class ChangeListener implements
 			return;
 		}
 
-		$params = [
-			'addedLinks' => self::prepareTitlesForLinksUpdate(
-				$linksUpdate->getAddedLinks(), $linkedArticlesToUpdate ),
+		$params = [];
+		if ( $this->searchConfig->get( 'CirrusSearchEnableIncomingLinkCounting' ) ) {
+			$params['addedLinks'] = self::prepareTitlesForLinksUpdate( $linksUpdate->getAddedLinks(),
+					$linkedArticlesToUpdate );
 			// We exclude links that contains invalid UTF-8 sequences, reason is that page created
 			// before T13143 was fixed might sill have bad links the pagelinks table
 			// and thus will cause LinksUpdate to believe that these links are removed.
-			'removedLinks' => self::prepareTitlesForLinksUpdate(
-				$linksUpdate->getRemovedLinks(), $unLinkedArticlesToUpdate, true ),
-		];
-		// non recursive LinksUpdate can go to the non prioritized queue
+			$params['removedLinks'] = self::prepareTitlesForLinksUpdate( $linksUpdate->getRemovedLinks(),
+					$unLinkedArticlesToUpdate, true );
+		}
+			// non recursive LinksUpdate can go to the non prioritized queue
 		if ( $linksUpdate->isRecursive() ) {
 			$params[ 'prioritize' ] = true;
 			$delay = $updateDelay['prioritized'];
@@ -132,8 +131,6 @@ class ChangeListener implements
 		if ( $uploadBase->getTitle()->exists() ) {
 			$this->jobQueue->push(
 				new Job\LinksUpdate( $uploadBase->getTitle(), [
-					'addedLinks' => [],
-					'removedLinks' => [],
 					'prioritize' => true
 				] )
 			);
@@ -163,10 +160,7 @@ class ChangeListener implements
 			// DeferredUpdate so we don't end up racing our own page deletion
 			\DeferredUpdates::addCallableUpdate( function () use ( $target ) {
 				$this->jobQueue->push(
-					new Job\LinksUpdate( $target, [
-						'addedLinks' => [],
-						'removedLinks' => [],
-					] )
+					new Job\LinksUpdate( $target, [] )
 				);
 			} );
 		}

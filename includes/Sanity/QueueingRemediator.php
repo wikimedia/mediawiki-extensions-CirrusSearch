@@ -106,8 +106,6 @@ class QueueingRemediator implements Remediator {
 	private function pushLinksUpdateJob( WikiPage $page ) {
 		$this->jobQueue->push(
 			new LinksUpdate( $page->getTitle(), [
-				'addedLinks' => [],
-				'removedLinks' => [],
 				'cluster' => $this->cluster,
 			] )
 		);

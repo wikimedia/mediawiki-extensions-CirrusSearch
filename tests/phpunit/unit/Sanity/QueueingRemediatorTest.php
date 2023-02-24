@@ -19,8 +19,6 @@ class QueueingRemediatorTest extends CirrusTestCase {
 		$docId = '123';
 		foreach ( [ null, 'c1' ] as $cluster ) {
 			$linksUpdateJob = new LinksUpdate( $title, [
-				'addedLinks' => [],
-				'removedLinks' => [],
 				'cluster' => $cluster
 			] );
 

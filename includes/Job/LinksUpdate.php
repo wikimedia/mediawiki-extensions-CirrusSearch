@@ -66,8 +66,8 @@ class LinksUpdate extends CirrusTitleJob {
 	 * Queue IncomingLinkCount jobs when pages are newly linked or unlinked
 	 */
 	private function queueIncomingLinksJobs() {
-		$titleKeys = array_merge( $this->params[ 'addedLinks' ],
-			$this->params[ 'removedLinks' ] );
+		$titleKeys = array_merge( $this->params[ 'addedLinks' ] ?? [],
+			$this->params[ 'removedLinks' ] ?? [] );
 		$refreshInterval = $this->getSearchConfig()->get( 'CirrusSearchRefreshInterval' );
 		$jobs = [];
 		foreach ( $titleKeys as $titleKey ) {

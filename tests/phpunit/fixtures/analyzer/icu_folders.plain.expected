@@ -182,6 +182,32 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "ckb_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ckb_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "cs_plain": {
             "char_filter": [
                 "nnbsp_norm",
@@ -890,6 +916,32 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "ro_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "ro_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ro_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "ru_plain": {
             "char_filter": [
                 "nnbsp_norm",
@@ -1200,6 +1252,10 @@
         "remove_empty": {
             "min": 1,
             "type": "length"
+        },
+        "ro_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u0102\u0103\u00c2\u00e2\u00ce\u00ee\u0218\u0219\u021a\u021b]"
         },
         "ru_icu_folding": {
             "type": "icu_folding",

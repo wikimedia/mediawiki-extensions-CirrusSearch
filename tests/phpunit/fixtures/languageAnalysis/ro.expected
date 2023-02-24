@@ -1,7 +1,21 @@
 {
     "analyzer": {
         "text": {
-            "type": "romanian"
+            "type": "custom",
+            "tokenizer": "standard",
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix",
+                "romanian_charfilter"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "romanian_stop",
+                "ro_comma_stop",
+                "romanian_stemmer",
+                "asciifolding"
+            ]
         },
         "plain": {
             "type": "custom",
@@ -45,12 +59,12 @@
         },
         "source_text_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper_source_text"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper_source_text"
             ]
         },
         "source_text_plain_search": {
@@ -161,7 +175,21 @@
             ]
         },
         "text_search": {
-            "type": "romanian"
+            "type": "custom",
+            "tokenizer": "standard",
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix",
+                "romanian_charfilter"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "romanian_stop",
+                "ro_comma_stop",
+                "romanian_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -198,6 +226,43 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "ro_comma_stop": {
+            "type": "stop",
+            "stopwords": [
+                "ace\u0219ti",
+                "ace\u0219tia",
+                "a\u0219",
+                "a\u0219adar",
+                "\u0103\u0219tia",
+                "a\u021bi",
+                "ave\u021bi",
+                "c\u00e2\u021bi",
+                "c\u00ee\u021bi",
+                "de\u0219i",
+                "e\u0219ti",
+                "fi\u021bi",
+                "\u00ee\u021bi",
+                "mul\u021bi",
+                "ni\u0219te",
+                "no\u0219tri",
+                "\u0219i",
+                "s\u00eente\u021bi",
+                "sunte\u021bi",
+                "\u021bi",
+                "\u021bie",
+                "to\u021bi",
+                "totu\u0219i",
+                "vo\u0219tri"
+            ]
+        },
+        "romanian_stop": {
+            "type": "stop",
+            "stopwords": "_romanian_"
+        },
+        "romanian_stemmer": {
+            "type": "stemmer",
+            "language": "romanian"
         },
         "dedup_asciifolding": {
             "type": "unique",
@@ -258,6 +323,23 @@
             "type": "mapping",
             "mappings": [
                 "\u0130=>I"
+            ]
+        },
+        "romanian_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\u015f=>\u0219",
+                "s\\u0326=>\u0219",
+                "s\\u0327=>\u0219",
+                "\u0163=>\u021b",
+                "t\\u0326=>\u021b",
+                "t\\u0327=>\u021b",
+                "\u015e=>\u0218",
+                "S\\u0326=>\u0218",
+                "S\\u0327=>\u0218",
+                "\u0162=>\u021a",
+                "T\\u0326=>\u021a",
+                "T\\u0327=>\u021a"
             ]
         }
     }

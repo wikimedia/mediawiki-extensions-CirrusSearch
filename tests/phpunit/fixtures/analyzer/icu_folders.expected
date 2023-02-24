@@ -404,6 +404,66 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "ckb_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ckb_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ckb_text": {
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "sorani_normalization",
+                "icu_normalizer",
+                "decimal_digit",
+                "sorani_stop",
+                "sorani_stemmer",
+                "icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ckb_text_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "sorani_normalization",
+                "icu_normalizer",
+                "decimal_digit",
+                "sorani_stop",
+                "sorani_stemmer",
+                "icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "cs_plain": {
             "char_filter": [
                 "nnbsp_norm",
@@ -1952,6 +2012,66 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "ro_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "ro_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ro_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ro_text": {
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix",
+                "romanian_charfilter"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "romanian_stop",
+                "ro_comma_stop",
+                "romanian_stemmer",
+                "ro_icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ro_text_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix",
+                "romanian_charfilter"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "romanian_stop",
+                "ro_comma_stop",
+                "romanian_stemmer",
+                "ro_icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "ru_plain": {
             "char_filter": [
                 "nnbsp_norm",
@@ -2477,6 +2597,23 @@
         "nnbsp_norm": {
             "mappings": [
                 "\\u202F=>\\u0020"
+            ],
+            "type": "mapping"
+        },
+        "romanian_charfilter": {
+            "mappings": [
+                "\u015f=>\u0219",
+                "s\\u0326=>\u0219",
+                "s\\u0327=>\u0219",
+                "\u0163=>\u021b",
+                "t\\u0326=>\u021b",
+                "t\\u0327=>\u021b",
+                "\u015e=>\u0218",
+                "S\\u0326=>\u0218",
+                "S\\u0327=>\u0218",
+                "\u0162=>\u021a",
+                "T\\u0326=>\u021a",
+                "T\\u0327=>\u021a"
             ],
             "type": "mapping"
         },
@@ -3011,6 +3148,47 @@
             "min": 1,
             "type": "length"
         },
+        "ro_comma_stop": {
+            "stopwords": [
+                "ace\u0219ti",
+                "ace\u0219tia",
+                "a\u0219",
+                "a\u0219adar",
+                "\u0103\u0219tia",
+                "a\u021bi",
+                "ave\u021bi",
+                "c\u00e2\u021bi",
+                "c\u00ee\u021bi",
+                "de\u0219i",
+                "e\u0219ti",
+                "fi\u021bi",
+                "\u00ee\u021bi",
+                "mul\u021bi",
+                "ni\u0219te",
+                "no\u0219tri",
+                "\u0219i",
+                "s\u00eente\u021bi",
+                "sunte\u021bi",
+                "\u021bi",
+                "\u021bie",
+                "to\u021bi",
+                "totu\u0219i",
+                "vo\u0219tri"
+            ],
+            "type": "stop"
+        },
+        "ro_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u0102\u0103\u00c2\u00e2\u00ce\u00ee\u0218\u0219\u021a\u021b]"
+        },
+        "romanian_stemmer": {
+            "language": "romanian",
+            "type": "stemmer"
+        },
+        "romanian_stop": {
+            "stopwords": "_romanian_",
+            "type": "stop"
+        },
         "ru_icu_folding": {
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u0419\u0439]"
@@ -3026,6 +3204,14 @@
         "sh_icu_folding": {
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u0110\u0111\u017d\u017e\u0106\u0107\u0160\u0161\u010c\u010d]"
+        },
+        "sorani_stemmer": {
+            "language": "sorani",
+            "type": "stemmer"
+        },
+        "sorani_stop": {
+            "stopwords": "_sorani_",
+            "type": "stop"
         },
         "spanish_stemmer": {
             "language": "light_spanish",

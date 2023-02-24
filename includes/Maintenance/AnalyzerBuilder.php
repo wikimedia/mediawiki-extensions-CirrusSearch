@@ -110,6 +110,9 @@ class AnalyzerBuilder {
 	/** @var string|null */
 	private $removeEmpty;
 
+	/** @var string|null */
+	private $decimalDigit;
+
 	/**
 	 * @param string $langName
 	 * @param string $analyzerName (default to 'text')
@@ -290,6 +293,13 @@ class AnalyzerBuilder {
 		return $this;
 	}
 
+	/** @return self */
+	public function withDecimalDigit(): self {
+		$this->unpackedCheck();
+		$this->decimalDigit = 'decimal_digit';
+		return $this;
+	}
+
 	/**
 	 * Create a basic analyzer with support for various common options
 	 *
@@ -338,6 +348,7 @@ class AnalyzerBuilder {
 			$this->filters[] = $this->elisionName;
 			$this->filters[] = $this->aggressiveSplitting;
 			$this->filters[] = 'lowercase';
+			$this->filters[] = $this->decimalDigit;
 			$this->filters[] = $this->stopName;
 			$this->filters[] = $this->overrideName;
 			$this->filters[] = $langStem;
@@ -422,13 +433,13 @@ class AnalyzerBuilder {
 	}
 
 	/**
-	 * Create a pattern_replace character filter with the mappings provided.
+	 * Create a pattern_replace filter/char_filter with the mappings provided.
 	 *
 	 * @param string $pat
 	 * @param string $repl
-	 * @return mixed[] character filter
+	 * @return mixed[] filter
 	 */
-	public static function patternCharFilter( string $pat, string $repl ): array {
+	public static function patternFilter( string $pat, string $repl ): array {
 		return [ 'type' => 'pattern_replace', 'pattern' => $pat, 'replacement' => $repl ];
 	}
 

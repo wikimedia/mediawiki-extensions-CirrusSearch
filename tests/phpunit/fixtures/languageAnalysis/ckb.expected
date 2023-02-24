@@ -1,7 +1,21 @@
 {
     "analyzer": {
         "text": {
-            "type": "sorani"
+            "type": "custom",
+            "tokenizer": "standard",
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "sorani_normalization",
+                "lowercase",
+                "decimal_digit",
+                "sorani_stop",
+                "sorani_stemmer",
+                "asciifolding"
+            ]
         },
         "plain": {
             "type": "custom",
@@ -45,12 +59,12 @@
         },
         "source_text_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper_source_text"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper_source_text"
             ]
         },
         "source_text_plain_search": {
@@ -161,7 +175,21 @@
             ]
         },
         "text_search": {
-            "type": "sorani"
+            "type": "custom",
+            "tokenizer": "standard",
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "sorani_normalization",
+                "lowercase",
+                "decimal_digit",
+                "sorani_stop",
+                "sorani_stemmer",
+                "asciifolding"
+            ]
         }
     },
     "filter": {
@@ -198,6 +226,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "sorani_stop": {
+            "type": "stop",
+            "stopwords": "_sorani_"
+        },
+        "sorani_stemmer": {
+            "type": "stemmer",
+            "language": "sorani"
         },
         "dedup_asciifolding": {
             "type": "unique",

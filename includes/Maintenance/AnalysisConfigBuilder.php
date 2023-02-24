@@ -417,6 +417,8 @@ class AnalysisConfigBuilder {
 		case 'nb': // T289612
 		case 'nn': // T289612
 			return '[^ÆæØøÅå]';
+		case 'ro':
+			return '[^ĂăÂâÎîȘșȚț]';
 		case 'ru':
 			return '[^Йй]';
 		case 'sv': // T160562
@@ -740,7 +742,7 @@ class AnalysisConfigBuilder {
 		case 'arabic':
 		case 'arabic-egyptian':
 		case 'arabic-moroccan':
-			$arPreStopFilters = [ 'decimal_digit' ];
+			$arPreStopFilters = [];
 			if ( $langName == 'arabic-egyptian' || $langName == 'arabic-moroccan' ) {
 				// load extra stopwords for Arabic varieties
 				$arStopwords = require __DIR__ . '/AnalysisLanguageData/arabicStopwords.php';
@@ -752,6 +754,7 @@ class AnalysisConfigBuilder {
 			// Unpack Arabic analyzer T294147
 			$config = ( new AnalyzerBuilder( 'arabic' ) )->
 				withUnpackedAnalyzer()->
+				withDecimalDigit()->
 				insertFiltersBefore( 'arabic_stop', $arPreStopFilters )->
 				insertFiltersBefore( 'arabic_stemmer', [ 'arabic_normalization' ] )->
 				build( $config );
@@ -768,8 +771,8 @@ class AnalysisConfigBuilder {
 		case 'bengali': // Unpack Bengali analyzer T294067
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
-				insertFiltersBefore( 'bengali_stop',
-					[ 'decimal_digit', 'indic_normalization' ] )->
+				withDecimalDigit()->
+				insertFiltersBefore( 'bengali_stop', [ 'indic_normalization' ] )->
 				build( $config );
 			break;
 		case 'bosnian':
@@ -941,8 +944,9 @@ class AnalysisConfigBuilder {
 			// Unpack Hindi analyzer T289612
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
+				withDecimalDigit()->
 				insertFiltersBefore( 'hindi_stop',
-					[ 'decimal_digit', 'indic_normalization', 'hindi_normalization' ] )->
+					[ 'indic_normalization', 'hindi_normalization' ] )->
 				build( $config );
 			break;
 		case 'indonesian':
@@ -1090,12 +1094,13 @@ class AnalysisConfigBuilder {
 			$config[ 'char_filter' ][ 'zero_width_spaces' ] =
 				AnalyzerBuilder::mappingCharFilter( [ "\u200C=>\u0020" ] );
 
-			$faPreStopFilters = [ 'decimal_digit', 'arabic_normalization', 'persian_normalization' ];
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
 				omitStemmer()->
+				withDecimalDigit()->
 				withCharFilters( [ 'zero_width_spaces' ] )->
-				insertFiltersBefore( 'persian_stop', $faPreStopFilters )->
+				insertFiltersBefore( 'persian_stop',
+					[ 'arabic_normalization', 'persian_normalization' ] )->
 				build( $config );
 			break;
 		case 'polish':
@@ -1125,6 +1130,24 @@ class AnalysisConfigBuilder {
 				'filter' => [ 'lowercase', 'polish_stop', 'polish_stem', 'stempel_pattern_filter',
 					'remove_empty', 'stempel_stop' ],
 			];
+			break;
+		case 'romanian':  // Unpack Romanian analyzer T325091
+			# map s & t with cedilla (not Romanian) to ones with comma (are Romanian)
+			# also normalize versions with combining diacritics to single characters
+			$cedillaMap = [
+				'ş=>ș', 's\u0326=>ș', 's\u0327=>ș', 'ţ=>ț', 't\u0326=>ț', 't\u0327=>ț',
+				'Ş=>Ș', 'S\u0326=>Ș', 'S\u0327=>Ș', 'Ţ=>Ț', 'T\u0326=>Ț', 'T\u0327=>Ț',
+			];
+
+			$roStopwords = require __DIR__ . '/AnalysisLanguageData/romanianStopwords.php';
+			$config[ 'filter' ][ 'ro_comma_stop' ] =
+				AnalyzerBuilder::stopFilterFromList( $roStopwords );
+
+			$config = ( new AnalyzerBuilder( $langName ) )->
+				withUnpackedAnalyzer()->
+				withCharMap( $cedillaMap )->
+				insertFiltersBefore( 'romanian_stemmer', [ 'ro_comma_stop' ] )->
+				build( $config );
 			break;
 		case 'russian':
 			// unpack built-in Russian analyzer and add character filter
@@ -1163,6 +1186,13 @@ class AnalysisConfigBuilder {
 				'tokenizer' => 'standard',
 				'filter' => [ 'lowercase', 'slovak_stemmer', 'asciifolding' ],
 			];
+			break;
+		case 'sorani':    // Unpack Sorani analyzer T325091
+			$config = ( new AnalyzerBuilder( $langName ) )->
+				withUnpackedAnalyzer()->
+				withDecimalDigit()->
+				insertFiltersBefore( 'lowercase', [ 'sorani_normalization' ] )->
+				build( $config );
 			break;
 		case 'swedish':
 			// Add asciifolding_preserve to lowercase_keyword
@@ -1210,7 +1240,7 @@ class AnalysisConfigBuilder {
 					// break between any digits and Thai letters, or vice versa
 					// break *Thai* tokens on periods (by making them spaces)
 					// (regex look-behind is okay, but look-ahead breaks offsets)
-					AnalyzerBuilder::patternCharFilter( "(?<=\\p{Nd})($thaiLetterPat)" .
+					AnalyzerBuilder::patternFilter( "(?<=\\p{Nd})($thaiLetterPat)" .
 						"|(?<=$thaiLetterPat)(\\p{Nd})" .
 						"|(?<=$thaiLetterPat)\.($thaiLetterPat)",
 						' $1$2$3' );
@@ -1237,7 +1267,7 @@ class AnalysisConfigBuilder {
 				withCharMap( $thCharMap )->
 				withTokenizer( $thaiTokenizer )->
 				omitStemmer()->
-				insertFiltersBefore( 'thai_stop', [ 'decimal_digit' ] )->
+				withDecimalDigit()->
 				build( $config );
 			break;
 		case 'turkish':
@@ -1629,6 +1659,7 @@ class AnalysisConfigBuilder {
 		'bs' => true,
 		'ca' => true,
 		'cs' => true,
+		'ckb' => true,
 		'da' => true,
 		'de' => true,
 		'el' => true,
@@ -1656,6 +1687,7 @@ class AnalysisConfigBuilder {
 		'nl' => true,
 		'nn' => true,
 		'pt' => true,
+		'ro' => true,
 		'ru' => true,
 		'sh' => true,
 		'sk' => true,

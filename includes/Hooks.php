@@ -5,7 +5,6 @@ namespace CirrusSearch;
 use ApiBase;
 use ApiMain;
 use ApiOpenSearch;
-use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
 use ConfigFactory;
 use Html;
@@ -614,41 +613,6 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	public function onUserGetDefaultOptions( &$defaultOptions ) {
 		$defaultOptions['cirrussearch-pref-completion-profile'] =
 			$this->configFactory->makeConfig( 'CirrusSearch' )->get( 'CirrusSearchCompletionSettings' );
-	}
-
-	/**
-	 * Register CirrusSearch services
-	 * @param MediaWikiServices $container
-	 */
-	public static function onMediaWikiServices( MediaWikiServices $container ) {
-		$container->defineService(
-			InterwikiResolverFactory::SERVICE,
-			[ InterwikiResolverFactory::class, 'newFactory' ]
-		);
-		$container->defineService(
-			InterwikiResolver::SERVICE,
-			static function ( MediaWikiServices $serviceContainer ) {
-				$config = $serviceContainer->getConfigFactory()
-						->makeConfig( 'CirrusSearch' );
-				return $serviceContainer
-					->getService( InterwikiResolverFactory::SERVICE )
-					->getResolver( $config );
-			}
-		);
-		$container->defineService( SearchProfileServiceFactory::SERVICE_NAME,
-			static function ( MediaWikiServices $serviceContainer ) {
-				$config = $serviceContainer->getConfigFactory()
-					->makeConfig( 'CirrusSearch' );
-				return new SearchProfileServiceFactory(
-					$serviceContainer->getService( InterwikiResolver::SERVICE ),
-					/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
-					$config,
-					$serviceContainer->getLocalServerObjectCache(),
-					new CirrusSearchHookRunner( $serviceContainer->getHookContainer() ),
-					$serviceContainer->getUserOptionsLookup()
-				);
-			}
-		);
 	}
 
 	public static function onSpecialStatsAddExtra( &$extraStats, $context ) {

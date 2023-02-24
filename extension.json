@@ -127,7 +127,6 @@
 		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchSimilarityConfig",
 		"GetPreferences": "default",
 		"LinksUpdateComplete": "changelistener",
-		"MediaWikiServices": "CirrusSearch\\Hooks::onMediaWikiServices",
 		"PrefixSearchExtractNamespace": "CirrusSearch\\Hooks::onPrefixSearchExtractNamespace",
 		"ResourceLoaderGetConfigVars": "CirrusSearch\\Hooks::onResourceLoaderGetConfigVars",
 		"SearchIndexFields": [

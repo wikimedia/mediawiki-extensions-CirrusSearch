@@ -6,7 +6,7 @@ This file provides an overview of the CirrusSearch upgrade process.
 It is always a good idea to upgrade index config when deploying a new version.
 If your wiki is relatively small this process is extremely fast and can be run
 with no downtime:
- php updateSearchIndexConfig.php --reindexAndRemoveOk --indexIdentifier now
+ php UpdateSearchIndexConfig.php --reindexAndRemoveOk --indexIdentifier now
 
 If you prefer not to reindex your data make sure to always upgrade the cirrus
 metastore by running:

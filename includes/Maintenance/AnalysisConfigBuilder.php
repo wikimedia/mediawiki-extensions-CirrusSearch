@@ -417,8 +417,9 @@ class AnalysisConfigBuilder {
 		case 'nb': // T289612
 		case 'nn': // T289612
 			return '[^ÆæØøÅå]';
-		case 'ro':
-			return '[^ĂăÂâÎîȘșȚț]';
+		case 'ro': // T325091
+			// including s&t with cedilla because we (have to) use it internally T330893
+			return '[^ĂăÂâÎîȘșȚțŞşŢţ]';
 		case 'ru':
 			return '[^Йй]';
 		case 'sv': // T160562
@@ -1131,14 +1132,20 @@ class AnalysisConfigBuilder {
 					'remove_empty', 'stempel_stop' ],
 			];
 			break;
-		case 'romanian':  // Unpack Romanian analyzer T325091
-			# map s & t with cedilla (not Romanian) to ones with comma (are Romanian)
-			# also normalize versions with combining diacritics to single characters
+		case 'romanian':  // Unpack Romanian analyzer T325091 / T330893
+			// Counterintuitively, we need to map correct s&t (with commas) to older
+			// incorrect forms (with cedilla) so that the old Snowball stemmer (from before
+			// comma forms were available) will work; also normalize versions with
+			// combining diacritics to single characters.
 			$cedillaMap = [
-				'ş=>ș', 's\u0326=>ș', 's\u0327=>ș', 'ţ=>ț', 't\u0326=>ț', 't\u0327=>ț',
-				'Ş=>Ș', 'S\u0326=>Ș', 'S\u0327=>Ș', 'Ţ=>Ț', 'T\u0326=>Ț', 'T\u0327=>Ț',
+				'ș=>ş', 's\u0326=>ş', 's\u0327=>ş', 'ț=>ţ', 't\u0326=>ţ', 't\u0327=>ţ',
+				'Ș=>Ş', 'S\u0326=>Ş', 'S\u0327=>Ş', 'Ț=>Ţ', 'T\u0326=>Ţ', 'T\u0327=>Ţ',
 			];
 
+			// Add stopword variants with modern commas instead of old cedillas so that
+			// both are handled, regardless of the character mapping needed for the
+			// stemmer. In the future, Lucene should update their stopwords and these will
+			// be included.
 			$roStopwords = require __DIR__ . '/AnalysisLanguageData/romanianStopwords.php';
 			$config[ 'filter' ][ 'ro_comma_stop' ] =
 				AnalyzerBuilder::stopFilterFromList( $roStopwords );

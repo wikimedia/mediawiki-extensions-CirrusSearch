@@ -232,7 +232,7 @@ class ChangeListener implements
 			$title = Title::newFromLinkTarget( $old );
 			$job = new Job\DeletePages( $title, [
 				'indexSuffix' => $oldIndexSuffix,
-				'docId' => $this->searchConfig->makeId( $new )
+				'docId' => $this->searchConfig->makeId( $pageid )
 			] );
 			// Push the job after DB commit but cancel on rollback
 			$this->loadBalancer->getConnectionRef( DB_PRIMARY )->onTransactionCommitOrIdle( function () use ( $job ) {

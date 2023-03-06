@@ -9,6 +9,7 @@ use Config;
 use MediaWiki\MediaWikiServices;
 use RequestContext;
 use WikiMap;
+use Wikimedia\Assert\Assert;
 
 /**
  * Configuration class encapsulating Searcher environment.
@@ -179,6 +180,8 @@ class SearchConfig implements \Config {
 	 * @return string
 	 */
 	public function makeId( $pageId ) {
+		Assert::parameter( is_int( $pageId ) || ( is_string( $pageId ) && ctype_digit( $pageId ) ),
+			'$pageId', "should be an integer or a string with digits, got [$pageId]." );
 		$prefix = $this->get( self::PREFIX_IDS )
 			? $this->getWikiId()
 			: null;

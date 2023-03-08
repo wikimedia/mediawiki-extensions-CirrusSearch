@@ -153,8 +153,6 @@ class ElasticaWrite extends CirrusGenericJob {
 			]
 		);
 
-		$retry = [];
-		$error = [];
 		$sender = new DataSender( $conn, $this->searchConfig );
 		try {
 			$status = $sender->{$this->params['method']}( ...$arguments );

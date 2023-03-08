@@ -71,28 +71,24 @@ class Updater extends ElasticsearchIntermediary {
 	/**
 	 * Update a single page.
 	 * @param Title $title
-	 * @return bool true if the page updated, false if it failed, null if it didn't need updating
 	 */
-	public function updateFromTitle( $title ) {
+	public function updateFromTitle( $title ): void {
 		list( $page, $redirects ) = $this->traceRedirects( $title );
 		if ( $page ) {
-			$updatedCount = $this->updatePages(
+			$this->updatePages(
 				[ $page ],
 				BuildDocument::INDEX_EVERYTHING
 			);
-			if ( $updatedCount < 0 ) {
-				return false;
-			}
 		}
 
 		if ( $redirects === [] ) {
-			return true;
+			return;
 		}
 		$redirectDocIds = [];
 		foreach ( $redirects as $redirect ) {
 			$redirectDocIds[] = $this->connection->getConfig()->makeId( $redirect->getId() );
 		}
-		return $this->deletePages( [], $redirectDocIds );
+		$this->deletePages( [], $redirectDocIds );
 	}
 
 	/**
@@ -179,9 +175,9 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param WikiPage[] $pages pages to update
 	 * @param int $flags Bit field containing instructions about how the document should be built
 	 *   and sent to Elasticsearch.
-	 * @return int Number of documents updated of -1 if there was an error
+	 * @return int Number of documents updated
 	 */
-	public function updatePages( $pages, $flags ) {
+	public function updatePages( $pages, $flags ): int {
 		// Don't update the same page twice. We shouldn't, but meh
 		$pageIds = [];
 		$pages = array_filter( $pages, static function ( WikiPage $page ) use ( &$pageIds ) {
@@ -285,9 +281,8 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param int[]|string[] $docIds List of elasticsearch document ids to delete
 	 * @param string|null $indexSuffix index from which to delete.  null means all.
 	 * @param array $writeJobParams Parameters passed on to ElasticaWriteJob
-	 * @return bool Always returns true.
 	 */
-	public function deletePages( $titles, $docIds, $indexSuffix = null, array $writeJobParams = [] ) {
+	public function deletePages( $titles, $docIds, $indexSuffix = null, array $writeJobParams = [] ): void {
 		Job\OtherIndex::queueIfRequired( $this->connection->getConfig(), $titles, $this->writeToClusterName );
 
 		// Deletes are fairly cheap to send, they can be batched in larger
@@ -305,8 +300,6 @@ class Updater extends ElasticsearchIntermediary {
 			},
 			$batchSize
 		);
-
-		return true;
 	}
 
 	/**
@@ -364,9 +357,8 @@ class Updater extends ElasticsearchIntermediary {
 	/**
 	 * Update the search index for newly linked or unlinked articles.
 	 * @param Title[] $titles titles to update
-	 * @return bool were all pages updated?
 	 */
-	public function updateLinkedArticles( $titles ) {
+	public function updateLinkedArticles( $titles ): void {
 		$pages = [];
 		$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();
 		foreach ( $titles as $title ) {
@@ -406,8 +398,7 @@ class Updater extends ElasticsearchIntermediary {
 			// a full update (just link counts).
 			$pages[] = $page;
 		}
-		$updatedCount = $this->updatePages( $pages, BuildDocument::SKIP_PARSE );
-		return $updatedCount >= 0;
+		$this->updatePages( $pages, BuildDocument::SKIP_PARSE );
 	}
 
 	/**

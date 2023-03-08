@@ -71,8 +71,9 @@ class MassIndex extends CirrusGenericJob {
 		}
 		// Now invoke the updater!
 		$updater = Updater::build( $this->searchConfig, $this->params['cluster'] ?? null );
-		$count = $updater->updatePages( $pageData, $this->params[ 'updateFlags' ] );
-		return $count >= 0;
+		$updater->updatePages( $pageData, $this->params[ 'updateFlags' ] );
+		// retries are handled in a separate queue
+		return true;
 	}
 
 	/**

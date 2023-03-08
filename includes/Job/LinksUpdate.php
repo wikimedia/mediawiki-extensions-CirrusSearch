@@ -48,18 +48,13 @@ class LinksUpdate extends CirrusTitleJob {
 	 */
 	protected function doJob() {
 		$updater = Updater::build( $this->getSearchConfig(), $this->params['cluster'] ?? null );
-		$res = $updater->updateFromTitle( $this->title );
-		if ( $res === false ) {
-			// Couldn't update. Bail early and retry rather than adding an
-			// IncomingLinkCount job that will produce the wrong answer.
-			return $res;
-		}
+		$updater->updateFromTitle( $this->title );
 
 		if ( $this->getSearchConfig()->get( 'CirrusSearchEnableIncomingLinkCounting' ) ) {
 			$this->queueIncomingLinksJobs();
 		}
 
-		return $res;
+		return true;
 	}
 
 	/**

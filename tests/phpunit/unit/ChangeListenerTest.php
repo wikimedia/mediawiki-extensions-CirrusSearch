@@ -99,4 +99,29 @@ class ChangeListenerTest extends CirrusTestCase {
 			]
 		];
 	}
+
+	/**
+	 * @covers \CirrusSearch\ChangeListener::onUploadComplete
+	 */
+	public function testOnFileUploadComplete() {
+		$now = 123;
+		\MWTimestamp::setFakeTime( $now );
+		$title = $this->createMock( \Title::class );
+		$title->method( 'getPrefixedDBkey' )->willReturn( 'My_Title' );
+		$title->method( 'exists' )->willReturn( true );
+
+		$uploadBase = $this->createMock( \UploadBase::class );
+		$uploadBase->method( 'getTitle' )->willReturn( $title );
+
+		$jobqueue = $this->createMock( \JobQueueGroup::class );
+		$expectedJobParam = [
+			"update_kind" => "page_change",
+			"root_event_time" => $now,
+			"prioritized" => true,
+		];
+		$jobqueue->expects( $this->once() )->method( 'push' )->with( new CirrusLinksUpdate( $title,  $expectedJobParam ) );
+
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(), $this->createMock( \LoadBalancer::class ) );
+		$listener->onUploadComplete( $uploadBase );
+	}
 }

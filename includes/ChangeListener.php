@@ -132,11 +132,7 @@ class ChangeListener implements
 	 */
 	public function onUploadComplete( $uploadBase ) {
 		if ( $uploadBase->getTitle()->exists() ) {
-			$this->jobQueue->push(
-				new Job\LinksUpdate( $uploadBase->getTitle(), [
-					'prioritize' => true
-				] )
-			);
+			$this->jobQueue->push( LinksUpdate::newPageChangeUpdate( $uploadBase->getTitle(), null, [] ) );
 		}
 	}
 

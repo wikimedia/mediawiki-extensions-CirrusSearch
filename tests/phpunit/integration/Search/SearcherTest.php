@@ -81,34 +81,34 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			],
 			'wgCirrusSearchQueryStringMaxDeterminizedStates' => 500,
 			'wgContentNamespaces' => [ NS_MAIN ],
-			// Override the list of namespaces to give more deterministic results
-			'wgHooks' => [
-				'CanonicalNamespaces' => [
-					static function ( &$namespaces ) {
-						$namespaces = [
-							0 => '',
-							-2 => 'Media',
-							-1 => 'Special',
-							1 => 'Talk',
-							2 => 'User',
-							3 => 'User_talk',
-							4 => 'Project',
-							5 => 'Project_talk',
-							6 => 'File',
-							7 => 'File_talk',
-							8 => 'MediaWiki',
-							9 => 'MediaWiki_talk',
-							10 => 'Template',
-							11 => 'Template_talk',
-							12 => 'Help',
-							13 => 'Help_talk',
-							14 => 'Category',
-							15 => 'Category_talk',
-						];
-					}
-				],
-			] + $GLOBALS['wgHooks']
 		] );
+
+		// Override the list of namespaces to give more deterministic results
+		$this->setTemporaryHook(
+			'CanonicalNamespaces',
+			static function ( &$namespaces ) {
+				$namespaces = [
+					0 => '',
+					-2 => 'Media',
+					-1 => 'Special',
+					1 => 'Talk',
+					2 => 'User',
+					3 => 'User_talk',
+					4 => 'Project',
+					5 => 'Project_talk',
+					6 => 'File',
+					7 => 'File_talk',
+					8 => 'MediaWiki',
+					9 => 'MediaWiki_talk',
+					10 => 'Template',
+					11 => 'Template_talk',
+					12 => 'Help',
+					13 => 'Help_talk',
+					14 => 'Category',
+					15 => 'Category_talk',
+				];
+			}
+		);
 
 		// Set a couple pre-defined pages for anything (morelike) that needs valid pages
 		$this->addGoodLinkObject( 12345, Title::newFromText( 'Some page' ) );

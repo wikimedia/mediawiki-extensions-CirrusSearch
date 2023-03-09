@@ -108,14 +108,15 @@ class ChangeListener implements
 			$params['removedLinks'] = self::prepareTitlesForLinksUpdate( $linksUpdate->getRemovedLinks(),
 					$unLinkedArticlesToUpdate, true );
 		}
-			// non recursive LinksUpdate can go to the non prioritized queue
+
+		// non recursive LinksUpdate can go to the non prioritized queue
 		if ( $linksUpdate->isRecursive() ) {
 			$params[ 'prioritize' ] = true;
 			$delay = $updateDelay['prioritized'];
 		} else {
 			$delay = $updateDelay['default'];
 		}
-		$params += Job\LinksUpdate::buildJobDelayOptions( Job\LinksUpdate::class, $delay );
+		$params += Job\LinksUpdate::buildJobDelayOptions( Job\LinksUpdate::class, $delay, $this->jobQueue );
 		$job = new Job\LinksUpdate( $linksUpdate->getTitle(), $params );
 
 		$this->jobQueue->lazyPush( $job );

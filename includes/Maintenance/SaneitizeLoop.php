@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Job\CheckerJob;
 use Elastica\Document;
+use MediaWiki\MediaWikiServices;
 use MWTimestamp;
 
 /**
@@ -43,6 +44,10 @@ class SaneitizeLoop {
 
 	/** @var callable */
 	private $logger;
+	/**
+	 * @var \JobQueueGroup
+	 */
+	private $jobQueueGroup;
 
 	/**
 	 * @param string $profileName Name of the saneitizer profile to use in created jobs
@@ -51,9 +56,10 @@ class SaneitizeLoop {
 	 * @param int $minLoopDuration Minimum number of seconds between loop restarts
 	 * @param callable|null $logger Callable accepting 2 arguments, first a log
 	 *  message and second either a channel name or null.
+	 * @param \JobQueueGroup|null $jobQueueGroup
 	 */
 	public function __construct(
-		$profileName, $pushJobFreq, $chunkSize, $minLoopDuration, $logger = null
+		$profileName, $pushJobFreq, $chunkSize, $minLoopDuration, $logger = null, \JobQueueGroup $jobQueueGroup = null
 	) {
 		$this->profileName = $profileName;
 		$this->pushJobFreq = $pushJobFreq;
@@ -61,6 +67,7 @@ class SaneitizeLoop {
 		$this->minLoopDuration = $minLoopDuration;
 		$this->logger = $logger ?? static function ( $msg, $channel = null ) {
 		};
+		$this->jobQueueGroup = $jobQueueGroup ?? MediaWikiServices::getInstance()->getJobQueueGroup();
 	}
 
 	/**
@@ -134,7 +141,7 @@ class SaneitizeLoop {
 	private function createCheckerJob( $from, $to, $cluster, $loopId ) {
 		$delay = mt_rand( 0, $this->pushJobFreq );
 		$this->log( "Creating CheckerJob( $from, $to, $delay, {$this->profileName}, $cluster, $loopId )\n" );
-		return CheckerJob::build( $from, $to, $delay, $this->profileName, $cluster, $loopId );
+		return CheckerJob::build( $from, $to, $delay, $this->profileName, $cluster, $loopId, $this->jobQueueGroup );
 	}
 
 	/**

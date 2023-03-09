@@ -65,6 +65,7 @@ class LinksUpdate extends CirrusTitleJob {
 			$this->params[ 'removedLinks' ] ?? [] );
 		$refreshInterval = $this->getSearchConfig()->get( 'CirrusSearchRefreshInterval' );
 		$jobs = [];
+		$jobQueue = MediaWikiServices::getInstance()->getJobQueueGroup();
 		foreach ( $titleKeys as $titleKey ) {
 			$title = Title::newFromDBkey( $titleKey );
 			if ( !$title || !$title->canExist() ) {
@@ -78,9 +79,9 @@ class LinksUpdate extends CirrusTitleJob {
 			$delay = 2 * $refreshInterval + 1;
 			$jobs[] = new IncomingLinkCount( $title, [
 				'cluster' => $this->params['cluster'],
-			] + self::buildJobDelayOptions( IncomingLinkCount::class, $delay ) );
+			] + self::buildJobDelayOptions( IncomingLinkCount::class, $delay, $jobQueue ) );
 		}
-		MediaWikiServices::getInstance()->getJobQueueGroup()->push( $jobs );
+		$jobQueue->push( $jobs );
 	}
 
 	/**

@@ -48,9 +48,10 @@ class CheckerJob extends CirrusGenericJob {
 	 * @param string|null $cluster
 	 * @param int $loopId The number of times the checker jobs have looped
 	 *  over the pages to be checked.
+	 * @param \JobQueueGroup $jobQueueGroup
 	 * @return CheckerJob
 	 */
-	public static function build( $fromPageId, $toPageId, $delay, $profile, $cluster, $loopId ) {
+	public static function build( $fromPageId, $toPageId, $delay, $profile, $cluster, $loopId, \JobQueueGroup $jobQueueGroup ) {
 		$job = new self( [
 			'fromPageId' => $fromPageId,
 			'toPageId' => $toPageId,
@@ -59,7 +60,7 @@ class CheckerJob extends CirrusGenericJob {
 			'profile' => $profile,
 			'cluster' => $cluster,
 			'loopId' => $loopId,
-		] + self::buildJobDelayOptions( self::class, $delay ) );
+		] + self::buildJobDelayOptions( self::class, $delay, $jobQueueGroup ) );
 		return $job;
 	}
 
@@ -324,7 +325,8 @@ class CheckerJob extends CirrusGenericJob {
 		$params['retryCount']++;
 		$params['fromPageId'] = $newFrom;
 		unset( $params['jobReleaseTimestamp'] );
-		$params += self::buildJobDelayOptions( self::class, $delay );
+		$jobQueue = MediaWikiServices::getInstance()->getJobQueueGroup();
+		$params += self::buildJobDelayOptions( self::class, $delay, $jobQueue );
 		$job = new self( $params );
 		LoggerFactory::getInstance( 'CirrusSearch' )->info(
 			"Sanitize CheckerJob: $cause ({fromPageId}:{toPageId}), Requeueing CheckerJob " .
@@ -336,6 +338,6 @@ class CheckerJob extends CirrusGenericJob {
 				'cluster' => $cluster ?: 'all clusters'
 			]
 		);
-		MediaWikiServices::getInstance()->getJobQueueGroup()->push( $job );
+		$jobQueue->push( $job );
 	}
 }

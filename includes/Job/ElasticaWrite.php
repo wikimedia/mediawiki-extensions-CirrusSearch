@@ -201,7 +201,8 @@ class ElasticaWrite extends CirrusGenericJob {
 			$params = $this->params;
 			$params['errorCount']++;
 			unset( $params['jobReleaseTimestamp'] );
-			$params += self::buildJobDelayOptions( self::class, $delay );
+			$jobQueue = MediaWikiServices::getInstance()->getJobQueueGroup();
+			$params += self::buildJobDelayOptions( self::class, $delay, $jobQueue );
 			$job = new self( $params );
 			// Individual failures should have already logged specific errors,
 			LoggerFactory::getInstance( 'CirrusSearch' )->info(
@@ -211,7 +212,7 @@ class ElasticaWrite extends CirrusGenericJob {
 					'delay' => $delay
 				]
 			);
-			MediaWikiServices::getInstance()->getJobQueueGroup()->push( $job );
+			$jobQueue->push( $job );
 			return true;
 		}
 	}

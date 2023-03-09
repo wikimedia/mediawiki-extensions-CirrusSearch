@@ -227,6 +227,7 @@ EOD
 		$jobInfo = $this->getJobInfo( $jobName ) ?? $this->createNewJob( $jobName );
 
 		$pushJobFreq = $this->getOption( 'refresh-freq', 2 * 3600 );
+		$jobQueue = MediaWikiServices::getInstance()->getJobQueueGroup();
 		$loop = new SaneitizeLoop(
 			$this->profileName,
 			$pushJobFreq,
@@ -234,7 +235,8 @@ EOD
 			$profile['min_loop_duration'],
 			function ( $msg, $channel ) {
 				$this->log( $msg, $channel );
-			} );
+			},
+			$jobQueue );
 		$jobs = $loop->run( $jobInfo, $maxJobs, $this->minId, $this->maxId );
 		if ( $jobs ) {
 			// Some job queues implementations ignore the timestamps and

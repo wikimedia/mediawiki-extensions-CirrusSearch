@@ -34,6 +34,14 @@ class DeletePages extends CirrusTitleJob {
 		$this->removeDuplicates = false;
 	}
 
+	public static function build( Title $title, string $docId, int $eventTime ): DeletePages {
+		return new self( $title, [
+			"docId" => $docId,
+			self::UPDATE_KIND => self::PAGE_CHANGE,
+			self::ROOT_EVENT_TIME => $eventTime
+		] );
+	}
+
 	/**
 	 * @return bool
 	 */

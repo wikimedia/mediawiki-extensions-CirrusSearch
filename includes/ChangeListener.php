@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
 use ConfigFactory;
 use JobQueueGroup;
@@ -180,9 +181,11 @@ class ChangeListener implements
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
 		// load it from the title because the page row has already been deleted.
 		$this->jobQueue->push(
-			new Job\DeletePages( $wikiPage->getTitle(), [
-				'docId' => $this->searchConfig->makeId( $id )
-			] )
+			DeletePages::build(
+				$wikiPage->getTitle(),
+				$this->searchConfig->makeId( $id ),
+				$logEntry->getTimestamp() !== false ? \MWTimestamp::convert( TS_UNIX, $logEntry->getTimestamp() ) : \MWTimestamp::time()
+			)
 		);
 	}
 

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate as CirrusLinksUpdate;
 use MediaWiki\Deferred\LinksUpdate\LinksUpdate;
 use MediaWiki\Revision\RevisionRecord;
@@ -123,5 +124,28 @@ class ChangeListenerTest extends CirrusTestCase {
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(), $this->createMock( \LoadBalancer::class ) );
 		$listener->onUploadComplete( $uploadBase );
+	}
+
+	/**
+	 * @covers \CirrusSearch\ChangeListener::onArticleDeleteComplete
+	 */
+	public function testOnArticleDeleteComplete() {
+		$now = 321;
+		$pageId = 123;
+		$page = $this->createMock( \WikiPage::class );
+		$title = $this->createMock( \Title::class );
+		$page->method( 'getTitle' )->willReturn( $title );
+		$logEntry = $this->createMock( \LogEntry::class );
+		$logEntry->method( 'getTimestamp' )->willReturn( \MWTimestamp::convert( TS_MW, $now ) );
+		$jobqueue = $this->createMock( \JobQueueGroup::class );
+
+		$expectedJobParam = [
+			"docId" => (string)$pageId,
+			"update_kind" => "page_change",
+			"root_event_time" => $now,
+		];
+		$jobqueue->expects( $this->once() )->method( 'push' )->with( new DeletePages( $title, $expectedJobParam ) );
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(), $this->createMock( \LoadBalancer::class ) );
+		$listener->onArticleDeleteComplete( $page, $this->createMock( \User::class ), "a reason", $pageId, null, $logEntry, 2 );
 	}
 }

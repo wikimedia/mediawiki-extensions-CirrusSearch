@@ -11,7 +11,7 @@
 	"license-name": "GPL-2.0-or-later",
 	"type": "other",
 	"requires": {
-		"MediaWiki": ">= 1.37.0",
+		"MediaWiki": ">= 1.39.0",
 		"extensions": {
 			"Elastica": ">= 6.0.1"
 		}
@@ -147,7 +147,9 @@
 	"HookHandlers": {
 		"default": {
 			"class": "CirrusSearch\\Hooks",
-			"services": [ "ConfigFactory" ]
+			"services": [
+				"ConfigFactory"
+			]
 		}
 	},
 	"config": {

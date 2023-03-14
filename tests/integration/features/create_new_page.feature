@@ -1,7 +1,7 @@
 @clean @phantomjs @bad_syntax
 Feature: Searches that prompt, or not, for new page creation
   Background:
-    Given I am at a random page
+    Given I am logged in and at a random page
 
   @incategory @wildcard
   Scenario Outline: Something something

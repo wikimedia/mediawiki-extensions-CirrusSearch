@@ -364,6 +364,11 @@ Given( /^I am at a random page$/, function () {
 	return this.visit( new TitlePage( 'Special:Random' ) );
 } );
 
+Given( /^I am logged in and at a random page$/, function () {
+	ArticlePage.login( this );
+	return this.visit( new TitlePage( 'Special:Random' ) );
+} );
+
 When( /^I set More Like This Options to ([^ ]+) field, word length to (\d+) and I api search for (.+)$/, function ( field, length, search ) {
 	const options = {
 		cirrusMtlUseFields: 'yes',

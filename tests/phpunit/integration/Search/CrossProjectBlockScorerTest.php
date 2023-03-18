@@ -18,7 +18,7 @@ class CrossProjectBlockScorerTest extends CirrusIntegrationTestCase {
 		];
 		$scorer = new RecallCrossProjectBlockScorer( [] );
 		$reordered = $scorer->reorder( $retval );
-		$this->assertEquals( array_keys( $reordered ), [ 'voy', 'wikt', 'b', 'broken' ] );
+		$this->assertEquals( [ 'voy', 'wikt', 'b', 'broken' ], array_keys( $reordered ) );
 	}
 
 	public function testStatic() {
@@ -35,7 +35,7 @@ class CrossProjectBlockScorerTest extends CirrusIntegrationTestCase {
 			'__default__' => 0.01,
 		] );
 		$reordered = $scorer->reorder( $retval );
-		$this->assertEquals( array_keys( $reordered ), [ 'voy', 'wikt', 'b', 'broken' ] );
+		$this->assertEquals( [ 'voy', 'wikt', 'b', 'broken' ], array_keys( $reordered ) );
 	}
 
 	public function testRandom() {
@@ -76,7 +76,7 @@ class CrossProjectBlockScorerTest extends CirrusIntegrationTestCase {
 			],
 		] );
 		$reordered = $scorer->reorder( $retval );
-		$this->assertEquals( array_keys( $reordered ), [ 'wikt', 's', 'voy', 'b', 'broken' ] );
+		$this->assertEquals( [ 'wikt', 's', 'voy', 'b', 'broken' ], array_keys( $reordered ) );
 	}
 
 	public function testEnWikiExample() {
@@ -93,7 +93,7 @@ class CrossProjectBlockScorerTest extends CirrusIntegrationTestCase {
 		);
 		$scorer = CrossProjectBlockScorerFactory::load( $hashConfig );
 		$reordered = $scorer->reorder( $retval );
-		$this->assertEquals( array_keys( $reordered ), [ 'wikt', 's', 'voy', 'b', 'broken' ] );
+		$this->assertEquals( [ 'wikt', 's', 'voy', 'b', 'broken' ], array_keys( $reordered ) );
 	}
 
 	private function mockRS( $totalHits ) {

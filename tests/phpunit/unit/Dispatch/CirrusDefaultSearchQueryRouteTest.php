@@ -14,7 +14,7 @@ class CirrusDefaultSearchQueryRouteTest extends CirrusTestCase {
 	public function testSearchTextDefaultRoute() {
 		$route = CirrusDefaultSearchQueryRoute::searchTextDefaultRoute();
 		$score = $route->score( $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), "foo" )->build() );
-		$this->assertEquals( $score, SearchQueryDispatchService::CIRRUS_DEFAULTS_SCORE );
+		$this->assertEquals( SearchQueryDispatchService::CIRRUS_DEFAULTS_SCORE, $score );
 		$this->assertEquals( SearchQuery::SEARCH_TEXT, $route->getSearchEngineEntryPoint() );
 		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT, $route->getProfileContext() );
 	}

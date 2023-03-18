@@ -73,7 +73,7 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 	public function testSetters() {
 		$expField = new ExperimentalHighlightedFieldBuilder( 'myfield', 'mytarget', 123 );
 		$baseField = new BaseHighlightedField( 'myfield', BaseHighlightedField::FVH_HL_TYPE, 'mytarget', 123 );
-		$this->assertEquals( $expField->getHighlighterType(), ExperimentalHighlightedFieldBuilder::EXPERIMENTAL_HL_TYPE );
+		$this->assertEquals( ExperimentalHighlightedFieldBuilder::EXPERIMENTAL_HL_TYPE, $expField->getHighlighterType() );
 		$this->assertEquals( BaseHighlightedField::FVH_HL_TYPE, $baseField->getHighlighterType() );
 		foreach ( [ $expField, $baseField ] as $field ) {
 			/** @var $field BaseHighlightedField */

@@ -15,23 +15,25 @@ abstract class IteratorDecorator implements Iterator {
 		$this->iterator = $iterator;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function current() {
 		return $this->iterator->current();
 	}
 
+	#[\ReturnTypeWillChange]
 	public function key() {
 		return $this->iterator->key();
 	}
 
-	public function next() {
+	public function next(): void {
 		$this->iterator->next();
 	}
 
-	public function rewind() {
+	public function rewind(): void {
 		$this->iterator->rewind();
 	}
 
-	public function valid() {
+	public function valid(): bool {
 		return $this->iterator->valid();
 	}
 }

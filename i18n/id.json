@@ -10,7 +10,8 @@
 			"Rachmat04",
 			"Sumbukompor",
 			"Veracious",
-			"Rex"
+			"Rex",
+			"Agam Riyandana"
 		]
 	},
 	"cirrussearch-desc": "Mesin pencarian yang didorong oleh Elasticsearch untuk MediaWiki",
@@ -52,6 +53,7 @@
 	"cirrussearch-feature-not-available": "Kata kunci pencarian '$1' belum diaktifkan di wiki ini.",
 	"cirrussearch-feature-too-many-conditions": "Terlalu banyak kondisi diberikan untuk '$1', menyingkati menjadi $2.",
 	"cirrussearch-feature-deepcat-exception": "Kueri pencarian SPARQL kategori dalam telah gagal",
+	"cirrussearch-feature-deepcat-toomany": "Kueri kategori dalam menghasilkan terlalu banyak kategori",
 	"cirrussearch-feature-deepcat-invalid-title": "Kategori yang diberikan tidak valid.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|ID}} halaman tidak valid: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Tidak ada kategori valid yang diberikan untuk '$1'.",

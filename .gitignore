@@ -10,3 +10,4 @@ composer.lock
 /tests/selenium/log
 log
 .idea
+.DS_Store

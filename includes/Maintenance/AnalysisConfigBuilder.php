@@ -426,6 +426,10 @@ class AnalysisConfigBuilder {
 			return '[^ÅåÄäÖö]';
 		case 'th': // T294147
 			return '[^\u0E47-\u0E4E]';
+		case 'tr': // T329762
+			// (I and i aren't strictly necessary but they keep the Turkish upper/lower
+			// pairs Iı & İi together and makes it clear both are intended.)
+			return '[^ÇçĞğIıİiÖöŞşÜü]';
 		default:
 			return null;
 		}
@@ -1278,7 +1282,16 @@ class AnalysisConfigBuilder {
 				build( $config );
 			break;
 		case 'turkish':
-			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
+			$trAposFilter = 'apostrophe';
+			if ( in_array( 'extra-analysis-turkish', $this->plugins ) ) {
+				$trAposFilter = 'better_apostrophe';
+			}
+			$config = ( new AnalyzerBuilder( $langName ) )->
+				withUnpackedAnalyzer()->
+				withLangLowercase()->
+				omitDottedI()->
+				insertFiltersBefore( 'turkish_stop', [ $trAposFilter ] )->
+				build( $config );
 			break;
 		case 'ukrainian-unpacked':
 			$this->languagesWithIcuFolding['uk'] = true;
@@ -1701,6 +1714,7 @@ class AnalysisConfigBuilder {
 		'sr' => true,
 		'sv' => true,
 		'th' => true,
+		'tr' => true,
 	];
 
 	/**

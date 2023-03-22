@@ -127,7 +127,11 @@
             ],
             "filter": [
                 "tr_lowercase",
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "tr_icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -145,10 +149,36 @@
             "type": "custom"
         },
         "tr_text": {
-            "type": "turkish"
+            "char_filter": [
+                "nnbsp_norm"
+            ],
+            "filter": [
+                "tr_lowercase",
+                "icu_normalizer",
+                "apostrophe",
+                "turkish_stop",
+                "turkish_stemmer",
+                "tr_icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "tr_text_search": {
-            "type": "turkish"
+            "char_filter": [
+                "nnbsp_norm"
+            ],
+            "filter": [
+                "tr_lowercase",
+                "icu_normalizer",
+                "apostrophe",
+                "turkish_stop",
+                "turkish_stemmer",
+                "tr_icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         }
     },
     "char_filter": {
@@ -246,9 +276,21 @@
             "min": 1,
             "type": "length"
         },
+        "tr_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00c7\u00e7\u011e\u011fI\u0131\u0130i\u00d6\u00f6\u015e\u015f\u00dc\u00fc]"
+        },
         "tr_lowercase": {
             "language": "turkish",
             "type": "lowercase"
+        },
+        "turkish_stemmer": {
+            "language": "turkish",
+            "type": "stemmer"
+        },
+        "turkish_stop": {
+            "stopwords": "_turkish_",
+            "type": "stop"
         }
     },
     "tokenizer": []

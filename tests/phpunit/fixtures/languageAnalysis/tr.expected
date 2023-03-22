@@ -1,7 +1,19 @@
 {
     "analyzer": {
         "text": {
-            "type": "turkish"
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "better_apostrophe",
+                "turkish_stop",
+                "turkish_stemmer",
+                "asciifolding"
+            ],
+            "char_filter": [
+                "nnbsp_norm"
+            ]
         },
         "plain": {
             "type": "custom",
@@ -45,12 +57,12 @@
         },
         "source_text_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper_source_text"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper_source_text"
             ]
         },
         "source_text_plain_search": {
@@ -161,7 +173,19 @@
             ]
         },
         "text_search": {
-            "type": "turkish"
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "homoglyph_norm",
+                "lowercase",
+                "better_apostrophe",
+                "turkish_stop",
+                "turkish_stemmer",
+                "asciifolding"
+            ],
+            "char_filter": [
+                "nnbsp_norm"
+            ]
         }
     },
     "filter": {
@@ -199,6 +223,14 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "turkish_stop": {
+            "type": "stop",
+            "stopwords": "_turkish_"
+        },
+        "turkish_stemmer": {
+            "type": "stemmer",
+            "language": "turkish"
         },
         "dedup_asciifolding": {
             "type": "unique",

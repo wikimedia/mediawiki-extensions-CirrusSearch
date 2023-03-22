@@ -509,14 +509,9 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	 * @param ISearchResultSet|null $textMatches
 	 */
 	public static function onSpecialSearchResults( $term, $titleMatches, $textMatches ) {
-		global $wgOut,
-			$wgCirrusExploreSimilarResults;
+		global $wgOut;
 
 		$wgOut->addModules( 'ext.cirrus.serp' );
-
-		if ( $wgCirrusExploreSimilarResults ) {
-			$wgOut->addModules( 'ext.cirrus.explore-similar' );
-		}
 
 		$jsVars = [
 			'wgCirrusSearchRequestSetToken' => Util::getRequestSetToken(),

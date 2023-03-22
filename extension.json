@@ -82,31 +82,6 @@
 				"desktop",
 				"mobile"
 			]
-		},
-		"ext.cirrus.explore-similar": {
-			"scripts": [
-				"resources/ext.cirrus.explore-similar.js"
-			],
-			"dependencies": [
-				"mediawiki.util",
-				"mediawiki.api",
-				"mediawiki.template.mustache"
-			],
-			"styles": [
-				"resources/ext.cirrus.explore-similar.less"
-			],
-			"targets": [
-				"desktop"
-			],
-			"messages": [
-				"cirrussearch-explore-similar-related",
-				"cirrussearch-explore-similar-categories",
-				"cirrussearch-explore-similar-languages",
-				"otherlanguages",
-				"cirrussearch-explore-similar-related-none",
-				"cirrussearch-explore-similar-categories-none",
-				"cirrussearch-explore-similar-languages-none"
-			]
 		}
 	},
 	"ResourceFileModulePaths": {
@@ -572,9 +547,6 @@
 		},
 		"CirrusSearchCrossProjectProfiles": {
 			"value": []
-		},
-		"CirrusExploreSimilarResults": {
-			"value": false
 		},
 		"CirrusSearchCrossProjectShowMultimedia": {
 			"value": false

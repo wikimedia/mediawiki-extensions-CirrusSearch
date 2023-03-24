@@ -152,7 +152,7 @@ function World( { attach, parameters } ) {
 			tmpUrl = page;
 		}
 		if ( !tmpUrl ) {
-			throw Error( `In "World.visit(page)" page is falsy: page=${page}` );
+			throw new Error( `In "World.visit(page)" page is falsy: page=${page}` );
 		}
 		tmpUrl = this.config.wikis[ wiki ].baseUrl + tmpUrl;
 		log( `[D] Visiting page: ${tmpUrl}`, this.tags.silentLog );

@@ -6,6 +6,8 @@
 	"rules": {
 		"max-len": "off",
 		"camelcase": "off",
-		"no-underscore-dangle": "off"
+		"no-underscore-dangle": "off",
+		"no-shadow": "warn",
+		"es-x/no-array-string-prototype-at": "warn"
 	}
 }

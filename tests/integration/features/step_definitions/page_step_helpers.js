@@ -58,7 +58,7 @@ class StepHelpers {
 			const client = yield this.apiPromise;
 
 			if ( text[ 0 ] === '@' ) {
-				text = fs.readFileSync( path.join( articlePath, text.substr( 1 ) ) ).toString();
+				text = fs.readFileSync( path.join( articlePath, text.slice( 1 ) ) ).toString();
 			}
 			const fetchedText = yield this.getWikitext( title );
 			if ( options.append ) {
@@ -186,7 +186,7 @@ class StepHelpers {
 						lastError = err;
 					}
 				}
-				if ( new Date() - start >= timeoutMs ) {
+				if ( Date.now() - start >= timeoutMs ) {
 					throw lastError || new Error( `Timeout out waiting for ${title}` );
 				}
 				yield this.waitForMs( 200 );
@@ -224,14 +224,14 @@ class StepHelpers {
 			const start = new Date();
 
 			const done = [];
-			const failedOps = ( ops, doneOps ) => ops.filter( ( v, idx ) => doneOps.indexOf( idx ) === -1 ).map( ( v ) => `[${v[ 0 ]}:${v[ 1 ]}]` ).join();
+			const failedOps = ( ops, doneOps ) => ops.filter( ( v, idx ) => !doneOps.includes( idx ) ).map( ( v ) => `[${v[ 0 ]}:${v[ 1 ]}]` ).join();
 			while ( done.length !== operations.length ) {
 				let consecutiveFailures = 0;
 				for ( let i = 0; i < operations.length; i++ ) {
 					const operation = operations[ i ][ 0 ];
 					let title = operations[ i ][ 1 ];
 					const revisionId = operations[ i ][ 2 ];
-					if ( done.indexOf( i ) !== -1 ) {
+					if ( done.includes( i ) ) {
 						continue;
 					}
 					if ( consecutiveFailures > 10 ) {
@@ -241,7 +241,7 @@ class StepHelpers {
 						consecutiveFailures = 0;
 						break;
 					}
-					if ( ( operation === 'upload' || operation === 'uploadOverwrite' ) && title.substr( 0, 5 ) !== 'File:' ) {
+					if ( ( operation === 'upload' || operation === 'uploadOverwrite' ) && title.slice( 0, 5 ) !== 'File:' ) {
 						title = 'File:' + title;
 					}
 					const expectExists = operation !== 'delete';
@@ -261,7 +261,7 @@ class StepHelpers {
 					break;
 				}
 
-				if ( new Date() - start >= timeoutMs ) {
+				if ( Date.now() - start >= timeoutMs ) {
 					const failed_ops = failedOps( operations, done );
 					throw new Error( `Timed out waiting for ${failed_ops}` );
 				}

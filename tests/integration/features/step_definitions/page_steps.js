@@ -39,7 +39,7 @@ function withApi( world, fn ) {
 }
 
 // TODO: We might need to share this epoch between wdio runner processes?
-const epoch = +new Date();
+const epoch = Date.now();
 const searchVars = {};
 // These expressions are string matches against capture groups in steps. For
 // any capture group whos regex string matches against the expression apply a
@@ -186,7 +186,7 @@ function checkApiSearchResultStep( title, in_ok, indexes ) {
 			// ex: found = ['foo bar baz'], title = 'bar' should pass.
 			// Chai doesnt (yet) have a native assertion for this:
 			// https://github.com/chaijs/chai/issues/858
-			const ok = found.reduce( ( a, b ) => a || b.indexOf( title ) > -1, false );
+			const ok = found.reduce( ( a, b ) => a || b.includes( title ), false );
 			expect( ok, `expected ${JSON.stringify( found )} to include "${title}"` ).to.equal( true );
 		} else {
 			expect( found ).to.include( title );
@@ -205,7 +205,7 @@ Then( /^(.+) is( not)? part of the api search result$/, function ( title, not_se
 		// Chai doesnt (yet) have a native assertion for this:
 		// https://github.com/chaijs/chai/issues/858
 		const found = this.apiResponse.query.search.map( ( result ) => result.title );
-		const ok = found.reduce( ( a, b ) => a || b.indexOf( title ) > -1, false );
+		const ok = found.reduce( ( a, b ) => a || b.includes( title ), false );
 		const msg = `Expected ${JSON.stringify( found )} to${not_searching ? ' not' : ''} include ${title}`;
 
 		if ( not_searching ) {
@@ -312,7 +312,7 @@ Then( /^(.+) is( in)? the highlighted (.+) of the (.+) api search result$/, func
 		const position = 'first second third fourth fifth sixth seventh eighth ninth tenth'.split( ' ' ).indexOf( index );
 		expect( this.apiResponse.query.search ).to.have.lengthOf.gt( position );
 
-		if ( key === 'title' && expected.indexOf( '*' ) > -1 ) {
+		if ( key === 'title' && expected.includes( '*' ) ) {
 			key = 'titlesnippet';
 		}
 		expect( this.apiResponse.query.search[ position ] ).to.include.keys( key );
@@ -438,7 +438,7 @@ Then( /^the page text contains (.+)$/, function ( text ) {
 Then( /^there are( no)? api search results with (.+) in the data$/, function ( should_not, within ) {
 	return withApi( this, () => {
 		const snippets = this.apiResponse.query.search.map( ( result ) => result.snippet );
-		const found = snippets.reduce( ( a, b ) => a || b.indexOf( within ) > -1, false );
+		const found = snippets.reduce( ( a, b ) => a || b.includes( within ), false );
 		expect( found ).to.equal( !should_not );
 	} );
 } );

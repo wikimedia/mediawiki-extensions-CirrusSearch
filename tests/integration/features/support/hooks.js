@@ -107,7 +107,7 @@ const job = {
 	delete: ( title ) => [ 'delete', title ],
 	edit: ( title, text ) => {
 		if ( text[ 0 ] === '@' ) {
-			text = fs.readFileSync( articlePath + text.substr( 1 ) ).toString();
+			text = fs.readFileSync( articlePath + text.slice( 1 ) ).toString();
 		}
 		return [ 'edit', title, text ];
 	},
@@ -406,9 +406,9 @@ BeforeOnce( { tags: '@prefer_recent', timeout: 60000 }, runBatchFn( {
 	// it was transformed into a simple smoke test because it was too unreliable,
 	// (it's why PreferRecent Third is created in the same batch).
 	edit: {
-		'PreferRecent First': 'PreferRecent random text for field norm ' + ( new Date() / 1 ),
-		'PreferRecent Second': 'PreferRecent ' + ( new Date() / 1 ),
-		'PreferRecent Third': 'PreferRecent random text for field norm ' + ( new Date() / 1 )
+		'PreferRecent First': 'PreferRecent random text for field norm ' + ( Date.now() / 1 ),
+		'PreferRecent Second': 'PreferRecent ' + ( Date.now() / 1 ),
+		'PreferRecent Third': 'PreferRecent random text for field norm ' + ( Date.now() / 1 )
 	}
 } ) );
 

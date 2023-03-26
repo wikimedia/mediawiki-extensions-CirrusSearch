@@ -22,7 +22,7 @@
 		"chai": "4.1.2",
 		"deepmerge": "2.0.1",
 		"eslint-config-wikimedia": "0.24.0",
-		"grunt": "1.5.3",
+		"grunt": "1.6.1",
 		"grunt-banana-checker": "0.10.0",
 		"grunt-eslint": "24.0.0",
 		"grunt-stylelint": "0.18.0",

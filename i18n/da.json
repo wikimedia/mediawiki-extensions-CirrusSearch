@@ -23,10 +23,5 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Ingen rettelse af tastefejl. Udelader omdirigeringer der meget ligner sidetitlen.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klassisk præfikssøgning",
 	"cirrussearch-completion-profile-classic-pref-desc": "Ingen rettelse af tastefejl. Matcher begyndelsen af sidetitler.",
-	"cirrussearch-explore-similar-related": "Relateret",
-	"cirrussearch-explore-similar-categories": "Kategorier",
-	"cirrussearch-explore-similar-languages": "Sprog",
-	"cirrussearch-explore-similar-categories-none": "Ingen kategorier tilgængelige",
-	"cirrussearch-explore-similar-languages-none": "Ikke tilgængelig på andre sprog",
 	"cirrussearch-article-words": "Ord i alle indholdsider"
 }

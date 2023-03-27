@@ -69,12 +69,7 @@
 	"cirrussearch-incategory-feature-no-valid-categories": "「$1」に対する有効なカテゴリがありません。",
 	"cirrussearch-mlt-feature-no-valid-titles": "'$1'に対応する有効なタイトルがありません。",
 	"cirrussearch-mlt-not-configured": "機能「$1」は正しく設定されていません。管理者に $wgCirrusSearchMoreLikeThisFields を訂正するよう依頼してください。",
-	"cirrussearch-explore-similar-related": "関連",
-	"cirrussearch-explore-similar-categories": "カテゴリ",
-	"cirrussearch-explore-similar-languages": "言語",
 	"cirrussearch-explore-similar-related-none": "関連するページが見つかりません",
-	"cirrussearch-explore-similar-categories-none": "カテゴリが見つかりません",
-	"cirrussearch-explore-similar-languages-none": "他の言語で見つかりません",
 	"cirrussearch-article-words": "すべてのコンテンツページの単語数",
 	"cirrussearch-keyword-prefix-ns-mismatch": "検索語 <code>prefix:</code> に含まれる名前空間は要求された名前空間と両立しません。検索語の頭に <code>all:</code> をつけることにより解決します。",
 	"cirrussearch-autoselect-profile": "検索エンジンの最適なプロフィールの選択をお任せください。"

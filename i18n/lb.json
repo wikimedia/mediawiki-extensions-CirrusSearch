@@ -33,11 +33,6 @@
 	"cirrussearch-feature-deepcat-invalid-title": "D'Kategorie déi agi gouf ass net valabel.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Keng valabel Kategorie fir '$1' uginn.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Keng valabel Titele fir '$1' uginn.",
-	"cirrussearch-explore-similar-related": "Associéiert",
-	"cirrussearch-explore-similar-categories": "Kategorien",
-	"cirrussearch-explore-similar-languages": "Sproochen",
 	"cirrussearch-explore-similar-related-none": "Keng associéiert Säiten disponibel",
-	"cirrussearch-explore-similar-categories-none": "Keng Kategorien disponibel",
-	"cirrussearch-explore-similar-languages-none": "Net an anere Sproochen disponibel",
 	"cirrussearch-article-words": "Wierder op alle Säite mat Inhalt"
 }

@@ -41,11 +41,6 @@
 	"cirrussearch-completion-profile-classic-pref-desc": "Μη διόρθωση τυπογραφικού λάθους. Ταιριάζει με την αρχή των τίτλων.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Δεν παράσχηκαν έγκυρες κατηγορίες στο '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Δεν παράσχηκαν έγκυροι τίτλοι στο '$1'.",
-	"cirrussearch-explore-similar-related": "Σχετικά",
-	"cirrussearch-explore-similar-categories": "Κατηγορίες",
-	"cirrussearch-explore-similar-languages": "Γλώσσες",
 	"cirrussearch-explore-similar-related-none": "Δεν υπάρχουν διαθέσιμες σχετικές σελίδες",
-	"cirrussearch-explore-similar-categories-none": "Δεν υπάρχουν διαθέσιμες κατηγορίες",
-	"cirrussearch-explore-similar-languages-none": "Δεν είναι διαθέσιμο σε άλλες γλώσσες",
 	"cirrussearch-article-words": "Λέξεις σε όλες τις σελίδες περιεχομένου"
 }

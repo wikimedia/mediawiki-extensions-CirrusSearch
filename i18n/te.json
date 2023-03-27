@@ -40,11 +40,6 @@
 	"cirrussearch-feature-deepcat-toomany": "లోతైన వర్గాన్వేషణ క్వెరీ చాలా ఎక్కువ వర్గాలను వెతికి తెచ్చింది",
 	"cirrussearch-incategory-feature-no-valid-categories": "'$1' కు సరైన వర్గాలేమీ ఇవ్వలేదు.",
 	"cirrussearch-mlt-feature-no-valid-titles": "'$1' కు సరైన శీర్షికలేమీ ఇవ్వలేదు.",
-	"cirrussearch-explore-similar-related": "సంబంధిత",
-	"cirrussearch-explore-similar-categories": "వర్గాలు",
-	"cirrussearch-explore-similar-languages": "భాషలు",
 	"cirrussearch-explore-similar-related-none": "సంబంధిత పేజీలేమీ లేవు",
-	"cirrussearch-explore-similar-categories-none": "వర్గాలేమీ లేవు",
-	"cirrussearch-explore-similar-languages-none": "ఇతర భాషల్లో లేవు",
 	"cirrussearch-article-words": "కంటెంటు పేజీలన్నిటి లోనూ పదాలు"
 }

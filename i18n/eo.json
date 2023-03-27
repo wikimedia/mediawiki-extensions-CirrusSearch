@@ -29,11 +29,6 @@
 	"cirrussearch-feature-pageid-invalid-id": "Nevalida paĝo {{PLURAL:$2|ID|IDs}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Neniu valida kategorio provizita al '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Neniu valida titolo provizita al '$1'.",
-	"cirrussearch-explore-similar-related": "Rilata",
-	"cirrussearch-explore-similar-categories": "Kategorioj",
-	"cirrussearch-explore-similar-languages": "Lingvoj",
 	"cirrussearch-explore-similar-related-none": "Neniu rilata paĝo havebla",
-	"cirrussearch-explore-similar-categories-none": "Neniu kategorio havebla",
-	"cirrussearch-explore-similar-languages-none": "Ne havebla en aliaj lingvoj",
 	"cirrussearch-article-words": "Vortoj en ĉiuj enhavaj paĝoj"
 }

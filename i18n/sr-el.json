@@ -30,11 +30,6 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Klasična pretraga po prefiksu",
 	"cirrussearch-completion-profile-classic-pref-desc": "Ne ispravlja greške u kucanju. Traži početke naslova.",
 	"cirrussearch-regex-timed-out": "Isteklo je vreme za izvršenje pretrage s regularnim izrazom. Dostupan je samo deo rezultata. Pojednostavite izraz da biste videli više stavki.",
-	"cirrussearch-explore-similar-related": "Povezano",
-	"cirrussearch-explore-similar-categories": "Kategorije",
-	"cirrussearch-explore-similar-languages": "Jezici",
 	"cirrussearch-explore-similar-related-none": "Nema dostupnih povezanih stranica",
-	"cirrussearch-explore-similar-categories-none": "Nema dostupnih kategorija",
-	"cirrussearch-explore-similar-languages-none": "Nije dostupno na drugim jezicima",
 	"cirrussearch-article-words": "Reči na svim stranicama sadržaja"
 }

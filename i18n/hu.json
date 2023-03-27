@@ -54,11 +54,6 @@
 	"cirrussearch-file-numeric-feature-not-a-number": "A(z) „$1” keresőkifejezésnek számnak kell lennie, viszont a(z) „$2” nem az.",
 	"cirrussearch-feature-not-available": "A(z) „$1” keresési kulcsszó nincs engedélyezve ezen a wikin.",
 	"cirrussearch-feature-deepcat-invalid-title": "A megadott kategória érvénytelen.",
-	"cirrussearch-explore-similar-related": "Kapcsolódó",
-	"cirrussearch-explore-similar-categories": "Kategóriák",
-	"cirrussearch-explore-similar-languages": "Nyelvek",
 	"cirrussearch-explore-similar-related-none": "Nem találhatók kapcsolódó lapok",
-	"cirrussearch-explore-similar-categories-none": "Nem találhatók kategóriák",
-	"cirrussearch-explore-similar-languages-none": "Nem érhető el más nyelveken",
 	"cirrussearch-article-words": "Szavak száma az összes tartalmi lapon"
 }

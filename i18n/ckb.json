@@ -24,11 +24,6 @@
 	"cirrussearch-completion-profile-classic-pref-name": "گەڕانی پێشگری کلاسیکی",
 	"cirrussearch-completion-profile-classic-pref-desc": "ھەڵە ڕاست ناکاتەوە. لێکچوونی سەرەتای ناوەکان نیشان دەکات.",
 	"cirrussearch-timed-out": "گەڕانەکە وەستا: تەنیا چەند ئەنجامێک ھاتنە بەردەست.",
-	"cirrussearch-explore-similar-related": "پەیوەست",
-	"cirrussearch-explore-similar-categories": "پۆلەكان",
-	"cirrussearch-explore-similar-languages": "زمانەکان",
 	"cirrussearch-explore-similar-related-none": "ھیچ پەڕەیەکی پەیوەستدار بەردەست نییە",
-	"cirrussearch-explore-similar-categories-none": "ھیچ پۆلێک بەردەست نییە",
-	"cirrussearch-explore-similar-languages-none": "بە زمانی تر بەردەست نییە",
 	"cirrussearch-article-words": "وشەکانی ھەموو وتارەکان"
 }

@@ -29,11 +29,6 @@
 	"cirrussearch-completion-profile-classic-pref-name": "ചിരകാല പൂർവ്വപ്രത്യയ തിരച്ചിൽ",
 	"cirrussearch-completion-profile-classic-pref-desc": "അക്ഷരപിശക് തിരുത്തില്ല. തലക്കെട്ടുകളുടെ ആദ്യം തിരയുന്നു.",
 	"cirrussearch-timed-out": "തിരച്ചിലിനുള്ള സമയം പൂർത്തിയായി, ഭാഗികമായ ഫലങ്ങളേ ലഭ്യമായിട്ടുള്ളു.",
-	"cirrussearch-explore-similar-related": "ബന്ധപ്പെട്ടവ",
-	"cirrussearch-explore-similar-categories": "വർഗ്ഗങ്ങൾ",
-	"cirrussearch-explore-similar-languages": "ഭാഷകൾ",
 	"cirrussearch-explore-similar-related-none": "ബന്ധപ്പെട്ട താളുകൾ ലഭ്യമല്ല",
-	"cirrussearch-explore-similar-categories-none": "വർഗ്ഗങ്ങൾ ലഭ്യമല്ല",
-	"cirrussearch-explore-similar-languages-none": "മറ്റ് ഭാഷകളിൽ ലഭ്യമല്ല",
 	"cirrussearch-article-words": "എല്ലാ ഉള്ളടക്ക താളുകളിലും ഉള്ള വാക്കുകൾ"
 }

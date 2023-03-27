@@ -28,11 +28,6 @@
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Не выпраўляе абдрукоўкі. Выпраўляе блізкія перанакіраваньні. Супастаўляе падфразы ў загалоўках.",
 	"cirrussearch-completion-profile-classic-pref-name": "Клясычны пошук па прэфіксе",
 	"cirrussearch-completion-profile-classic-pref-desc": "Без выпраўленьня абдруковак. Супастаўляе пачаткі загалоўкаў.",
-	"cirrussearch-explore-similar-related": "Зьвязанае",
-	"cirrussearch-explore-similar-categories": "Катэгорыі",
-	"cirrussearch-explore-similar-languages": "Мовы",
-	"cirrussearch-explore-similar-categories-none": "Катэгорыі недаступныя",
-	"cirrussearch-explore-similar-languages-none": "Недаступна іншымі мовамі",
 	"cirrussearch-article-words": "Колькасьць словаў ва ўсіх артыкулах",
 	"cirrussearch-autoselect-profile": "Дазволіць рухавіку абіраць найлепшы профіль для выкарыстаньня."
 }

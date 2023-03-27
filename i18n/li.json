@@ -58,11 +58,6 @@
 	"cirrussearch-incategory-feature-no-valid-categories": "Gein geljige categorieje opgegaeve bie '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Gein geljige titels opgegaeve bie '$1'.",
 	"cirrussearch-mlt-not-configured": "De '$1'- functie is neet good ingestèld. Vraog 'nen admin $wgCirrusSearchMoreLikeThisFields te make",
-	"cirrussearch-explore-similar-related": "Verwantj",
-	"cirrussearch-explore-similar-categories": "Categorieë",
-	"cirrussearch-explore-similar-languages": "Spraoke",
 	"cirrussearch-explore-similar-related-none": "Gein verwantje pagina's besjikbaar",
-	"cirrussearch-explore-similar-categories-none": "Gein categorieje besjikbaar",
-	"cirrussearch-explore-similar-languages-none": "Neet besjikbaar in anger spraoke",
 	"cirrussearch-article-words": "Wäörd in alle inhawdspagina's"
 }

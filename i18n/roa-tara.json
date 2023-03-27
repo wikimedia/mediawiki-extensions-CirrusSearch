@@ -29,11 +29,6 @@
 	"cirrussearch-feature-pageid-invalid-id": "ID {{PLURAL:$2|d'a pàgene|de le pàggene}} invalide: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nisciuna categorije valide date a '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nisciune titole valide date a '$1'.",
-	"cirrussearch-explore-similar-related": "Collegate",
-	"cirrussearch-explore-similar-categories": "Categorije",
-	"cirrussearch-explore-similar-languages": "Lènghe",
 	"cirrussearch-explore-similar-related-none": "Nisciuna pàgena collegate disponibbile",
-	"cirrussearch-explore-similar-categories-none": "Nisciuna categorije disponibbile",
-	"cirrussearch-explore-similar-languages-none": "Non disponibbele jndr'à otre lènghe",
 	"cirrussearch-article-words": "Parole jndr'à tutte le pàggene de condenute"
 }

@@ -27,12 +27,7 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Не коригира правописни грешки. Взима под внимание близки пренасочвания.",
 	"cirrussearch-completion-profile-classic-pref-name": "Класическо търсене по представка",
 	"cirrussearch-completion-profile-classic-pref-desc": "Не коригира правописни грешки. Търси по съвпадение на началото на заглавията.",
-	"cirrussearch-explore-similar-related": "Свързани",
-	"cirrussearch-explore-similar-categories": "Категории",
-	"cirrussearch-explore-similar-languages": "Езици",
 	"cirrussearch-explore-similar-related-none": "Няма налични свързани страници",
-	"cirrussearch-explore-similar-categories-none": "Няма налични категории",
-	"cirrussearch-explore-similar-languages-none": "Не е налично на други езици",
 	"cirrussearch-article-words": "Думи във всички страници със съдържание",
 	"cirrussearch-autoselect-profile": "Нека търсещата машина да реши кой е най-добрият профил за употреба."
 }

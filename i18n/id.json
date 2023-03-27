@@ -58,12 +58,7 @@
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|ID}} halaman tidak valid: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Tidak ada kategori valid yang diberikan untuk '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Tidak ada judul valid yang diberikan untuk '$1'.",
-	"cirrussearch-explore-similar-related": "Terkait",
-	"cirrussearch-explore-similar-categories": "Kategori",
-	"cirrussearch-explore-similar-languages": "Bahasa",
 	"cirrussearch-explore-similar-related-none": "Tidak tersedia halaman terkait",
-	"cirrussearch-explore-similar-categories-none": "Tidak ada kategori yang tersedia",
-	"cirrussearch-explore-similar-languages-none": "Tidak tersedia dalam bahasa lain",
 	"cirrussearch-article-words": "Kata-kata di semua halaman konten",
 	"cirrussearch-autoselect-profile": "Biarkan mesin pencari memutuskan profil yang terbaik untuk digunakan.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Mengabaikan permintaan untuk membuat nomor halaman hasil pengurutan secara acak."

@@ -1956,6 +1956,62 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "pt-br_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "pt-br_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "pt-br_text": {
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "brazilian_stop",
+                "brazilian_stemmer",
+                "icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "pt-br_text_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "brazilian_stop",
+                "brazilian_stemmer",
+                "icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "pt_plain": {
             "char_filter": [
                 "nnbsp_norm",
@@ -2909,6 +2965,14 @@
         "bg_icu_folding": {
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u0419\u0439]"
+        },
+        "brazilian_stemmer": {
+            "language": "brazilian",
+            "type": "stemmer"
+        },
+        "brazilian_stop": {
+            "stopwords": "_brazilian_",
+            "type": "stop"
         },
         "bs_icu_folding": {
             "type": "icu_folding",

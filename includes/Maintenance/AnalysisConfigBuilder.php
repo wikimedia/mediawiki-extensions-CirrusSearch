@@ -720,6 +720,7 @@ class AnalysisConfigBuilder {
 
 		// usual unpacked languages
 		case 'basque':    // Unpack Basque analyzer T283366
+		case 'brazilian': // Unpack Brazilian analyzer T325092
 		case 'bulgarian': // Unpack Bulgarian analyzer T325090
 		case 'czech':     // Unpack Czech analyzer T284578
 		case 'danish':    // Unpack Danish analyzer T283366
@@ -1707,6 +1708,7 @@ class AnalysisConfigBuilder {
 		'nl' => true,
 		'nn' => true,
 		'pt' => true,
+		'pt-br' => true,
 		'ro' => true,
 		'ru' => true,
 		'sh' => true,

@@ -26,6 +26,8 @@
 	"cirrussearch-ignored-headings": " # <pre>\n# Judul yang akan diabaikan oleh pencarian.\n# Suntingan ini akan diterapkan setelah halaman dengan judul ini diindeks.\n# Anda bisa memaksakan pengindeksan kembali halaman ini dengan melakukan suntingan kosong (''null edit'')\n# Sintaksisnya adalah seperti berikut:\n#   * Semuanya dari karakter \"#\" ke akhir baris adalah sebuah komentar.\n#   * Setiap baris tak-kosong adalah judul tepat yang akan diabaikan.\nReferensi\nPranala luar\nLihat pula\n #</pre>",
 	"cirrussearch-pref-label": "Pencarian baru",
 	"cirrussearch-give-feedback": "Berikan umpan balik Anda.",
+	"cirrussearch-query-too-long": "Permintaan penelusuran lebih panjang dari panjang karakter maksimum yang diizinkan. (Panjang sekarang: $1; Panjang yang diizinkan: $2)",
+	"cirrussearch-query-too-long-with-exemptions": "Permintaan penelusuran lebih panjang dari panjang karakter maksimum yang diizinkan. (Panjang sekarang: $1; Panjang yang diizinkan: $2, tidak menghitung $3)",
 	"cirrussearch-completion-profile-classic": "Awalan klasik, beberapa karakter pemisah dan diakritik dihapus.",
 	"cirrussearch-completion-profile-normal": "Beberapa karakter pemisah, diakritik dan kata henti dihapus.",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Peringkat menurut beberapa templat, bahasa halaman dan kebaruan ketika diaktifkan di wiki ini.",

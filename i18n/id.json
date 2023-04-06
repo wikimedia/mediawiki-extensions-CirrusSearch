@@ -10,7 +10,8 @@
 			"Rachmat04",
 			"Rex",
 			"Sumbukompor",
-			"Veracious"
+			"Veracious",
+			"Agam Riyandana"
 		]
 	},
 	"cirrussearch-desc": "Mesin pencarian yang didorong oleh Elasticsearch untuk MediaWiki",
@@ -25,6 +26,8 @@
 	"cirrussearch-ignored-headings": " # <pre>\n# Judul yang akan diabaikan oleh pencarian.\n# Suntingan ini akan diterapkan setelah halaman dengan judul ini diindeks.\n# Anda bisa memaksakan pengindeksan kembali halaman ini dengan melakukan suntingan kosong (''null edit'')\n# Sintaksisnya adalah seperti berikut:\n#   * Semuanya dari karakter \"#\" ke akhir baris adalah sebuah komentar.\n#   * Setiap baris tak-kosong adalah judul tepat yang akan diabaikan.\nReferensi\nPranala luar\nLihat pula\n #</pre>",
 	"cirrussearch-pref-label": "Pencarian baru",
 	"cirrussearch-give-feedback": "Berikan umpan balik Anda.",
+	"cirrussearch-query-too-long": "Permintaan penelusuran lebih panjang dari panjang karakter maksimum yang diizinkan. (Panjang sekarang: $1; Panjang yang diizinkan: $2)",
+	"cirrussearch-query-too-long-with-exemptions": "Permintaan penelusuran lebih panjang dari panjang karakter maksimum yang diizinkan. (Panjang sekarang: $1; Panjang yang diizinkan: $2, tidak menghitung $3)",
 	"cirrussearch-completion-profile-classic": "Awalan klasik, beberapa karakter pemisah dan diakritik dihapus.",
 	"cirrussearch-completion-profile-normal": "Beberapa karakter pemisah, diakritik dan kata henti dihapus.",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Peringkat menurut beberapa templat, bahasa halaman dan kebaruan ketika diaktifkan di wiki ini.",
@@ -52,6 +55,7 @@
 	"cirrussearch-feature-not-available": "Kata kunci pencarian '$1' belum diaktifkan di wiki ini.",
 	"cirrussearch-feature-too-many-conditions": "Terlalu banyak kondisi diberikan untuk '$1', menyingkati menjadi $2.",
 	"cirrussearch-feature-deepcat-exception": "Kueri pencarian SPARQL kategori dalam telah gagal",
+	"cirrussearch-feature-deepcat-toomany": "Kueri kategori dalam menghasilkan terlalu banyak kategori",
 	"cirrussearch-feature-deepcat-invalid-title": "Kategori yang diberikan tidak valid.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|ID}} halaman tidak valid: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Tidak ada kategori valid yang diberikan untuk '$1'.",

@@ -5,7 +5,8 @@
 			"Kghbln",
 			"Metalhead64",
 			"Michawiki",
-			"Tiin"
+			"Tiin",
+			"CyberOne25"
 		]
 	},
 	"cirrussearch-desc": "Ermöglicht eine auf „elasticsearch“ gestützte Suche",
@@ -55,8 +56,8 @@
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Tippfehler werden nicht korrigiert. Berücksichtigt ähnliche Weiterleitungen sowie dem ersten Wort im Seitennamen folgende Ausdrücke.",
 	"cirrussearch-completion-profile-classic-pref-name": "Präfixsuchmodus",
 	"cirrussearch-completion-profile-classic-pref-desc": "Tippfehler werden nicht korrigiert. Entsprechen den Anfangsbuchstaben der Seitennamen.",
-	"cirrussearch-timed-out": "Zeitüberschreitung bei der Suche, die Ergebnisse sind nur teilweise verfügbar.",
-	"cirrussearch-regex-timed-out": "Zeitüberschreitung bei der Regex-Suche, die Ergebnisse sind nur teilweise verfügbar. Versuche, deine regulären Ausdrücke zu vereinfachen, um vollständige Ergebnisse zu erhalten.",
+	"cirrussearch-timed-out": "Zeitüberschreitung bei der Suche; die Ergebnisse sind nur teilweise verfügbar.",
+	"cirrussearch-regex-timed-out": "Zeitüberschreitung bei der Regex-Suche; die Ergebnisse sind nur teilweise verfügbar. Versuche, deine regulären Ausdrücke zu vereinfachen, um vollständige Ergebnisse zu erhalten.",
 	"cirrussearch-file-numeric-feature-not-a-number": "Der Suchbegriff „$1“ erfordert numerische Werte, jedoch wurde „$2“ angegeben.",
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Der Suchbegriff „$1“ erlaubt keine Angabe mehrerer Argumente und kein Zeichen mit „$2“.",
 	"cirrussearch-feature-not-available": "Das Such-Schlüsselwort „$1“ ist auf diesem Wiki nicht aktiviert.",

@@ -5,6 +5,7 @@ namespace CirrusSearch\Jenkins;
 use DatabaseUpdater;
 use Language;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\StubObject\StubUserLang;
 use Title;
 
 /**

@@ -24,6 +24,8 @@ class SearchAfter implements \Iterator {
 	private $currentPage;
 	/** @var float[] Sequence of second length backoffs to use for retries */
 	private $backoff;
+	/** @var array Initial value for search_after */
+	private array $initialSearchAfter = [];
 
 	/**
 	 * @param Search $search
@@ -71,6 +73,10 @@ class SearchAfter implements \Iterator {
 		$this->currentPage++;
 	}
 
+	public function initializeSearchAfter( array $searchAfter ): void {
+		$this->initialSearchAfter = $searchAfter;
+	}
+
 	private function runSearch() {
 		foreach ( $this->backoff as $backoffSec ) {
 			try {
@@ -94,7 +100,11 @@ class SearchAfter implements \Iterator {
 		// Use -1 so that on increment the first page is 0
 		$this->currentPage = -1;
 		$this->currentResultSet = null;
-		$this->search->setQuery( clone $this->baseQuery );
+		$query = clone $this->baseQuery;
+		if ( $this->initialSearchAfter ) {
+			$query->setParam( 'search_after', $this->initialSearchAfter );
+		}
+		$this->search->setQuery( $query );
 		// rewind performs the first query
 		$this->next();
 	}

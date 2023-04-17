@@ -116,6 +116,49 @@ class SearchAfterTest extends CirrusTestCase {
 		$this->assertEquals( [ 59 ], $lastRequest['search_after'] );
 	}
 
+	public function testInitializeSearchAfter() {
+		$client = $this->makeClient( [
+			$this->makeResponse( [
+				[ '_id' => 1042, 'sort' => [ 1042 ] ],
+				[ '_id' => 1043, 'sort' => [ 1043 ] ],
+			] ),
+			$this->makeResponse( [
+				[ '_id' => 1058, 'sort' => [ 1058 ] ],
+				[ '_id' => 1059, 'sort' => [ 1059 ] ],
+			] ),
+			$this->makeResponse( [] ),
+		] );
+
+		$search = new Search( $client );
+		$q = ( new Query( new MatchAll() ) )
+			->setSort( [ [ '_id' => 'asc' ] ] );
+		$search->setQuery( $q );
+		$it = new SearchAfter( $search );
+		$it->initializeSearchAfter( [ 999 ] );
+
+		// First request must have initialized search_after
+		$it->rewind();
+		$this->assertTrue( $it->valid() );
+		$this->assertSame( 0, $it->key() );
+		$lastRequest = $this->lastRequestData();
+		$this->assertArrayHasKey( 'search_after', $lastRequest );
+		$this->assertEquals( [ 999 ], $lastRequest['search_after'] );
+
+		// Followups must provide correct search_after
+		$it->next();
+		$this->assertTrue( $it->valid() );
+		$this->assertSame( 1, $it->key() );
+		$lastRequest = $this->lastRequestData();
+		$this->assertArrayHasKey( 'search_after', $lastRequest );
+		$this->assertEquals( [ 1043 ], $lastRequest['search_after'] );
+
+		$it->next();
+		$lastRequest = $this->lastRequestData();
+		$this->assertFalse( $it->valid() );
+		$this->assertArrayHasKey( 'search_after', $lastRequest );
+		$this->assertEquals( [ 1059 ], $lastRequest['search_after'] );
+	}
+
 	public function testIteration() {
 		$client = $this->makeClient( [
 			$this->makeResponse( [

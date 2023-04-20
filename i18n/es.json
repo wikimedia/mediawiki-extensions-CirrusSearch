@@ -39,6 +39,7 @@
 	"cirrussearch-query-too-long": "La solicitud de búsqueda supera la longitud máxima permitida: (Actual: $1; permitido: $2)",
 	"cirrussearch-query-too-long-with-exemptions": "La solicitud de búsqueda supera la longitud máxima permitida. (Actual: $1, permitido: $2, sin contar $3)",
 	"cirrussearch-completion-profile-strict": "Perfil estricto con pocos signos de puntuación eliminados pero diacríticos y marcas de enfásis son conservados.",
+	"cirrussearch-completion-profile-classic": "Prefijo clásico, pocos signos de puntuación y algunos signos diacríticos eliminados.",
 	"cirrussearch-qi-profile-wsum-inclinks-pv": "Suma ponderada basada en enlaces entrantes y en el número de visitas semanales",
 	"cirrussearch-qi-profile-wsum-inclinks": "Suma ponderada basada en enlaces entrantes",
 	"cirrussearch-qi-profile-popular-pv": "Ranking basado principalmente en vistas de página",

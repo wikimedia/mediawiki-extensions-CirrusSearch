@@ -37,10 +37,9 @@ class ArticlePage extends TitlePage {
 
 	get_search_suggestions() {
 		const selector = '.cdx-search-result-title';
-		browser.waitUntil(
-			() => browser.$( selector ).isExisting(),
-			{ timeout: 10000 }
-		);
+		browser.waitUntil( () => browser.$( selector ).isExisting(), {
+			timeout: { timeout: 10000 }
+		} );
 		return this.collect_element_texts( selector );
 	}
 

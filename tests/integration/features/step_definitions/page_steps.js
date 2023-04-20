@@ -9,7 +9,7 @@
 
 'use strict';
 
-const { defineParameterType, Given, When, Then } = require( 'cucumber' ),
+const { defineParameterType, Given, When, Then } = require( '@cucumber/cucumber' ),
 	SpecialUndelete = require( '../support/pages/special_undelete' ),
 	ArticlePage = require( '../support/pages/article_page' ),
 	TitlePage = require( '../support/pages/title_page' ),
@@ -47,7 +47,7 @@ const searchVars = {};
 // value desired.
 const expressions = [ '.+', '.+?' ];
 const transformer = ( s ) => {
-	if ( s === undefined ) {
+	if ( s === undefined || s === null ) {
 		return s;
 	}
 	if ( s === 'the empty string' ) {

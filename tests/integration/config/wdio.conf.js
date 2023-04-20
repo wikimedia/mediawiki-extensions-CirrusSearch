@@ -98,6 +98,7 @@ exports.config = {
 	cucumberOpts: {
 		tagsInTitle: true,
 		timeout: 60000,
+		tagExpression: process.env.CIRRUS_TAGS,
 		require: [
 			relPath( './integration/features/support/world.js' ),
 			relPath( './integration/features/support/hooks.js' ),
@@ -142,7 +143,7 @@ exports.config = {
 		browserName: 'chrome',
 		// Since Chrome v57 https://bugs.chromium.org/p/chromedriver/issues/detail?id=1625
 		'goog:chromeOptions': {
-			args: [ '--enable-automation', '--remote-debugging-port=9222', '--remote-debugging-address=0.0.0.0', '--headless', '--window-size=1200x800' ]
+			args: [ '--headless' ]
 		}
 	} ],
 	//
@@ -156,8 +157,8 @@ exports.config = {
 	// e.g. using promises you can set the sync option to false.
 	sync: true,
 	//
-	// Level of logging verbosity: silent | verbose | command | data | result | error
-	logLevel: 'error',
+	// Level of logging verbosity: trace | debug | info | warn | error | silent
+	logLevel: 'warn',
 	//
 	// Enables colors for log output.
 	coloredLogs: true,

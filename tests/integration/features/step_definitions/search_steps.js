@@ -1,6 +1,6 @@
 'use strict';
 
-const { Given, When, Then } = require( 'cucumber' ),
+const { Given, When, Then } = require( '@cucumber/cucumber' ),
 	SearchResultsPage = require( '../support/pages/search_results_page' ),
 	ArticlePage = require( '../support/pages/article_page' ),
 	TitlePage = require( '../support/pages/title_page' ),
@@ -55,12 +55,12 @@ Then( /^(.+) is the first search result( and has an image link)?$/, function ( r
 } );
 
 Then( /^(.+) is( not)? in the search results$/, function ( result, not ) {
-	const msg = `${result} is${not === undefined ? '' : not} in the search results`;
+	const msg = `${result} is${not === null ? '' : not} in the search results`;
 	expect( SearchResultsPage.is_on_srp(), msg ).to.equal( true );
-	if ( not === undefined ) {
+	if ( not === null ) {
 		expect( SearchResultsPage.has_search_results(), msg ).to.equal( true );
 	}
-	expect( SearchResultsPage.in_search_results( result ), msg ).to.equal( not === undefined );
+	expect( SearchResultsPage.in_search_results( result ), msg ).to.equal( not === null );
 } );
 
 Given( /^I am at the search results page$/, function () {

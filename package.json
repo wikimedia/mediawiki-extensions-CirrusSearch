@@ -5,19 +5,20 @@
 	"description": "Build tools for the CirrusSearch extension.",
 	"scripts": {
 		"test": "grunt test",
-		"selenium": "killall -0 chromedriver 2>/dev/null || chromedriver --url-base=/wd/hub --port=4444 & grunt webdriver:test; killall chromedriver",
+		"selenium": "killall -0 chromedriver 2>/dev/null || chromedriver --url-base=/wd/hub --port=4444 & npm run @selenium-test",
 		"selenium-daily": "npm run @selenium-test",
-		"@selenium-test": "wdio tests/selenium/wdio.conf.js"
+		"@selenium-test": "wdio ${WEBDRIVER_IO_CONFIG_FILE:-tests/selenium/wdio.conf.js}"
 	},
 	"devDependencies": {
-		"@wdio/cli": "5.23.0",
-		"@wdio/cucumber-framework": "5.23.0",
-		"@wdio/dot-reporter": "5.16.5",
-		"@wdio/junit-reporter": "5.22.4",
-		"@wdio/local-runner": "5.23.0",
-		"@wdio/mocha-framework": "5.23.0",
-		"@wdio/spec-reporter": "5.23.0",
-		"@wdio/sync": "5.23.0",
+		"@wdio/cli": "^7.31.1",
+		"@wdio/codemod": "^0.12.0",
+		"@wdio/cucumber-framework": "^7.31.1",
+		"@wdio/dot-reporter": "^7.31.1",
+		"@wdio/junit-reporter": "^7.31.1",
+		"@wdio/local-runner": "^7.31.1",
+		"@wdio/mocha-framework": "^7.30.2",
+		"@wdio/spec-reporter": "^7.31.1",
+		"@wdio/sync": "^7.27.0",
 		"bluebird": "3.5.1",
 		"chai": "4.1.2",
 		"deepmerge": "2.0.1",
@@ -26,13 +27,12 @@
 		"grunt-banana-checker": "0.10.0",
 		"grunt-eslint": "24.0.0",
 		"grunt-stylelint": "0.18.0",
-		"grunt-webdriver": "3.0.0",
 		"mwbot": "1.0.9",
 		"request": "2.88.2",
 		"request-promise-native": "1.0.5",
 		"restify": "8.5.1",
 		"semlog": "0.6.10",
 		"stylelint-config-wikimedia": "0.14.0",
-		"wdio-mediawiki": "1.2.0"
+		"wdio-mediawiki": "2.2"
 	}
 }

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { setWorldConstructor } = require( 'cucumber' ),
+const { setWorldConstructor } = require( '@cucumber/cucumber' ),
 	request = require( 'request-promise-native' ),
 	log = require( 'semlog' ).log,
 	Bot = require( 'mwbot' ),

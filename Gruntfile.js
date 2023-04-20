@@ -8,25 +8,10 @@
 
 'use strict';
 
-const path = require( 'path' );
-
 module.exports = function ( grunt ) {
-	let WebdriverIOconfigFile;
-
 	grunt.loadNpmTasks( 'grunt-banana-checker' );
 	grunt.loadNpmTasks( 'grunt-eslint' );
 	grunt.loadNpmTasks( 'grunt-stylelint' );
-	grunt.loadNpmTasks( 'grunt-webdriver' );
-
-	if ( process.env.WEBDRIVER_IO_CONFIG_FILE ) {
-		WebdriverIOconfigFile = process.env.WEBDRIVER_IO_CONFIG_FILE;
-	} else if ( process.env.JENKINS_HOME ) {
-		WebdriverIOconfigFile = './tests/integration/config/wdio.conf.jenkins.js';
-	} else if ( process.env.MWV_LABS_HOSTNAME ) {
-		WebdriverIOconfigFile = './tests/integration/config/wdio.conf.mwvlabs.js';
-	} else {
-		WebdriverIOconfigFile = './tests/integration/config/wdio.conf.js';
-	}
 
 	grunt.initConfig( {
 		eslint: {
@@ -52,29 +37,6 @@ module.exports = function ( grunt ) {
 				'!tests/integration/articles/**',
 				'!vendor/**'
 			]
-		},
-		// Configure WebdriverIO Node task
-		webdriver: {
-			test: {
-				configFile: WebdriverIOconfigFile,
-				cucumberOpts: {
-					tagExpression: ( () => grunt.option( 'tags' ) )()
-				},
-				maxInstances: ( () => {
-					const max = grunt.option( 'maxInstances' );
-					return max ? parseInt( max, 10 ) : 1;
-				} )(),
-				spec: ( () => {
-					const spec = grunt.option( 'spec' );
-					if ( !spec ) {
-						return undefined;
-					}
-					if ( spec[ 0 ] === '/' ) {
-						return spec;
-					}
-					return path.join( __dirname, 'tests/integration/features', spec );
-				} )()
-			}
 		}
 	} );
 

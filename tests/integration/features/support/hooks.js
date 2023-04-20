@@ -1,6 +1,6 @@
 'use strict';
 
-const { Before } = require( 'cucumber' );
+const { Before } = require( '@cucumber/cucumber' );
 const Promise = require( 'bluebird' );
 const MWBot = require( 'mwbot' );
 const fs = require( 'fs' );

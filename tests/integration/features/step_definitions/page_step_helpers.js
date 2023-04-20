@@ -97,13 +97,17 @@ class StepHelpers {
 	movePage( from, to, noRedirect = true ) {
 		return Promise.coroutine( function* () {
 			const client = yield this.apiPromise;
-			yield client.request( {
+			const req = {
 				action: 'move',
 				from: from,
 				to: to,
-				noredirect: noRedirect ? 1 : 0,
-				token: client.editToken
-			} );
+				token: client.editToken,
+				formatversion: 2
+			};
+			if ( noRedirect ) {
+				req.noredirect = 1;
+			}
+			yield client.request( req );
 			// If no redirect was left behind we have no way to check the
 			// old page has been removed from elasticsearch. The page table
 			// entry itself was renamed leaving nothing (except a log) for

@@ -11,7 +11,7 @@ use CirrusSearch\Maintenance\SuggesterMappingConfigBuilder;
 use Elastica\Index;
 use Elastica\Query\BoolQuery;
 use GitInfo;
-use WikiMap;
+use MediaWiki\WikiMap\WikiMap;
 
 class MetaVersionStore implements MetaStore {
 	public const METASTORE_TYPE = 'version';

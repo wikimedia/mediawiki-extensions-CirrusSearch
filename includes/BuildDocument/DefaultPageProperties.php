@@ -5,9 +5,9 @@ namespace CirrusSearch\BuildDocument;
 use CirrusSearch\Util;
 use Elastica\Document;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\WikiMap\WikiMap;
 use MWTimestamp;
 use Title;
-use WikiMap;
 use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 

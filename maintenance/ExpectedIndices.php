@@ -4,7 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
-use WikiMap;
+use MediaWiki\WikiMap\WikiMap;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {

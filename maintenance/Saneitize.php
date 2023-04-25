@@ -7,7 +7,7 @@ use CirrusSearch\Sanity\NoopRemediator;
 use CirrusSearch\Sanity\PrintingRemediator;
 use CirrusSearch\Sanity\QueueingRemediator;
 use CirrusSearch\Searcher;
-use WikiMap;
+use MediaWiki\WikiMap\WikiMap;
 
 /**
  * Make sure the index for the wiki is sane.

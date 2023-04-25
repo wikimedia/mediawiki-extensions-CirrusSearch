@@ -6,7 +6,7 @@ use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use Config;
 use Language;
 use MediaWiki\MediaWikiServices;
-use WikiMap;
+use MediaWiki\WikiMap\WikiMap;
 
 /**
  * @covers \CirrusSearch\Util

@@ -3,7 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Profile\SearchProfileService;
-use WikiMap;
+use MediaWiki\WikiMap\WikiMap;
 
 /**
  * @group CirrusSearch

@@ -19,6 +19,7 @@ use CirrusSearch\Wikimedia\WeightedTagsHooks;
 use ISearchResultSet;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\ProperPageIdentity;
+use MediaWiki\WikiMap\WikiMap;
 use RequestContext;
 use SearchEngine;
 use SearchIndexField;
@@ -27,7 +28,6 @@ use Status;
 use Title;
 use User;
 use WebRequest;
-use WikiMap;
 use Wikimedia\Assert\Assert;
 
 /**

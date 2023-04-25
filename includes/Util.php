@@ -6,13 +6,13 @@ use IBufferingStatsdDataFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\User\UserIdentity;
+use MediaWiki\WikiMap\WikiMap;
 use NullStatsdDataFactory;
 use PoolCounterWorkViaCallback;
 use Status;
 use Title;
 use UIDGenerator;
 use WebRequest;
-use WikiMap;
 use Wikimedia\Assert\Assert;
 use Wikimedia\IPUtils;
 

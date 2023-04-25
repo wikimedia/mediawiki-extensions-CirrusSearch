@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Api;
 
-use WikiMap;
+use MediaWiki\WikiMap\WikiMap;
 
 /**
  * Update ElasticSearch suggestion index

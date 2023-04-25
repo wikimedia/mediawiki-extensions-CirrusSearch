@@ -10,10 +10,10 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Updater;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\WikiMap\WikiMap;
 use MWException;
 use MWTimestamp;
 use Title;
-use WikiMap;
 use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 

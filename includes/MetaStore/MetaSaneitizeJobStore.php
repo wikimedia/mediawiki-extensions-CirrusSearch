@@ -3,7 +3,7 @@
 namespace CirrusSearch\MetaStore;
 
 use Elastica\Index;
-use WikiMap;
+use MediaWiki\WikiMap\WikiMap;
 
 class MetaSaneitizeJobStore implements MetaStore {
 	public const METASTORE_TYPE = "sanitize";

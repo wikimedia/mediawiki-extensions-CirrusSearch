@@ -6,8 +6,8 @@ use BagOStuff;
 use ExtensionRegistry;
 use MediaWiki\Extension\SiteMatrix\SiteMatrix;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\WikiMap\WikiMap;
 use WANObjectCache;
-use WikiMap;
 
 /**
  * InterwikiResolver suited for WMF context and uses SiteMatrix.

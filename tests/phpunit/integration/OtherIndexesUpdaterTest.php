@@ -2,8 +2,8 @@
 
 namespace CirrusSearch;
 
+use MediaWiki\WikiMap\WikiMap;
 use Title;
-use WikiMap;
 
 /**
  * @covers \CirrusSearch\OtherIndexesUpdater

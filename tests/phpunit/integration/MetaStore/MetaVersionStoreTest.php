@@ -8,7 +8,7 @@ use CirrusSearch\HashSearchConfig;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet;
-use WikiMap;
+use MediaWiki\WikiMap\WikiMap;
 
 /**
  * Mostly stupid happy path tests. :(

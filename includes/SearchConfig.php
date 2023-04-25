@@ -7,8 +7,8 @@ use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\WikiMap\WikiMap;
 use RequestContext;
-use WikiMap;
 use Wikimedia\Assert\Assert;
 
 /**

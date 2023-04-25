@@ -7,7 +7,7 @@ use Elastica\Index;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Ids;
 use Elastica\Query\MatchQuery;
-use WikiMap;
+use MediaWiki\WikiMap\WikiMap;
 
 class MetaNamespaceStore implements MetaStore {
 	/** @const Value of metastore 'type' field for our documents */

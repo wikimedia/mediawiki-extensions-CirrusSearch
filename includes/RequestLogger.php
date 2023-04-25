@@ -6,9 +6,9 @@ use DeferredUpdates;
 use ISearchResultSet;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\User\UserIdentity;
+use MediaWiki\WikiMap\WikiMap;
 use UIDGenerator;
 use User;
-use WikiMap;
 
 /**
  * Handles logging information about requests made to various destinations,

@@ -6,6 +6,7 @@ use CirrusSearch\CirrusIntegrationTestCaseTrait;
 use CirrusSearch\CirrusSearch;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\WikiMap\WikiMap;
 
 /**
  * @group Database
@@ -122,7 +123,7 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 			'version' => $revision->getId(),
 			'namespace' => 0,
 			'namespace_text' => '',
-			'wiki' => \WikiMap::getCurrentWikiId(),
+			'wiki' => WikiMap::getCurrentWikiId(),
 			'title' => 'QueryBuildDocumentTest Page',
 			'timestamp' => \MWTimestamp::convert( TS_ISO_8601, $revision->getTimestamp() ),
 			'create_timestamp' => \MWTimestamp::convert( TS_ISO_8601, $firstRevision->getTimestamp() ),
@@ -148,7 +149,7 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 			'version' => $revision->getId(),
 			'namespace' => 0,
 			'namespace_text' => '',
-			'wiki' => \WikiMap::getCurrentWikiId(),
+			'wiki' => WikiMap::getCurrentWikiId(),
 			'title' => 'QueryBuildDocumentTest Page',
 			'timestamp' => \MWTimestamp::convert( TS_ISO_8601, $revision->getTimestamp() ),
 			'create_timestamp' => \MWTimestamp::convert( TS_ISO_8601, $firstRevision->getTimestamp() ),

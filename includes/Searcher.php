@@ -34,12 +34,12 @@ use Elastica\Query\MultiMatch;
 use Elastica\Search;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\WikiMap\WikiMap;
 use RequestContext;
 use Status;
 use Title;
 use User;
 use WebRequest;
-use WikiMap;
 use Wikimedia\Assert\Assert;
 use Wikimedia\ObjectFactory\ObjectFactory;
 

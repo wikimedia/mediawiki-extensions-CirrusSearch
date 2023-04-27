@@ -10,7 +10,9 @@ use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Bulk\Action\AbstractDocument;
 use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
+use Elastica\Exception\RuntimeException;
 use Elastica\JSON;
+use Elastica\Response;
 use Liuggio\StatsdClient\Factory\StatsdDataFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -352,55 +354,50 @@ class DataSender extends ElasticsearchIntermediary {
 					);
 				}
 			);
-			if ( !$justDocumentMissing ) {
-				$exception = $e;
-			}
+			$exception = $e;
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$exception = $e;
 		}
 
-		// TODO: rewrite error handling, the logic here is hard to follow
-		$validResponse = $responseSet !== null && count( $responseSet->getBulkResponses() ) > 0;
-		if ( $exception === null && ( $justDocumentMissing || $validResponse ) ) {
+		if ( $justDocumentMissing ) {
+			// wa have a failure but this is just docs that are missing in the index
+			// missing docs are logged above
 			$this->success();
-			if ( $validResponse ) {
-				// @phan-suppress-next-line PhanTypeMismatchArgumentNullable responseset is not null
-				$this->reportUpdateMetrics( $responseSet, $indexSuffix, count( $documents ) );
-			}
 			return Status::newGood();
-		} else {
-			$this->failure( $exception );
-			$documentIds = array_map( static function ( $d ) {
-				return (string)( $d->getId() );
-			}, $documents );
-			$logContext = [ 'docId' => implode( ', ', $documentIds ) ];
-			if ( $exception ) {
-				$logContext['exception'] = $exception;
-			} else {
-				// we want to figure out error_massage from the responseData log, because
-				// error_message is currently not set when exception is null and response is not
-				// valid
-				$responseData = $responseSet->getData();
-				$responseDataString = json_encode( $responseData );
-
-				// in logstash some error_message seems to be empty we are assuming its due to
-				// non UTF-8 sequences in the response data causing the json_encode to return empty
-				// string,so we added a logic to validate the assumption
-				if ( json_last_error() === JSON_ERROR_UTF8 ) {
-					$responseDataString =
-						json_encode( $this->convertEncoding( $responseData ) );
-				} elseif ( json_last_error() !== JSON_ERROR_NONE ) {
-					$responseDataString = json_last_error_msg();
-				}
-
-				$logContext['error_message'] = mb_substr( $responseDataString, 0, 4096 );
-			}
-			$this->failedLog->warning(
-				'Failed to update documents {docId}',
-				$logContext
-			);
-			return Status::newFatal( 'cirrussearch-failed-send-data' );
 		}
+		// check if the response is valid by making sure that it has bulk responses
+		if ( $responseSet !== null && count( $responseSet->getBulkResponses() ) > 0 ) {
+			$this->success();
+			$this->reportUpdateMetrics( $responseSet, $indexSuffix, count( $documents ) );
+			return Status::newGood();
+		}
+		// Everything else should be a failure.
+		if ( $exception === null ) {
+			// Elastica failed to identify the error, reason is that the Elastica Bulk\Response
+			// does identify errors only in individual responses if the request fails without
+			// getting a formal elastic response Bulk\Response->isOk might remain true
+			// So here we construct the ResponseException that should have been built and thrown
+			// by Elastica
+			$lastRequest = $this->connection->getClient()->getLastRequest();
+			if ( $lastRequest !== null ) {
+				$exception = new \Elastica\Exception\ResponseException( $lastRequest,
+					new Response( $responseSet->getData() ) );
+			} else {
+				$exception = new RuntimeException( "Unknown error in bulk request (Client::getLastRequest() is null)" );
+			}
+		}
+		$this->failure( $exception );
+		$documentIds = array_map( static function ( $d ) {
+			return (string)( $d->getId() );
+		}, $documents );
+		$this->failedLog->warning(
+			'Failed to update documents {docId}',
+			[
+				'docId' => implode( ', ', $documentIds ),
+				'exception' => $exception
+			]
+		);
+		return Status::newFatal( 'cirrussearch-failed-send-data' );
 	}
 
 	/**

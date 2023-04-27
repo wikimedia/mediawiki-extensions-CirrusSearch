@@ -232,7 +232,6 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 			'CirrusSearchReplicaGroup' => 'default',
 		];
 		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
-		$serde = new ElasticaDocumentsJsonSerde();
 		$mockClient = $this->getMockBuilder( Client::class )
 			->disableOriginalConstructor()
 			->setProxyTarget( new Client( [ 'connections' => [] ] ) )

@@ -7,7 +7,8 @@
 			"Hugo.arg",
 			"Manvydasz",
 			"Pavel1513",
-			"Tomasdd"
+			"Tomasdd",
+			"Nokeoo"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-įgalinta MediaWiki paieška",
@@ -36,7 +37,13 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Įprastinė paieška pagal žodžio pradžią",
 	"cirrussearch-completion-profile-classic-pref-desc": "Netaiso riktų. Ieškoma pagal žodžio pradžią.",
 	"cirrussearch-feature-deepcat-timeout": "Baigėsi kategorijos platesnės paieškos skirtasis laikas. Greičiausiai kategorijoje yra per daug subkategorijų.",
+	"cirrussearch-feature-deepcat-invalid-title": "Pateikta kategorija negalima.",
+	"cirrussearch-feature-pageid-invalid-id": "Negalimas puslapio {{PLURAL:$2|ID}}: $1",
+	"cirrussearch-incategory-feature-no-valid-categories": "„$1“ nepateikta jokia galima kategorija.",
+	"cirrussearch-mlt-feature-no-valid-titles": "„$1“ nepateiktas joks galimas pavadinimas.",
+	"cirrussearch-mlt-not-configured": "Funkcija „$1“ netinkamai sukonfigūruota. Paprašykite administratoriaus pataisyti $wgCirrusSearchMoreLikeThisFields",
 	"cirrussearch-explore-similar-categories": "Kategorijos",
 	"cirrussearch-explore-similar-languages": "Kalbos",
+	"cirrussearch-explore-similar-related-none": "Nėra jokių susijusių puslapių",
 	"cirrussearch-article-words": "Žodžiai visuose turinio puslapiuose"
 }

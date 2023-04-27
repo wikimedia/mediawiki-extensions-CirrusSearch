@@ -396,6 +396,8 @@ class AnalysisConfigBuilder {
 			return '[^ĈĉĜĝĤĥĴĵŜŝŬŭ]';
 		case 'es': // T277699
 			return '[^Ññ]';
+		case 'et': // T332322
+			return '[^ŠšŽžÕõÄäÖöÜü]';
 		case 'eu': // T283366
 			return '[^Ññ]';
 		case 'fi': // T284578
@@ -724,6 +726,7 @@ class AnalysisConfigBuilder {
 		case 'bulgarian': // Unpack Bulgarian analyzer T325090
 		case 'czech':     // Unpack Czech analyzer T284578
 		case 'danish':    // Unpack Danish analyzer T283366
+		case 'estonian':  // Unpack Estonian analyzer T332322
 		case 'finnish':   // Unpack Finnish analyzer T284578
 		case 'galician':  // Unpack Galician analyzer T284578
 		case 'hungarian': // Unpack Hungarian analyzer T325089
@@ -1639,6 +1642,7 @@ class AnalysisConfigBuilder {
 		'en-ca' => 'english',
 		'en-gb' => 'english',
 		'simple' => 'english',
+		'et' => 'estonian',
 		'fi' => 'finnish',
 		'fr' => 'french',
 		'gl' => 'galician',
@@ -1690,6 +1694,7 @@ class AnalysisConfigBuilder {
 		'simple' => true,
 		'eo' => true,
 		'es' => true,
+		'et' => true,
 		'eu' => true,
 		'fa' => true,
 		'fi' => true,

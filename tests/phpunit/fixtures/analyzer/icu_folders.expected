@@ -988,6 +988,62 @@
             "tokenizer": "standard",
             "type": "custom"
         },
+        "et_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "et_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "et_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "et_text": {
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "estonian_stop",
+                "estonian_stemmer",
+                "et_icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "et_text_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "dotted_I_fix"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "estonian_stop",
+                "estonian_stemmer",
+                "et_icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
         "eu_plain": {
             "char_filter": [
                 "nnbsp_norm",
@@ -3071,6 +3127,18 @@
         "es_icu_folding": {
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u00d1\u00f1]"
+        },
+        "estonian_stemmer": {
+            "language": "estonian",
+            "type": "stemmer"
+        },
+        "estonian_stop": {
+            "stopwords": "_estonian_",
+            "type": "stop"
+        },
+        "et_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u0160\u0161\u017d\u017e\u00d5\u00f5\u00c4\u00e4\u00d6\u00f6\u00dc\u00fc]"
         },
         "eu_icu_folding": {
             "type": "icu_folding",

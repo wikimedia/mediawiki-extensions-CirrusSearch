@@ -1,10 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Albertas"
+			"Albertas",
+			"Nokeoo"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "CirrusSearch konfigūracijos išklotinė.",
 	"apihelp-cirrus-mapping-dump-description": "CirrusSearch susiejimo šiam vikiui išklotinė.",
-	"apihelp-cirrus-settings-dump-description": "CirrusSearch nustatymų šiam vikiui išklotinė."
+	"apihelp-cirrus-settings-dump-description": "CirrusSearch nustatymų šiam vikiui išklotinė.",
+	"apihelp-query+compsuggestbuilddoc-param-method": "Naudotinas balų skaičiavimo metodas",
+	"apierror-compsuggestbuilddoc-bad-method": "Nežinomas balų skaičiavimo metodas"
 }

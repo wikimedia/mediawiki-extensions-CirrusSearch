@@ -4,6 +4,7 @@
 			"Ajiniyaz Nurniyazov"
 		]
 	},
+	"cirrussearch-query-too-long": "Izlew sorawınıń teksti ruxsat etilgennen uzınıraq. (fakt: $1; ruxsat etilgen: $2)",
 	"cirrussearch-explore-similar-categories": "Kategoriyalar",
 	"cirrussearch-explore-similar-languages": "Tiller"
 }

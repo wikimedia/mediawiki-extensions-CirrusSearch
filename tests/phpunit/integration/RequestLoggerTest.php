@@ -94,20 +94,17 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			list( $loggers, $config, $connection, $transport ) = $this->buildDependencies( $responses );
 		}
 
-		// Disable opportunistic execution of deferred updates
-		// in CLI mode
-		$this->setMwGlobals( 'wgCommandLineMode', false );
-		// Default config of SiteMatrix in vagrant is broken
-		$this->setMwGlobals( 'wgSiteMatrixSites', [] );
+		$this->setMwGlobals( [
+			// Disable opportunistic execution of deferred updates in CLI mode
+			'wgCommandLineMode' => false,
+			// Default config of SiteMatrix in vagrant is broken
+			'wgSiteMatrixSites' => [],
+			// Make sure OtherIndex is configured for use as well
+			'wgCirrusSearchExtraIndexes' => [ NS_FILE => [ 'commonswiki_file' ] ],
+		] );
 		// This ends up breaking WebRequest::getIP(), so
 		// provide an explicit value
 		\RequestContext::getMain()->getRequest()->setIP( '127.0.0.1' );
-		// Make sure OtherIndex is configured for use as well
-		$this->setMwGlobals( 'wgCirrusSearchExtraIndexes', [
-			NS_FILE => [
-				'commonswiki_file'
-			],
-		] );
 		$test( $config, $connection );
 
 		// Force the logger to flush

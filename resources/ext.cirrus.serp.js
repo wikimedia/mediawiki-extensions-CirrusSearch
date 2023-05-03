@@ -1,12 +1,12 @@
 $( function () {
-	var router = require( 'mediawiki.router' );
+	const router = require( 'mediawiki.router' );
 	if ( !router.isSupported() ) {
 		return;
 	}
 
 	// Always clean up the address bar, even (and especially) if the feature is disabled.
 	try {
-		var uri = new mw.Uri( location.href );
+		const uri = new mw.Uri( location.href );
 		if ( uri.query.searchToken ) {
 			delete uri.query.searchToken;
 			router.navigateTo( document.title, {
@@ -43,7 +43,7 @@ $( function () {
 	 */
 	function handlePossiblyNavigatingClick() {
 		try {
-			var clickUri = new mw.Uri( location.href );
+			const clickUri = new mw.Uri( location.href );
 			clickUri.query.searchToken = mw.config.get( 'wgCirrusSearchRequestSetToken' );
 			router.navigateTo( document.title, {
 				path: clickUri.toString(),

@@ -9,7 +9,7 @@ use CirrusSearch\CirrusSearch;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
-use Mediawiki\MediaWikiServices;
+use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
 
 /**

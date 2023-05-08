@@ -18,7 +18,7 @@
 	"cirrussearch-completion-profile-strict-pref-desc": "املا کی درستی اور لہجے کی شناخت نہيں، ہو بہو تلاش۔",
 	"cirrussearch-completion-profile-normal-pref-name": "حالت رجوع مکرر (اضافی)",
 	"cirrussearch-completion-profile-normal-pref-desc": "املا کی درستی نہیں تاہم قریبی رجوع مکررات کو حل کرتا ہے۔",
-	"cirrussearch-completion-profile-classic-pref-name": "سابقہ کی کلاسیکی تلاش",
+	"cirrussearch-completion-profile-classic-pref-name": "سابقہ کی تلاش بانداز قدیم",
 	"cirrussearch-completion-profile-classic-pref-desc": "املا کی درستی نہیں اور عناوین کے ابتدائی حروف سے مطابقت کی کوشش کرتا ہے۔",
 	"cirrussearch-feature-not-available": "تلاش کی بورڈ '$1' اس ویکی پر فعال نہیں ہے۔",
 	"cirrussearch-incategory-feature-no-valid-categories": "'$1' کے لیے درست زمرہ جات نہیں دیے گئے۔",

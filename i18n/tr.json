@@ -25,6 +25,7 @@
 	"cirrussearch-backend-error": "Biz geçici bir sorun nedeniyle aramanızı tamamlayamadık. Lütfen daha sonra tekrar deneyin.",
 	"cirrussearch-parse-error": "Sorgu anlaşılamadı. Lütfen daha basit olun. Sorgu arama sistemini iyileştirmek için oturum açmış olmalısınız.",
 	"cirrussearch-too-busy-error": "Arama şu anda çok meşgul. Lütfen daha sonra tekrar deneyiniz.",
+	"cirrussearch-regex-empty-expression": "$1 boş olmayan bir düzenli ifade bekliyor.",
 	"cirrussearch-regex-syntax-error": "$2 normal ifade sözdizimi hatası: $1",
 	"cirrussearch-regex-too-busy-error": "Çok fazla sıradan ifade araması çalışmakta. Lütfen daha sonra tekrar deneyiniz.",
 	"cirrussearch-regex-too-complex-error": "Düzenli ifade çok karmaşık. [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|Burada]] sadeleştirme hakkında daha fazla bilgi edinin.",

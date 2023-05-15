@@ -509,9 +509,10 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	 * @param ISearchResultSet|null $textMatches
 	 */
 	public static function onSpecialSearchResults( $term, $titleMatches, $textMatches ) {
-		global $wgOut;
+		$context = RequestContext::getMain();
+		$out = $context->getOutput();
 
-		$wgOut->addModules( 'ext.cirrus.serp' );
+		$out->addModules( 'ext.cirrus.serp' );
 
 		$jsVars = [
 			'wgCirrusSearchRequestSetToken' => Util::getRequestSetToken(),
@@ -529,7 +530,7 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 				$jsVars['wgCirrusSearchBackendUserTests'] = $trigger ? [ $trigger ] : [];
 			}
 		}
-		$wgOut->addJsConfigVars( $jsVars );
+		$out->addJsConfigVars( $jsVars );
 
 		// This ignores interwiki results for now...not sure what do do with those
 		ElasticsearchIntermediary::setResultPages( [

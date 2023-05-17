@@ -33,6 +33,11 @@ use Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class LinksUpdate extends CirrusTitleJob {
+	/**
+	 * param key to determine if the job should be "prioritized"
+	 */
+	private const PRIORITIZE = 'prioritize';
+
 	public function __construct( Title $title, array $params ) {
 		parent::__construct( $title, $params );
 
@@ -59,7 +64,7 @@ class LinksUpdate extends CirrusTitleJob {
 			$ts = \MWTimestamp::time();
 		}
 		$params += [
-			'prioritized' => true,
+			self::PRIORITIZE => true,
 			self::UPDATE_KIND => self::PAGE_CHANGE,
 			self::ROOT_EVENT_TIME => $ts,
 		];
@@ -77,7 +82,7 @@ class LinksUpdate extends CirrusTitleJob {
 	 */
 	public static function newPageRefreshUpdate( Title $title, array $params ): LinksUpdate {
 		$params += [
-			'prioritized' => false,
+			self::PRIORITIZE => false,
 			self::UPDATE_KIND => self::PAGE_REFRESH,
 			self::ROOT_EVENT_TIME => \MWTimestamp::time(),
 		];
@@ -129,6 +134,6 @@ class LinksUpdate extends CirrusTitleJob {
 	 * @return bool Is this job prioritized?
 	 */
 	public function isPrioritized() {
-		return isset( $this->params[ 'prioritize' ] ) && $this->params[ 'prioritize' ];
+		return isset( $this->params[self::PRIORITIZE] ) && $this->params[self::PRIORITIZE];
 	}
 }

@@ -85,7 +85,7 @@ class ChangeListenerTest extends CirrusTestCase {
 				[
 					"update_kind" => "page_refresh",
 					"root_event_time" => 123,
-					"prioritized" => false
+					"prioritize" => false
 				]
 			],
 			'simple rev update' => [
@@ -95,7 +95,7 @@ class ChangeListenerTest extends CirrusTestCase {
 				[
 					"update_kind" => "page_change",
 					"root_event_time" => 122,
-					"prioritized" => true
+					"prioritize" => true
 				]
 			]
 		];
@@ -118,7 +118,7 @@ class ChangeListenerTest extends CirrusTestCase {
 		$expectedJobParam = [
 			"update_kind" => "page_change",
 			"root_event_time" => $now,
-			"prioritized" => true,
+			"prioritize" => true,
 		];
 		$jobqueue->expects( $this->once() )->method( 'push' )->with( new CirrusLinksUpdate( $title,  $expectedJobParam ) );
 

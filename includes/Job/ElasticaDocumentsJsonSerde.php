@@ -20,13 +20,17 @@ class ElasticaDocumentsJsonSerde {
 	public function serialize( array $docs ) {
 		$res = [];
 		foreach ( $docs as $doc ) {
-			$res[] = [
-				'data' => $doc->getData(),
-				'params' => $doc->getParams(),
-				'upsert' => $doc->getDocAsUpsert(),
-			];
+			$res[] = $this->serializeOne( $doc );
 		}
 		return $res;
+	}
+
+	public function serializeOne( Document $doc ) {
+		return [
+			'data' => $doc->getData(),
+			'params' => $doc->getParams(),
+			'upsert' => $doc->getDocAsUpsert(),
+		];
 	}
 
 	/**
@@ -34,22 +38,29 @@ class ElasticaDocumentsJsonSerde {
 	 * @return Document[]
 	 */
 	public function deserialize( array $serialized ) {
+		$res = [];
+		foreach ( $serialized as $x ) {
+			$res[] = $this->deserializeOne( $x );
+		}
+		return $res;
+	}
+
+	public function deserializeOne( array $serialized, ?Document $doc = null ): Document {
 		// TODO: Because json_encode/decode is involved the round trip
 		// is imperfect. Almost everything here is an array regardless
 		// of what it was before serialization.  That shouldn't matter
 		// for documents, but elastica does occasionally use `(object)[]`
 		// instead of an empty array to force `{}` in the json output
 		// and that has been lost here.
-
-		$res = [];
-		foreach ( $serialized as $x ) {
-			// document _source
-			$doc = Document::create( $x['data'] );
-			// id, version, etc.
-			$doc->setParams( $x['params'] );
-			$doc->setDocAsUpsert( $x['upsert'] );
-			$res[] = $doc;
+		// document _source
+		if ( $doc === null ) {
+			$doc = Document::create( $serialized['data'] );
+		} else {
+			$doc->setData( $serialized['data'] );
 		}
-		return $res;
+		// id, version, etc.
+		$doc->setParams( $serialized['params'] );
+		$doc->setDocAsUpsert( $serialized['upsert'] );
+		return $doc;
 	}
 }

@@ -77,11 +77,7 @@ class ChangeListener implements
 	 *   [id => ['oldBits' => $oldBits, 'newBits' => $newBits], ... ]
 	 */
 	public function onArticleRevisionVisibilitySet( $title, $ids, $visibilityChangeMap ) {
-		$this->jobQueue->push(
-			new Job\LinksUpdate( $title, [
-				'prioritize' => true
-			] )
-		);
+		$this->jobQueue->push( LinksUpdate::newPastRevisionVisibilityChange( $title ) );
 	}
 
 	/**

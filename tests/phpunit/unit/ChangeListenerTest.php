@@ -148,4 +148,23 @@ class ChangeListenerTest extends CirrusTestCase {
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(), $this->createMock( \LoadBalancer::class ) );
 		$listener->onArticleDeleteComplete( $page, $this->createMock( \User::class ), "a reason", $pageId, null, $logEntry, 2 );
 	}
+
+	/**
+	 * @covers \CirrusSearch\ChangeListener::onArticleRevisionVisibilitySet
+	 * @covers \CirrusSearch\Job\LinksUpdate::newPastRevisionVisibilityChange
+	 */
+	public function testOnArticleRevisionVisibilitySet() {
+		$now = 321;
+		\MWTimestamp::setFakeTime( $now );
+		$title = $this->createMock( \Title::class );
+		$jobqueue = $this->createMock( \JobQueueGroup::class );
+		$expectedJobParam = [
+			"update_kind" => "visibility_change",
+			"root_event_time" => $now,
+			"prioritize" => true
+		];
+		$jobqueue->expects( $this->once() )->method( 'push' )->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(), $this->createMock( \LoadBalancer::class ) );
+		$listener->onArticleRevisionVisibilitySet( $title, [], [] );
+	}
 }

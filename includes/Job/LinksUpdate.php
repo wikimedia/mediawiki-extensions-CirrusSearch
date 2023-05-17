@@ -73,6 +73,22 @@ class LinksUpdate extends CirrusTitleJob {
 	}
 
 	/**
+	 * Prepare a cautionary update of a page that had some of its revision's visibility changed.
+	 * (Theoretically not required because old revisions should not be part of the index)
+	 * @param Title $title
+	 * @return LinksUpdate
+	 */
+	public static function newPastRevisionVisibilityChange( Title $title ): LinksUpdate {
+		$params = [
+			self::PRIORITIZE => true,
+			self::UPDATE_KIND => self::VISIBILITY_CHANGE,
+			self::ROOT_EVENT_TIME => \MWTimestamp::time(),
+		];
+
+		return new self( $title, $params );
+	}
+
+	/**
 	 * Prepare a page update for when the rendered output of the page might have changed due to a
 	 * change not directly related to this page (e.g. template update).
 	 *

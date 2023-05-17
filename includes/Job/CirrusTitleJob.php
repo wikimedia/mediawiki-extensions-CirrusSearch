@@ -35,6 +35,11 @@ abstract class CirrusTitleJob extends Job {
 	public const PAGE_CHANGE = 'page_change';
 	/** a change that could possibly change the rendered output of the page */
 	public const PAGE_REFRESH = 'page_refresh';
+	/** a change emitted when detecting a visibility change on a past revision
+	 * theoretically not needed but is being triggered out of caution as generally visibility changes
+	 * occur to hide harmful content.
+	 */
+	public const VISIBILITY_CHANGE = "visibility_change";
 
 	/**
 	 * @var SearchConfig|null (lazy loaded by getSearchConfig())

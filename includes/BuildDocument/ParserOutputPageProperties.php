@@ -3,6 +3,7 @@
 namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\CirrusSearch;
+use CirrusSearch\Job\ElasticaDocumentsJsonSerde;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
@@ -12,6 +13,7 @@ use MediaWiki\Revision\RevisionRecord;
 use ParserOutput;
 use Sanitizer;
 use Title;
+use Wikimedia\LightweightObjectStore\ExpirationAwareness;
 use WikiPage;
 
 /**
@@ -47,7 +49,27 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 	 */
 	public function finalize( Document $doc, Title $title, RevisionRecord $revision ): void {
 		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
-		$this->finalizeReal( $doc, $page, new CirrusSearch, $revision );
+		// TODO: If parserCache is null here then we will parse for every
+		// cluster and every retry.  Maybe instead of forcing a parse, we could
+		// force a parser cache update during self::initialize?
+
+		$wanCache = MediaWikiServices::getInstance()->getMainWANObjectCache();
+		$serde = new ElasticaDocumentsJsonSerde();
+		$cacheKey = $wanCache->makeKey(
+			'CirrusSearchParserOutputPageProperties',
+			$page->getId(),
+			$revision->getId(),
+			$page->getTouched()
+		);
+		$cacheData = $wanCache->getWithSetCallback(
+			$cacheKey,
+			ExpirationAwareness::TTL_HOUR * 6,
+			function () use ( $doc, $page, $revision, $serde ) {
+				$this->finalizeReal( $doc, $page, new CirrusSearch, $revision );
+				return $serde->serializeOne( $doc );
+			}
+		);
+		$serde->deserializeOne( $cacheData, $doc );
 	}
 
 	/**
@@ -122,7 +144,7 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 		// The strategy here is to see if the portion before the : is a valid namespace
 		// in either the language of the wiki or the language of the page. If it is
 		// then we strip it from the display title.
-		list( $maybeNs, $maybeDisplayTitle ) = explode( ':', $clean, 2 );
+		[ $maybeNs, $maybeDisplayTitle ] = explode( ':', $clean, 2 );
 		$cleanTitle = Title::newFromText( $clean );
 		if ( $cleanTitle === null ) {
 			// The title is invalid, we cannot extract the ns prefix

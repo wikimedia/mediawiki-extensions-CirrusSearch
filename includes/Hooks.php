@@ -188,7 +188,7 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 			600,
 			static function () {
 				$source = wfMessage( 'cirrussearch-morelikethis-settings' )->inContentLanguage();
-				if ( $source && $source->isDisabled() ) {
+				if ( $source->isDisabled() ) {
 					return [];
 				}
 				return Util::parseSettingsInMessage( $source->plain() );

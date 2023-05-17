@@ -95,7 +95,7 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 			600,
 			static function () {
 				$source = wfMessage( 'cirrussearch-didyoumean-settings' )->inContentLanguage();
-				if ( !$source || $source->isDisabled() ) {
+				if ( $source->isDisabled() ) {
 					return [];
 				}
 				return Util::parseSettingsInMessage( $source->plain() );

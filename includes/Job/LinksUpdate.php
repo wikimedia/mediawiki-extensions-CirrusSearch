@@ -106,6 +106,22 @@ class LinksUpdate extends CirrusTitleJob {
 	}
 
 	/**
+	 * New change emitted from the saneitizer
+	 * @param Title $title
+	 * @param string|null $cluster optional target cluster, null for all clusters
+	 * @return LinksUpdate
+	 */
+	public static function newSaneitizerUpdate( Title $title, ?string $cluster ): LinksUpdate {
+		$params = [
+			self::PRIORITIZE => false,
+			self::UPDATE_KIND => self::SANEITIZER,
+			self::ROOT_EVENT_TIME => \MWTimestamp::time(),
+			self::CLUSTER => $cluster
+		];
+		return new self( $title, $params );
+	}
+
+	/**
 	 * @return bool
 	 */
 	protected function doJob() {

@@ -30,14 +30,21 @@ class AllClustersQueuingRemediatorTest extends CirrusTestCase {
 	}
 
 	public function testDelegation() {
+		$now = 123;
+		\MWTimestamp::setFakeTime( $now );
 		$title = \Title::makeTitle( NS_MAIN, 'Test' );
 		$wp = $this->createMock( \WikiPage::class );
 		$wp->method( 'getTitle' )->willReturn( $title );
 		$wrongIndex = 'wrongType';
 		$docId = '123';
+		$baseParams = [
+			'update_kind' => 'saneitizer',
+			'root_event_time' => $now,
+			'prioritize' => false
+		];
 		$linksUpdateJob = new LinksUpdate( $title, [
 			'cluster' => null,
-		] );
+		] + $baseParams );
 
 		$deletePageJob = new DeletePages( $title, [
 			'docId' => $docId,

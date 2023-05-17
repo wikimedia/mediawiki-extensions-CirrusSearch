@@ -11,6 +11,8 @@ use JobQueueGroup;
  * @covers \CirrusSearch\Sanity\QueueingRemediator
  */
 class QueueingRemediatorTest extends CirrusTestCase {
+	private const NOW = 123;
+
 	public function provideTestJobIsSent() {
 		$title = \Title::makeTitle( NS_MAIN, 'Test' );
 		$wp = $this->createMock( \WikiPage::class );
@@ -19,7 +21,10 @@ class QueueingRemediatorTest extends CirrusTestCase {
 		$docId = '123';
 		foreach ( [ null, 'c1' ] as $cluster ) {
 			$linksUpdateJob = new LinksUpdate( $title, [
-				'cluster' => $cluster
+				'cluster' => $cluster,
+				'update_kind' => 'saneitizer',
+				'root_event_time' => self::NOW,
+				'prioritize' => false
 			] );
 
 			$deletePageJob = new DeletePages( $title, [
@@ -57,6 +62,7 @@ class QueueingRemediatorTest extends CirrusTestCase {
 	 * @param string|null $cluster
 	 */
 	public function testJobIsSent( $methodCall, array $methodParams, array $jobs, $cluster ) {
+		\MWTimestamp::setFakeTime( self::NOW );
 		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
 		call_user_func_array(
 			[ $jobQueueGroup->expects( $this->exactly( count( $jobs ) ) )->method( 'push' ), 'withConsecutive' ],

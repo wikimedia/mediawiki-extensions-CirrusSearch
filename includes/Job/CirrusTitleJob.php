@@ -40,6 +40,13 @@ abstract class CirrusTitleJob extends Job {
 	 * occur to hide harmful content.
 	 */
 	public const VISIBILITY_CHANGE = "visibility_change";
+	/**
+	 * Change issued from the saneitizer, either a fixup or a forced update
+	 */
+	public const SANEITIZER = "saneitizer";
+
+	/** param key to store the target elastic cluster */
+	public const CLUSTER = 'cluster';
 
 	/**
 	 * @var SearchConfig|null (lazy loaded by getSearchConfig())
@@ -52,7 +59,7 @@ abstract class CirrusTitleJob extends Job {
 	 */
 	public function __construct( $title, $params ) {
 		$params += [
-			'cluster' => null,
+			self::CLUSTER => null,
 			self::UPDATE_KIND => 'unknown',
 			self::ROOT_EVENT_TIME => null
 		];

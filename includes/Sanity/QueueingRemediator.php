@@ -104,10 +104,6 @@ class QueueingRemediator implements Remediator {
 	}
 
 	private function pushLinksUpdateJob( WikiPage $page ) {
-		$this->jobQueue->push(
-			new LinksUpdate( $page->getTitle(), [
-				'cluster' => $this->cluster,
-			] )
-		);
+		$this->jobQueue->push( LinksUpdate::newSaneitizerUpdate( $page->getTitle(), $this->cluster ) );
 	}
 }

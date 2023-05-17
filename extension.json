@@ -684,6 +684,10 @@
 		"CirrusSearchEnableIncomingLinkCounting": {
 			"description": "Enables queries used for counting of incoming links. Disable if an external service is updating these.",
 			"value": true
+		},
+		"CirrusSearchDeduplicateAnalysis": {
+			"description": "[experimental] Deduplicate index analysis chains",
+			"value": false
 		}
 	},
 	"SearchMappings": {

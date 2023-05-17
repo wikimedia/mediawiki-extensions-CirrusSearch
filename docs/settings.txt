@@ -1683,3 +1683,15 @@ The incoming_links values will still be used as part of relevance scoring. This
 should only be disabled if an external process has been configured to update
 the incoming_links field on a scheduled basis separate from the edit pipeline.
 
+; $wgCirrusSearchDeduplicateAnalysis
+
+Default:
+  $wgCirrusSearchDeduplicateAnalysis = false;
+
+Setting to true will enable deduplication of the elasticsearch index analysis
+settings. In most cases this is not necessary and makes investigating and
+understanding the system more complicated. In special cases where many
+languages analysis chains are loaded into a single index this deduplication can
+greatly reduce the amount of time the nodes require to process the index
+settings.
+

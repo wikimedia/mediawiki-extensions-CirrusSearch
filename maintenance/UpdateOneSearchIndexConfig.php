@@ -581,8 +581,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->analysisConfig = $analysisConfigBuilder->buildConfig();
 		if ( $this->safeToOptimizeAnalysisConfig ) {
 			$filter = new AnalysisFilter();
+			$deduplicate = $this->getSearchConfig()->get( 'CirrusSearchDeduplicateAnalysis' );
+			// A bit adhoc, this is the list of analyzers that should not be renamed, because
+			// they are referenced at query time.
+			$protected = [ 'token_reverse' ];
 			list( $this->analysisConfig, $this->mapping ) = $filter
-				->filterAnalysis( $this->analysisConfig, $this->mapping );
+				->filterAnalysis( $this->analysisConfig, $this->mapping, $deduplicate, $protected );
 		}
 		$this->similarityConfig = $analysisConfigBuilder->buildSimilarityConfig();
 	}

@@ -406,6 +406,36 @@ class AnalysisFilterTest extends CirrusTestCase {
 	/**
 	 * @covers \CirrusSearch\Maintenance\AnalysisFilter::filterAnalysis
 	 */
+	public function testExcludesProtectedAnalyzers() {
+		$filter = new AnalysisFilter();
+		$analysis = [
+			'analyzer' => [
+				'text_search_a' => [
+					'tokenizer' => 'foo',
+				],
+				'text_search_b' => [
+					'tokenizer' => 'foo',
+				],
+			],
+		];
+		$mappings = [
+			'my_type' => [
+				'properties' => [
+					'title' => [
+						'analyzer' => 'text',
+						'search_analyzer' => 'text_search_a',
+					],
+				],
+			],
+		];
+
+		[ $analysis, $mappings ] = $filter->filterAnalysis( $analysis, $mappings, true, [ 'text_search_b' ] );
+		$this->assertArrayHasKey( 'text_search_b', $analysis['analyzer'] );
+	}
+
+	/**
+	 * @covers \CirrusSearch\Maintenance\AnalysisFilter::filterAnalysis
+	 */
 	public function testPrimaryEntrypoint() {
 		$filter = new AnalysisFilter();
 		$initialAnalysis = [

@@ -350,6 +350,6 @@ class MappingConfigBuilder {
 	 * @return bool
 	 */
 	public function canOptimizeAnalysisConfig() {
-		return false;
+		return true;
 	}
 }

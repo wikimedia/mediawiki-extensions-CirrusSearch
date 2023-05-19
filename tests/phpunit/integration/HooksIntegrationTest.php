@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use ConfigFactory;
+use MediaWiki\Request\FauxRequest;
 use User;
 
 /**
@@ -208,12 +209,12 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 								 $option => $originalValue
 							 ] + $additionalConfig );
 
-		$request = new \FauxRequest( [ $paramName . "Foo" => $paramValue ] );
+		$request = new FauxRequest( [ $paramName . "Foo" => $paramValue ] );
 		Hooks::initializeForRequest( $request );
 		$this->assertEquals( $originalValue, $GLOBALS[$option],
 			'Unrelated param does not affect overrides' );
 
-		$request = new \FauxRequest( [ $paramName => $paramValue ] );
+		$request = new FauxRequest( [ $paramName => $paramValue ] );
 		Hooks::initializeForRequest( $request );
 		$this->assertEquals( $expectedValue, $GLOBALS[$option] );
 	}
@@ -335,12 +336,12 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 								 $option => $originalValue
 							 ] + $additionalConfig );
 
-		$request = new \FauxRequest( [ $paramName . "Foo" => $paramValue ] );
+		$request = new FauxRequest( [ $paramName . "Foo" => $paramValue ] );
 		Hooks::initializeForRequest( $request );
 		$this->assertEquals( $originalValue, $GLOBALS[$option],
 			'Unrelated param does not affect overrides' );
 
-		$request = new \FauxRequest( [ $paramName => $paramValue ] );
+		$request = new FauxRequest( [ $paramName => $paramValue ] );
 		Hooks::initializeForRequest( $request );
 		$this->assertEquals( $expectedValue + $nullOptions, $GLOBALS[$option] );
 	}

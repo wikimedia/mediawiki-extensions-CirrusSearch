@@ -3,6 +3,7 @@
 namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusTestCase;
+use MediaWiki\Request\FauxRequest;
 
 /**
  * @group CirrusSearch
@@ -11,7 +12,7 @@ use CirrusSearch\CirrusTestCase;
 class UriParamSearchProfileOverrideTest extends CirrusTestCase {
 
 	public function testNormalUseCase() {
-		$request = new \FauxRequest( [ 'paramOverride' => 'overridden' ] );
+		$request = new FauxRequest( [ 'paramOverride' => 'overridden' ] );
 		$override = new UriParamSearchProfileOverride( $request, 'paramOverride' );
 		$this->assertSame( SearchProfileOverride::URI_PARAM_PRIO, $override->priority() );
 		$this->assertSame( 'overridden', $override->getOverriddenName( [] ) );
@@ -26,13 +27,13 @@ class UriParamSearchProfileOverrideTest extends CirrusTestCase {
 	}
 
 	public function testWithoutUriParam() {
-		$request = new \FauxRequest( [ 'paramOverride' => 'overridden' ] );
+		$request = new FauxRequest( [ 'paramOverride' => 'overridden' ] );
 		$override = new UriParamSearchProfileOverride( $request, 'paramOverride2' );
 		$this->assertNull( $override->getOverriddenName( [] ) );
 	}
 
 	public function testCustomPrio() {
-		$request = new \FauxRequest( [ 'paramOverride' => 'overridden' ] );
+		$request = new FauxRequest( [ 'paramOverride' => 'overridden' ] );
 		$override = new UriParamSearchProfileOverride( $request, 'paramOverride2', 123 );
 		$this->assertSame( 123, $override->priority() );
 	}

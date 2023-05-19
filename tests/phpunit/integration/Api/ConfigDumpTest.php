@@ -1,6 +1,7 @@
 <?php
 
 use CirrusSearch\Api\ConfigDump;
+use MediaWiki\Request\FauxRequest;
 
 /**
  * @covers \CirrusSearch\Api\ProfilesDump

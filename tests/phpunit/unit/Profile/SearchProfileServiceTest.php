@@ -6,6 +6,7 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Dispatch\BasicSearchQueryRoute;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchQuery;
+use MediaWiki\Request\FauxRequest;
 use MediaWiki\User\StaticUserOptionsLookup;
 use MediaWiki\User\UserIdentityValue;
 
@@ -84,7 +85,7 @@ class SearchProfileServiceTest extends CirrusTestCase {
 	}
 
 	public function testOverrides() {
-		$request = new \FauxRequest( [ 'profile' => 'prof3' ] );
+		$request = new FauxRequest( [ 'profile' => 'prof3' ] );
 		$username = 'test';
 		$user = new UserIdentityValue( 1, $username );
 		$userOptions = [ $username => [ 'profile-pref' => 'prof4' ] ];

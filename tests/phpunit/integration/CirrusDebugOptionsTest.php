@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use Elastica\Query;
+use MediaWiki\Request\FauxRequest;
 
 /**
  * @covers \CirrusSearch\CirrusDebugOptions
@@ -10,13 +11,13 @@ use Elastica\Query;
 class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 
 	public function testEmptyOptions() {
-		$request = new \FauxRequest();
+		$request = new FauxRequest();
 		$debugOptions = CirrusDebugOptions::fromRequest( $request );
 		$this->assertNone( $debugOptions );
 	}
 
 	public function testFullOptions() {
-		$request = new \FauxRequest( [
+		$request = new FauxRequest( [
 			'cirrusMLRModel' => 'my_model',
 			'cirrusSuppressSuggest' => '',
 			'cirrusCompletionVariant' => [ 'foo', 'bar' ],
@@ -36,7 +37,7 @@ class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 		// cirrusExplain should be ignored when cirrusDumpQuery or cirrusDumpQueryAST is set
 		$this->assertNull( $debugOptions->getCirrusExplainFormat() );
 
-		$request = new \FauxRequest( [
+		$request = new FauxRequest( [
 			'cirrusMLRModel' => 'my_model',
 			'cirrusSuppressSuggest' => '',
 			'cirrusCompletionVariant' => [ 'foo', 'bar' ],
@@ -80,7 +81,7 @@ class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testApplyToQuery() {
-		$options = CirrusDebugOptions::fromRequest( new \FauxRequest( [ 'cirrusExplain' => 'pretty' ] ) );
+		$options = CirrusDebugOptions::fromRequest( new FauxRequest( [ 'cirrusExplain' => 'pretty' ] ) );
 		$query = new Query();
 		$options->applyDebugOptions( $query );
 		$this->assertTrue( $query->getParam( 'explain' ) );
@@ -92,25 +93,25 @@ class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testNeverCache() {
-		$options = CirrusDebugOptions::fromRequest( new \FauxRequest( [] ) );
+		$options = CirrusDebugOptions::fromRequest( new FauxRequest( [] ) );
 		$this->assertFalse( $options->mustNeverBeCached() );
 
-		$options = CirrusDebugOptions::fromRequest( new \FauxRequest( [
+		$options = CirrusDebugOptions::fromRequest( new FauxRequest( [
 			'cirrusExplain' => 'pretty'
 		] ) );
 		$this->assertTrue( $options->mustNeverBeCached() );
 
-		$options = CirrusDebugOptions::fromRequest( new \FauxRequest( [
+		$options = CirrusDebugOptions::fromRequest( new FauxRequest( [
 			'cirrusExplain' => 'raw'
 		] ) );
 		$this->assertTrue( $options->mustNeverBeCached() );
 
-		$options = CirrusDebugOptions::fromRequest( new \FauxRequest( [
+		$options = CirrusDebugOptions::fromRequest( new FauxRequest( [
 			'cirrusExplain' => 'unknown and ignored value'
 		] ) );
 		$this->assertFalse( $options->mustNeverBeCached() );
 
-		$options = CirrusDebugOptions::fromRequest( new \FauxRequest( [
+		$options = CirrusDebugOptions::fromRequest( new FauxRequest( [
 			'cirrusDumpResult' => '1'
 		] ) );
 		$this->assertTrue( $options->mustNeverBeCached() );

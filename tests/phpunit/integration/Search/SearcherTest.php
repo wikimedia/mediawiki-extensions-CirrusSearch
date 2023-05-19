@@ -11,6 +11,7 @@ use Elastica\Response;
 use HtmlArmor;
 use LinkCacheTestTrait;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Request\FauxRequest;
 use Title;
 
 /**
@@ -293,14 +294,14 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$config = new HashSearchConfig( [] );
 		$searcher = new Searcher( new DummyConnection(), 0, 20, $config,
 			[], null, false,
-			CirrusDebugOptions::fromRequest( new \FauxRequest( [ 'cirrusExplain' => 'pretty' ] ) ) );
+			CirrusDebugOptions::fromRequest( new FauxRequest( [ 'cirrusExplain' => 'pretty' ] ) ) );
 		$query = new Query();
 		$searcher->applyDebugOptionsToQuery( $query );
 		$this->assertTrue( $query->getParam( 'explain' ) );
 
 		$searcher = new Searcher( new DummyConnection(), 0, 20, $config,
 			[], null, null,
-			CirrusDebugOptions::fromRequest( new \FauxRequest() ) );
+			CirrusDebugOptions::fromRequest( new FauxRequest() ) );
 		$query = new Query();
 		$searcher->applyDebugOptionsToQuery( $query );
 		$this->assertFalse( $query->hasParam( 'explain' ) );

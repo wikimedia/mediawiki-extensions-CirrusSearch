@@ -8,6 +8,7 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolverFactory;
 use EmptyBagOStuff;
 use MediaWiki\Interwiki\NullInterwikiLookup;
+use MediaWiki\Request\FauxRequest;
 use MediaWiki\Session\TestBagOStuff;
 use MediaWiki\User\StaticUserOptionsLookup;
 use MediaWiki\User\UserIdentityValue;
@@ -75,16 +76,16 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			->willReturn( null );
 
 		if ( $overrideType === 'uri' ) {
-			$request = new \FauxRequest( [ $overrideKey => $profileName ] );
+			$request = new FauxRequest( [ $overrideKey => $profileName ] );
 			$config = new HashSearchConfig( [] );
 		} elseif ( $overrideType === 'pref' ) {
-			$request = new \FauxRequest();
+			$request = new FauxRequest();
 			$username = 'test';
 			$user = new UserIdentityValue( 1, $username );
 			$userOption = [ $username => [ $overrideKey => $profileName ] ];
 			$config = new HashSearchConfig( [] );
 		} elseif ( $overrideType === 'config' ) {
-			$request = new \FauxRequest();
+			$request = new FauxRequest();
 			$config = new HashSearchConfig( [ $overrideKey => $profileName ] );
 		} else {
 			throw new \RuntimeException( "Unknown override type $overrideType" );

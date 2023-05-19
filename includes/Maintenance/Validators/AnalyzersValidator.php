@@ -4,7 +4,7 @@ namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\Maintenance\Printer;
 use Elastica\Index;
-use RawMessage;
+use MediaWiki\Language\RawMessage;
 use Status;
 
 class AnalyzersValidator extends Validator {

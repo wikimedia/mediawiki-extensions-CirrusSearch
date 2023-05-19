@@ -7,7 +7,7 @@ use CirrusSearch\Maintenance\Printer;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
 use Elastica\Mapping;
-use RawMessage;
+use MediaWiki\Language\RawMessage;
 use Status;
 use Wikimedia\Assert\Assert;
 

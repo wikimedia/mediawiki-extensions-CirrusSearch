@@ -97,7 +97,7 @@ class ElasticaErrorHandlerTest extends CirrusTestCase {
 		);
 	}
 
-	public function extractMessageAndStatusProvider() {
+	public static function extractMessageAndStatusProvider() {
 		return [
 			'non-elasticsearch error' => [
 				'expected' => 'unknown: Status code 503; 503 Bad Gateway',
@@ -117,7 +117,7 @@ class ElasticaErrorHandlerTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $message );
 	}
 
-	public function extractFullErrorProvider() {
+	public static function extractFullErrorProvider() {
 		return [
 			'non-elasticsearch error' => [
 				'expected' => [

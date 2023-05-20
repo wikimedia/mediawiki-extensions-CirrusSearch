@@ -114,7 +114,7 @@ class UserTestingEngineTest extends CirrusIntegrationTestCase {
 		}
 	}
 
-	public function providerChooseBucket() {
+	public static function providerChooseBucket() {
 		return [
 			[ 'a', 0, [ 'a', 'b', 'c' ] ],
 			[ 'a', 0, [ 'a', 'b', 'c', 'd' ] ],

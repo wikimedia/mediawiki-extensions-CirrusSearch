@@ -37,7 +37,7 @@ class FunctionScoreChainTest extends CirrusIntegrationTestCase {
 		$this->removeTemporaryHook( 'CirrusSearchProfileService' );
 	}
 
-	public function implProvider() {
+	public static function implProvider() {
 		return [
 			[ [ 'type' => 'boostlinks' ] ],
 			[ [ 'type' => 'recency' ] ],

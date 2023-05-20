@@ -12,7 +12,7 @@ use MediaWiki\MainConfigSchema;
  */
 class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 
-	public function buildProvider() {
+	public static function buildProvider() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'mapping/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$buildClass = preg_match( '/\Q-archive.config\E$/', $testFile )

@@ -41,7 +41,7 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 		return $client;
 	}
 
-	public function provideQueries() {
+	public static function provideQueries() {
 		return [
 			'two results' => [
 				'Duck',

@@ -12,7 +12,7 @@ use CirrusSearch\CrossSearchStrategy;
 class LanguageFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function provideQueries() {
+	public static function provideQueries() {
 		$tooMany = array_map(
 			static function ( $l ) {
 				return (string)$l;

@@ -17,7 +17,7 @@ use Elastica\Query\BoolQuery;
 class InTitleFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function parseProvider() {
+	public static function parseProvider() {
 		$defaults = [
 			'fields' => [ 'title', 'title.plain', 'redirect.title', 'redirect.title.plain' ],
 			'default_operator' => 'AND',

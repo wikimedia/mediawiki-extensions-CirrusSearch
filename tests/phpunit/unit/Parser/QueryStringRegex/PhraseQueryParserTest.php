@@ -26,7 +26,7 @@ class PhraseQueryParserTest extends CirrusTestCase {
 		$this->assertEquals( $expectedNode, $node );
 	}
 
-	public function provideQueries() {
+	public static function provideQueries() {
 		return [
 			'no phrase' => [
 				'foo bar',

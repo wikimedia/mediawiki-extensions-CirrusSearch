@@ -16,7 +16,7 @@ use CirrusSearch\Search\SearchContext;
 class LocalFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function parseProvider() {
+	public static function parseProvider() {
 		return [
 			'simple local' => [
 				'foo bar',

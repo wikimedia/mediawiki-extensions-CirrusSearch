@@ -260,7 +260,7 @@ trait CirrusTestCaseTrait {
 			CirrusDebugOptions::defaultOptions(), $this->namespacePrefixParser(), new EmptyInterwikiResolver() );
 	}
 
-	public function sanitizeLinkFragment( string $id ): string {
+	public static function sanitizeLinkFragment( string $id ): string {
 		return str_replace( ' ', '_', $id );
 	}
 
@@ -268,8 +268,8 @@ trait CirrusTestCaseTrait {
 		return new class(
 			$hostWikiID,
 			$iwResolver ?: new EmptyInterwikiResolver(),
-			function ( $v ) {
-				return $this->sanitizeLinkFragment( $v );
+			static function ( $v ) {
+				return self::sanitizeLinkFragment( $v );
 			}
 		) extends TitleHelper {
 			public function __construct( $hostWikiId,

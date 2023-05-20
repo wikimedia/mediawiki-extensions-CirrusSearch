@@ -12,7 +12,7 @@ use CirrusSearch\HashSearchConfig;
  */
 class ParsedQueryTest extends CirrusIntegrationTestCase {
 
-	public function provideQueriesForTestingCrossSearchStrategy() {
+	public static function provideQueriesForTestingCrossSearchStrategy() {
 		return [
 			'simple' => [
 				'',
@@ -43,7 +43,7 @@ class ParsedQueryTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( $expectedStratery, $pQuery->getCrossSearchStrategy() );
 	}
 
-	public function provideTestFeaturesUsed() {
+	public static function provideTestFeaturesUsed() {
 		return [
 			'none' => [
 				'query',
@@ -80,7 +80,7 @@ class ParsedQueryTest extends CirrusIntegrationTestCase {
 		$this->assertArrayEquals( $features, $parsedQuery->getFeaturesUsed() );
 	}
 
-	public function provideTestNsHeader() {
+	public static function provideTestNsHeader() {
 		return [
 			'none' => [ 'foobar', null, 0 ],
 			'simple' => [ 'help:foobar', NS_HELP, strlen( 'help:' ) ],
@@ -103,7 +103,7 @@ class ParsedQueryTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( $queryStartOffset, $pq->getRoot()->getStartOffset() );
 	}
 
-	public function provideTestActualNamespace() {
+	public static function provideTestActualNamespace() {
 		return [
 			'initial kept' => [
 				'foobar',
@@ -199,7 +199,7 @@ class ParsedQueryTest extends CirrusIntegrationTestCase {
 		}
 	}
 
-	public function provideTestLeadingTilde() {
+	public static function provideTestLeadingTilde() {
 		return [
 			'none' => [ 'foobar', false ],
 			'simple' => [ '~foobar', true ],

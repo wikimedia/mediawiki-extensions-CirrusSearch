@@ -12,7 +12,7 @@ use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
  */
 class SuggesterAnalysisConfigBuilderTest extends CirrusIntegrationTestCase {
 
-	public function provideLanguageAnalysis() {
+	public static function provideLanguageAnalysis() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'languageAnalysisCompSuggest/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$extraConfig = CirrusIntegrationTestCase::loadFixture( $testFile );

@@ -40,7 +40,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 	use SimpleKeywordFeatureTestTrait;
 	use LinkCacheTestTrait;
 
-	public function applyProvider() {
+	public static function applyProvider() {
 		return [
 			'morelike: doesnt eat unrelated queries' => [
 				'other stuff',
@@ -126,7 +126,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 			],
 			'morelikethis: can be combined' => [
 				'other stuff morelikethis:"Some page" and other stuff',
-				$this->wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
+				self::wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
 					->setParams( [
 						'min_doc_freq' => 2,
 						'max_doc_freq' => null,
@@ -152,7 +152,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 			],
 			'morelikethis: single page' => [
 				'morelikethis:"Some page"',
-				$this->wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
+				self::wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
 					->setParams( [
 						'min_doc_freq' => 2,
 						'max_doc_freq' => null,
@@ -171,7 +171,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 			],
 			'morelikethis: multi page' => [
 				'morelikethis:"Some page|Other page"',
-				$this->wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
+				self::wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
 					->setParams( [
 						'min_doc_freq' => 2,
 						'max_doc_freq' => null,
@@ -191,7 +191,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 			],
 			'morelikethis: multi page with only one valid' => [
 				'morelikethis:"Some page|Does not exist or at least I hope not"',
-				$this->wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
+				self::wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
 					->setParams( [
 						'min_doc_freq' => 2,
 						'max_doc_freq' => null,
@@ -282,7 +282,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 		);
 	}
 
-	private function wrapInMust( AbstractQuery $query ): AbstractQuery {
+	private static function wrapInMust( AbstractQuery $query ): AbstractQuery {
 		$boolQuery = new BoolQuery();
 		$boolQuery->addMust( $query );
 		return $boolQuery;

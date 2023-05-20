@@ -11,7 +11,7 @@ use CirrusSearch\Test\MockSimpleKeywordFeature;
  * @covers \CirrusSearch\Query\SimpleKeywordFeature
  */
 class SimpleKeywordFeatureTest extends CirrusTestCase {
-	public function applyProvider() {
+	public static function applyProvider() {
 		return [
 			'unquoted value' => [
 				// expected doApply calls

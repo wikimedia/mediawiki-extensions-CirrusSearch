@@ -345,7 +345,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 		$this->assertEquals( $output, $subPageSuggestions );
 	}
 
-	public function providePagesForSubphrases() {
+	public static function providePagesForSubphrases() {
 		return [
 			'none subpage' => [
 				'Hello World',

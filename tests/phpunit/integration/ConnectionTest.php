@@ -24,7 +24,7 @@ namespace CirrusSearch;
  * @covers \CirrusSearch\Connection
  */
 class ConnectionTest extends CirrusIntegrationTestCase {
-	public function extractIndexSuffixProvider() {
+	public static function extractIndexSuffixProvider() {
 		return [
 			'basic index name' => [
 				'content',
@@ -122,7 +122,7 @@ class ConnectionTest extends CirrusIntegrationTestCase {
 			$con->getAllIndexSuffixes( Connection::ARCHIVE_DOC_TYPE ) );
 	}
 
-	public function providePoolCaching() {
+	public static function providePoolCaching() {
 		return [
 			'constant returns same' => [
 				'config' => [

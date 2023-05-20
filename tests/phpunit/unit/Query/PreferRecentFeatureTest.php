@@ -14,7 +14,7 @@ use CirrusSearch\Search\Rescore\PreferRecentFunctionScoreBuilder;
 class PreferRecentFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function parseProvider() {
+	public static function parseProvider() {
 		return [
 			'uses defaults if nothing provided' => [
 				'',

@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class KeywordNodeVisitorTest extends CirrusIntegrationTestCase {
 
-	public function provideQueries() {
+	public static function provideQueries() {
 		return [
 			'nothing' => [
 				'',

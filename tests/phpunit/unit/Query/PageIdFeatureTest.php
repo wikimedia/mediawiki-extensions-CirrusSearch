@@ -11,7 +11,7 @@ use CirrusSearch\CirrusTestCase;
 class PageIdFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function parseProvider() {
+	public static function parseProvider() {
 		return [
 			'basic usage' => [
 				[ 'ids' => [

@@ -42,7 +42,7 @@ class DocumentSizeLimiterTest extends TestCase {
 		]
 	];
 
-	public function provideDocuments(): array {
+	public static function provideDocuments(): array {
 		return [
 			"no limit" => [
 				"no limit",

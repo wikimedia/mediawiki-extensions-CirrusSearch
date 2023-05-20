@@ -21,7 +21,7 @@ use Elastica\Query\Term;
 class PrefixFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function parseProvider() {
+	public static function parseProvider() {
 		return [
 			'simple' => [
 				'prefix:test',
@@ -230,7 +230,7 @@ class PrefixFeatureTest extends CirrusTestCase {
 		$this->assertNotConsumed( new PrefixFeature( $this->namespacePrefixParser() ), 'foo bar' );
 	}
 
-	public function provideBadPrefixQueries() {
+	public static function provideBadPrefixQueries() {
 		return [
 			'prefix wants all but context is NS_MAIN' => [
 				'prefix:all:',
@@ -301,7 +301,7 @@ class PrefixFeatureTest extends CirrusTestCase {
 		$this->assertEquals( $additionalNs, $parsedQuery->getRequiredNamespaces() );
 	}
 
-	public function provideTestPrepareSearchContext() {
+	public static function provideTestPrepareSearchContext() {
 		return [
 			'main' => [
 				[ NS_MAIN ],
@@ -349,7 +349,7 @@ class PrefixFeatureTest extends CirrusTestCase {
 		);
 	}
 
-	public function provideTestContextualFilter() {
+	public static function provideTestContextualFilter() {
 		return [
 			'main' => [
 				'test',

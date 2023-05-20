@@ -20,7 +20,7 @@ use HtmlArmor;
  */
 class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 
-	public function provideTest() {
+	public static function provideTest() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'indexLookupFallbackMethodResponses/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
@@ -92,7 +92,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		}
 	}
 
-	public function provideTestLookupQueries() {
+	public static function provideTestLookupQueries() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'indexLookupFallbackMethod/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
@@ -210,7 +210,7 @@ class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 		$this->assertNull( IndexLookupFallbackMethod::build( $query, $params ) );
 	}
 
-	public function provideInvalidProfileParams() {
+	public static function provideInvalidProfileParams() {
 		return [
 			[
 				[

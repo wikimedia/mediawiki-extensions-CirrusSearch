@@ -18,7 +18,7 @@ use MediaWiki\Page\PageStoreRecord;
 class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function parseProvider() {
+	public static function parseProvider() {
 		return [
 			'single category' => [
 				[ 'bool' => [

@@ -9,7 +9,7 @@ use CirrusSearch\Job\CheckerJob;
  * @covers \CirrusSearch\Maintenance\SaneitizeLoop
  */
 class SaneitizeLoopTest extends CirrusIntegrationTestCase {
-	public function loopProvider() {
+	public static function loopProvider() {
 		return [
 			'loop ends, returns nothing, restarts when time passes' => [
 				2, // 2 jobs at a time

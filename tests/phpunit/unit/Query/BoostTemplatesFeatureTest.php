@@ -15,7 +15,7 @@ use CirrusSearch\Search\Rescore\ByKeywordTemplateBoostFunction;
 class BoostTemplatesFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function parseProvider() {
+	public static function parseProvider() {
 		return [
 			'single template parse' => [
 				[ 'Main article' => 2.5 ],

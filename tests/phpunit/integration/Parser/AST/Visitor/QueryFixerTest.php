@@ -11,7 +11,7 @@ use HtmlArmor;
  */
 class QueryFixerTest extends CirrusIntegrationTestCase {
 
-	public function provideTest() {
+	public static function provideTest() {
 		return [
 			'simple words' => [
 				'hello wolrd',

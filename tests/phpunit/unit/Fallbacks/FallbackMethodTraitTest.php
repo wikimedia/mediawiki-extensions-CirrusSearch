@@ -10,7 +10,7 @@ use Elastica\Response;
 use Elastica\Result;
 
 class FallbackMethodTraitTest extends BaseFallbackMethodTest {
-	public function provideTestResultThreshold() {
+	public static function provideTestResultThreshold() {
 		return [
 			'threshold is not reached' => [
 				1,
@@ -123,7 +123,7 @@ class FallbackMethodTraitTest extends BaseFallbackMethodTest {
 		$this->assertFalse( $mock->resultContainsFullyHighlightedMatch( $resultset ) );
 	}
 
-	public function provideTestNotRewrittenOnQueryNotRewritable() {
+	public static function provideTestNotRewrittenOnQueryNotRewritable() {
 		return [
 			'rewritten if query is rewritable, threshold met' => [
 				[], 2, "foo", true, "bar", true, true

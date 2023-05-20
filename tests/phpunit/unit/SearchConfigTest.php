@@ -122,7 +122,7 @@ class SearchConfigTest extends CirrusTestCase {
 		$this->assertSame( 'foobar', $config->get( 'CirrusSearchIndexBaseName' ) );
 	}
 
-	public function getHostWikiConfigProvider() {
+	public static function getHostWikiConfigProvider() {
 		return [
 			'default' => [ 'same', new SearchConfig() ],
 			'override with inherit and same wikiid is same' => [ 'same', new HashSearchConfig( [
@@ -170,7 +170,7 @@ class SearchConfigTest extends CirrusTestCase {
 		$this->assertSame( [ '10.9.8.7:9200' ], $config->getClusterAssignment()->getServerList() );
 	}
 
-	public function provideCompletionSuggesterEnabled() {
+	public static function provideCompletionSuggesterEnabled() {
 		return [
 			'enabled' => [
 				'yes', true

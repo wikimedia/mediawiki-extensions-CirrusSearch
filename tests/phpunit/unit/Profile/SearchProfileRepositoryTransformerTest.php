@@ -11,7 +11,7 @@ use CirrusSearch\CirrusTestCase;
  */
 class SearchProfileRepositoryTransformerTest extends CirrusTestCase {
 
-	public function provideRepositories() {
+	public static function provideRepositories() {
 		$tests = [
 			'simple' => [
 				[ 'prof1' => [ 'replace' => 'me' ] ],
@@ -191,7 +191,7 @@ class SearchProfileRepositoryTransformerTest extends CirrusTestCase {
 		}
 	}
 
-	public function provideBadReplacements() {
+	public static function provideBadReplacements() {
 		return [
 			'empty' => [ '' ],
 			'start with dot' => [ '.df' ],

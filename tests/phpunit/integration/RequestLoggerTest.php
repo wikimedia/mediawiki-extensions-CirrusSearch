@@ -56,7 +56,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		$this->assertTrue( $logger->hasQueryLogs() );
 	}
 
-	public function requestLoggingProvider() {
+	public static function requestLoggingProvider() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'requestLogging/*.request' ) as $requestFile ) {
 			$testBase = substr( $requestFile, 0, -8 );
 			$testName = basename( $testBase );

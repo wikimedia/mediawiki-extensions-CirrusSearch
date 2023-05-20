@@ -25,7 +25,7 @@ namespace CirrusSearch;
  */
 class UtilTest extends CirrusTestCase {
 
-	public function provideQuestionMarkQueries() {
+	public static function provideQuestionMarkQueries() {
 		// tests are input, strippingLevel, expectedOutput
 		return [
 			[ 'pickles', 'all', 'pickles' ],
@@ -93,7 +93,7 @@ class UtilTest extends CirrusTestCase {
 		$this->assertSame( $configValues['CirrusSearchBoostTemplates'], $ru );
 	}
 
-	public function provideEmptyValues() {
+	public static function provideEmptyValues() {
 		return [
 			[ '' ],
 			[ [] ],
@@ -134,7 +134,7 @@ class UtilTest extends CirrusTestCase {
 		$this->assertSame( [ 'key1' => 123, 'KEY2' => false, 'key4' => [ 'a', 'b', 'c' ] ], $arr2 );
 	}
 
-	public function lookslikeAutomationProvider() {
+	public static function lookslikeAutomationProvider() {
 		return [
 			'no config, no problem' => [
 				false, null, [], '1.2.3.4', [],

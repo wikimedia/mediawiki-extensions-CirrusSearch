@@ -37,7 +37,7 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 		return $mock;
 	}
 
-	public function provideTest() {
+	public static function provideTest() {
 		return [
 			'fallback worked' => [
 				'foobar',
@@ -162,7 +162,7 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 		}
 	}
 
-	public function provideTestNotRunWhenRewriteDisabled() {
+	public static function provideTestNotRunWhenRewriteDisabled() {
 		return [
 			'allowed' => [ true, 0.5 ],
 			'not allowed' => [ false, 0.0 ],

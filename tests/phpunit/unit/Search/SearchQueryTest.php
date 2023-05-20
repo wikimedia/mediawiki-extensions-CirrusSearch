@@ -90,7 +90,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $builder->build()->getNamespaces() );
 	}
 
-	public function provideCrossSearchStrategy() {
+	public static function provideCrossSearchStrategy() {
 		return [
 			'simple' => [
 				'test',

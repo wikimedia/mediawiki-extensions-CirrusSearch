@@ -22,7 +22,7 @@ class ExternalIndexTest extends CirrusTestCase {
 		$this->assertEquals( 'foo', $idx->getSearchIndex( 'default' ) );
 	}
 
-	public function getWriteClustersProvider() {
+	public static function getWriteClustersProvider() {
 		// Current wiki writes to cluster `1` in datacenters `a` and `b`
 		$config = [
 			'CirrusSearchClusters' => [
@@ -74,7 +74,7 @@ class ExternalIndexTest extends CirrusTestCase {
 		$this->assertEquals( $targetCluster, $idx->getCrossClusterName() );
 	}
 
-	public function getBoostsProvider() {
+	public static function getBoostsProvider() {
 		return [
 			'unconfigured' => [ '', [], [] ],
 			'configured for different index' => [ '', [], [

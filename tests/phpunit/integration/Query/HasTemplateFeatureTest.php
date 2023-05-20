@@ -12,7 +12,7 @@ use CirrusSearch\CrossSearchStrategy;
 class HasTemplateFeatureTest extends CirrusIntegrationTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function parseProvider() {
+	public static function parseProvider() {
 		return [
 			'basic usage' => [
 				[ 'match' => [

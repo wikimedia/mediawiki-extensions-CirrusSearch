@@ -36,7 +36,7 @@ class LanguageDetectTest extends CirrusTestCase {
 	 */
 	private $textCatModelBaseDir;
 
-	public function provideTestFactory() {
+	public static function provideTestFactory() {
 		return [
 			'empty' => [ [ 'CirrusSearchLanguageDetectors' => [] ], [] ],
 			'textcat only' => [

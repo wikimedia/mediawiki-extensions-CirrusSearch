@@ -10,7 +10,7 @@ use Title;
  */
 class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 
-	public function getExternalIndexesProvider() {
+	public static function getExternalIndexesProvider() {
 		return [
 			'empty config must return empty external indexes' => [
 				[ 'Main_Page' => [] ],
@@ -48,7 +48,7 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 		}
 	}
 
-	public function getExtraIndexesForNamespaceProvider() {
+	public static function getExtraIndexesForNamespaceProvider() {
 		return [
 			'Unconfigured does not issue warnings' => [
 				[

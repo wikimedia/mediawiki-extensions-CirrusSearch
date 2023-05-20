@@ -12,7 +12,7 @@ use Elastica\Query\Term;
  */
 class BoostedQueriesFunctionTest extends CirrusTestCase {
 
-	public function provideTestData() {
+	public static function provideTestData() {
 		$termQuery = new Term( [ 'field' => 'term' ] );
 		$notTermQuery = new BoolQuery();
 		$notTermQuery->addMustNot( $termQuery );

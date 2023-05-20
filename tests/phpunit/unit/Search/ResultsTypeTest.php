@@ -35,7 +35,7 @@ use Elastica\Response;
  * @group CirrusSearch
  */
 class ResultsTypeTest extends CirrusTestCase {
-	public function fancyRedirectHandlingProvider() {
+	public static function fancyRedirectHandlingProvider() {
 		return [
 			'typical title only match' => [
 				NS_MAIN,

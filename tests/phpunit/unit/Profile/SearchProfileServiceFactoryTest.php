@@ -148,7 +148,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 		];
 	}
 
-	public function provideTestInterwikiOverrides() {
+	public static function provideTestInterwikiOverrides() {
 		$baseConfig = [
 			'CirrusSearchInterwikiSources' => [
 				'my' => 'mywiki',

@@ -11,7 +11,7 @@ use CirrusSearch\CirrusIntegrationTestCase;
  * @coversNothing
  */
 class ScriptsRunnableTest extends CirrusIntegrationTestCase {
-	public function scriptPathProvider() {
+	public static function scriptPathProvider() {
 		$it = new \DirectoryIterator( __DIR__ . '/../../../../maintenance/' );
 		/** @var \SplFileInfo $fileInfo */
 		foreach ( $it as $fileInfo ) {

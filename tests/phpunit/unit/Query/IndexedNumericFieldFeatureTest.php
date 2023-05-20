@@ -169,7 +169,7 @@ class IndexedNumericFieldFeatureTest extends CirrusTestCase {
 		$this->assertNotConsumed( new IndexedNumericFieldFeature(), 'filetype:' );
 	}
 
-	public function warningNumericProvider() {
+	public static function warningNumericProvider() {
 		return [
 			'arguments must be numeric' => [
 				[ [ 'cirrussearch-file-numeric-feature-not-a-number', 'filebits', 'celery' ] ],

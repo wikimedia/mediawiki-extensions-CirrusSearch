@@ -11,7 +11,7 @@ use Elastica\Query\MatchQuery;
  */
 class QueryHelperTest extends CirrusIntegrationTestCase {
 
-	public function provideMatchPage(): array {
+	public static function provideMatchPage(): array {
 		return [
 			[ 'Page title', 'foo', 'Page title', false ],
 			[ 'Page title', 'foo', 'page_title', false ],
@@ -34,7 +34,7 @@ class QueryHelperTest extends CirrusIntegrationTestCase {
 		$this->matchQueryAssertions( $match, $field, $expected );
 	}
 
-	public function provideMatchCategory(): array {
+	public static function provideMatchCategory(): array {
 		return [
 			[ 'Page title', 'foo', 'Page title' ],
 			[ 'Page title', 'foo', 'Page_title' ],

@@ -12,7 +12,7 @@ use CirrusSearch\CrossSearchStrategy;
 class LinksToFeatureTest extends CirrusIntegrationTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function provideQueries() {
+	public static function provideQueries() {
 		return [
 			'simple' => [
 				'linksto:test',

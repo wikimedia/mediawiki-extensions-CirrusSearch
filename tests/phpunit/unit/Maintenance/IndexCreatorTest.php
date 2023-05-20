@@ -63,7 +63,7 @@ class IndexCreatorTest extends CirrusTestCase {
 		return $retval;
 	}
 
-	public function createIndexProvider() {
+	public static function createIndexProvider() {
 		$successResponse = new Response( [] );
 		$errorResponse = new Response( [ 'error' => 'index creation failed' ] );
 

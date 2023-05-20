@@ -25,7 +25,7 @@ class CirrusSearchResultBuilderTest extends CirrusTestCase {
 		$this->assertEquals( 'iw', $builder->build()->getInterwikiPrefix() );
 	}
 
-	public function provideTest() {
+	public static function provideTest() {
 		$now = new \MWTimestamp();
 		return [
 			'score' => [ 'score', 2.3, 0.0 ],

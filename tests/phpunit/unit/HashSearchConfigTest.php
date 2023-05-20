@@ -15,7 +15,7 @@ class HashSearchConfigTest extends CirrusTestCase {
 		$this->assertTrue( true );
 	}
 
-	public function provideUnknownFlags() {
+	public static function provideUnknownFlags() {
 		return [
 			[ [ 'unknown' ] ],
 			[ [ HashSearchConfig::FLAG_INHERIT, 'unknown' ] ],

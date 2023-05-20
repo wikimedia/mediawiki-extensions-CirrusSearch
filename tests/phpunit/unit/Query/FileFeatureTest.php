@@ -135,7 +135,7 @@ class FileFeatureTest extends CirrusTestCase {
 		$this->assertFilter( $feature, $term, $expectedQuery, [] );
 	}
 
-	public function warningTypeProvider() {
+	public static function warningTypeProvider() {
 		return [
 			'too many conditions' => [
 				[

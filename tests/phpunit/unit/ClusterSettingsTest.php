@@ -194,7 +194,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $settings->isPrivateCluster() );
 	}
 
-	public function provideIsolation() {
+	public static function provideIsolation() {
 		return [
 			'null value isolates everything' => [
 				'expected' => true,
@@ -230,7 +230,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $settings->isIsolated() );
 	}
 
-	public function provideElasticaWritePartitionCount() {
+	public static function provideElasticaWritePartitionCount() {
 		return [
 			'unnamed clusters default to 1' => [
 				'expected' => 1,

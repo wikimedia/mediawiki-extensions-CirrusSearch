@@ -135,7 +135,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		return $doc;
 	}
 
-	public function provideTestSendDataRequest() {
+	public static function provideTestSendDataRequest() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendData-*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
@@ -207,7 +207,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$sender->sendData( $indexSuffix, $documents );
 	}
 
-	public function provideTestSendDeletesRequest() {
+	public static function provideTestSendDeletesRequest() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendDeletes-request-*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
@@ -277,7 +277,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$sender->sendDeletes( $ids, $indexSuffix );
 	}
 
-	public function provideTestSendOtherIndexUpdatesRequest() {
+	public static function provideTestSendOtherIndexUpdatesRequest() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendOtherIndexUpdates-request-*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
@@ -316,7 +316,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		);
 	}
 
-	public function provideUpdateWeightedTagsRequest() {
+	public static function provideUpdateWeightedTagsRequest() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendUpdateWeightedTags-request-*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
@@ -383,7 +383,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		);
 	}
 
-	public function provideResetWeightedTagsRequest() {
+	public static function provideResetWeightedTagsRequest() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendResetWeightedTags-request-*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );

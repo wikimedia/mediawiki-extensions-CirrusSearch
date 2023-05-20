@@ -85,7 +85,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 		}, $parsedQuery->getClauses() ) );
 	}
 
-	public function provideEscapedQueries() {
+	public static function provideEscapedQueries() {
 		return [
 			'escaped space does not disable keyword' => [
 				'foo\ filew:100 fileh:200',

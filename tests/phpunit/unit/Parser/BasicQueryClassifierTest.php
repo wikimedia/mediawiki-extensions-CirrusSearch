@@ -10,7 +10,7 @@ use CirrusSearch\CirrusTestCase;
  */
 class BasicQueryClassifierTest extends CirrusTestCase {
 
-	public function provideQueries() {
+	public static function provideQueries() {
 		return [
 			'simple' => [ 'foo', [ BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ] ],
 			'simple unquoted phrase' => [ 'foo bar', [ BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ] ],

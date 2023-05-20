@@ -57,7 +57,7 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( $expectedQueries, $suggest->toArray()['suggest'] );
 	}
 
-	public function provideQueries() {
+	public static function provideQueries() {
 		$simpleProfile = [
 			'plain' => [
 				'field' => 'suggest',
@@ -234,7 +234,7 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 		}
 	}
 
-	public function provideMinMaxQueries() {
+	public static function provideMinMaxQueries() {
 		// The completion should not count extra spaces
 		// This is to avoid enbling costly fuzzy profiles
 		// by cheating with spaces
@@ -274,7 +274,7 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 		}
 	}
 
-	public function provideResponse() {
+	public static function provideResponse() {
 		$suggestions = [];
 		$max = 200;
 		for ( $i = 1; $i <= $max; $i++ ) {

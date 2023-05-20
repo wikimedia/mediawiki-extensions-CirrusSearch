@@ -40,7 +40,7 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 	/**
 	 * @return array
 	 */
-	public function provideTestNamespacesRouting() {
+	public static function provideTestNamespacesRouting() {
 		return [
 			'simple match' => [
 				[ 1 ],
@@ -93,7 +93,7 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 		$this->assertSame( $expectedScore, $route->score( $query ) );
 	}
 
-	public function provideTestQueryClassRouting() {
+	public static function provideTestQueryClassRouting() {
 		return [
 			'simple match' => [
 				[ BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ],
@@ -140,9 +140,9 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 		$this->assertSame( $expectedScore, $route->score( $query ) );
 	}
 
-	public function provideTestNamespacesAndQueryClassRouting() {
-		foreach ( $this->provideTestNamespacesRouting() as $nsTest => $nsOptions ) {
-			foreach ( $this->provideTestQueryClassRouting() as $clTest => $clOptions ) {
+	public static function provideTestNamespacesAndQueryClassRouting() {
+		foreach ( self::provideTestNamespacesRouting() as $nsTest => $nsOptions ) {
+			foreach ( self::provideTestQueryClassRouting() as $clTest => $clOptions ) {
 				yield $nsTest . ' + ' . $clTest => [
 					$nsOptions[0],
 					$clOptions[0],

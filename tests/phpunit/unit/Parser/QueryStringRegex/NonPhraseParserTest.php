@@ -24,7 +24,7 @@ class NonPhraseParserTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $nodes );
 	}
 
-	public function provideWordQueries() {
+	public static function provideWordQueries() {
 		return [
 			'simple' => [
 				'this is just"something"',

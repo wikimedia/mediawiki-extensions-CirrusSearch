@@ -15,7 +15,7 @@ use Elastica\Query\MultiMatch;
 class SubPageOfFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function provideQueries() {
+	public static function provideQueries() {
 		return [
 			'simple' => [
 				'subpageof:test',

@@ -36,11 +36,11 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( [ 'file_text' => 'e é' ], ParserOutputPageProperties::truncateFileTextContent( 4, $doc ) );
 	}
 
-	public function displayTitleProvider() {
+	public static function displayTitleProvider() {
 		$mainTitle = Title::makeTitle( NS_MAIN, 'Phpunit' );
-		$this->forceTitleLang( $mainTitle, 'fr' );
+		self::forceTitleLang( $mainTitle, 'fr' );
 		$talkTitle = Title::makeTitle( NS_TALK, 'Phpunit' );
-		$this->forceTitleLang( $talkTitle, 'fr' );
+		self::forceTitleLang( $talkTitle, 'fr' );
 		return [
 			'null when no display title is set' => [
 				null, $mainTitle, false,
@@ -160,7 +160,7 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 		return $page;
 	}
 
-	private function forceTitleLang( \Title $title, $langCode ) {
+	private static function forceTitleLang( \Title $title, $langCode ) {
 		global $wgLanguageCode;
 		$refl = new \ReflectionProperty( \Title::class, 'mPageLanguage' );
 		$refl->setAccessible( true );

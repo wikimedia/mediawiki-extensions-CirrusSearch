@@ -632,7 +632,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		];
 	}
 
-	public function provideLanguageAnalysis() {
+	public static function provideLanguageAnalysis() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'languageAnalysis/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$extraConfig = CirrusIntegrationTestCase::loadFixture( $testFile );
@@ -704,7 +704,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		}
 	}
 
-	public function languageConfigDataProvider() {
+	public static function languageConfigDataProvider() {
 		$emptyConfig = [
 			'analyzer' => [],
 			'filter' => [],

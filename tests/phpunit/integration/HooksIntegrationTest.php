@@ -30,7 +30,7 @@ use User;
  */
 class HooksIntegrationTest extends CirrusIntegrationTestCase {
 
-	public function provideOverrides() {
+	public static function provideOverrides() {
 		return [
 			'wgCirrusSearchPhraseRescoreWindowSize normal' => [
 				'wgCirrusSearchPhraseRescoreWindowSize',
@@ -218,7 +218,7 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( $expectedValue, $GLOBALS[$option] );
 	}
 
-	public function provideMltOverrides() {
+	public static function provideMltOverrides() {
 		return [
 			'wgCirrusSearchMoreLikeThisConfig min_doc_freq' => [
 				'wgCirrusSearchMoreLikeThisConfig',

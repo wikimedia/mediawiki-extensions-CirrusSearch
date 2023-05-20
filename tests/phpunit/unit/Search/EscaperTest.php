@@ -36,7 +36,7 @@ class EscaperTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $actual );
 	}
 
-	public function provideQueriesToFixup() {
+	public static function provideQueriesToFixup() {
 		return [
 			// Fuzzy escape
 			'Default fuzziness is allowed' => [ 'fuzzy~', 'fuzzy~' ],
@@ -141,7 +141,7 @@ class EscaperTest extends CirrusTestCase {
 		$this->assertEquals( $unescaped, $escaper->unescape( $escaped ) );
 	}
 
-	public function provideEscapedSequence() {
+	public static function provideEscapedSequence() {
 		return [
 			'unchanged' => [ 'foo', 'foo' ],
 			'simple' => [ 'foo\\"', 'foo"' ],

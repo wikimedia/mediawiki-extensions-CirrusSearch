@@ -12,7 +12,7 @@ use CirrusSearch\CrossSearchStrategy;
 class ContentModelFeatureTest extends CirrusIntegrationTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function provideQueries() {
+	public static function provideQueries() {
 		return [
 			'simple' => [
 				'contentmodel:test',

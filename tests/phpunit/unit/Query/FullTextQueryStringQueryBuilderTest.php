@@ -14,7 +14,7 @@ use CirrusSearch\Util;
  */
 class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 
-	public function syntaxUsedProvider() {
+	public static function syntaxUsedProvider() {
 		return [
 			'basic term uses no special syntax' => [
 				'foo',

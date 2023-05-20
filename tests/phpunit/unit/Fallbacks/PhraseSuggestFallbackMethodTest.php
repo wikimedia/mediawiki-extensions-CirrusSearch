@@ -82,7 +82,7 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 		}
 	}
 
-	public function provideTestSuggestQueries() {
+	public static function provideTestSuggestQueries() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'phraseSuggest/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );

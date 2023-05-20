@@ -58,7 +58,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 			$fetchPhaseConfigBuilder->getHLFieldsPerTargetAndPriority(), [ 'extra_field1', 'extra_field2' ] );
 	}
 
-	public function provideTest() {
+	public static function provideTest() {
 		$cases = [
 			'word_count' => [
 				array_merge_recursive( [ 'fields' => [ 'text.word_count' => [ 432 ] ] ], self::$MINIMAL_HIT ),
@@ -371,7 +371,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 					'sectionSnippet' => 'The ' . Searcher::HIGHLIGHT_PRE . 'matched' . Searcher::HIGHLIGHT_POST . ' &lt;section',
 					'sectionSnippetField' => 'heading',
 					'sectionTitle' => Title::makeTitle( NS_TEMPLATE, 'Main Page' )
-						->createFragmentTarget( $this->sanitizeLinkFragment( 'The matched <section' ) )
+						->createFragmentTarget( self::sanitizeLinkFragment( 'The matched <section' ) )
 				]
 			],
 			'categorySnippet' => [

@@ -12,7 +12,7 @@ use PHPUnit\Framework\AssertionFailedError;
  */
 class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 
-	public function provideTestTimeouts() {
+	public static function provideTestTimeouts() {
 		return [
 			'simple' => [
 				[

@@ -11,7 +11,7 @@ use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
  */
 class QueryParserFactoryTest extends CirrusTestCase {
 
-	public function provideConfig() {
+	public static function provideConfig() {
 		return [
 			'CirrusSearchAllowLeadingWildcard changes parsing behaviors' => [
 				[ 'CirrusSearchAllowLeadingWildcard' => true ],

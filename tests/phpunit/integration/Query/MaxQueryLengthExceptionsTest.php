@@ -63,7 +63,7 @@ class MaxQueryLengthExceptionsTest extends CirrusIntegrationTestCase {
 		}
 	}
 
-	public function provideMaxLength() {
+	public static function provideMaxLength() {
 		// return value: [ length limit, query, expected to pass? ]
 		yield [ 10, str_repeat( 'a', 10 ), true ];
 		yield [ 10, str_repeat( 'a', 11 ), false ];

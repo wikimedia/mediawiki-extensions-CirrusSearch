@@ -55,7 +55,7 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( [ '127.0.0.1:9202' ], $clusters->getServerList( 'cluster_2' ) );
 	}
 
-	public function groupAssignmentProvider() {
+	public static function groupAssignmentProvider() {
 		return [
 			[
 				'x', 'dc1', [ 'dc1' ],

@@ -11,7 +11,7 @@ use CirrusSearch\HashSearchConfig;
  */
 class ReindexerTest extends CirrusTestCase {
 
-	public function provideDetectRemoteSourceParams() {
+	public static function provideDetectRemoteSourceParams() {
 		return [
 			'simple configuration' => [
 				// Expected remote info

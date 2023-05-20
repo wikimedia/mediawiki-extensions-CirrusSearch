@@ -13,7 +13,7 @@ use SearchIndexField;
  */
 class CirrusSearchIndexFieldFactoryTest extends CirrusTestCase {
 
-	public function provideTestFactory() {
+	public static function provideTestFactory() {
 		return [
 			'bool' => [ 'foo', \SearchIndexField::INDEX_TYPE_BOOL, BooleanIndexField::class ],
 			'datetime' => [ 'foo', \SearchIndexField::INDEX_TYPE_DATETIME, DatetimeIndexField::class ],

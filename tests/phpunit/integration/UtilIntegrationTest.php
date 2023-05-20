@@ -216,7 +216,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( $expected, Util::identifyNamespace( $namespace, $method, $language ) );
 	}
 
-	public function provideTestIdentifyNamespace() {
+	public static function provideTestIdentifyNamespace() {
 		return [
 			'simple' => [ 'macon', 100, 'naive' ],
 			'simple utr30' => [ 'macon', 100, 'utr30' ],

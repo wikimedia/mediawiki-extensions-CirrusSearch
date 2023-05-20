@@ -76,7 +76,7 @@ class ChangeListenerTest extends CirrusTestCase {
 		$listener->onLinksUpdateComplete( $linksUpdate, null );
 	}
 
-	public function provideTestOnLinksUpdateComplete(): array {
+	public static function provideTestOnLinksUpdateComplete(): array {
 		return [
 			'simple page refresh' => [
 				123,

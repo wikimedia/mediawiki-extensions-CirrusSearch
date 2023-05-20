@@ -6,7 +6,7 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Test\NoopPrinter;
 
 class ConfigUtilsTest extends CirrusTestCase {
-	public function scanAvailablePluginsProvider() {
+	public static function scanAvailablePluginsProvider() {
 		return [
 			'no plugins reported' => [
 				[], [], []

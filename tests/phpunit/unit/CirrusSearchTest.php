@@ -12,7 +12,7 @@ use Wikimedia\Assert\AssertionException;
  */
 class CirrusSearchTest extends CirrusTestCase {
 
-	public function provideProfiles() {
+	public static function provideProfiles() {
 		return [
 			'completion' => [
 				\SearchEngine::COMPLETION_PROFILE_TYPE,
@@ -57,7 +57,7 @@ class CirrusSearchTest extends CirrusTestCase {
 		}
 	}
 
-	public function provideExtractProfileFromFeatureData() {
+	public static function provideExtractProfileFromFeatureData() {
 		return [
 			'engine defaults (completion)' => [
 				\SearchEngine::COMPLETION_PROFILE_TYPE,
@@ -93,7 +93,7 @@ class CirrusSearchTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $engine->extractProfileFromFeatureData( $type ) );
 	}
 
-	public function provideCompletionSuggesterEnabled() {
+	public static function provideCompletionSuggesterEnabled() {
 		return [
 			'enabled' => [
 				'yes', true
@@ -187,7 +187,7 @@ class CirrusSearchTest extends CirrusTestCase {
 		}
 	}
 
-	public function provideUpdateWeightedTags() {
+	public static function provideUpdateWeightedTags() {
 		return [
 			// good
 			'prefix only' => [ 'foo', null, null, true ],

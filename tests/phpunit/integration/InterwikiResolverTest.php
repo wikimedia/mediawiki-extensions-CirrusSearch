@@ -287,7 +287,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		}
 	}
 
-	public function provideTestLoadConfigForCrossLang() {
+	public static function provideTestLoadConfigForCrossLang() {
 		return [
 			'enwiki loads frwiki config properly' => [ true ],
 			'enwiki loads frwiki config and fails' => [ false ],

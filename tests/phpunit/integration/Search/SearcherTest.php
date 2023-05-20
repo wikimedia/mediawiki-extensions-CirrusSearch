@@ -37,7 +37,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		parent::tearDown();
 	}
 
-	public function searchTextProvider() {
+	public static function searchTextProvider() {
 		$configs = [];
 		// globals overrides. All tests will be run for each defined configuration
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'searchText/*.config' ) as $configFile ) {
@@ -231,7 +231,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		return $query;
 	}
 
-	public function archiveFixtureProvider() {
+	public static function archiveFixtureProvider() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'archiveSearch/*.query' ) as $queryFile ) {
 			$testName = substr( basename( $queryFile ), 0, -6 );
 			$query = self::loadTextFixture( $queryFile );
@@ -306,7 +306,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$this->assertFalse( $query->hasParam( 'explain' ) );
 	}
 
-	public function provideTestOffsetLimitBounds() {
+	public static function provideTestOffsetLimitBounds() {
 		return [
 			'ok' => [
 				5000, 5000,
@@ -343,7 +343,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( $expected, $searcher->getOffsetLimit() );
 	}
 
-	public function provideTestSuggestQueries() {
+	public static function provideTestSuggestQueries() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'phraseSuggest/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
@@ -383,7 +383,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		);
 	}
 
-	public function providePhraseSuggestResponse() {
+	public static function providePhraseSuggestResponse() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'phraseSuggestResponses/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );

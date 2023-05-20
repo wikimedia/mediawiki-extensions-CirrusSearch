@@ -20,7 +20,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 		$this->assertSame( [ 'visual-arts' => 0.123, 'history' => 0.456 ], $topics );
 	}
 
-	public function parseProvider() {
+	public static function parseProvider() {
 		$term = static function ( string $topic, string $prefix ) {
 			return [
 				[
@@ -121,7 +121,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 		$this->assertSame( $expectedQuery, $actualQuery );
 	}
 
-	public function provide_testParse_invalid() {
+	public static function provide_testParse_invalid() {
 		return [
 			'With articletopic' => [ 'articletopic' ],
 			'With drafttopic' => [ 'drafttopic' ]

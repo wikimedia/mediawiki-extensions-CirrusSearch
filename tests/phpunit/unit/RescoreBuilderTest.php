@@ -482,7 +482,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 		];
 	}
 
-	public function termBoostProvider() {
+	public static function termBoostProvider() {
 		return [
 			"one statement" => [
 				1.5,

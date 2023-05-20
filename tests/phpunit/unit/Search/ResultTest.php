@@ -55,7 +55,7 @@ class ResultTest extends CirrusTestCase {
 		$this->builder = new FullTextCirrusSearchResultBuilder( $this->titleHelper, $fetchPhaseBuilder->getHLFieldsPerTargetAndPriority() );
 	}
 
-	public function highlightedSectionSnippetProvider() {
+	public static function highlightedSectionSnippetProvider() {
 		$originalTestCases = [
 					'stuff' => [ [ '', 'stuff', '' ], [], '' ],
 					// non-ASCII encoding of "fragment" is ugly, so test on easier

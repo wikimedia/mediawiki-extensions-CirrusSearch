@@ -71,7 +71,6 @@ class QueryBuildDocument extends \ApiQueryBase {
 			$builder = new BuildDocument(
 				$this->getCirrusConnection(),
 				$this->getDB(),
-				$services->getParserCache(),
 				$services->getRevisionStore(),
 				$services->getBacklinkCacheFactory(),
 				new DocumentSizeLimiter( $engine->getConfig()->getProfileService()

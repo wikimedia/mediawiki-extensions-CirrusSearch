@@ -204,7 +204,6 @@ class Updater extends ElasticsearchIntermediary {
 		$builder = new BuildDocument(
 			$this->connection,
 			$services->getDBLoadBalancer()->getConnection( DB_REPLICA ),
-			$services->getParserCache(),
 			$services->getRevisionStore(),
 			$services->getBacklinkCacheFactory(),
 			$docSizeLimiter,

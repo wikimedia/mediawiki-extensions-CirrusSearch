@@ -10,7 +10,6 @@ use MediaWiki\Cache\BacklinkCacheFactory;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
-use ParserCache;
 use Title;
 use TitleFormatter;
 use Wikimedia\Rdbms\IDatabase;
@@ -50,7 +49,6 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 		return new class(
 			$connection,
 			$this->createMock( IDatabase::class ),
-			$this->createMock( ParserCache::class ),
 			$this->revStore,
 			$this->createMock( BacklinkCacheFactory::class ),
 			new DocumentSizeLimiter( [] ),

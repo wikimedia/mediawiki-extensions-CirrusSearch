@@ -12,7 +12,6 @@ use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionAccessException;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
-use ParserCache;
 use TitleFormatter;
 use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
@@ -58,7 +57,6 @@ class BuildDocument {
 	public const INDEX_ON_SKIP = 1;
 	public const SKIP_PARSE = 2;
 	public const SKIP_LINKS = 4;
-	public const FORCE_PARSE = 8;
 
 	/** @var SearchConfig */
 	private $config;
@@ -66,8 +64,6 @@ class BuildDocument {
 	private $connection;
 	/** @var IDatabase */
 	private $db;
-	/** @var ParserCache */
-	private $parserCache;
 	/** @var RevisionStore */
 	private $revStore;
 	/** @var BacklinkCacheFactory */
@@ -82,7 +78,6 @@ class BuildDocument {
 	/**
 	 * @param Connection $connection Cirrus connection to read page properties from
 	 * @param IDatabase $db Wiki database connection to read page properties from
-	 * @param ParserCache $parserCache Cache to read parser output from
 	 * @param RevisionStore $revStore Store for retrieving revisions by id
 	 * @param BacklinkCacheFactory $backlinkCacheFactory
 	 * @param DocumentSizeLimiter $docSizeLimiter
@@ -92,7 +87,6 @@ class BuildDocument {
 	public function __construct(
 		Connection $connection,
 		IDatabase $db,
-		ParserCache $parserCache,
 		RevisionStore $revStore,
 		BacklinkCacheFactory $backlinkCacheFactory,
 		DocumentSizeLimiter $docSizeLimiter,
@@ -102,7 +96,6 @@ class BuildDocument {
 		$this->config = $connection->getConfig();
 		$this->connection = $connection;
 		$this->db = $db;
-		$this->parserCache = $parserCache;
 		$this->revStore = $revStore;
 		$this->backlinkCacheFactory = $backlinkCacheFactory;
 		$this->documentSizeLimiter = $docSizeLimiter;
@@ -217,10 +210,9 @@ class BuildDocument {
 	protected function createBuilders( int $flags ): array {
 		$skipLinks = $flags & self::SKIP_LINKS;
 		$skipParse = $flags & self::SKIP_PARSE;
-		$forceParse = $flags & self::FORCE_PARSE;
 		$builders = [ new DefaultPageProperties( $this->db ) ];
 		if ( !$skipParse ) {
-			$builders[] = new ParserOutputPageProperties( $this->parserCache, (bool)$forceParse, $this->config );
+			$builders[] = new ParserOutputPageProperties( $this->config );
 		}
 		if ( !$skipLinks ) {
 			$builders[] = new RedirectsAndIncomingLinks(

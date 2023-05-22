@@ -7,7 +7,6 @@ use CirrusSearch\HashSearchConfig;
 use ContentHandler;
 use Elastica\Document;
 use MediaWiki\Revision\RevisionRecord;
-use ParserCache;
 use ParserOutput;
 use Title;
 use WikiPage;
@@ -107,9 +106,8 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 
 	private function buildDoc( WikiPage $page ) {
 		$doc = new Document( null, [] );
-		$cache = $this->createMock( ParserCache::class );
-		$builder = new ParserOutputPageProperties( $cache, false, new HashSearchConfig( [] ) );
-		$builder->finalizeReal( $doc, $page, null, new CirrusSearch, $page->getRevisionRecord() );
+		$builder = new ParserOutputPageProperties( new HashSearchConfig( [] ) );
+		$builder->finalizeReal( $doc, $page, new CirrusSearch, $page->getRevisionRecord() );
 		return $doc;
 	}
 

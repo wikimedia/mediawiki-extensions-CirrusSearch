@@ -126,13 +126,30 @@ class LinksUpdate extends CirrusTitleJob {
 	 */
 	protected function doJob() {
 		$updater = Updater::build( $this->getSearchConfig(), $this->params['cluster'] ?? null );
-		$updater->updateFromTitle( $this->title, $this->params[self::UPDATE_KIND], $this->params[self::ROOT_EVENT_TIME] );
+		if ( $this->params[self::UPDATE_KIND] === self::SANEITIZER ) {
+			$this->saneitize( $updater );
+		} else {
+			$this->update( $updater );
+		}
 
 		if ( $this->getSearchConfig()->get( 'CirrusSearchEnableIncomingLinkCounting' ) ) {
 			$this->queueIncomingLinksJobs();
 		}
 
 		return true;
+	}
+
+	/**
+	 * Indirection doing technically nothing but help measure the impact of these jobs via flame graphs.
+	 * @param Updater $updater
+	 * @return void
+	 */
+	private function saneitize( Updater $updater ): void {
+		$this->update( $updater );
+	}
+
+	private function update( Updater $updater ): void {
+		$updater->updateFromTitle( $this->title, $this->params[self::UPDATE_KIND], $this->params[self::ROOT_EVENT_TIME] );
 	}
 
 	/**

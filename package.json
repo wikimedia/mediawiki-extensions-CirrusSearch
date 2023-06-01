@@ -24,7 +24,7 @@
 		"deepmerge": "2.0.1",
 		"eslint-config-wikimedia": "0.25.0",
 		"grunt": "1.6.1",
-		"grunt-banana-checker": "0.10.0",
+		"grunt-banana-checker": "0.11.0",
 		"grunt-eslint": "24.0.1",
 		"grunt-stylelint": "0.18.0",
 		"mwbot": "1.0.9",
@@ -32,7 +32,7 @@
 		"request-promise-native": "1.0.5",
 		"restify": "8.5.1",
 		"semlog": "0.6.10",
-		"stylelint-config-wikimedia": "0.14.0",
+		"stylelint-config-wikimedia": "0.15.0",
 		"wdio-mediawiki": "2.2"
 	}
 }

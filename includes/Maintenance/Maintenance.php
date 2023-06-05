@@ -225,7 +225,8 @@ abstract class Maintenance extends \Maintenance implements Printer {
 			$this->getConnection(),
 			$this,
 			$this->getSearchConfig() );
-		$metastore->createIfNecessary();
+		$status = $metastore->createIfNecessary();
+		$this->unwrap( $status );
 		return $metastore;
 	}
 

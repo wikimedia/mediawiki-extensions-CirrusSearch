@@ -8,6 +8,7 @@ use CirrusSearch\Maintenance\AnalysisFilter;
 use CirrusSearch\Maintenance\ConfigUtils;
 use CirrusSearch\Maintenance\Printer;
 use CirrusSearch\SearchConfig;
+use Status;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -126,35 +127,39 @@ class MetaStoreIndex {
 	}
 
 	/**
-	 * @return \Elastica\Index|null Index on creation, or null if the index
+	 * @return Status with on success \Elastica\Index|null Index on creation, or null if the index
 	 *  already exists.
 	 */
-	public function createIfNecessary() {
+	public function createIfNecessary(): Status {
 		// If the mw_cirrus_metastore alias does not exists it
 		// means we need to create everything from scratch.
 		if ( $this->cirrusReady() ) {
-			return null;
+			return Status::newGood();
+		}
+		$status = $this->configUtils->checkElasticsearchVersion();
+		if ( !$status->isOK() ) {
+			return $status;
 		}
 		$this->log( self::INDEX_NAME . " missing, creating new metastore index.\n" );
 		$newIndex = $this->createNewIndex();
 		$this->switchAliasTo( $newIndex );
-		return $newIndex;
+		return Status::newGood( $newIndex );
 	}
 
-	public function createOrUpgradeIfNecessary() {
-		$newIndex = $this->createIfNecessary();
-		if ( $newIndex === null ) {
+	public function createOrUpgradeIfNecessary(): Status {
+		$newIndexStatus = $this->createIfNecessary();
+		if ( $newIndexStatus->isOK() && $newIndexStatus->getValue() === null ) {
 			$version = $this->metastoreVersion();
 			if ( $version < self::METASTORE_VERSION ) {
 				$this->log( self::INDEX_NAME . " version mismatch, upgrading.\n" );
 				$this->upgradeIndexVersion();
 			} elseif ( $version > self::METASTORE_VERSION ) {
-				throw new \Exception(
-					"Metastore version $version found, cannot upgrade to a lower version: " .
+				return Status::newFatal( "Metastore version $version found, cannot upgrade to a lower version: " .
 					self::METASTORE_VERSION
 				);
 			}
 		}
+		return Status::newGood();
 	}
 
 	private function buildIndexConfiguration() {

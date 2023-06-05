@@ -67,7 +67,8 @@ class Metastore extends Maintenance {
 		if ( !$this->metaStore->cirrusReady() ) {
 			// This is certainly a fresh install we need to create
 			// the metastore otherwize updateSearchIndexConfig will fail
-			$this->metaStore->createOrUpgradeIfNecessary();
+			$status = $this->metaStore->createOrUpgradeIfNecessary();
+			$this->unwrap( $status );
 		}
 
 		if ( $this->hasOption( 'version' ) ) {
@@ -81,7 +82,8 @@ class Metastore extends Maintenance {
 					"$storeVersion\n" );
 			}
 		} elseif ( $this->hasOption( 'upgrade' ) ) {
-			$this->metaStore->createOrUpgradeIfNecessary();
+			$status = $this->metaStore->createOrUpgradeIfNecessary();
+			$this->unwrap( $status );
 			$this->output( "mw_cirrus_metastore is up and running with version " .
 				$this->metaStore->metastoreVersion() . "\n" );
 		} elseif ( $this->hasOption( 'show-all-index-versions' ) ) {

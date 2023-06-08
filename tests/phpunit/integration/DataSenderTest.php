@@ -347,7 +347,6 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	 * @param array|null $tagWeights
 	 * @param string $expectedFile
 	 * @param int|null $expectedRequestCount
-	 * @throws \MWException
 	 */
 	public function testUpdateWeightedTags(
 		array $config,
@@ -408,7 +407,6 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	 * @param string $tagField
 	 * @param string $tagPrefix
 	 * @param string $expectedFile
-	 * @throws \MWException
 	 */
 	public function testResetWeightedTags(
 		array $config,

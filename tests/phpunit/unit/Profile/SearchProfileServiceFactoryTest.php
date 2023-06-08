@@ -22,9 +22,6 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 	 * @dataProvider provideTypeAndContext
 	 * @param string $type
 	 * @param string $context
-	 * @throws \Exception
-	 * @throws \FatalError
-	 * @throws \MWException
 	 */
 	public function testSaneDefaults( $type, $context ) {
 		// Even with an empty search config we should have default profiles
@@ -56,9 +53,6 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 	 * @param string $overrideType
 	 * @param string $overrideKey
 	 * @param array[] $profiles
-	 * @throws \Exception
-	 * @throws \FatalError
-	 * @throws \MWException
 	 */
 	public function testOverrides( $type, $context, $overrideType, $overrideKey, $profiles ) {
 		$cirrusSearchHookRunner = $this->createCirrusSearchHookRunner( [
@@ -199,8 +193,6 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideTestInterwikiOverrides
-	 * @throws \FatalError
-	 * @throws \MWException
 	 */
 	public function testInterwikiOverrides( array $hostWikiConfig, array $targetWikiConfig, $profileType, $overridden ) {
 		$factory = $this->getFactory( $hostWikiConfig, null, [] );

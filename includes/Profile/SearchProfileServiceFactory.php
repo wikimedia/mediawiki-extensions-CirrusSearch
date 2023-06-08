@@ -133,9 +133,6 @@ class SearchProfileServiceFactory {
 	 * @param UserIdentity|null $user
 	 * @param bool $forceHook force running the hook even if using HashSearchConfig
 	 * @return SearchProfileService
-	 * @throws \Exception
-	 * @throws \FatalError
-	 * @throws \MWException
 	 */
 	public function loadService( SearchConfig $config, WebRequest $request = null, UserIdentity $user = null, $forceHook = false ) {
 		$service = new SearchProfileService( $this->userOptionsLookup, $request, $user );

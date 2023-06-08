@@ -11,9 +11,10 @@ use CirrusSearch\Updater;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\WikiMap\WikiMap;
-use MWException;
 use MWTimestamp;
+use Throwable;
 use Title;
+use UnexpectedValueException;
 use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 
@@ -558,7 +559,7 @@ class ForceSearchIndex extends Maintenance {
 				} elseif ( $endingAtColumn === 'page_id' ) {
 					$endingAt = $row->page_id;
 				} else {
-					throw new \MWException( 'Unknown $endingAtColumn: ' . $endingAtColumn );
+					throw new UnexpectedValueException( 'Unknown $endingAtColumn: ' . $endingAtColumn );
 				}
 			} else {
 				$endingAt = 'unknown';
@@ -582,7 +583,7 @@ class ForceSearchIndex extends Maintenance {
 	private function decidePage( Updater $updater, WikiPage $page ) {
 		try {
 			$content = $page->getContent();
-		} catch ( MWException $ex ) {
+		} catch ( Throwable $ex ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Error deserializing content, skipping page: {pageId}",
 				[ 'pageId' => $page->getTitle()->getArticleID() ]

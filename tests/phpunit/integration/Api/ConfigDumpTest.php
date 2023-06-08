@@ -7,9 +7,6 @@ use MediaWiki\Request\FauxRequest;
  * @covers \CirrusSearch\Api\ProfilesDump
  */
 class ConfigDumpTest extends \CirrusSearch\CirrusIntegrationTestCase {
-	/**
-	 * @throws MWException
-	 */
 	public function testHappyPath() {
 		$request = new FauxRequest( [] );
 		$context = new RequestContext();

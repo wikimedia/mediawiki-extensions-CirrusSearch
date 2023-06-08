@@ -9,6 +9,7 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\InterwikiResolverFactory;
 use CirrusSearch\SiteMatrixInterwikiResolver;
+use LogicException;
 use MediaWiki\MediaWikiServices;
 use MockHttpTrait;
 use Wikimedia\AtEase\AtEase;
@@ -102,7 +103,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			);
 			break;
 		default:
-			throw new \Exception( "Invalid op $what" );
+			throw new LogicException( "Invalid op $what" );
 		}
 	}
 
@@ -297,7 +298,6 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider provideTestLoadConfigForCrossLang
 	 * @param bool $valid
-	 * @throws \MWException
 	 */
 	public function testLoadConfigForCrossLang( $valid ) {
 		$this->markTestSkippedIfExtensionNotLoaded( 'SiteMatrix' );

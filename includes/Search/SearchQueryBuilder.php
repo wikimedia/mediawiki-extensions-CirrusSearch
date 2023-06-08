@@ -251,7 +251,6 @@ final class SearchQueryBuilder {
 	 * @param CirrusSearchHookRunner $cirrusSearchHookRunner
 	 * @return SearchQueryBuilder
 	 * @throws \CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException
-	 * @throws \MWException
 	 */
 	public static function forRewrittenQuery(
 		SearchQuery $original,

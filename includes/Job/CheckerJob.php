@@ -86,7 +86,6 @@ class CheckerJob extends CirrusGenericJob {
 
 	/**
 	 * @return bool
-	 * @throws \MWException
 	 */
 	protected function doJob() {
 		$profile = $this->searchConfig

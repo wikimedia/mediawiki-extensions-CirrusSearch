@@ -8,9 +8,6 @@ use MediaWiki\Request\FauxRequest;
  * @covers \CirrusSearch\Api\ProfilesDump
  */
 class ProfilesDumpTest extends \CirrusSearch\CirrusIntegrationTestCase {
-	/**
-	 * @throws MWException
-	 */
 	public function test() {
 		$request = new FauxRequest( [] );
 		$context = new RequestContext();

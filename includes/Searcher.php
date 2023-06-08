@@ -791,7 +791,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			return false;
 		}
 		return Util::looksLikeAutomation(
-			$this->config, $req->getIP(), $req->getAllHeaders() );
+			$this->config, $ip, $req->getAllHeaders() );
 	}
 
 	/**

@@ -374,7 +374,6 @@ class KeywordFeatureAssertions {
 	 * @param array|string|null $highlightField
 	 * @param array|null $highlightQuery
 	 * @param SearchConfig|null $expandConfig config used when calling KeywordFeature::expand
-	 * @throws \MWException
 	 */
 	public function assertHighlighting(
 		KeywordFeature $feature,

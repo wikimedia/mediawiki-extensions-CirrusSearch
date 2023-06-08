@@ -100,7 +100,6 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideTest
-	 * @throws \Exception
 	 */
 	public function test(
 		$query,

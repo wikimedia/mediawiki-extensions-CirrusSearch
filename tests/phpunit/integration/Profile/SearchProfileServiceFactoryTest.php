@@ -19,9 +19,6 @@ use MediaWiki\User\StaticUserOptionsLookup;
 class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider provideExposedProfileType
-	 * @throws \Exception
-	 * @throws \FatalError
-	 * @throws \MWException
 	 */
 	public function testExportedProfilesWithI18N( $type, array $must_have ) {
 		$factory = $this->getFactory( [], null, [] );

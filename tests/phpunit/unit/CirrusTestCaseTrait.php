@@ -167,12 +167,8 @@ trait CirrusTestCaseTrait {
 		Config $inherited = null,
 		SearchProfileServiceFactoryFactory $factoryFactory = null
 	): SearchConfig {
-		try {
-			return new HashSearchConfig( $config, $flags, $inherited,
-				$factoryFactory ?: $this->hostWikiSearchProfileServiceFactory() );
-		} catch ( \MWException $e ) {
-			$this->fail( $e->getMessage() );
-		}
+		return new HashSearchConfig( $config, $flags, $inherited,
+			$factoryFactory ?: $this->hostWikiSearchProfileServiceFactory() );
 	}
 
 	/**

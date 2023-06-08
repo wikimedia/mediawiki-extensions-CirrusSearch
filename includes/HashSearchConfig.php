@@ -22,7 +22,6 @@ class HashSearchConfig extends SearchConfig {
 	 * - inherit: config vars not part the settings provided are fetched from GlobalVarConfig
 	 * @param \Config|null $inherited (only useful when the inherit flag is set)
 	 * @param SearchProfileServiceFactoryFactory|null $searchProfileServiceFactoryFactory
-	 * @throws \MWException
 	 */
 	public function __construct(
 		array $settings,

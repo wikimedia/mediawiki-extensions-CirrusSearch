@@ -51,7 +51,6 @@ class MassIndex extends CirrusGenericJob {
 
 	/**
 	 * @return bool
-	 * @throws \MWException
 	 */
 	protected function doJob() {
 		// Reload pages from pageIds to throw into the updater

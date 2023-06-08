@@ -24,7 +24,6 @@ class InSourceTest extends CirrusTestCase {
 	 * @param string $expectedRemaining
 	 * @param string|null $filterValue
 	 * @param bool $negated
-	 * @throws \MWException
 	 */
 	public function testSimple( $query, $expectedRemaining, $filterValue, $negated = false ) {
 		$qsQuery = null;
@@ -139,7 +138,6 @@ class InSourceTest extends CirrusTestCase {
 	 * @param string $expectedRemaining
 	 * @param mixed $filterValue
 	 * @param bool $insensitive
-	 * @throws \MWException
 	 */
 	public function testRegex( $query, $expectedRemaining, $filterValue, $insensitive ) {
 		$filterCallback = static function ( SourceRegex $x ) use ( $filterValue, $insensitive ) {

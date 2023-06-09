@@ -12,7 +12,8 @@
                 "dedup_asciifolding"
             ],
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ]
         },
         "plain": {
@@ -57,12 +58,12 @@
         },
         "source_text_plain": {
             "type": "custom",
+            "char_filter": [
+                "word_break_helper_source_text"
+            ],
             "tokenizer": "standard",
             "filter": [
                 "lowercase"
-            ],
-            "char_filter": [
-                "word_break_helper_source_text"
             ]
         },
         "source_text_plain_search": {
@@ -186,7 +187,8 @@
                 "dedup_asciifolding"
             ],
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ]
         }
     },
@@ -267,6 +269,30 @@
             "type": "mapping",
             "mappings": [
                 "\\u202F=>\\u0020"
+            ]
+        },
+        "apostrophe_norm": {
+            "type": "mapping",
+            "mappings": [
+                "`=>'",
+                "\u00b4=>'",
+                "\u02b9=>'",
+                "\u02bb=>'",
+                "\u02bc=>'",
+                "\u02bd=>'",
+                "\u02be=>'",
+                "\u02bf=>'",
+                "\u02cb=>'",
+                "\u055a=>'",
+                "\\u05F3=>'",
+                "\u2018=>'",
+                "\u2019=>'",
+                "\u201b=>'",
+                "\u2032=>'",
+                "\u2035=>'",
+                "\ua78c=>'",
+                "\uff07=>'",
+                "\uff40=>'"
             ]
         },
         "word_break_helper": {

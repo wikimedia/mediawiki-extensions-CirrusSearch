@@ -651,6 +651,31 @@ class AnalysisConfigBuilder {
 						'\u202F=>\u0020',
 					],
 				],
+				// map lots of apostrophe-like characters to apostrophe (T315118)
+				'apostrophe_norm' => [
+					'type' => 'mapping',
+					'mappings' => [
+						"`=>'",		 // grave accent
+						"´=>'",		 // acute accent
+						"ʹ=>'",		 // modifier letter prime
+						"ʻ=>'",		 // modifier letter turned comma
+						"ʼ=>'",		 // modifier letter apostrophe
+						"ʽ=>'",		 // modifier letter reversed comma
+						"ʾ=>'",		 // modifier letter right half ring
+						"ʿ=>'",		 // modifier letter left half ring
+						"ˋ=>'",		 // modifier letter grave accent
+						"՚=>'",		 // Armenian apostrophe
+						"\u05F3=>'", // Hebrew punctuation geresh
+						"‘=>'",		 // left single quotation mark
+						"’=>'",		 // right single quotation mark
+						"‛=>'",		 // single high-reversed-9 quotation mark
+						"′=>'",		 // prime
+						"‵=>'",		 // reversed prime
+						"ꞌ=>'",		 // Latin small letter saltillo
+						"＇=>'",		 // fullwidth apostrophe
+						"｀=>'",		 // fullwidth grave accent
+					],
+				],
 				// Converts things that don't always count as word breaks into spaces which always
 				// count as word breaks.
 				'word_break_helper' => [
@@ -1081,22 +1106,6 @@ class AnalysisConfigBuilder {
 				withElision( $mwlElision )->
 				withStop( $mwlStopwords )->
 				withFilters( $mwlFilters )->
-				build( $config );
-			break;
-		case 'nias':
-			$config[ 'char_filter' ][ 'apostrophe_norm' ] =
-				AnalyzerBuilder::mappingCharFilter( [
-					"‘=>'",
-					"’=>'",
-					"`=>'",
-					"ʼ=>'",
-					"ʿ=>'",
-					"ʾ=>'",
-				] );
-
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withFilters( [ 'lowercase' ] )->
-				withCharFilters( [ 'apostrophe_norm' ] )->
 				build( $config );
 			break;
 		case 'persian': // Unpack Persian analyzer T325090
@@ -1658,7 +1667,6 @@ class AnalysisConfigBuilder {
 		'ms' => 'malay',
 		'mwl' => 'mirandese',
 		'nb' => 'norwegian',
-		'nia' => 'nias',
 		'nn' => 'norwegian',
 		'fa' => 'persian',
 		'pt' => 'portuguese',
@@ -1801,6 +1809,7 @@ class AnalysisConfigBuilder {
 				[ 'extra-analysis-homoglyph' ], [ 'aggressive_splitting' ] ),
 			'nnbsp_norm' => new GlobalCustomFilter( 'char_filter', [], [],
 				[ 'text', 'text_search', 'plain', 'plain_search' ] ),
+			'apostrophe_norm' => new GlobalCustomFilter( 'char_filter' ),
 		];
 		// reverse the array so that items are ordered (approximately, modulo incompatible
 		// filters) in the order specified here

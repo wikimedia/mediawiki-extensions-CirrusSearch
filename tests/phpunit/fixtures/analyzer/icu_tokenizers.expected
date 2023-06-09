@@ -24,7 +24,8 @@
         },
         "bo_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -34,7 +35,8 @@
         },
         "bo_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -66,7 +68,8 @@
         },
         "bug_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -76,7 +79,8 @@
         },
         "bug_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -108,7 +112,8 @@
         },
         "cdo_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -118,7 +123,8 @@
         },
         "cdo_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -150,7 +156,8 @@
         },
         "cr_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -160,7 +167,8 @@
         },
         "cr_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -192,7 +200,8 @@
         },
         "dz_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -202,7 +211,8 @@
         },
         "dz_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -234,7 +244,8 @@
         },
         "gan_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -244,7 +255,8 @@
         },
         "gan_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -276,7 +288,8 @@
         },
         "hak_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -286,7 +299,8 @@
         },
         "hak_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -323,6 +337,7 @@
         "ja_text": {
             "char_filter": [
                 "nnbsp_norm",
+                "apostrophe_norm",
                 "dotted_I_fix",
                 "cjk_charfilter"
             ],
@@ -340,6 +355,7 @@
         "ja_text_search": {
             "char_filter": [
                 "nnbsp_norm",
+                "apostrophe_norm",
                 "dotted_I_fix",
                 "cjk_charfilter"
             ],
@@ -378,7 +394,8 @@
         },
         "jv_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -388,7 +405,8 @@
         },
         "jv_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -420,7 +438,8 @@
         },
         "km_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -430,7 +449,8 @@
         },
         "km_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -462,7 +482,8 @@
         },
         "lo_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -472,7 +493,8 @@
         },
         "lo_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -504,7 +526,8 @@
         },
         "lzh_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -514,7 +537,8 @@
         },
         "lzh_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -546,7 +570,8 @@
         },
         "my_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -556,7 +581,8 @@
         },
         "my_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -588,7 +614,8 @@
         },
         "nan_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -598,7 +625,8 @@
         },
         "nan_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -635,6 +663,7 @@
         "th_text": {
             "char_filter": [
                 "nnbsp_norm",
+                "apostrophe_norm",
                 "thai_repl_pat",
                 "dotted_I_fix",
                 "thai_charfilter"
@@ -652,6 +681,7 @@
         "th_text_search": {
             "char_filter": [
                 "nnbsp_norm",
+                "apostrophe_norm",
                 "thai_repl_pat",
                 "dotted_I_fix",
                 "thai_charfilter"
@@ -690,7 +720,8 @@
         },
         "wuu_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -700,7 +731,8 @@
         },
         "wuu_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -732,7 +764,8 @@
         },
         "yue_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -742,7 +775,8 @@
         },
         "yue_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -774,7 +808,8 @@
         },
         "zh-classical_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -784,7 +819,8 @@
         },
         "zh-classical_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -816,7 +852,8 @@
         },
         "zh-min-nan_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -826,7 +863,8 @@
         },
         "zh-min-nan_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -858,7 +896,8 @@
         },
         "zh-yue_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -868,7 +907,8 @@
         },
         "zh-yue_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -900,7 +940,8 @@
         },
         "zh_text": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -910,7 +951,8 @@
         },
         "zh_text_search": {
             "char_filter": [
-                "nnbsp_norm"
+                "nnbsp_norm",
+                "apostrophe_norm"
             ],
             "filter": [
                 "icu_normalizer"
@@ -920,6 +962,30 @@
         }
     },
     "char_filter": {
+        "apostrophe_norm": {
+            "mappings": [
+                "`=>'",
+                "\u00b4=>'",
+                "\u02b9=>'",
+                "\u02bb=>'",
+                "\u02bc=>'",
+                "\u02bd=>'",
+                "\u02be=>'",
+                "\u02bf=>'",
+                "\u02cb=>'",
+                "\u055a=>'",
+                "\\u05F3=>'",
+                "\u2018=>'",
+                "\u2019=>'",
+                "\u201b=>'",
+                "\u2032=>'",
+                "\u2035=>'",
+                "\ua78c=>'",
+                "\uff07=>'",
+                "\uff40=>'"
+            ],
+            "type": "mapping"
+        },
         "cjk_charfilter": {
             "mappings": [
                 "\u309b=>\\u3099",

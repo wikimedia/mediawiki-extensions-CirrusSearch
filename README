@@ -97,6 +97,15 @@ The first command picks up all the deletes that occurred during the outage and
 should complete quite quickly.  The second command picks up all the updates
 that occurred during the outage and might take significantly longer.
 
+Changing $wgNamespacesToBeSearchedDefault
+-----------------------------------------
+When changing wgNamespacesToBeSearchedDefault you might need to reindex some pages from the source documents.
+For achieving this you have two options:
+- Blow away the search index and rebuild it from scratch. (see the Upgrading section, option A)
+- Use the "Saneitizer": php Saneitize.php
+
+ Both options have drawbacks, the first one might incur a downtime making some pages unfindable while
+ they are indexed, the second option might take time if the wiki is large.
 
 PoolCounter
 -----------

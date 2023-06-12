@@ -35,15 +35,16 @@ class ChangeListenerTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers       \CirrusSearch\ChangeListener::onLinksUpdateComplete
+	 * @covers \CirrusSearch\ChangeListener::onLinksUpdateComplete
 	 * @dataProvider provideTestOnLinksUpdateComplete
 	 * @param int $now
 	 * @param bool $recursive
+	 * @param string $causeAction
 	 * @param int|null $revTimestamp
 	 * @param array $jobParams
 	 * @return void
 	 */
-	public function testOnLinksUpdateComplete( int $now, bool $recursive, ?int $revTimestamp, array $jobParams ) {
+	public function testOnLinksUpdateComplete( int $now, bool $recursive, string $causeAction, ?int $revTimestamp, array $jobParams ) {
 		Assert::precondition( ( $revTimestamp !== null ) === $recursive, '$revTimestamp must be set if recursive is true' );
 		$config = [
 			'CirrusSearchLinkedArticlesToUpdate' => 10,
@@ -70,6 +71,7 @@ class ChangeListenerTest extends CirrusTestCase {
 			$linksUpdate->method( 'getRevisionRecord' )->willReturn( $revision );
 		}
 		$linksUpdate->method( 'isRecursive' )->willReturn( $recursive );
+		$linksUpdate->method( 'getCauseAction' )->willReturn( $causeAction );
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ), $this->createMock( \LoadBalancer::class ) );
 
@@ -81,6 +83,7 @@ class ChangeListenerTest extends CirrusTestCase {
 			'simple page refresh' => [
 				123,
 				false,
+				'RefreshLinks',
 				null,
 				[
 					"update_kind" => "page_refresh",
@@ -91,11 +94,23 @@ class ChangeListenerTest extends CirrusTestCase {
 			'simple rev update' => [
 				123,
 				true,
+				'edit-page',
 				122,
 				[
 					"update_kind" => "page_change",
 					"root_event_time" => 122,
 					"prioritize" => true
+				]
+			],
+			'api-purge' => [
+				123,
+				true,
+				'api-purge',
+				122,
+				[
+					"update_kind" => "page_refresh",
+					"root_event_time" => 123,
+					"prioritize" => false
 				]
 			]
 		];

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Job\CirrusTitleJob;
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
 use ConfigFactory;
@@ -107,12 +108,23 @@ class ChangeListener implements
 					$unLinkedArticlesToUpdate, true );
 		}
 
-		// non recursive LinksUpdate can go to the non prioritized queue
-		if ( $linksUpdate->isRecursive() ) {
+		// We want to populate the prioritized queue with updates that reflect a change to the page
+		// itself. We identify those using the following heuristics:
+		// - LinksUpdate::isRecursive is true
+		// - LinksUpdate::getCauseAction is not api-purge
+		if ( $linksUpdate->isRecursive() && $linksUpdate->getCauseAction() !== 'api-purge' ) {
 			$job = LinksUpdate::newPageChangeUpdate(
 				$linksUpdate->getTitle(),
 				$linksUpdate->getRevisionRecord(),
 				$params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class,  $updateDelay['prioritized'], $this->jobQueue ) );
+			if ( ( \MWTimestamp::time() - $job->params[CirrusTitleJob::ROOT_EVENT_TIME] ) > ( 3600 * 24 ) ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )->debug(
+					"Scheduled a page-change-update for {title} on a revision created more than 24hours ago, the cause is {causeAction}",
+					[
+						'title' => $linksUpdate->getTitle()->getPrefixedDBkey(),
+						'causeAction' => $linksUpdate->getCauseAction()
+					] );
+			}
 		} else {
 			$job = LinksUpdate::newPageRefreshUpdate( $linksUpdate->getTitle(),
 				$params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class,  $updateDelay['default'], $this->jobQueue ) );

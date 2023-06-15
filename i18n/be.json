@@ -45,7 +45,7 @@
 	"prefs-completion": "Дапаўненне пошуку",
 	"cirrussearch-pref-completion-section-desc": "Прапанова канчаткаў",
 	"cirrussearch-pref-completion-profile-help": "Задае паводзіны для прапаноў аўтазапаўнення (пошук падчас набору).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Прапановы аўтазапаўнення] — алгарытм для прапаноў пошуку з лепшым выпраўленнем памылак і дакладнасцю пошуку. Прэфіксавы пошук —  алгарытм прапаноў падчас набору тэксту.",
-	"cirrussearch-completion-profile-fuzzy-pref-name": "Па змоўчанні (рэкамендуецца)",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Прадвызначана (рэкамендуецца)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Выпраўляе да дзвюх абдруковак. Выдаляе перанакіраванні, якія вельмі падобныя да асноўнай назвы.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Супастаўленне падфразаў (рэкамэндуецца для доўгіх назваў старонак)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Выпраўляе да дзвюх абдруковак. Выпраўляе блізкія перанакіраванні. Супастаўляе падфразы ў загалоўках.",

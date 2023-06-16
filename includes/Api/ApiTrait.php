@@ -8,7 +8,6 @@ use CirrusSearch\Searcher;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
-use PageArchive;
 use Title;
 use User;
 
@@ -110,7 +109,9 @@ trait ApiTrait {
 		$hasRedirects = false;
 		$seen = [];
 		$now = wfTimestamp( TS_MW );
-		$contentHandlerFactory = MediaWikiServices::getInstance()->getContentHandlerFactory();
+		$services = MediaWikiServices::getInstance();
+		$contentHandlerFactory = $services->getContentHandlerFactory();
+		$archivedRevisionLookup = $services->getArchivedRevisionLookup();
 		while ( true ) {
 			if ( isset( $seen[$title->getPrefixedText()] ) || count( $seen ) > 10 ) {
 				return [ null, $hasRedirects ];
@@ -121,7 +122,7 @@ trait ApiTrait {
 			// been removed from the elasticsearch index we lookup the page in
 			// the archive to get it's page id. getPreviousRevisionRecord will
 			// check both the archive and live content to return the most recent.
-			$revRecord = ( new PageArchive( $title ) )->getPreviousRevisionRecord( $now );
+			$revRecord = $archivedRevisionLookup->getPreviousRevisionRecord( $title, $now );
 			if ( !$revRecord ) {
 				return [ null, $hasRedirects ];
 			}

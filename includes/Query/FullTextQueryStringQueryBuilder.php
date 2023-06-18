@@ -590,9 +590,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				// fallack
 				new \Elastica\Query\MatchNone(),
 				// field
-				null,
-				// analyzer
-				'text_search'
+				'text'
 			);
 			$maxTokens = $this->config->get( 'CirrusSearchMaxPhraseTokens' );
 			if ( $maxTokens ) {

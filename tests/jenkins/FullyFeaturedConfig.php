@@ -34,6 +34,7 @@ $wgCirrusSearchQueryStringMaxDeterminizedStates = 500;
 $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
 $wgCirrusSearchWikimediaExtraPlugin[ 'documentVersion' ] = true;
 $wgCirrusSearchWikimediaExtraPlugin[ 'term_freq' ] = true;
+$wgCirrusSearchWikimediaExtraPlugin[ 'token_count_router' ] = true;
 
 $wgCirrusSearchNamespaceResolutionMethod = 'utr30';
 

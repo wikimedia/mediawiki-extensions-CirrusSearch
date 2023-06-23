@@ -144,18 +144,25 @@ class ElasticaErrorHandler {
 			'failed' => [
 				'type_regexes' => [
 					'^es_rejected_execution_exception$',
+					'^search_phase_execution_exception',
 					'^remote_transport_exception$',
 					'^search_context_missing_exception$',
 					'^null_pointer_exception$',
 					'^elasticsearch_timeout_exception$',
 					'^retry_on_primary_exception$',
 				],
-				// These are exceptions thrown by elastica itself
 				'msg_regexes' => [
+					// These are exceptions thrown by elastica itself
 					'^Couldn\'t connect to host',
 					'^No enabled connection',
 					'^Operation timed out',
+					// These are problems raised by the http intermediary layers (nginx/envoy)
 					'^Status code 503',
+					'^\Qupstream connect error or disconnect/reset\E',
+					'^upstream request timeout',
+					// see \CirrusSearch\Query\CompSuggestQueryBuilder::postProcess, not ideal to rely
+					// on our own exception message for error classification...
+					'^\QInvalid response returned from the backend (probable shard failure during the fetch phase)\E',
 				],
 			],
 			'config_issue' => [
@@ -178,11 +185,11 @@ class ElasticaErrorHandler {
 
 		foreach ( $heuristics as $type => $heuristic ) {
 			$regex = implode( '|', $heuristic['type_regexes'] );
-			if ( $regex && preg_match( "/$regex/", $error['type'] ) ) {
+			if ( $regex && preg_match( "#$regex#", $error['type'] ) ) {
 				return $type;
 			}
 			$regex = implode( '|', $heuristic['msg_regexes'] );
-			if ( $regex && preg_match( "/$regex/", $error['reason'] ) ) {
+			if ( $regex && preg_match( "#$regex#", $error['reason'] ) ) {
 				return $type;
 			}
 		}

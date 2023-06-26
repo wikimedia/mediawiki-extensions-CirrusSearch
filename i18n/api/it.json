@@ -5,13 +5,9 @@
 			"Mpiva"
 		]
 	},
-	"apihelp-cirrus-config-dump-description": "Copia della configurazione di CirrusSearch.",
 	"apihelp-cirrus-config-dump-example": "Ottieni un dump della configurazione CirrusSearch.",
-	"apihelp-cirrus-mapping-dump-description": "Copia della mappatura di CirrusSearch per questo wiki.",
 	"apihelp-cirrus-mapping-dump-example": "Ottieni un dump della mappatura CirrusSearch per questo wiki.",
-	"apihelp-cirrus-settings-dump-description": "Copia delle impostazioni di CirrusSearch per questo wiki.",
 	"apihelp-cirrus-settings-dump-example": "Ottieni un dump delle impostazioni di CirrusSearch per questo wiki.",
-	"apihelp-cirrus-profiles-dump-description": "Copia dei profili di CirrusSearch per questo wiki.",
 	"apihelp-cirrus-profiles-dump-summary": "Copia dei profili di CirrusSearch per questo wiki.",
 	"apihelp-cirrus-profiles-dump-example": "Ottieni un dump dei profili di CirrusSearch per questo wiki.",
 	"apihelp-query+cirrusbuilddoc-param-builders": "Tipo di dati da estrarre",

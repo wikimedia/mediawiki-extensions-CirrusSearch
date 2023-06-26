@@ -5,15 +5,11 @@
 			"Sfic"
 		]
 	},
-	"apihelp-cirrus-config-dump-description": "सर्कस खोज का तय डम्प",
 	"apihelp-cirrus-config-dump-example": "सर्कस खोज का तय डम्प हासिल करें",
-	"apihelp-cirrus-mapping-dump-description": "इस विकि हेतु सर्कसखोज का डंप",
 	"apihelp-cirrus-mapping-dump-summary": "इस विकि के लिए CirrusSearch मानचित्रण का डम्प।",
 	"apihelp-cirrus-mapping-dump-example": "इस विकि के लिए CirrusSearch मानचित्रण का डम्प पाएँ।",
-	"apihelp-cirrus-settings-dump-description": "इस विकि के लिए CirrusSearch सेटिंग्स का डम्प।",
 	"apihelp-cirrus-settings-dump-summary": "इस विकि के लिए CirrusSearch सेटिंग्स का डम्प।",
 	"apihelp-cirrus-settings-dump-example": "इस विकि के लिए CirrusSearch सेटिंग्स का डम्प पाएँ।",
-	"apihelp-cirrus-profiles-dump-description": "इस विकि के लिए CirrusSearch प्रोफ़ाइलों का डम्प।",
 	"apihelp-cirrus-profiles-dump-summary": "इस विकि के लिए CirrusSearch प्रोफ़ाइलों का डम्प।",
 	"apihelp-cirrus-profiles-dump-example": "इस विकि के लिए CirrusSearch प्रोफ़ाइलों का डम्प पाएँ।",
 	"apihelp-cirrus-profiles-dump-param-verbose": "प्रोफ़ाइलों की सामग्री को डम्प करें",

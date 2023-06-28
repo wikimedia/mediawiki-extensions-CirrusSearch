@@ -68,18 +68,19 @@ class QueryBuildDocument extends \ApiQueryBase {
 				}
 			}
 
+			$searchConfig = $engine->getConfig();
 			$builder = new BuildDocument(
 				$this->getCirrusConnection(),
 				$this->getDB(),
 				$services->getRevisionStore(),
 				$services->getBacklinkCacheFactory(),
-				new DocumentSizeLimiter( $engine->getConfig()->getProfileService()
+				new DocumentSizeLimiter( $searchConfig->getProfileService()
 					->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER, SearchProfileService::CONTEXT_DEFAULT, $profile ) ),
 				$services->getTitleFormatter(),
 				$services->getWikiPageFactory()
 			);
 			$baseMetadata = [];
-			$clusterGroup = $engine->getConfig()->getClusterAssignment()->getCrossClusterName();
+			$clusterGroup = $searchConfig->getClusterAssignment()->getCrossClusterName();
 			if ( $clusterGroup !== null ) {
 				$baseMetadata['cluster_group'] = $clusterGroup;
 			}
@@ -101,7 +102,7 @@ class QueryBuildDocument extends \ApiQueryBase {
 					if ( $limiterStats !== null ) {
 						$metadata += [ 'size_limiter_stats' => $limiterStats ];
 					}
-					$indexName = $this->getCirrusConnection()->getIndexName( $this->getConfig()->get( SearchConfig::INDEX_BASE_NAME ),
+					$indexName = $this->getCirrusConnection()->getIndexName( $searchConfig->get( SearchConfig::INDEX_BASE_NAME ),
 						$this->getCirrusConnection()->getIndexSuffixForNamespace( $doc->get( 'namespace' ) ) );
 					$metadata += [
 						'index_name' => $indexName

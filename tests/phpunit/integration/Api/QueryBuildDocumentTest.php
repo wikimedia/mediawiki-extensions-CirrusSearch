@@ -39,7 +39,6 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 			MainConfigNames::RestrictDisplayTitle => false,
 			'CirrusSearchWikimediaExtraPlugin' => [ 'documentVersion' ],
 			'CirrusSearchDefaultCluster' => 'my_replica',
-			'CirrusSearchIndexBaseName' => 'my_index_name',
 			'CirrusSearchReplicaGroup' => 'my_group',
 			'CirrusSearchClusters' => [
 				[
@@ -57,7 +56,6 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 	public function test_content_extraction() {
 		$expectedMetadata = [
 			'cluster_group' => 'my_group',
-			'index_name' => 'my_index_name_content',
 			'noop_hints' => [
 				'version' => 'documentVersion',
 			],
@@ -88,10 +86,19 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 		$this->assertEquals( $expectedDoc, $doc );
 		$cirrusMetadata = $data[0]["query"]["pages"][$pageId]["cirrusbuilddoc_metadata"];
 
+		$indexName = $cirrusMetadata['index_name'];
+		// WikiMap::getCurrentWikiId() does not appear to return the same value while setting-up
+		// the services and while running the assertion, relax the test to just make sure
+		// that we do attempt to replace the __wikiid__ placeholder from the CirrusSearchIndexBaseName
+		// config value
+		$this->assertStringEndsWith( "_content", $indexName, "_content" );
+		$this->assertStringStartsWith( WikiMap::getCurrentWikiDbDomain()->getDatabase(), $indexName );
+
 		$this->assertArrayHasKey( 'size_limiter_stats', $cirrusMetadata );
 		// remove the stats as they depend on the doc size which might vary depending on the extensions
 		// being present while testing
 		unset( $cirrusMetadata['size_limiter_stats'] );
+		unset( $cirrusMetadata['index_name'] );
 		$this->assertEquals( $expectedMetadata, $cirrusMetadata );
 
 		// Case 2: test first using revids
@@ -110,6 +117,7 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 
 		$this->assertArrayHasKey( 'size_limiter_stats', $cirrusMetadata );
 		unset( $cirrusMetadata['size_limiter_stats'] );
+		unset( $cirrusMetadata['index_name'] );
 		$this->assertEquals( $expectedMetadata, $cirrusMetadata );
 	}
 

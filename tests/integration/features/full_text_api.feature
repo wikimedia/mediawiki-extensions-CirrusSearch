@@ -62,9 +62,6 @@ Feature: Full text search
     | pascal_case         | PascalCase          |
     | PascalCase          | PascalCase          |
     | pascalcase          | PascalCase          |
-    | numeric 7           | NumericCase7        |
-    | numericcase7        | NumericCase7        |
-    | numericCase         | NumericCase7        |
     | getInitial          | this.getInitial     |
     | reftoolbarbase js   | RefToolbarBase.js   |
     | this.iscamelcased   | PFTest Paren        |

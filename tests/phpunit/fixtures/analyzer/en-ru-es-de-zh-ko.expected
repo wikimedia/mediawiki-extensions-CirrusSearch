@@ -32,6 +32,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "dotted_I_fix",
                 "german_charfilter"
             ],
@@ -50,6 +51,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "dotted_I_fix",
                 "german_charfilter"
             ],
@@ -94,11 +96,11 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "word_break_helper",
                 "kana_map"
             ],
             "filter": [
-                "aggressive_splitting",
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
@@ -114,11 +116,11 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "word_break_helper",
                 "kana_map"
             ],
             "filter": [
-                "aggressive_splitting",
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
@@ -160,6 +162,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -176,6 +179,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -214,6 +218,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "dotted_I_fix",
                 "nori_charfilter",
                 "nori_combo_filter"
@@ -231,6 +236,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "dotted_I_fix",
                 "nori_charfilter",
                 "nori_combo_filter"
@@ -276,6 +282,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "dotted_I_fix",
                 "russian_charfilter"
             ],
@@ -293,6 +300,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "dotted_I_fix",
                 "russian_charfilter"
             ],
@@ -334,6 +342,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "stconvertfix",
                 "tsconvert"
             ],
@@ -348,6 +357,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "stconvertfix",
                 "tsconvert"
             ],
@@ -517,6 +527,11 @@
             ],
             "type": "mapping"
         },
+        "split_camelCase": {
+            "pattern": "(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})",
+            "replacement": " $1",
+            "type": "pattern_replace"
+        },
         "stconvertfix": {
             "mappings": [
                 "\\u606d\\u5f18=>\\u606d \\u5f18",
@@ -541,11 +556,6 @@
         }
     },
     "filter": {
-        "aggressive_splitting": {
-            "preserve_original": false,
-            "stem_english_possessive": false,
-            "type": "word_delimiter"
-        },
         "custom_stem": {
             "rules": "guidelines => guideline",
             "type": "stemmer_override"

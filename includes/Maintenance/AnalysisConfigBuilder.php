@@ -583,13 +583,9 @@ class AnalysisConfigBuilder {
 					'type' => 'lowercase',
 				],
 				'aggressive_splitting' => [
-					'type' => 'word_delimiter',
+					'type' => 'word_delimiter_graph',
 					'stem_english_possessive' => false,
-					// 'catenate_words' => true, // Might be useful but causes errors on indexing
-					// 'catenate_numbers' => true, // Might be useful but causes errors on indexing
-					// 'catenate_all' => true, // Might be useful but causes errors on indexing
-					'preserve_original' => false // "wi-fi-555" finds "wi-fi-555".
-												 // Not needed because of plain analysis.
+					'preserve_original' => false
 				],
 				'prefix_ngram_filter' => [
 					'type' => 'edgeNGram',
@@ -650,6 +646,14 @@ class AnalysisConfigBuilder {
 					'mappings' => [
 						'\u202F=>\u0020',
 					],
+				],
+				// add a space between lowercase letter {Ll} and uppercase letter {Lu}
+				// allowing for 0–9 combining marks {M} or invisibles {Cf}
+				// {0-9}+ rather than * or *+ because they are too sloooooooow
+				'split_camelCase' => [
+					'type' => 'pattern_replace',
+					'pattern' => '(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})',
+					'replacement' => ' $1'
 				],
 				// map lots of apostrophe-like characters to apostrophe (T315118)
 				'apostrophe_norm' => [
@@ -913,8 +917,8 @@ class AnalysisConfigBuilder {
 				'type' => 'custom',
 				'char_filter' => [ 'word_break_helper', 'kana_map' ],
 				'tokenizer' => 'standard',
-				'filter' => [ 'aggressive_splitting', 'possessive_english', 'lowercase',
-					'stop', 'asciifolding', 'kstem', 'custom_stem' ],
+				'filter' => [ 'possessive_english', 'lowercase', 'stop', 'asciifolding',
+					'kstem', 'custom_stem' ],
 			];
 
 			// Add asciifolding_preserve to the plain analyzer as well (but not plain_search)
@@ -996,7 +1000,7 @@ class AnalysisConfigBuilder {
 				  'ṡ=>sh', 'ẛ=>sh', 'ṫ=>th', 'Ḃ=>BH', 'Ċ=>CH', 'Ḋ=>DH', 'Ḟ=>FH', 'Ġ=>GH',
 				  'Ṁ=>MH', 'Ṗ=>PH', 'Ṡ=>SH', 'Ṫ=>TH' ];
 			$gaElision = [ 'd', 'm', 'b' ];
-			$gaHyphenStop = [ 'h', 'n', 't' ];
+			$gaHyphenStop = [ 'h', 'n', 't', 'b', 'bh', 'g', 'm' ]; // Add b, bh, g, m for camelCase cleanup
 			$config[ 'filter' ][ 'irish_hyphenation' ] =
 				AnalyzerBuilder::stopFilterFromList( $gaHyphenStop, true );
 
@@ -1019,8 +1023,7 @@ class AnalysisConfigBuilder {
 				withUnpackedAnalyzer()->
 				omitDottedI()->
 				withWordBreakHelper()->
-				withElision( $itElision, false )->
-				withAggressiveSplitting()->
+				withElision( $itElision )->
 				withLightStemmer()->
 				build( $config );
 
@@ -1810,6 +1813,7 @@ class AnalysisConfigBuilder {
 			'nnbsp_norm' => new GlobalCustomFilter( 'char_filter', [], [],
 				[ 'text', 'text_search', 'plain', 'plain_search' ] ),
 			'apostrophe_norm' => new GlobalCustomFilter( 'char_filter' ),
+			'split_camelCase' => new GlobalCustomFilter( 'char_filter' ),
 		];
 		// reverse the array so that items are ordered (approximately, modulo incompatible
 		// filters) in the order specified here

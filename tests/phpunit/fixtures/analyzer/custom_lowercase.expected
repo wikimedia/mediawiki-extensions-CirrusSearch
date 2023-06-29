@@ -31,7 +31,8 @@
         "el_text": {
             "char_filter": [
                 "nnbsp_norm",
-                "apostrophe_norm"
+                "apostrophe_norm",
+                "split_camelCase"
             ],
             "filter": [
                 "lowercase",
@@ -46,7 +47,8 @@
         "el_text_search": {
             "char_filter": [
                 "nnbsp_norm",
-                "apostrophe_norm"
+                "apostrophe_norm",
+                "split_camelCase"
             ],
             "filter": [
                 "lowercase",
@@ -90,6 +92,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "irish_charfilter"
             ],
             "filter": [
@@ -109,6 +112,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "irish_charfilter"
             ],
             "filter": [
@@ -155,7 +159,8 @@
         "tr_text": {
             "char_filter": [
                 "nnbsp_norm",
-                "apostrophe_norm"
+                "apostrophe_norm",
+                "split_camelCase"
             ],
             "filter": [
                 "tr_lowercase",
@@ -172,7 +177,8 @@
         "tr_text_search": {
             "char_filter": [
                 "nnbsp_norm",
-                "apostrophe_norm"
+                "apostrophe_norm",
+                "split_camelCase"
             ],
             "filter": [
                 "tr_lowercase",
@@ -242,6 +248,11 @@
             ],
             "type": "mapping"
         },
+        "split_camelCase": {
+            "pattern": "(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})",
+            "replacement": " $1",
+            "type": "pattern_replace"
+        },
         "word_break_helper": {
             "mappings": [
                 "_=>\\u0020",
@@ -286,7 +297,11 @@
             "stopwords": [
                 "h",
                 "n",
-                "t"
+                "t",
+                "b",
+                "bh",
+                "g",
+                "m"
             ],
             "type": "stop"
         },

@@ -369,7 +369,6 @@ BeforeOnce( { tags: '@programmer_friendly' }, runBatchFn( {
 		$wgNamespaceAliases: '$wgNamespaceAliases',
 		PFSC: 'snake_case',
 		PascalCase: 'PascalCase',
-		NumericCase7: 'NumericCase7',
 		'this.getInitial': 'this.getInitial',
 		'RefToolbarBase.js': 'RefToolbarBase.js',
 		'PFTest Paren': 'this.isCamelCased()'

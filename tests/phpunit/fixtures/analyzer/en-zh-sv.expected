@@ -30,11 +30,11 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "word_break_helper",
                 "kana_map"
             ],
             "filter": [
-                "aggressive_splitting",
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
@@ -50,11 +50,11 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "word_break_helper",
                 "kana_map"
             ],
             "filter": [
-                "aggressive_splitting",
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
@@ -95,7 +95,8 @@
         "sv_text": {
             "char_filter": [
                 "nnbsp_norm",
-                "apostrophe_norm"
+                "apostrophe_norm",
+                "split_camelCase"
             ],
             "filter": [
                 "icu_normalizer",
@@ -112,7 +113,8 @@
         "sv_text_search": {
             "char_filter": [
                 "nnbsp_norm",
-                "apostrophe_norm"
+                "apostrophe_norm",
+                "split_camelCase"
             ],
             "filter": [
                 "icu_normalizer",
@@ -154,6 +156,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "stconvertfix",
                 "tsconvert"
             ],
@@ -168,6 +171,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "stconvertfix",
                 "tsconvert"
             ],
@@ -301,6 +305,11 @@
             ],
             "type": "mapping"
         },
+        "split_camelCase": {
+            "pattern": "(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})",
+            "replacement": " $1",
+            "type": "pattern_replace"
+        },
         "stconvertfix": {
             "mappings": [
                 "\\u606d\\u5f18=>\\u606d \\u5f18",
@@ -325,11 +334,6 @@
         }
     },
     "filter": {
-        "aggressive_splitting": {
-            "preserve_original": false,
-            "stem_english_possessive": false,
-            "type": "word_delimiter"
-        },
         "custom_stem": {
             "rules": "guidelines => guideline",
             "type": "stemmer_override"

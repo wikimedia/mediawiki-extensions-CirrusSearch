@@ -6,6 +6,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -180,6 +181,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "split_camelCase",
                 "dotted_I_fix"
             ],
             "filter": [
@@ -203,7 +205,7 @@
             "type": "lowercase"
         },
         "aggressive_splitting": {
-            "type": "word_delimiter",
+            "type": "word_delimiter_graph",
             "stem_english_possessive": false,
             "preserve_original": false
         },
@@ -277,6 +279,11 @@
             "mappings": [
                 "\\u202F=>\\u0020"
             ]
+        },
+        "split_camelCase": {
+            "type": "pattern_replace",
+            "pattern": "(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})",
+            "replacement": " $1"
         },
         "apostrophe_norm": {
             "type": "mapping",

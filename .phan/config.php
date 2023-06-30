@@ -9,6 +9,7 @@ $cfg['directory_list'] = array_merge(
 		'../../extensions/Elastica',
 		'../../extensions/BetaFeatures',
 		'../../extensions/SiteMatrix',
+		'../../extensions/EventBus',
 	]
 );
 
@@ -18,6 +19,7 @@ $cfg['exclude_analysis_directory_list'] = array_merge(
 		'../../extensions/Elastica',
 		'../../extensions/BetaFeatures',
 		'../../extensions/SiteMatrix',
+		'../../extensions/EventBus',
 	]
 );
 

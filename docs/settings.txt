@@ -1695,3 +1695,10 @@ languages analysis chains are loaded into a single index this deduplication can
 greatly reduce the amount of time the nodes require to process the index
 settings.
 
+; $wgCirrusSearchUseEventBusBridge
+
+Default:
+  $wgCirrusSearchUseEventBusBridge = false;
+
+Emit page-rerenders events to EventBus. Required if the udpate process is managed
+outside of MW.

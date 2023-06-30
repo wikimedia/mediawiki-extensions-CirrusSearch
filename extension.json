@@ -96,7 +96,7 @@
 		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAnalysisConfig",
 		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchSimilarityConfig",
 		"GetPreferences": "default",
-		"LinksUpdateComplete": "changelistener",
+		"LinksUpdateComplete": [ "changelistener", "eventbusbridge" ],
 		"PrefixSearchExtractNamespace": "CirrusSearch\\Hooks::onPrefixSearchExtractNamespace",
 		"ResourceLoaderGetConfigVars": "CirrusSearch\\Hooks::onResourceLoaderGetConfigVars",
 		"SearchIndexFields": [
@@ -130,6 +130,21 @@
 				"DBLoadBalancer",
 				"RedirectLookup",
 				"DeferredUpdatesManager"
+			]
+		},
+		"eventbusbridge": {
+			"class": "CirrusSearch\\Event\\EventBridge",
+			"factory": "CirrusSearch\\Event\\EventBusBridge::factory",
+			"services": [
+				"ConfigFactory",
+				"MainConfig",
+				"GlobalIdGenerator",
+				"TitleFormatter",
+				"PageStore",
+				"DeferredUpdatesManager"
+			],
+			"optional_services": [
+				"EventBus.EventBusFactory"
 			]
 		}
 	},
@@ -688,6 +703,10 @@
 		},
 		"CirrusSearchDeduplicateAnalysis": {
 			"description": "[experimental] Deduplicate index analysis chains",
+			"value": false
+		},
+		"CirrusSearchUseEventBusBridge": {
+			"description": "Emit page-rerenders events via EventBus (requires EventBus)",
 			"value": false
 		}
 	},

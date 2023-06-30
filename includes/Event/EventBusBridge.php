@@ -1,0 +1,108 @@
+<?php
+
+namespace CirrusSearch\Event;
+
+use CirrusSearch\PageChangeTracker;
+use Config;
+use ConfigFactory;
+use MediaWiki\Deferred\DeferredUpdatesManager;
+use MediaWiki\Extension\EventBus\EventBusFactory;
+use MediaWiki\Page\PageLookup;
+use TitleFormatter;
+use Wikimedia\UUID\GlobalIdGenerator;
+
+/**
+ * Hook handler responsible for bridging internal MW events to dedicated event streams.
+ */
+class EventBusBridge extends PageChangeTracker implements EventBridge {
+	private EventBusFactory $eventBusFactory;
+	private PageLookup $pageLookup;
+	private PageRerenderSerializer $pageRerenderSerializer;
+	private DeferredUpdatesManager $deferredUpdatesManager;
+
+	/**
+	 * @param EventBusFactory $eventBusFactory
+	 * @param PageLookup $pageLookup
+	 * @param PageRerenderSerializer $pageRerenderSerializer
+	 * @param DeferredUpdatesManager $deferredUpdatesManager
+	 */
+	public function __construct(
+		EventBusFactory $eventBusFactory,
+		PageLookup $pageLookup,
+		PageRerenderSerializer $pageRerenderSerializer,
+		DeferredUpdatesManager $deferredUpdatesManager,
+		int $maxStateSize = 512
+	) {
+		parent::__construct( $maxStateSize );
+		$this->eventBusFactory = $eventBusFactory;
+		$this->pageLookup = $pageLookup;
+		$this->pageRerenderSerializer = $pageRerenderSerializer;
+		$this->deferredUpdatesManager = $deferredUpdatesManager;
+	}
+
+	/**
+	 * @param ConfigFactory $configFactory
+	 * @param Config $mainConfig
+	 * @param GlobalIdGenerator $globalIdGenerator
+	 * @param TitleFormatter $titleFormatter
+	 * @param PageLookup $pageLookup
+	 * @param DeferredUpdatesManager $deferredUpdatesManager
+	 * @param EventBusFactory|null $eventBusFactory
+	 * @return EventBridge
+	 */
+	public static function factory(
+		ConfigFactory $configFactory,
+		\Config $mainConfig,
+		GlobalIdGenerator $globalIdGenerator,
+		TitleFormatter $titleFormatter,
+		PageLookup $pageLookup,
+		DeferredUpdatesManager $deferredUpdatesManager,
+		$eventBusFactory = null
+	): EventBridge {
+		$config = $configFactory->makeConfig( "CirrusSearch" );
+		'@phan-var \CirrusSearch\SearchConfig $config';
+		if ( $eventBusFactory !== null && $config->get( 'CirrusSearchUseEventBusBridge' ) ) {
+			$pageRerenderSerializer = new PageRerenderSerializer( $mainConfig, $titleFormatter,
+				$config, $globalIdGenerator );
+			return new self( $eventBusFactory, $pageLookup, $pageRerenderSerializer, $deferredUpdatesManager );
+		}
+		return new class() implements EventBridge {
+			/**
+			 * @inheritDoc
+			 */
+			public function onLinksUpdateComplete( $linksUpdate, $ticket ) {
+			}
+		};
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function onLinksUpdateComplete( $linksUpdate, $ticket ) {
+		$this->deferredUpdatesManager->addCallableUpdate( function () use ( $linksUpdate ) {
+			if ( $this->isPageChange( $linksUpdate->getPageId() ) ) {
+				// Page changes are handled via the page-change stream
+				return;
+			}
+			$page = $this->pageLookup->getPageById( $linksUpdate->getPageId() );
+			if ( $page === null ) {
+				// the page no longer exists
+				return;
+			}
+			if ( $page->isRedirect() ) {
+				// We are not really interested in redirects at this point
+				// since we would ultimately refresh the target of this redirect we assume
+				// that a LinksUpdate for the redirect does not imply that the target page has
+				// to re-render as well.
+				return;
+			}
+			$event = $this->pageRerenderSerializer->eventDataForPage( $page,
+				PageRerenderSerializer::LINKS_UPDATE_REASON, \WebRequest::getRequestId() );
+			// Fire and forget, we do not check the return value, problems should be already logged by
+			// EventBus
+			$this->eventBusFactory
+				->getInstanceForStream( $event['meta']['stream'] )
+				->send( [ $event ] );
+		} );
+	}
+}

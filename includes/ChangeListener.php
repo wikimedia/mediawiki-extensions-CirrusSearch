@@ -109,10 +109,11 @@ class ChangeListener implements
 		}
 
 		// We want to populate the prioritized queue with updates that reflect a change to the page
-		// itself. We identify those using the following heuristics:
-		// - LinksUpdate::isRecursive is true
-		// - LinksUpdate::getCauseAction is not api-purge
-		if ( $linksUpdate->isRecursive() && $linksUpdate->getCauseAction() !== 'api-purge' ) {
+		// itself. We identify those by checking if causeAction is 'edit-page'.
+		// This might exclude few corner cases like Special:Import and Special:FileImport
+		// But we prefer to not treat those as prioritized as they possibly trigger on old revisions
+		// messing up how lag is reported.
+		if ( $linksUpdate->getCauseAction() === 'edit-page' ) {
 			$job = LinksUpdate::newPageChangeUpdate(
 				$linksUpdate->getTitle(),
 				$linksUpdate->getRevisionRecord(),
@@ -333,5 +334,4 @@ class ChangeListener implements
 			new Job\DeleteArchive( $title, [ 'docIds' => $restoredPages ] )
 		);
 	}
-
 }

@@ -143,6 +143,8 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 		$page = $this->createMock( WikiPage::class );
 		$page->method( 'getTitle' )
 			->willReturn( $title );
+		$page->method( 'getTouched' )
+			->willReturn( '20230102110000' );
 		$page->method( 'getContentHandler' )
 			->willReturn( $contentHandler );
 		$page->method( 'getContent' )
@@ -151,6 +153,8 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 			->willReturn( 2 );
 
 		$revision = $this->createMock( RevisionRecord::class );
+		$revision->method( 'getId' )
+			->willReturn( 12 );
 		$revision->method( 'getContent' )->willReturn( new \WikitextContent( 'TEST_CONTENT' ) );
 		$page->method( 'getRevisionRecord' )
 			->willReturn( $revision );

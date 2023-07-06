@@ -3,7 +3,6 @@
 namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\CirrusSearch;
-use CirrusSearch\Job\ElasticaDocumentsJsonSerde;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
@@ -49,27 +48,7 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 	 */
 	public function finalize( Document $doc, Title $title, RevisionRecord $revision ): void {
 		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
-		// TODO: If parserCache is null here then we will parse for every
-		// cluster and every retry.  Maybe instead of forcing a parse, we could
-		// force a parser cache update during self::initialize?
-
-		$wanCache = MediaWikiServices::getInstance()->getMainWANObjectCache();
-		$serde = new ElasticaDocumentsJsonSerde();
-		$cacheKey = $wanCache->makeKey(
-			'CirrusSearchParserOutputPageProperties',
-			$page->getId(),
-			$revision->getId(),
-			$page->getTouched()
-		);
-		$cacheData = $wanCache->getWithSetCallback(
-			$cacheKey,
-			ExpirationAwareness::TTL_HOUR * 6,
-			function () use ( $doc, $page, $revision, $serde ) {
-				$this->finalizeReal( $doc, $page, new CirrusSearch, $revision );
-				return $serde->serializeOne( $doc );
-			}
-		);
-		$serde->deserializeOne( $cacheData, $doc );
+		$this->finalizeReal( $doc, $page, new CirrusSearch, $revision );
 	}
 
 	/**
@@ -87,20 +66,36 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 		CirrusSearch $engine,
 		RevisionRecord $revision
 	): void {
-		$contentHandler = $page->getContentHandler();
-		// TODO: Should see if we can change content handler api to avoid
-		// the WikiPage god object, but currently parser cache is still
-		// tied to WikiPage as well.
-		$output = $contentHandler->getParserOutputForIndexing( $page, null, $revision );
+		$wanCache = MediaWikiServices::getInstance()->getMainWANObjectCache();
+		$cacheKey = $wanCache->makeKey(
+			'CirrusSearchParserOutputPageProperties',
+			$page->getId(),
+			$revision->getId(),
+			$page->getTouched(),
+			'v2'
+		);
 
-		if ( !$output ) {
-			throw new BuildDocumentException( "ParserOutput cannot be obtained." );
-		}
+		$fieldContent = $wanCache->getWithSetCallback(
+			$cacheKey,
+			ExpirationAwareness::TTL_HOUR * 6,
+			function () use ( $page, $revision, $engine ) {
+				$contentHandler = $page->getContentHandler();
+				// TODO: Should see if we can change content handler api to avoid
+				// the WikiPage god object, but currently parser cache is still
+				// tied to WikiPage as well.
+				$output = $contentHandler->getParserOutputForIndexing( $page, null, $revision );
 
-		$fieldDefinitions = $engine->getSearchIndexFields();
-		$fieldContent = $contentHandler->getDataForSearchIndex( $page, $output, $engine, $revision );
-		$fieldContent = self::fixAndFlagInvalidUTF8InSource( $fieldContent, $page->getId() );
+				if ( !$output ) {
+					throw new BuildDocumentException( "ParserOutput cannot be obtained." );
+				}
+
+				$fieldContent = $contentHandler->getDataForSearchIndex( $page, $output, $engine, $revision );
+				$fieldContent['display_title'] = self::extractDisplayTitle( $page->getTitle(), $output );
+				return self::fixAndFlagInvalidUTF8InSource( $fieldContent, $page->getId() );
+			}
+		);
 		$fieldContent = $this->truncateFileContent( $fieldContent );
+		$fieldDefinitions = $engine->getSearchIndexFields();
 		foreach ( $fieldContent as $field => $fieldData ) {
 			$doc->set( $field, $fieldData );
 			if ( isset( $fieldDefinitions[$field] ) ) {
@@ -108,8 +103,6 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 				CirrusIndexField::addIndexingHints( $doc, $field, $hints );
 			}
 		}
-
-		$doc->set( 'display_title', self::extractDisplayTitle( $page->getTitle(), $output ) );
 	}
 
 	/**

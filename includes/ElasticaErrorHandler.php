@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use Elastica\Exception\Bulk\ResponseException as BulkResponseException;
+use Elastica\Exception\Connection\HttpException;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
 use MediaWiki\Logger\LoggerFactory;
@@ -49,6 +50,11 @@ class ElasticaErrorHandler {
 				'reason' => $exception->getMessage(),
 				'actionReasons' => $actionReasons,
 			];
+		} elseif ( $exception instanceof HttpException ) {
+			return [
+				'type' => 'http_exception',
+				'reason' => $exception->getMessage()
+			];
 		} elseif ( !( $exception instanceof ResponseException ) ) {
 			// simulate the basic full error structure
 			return [
@@ -87,14 +93,18 @@ class ElasticaErrorHandler {
 			// response wasnt json or didn't contain 'error' key
 			// in this case elastica reports nothing.
 			$data = $response->getData();
-			$reason = 'Status code ' . $response->getStatus();
+			$parts = [];
+			if ( $response->getStatus() !== null ) {
+				$parts[] = 'Status code ' . $response->getStatus();
+			}
 			if ( isset( $data['message'] ) ) {
 				// Client puts non-json responses here
-				$reason .= "; " . substr( $data['message'], 0, 200 );
+				$parts[] = substr( $data['message'], 0, 200 );
 			} elseif ( is_string( $data ) && $data !== "" ) {
 				// pre-6.0.3 versions of Elastica
-				$reason .= "; " . substr( $data, 0, 200 );
+				$parts[] = substr( $data, 0, 200 );
 			}
+			$reason = implode( "; ", $parts );
 
 			$error = [
 				'type' => 'unknown',
@@ -150,12 +160,13 @@ class ElasticaErrorHandler {
 					'^null_pointer_exception$',
 					'^elasticsearch_timeout_exception$',
 					'^retry_on_primary_exception$',
+					// These are exceptions thrown by elastica itself
+					// (generally connectivity issues in cURL)
+					'^http_exception$',
 				],
 				'msg_regexes' => [
-					// These are exceptions thrown by elastica itself
-					'^Couldn\'t connect to host',
+					// ClientException thrown by Elastica
 					'^No enabled connection',
-					'^Operation timed out',
 					// These are problems raised by the http intermediary layers (nginx/envoy)
 					'^Status code 503',
 					'^\Qupstream connect error or disconnect/reset\E',

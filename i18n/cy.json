@@ -10,6 +10,7 @@
 	"cirrussearch-ignored-headings": " #<!-- cadwch y llinell hwn fel ag y mae --> <pre>\n# Penawdau a gaiff eu hanwybyddu gan Chwilio.\n# Bydd newidiadau yn digwydd cyn gynted ag y bydd y pennawd wedi cael ei fynegeio.\n# Gallwch gorfodi ail-fynegeio tudalen trwy wneud \"dim golygiad\".\n# Dyma'r gystrawen:\n#   * Mae popeth o'r nod \"#\" i ddiwedd y llinell yn sylw.\n#   * Mae pob llinell nad yw'n wag yw'r union deitl i'w hanwybyddu, cas a phopeth.\nCyfeiriadau\nDolenni allanol\nGweler hefyd\n #<!-- cadwch y llinell hwn fel ag y mae --> <pre>",
 	"cirrussearch-pref-label": "Chwiliad newydd",
 	"cirrussearch-give-feedback": "Rhowch eich adborth i ni",
+	"prefs-completion": "Cwblhau chwiliadau",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Rhagosodedig (argymhellir)",
 	"cirrussearch-completion-profile-strict-pref-name": "Modd llym (uwch)",
 	"cirrussearch-explore-similar-related": "Perthnasol",

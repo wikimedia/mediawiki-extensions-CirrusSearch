@@ -138,30 +138,14 @@
                     }
                 },
                 "highlight_query": {
-                    "query_string": {
-                        "allow_leading_wildcard": true,
+                    "simple_query_string": {
                         "default_operator": "AND",
                         "fields": [
-                            "auxiliary_text.plain^0.5",
-                            "auxiliary_text^0.25",
-                            "category.plain^8",
-                            "category^4",
-                            "heading.plain^5",
-                            "heading^2.5",
-                            "opening_text.plain^3",
-                            "opening_text^1.5",
-                            "redirect.title.plain^15",
-                            "redirect.title^7.5",
-                            "text.plain^1",
-                            "text^0.5",
-                            "title.plain^20",
-                            "title^10"
+                            "all.plain^1",
+                            "all^0.5"
                         ],
-                        "fuzzy_prefix_length": 2,
-                        "max_determinized_states": 500,
-                        "phrase_slop": 1,
-                        "query": "catapult \\|\\|",
-                        "rewrite": "top_terms_boost_1024"
+                        "flags": "OR|AND",
+                        "query": "catapult \\|\\|"
                     }
                 },
                 "post_tags": [
@@ -185,30 +169,16 @@
                             }
                         }
                     ],
-                    "minimum_should_match": 1,
-                    "should": [
+                    "must": [
                         {
-                            "multi_match": {
-                                "fields": [
-                                    "all_near_match.asciifolding^1.5",
-                                    "all_near_match^2"
-                                ],
-                                "query": "catapult ||"
-                            }
-                        },
-                        {
-                            "query_string": {
-                                "allow_leading_wildcard": true,
+                            "simple_query_string": {
                                 "default_operator": "AND",
                                 "fields": [
                                     "all.plain^1",
                                     "all^0.5"
                                 ],
-                                "fuzzy_prefix_length": 2,
-                                "max_determinized_states": 500,
-                                "phrase_slop": 0,
-                                "query": "catapult \\|\\|",
-                                "rewrite": "top_terms_boost_1024"
+                                "flags": "OR|AND",
+                                "query": "catapult \\|\\|"
                             }
                         }
                     ]
@@ -291,6 +261,7 @@
             ],
             "size": 21,
             "stats": [
+                "degraded_full_text",
                 "full_text",
                 "full_text_querystring",
                 "simple_bag_of_words",

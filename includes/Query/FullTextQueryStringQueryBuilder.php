@@ -270,11 +270,15 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		);
 
 		$searchContext->addSyntaxUsed( 'degraded_full_text' );
-		$searchContext->setMainQuery( new \Elastica\Query\Simple( [ 'simple_query_string' => [
+		$simpleQuery = new \Elastica\Query\Simple( [ 'simple_query_string' => [
 			'fields' => $fields,
 			'query' => $this->queryStringQueryString,
 			'default_operator' => 'AND',
-		] ] ) );
+			// Disable all costly operators
+			'flags' => 'OR|AND'
+		] ] );
+		$searchContext->setMainQuery( $simpleQuery );
+		$searchContext->setHighlightQuery( $simpleQuery );
 
 		return true;
 	}

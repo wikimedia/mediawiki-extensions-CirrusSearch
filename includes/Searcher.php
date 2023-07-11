@@ -307,6 +307,22 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 
 		$qb->build( $this->searchContext, $term );
 
+		if ( $this->searchContext->getSearchQuery() !== null ) {
+			$degradeOnParseWarnings = [
+				// && test, test AND && test
+				'cirrussearch-parse-error-unexpected-token',
+				// test AND
+				'cirrussearch-parse-error-unexpected-end'
+			];
+			// Quick hack to avoid sending bad queries to the backend
+			foreach ( $this->searchContext->getSearchQuery()->getParsedQuery()->getParseWarnings() as $warning ) {
+				if ( in_array( $warning->getMessage(), $degradeOnParseWarnings ) ) {
+					$qb->buildDegraded( $this->searchContext );
+					return $qb;
+				}
+			}
+		}
+
 		return $qb;
 	}
 

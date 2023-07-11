@@ -36,3 +36,11 @@ Feature: Searches with boolean operators
   | catapult \|\| "África" |
   | "África" OR catapult   |
   | "África" \|\| catapult |
+
+  Scenario Outline: Invalid boolean constructs shows a warning
+    When I api search for <query>
+    Then Amazing Catapult is in the api search results
+ Examples:
+  |          query         |
+  | catapult AND OR amazing|
+  | && amazing catapult    |

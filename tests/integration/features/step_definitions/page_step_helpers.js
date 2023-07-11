@@ -178,6 +178,26 @@ class StepHelpers {
 		} ).call( this );
 	}
 
+	wikibaseSearchFor( query, options = {} ) {
+		return Promise.coroutine( function* () {
+			const client = yield this.apiPromise;
+
+			try {
+				const response = yield client.request( Object.assign( options, {
+					action: 'query',
+					generator: 'search',
+					gsrsearch: query,
+					prop: 'entityterms',
+					format: 'json',
+					formatversion: 2
+				} ) );
+				this.world.setApiResponse( response );
+			} catch ( err ) {
+				this.world.setApiError( err );
+			}
+		} ).call( this );
+	}
+
 	waitForDocument( title, check ) {
 		return Promise.coroutine( function* () {
 			const timeoutMs = 20000;

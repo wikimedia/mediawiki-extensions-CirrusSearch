@@ -100,6 +100,11 @@ function World( { attach, parameters } ) {
 			return apiClients[ wiki ];
 		}
 
+		if ( !this.config.wikis[ wiki ] ) {
+			const available = Object.keys( this.config.wikis ).join( ', ' );
+			throw new Error( `In "World.onWiki(wiki)" wiki is not found: wiki=${wiki}; available=${available}` );
+		}
+
 		const w = this.config.wikis[ wiki ];
 		const client = new Bot();
 		client.setOptions( {

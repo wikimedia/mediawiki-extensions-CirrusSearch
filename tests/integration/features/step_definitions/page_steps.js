@@ -17,6 +17,8 @@ const { defineParameterType, Given, When, Then } = require( '@cucumber/cucumber'
 	querystring = require( 'querystring' ),
 	Promise = require( 'bluebird' );
 
+const namedPositions = [ 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth', 'ninth', 'tenth' ];
+
 // Attach extra information to assertion errors about what api call triggered the problem
 function withApi( world, fn ) {
 	try {
@@ -122,7 +124,7 @@ When( /^I get api suggestions for (.+?)(?: using the (.+) profile)?(?: on namesp
 
 Then( /^(.+) is the (.+) api suggestion$/, function ( title, position ) {
 	return withApi( this, () => {
-		const pos = [ 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth', 'ninth', 'tenth' ].indexOf( position );
+		const pos = namedPositions.indexOf( position );
 		if ( title === 'none' ) {
 			if ( this.apiError && pos === 1 ) {
 				// TODO: Why 1? maybe 0?
@@ -173,7 +175,7 @@ Then( /^I get api near matches for (.+)$/, function ( search ) {
 
 function checkApiSearchResultStep( title, in_ok, indexes ) {
 	indexes = indexes.split( ' or ' ).map( ( index ) => {
-		return 'first second third fourth fifth sixth seventh eighth ninth tenth'.split( ' ' ).indexOf( index );
+		return namedPositions.indexOf( index );
 	} );
 	if ( title === 'none' ) {
 		expect( this.apiResponse.query.search ).to.have.lengthOf.below( 1 + Math.min.apply( null, indexes ) );
@@ -220,26 +222,32 @@ Then( /^(.+) is( not)? part of the api search result$/, function ( title, not_se
 	} );
 } );
 
-When( /^I api search( with rewrites enabled)?(?: with query independent profile ([^ ]+))?(?: with offset (\d+))?(?: in the (.+) language)?(?: in namespaces? (\d+(?: \d+)*))?(?: on ([a-z]+))? for (.+)$/, function ( enableRewrites, qiprofile, offset, lang, namespaces, wiki, search ) {
-	const options = {
-		srnamespace: ( namespaces || '0' ).split( ' ' ).join( ',' ),
-		srenablerewrites: enableRewrites ? 1 : 0
-	};
+When( /^I api search( for entities)?( with rewrites enabled)?(?: with query independent profile ([^ ]+))?(?: with offset (\d+))?(?: in the (.+) language)?(?: in namespaces? (\d+(?: \d+)*))?(?: on ([a-z]+))? for (.+)$/, function ( forEntities, enableRewrites, qiprofile, offset, lang, namespaces, wiki, search ) {
+	// Entity search uses a generator
+	const prefix = forEntities ? 'gsr' : 'sr';
+	const options = {};
+	options[ prefix + 'namespace' ] = ( namespaces || '0' ).split( ' ' ).join( ',' );
+	options[ prefix + 'enablerewrites' ] = enableRewrites ? 1 : 0;
 	if ( offset ) {
-		options.sroffset = offset;
+		options[ prefix + 'offset' ] = offset;
 	}
 	if ( lang ) {
 		options.uselang = lang;
 	}
 	if ( qiprofile ) {
-		options.srqiprofile = qiprofile;
+		options[ prefix + 'qiprofile' ] = qiprofile;
 	}
 
 	let stepHelpers = this.stepHelpers;
 	if ( wiki ) {
 		stepHelpers = this.stepHelpers.onWiki( wiki );
 	}
-	return stepHelpers.searchFor( search, options );
+
+	// It seems in theory stepHelpers.onWiki() could return something where
+	// searchFor just does the right thing, but it would accept different
+	// options and return results in a different format.
+	const action = forEntities ? stepHelpers.wikibaseSearchFor : stepHelpers.searchFor;
+	return action.call( stepHelpers, search, options );
 } );
 
 Then( /^there are no errors reported by the api$/, function () {
@@ -313,7 +321,7 @@ Then( /^(.+?)(?: or (.+))? is the did you mean suggestion from the api$/, functi
 
 Then( /^(.+) is( in)? the highlighted (.+) of the (.+) api search result$/, function ( expected, in_ok, key, index ) {
 	withApi( this, () => {
-		const position = 'first second third fourth fifth sixth seventh eighth ninth tenth'.split( ' ' ).indexOf( index );
+		const position = namedPositions.indexOf( index );
 		expect( this.apiResponse.query.search ).to.have.lengthOf.gt( position );
 
 		if ( key === 'title' && expected.includes( '*' ) ) {
@@ -583,4 +591,38 @@ Then( /^A valid query dump for (.+) is produced$/, function ( query ) {
 		expect( this.apiResponse.__main__.description ).to.equal(
 			`full_text search for '${query}'` );
 	} );
+} );
+
+When( /^I wbsearchentities on (.+) for (.+)/, function ( wiki, query ) {
+	return Promise.coroutine( function* () {
+		const client = yield this.onWiki( wiki );
+		try {
+			const response = yield client.request( {
+				action: 'wbsearchentities',
+				search: query,
+				language: 'en',
+				format: 'json',
+				formatversion: 2
+			} );
+			this.setApiResponse( response );
+		} catch ( err ) {
+			this.setApiError( err );
+		}
+	} ).call( this );
+} );
+
+Then( /^(.+) is the label of the (.+) wbsearchentities result/, function ( label, position ) {
+	const pos = namedPositions.indexOf( position );
+	expect( this.apiError ).to.equal( undefined );
+	expect( this.apiResponse ).to.be.an( 'object' );
+	expect( this.apiResponse.search ).to.have.lengthOf.at.least( pos );
+	expect( this.apiResponse.search[ pos ].display.label.value ).to.equal( label );
+} );
+
+Then( /^(.+) is the (.+) api entity search result/, function ( label, position ) {
+	const pos = namedPositions.indexOf( position );
+	expect( this.apiError ).to.equal( undefined );
+	expect( this.apiResponse ).to.be.an( 'object' );
+	expect( this.apiResponse.query.pages ).to.have.lengthOf.at.least( pos );
+	expect( this.apiResponse.query.pages[ pos ].entityterms.label[ 0 ] ).to.equal( label );
 } );

@@ -29,6 +29,10 @@ exports.config = merge( wdioConf.config, {
 		ru: {
 			apiUrl: 'http://ruwiki.mediawiki.mwdd:8080/w/api.php',
 			baseUrl: 'http://ruwiki.mediawiki.mwdd:8080'
+		},
+		wikidata: {
+			apiUrl: 'http://wikidatawiki.mediawiki.mwdd:8080/w/api.php',
+			baseUrl: 'http://wikidatawiki.mediawiki.mwdd:8080'
 		}
 	}
 // overwrite so new reporters override previous instead of merging into combined reporters

@@ -655,6 +655,29 @@ BeforeOnce( { tags: '@geo' }, runBatchFn( {
 	}
 } ) );
 
+BeforeOnce( { tags: '@wbcs' }, Promise.coroutine( function* () {
+	// This could all be generalized, but for now we need a single entity
+	// to exist that we can search for.
+	const wiki = 'wikidata';
+	const client = yield this.onWiki( wiki );
+	const response = yield client.request( {
+		action: 'wbeditentity',
+		new: 'item',
+		data: JSON.stringify( {
+			labels: {
+				en: {
+					language: 'en',
+					value: 'Universe'
+				}
+			}
+		} ),
+		token: client.editToken
+	} );
+	const title = 'Item:' + response.entity.id;
+	const revId = response.entity.lastrevid;
+	yield this.stepHelpers.onWiki( wiki ).waitForOperation( 'edit', title, null, revId );
+} ) );
+
 // This needs to be the *last* hook added. That gives us some hope that everything
 // else is inside elasticsearch by the time cirrus-suggest-index runs and builds
 // the completion suggester

@@ -375,6 +375,12 @@ BeforeOnce( { tags: '@programmer_friendly' }, runBatchFn( {
 	}
 } ) );
 
+BeforeOnce( { tags: '@acronym_fixer' }, runBatchFn( {
+	edit: {
+		PageWithAcronyms: articleText( 'acronym_fixer.txt' )
+	}
+} ) );
+
 BeforeOnce( { tags: '@stemmer' }, runBatchFn( {
 	edit: {
 		'StemmerTest Aliases': 'StemmerTest Aliases',

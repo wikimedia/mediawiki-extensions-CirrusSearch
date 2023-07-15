@@ -7,7 +7,10 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "dotted_I_fix"
+                "dotted_I_fix",
+                "armenian_charfilter",
+                "acronym_fixer",
+                "word_break_helper"
             ],
             "filter": [
                 "homoglyph_norm",
@@ -182,7 +185,10 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "dotted_I_fix"
+                "dotted_I_fix",
+                "armenian_charfilter",
+                "acronym_fixer",
+                "word_break_helper"
             ],
             "filter": [
                 "homoglyph_norm",
@@ -285,6 +291,11 @@
             "pattern": "(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})",
             "replacement": " $1"
         },
+        "acronym_fixer": {
+            "type": "pattern_replace",
+            "pattern": "(?<=(?:^|\\P{L})\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
+            "replacement": "$1"
+        },
         "apostrophe_norm": {
             "type": "mapping",
             "mappings": [
@@ -313,9 +324,13 @@
             "type": "mapping",
             "mappings": [
                 "_=>\\u0020",
+                ":=>\\u0020",
                 ".=>\\u0020",
                 "(=>\\u0020",
-                ")=>\\u0020"
+                ")=>\\u0020",
+                "\uff0e=>\\u0020",
+                "\uff3f=>\\u0020",
+                "\uff1a=>\\u0020"
             ]
         },
         "word_break_helper_source_text": {
@@ -332,6 +347,12 @@
             "type": "mapping",
             "mappings": [
                 "\u0130=>I"
+            ]
+        },
+        "armenian_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\u2024=>."
             ]
         }
     }

@@ -92,12 +92,6 @@ class AnalyzerBuilder {
 	/** @var string */
 	private $dottedIFix = 'dotted_I_fix';
 
-	/** @var string|null */
-	private $wordBreakHelper;
-
-	/** @var string|null */
-	private $aggressiveSplitting;
-
 	/** @var bool */
 	private $useStemmer = true;
 
@@ -245,20 +239,6 @@ class AnalyzerBuilder {
 	}
 
 	/** @return self */
-	public function withWordBreakHelper(): self {
-		$this->unpackedCheck();
-		$this->wordBreakHelper = 'word_break_helper';
-		return $this;
-	}
-
-	/** @return self */
-	public function withAggressiveSplitting(): self {
-		$this->unpackedCheck();
-		$this->aggressiveSplitting = 'aggressive_splitting';
-		return $this;
-	}
-
-	/** @return self */
 	public function withLightStemmer(): self {
 		$this->unpackedCheck();
 		$this->stemmerName = "light_{$this->langName}";
@@ -325,7 +305,7 @@ class AnalyzerBuilder {
 			//
 			// type: custom
 			// tokenizer: standard
-			// char_filter: dotted_I_fix, lang_charfilter, lang_numbers, word_break_helper
+			// char_filter: dotted_I_fix, lang_charfilter, lang_numbers
 			// filter: elision, aggressive_splitting, lowercase, stopwords, lang_norm,
 			//         stemmer_override, stemmer, asciifolding, remove_empty
 			if ( $this->useStemmer ) {
@@ -339,14 +319,12 @@ class AnalyzerBuilder {
 			$this->charFilters[] = $this->dottedIFix;
 			$this->charFilters[] = $this->charMapName;
 			$this->charFilters[] = $this->numCharMapName;
-			$this->charFilters[] = $this->wordBreakHelper;
 
 			// remove 'falsey' (== not configured) values from the list
 			$this->charFilters = array_values( array_filter( $this->charFilters ) );
 
 			// build up the filter list--lowercase, stop, and stem are required
 			$this->filters[] = $this->elisionName;
-			$this->filters[] = $this->aggressiveSplitting;
 			$this->filters[] = 'lowercase';
 			$this->filters[] = $this->decimalDigit;
 			$this->filters[] = $this->stopName;

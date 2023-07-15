@@ -62,6 +62,7 @@ class AnalysisConfigBuilder {
 	 * @var SearchConfig cirrus config
 	 */
 	protected $config;
+
 	/**
 	 * @var string[]
 	 */
@@ -476,7 +477,7 @@ class AnalysisConfigBuilder {
 					// The difference between this and the 'standard'
 					// analyzer is the lack of english stop words.
 					'type' => 'custom',
-					'char_filter' => [ 'word_break_helper' ],
+					'char_filter' => [ 'nnbsp_norm', 'word_break_helper' ],
 					'tokenizer' => 'standard',
 					'filter' => [ 'lowercase' ],
 				],
@@ -485,7 +486,7 @@ class AnalysisConfigBuilder {
 					// squashing to allow searches with accents to only find accents
 					// and searches without accents to find both.
 					'type' => 'custom',
-					'char_filter' => [ 'word_break_helper' ],
+					'char_filter' => [ 'nnbsp_norm', 'word_break_helper' ],
 					'tokenizer' => 'standard',
 					'filter' => [ 'lowercase' ],
 				],
@@ -655,6 +656,15 @@ class AnalysisConfigBuilder {
 					'pattern' => '(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})',
 					'replacement' => ' $1'
 				],
+				// remove dots from letter-dot-letter-dot-letter... sequences
+				// Letters are {L} with optional combining marks {M} or invisibles {Cf}
+				// Acronym boundaries are non-letters {L} or string boundaries (so we don't
+				// remove dots from web domains, for example)
+				'acronym_fixer' => [
+					'type' => 'pattern_replace',
+					'pattern' => '(?<=(?:^|\\P{L})\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.．]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)',
+					'replacement' => '$1'
+				],
 				// map lots of apostrophe-like characters to apostrophe (T315118)
 				'apostrophe_norm' => [
 					'type' => 'mapping',
@@ -686,10 +696,15 @@ class AnalysisConfigBuilder {
 					'type' => 'mapping',
 					'mappings' => [
 						'_=>\u0020',
+						':=>\u0020',
 						// These are more useful for code:
 						'.=>\u0020',
 						'(=>\u0020',
 						')=>\u0020',
+						// fullwidth variants
+						'．=>\u0020',
+						'＿=>\u0020',
+						'：=>\u0020',
 					],
 				],
 				'word_break_helper_source_text' => [
@@ -798,11 +813,14 @@ class AnalysisConfigBuilder {
 				build( $config );
 			break;
 		case 'armenian':  // Unpack Armenian analyzer T325089
+			// Armenian uses ․ ("one-dot leader") about 10% as often as . (period)
+			$hyCharMap = [ '․=>.' ];
 			// stopwords նաև & և get normalized to նաեւ & եւ, so pick those up, too.
 			$config[ 'filter' ][ 'armenian_norm_stop' ] =
 				AnalyzerBuilder::stopFilterFromList( [ 'նաեւ', 'եւ' ] );
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
+				withCharMap( $hyCharMap )->
 				insertFiltersBefore( 'armenian_stop', [ 'armenian_norm_stop' ] )->
 				build( $config );
 			break;
@@ -915,7 +933,7 @@ class AnalysisConfigBuilder {
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142037
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
-				'char_filter' => [ 'word_break_helper', 'kana_map' ],
+				'char_filter' => [ 'kana_map' ],
 				'tokenizer' => 'standard',
 				'filter' => [ 'possessive_english', 'lowercase', 'stop', 'asciifolding',
 					'kstem', 'custom_stem' ],
@@ -1022,7 +1040,6 @@ class AnalysisConfigBuilder {
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
 				omitDottedI()->
-				withWordBreakHelper()->
 				withElision( $itElision )->
 				withLightStemmer()->
 				build( $config );
@@ -1584,45 +1601,13 @@ class AnalysisConfigBuilder {
 	public function enableGlobalCustomFilters( array $config, string $language ) {
 		foreach ( $this->globalCustomFilters as $gcf => $gcfInfo ) {
 			if ( $gcfInfo->filterIsUsable( $language, $this->plugins ) ) {
-				foreach ( $gcfInfo->applyTo as $analyzer ) {
-					$config = $this->insertGlobalCustomFilter( $config, $analyzer,
+				foreach ( $gcfInfo->getApplyToAnalyzers() as $analyzer ) {
+					$config = $gcfInfo->insertGlobalCustomFilter( $config, $analyzer,
 						$gcf, $gcfInfo );
 				}
 			}
 		}
 
-		return $config;
-	}
-
-	/**
-	 * insert one of the global custom filters into the right spot in the analysis chain
-	 * @param mixed[] $config the analysis config we are modifying
-	 * @param string $analyzer the specifc analyzer we are modifying
-	 * @param string $filterName filter to add
-	 * @param GlobalCustomFilter $filterInfo includes filter type & incompatible filters
-	 * @return mixed[] updated config
-	 */
-	private function insertGlobalCustomFilter( array $config, string $analyzer,
-		string $filterName, GlobalCustomFilter $filterInfo ) {
-		if ( !array_key_exists( $analyzer, $config['analyzer'] ) ) {
-			return $config;
-		}
-
-		if ( $config['analyzer'][$analyzer]['type'] == 'custom' ) {
-			$filters = $config['analyzer'][$analyzer][$filterInfo->type] ?? [];
-
-			$lastBadFilter = -1;
-			foreach ( $filterInfo->incompatibleFilters as $badFilter ) {
-				$badFilterIdx = array_keys( $filters, $badFilter );
-				$badFilterIdx = end( $badFilterIdx );
-				if ( $badFilterIdx !== false && $badFilterIdx > $lastBadFilter ) {
-					$lastBadFilter = $badFilterIdx;
-				}
-			}
-			array_splice( $filters, $lastBadFilter + 1, 0, $filterName );
-
-			$config['analyzer'][$analyzer][$filterInfo->type] = $filters;
-		}
 		return $config;
 	}
 
@@ -1808,12 +1793,19 @@ class AnalysisConfigBuilder {
 	 */
 	private static function buildGlobalCustomFilters(): array {
 		$gcf = [
-			'homoglyph_norm' => new GlobalCustomFilter( 'filter',
-				[ 'extra-analysis-homoglyph' ], [ 'aggressive_splitting' ] ),
-			'nnbsp_norm' => new GlobalCustomFilter( 'char_filter', [], [],
-				[ 'text', 'text_search', 'plain', 'plain_search' ] ),
+			// char filters
+			'nnbsp_norm' => new GlobalCustomFilter( 'char_filter' ),
 			'apostrophe_norm' => new GlobalCustomFilter( 'char_filter' ),
 			'split_camelCase' => new GlobalCustomFilter( 'char_filter' ),
+			'acronym_fixer' => ( new GlobalCustomFilter( 'char_filter' ) )->
+				setMustFollowFilters( [ 'armenian_charfilter' ] ),
+			'word_break_helper' => ( new GlobalCustomFilter( 'char_filter' ) )->
+				setMustFollowFilters( [ 'acronym_fixer', 'armenian_charfilter' ] )->
+				setDenyList( [ 'ko', 'zh' ] ),
+			// filters
+			'homoglyph_norm' => ( new GlobalCustomFilter( 'filter' ) )->
+				setRequiredPlugins( [ 'extra-analysis-homoglyph' ] )->
+				setMustFollowFilters( [ 'aggressive_splitting' ] ),
 		];
 		// reverse the array so that items are ordered (approximately, modulo incompatible
 		// filters) in the order specified here

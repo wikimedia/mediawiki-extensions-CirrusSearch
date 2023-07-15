@@ -1,0 +1,42 @@
+=== Acronyms with internal periods ===
+
+n.a.s.a.
+U.S.S.R
+פ.צ.
+  \_ (Hebrew F.C.)
+
+=== Acronyms without internal periods ===
+
+IBM.
+asap
+մթա (Armenian B.C.E)
+
+=== Multi-codepoint acronyms ===
+
+সি.ও.পি.ডি. (Bengali C.O.P.D.)
+អេ.ភី. (Khmer A.P.)
+બીબીસી (Gujarati BBC)
+ఎంఐటి (Telugu MIT)
+హెచ్‌.ఐ.వీ (Telugu H.I.V., with zero width joiner)
+
+=== Names with intials with periods ===
+
+J.R.R.Tolkein
+Д.Р.Р. Толкин
+
+Ю́.В.Про́хоров (Russian Yuri Prokhorov, with diacritic)
+L.M̂. (French CD name, with diacritic)
+
+=== Names with intials without periods ===
+
+MC Escher
+МК Эшер
+
+=== Not acronyms ===
+
+wikipedia.org
+legen...dary
+Ph.D
+B.Sc.
+1.2.3.4.
+A. B. C. D.

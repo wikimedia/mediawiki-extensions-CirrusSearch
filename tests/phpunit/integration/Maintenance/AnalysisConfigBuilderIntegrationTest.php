@@ -111,8 +111,9 @@ class AnalysisConfigBuilderIntegrationTest extends CirrusIntegrationTestCase {
 		// keep things simple and only enable homoglyph_norm for testing
 		// specify badfilter[12] as incompatible
 		$builder->globalCustomFilters = [
-			'homoglyph_norm' => new GlobalCustomFilter( 'filter',
-				[ 'extra-analysis-homoglyph' ], [ 'badfilter1', 'badfilter2' ] ),
+			'homoglyph_norm' => ( new GlobalCustomFilter( 'filter' ) )->
+				setRequiredPlugins( [ 'extra-analysis-homoglyph' ] )->
+				setMustFollowFilters( [ 'badfilter1', 'badfilter2' ] ),
 		];
 
 		$result = $builder->enableGlobalCustomFilters( $input, 'xx' );
@@ -124,8 +125,27 @@ class AnalysisConfigBuilderIntegrationTest extends CirrusIntegrationTestCase {
 			$this->assertFalse( isset( $result[ 'filter' ] ) );
 		}
 
+		// disable homoglyphs for text_search
+		$builder->globalCustomFilters[ 'homoglyph_norm' ]->setApplyToAnalyzers( [ 'text' ] );
+		$this->assertEquals( [ 'text' ],
+			$builder->globalCustomFilters[ 'homoglyph_norm' ]->getApplyToAnalyzers() );
+
+		$result = $builder->enableGlobalCustomFilters( $input, 'xx' );
+		if ( array_key_exists( 'text', $result[ 'analyzer' ] ) ) {
+			$this->assertEquals( $expected[ 'analyzer' ][ 'text' ], $result[ 'analyzer' ][ 'text' ] );
+		}
+		if ( array_key_exists( 'text_search', $result[ 'analyzer' ] ) ) {
+			$this->assertEquals( $input[ 'analyzer' ][ 'text_search' ],
+				$result[ 'analyzer' ][ 'text_search' ] );
+		}
+
+		// re-enable homoglyphs for text & text_search
 		// disable homoglyphs for language 'xx'
-		$builder->globalCustomFilters[ 'homoglyph_norm' ]->denyList = [ 'xx' ];
+		$builder->globalCustomFilters[ 'homoglyph_norm' ]->setApplyToAnalyzers( [ 'text', 'text_search' ] );
+		$this->assertEquals( [ 'text', 'text_search' ],
+			$builder->globalCustomFilters[ 'homoglyph_norm' ]->getApplyToAnalyzers() );
+
+		$builder->globalCustomFilters[ 'homoglyph_norm' ]->setDenyList( [ 'xx' ] );
 		$result = $builder->enableGlobalCustomFilters( $input, 'xx' );
 		$this->assertEquals( $input[ 'analyzer' ], $result[ 'analyzer' ] );
 	}
@@ -851,9 +871,9 @@ class AnalysisConfigBuilderIntegrationTest extends CirrusIntegrationTestCase {
 	}
 
 	public static function provideUnpackedOnlyMethods() {
-		$functionsToTest = [ 'omitAsciifolding', 'omitDottedI', 'withAggressiveSplitting',
-			'withAsciifoldingPreserve', 'withLightStemmer', 'withRemoveEmpty',
-			'withWordBreakHelper' ];
+		$functionsToTest = [ 'omitDottedI', 'withLightStemmer', 'omitStemmer',
+			'withAsciifoldingPreserve', 'omitAsciifolding', 'withRemoveEmpty',
+			'withDecimalDigit' ];
 		foreach ( $functionsToTest as $func ) {
 			yield $func => [ $func ];
 		}
@@ -868,22 +888,22 @@ class AnalysisConfigBuilderIntegrationTest extends CirrusIntegrationTestCase {
 
 		// Should work if called after withUnpackedAnalyzer()
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
-		withUnpackedAnalyzer()->
-		$name()->
-		build( $config );
+			withUnpackedAnalyzer()->
+			$name()->
+			build( $config );
 
 		// Should fail if called before withUnpackedAnalyzer()
 		$this->expectException( \ConfigException::class );
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
-		$name()->
-		withUnpackedAnalyzer()->
-		build( $config );
+			$name()->
+			withUnpackedAnalyzer()->
+			build( $config );
 
 		// Should fail if called without withUnpackedAnalyzer()
 		$this->expectException( \ConfigException::class );
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
-		$name()->
-		build( $config );
+			$name()->
+			build( $config );
 	}
 
 	public function testInsertFiltersBefore() {
@@ -893,42 +913,42 @@ class AnalysisConfigBuilderIntegrationTest extends CirrusIntegrationTestCase {
 
 		// Build up the "expected" analysis chain filters, in a slightly silly way
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
-		withUnpackedAnalyzer()->
-		omitAsciifolding()->
-		insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
-		insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_pre' ] )->
-		insertFiltersBefore( AnalyzerBuilder::APPEND, [ 'xx_post' ] )->
-		insertFiltersBefore( 'xx_pre', [ 'xx_pre_pre' ] )->
-		insertFiltersBefore( 'xx_post', [ 'xx_pre_post' ] )->
-		insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_FIRST' ] )->
-		build( $config );
+			withUnpackedAnalyzer()->
+			omitAsciifolding()->
+			insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
+			insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_pre' ] )->
+			insertFiltersBefore( AnalyzerBuilder::APPEND, [ 'xx_post' ] )->
+			insertFiltersBefore( 'xx_pre', [ 'xx_pre_pre' ] )->
+			insertFiltersBefore( 'xx_post', [ 'xx_pre_post' ] )->
+			insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_FIRST' ] )->
+			build( $config );
 
 		$this->assertEquals( $expected, $config[ 'analyzer' ][ 'text' ][ 'filter' ] );
 
 		// Let's do it again, but in a different way (this is realistic)
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
-		withUnpackedAnalyzer()->
-		omitAsciifolding()->
-		insertFiltersBefore( AnalyzerBuilder::PREPEND,
-			[ 'xx_FIRST', 'xx_pre_pre', 'xx_pre' ] )->
-		insertFiltersBefore( AnalyzerBuilder::APPEND,
-			[ 'xx_pre_post', 'xx_post' ] )->
-		insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
-		build( $config );
+			withUnpackedAnalyzer()->
+			omitAsciifolding()->
+			insertFiltersBefore( AnalyzerBuilder::PREPEND,
+				[ 'xx_FIRST', 'xx_pre_pre', 'xx_pre' ] )->
+			insertFiltersBefore( AnalyzerBuilder::APPEND,
+				[ 'xx_pre_post', 'xx_post' ] )->
+			insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
+			build( $config );
 
 		$this->assertEquals( $expected, $config[ 'analyzer' ][ 'text' ][ 'filter' ] );
 
 		// One more time... all over the place
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
-		withUnpackedAnalyzer()->
-		omitAsciifolding()->
-		insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_pre' ] )->
-		insertFiltersBefore( AnalyzerBuilder::APPEND, [ 'xx_pre_post' ] )->
-		insertFiltersBefore( 'xx_pre', [ 'xx_pre_pre' ] )->
-		insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_FIRST' ] )->
-		insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
-		insertFiltersBefore( AnalyzerBuilder::APPEND, [ 'xx_post' ] )->
-		build( $config );
+			withUnpackedAnalyzer()->
+			omitAsciifolding()->
+			insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_pre' ] )->
+			insertFiltersBefore( AnalyzerBuilder::APPEND, [ 'xx_pre_post' ] )->
+			insertFiltersBefore( 'xx_pre', [ 'xx_pre_pre' ] )->
+			insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_FIRST' ] )->
+			insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
+			insertFiltersBefore( AnalyzerBuilder::APPEND, [ 'xx_post' ] )->
+			build( $config );
 
 		$this->assertEquals( $expected, $config[ 'analyzer' ][ 'text' ][ 'filter' ] );
 	}

@@ -26,7 +26,9 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase"
+                "split_camelCase",
+                "acronym_fixer",
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer"
@@ -38,7 +40,9 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase"
+                "split_camelCase",
+                "acronym_fixer",
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer"
@@ -72,7 +76,9 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase"
+                "split_camelCase",
+                "acronym_fixer",
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer"
@@ -84,7 +90,9 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase"
+                "split_camelCase",
+                "acronym_fixer",
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer"
@@ -118,7 +126,9 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase"
+                "split_camelCase",
+                "acronym_fixer",
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer"
@@ -130,7 +140,9 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase"
+                "split_camelCase",
+                "acronym_fixer",
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer"
@@ -164,7 +176,9 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase"
+                "split_camelCase",
+                "acronym_fixer",
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer"
@@ -176,7 +190,9 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase"
+                "split_camelCase",
+                "acronym_fixer",
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer"
@@ -210,7 +226,9 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase"
+                "split_camelCase",
+                "acronym_fixer",
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer"
@@ -222,7 +240,9 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase"
+                "split_camelCase",
+                "acronym_fixer",
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer"
@@ -232,6 +252,11 @@
         }
     },
     "char_filter": {
+        "acronym_fixer": {
+            "pattern": "(?<=(?:^|\\P{L})\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
+            "replacement": "$1",
+            "type": "pattern_replace"
+        },
         "apostrophe_norm": {
             "mappings": [
                 "`=>'",
@@ -270,9 +295,13 @@
         "word_break_helper": {
             "mappings": [
                 "_=>\\u0020",
+                ":=>\\u0020",
                 ".=>\\u0020",
                 "(=>\\u0020",
-                ")=>\\u0020"
+                ")=>\\u0020",
+                "\uff0e=>\\u0020",
+                "\uff3f=>\\u0020",
+                "\uff1a=>\\u0020"
             ],
             "type": "mapping"
         }

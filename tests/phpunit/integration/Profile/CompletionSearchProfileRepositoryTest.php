@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Profile;
 
-use CirrusSearch\CirrusTestCase;
+use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use ExtensionRegistry;
 use Wikimedia\ScopedCallback;
@@ -11,7 +11,7 @@ use Wikimedia\ScopedCallback;
  * @group CirrusSearch
  * @covers \CirrusSearch\Profile\CompletionSearchProfileRepository
  */
-class CompletionSearchProfileRepositoryTest extends CirrusTestCase {
+class CompletionSearchProfileRepositoryTest extends CirrusIntegrationTestCase {
 
 	public function testFromConfig() {
 		// Without subphrases the normal-subphrases is hidden

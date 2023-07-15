@@ -3,6 +3,7 @@
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQueryBuilder;
@@ -13,7 +14,8 @@ use HtmlArmor;
  * @covers \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod
  * @covers \CirrusSearch\Fallbacks\FallbackMethodTrait
  */
-class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
+class PhraseSuggestFallbackMethodTest extends CirrusTestCase {
+	use FallbackMethodTestTrait;
 
 	public function provideTest() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'phraseSuggestResponses/*.config' ) as $testFile ) {

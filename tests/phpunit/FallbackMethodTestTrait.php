@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Fallbacks;
 
-use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Search\BaseCirrusSearchResultSet;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
@@ -13,7 +12,7 @@ use Elastica\Response;
 use Elastica\ResultSet;
 use Elastica\ResultSet\DefaultBuilder;
 
-abstract class BaseFallbackMethodTest extends CirrusTestCase {
+trait FallbackMethodTestTrait {
 
 	public function getSearcherFactoryMock( SearchQuery $query = null, CirrusSearchResultSet $resultSet = null ) {
 		$searcherMock = $this->createMock( Searcher::class );

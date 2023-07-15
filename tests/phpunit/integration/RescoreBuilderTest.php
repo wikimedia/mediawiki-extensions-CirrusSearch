@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-use CirrusSearch\CirrusTestCase;
+use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Profile\SearchProfileException;
@@ -21,7 +21,7 @@ use NamespaceInfo;
 /**
  * @group CirrusSearch
  */
-class RescoreBuilderTest extends CirrusTestCase {
+class RescoreBuilderTest extends CirrusIntegrationTestCase {
 	/**
 	 * @covers \CirrusSearch\Search\Rescore\FunctionScoreDecorator
 	 */

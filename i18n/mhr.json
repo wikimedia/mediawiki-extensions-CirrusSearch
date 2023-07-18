@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Lifeway"
+		]
+	},
+	"cirrussearch-pref-label": "У кычалмаш",
+	"prefs-completion": "Кычалмашлан ешартыш",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Ойлыде (темлалтеш)"
+}

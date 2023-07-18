@@ -113,7 +113,7 @@ class ChangeListener implements
 		// This might exclude few corner cases like Special:Import and Special:FileImport
 		// But we prefer to not treat those as prioritized as they possibly trigger on old revisions
 		// messing up how lag is reported.
-		if ( $linksUpdate->getCauseAction() === 'edit-page' ) {
+		if ( $linksUpdate->getCauseAction() === 'edit-page' && $linksUpdate->isRecursive() ) {
 			$job = LinksUpdate::newPageChangeUpdate(
 				$linksUpdate->getTitle(),
 				$linksUpdate->getRevisionRecord(),

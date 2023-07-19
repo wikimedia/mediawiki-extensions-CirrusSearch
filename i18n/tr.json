@@ -68,7 +68,7 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Klasik ön ek araması",
 	"cirrussearch-completion-profile-classic-pref-desc": "Yazım düzeltmesi yapılmaz. Sayfa adının başından itibaren eşleşen sonuçlar gösterilir.",
 	"cirrussearch-timed-out": "Arama zaman aşımına uğradı, yalnızca kısmi sonuçlar var.",
-	"cirrussearch-regex-timed-out": "Normal ifade araması zaman aşımına uğradı, yalnızca kısmi sonuçlar var. Tam sonuç almak için normal ifadenizi basitleştirmeyi deneyin.",
+	"cirrussearch-regex-timed-out": "Düzenli ifade araması zaman aşımına uğradı, yalnızca kısmi sonuçlar var. Tam sonuç almak için düzenli ifadenizi basitleştirmeyi deneyin.",
 	"cirrussearch-file-numeric-feature-not-a-number": "'$1' arama terimi sayısal değerler gerektirir, ancak '$2' sağlanmıştır.",
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "'$1' arama terimi, birden fazla bağımsız değişken ve '$2' içeren bir işaret sağlanmasına izin vermiyor.",
 	"cirrussearch-feature-not-available": "'$1' arama anahtar kelimesi bu vikide etkin değil.",

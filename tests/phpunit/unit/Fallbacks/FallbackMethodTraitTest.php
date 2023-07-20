@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Fallbacks;
 
-use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
 use CirrusSearch\Test\DummySearchResultSet;
@@ -10,9 +9,7 @@ use Elastica\Query;
 use Elastica\Response;
 use Elastica\Result;
 
-class FallbackMethodTraitTest extends CirrusTestCase {
-	use FallbackMethodTestTrait;
-
+class FallbackMethodTraitTest extends BaseFallbackMethodTest {
 	public static function provideTestResultThreshold() {
 		return [
 			'threshold is not reached' => [

@@ -3,8 +3,8 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusDebugOptions;
-use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CirrusSearchHookRunner;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\Parser\AST\ParsedQuery;
@@ -22,7 +22,7 @@ use PHPUnit\Framework\Assert;
  * @covers \CirrusSearch\Search\SearchContext
  * @covers \CirrusSearch\Parser\AST\ParsedQuery
  */
-class SearchQueryTest extends CirrusIntegrationTestCase {
+class SearchQueryTest extends CirrusTestCase {
 
 	public function provildeGetNamespaces() {
 		return [

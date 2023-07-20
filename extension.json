@@ -56,7 +56,7 @@
 		"CirrusSearch\\CirrusTestCaseTrait": "tests/phpunit/unit/CirrusTestCaseTrait.php",
 		"CirrusSearch\\Query\\SimpleKeywordFeatureTestTrait": "tests/phpunit/unit/Query/SimpleKeywordFeatureTestTrait.php",
 		"CirrusSearch\\Query\\KeywordFeatureAssertions": "tests/phpunit/unit/Query/KeywordFeatureAssertions.php",
-		"CirrusSearch\\Fallbacks\\FallbackMethodTestTrait": "tests/phpunit/FallbackMethodTestTrait.php"
+		"CirrusSearch\\Fallbacks\\BaseFallbackMethodTest": "tests/phpunit/unit/Fallbacks/BaseFallbackMethodTest.php"
 	},
 	"AutoloadNamespaces": {
 		"CirrusSearch\\": "includes/",

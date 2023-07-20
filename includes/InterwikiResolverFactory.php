@@ -33,6 +33,7 @@ class InterwikiResolverFactory {
 	 * @param WANObjectCache|null $wanCache Cache object for caching repeated requests
 	 * @param BagOStuff|null $srvCache Local server cache object for caching repeated requests
 	 * @param InterwikiLookup|null $iwLookup
+	 * @param \ExtensionRegistry|null $extensionRegistry
 	 * @return InterwikiResolver
 	 * @throws \Exception
 	 * @see CirrusSearchInterwikiResolverFactory::accepts()
@@ -43,13 +44,14 @@ class InterwikiResolverFactory {
 		\MultiHttpClient $client = null,
 		WANObjectCache $wanCache = null,
 		BagOStuff $srvCache = null,
-		InterwikiLookup $iwLookup = null
+		InterwikiLookup $iwLookup = null,
+		\ExtensionRegistry $extensionRegistry = null
 	) {
 		if ( CirrusConfigInterwikiResolver::accepts( $config ) ) {
 			return new CirrusConfigInterwikiResolver( $config, $client, $wanCache, $srvCache, $iwLookup );
 		}
-		if ( SiteMatrixInterwikiResolver::accepts( $config ) ) {
-			return new SiteMatrixInterwikiResolver( $config, $client, $wanCache, $srvCache );
+		if ( SiteMatrixInterwikiResolver::accepts( $config, $extensionRegistry ) ) {
+			return new SiteMatrixInterwikiResolver( $config, $client, $wanCache, $srvCache, $extensionRegistry );
 		}
 		return new EmptyInterwikiResolver();
 	}

@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Profile;
 
-use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Dispatch\BasicSearchQueryRoute;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchQuery;
@@ -14,7 +14,7 @@ use MediaWiki\User\UserIdentityValue;
  * @group CirrusSearch
  * @covers \CirrusSearch\Profile\SearchProfileService
  */
-class SearchProfileServiceTest extends CirrusIntegrationTestCase {
+class SearchProfileServiceTest extends CirrusTestCase {
 
 	public function testSimpleSingleRepo() {
 		$profiles = [

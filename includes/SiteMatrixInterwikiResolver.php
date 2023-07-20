@@ -25,7 +25,8 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 		SearchConfig $config,
 		\MultiHttpClient $client = null,
 		WANObjectCache $wanCache = null,
-		BagOStuff $srvCache = null
+		BagOStuff $srvCache = null,
+		ExtensionRegistry $extensionRegistry = null
 	) {
 		parent::__construct( $config, $client, $wanCache, $srvCache );
 		$this->cache = $wanCache ?: MediaWikiServices::getInstance()->getMainWANObjectCache();
@@ -33,7 +34,9 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 			throw new \RuntimeException( "This resolver cannot with an external wiki config. (config: " .
 				$config->getWikiId() . ", global: " . WikiMap::getCurrentWikiId() );
 		}
-		if ( !ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
+
+		$extensionRegistry = $extensionRegistry ?: ExtensionRegistry::getInstance();
+		if ( !$extensionRegistry->isLoaded( 'SiteMatrix' ) ) {
 			throw new \RuntimeException( "SiteMatrix is required" );
 		}
 		if ( !$this->config->has( 'SiteMatrixSites' ) ) {
@@ -43,11 +46,13 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 
 	/**
 	 * @param SearchConfig $config
+	 * @param ExtensionRegistry|null $extensionRegistry
 	 * @return bool true if this resolver can run with the specified config
 	 */
-	public static function accepts( SearchConfig $config ) {
+	public static function accepts( SearchConfig $config, ExtensionRegistry $extensionRegistry = null ) {
+		$extensionRegistry = $extensionRegistry ?: ExtensionRegistry::getInstance();
 		return $config->getWikiId() === WikiMap::getCurrentWikiId()
-			&& ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' )
+			&& $extensionRegistry->isLoaded( 'SiteMatrix' )
 			&& $config->has( 'SiteMatrixSites' );
 	}
 

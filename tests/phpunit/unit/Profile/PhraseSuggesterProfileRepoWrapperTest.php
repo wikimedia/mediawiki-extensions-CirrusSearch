@@ -2,13 +2,13 @@
 
 namespace CirrusSearch\Profile;
 
-use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 
 /**
  * @group CirrusSearch
  * @covers \CirrusSearch\Profile\PhraseSuggesterProfileRepoWrapper
  */
-class PhraseSuggesterProfileRepoWrapperTest extends CirrusIntegrationTestCase {
+class PhraseSuggesterProfileRepoWrapperTest extends CirrusTestCase {
 
 	public function testFromConfig() {
 		$profiles = [

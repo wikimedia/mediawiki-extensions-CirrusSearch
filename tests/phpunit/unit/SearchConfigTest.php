@@ -10,7 +10,7 @@ use MediaWiki\WikiMap\WikiMap;
  * @covers \CirrusSearch\SearchConfig
  * @covers \CirrusSearch\HashSearchConfig
  */
-class SearchConfigTest extends CirrusIntegrationTestCase {
+class SearchConfigTest extends CirrusTestCase {
 
 	public function testGetters() {
 		$config = $this->newHashSearchConfig( [

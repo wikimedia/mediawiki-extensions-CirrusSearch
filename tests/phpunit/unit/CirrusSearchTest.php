@@ -10,7 +10,7 @@ use Wikimedia\Assert\AssertionException;
 /**
  * @group CirrusSearch
  */
-class CirrusSearchTest extends CirrusIntegrationTestCase {
+class CirrusSearchTest extends CirrusTestCase {
 
 	public static function provideProfiles() {
 		return [

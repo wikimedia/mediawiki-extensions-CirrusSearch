@@ -18,8 +18,7 @@ use HtmlArmor;
  * @covers \CirrusSearch\Fallbacks\IndexLookupFallbackMethod
  * @covers \CirrusSearch\Fallbacks\FallbackMethodTrait
  */
-class IndexLookupFallbackMethodTest extends CirrusIntegrationTestCase {
-	use FallbackMethodTestTrait;
+class IndexLookupFallbackMethodTest extends BaseFallbackMethodTest {
 
 	public static function provideTest() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'indexLookupFallbackMethodResponses/*.config' ) as $testFile ) {

@@ -201,12 +201,9 @@ trait CirrusTestCaseTrait {
 			}
 
 			public function getFactory( SearchConfig $config ): SearchProfileServiceFactory {
-				return new SearchProfileServiceFactory(
-					$this->testCase->getInterWikiResolver( $config ),
-					$config,
-					$this->testCase->localServerCacheForProfileService(),
-					$this->cirrusHookRunner,
-					$this->userOptionsLookup
+				return new SearchProfileServiceFactory( $this->testCase->getInterWikiResolver( $config ),
+					$config, $this->testCase->localServerCacheForProfileService(),
+					$this->cirrusHookRunner, $this->userOptionsLookup, new \ExtensionRegistry()
 				);
 			}
 		};

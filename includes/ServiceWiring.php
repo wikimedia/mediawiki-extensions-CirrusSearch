@@ -46,13 +46,13 @@ return [
 	SearchProfileServiceFactory::SERVICE_NAME => static function ( MediaWikiServices $services ) {
 		$config = $services->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
-		return new SearchProfileServiceFactory(
-			$services->getService( InterwikiResolver::SERVICE ),
-			/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
+		return new SearchProfileServiceFactory( $services->getService( InterwikiResolver::SERVICE ),
+		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
 			$config,
 			$services->getLocalServerObjectCache(),
 			new CirrusSearchHookRunner( $services->getHookContainer() ),
-			$services->getUserOptionsLookup()
+			$services->getUserOptionsLookup(),
+			ExtensionRegistry::getInstance()
 		);
 	}
 ];

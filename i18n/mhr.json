@@ -5,6 +5,9 @@
 		]
 	},
 	"cirrussearch-pref-label": "У кычалмаш",
+	"cirrussearch-give-feedback": "Шке шоныммутет кодо",
 	"prefs-completion": "Кычалмашлан ешартыш",
-	"cirrussearch-completion-profile-fuzzy-pref-name": "Ойлыде (темлалтеш)"
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Ойлыде (темлалтеш)",
+	"cirrussearch-completion-profile-classic-pref-name": "Префикс дене тыглай кычалмаш",
+	"cirrussearch-feature-deepcat-invalid-title": "Ончыктымо категорий чын огыл."
 }

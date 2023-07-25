@@ -73,6 +73,21 @@ class AnalyzerBuilder {
 	/** @var string|null */
 	private $stopName;
 
+	/** @var mixed|null stopword _list_ or array of stopwords */
+	private $extraStopList;
+
+	/** @var string|null */
+	private $extraStopName;
+
+	/** @var bool|null */
+	private $extraStopIgnoreCase;
+
+	/** @var string|null */
+	private $extraStemmerLang;
+
+	/** @var string|null */
+	private $extraStemmerName;
+
 	/** @var string[]|null list of stemmer override rules */
 	private $overrideRules;
 
@@ -96,7 +111,7 @@ class AnalyzerBuilder {
 	private $useStemmer = true;
 
 	/** @var string|null */
-	private $stemmerName;
+	private $stemmerLang;
 
 	/** @var string|null asciifolding flavor to use (null for none) */
 	private $asciifolding = 'asciifolding';
@@ -145,21 +160,23 @@ class AnalyzerBuilder {
 
 	/**
 	 * @param string[] $mappings
+	 * @param string|null $name
 	 * @return self
 	 */
-	public function withCharMap( array $mappings ): self {
+	public function withCharMap( array $mappings, string $name = null ): self {
 		$this->charMap = $mappings;
-		$this->charMapName = "{$this->langName}_charfilter";
+		$this->charMapName = $name ?? "{$this->langName}_charfilter";
 		return $this;
 	}
 
 	/**
 	 * @param int $langZero
+	 * @param string|null $name
 	 * @return self
 	 */
-	public function withNumberCharFilter( int $langZero ): self {
+	public function withNumberCharFilter( int $langZero, string $name = null ): self {
 		$this->langZero = $langZero;
-		$this->numCharMapName = "{$this->langName}_numbers";
+		$this->numCharMapName = $name ?? "{$this->langName}_numbers";
 		return $this;
 	}
 
@@ -183,21 +200,52 @@ class AnalyzerBuilder {
 
 	/**
 	 * @param mixed $stop pre-defined list like _french_ or an array of stopwords
+	 * @param string|null $name
 	 * @return self
 	 */
-	public function withStop( $stop ): self {
+	public function withStop( $stop, string $name = null ): self {
 		$this->customStopList = $stop;
-		$this->stopName = "{$this->langName}_stop";
+		$this->stopName = $name ?? "{$this->langName}_stop";
 		return $this;
 	}
 
 	/**
-	 * @param string[] $rules stemmer override rules
+	 * @param mixed $stop pre-defined list like _french_ or an array of stopwords
+	 * @param string $name
+	 * @param mixed $beforeFilter filter to insert extra stop before
+	 * @param bool|null $ignoreCase
 	 * @return self
 	 */
-	public function withStemmerOverride( array $rules ): self {
+	public function withExtraStop( $stop, string $name, $beforeFilter = self::APPEND,
+			bool $ignoreCase = null ): self {
+		$this->extraStopList = $stop;
+		$this->extraStopName = $name;
+		$this->extraStopIgnoreCase = $ignoreCase;
+		$this->insertFiltersBefore( $beforeFilter, [ $name ] );
+		return $this;
+	}
+
+	/**
+	 * @param string $lang
+	 * @param string|null $name
+	 * @return self
+	 */
+	public function withExtraStemmer( string $lang, string $name = null ): self {
+		$this->extraStemmerLang = $lang;
+		$this->extraStemmerName = $name ?? $lang;
+		return $this;
+	}
+
+	/**
+	 * Rules can be a single rule string, or an array of rules
+	 *
+	 * @param mixed $rules stemmer override rules
+	 * @param string|null $name
+	 * @return self
+	 */
+	public function withStemmerOverride( $rules, string $name = null ): self {
 		$this->overrideRules = $rules;
-		$this->overrideName = "{$this->langName}_override";
+		$this->overrideName = $name ?? "{$this->langName}_override";
 		return $this;
 	}
 
@@ -231,6 +279,26 @@ class AnalyzerBuilder {
 		return $this;
 	}
 
+	/**
+	 * @param string[] $filterList list of additional filters to append
+	 * @return self
+	 */
+	public function appendFilters( array $filterList ): self {
+		$this->unpackedCheck();
+		$this->insertFiltersBefore( self::APPEND, $filterList );
+		return $this;
+	}
+
+	/**
+	 * @param string[] $filterList list of additional filters to prepend
+	 * @return self
+	 */
+	public function prependFilters( array $filterList ): self {
+		$this->unpackedCheck();
+		$this->insertFiltersBefore( self::PREPEND, $filterList );
+		return $this;
+	}
+
 	/** @return self */
 	public function omitDottedI(): self {
 		$this->unpackedCheck();
@@ -241,7 +309,7 @@ class AnalyzerBuilder {
 	/** @return self */
 	public function withLightStemmer(): self {
 		$this->unpackedCheck();
-		$this->stemmerName = "light_{$this->langName}";
+		$this->stemmerLang = "light_{$this->langName}";
 		return $this;
 	}
 
@@ -309,7 +377,7 @@ class AnalyzerBuilder {
 			// filter: elision, aggressive_splitting, lowercase, stopwords, lang_norm,
 			//         stemmer_override, stemmer, asciifolding, remove_empty
 			if ( $this->useStemmer ) {
-				$this->stemmerName = $this->stemmerName ?? $this->langName;
+				$this->stemmerLang = $this->stemmerLang ?? $this->langName;
 			} else {
 				$langStem = '';
 			}
@@ -394,6 +462,11 @@ class AnalyzerBuilder {
 				$this->stopFilterFromList( $this->customStopList );
 		}
 
+		if ( $this->extraStopName ) {
+			$config[ 'filter' ][ $this->extraStopName ] =
+				$this->stopFilterFromList( $this->extraStopList, $this->extraStopIgnoreCase );
+		}
+
 		if ( $this->charFilters ) {
 			$config[ 'analyzer' ][ $this->analyzerName ][ 'char_filter' ] = $this->charFilters;
 		}
@@ -402,9 +475,14 @@ class AnalyzerBuilder {
 			$config[ 'analyzer' ][ $this->analyzerName ][ 'filter' ] = $this->filters;
 		}
 
-		if ( $this->stemmerName && $this->useStemmer ) {
+		if ( $this->stemmerLang && $this->useStemmer ) {
 			$config[ 'filter' ][ $langStem ] =
-				$this->stemmerFilter( $this->stemmerName );
+				$this->stemmerFilter( $this->stemmerLang );
+		}
+
+		if ( $this->extraStemmerName ) {
+			$config[ 'filter' ][ $this->extraStemmerName ] =
+				$this->stemmerFilter( $this->extraStemmerLang );
 		}
 
 		return $config;
@@ -417,7 +495,7 @@ class AnalyzerBuilder {
 	 * @param string $repl
 	 * @return mixed[] filter
 	 */
-	public static function patternFilter( string $pat, string $repl ): array {
+	public static function patternFilter( string $pat, string $repl = '' ): array {
 		return [ 'type' => 'pattern_replace', 'pattern' => $pat, 'replacement' => $repl ];
 	}
 
@@ -476,12 +554,13 @@ class AnalyzerBuilder {
 	}
 
 	/**
-	 * Create an stemming override filter with the rules provided
+	 * Create an stemming override filter with the rules provided, which can be a string
+	 * with one rule or an array of such rules
 	 *
-	 * @param string[] $rules
+	 * @param mixed $rules
 	 * @return mixed[] token filter
 	 */
-	private function overrideFilter( array $rules ): array {
+	private function overrideFilter( $rules ): array {
 		return [ 'type' => 'stemmer_override', 'rules' => $rules ];
 	}
 

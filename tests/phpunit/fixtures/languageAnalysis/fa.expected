@@ -9,8 +9,8 @@
                 "split_camelCase",
                 "acronym_fixer",
                 "word_break_helper",
-                "zero_width_spaces",
-                "dotted_I_fix"
+                "dotted_I_fix",
+                "zero_width_spaces"
             ],
             "filter": [
                 "homoglyph_norm",
@@ -188,8 +188,8 @@
                 "split_camelCase",
                 "acronym_fixer",
                 "word_break_helper",
-                "zero_width_spaces",
-                "dotted_I_fix"
+                "dotted_I_fix",
+                "zero_width_spaces"
             ],
             "filter": [
                 "homoglyph_norm",

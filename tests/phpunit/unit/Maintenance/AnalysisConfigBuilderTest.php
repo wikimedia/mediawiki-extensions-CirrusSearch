@@ -928,6 +928,20 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 
 		$this->assertEquals( $expected, $config[ 'analyzer' ][ 'text' ][ 'filter' ] );
 
+		// ... again with pre-/appendFilters()
+		$config = ( new AnalyzerBuilder( 'xx' ) )->
+		withUnpackedAnalyzer()->
+		omitAsciifolding()->
+		insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
+		prependFilters( [ 'xx_pre' ] )->
+		appendFilters( [ 'xx_post' ] )->
+		insertFiltersBefore( 'xx_pre', [ 'xx_pre_pre' ] )->
+		insertFiltersBefore( 'xx_post', [ 'xx_pre_post' ] )->
+		prependFilters( [ 'xx_FIRST' ] )->
+		build( $config );
+
+		$this->assertEquals( $expected, $config[ 'analyzer' ][ 'text' ][ 'filter' ] );
+
 		// Let's do it again, but in a different way (this is realistic)
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
 		withUnpackedAnalyzer()->
@@ -936,6 +950,17 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			[ 'xx_FIRST', 'xx_pre_pre', 'xx_pre' ] )->
 		insertFiltersBefore( AnalyzerBuilder::APPEND,
 			[ 'xx_pre_post', 'xx_post' ] )->
+		insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
+		build( $config );
+
+		$this->assertEquals( $expected, $config[ 'analyzer' ][ 'text' ][ 'filter' ] );
+
+		// ... again with pre-/appendFilters()
+		$config = ( new AnalyzerBuilder( 'xx' ) )->
+		withUnpackedAnalyzer()->
+		omitAsciifolding()->
+		prependFilters( [ 'xx_FIRST', 'xx_pre_pre', 'xx_pre' ] )->
+		appendFilters( [ 'xx_pre_post', 'xx_post' ] )->
 		insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
 		build( $config );
 

@@ -37,6 +37,7 @@
             "filter": [
                 "niqqud",
                 "hebrew_lemmatizer",
+                "remove_duplicates",
                 "icu_normalizer",
                 "icu_folding",
                 "remove_empty"
@@ -55,6 +56,7 @@
             "filter": [
                 "niqqud",
                 "hebrew_lemmatizer",
+                "remove_duplicates",
                 "icu_normalizer",
                 "icu_folding",
                 "remove_empty"

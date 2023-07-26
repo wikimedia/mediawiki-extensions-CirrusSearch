@@ -237,6 +237,8 @@ class SearchProfileServiceFactory {
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/RescoreFunctionChains.config.php' );
 		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::RESCORE_FUNCTION_CHAINS,
 			self::CIRRUS_CONFIG, 'CirrusSearchRescoreFunctionScoreChains', $config ) );
+		$service->registerRepository( new ExtensionRegistryProfileRepository( SearchProfileService::RESCORE_FUNCTION_CHAINS,
+			self::EXTENSION_REGISTRY, 'CirrusSearchRescoreFunctionScoreChains', $this->extensionRegistry ) );
 		// No default profiles for function chains, these profiles are always accessed explicitly
 	}
 

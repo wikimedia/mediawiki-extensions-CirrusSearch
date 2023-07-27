@@ -2,6 +2,7 @@
     "analyzer": {
         "text": {
             "type": "custom",
+            "tokenizer": "nori_tok",
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
@@ -11,7 +12,6 @@
                 "nori_charfilter",
                 "nori_combo_filter"
             ],
-            "tokenizer": "nori_tok",
             "filter": [
                 "homoglyph_norm",
                 "nori_posfilter",
@@ -179,6 +179,7 @@
         },
         "text_search": {
             "type": "custom",
+            "tokenizer": "nori_tok",
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
@@ -188,7 +189,6 @@
                 "nori_charfilter",
                 "nori_combo_filter"
             ],
-            "tokenizer": "nori_tok",
             "filter": [
                 "homoglyph_norm",
                 "nori_posfilter",
@@ -306,7 +306,7 @@
         },
         "acronym_fixer": {
             "type": "pattern_replace",
-            "pattern": "(?<=(?:^|\\P{L})\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
+            "pattern": "(?<=(?:^|[^\\p{L}\\p{M}\\p{Cf}])[\\p{M}\\p{Cf}]{0,9}+\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
             "replacement": "$1"
         },
         "apostrophe_norm": {
@@ -362,6 +362,11 @@
                 "\u0130=>I"
             ]
         },
+        "nori_combo_filter": {
+            "type": "pattern_replace",
+            "pattern": "[\\u0300-\\u0331]",
+            "replacement": ""
+        },
         "nori_charfilter": {
             "type": "mapping",
             "mappings": [
@@ -370,11 +375,6 @@
                 "\\u00AD=>",
                 "\\u200C=>"
             ]
-        },
-        "nori_combo_filter": {
-            "type": "pattern_replace",
-            "pattern": "[\\u0300-\\u0331]",
-            "replacement": ""
         }
     }
 }

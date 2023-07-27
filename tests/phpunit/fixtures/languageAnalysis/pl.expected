@@ -2,6 +2,7 @@
     "analyzer": {
         "text": {
             "type": "custom",
+            "tokenizer": "standard",
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
@@ -10,7 +11,6 @@
                 "word_break_helper",
                 "dotted_I_fix"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "homoglyph_norm",
                 "lowercase",
@@ -180,6 +180,7 @@
         },
         "text_search": {
             "type": "custom",
+            "tokenizer": "standard",
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
@@ -188,7 +189,6 @@
                 "word_break_helper",
                 "dotted_I_fix"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "homoglyph_norm",
                 "lowercase",
@@ -234,6 +234,11 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "stempel_pattern_filter": {
+            "type": "pattern_replace",
+            "pattern": "^([a-z\u0105\u0142]?[a-z\u0107\u0144]|..\u0107|\\d.*\u0107)$",
+            "replacement": ""
         },
         "polish_stop": {
             "type": "stop",
@@ -423,11 +428,6 @@
                 "xv"
             ]
         },
-        "stempel_pattern_filter": {
-            "type": "pattern_replace",
-            "pattern": "^([a-z\u0105\u0142]?[a-z\u0107\u0144]|..\u0107|\\d.*\u0107)$",
-            "replacement": ""
-        },
         "stempel_stop": {
             "type": "stop",
             "stopwords": [
@@ -484,7 +484,7 @@
         },
         "acronym_fixer": {
             "type": "pattern_replace",
-            "pattern": "(?<=(?:^|\\P{L})\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
+            "pattern": "(?<=(?:^|[^\\p{L}\\p{M}\\p{Cf}])[\\p{M}\\p{Cf}]{0,9}+\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
             "replacement": "$1"
         },
         "apostrophe_norm": {

@@ -17,7 +17,6 @@ asap
 អេ.ភី. (Khmer A.P.)
 બીબીસી (Gujarati BBC)
 ఎంఐటి (Telugu MIT)
-హెచ్‌.ఐ.వీ (Telugu H.I.V., with zero width joiner)
 
 === Names with intials with periods ===
 
@@ -40,3 +39,4 @@ Ph.D
 B.Sc.
 1.2.3.4.
 A. B. C. D.
+e̪f.g (the character before f is a "non-letter" combining mark)

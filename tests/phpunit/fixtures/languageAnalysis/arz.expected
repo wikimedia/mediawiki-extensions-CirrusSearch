@@ -237,6 +237,10 @@
             "type": "length",
             "min": 1
         },
+        "arabic_stop": {
+            "type": "stop",
+            "stopwords": "_arabic_"
+        },
         "arz_ary_stop": {
             "type": "stop",
             "stopwords": [
@@ -371,10 +375,6 @@
                 "\u0648\u064e\u0647\u064f\u0648\u064e"
             ]
         },
-        "arabic_stop": {
-            "type": "stop",
-            "stopwords": "_arabic_"
-        },
         "arabic_stemmer": {
             "type": "stemmer",
             "language": "arabic"
@@ -422,7 +422,7 @@
         },
         "acronym_fixer": {
             "type": "pattern_replace",
-            "pattern": "(?<=(?:^|\\P{L})\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
+            "pattern": "(?<=(?:^|[^\\p{L}\\p{M}\\p{Cf}])[\\p{M}\\p{Cf}]{0,9}+\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
             "replacement": "$1"
         },
         "apostrophe_norm": {

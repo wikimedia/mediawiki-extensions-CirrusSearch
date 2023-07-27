@@ -235,6 +235,10 @@
             "type": "length",
             "min": 1
         },
+        "romanian_stop": {
+            "type": "stop",
+            "stopwords": "_romanian_"
+        },
         "ro_comma_stop": {
             "type": "stop",
             "stopwords": [
@@ -263,10 +267,6 @@
                 "totu\u0219i",
                 "vo\u0219tri"
             ]
-        },
-        "romanian_stop": {
-            "type": "stop",
-            "stopwords": "_romanian_"
         },
         "romanian_stemmer": {
             "type": "stemmer",
@@ -315,7 +315,7 @@
         },
         "acronym_fixer": {
             "type": "pattern_replace",
-            "pattern": "(?<=(?:^|\\P{L})\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
+            "pattern": "(?<=(?:^|[^\\p{L}\\p{M}\\p{Cf}])[\\p{M}\\p{Cf}]{0,9}+\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
             "replacement": "$1"
         },
         "apostrophe_norm": {

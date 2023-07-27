@@ -2,6 +2,7 @@
     "analyzer": {
         "text": {
             "type": "custom",
+            "tokenizer": "kuromoji_tokenizer",
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
@@ -10,7 +11,6 @@
                 "word_break_helper",
                 "fullwidthnumfix"
             ],
-            "tokenizer": "kuromoji_tokenizer",
             "filter": [
                 "homoglyph_norm",
                 "kuromoji_baseform",
@@ -179,6 +179,7 @@
         },
         "text_search": {
             "type": "custom",
+            "tokenizer": "kuromoji_tokenizer",
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
@@ -187,7 +188,6 @@
                 "word_break_helper",
                 "fullwidthnumfix"
             ],
-            "tokenizer": "kuromoji_tokenizer",
             "filter": [
                 "homoglyph_norm",
                 "kuromoji_baseform",
@@ -276,7 +276,7 @@
         },
         "acronym_fixer": {
             "type": "pattern_replace",
-            "pattern": "(?<=(?:^|\\P{L})\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
+            "pattern": "(?<=(?:^|[^\\p{L}\\p{M}\\p{Cf}])[\\p{M}\\p{Cf}]{0,9}+\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
             "replacement": "$1"
         },
         "apostrophe_norm": {

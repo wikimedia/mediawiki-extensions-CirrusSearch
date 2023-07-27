@@ -29,7 +29,6 @@ Feature: Searches that involve acronyms
     | term     |
     | সিওপিডি   |
     | អេភី      |
-    | హెచ్ఐవీ   |
     | બી.બી.સી  |
     | ఎం.ఐ.టి. |
 
@@ -56,3 +55,5 @@ Feature: Searches that involve acronyms
     | bsc          |
     | 1234         |
     | ABCD         |
+    | e̪fg          |
+    | efg          |

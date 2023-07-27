@@ -658,11 +658,13 @@ class AnalysisConfigBuilder {
 				],
 				// remove dots from letter-dot-letter-dot-letter... sequences
 				// Letters are {L} with optional combining marks {M} or invisibles {Cf}
-				// Acronym boundaries are non-letters {L} or string boundaries (so we don't
-				// remove dots from web domains, for example)
+				// Acronym boundaries are non-letters {L} (with optional combining marks
+				// or invisibles) or string boundaries (so we don't remove dots from web
+				// domains, for example)
 				'acronym_fixer' => [
 					'type' => 'pattern_replace',
-					'pattern' => '(?<=(?:^|\\P{L})\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.．]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)',
+					'pattern' => '(?<=(?:^|[^\\p{L}\\p{M}\\p{Cf}])[\\p{M}\\p{Cf}]{0,9}+\\p{L}[\\p{M}\\p{Cf}]{0,9}+)' .
+						'[.．]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)',
 					'replacement' => '$1'
 				],
 				// map lots of apostrophe-like characters to apostrophe (T315118)

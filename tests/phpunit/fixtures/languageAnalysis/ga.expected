@@ -236,19 +236,6 @@
             "type": "length",
             "min": 1
         },
-        "irish_hyphenation": {
-            "type": "stop",
-            "stopwords": [
-                "h",
-                "n",
-                "t",
-                "b",
-                "bh",
-                "g",
-                "m"
-            ],
-            "ignore_case": true
-        },
         "irish_elision": {
             "type": "elision",
             "articles_case": true,
@@ -261,6 +248,19 @@
         "irish_stop": {
             "type": "stop",
             "stopwords": "_irish_"
+        },
+        "irish_hyphenation": {
+            "type": "stop",
+            "stopwords": [
+                "h",
+                "n",
+                "t",
+                "b",
+                "bh",
+                "g",
+                "m"
+            ],
+            "ignore_case": true
         },
         "irish_stemmer": {
             "type": "stemmer",
@@ -309,7 +309,7 @@
         },
         "acronym_fixer": {
             "type": "pattern_replace",
-            "pattern": "(?<=(?:^|\\P{L})\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
+            "pattern": "(?<=(?:^|[^\\p{L}\\p{M}\\p{Cf}])[\\p{M}\\p{Cf}]{0,9}+\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
             "replacement": "$1"
         },
         "apostrophe_norm": {

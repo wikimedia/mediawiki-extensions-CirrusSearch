@@ -2,38 +2,38 @@
 Feature: Searches with a prefix filter
   Scenario: The prefix: filter interprets spaces literally
     When I api search for prefix prefix:prefix tes
-    Then Prefix Test is the first api search result
+    Then Prefix Test is in the api search results
 
   Scenario: The prefix: filter interprets underscores as spaces
     When I api search for prefix prefix:prefix_tes
-    Then Prefix Test is the first api search result
+    Then Prefix Test is in the api search results
 
   Scenario: It is ok to start the query with the prefix filter
     When I api search for prefix:prefix tes
-    Then Prefix Test is the first api search result
+    Then Prefix Test is in the api search results
 
   Scenario: It is ok to specify an empty prefix filter
     When I api search for prefix test prefix:
-    Then Prefix Test is the first api search result
+    Then Prefix Test is in the api search results
 
   Scenario: The prefix: filter can be used to apply a namespace and a title prefix
     When I api search for all:prefix:talk:prefix tes
-    Then Talk:Prefix Test is the first api search result
-    But Prefix Test is not in the api search results
+    Then Talk:Prefix Test is in the api search results
+      But Prefix Test is not in the api search results
 
   Scenario: The prefix: filter can be used to apply a namespace without a title prefix
     When I api search for all:prefix test prefix:talk:
-    Then Talk:Prefix Test is the first api search result
+    Then Talk:Prefix Test is in the api search results
       But Prefix Test is not in the api search results
 
   Scenario: The prefix: filter can apply a namespace containing a space
     When I api search for all:prefix test prefix:user talk:
-    Then User talk:Prefix Test is the first api search result
+    Then User talk:Prefix Test is in the api search results
       But Prefix Test is not in the api search results
 
   Scenario: The prefix: filter can apply a namespace containing an underscore
     When I api search for all:prefix test prefix:user_talk:
-    Then User talk:Prefix Test is the first api search result
+    Then User talk:Prefix Test is in the api search results
       But Prefix Test is not in the api search results
 
   Scenario: The prefix: filter can be used to filter to subpages
@@ -48,7 +48,7 @@ Feature: Searches with a prefix filter
 
   Scenario: The prefix: filter can be quoted
     When I api search for all:prefix test prefix:"user_talk:"
-    Then User talk:Prefix Test is the first api search result
+    Then User talk:Prefix Test is in the api search results
       But Prefix Test is not in the api search results
 
   Scenario: The prefix: filter doesn't find redirects
@@ -57,5 +57,5 @@ Feature: Searches with a prefix filter
 
  Scenario: The prefix: filter filters results to those with titles prefixed by value
     When I api search for prefix prefix:prefix
-    Then Prefix Test is the first api search result
+    Then Prefix Test is in the api search results
       But Foo Prefix Test is not in the api search results

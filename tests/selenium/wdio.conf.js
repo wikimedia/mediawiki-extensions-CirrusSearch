@@ -55,15 +55,6 @@ exports.config = {
 	// Test Configurations
 	// ===================
 
-	// Enabling synchronous mode (via the wdio-sync package), means specs don't have to
-	// use Promise#then() or await for browser commands, such as like `brower.element()`.
-	// Instead, it will automatically pause JavaScript execution until th command finishes.
-	//
-	// For non-browser commands (such as MWBot and other promises), this means you
-	// have to use `browser.call()` to make sure WDIO waits for it before the next
-	// browser command.
-	sync: true,
-
 	// Level of logging verbosity: silent | verbose | command | data | result | error
 	logLevel: 'error',
 

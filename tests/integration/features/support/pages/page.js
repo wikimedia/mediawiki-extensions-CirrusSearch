@@ -51,25 +51,16 @@ class Page {
 				const s = selector || '';
 				const t = ( text ) ? '=' + text : '';
 				const sel = el + s + t;
-				return browser.$$( sel );
+				return $$( sel );
 			};
 		} );
 	}
 
-	collect_element_texts( selector ) {
-		const elements = browser.$$( selector );
+	async collect_element_texts( selector ) {
+		const elements = await $$( selector );
 		const texts = [];
 		for ( const text of elements ) {
-			texts.push( text.getText() );
-		}
-		return texts;
-	}
-
-	collect_element_attribute( attr, selector ) {
-		const elements = browser.$$( selector );
-		const texts = [];
-		for ( const elt of elements ) {
-			texts.push( elt.getAttribute( attr ) );
+			texts.push( await text.getText() );
 		}
 		return texts;
 	}
@@ -83,18 +74,18 @@ class Page {
 		this._url_params = url_params;
 	}
 
-	login( world, wiki = false ) {
+	async login( world, wiki = false ) {
 		const config = wiki ?
 			world.config.wikis[ wiki ] :
 			world.config.wikis[ world.config.wikis.default ];
 		world.visit( 'Special:UserLogin' );
-		browser.$( '#wpName1' ).setValue( config.username );
-		browser.$( '#wpPassword1' ).setValue( config.password );
-		browser.$( '#wpLoginAttempt' ).click();
+		await browser.$( '#wpName1' ).setValue( config.username );
+		await browser.$( '#wpPassword1' ).setValue( config.password );
+		await browser.$( '#wpLoginAttempt' ).click();
 		// skip password reset, not always present?
-		const skip = browser.$( '#mw-input-skipReset' );
-		if ( skip.isExisting() ) {
-			skip.click();
+		const skip = await $( '#mw-input-skipReset' );
+		if ( await skip.isExisting() ) {
+			await skip.click();
 		}
 	}
 }

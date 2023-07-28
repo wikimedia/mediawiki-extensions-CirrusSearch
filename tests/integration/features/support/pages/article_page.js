@@ -8,11 +8,12 @@ const TitlePage = require( './title_page' );
 
 class ArticlePage extends TitlePage {
 
-	get articleTitle() {
-		return this.title_element().getText();
+	async articleTitle() {
+		const elt = await this.title_element();
+		return elt.getText();
 	}
 
-	title_element() {
+	async title_element() {
 		return browser.$( 'h1#firstHeading' );
 	}
 
@@ -21,34 +22,38 @@ class ArticlePage extends TitlePage {
 	 * is harder to automate as it only appears when focused, going back
 	 * and forth between clickable and not-clickable in vector 2.
 	 */
-	submit_search_top_right() {
-		browser.$( '#searchform [name=search]' ).keys( '\n' );
+	async submit_search_top_right() {
+		return browser.$( '#searchform [name=search]' ).keys( '\n' );
 	}
 
-	has_search_suggestions() {
-		return this.get_search_suggestions().length > 0;
+	async has_search_suggestions() {
+		const elt = await this.get_search_suggestions();
+		return elt.length > 0;
 	}
 
-	get_search_suggestion_at( nth ) {
+	async get_search_suggestion_at( nth ) {
 		nth--;
-		const suggestions = this.get_search_suggestions();
+		const suggestions = await this.get_search_suggestions();
 		return suggestions.length > nth ? suggestions[ nth ] : null;
 	}
 
-	get_search_suggestions() {
+	async get_search_suggestions() {
 		const selector = '.cdx-search-result-title';
-		browser.waitUntil( () => browser.$( selector ).isExisting(), {
-			timeout: { timeout: 10000 }
-		} );
+		await browser.waitUntil(
+			async function () {
+				return browser.$( selector ).isExisting();
+			},
+			{ timeout: { timeout: 10000 } }
+		);
 		return this.collect_element_texts( selector );
 	}
 
-	set search_query_top_right( search ) {
-		browser.$( '#searchform [name=search]' ).setValue( search );
+	async set_search_query_top_right( search ) {
+		return browser.$( '#searchform [name=search]' ).setValue( search );
 	}
 
-	get search_query_top_right() {
-		return browser.getValue( '#searchform [name=search]' );
+	async get_search_query_top_right() {
+		return browser.$( '#searchform [name=search]' );
 	}
 }
 

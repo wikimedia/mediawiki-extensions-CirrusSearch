@@ -17,12 +17,12 @@ describe( 'Smoke test for search', function () {
 	 * Then suggestions should appear
 	 * And Main Page is the first suggestion
 	 */
-	it( 'Search suggestions', function () {
-		RandomPage.open();
-		ArticlePage.search_query_top_right = 'main p';
-		assert.ok( ArticlePage.has_search_suggestions() );
+	it( 'Search suggestions', async function () {
+		await RandomPage.open();
+		await ArticlePage.set_search_query_top_right( 'main p' );
+		assert.ok( await ArticlePage.has_search_suggestions() );
 		const expectedSuggestion = 'Main Page';
-		assert.equal( ArticlePage.get_search_suggestion_at( 1 ), expectedSuggestion,
+		assert.equal( await ArticlePage.get_search_suggestion_at( 1 ), expectedSuggestion,
 			`${expectedSuggestion} is the first suggestion` );
 	} );
 
@@ -32,12 +32,12 @@ describe( 'Smoke test for search', function () {
 	 * And I click the search button
 	 * Then I am on a page titled Search results
 	 */
-	it( 'Fill in search term and click search', function () {
+	it( 'Fill in search term and click search', async function () {
 		RandomPage.open();
-		ArticlePage.search_query_top_right = 'ma';
-		ArticlePage.submit_search_top_right();
+		await ArticlePage.search_query_top_right( 'ma' );
+		await ArticlePage.submit_search_top_right();
 		const expectedPage = 'Search results';
-		assert.equal( ArticlePage.articleTitle, expectedPage,
+		assert.equal( await ArticlePage.articleTitle(), expectedPage,
 			`I am on a page named ${expectedPage}` );
 	} );
 
@@ -46,12 +46,12 @@ describe( 'Smoke test for search', function () {
 	 * When I search for África
 	 * Then I am on a page titled África
 	 */
-	it( 'Search with accent yields result page with accent', function () {
+	it( 'Search with accent yields result page with accent', async function () {
 		RandomPage.open();
-		ArticlePage.search_query_top_right = 'África';
-		ArticlePage.submit_search_top_right();
+		await ArticlePage.set_search_query_top_right( 'África' );
+		await ArticlePage.submit_search_top_right();
 		const expectedPage = 'África';
-		assert.equal( ArticlePage.articleTitle, expectedPage,
+		assert.equal( await ArticlePage.articleTitle(), expectedPage,
 			`I am on a page named ${expectedPage}` );
 	} );
 

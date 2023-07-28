@@ -8,20 +8,20 @@ class SpecialUndelete extends TitlePage {
 		super( 'Special:Undelete', 'fuzzy=1' );
 	}
 
-	set search_input( search ) {
-		browser.$( '#prefix' ).setValue( search );
+	async set_search_input( search ) {
+		return browser.$( '#prefix' ).setValue( search );
 	}
 
-	get search_input() {
+	async get_search_input() {
 		return browser.$( '#prefix' ).getValue();
 	}
 
-	click_search_button() {
-		browser.$( '#searchUndelete' ).click();
+	async click_search_button() {
+		await browser.$( '#searchUndelete' ).click();
 	}
 
 	// nth is 1-indexed, not 0 like might be expected
-	get_result_at( nth ) {
+	async get_result_at( nth ) {
 		return browser.$( `.undeleteResult:nth-child(${nth}) a` ).getText();
 	}
 }

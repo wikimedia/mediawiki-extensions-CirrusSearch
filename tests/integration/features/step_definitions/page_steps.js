@@ -73,7 +73,7 @@ for ( const expression of expressions ) {
 	} );
 }
 
-When( /^I go to (.+)$/, function ( title ) {
+When( /^I go to (.+)$/, async function ( title ) {
 	return this.visit( new TitlePage( title ) );
 } );
 
@@ -371,16 +371,16 @@ Then( /^a file named (.+) exists( on commons)? with contents (.+) and descriptio
 	return stepHelpers.uploadFile( title, fileName, description );
 } );
 
-Then( /^I am on a page titled (.+)$/, function ( title ) {
-	expect( ArticlePage.articleTitle, `I am on ${title}` ).to.equal( title );
+Then( /^I am on a page titled (.+)$/, async function ( title ) {
+	expect( await ArticlePage.articleTitle(), `I am on ${title}` ).to.equal( title );
 } );
 
-Given( /^I am at a random page$/, function () {
+Given( /^I am at a random page$/, async function () {
 	return this.visit( new TitlePage( 'Special:Random' ) );
 } );
 
-Given( /^I am logged in and at a random page$/, function () {
-	ArticlePage.login( this );
+Given( /^I am logged in and at a random page$/, async function () {
+	await ArticlePage.login( this );
 	return this.visit( new TitlePage( 'Special:Random' ) );
 } );
 
@@ -431,23 +431,23 @@ Then( /^I move (.+) to (.+) and( do not)? leave a redirect via api$/, function (
 	return this.stepHelpers.movePage( from, to, noRedirect );
 } );
 
-Then( /^I search deleted pages for (.+)$/, function ( title ) {
-	SpecialUndelete.login( this );
-	this.visit( SpecialUndelete );
-	SpecialUndelete.search_input = title;
-	SpecialUndelete.click_search_button();
+Then( /^I search deleted pages for (.+)$/, async function ( title ) {
+	await SpecialUndelete.login( this );
+	await this.visit( SpecialUndelete );
+	await SpecialUndelete.set_search_input( title );
+	return SpecialUndelete.click_search_button();
 } );
 
-Then( /^deleted page search returns (.+) as first result$/, function ( title ) {
-	expect( SpecialUndelete.get_result_at( 1 ) ).to.equal( title );
+Then( /^deleted page search returns (.+) as first result$/, async function ( title ) {
+	expect( await SpecialUndelete.get_result_at( 1 ) ).to.equal( title );
 } );
 
-When( /^I dump the cirrus data for (.+)$/, function ( title ) {
-	this.visit( new TitlePage( title + '&action=cirrusDump' ) );
+When( /^I dump the cirrus data for (.+)$/, async function ( title ) {
+	return this.visit( new TitlePage( title + '&action=cirrusDump' ) );
 } );
 
-Then( /^the page text contains (.+)$/, function ( text ) {
-	expect( browser.$( 'body' ).getText() ).to.contains( text );
+Then( /^the page text contains (.+)$/, async function ( text ) {
+	expect( await browser.$( 'body' ).getText() ).to.contains( text );
 } );
 
 Then( /^there are( no)? api search results with (.+) in the data$/, function ( should_not, within ) {

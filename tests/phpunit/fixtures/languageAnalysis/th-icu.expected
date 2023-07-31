@@ -1,186 +1,141 @@
 {
     "analyzer": {
-        "text": {
-            "type": "custom",
-            "tokenizer": "icu_tokenizer",
+        "keyword": {
+            "filter": [
+                "truncate_keyword"
+            ],
+            "tokenizer": "no_splitting",
+            "type": "custom"
+        },
+        "lowercase_keyword": {
+            "filter": [
+                "truncate_keyword",
+                "icu_normalizer"
+            ],
+            "tokenizer": "no_splitting",
+            "type": "custom"
+        },
+        "near_match": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
-                "split_camelCase",
-                "acronym_fixer",
-                "word_break_helper",
-                "thai_repl_pat",
-                "dotted_I_fix",
-                "thai_charfilter"
+                "near_space_flattener"
             ],
             "filter": [
-                "homoglyph_norm",
+                "icu_normalizer"
+            ],
+            "tokenizer": "no_splitting",
+            "type": "custom"
+        },
+        "near_match_asciifolding": {
+            "char_filter": [
+                "near_space_flattener"
+            ],
+            "filter": [
+                "truncate_keyword",
                 "icu_normalizer",
-                "decimal_digit",
-                "thai_stop",
                 "asciifolding"
-            ]
+            ],
+            "tokenizer": "no_splitting",
+            "type": "custom"
         },
         "plain": {
-            "type": "custom",
             "char_filter": [
                 "nnbsp_norm",
                 "word_break_helper"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ]
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "plain_search": {
-            "type": "custom",
             "char_filter": [
                 "nnbsp_norm",
                 "word_break_helper"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ]
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "prefix": {
+            "char_filter": [
+                "near_space_flattener"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "prefix",
+            "type": "custom"
+        },
+        "prefix_asciifolding": {
+            "char_filter": [
+                "near_space_flattener"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "asciifolding"
+            ],
+            "tokenizer": "prefix",
+            "type": "custom"
         },
         "short_text": {
-            "type": "custom",
-            "tokenizer": "whitespace",
             "filter": [
                 "icu_normalizer",
                 "aggressive_splitting",
                 "asciifolding_preserve",
                 "dedup_asciifolding"
-            ]
+            ],
+            "tokenizer": "whitespace",
+            "type": "custom"
         },
         "short_text_search": {
-            "type": "custom",
-            "tokenizer": "whitespace",
             "filter": [
                 "icu_normalizer",
                 "aggressive_splitting"
-            ]
+            ],
+            "tokenizer": "whitespace",
+            "type": "custom"
         },
         "source_text_plain": {
-            "type": "custom",
             "char_filter": [
                 "word_break_helper_source_text"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ]
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "source_text_plain_search": {
-            "type": "custom",
             "char_filter": [
                 "word_break_helper_source_text"
             ],
-            "tokenizer": "standard",
             "filter": [
                 "icu_normalizer"
-            ]
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "suggest": {
-            "type": "custom",
-            "tokenizer": "standard",
             "filter": [
                 "icu_normalizer",
                 "suggest_shingle"
-            ]
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         },
         "suggest_reverse": {
-            "type": "custom",
-            "tokenizer": "standard",
             "filter": [
                 "icu_normalizer",
                 "suggest_shingle",
                 "reverse"
-            ]
-        },
-        "token_reverse": {
-            "type": "custom",
-            "tokenizer": "no_splitting",
-            "filter": [
-                "reverse"
-            ]
-        },
-        "near_match": {
-            "type": "custom",
-            "char_filter": [
-                "near_space_flattener"
             ],
-            "tokenizer": "no_splitting",
-            "filter": [
-                "icu_normalizer"
-            ]
-        },
-        "near_match_asciifolding": {
-            "type": "custom",
-            "char_filter": [
-                "near_space_flattener"
-            ],
-            "tokenizer": "no_splitting",
-            "filter": [
-                "truncate_keyword",
-                "icu_normalizer",
-                "asciifolding"
-            ]
-        },
-        "prefix": {
-            "type": "custom",
-            "char_filter": [
-                "near_space_flattener"
-            ],
-            "tokenizer": "prefix",
-            "filter": [
-                "icu_normalizer"
-            ]
-        },
-        "prefix_asciifolding": {
-            "type": "custom",
-            "char_filter": [
-                "near_space_flattener"
-            ],
-            "tokenizer": "prefix",
-            "filter": [
-                "icu_normalizer",
-                "asciifolding"
-            ]
-        },
-        "word_prefix": {
-            "type": "custom",
             "tokenizer": "standard",
-            "filter": [
-                "icu_normalizer",
-                "prefix_ngram_filter"
-            ]
+            "type": "custom"
         },
-        "keyword": {
-            "type": "custom",
-            "tokenizer": "no_splitting",
-            "filter": [
-                "truncate_keyword"
-            ]
-        },
-        "lowercase_keyword": {
-            "type": "custom",
-            "tokenizer": "no_splitting",
-            "filter": [
-                "truncate_keyword",
-                "icu_normalizer"
-            ]
-        },
-        "trigram": {
-            "type": "custom",
-            "tokenizer": "trigram",
-            "filter": [
-                "icu_normalizer"
-            ]
-        },
-        "text_search": {
-            "type": "custom",
-            "tokenizer": "icu_tokenizer",
+        "text": {
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
@@ -197,93 +152,55 @@
                 "decimal_digit",
                 "thai_stop",
                 "asciifolding"
-            ]
-        }
-    },
-    "filter": {
-        "suggest_shingle": {
-            "type": "shingle",
-            "min_shingle_size": 2,
-            "max_shingle_size": 3,
-            "output_unigrams": true
+            ],
+            "tokenizer": "icu_tokenizer",
+            "type": "custom"
         },
-        "lowercase": {
-            "type": "lowercase"
+        "text_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "apostrophe_norm",
+                "split_camelCase",
+                "acronym_fixer",
+                "word_break_helper",
+                "thai_repl_pat",
+                "dotted_I_fix",
+                "thai_charfilter"
+            ],
+            "filter": [
+                "homoglyph_norm",
+                "icu_normalizer",
+                "decimal_digit",
+                "thai_stop",
+                "asciifolding"
+            ],
+            "tokenizer": "icu_tokenizer",
+            "type": "custom"
         },
-        "aggressive_splitting": {
-            "type": "word_delimiter_graph",
-            "stem_english_possessive": false,
-            "preserve_original": false
-        },
-        "prefix_ngram_filter": {
-            "type": "edgeNGram",
-            "max_gram": 255
-        },
-        "asciifolding": {
-            "type": "asciifolding",
-            "preserve_original": false
-        },
-        "asciifolding_preserve": {
-            "type": "asciifolding",
-            "preserve_original": true
-        },
-        "truncate_keyword": {
-            "type": "truncate",
-            "length": 5000
-        },
-        "remove_empty": {
-            "type": "length",
-            "min": 1
-        },
-        "icu_normalizer": {
-            "type": "icu_normalizer",
-            "name": "nfkc_cf"
-        },
-        "thai_stop": {
-            "type": "stop",
-            "stopwords": "_thai_"
-        },
-        "dedup_asciifolding": {
-            "type": "unique",
-            "only_on_same_position": true
-        }
-    },
-    "tokenizer": {
-        "prefix": {
-            "type": "edgeNGram",
-            "max_gram": 255
-        },
-        "no_splitting": {
-            "type": "keyword"
+        "token_reverse": {
+            "filter": [
+                "reverse"
+            ],
+            "tokenizer": "no_splitting",
+            "type": "custom"
         },
         "trigram": {
-            "type": "nGram",
-            "min_gram": 3,
-            "max_gram": 3
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "trigram",
+            "type": "custom"
+        },
+        "word_prefix": {
+            "filter": [
+                "icu_normalizer",
+                "prefix_ngram_filter"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
         }
     },
     "char_filter": {
-        "near_space_flattener": {
-            "type": "mapping",
-            "mappings": [
-                "'=>\\u0020",
-                "\\u2019=>\\u0020",
-                "\\u02BC=>\\u0020",
-                "_=>\\u0020",
-                "-=>\\u0020"
-            ]
-        },
-        "nnbsp_norm": {
-            "type": "mapping",
-            "mappings": [
-                "\\u202F=>\\u0020"
-            ]
-        },
-        "split_camelCase": {
-            "type": "pattern_replace",
-            "pattern": "(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})",
-            "replacement": " $1"
-        },
         "acronym_fixer": {
             "type": "pattern_replace",
             "pattern": "(?<=(?:^|[^\\p{L}\\p{M}\\p{Cf}])[\\p{M}\\p{Cf}]{0,9}+\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
@@ -313,6 +230,57 @@
                 "\uff40=>'"
             ]
         },
+        "dotted_I_fix": {
+            "type": "mapping",
+            "mappings": [
+                "\u0130=>I"
+            ]
+        },
+        "near_space_flattener": {
+            "type": "mapping",
+            "mappings": [
+                "'=>\\u0020",
+                "\\u2019=>\\u0020",
+                "\\u02BC=>\\u0020",
+                "_=>\\u0020",
+                "-=>\\u0020"
+            ]
+        },
+        "nnbsp_norm": {
+            "type": "mapping",
+            "mappings": [
+                "\\u202F=>\\u0020"
+            ]
+        },
+        "split_camelCase": {
+            "type": "pattern_replace",
+            "pattern": "(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})",
+            "replacement": " $1"
+        },
+        "thai_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "_=>\\u0020",
+                ";=>\\u0020",
+                ":=>\\u0020",
+                "\u00b7=>\\u0020",
+                "\u2027=>\\u0020",
+                "\u0e03=>\u0e02",
+                "\u0e05=>\u0e04",
+                "\\u0e4d\\u0e32=>\\u0e33",
+                "\\u0e4d\\u0e48\\u0e32=>\\u0e48\\u0e33",
+                "\\u0e4d\\u0e49\\u0e32=>\\u0e49\\u0e33",
+                "\\u0e33\\u0e48=>\\u0e48\\u0e33",
+                "\\u0e33\\u0e49=>\\u0e49\\u0e33",
+                "\\u0E34\\u0E4D=>\\u0E36",
+                "\\u0E4D\\u0E34=>\\u0E36"
+            ]
+        },
+        "thai_repl_pat": {
+            "type": "pattern_replace",
+            "pattern": "(?<=\\p{Nd})([\u0e01-\u0e4f])|(?<=[\u0e01-\u0e4f])(\\p{Nd})|(?<=[\u0e01-\u0e4f])\\.([\u0e01-\u0e4f])",
+            "replacement": " $1$2$3"
+        },
         "word_break_helper": {
             "type": "mapping",
             "mappings": [
@@ -335,36 +303,68 @@
                 ")=>\\u0020",
                 ":=>\\u0020"
             ]
+        }
+    },
+    "filter": {
+        "aggressive_splitting": {
+            "type": "word_delimiter_graph",
+            "stem_english_possessive": false,
+            "preserve_original": false
         },
-        "dotted_I_fix": {
-            "type": "mapping",
-            "mappings": [
-                "\u0130=>I"
-            ]
+        "asciifolding": {
+            "type": "asciifolding",
+            "preserve_original": false
         },
-        "thai_repl_pat": {
-            "type": "pattern_replace",
-            "pattern": "(?<=\\p{Nd})([\u0e01-\u0e4f])|(?<=[\u0e01-\u0e4f])(\\p{Nd})|(?<=[\u0e01-\u0e4f])\\.([\u0e01-\u0e4f])",
-            "replacement": " $1$2$3"
+        "asciifolding_preserve": {
+            "type": "asciifolding",
+            "preserve_original": true
         },
-        "thai_charfilter": {
-            "type": "mapping",
-            "mappings": [
-                "_=>\\u0020",
-                ";=>\\u0020",
-                ":=>\\u0020",
-                "\u00b7=>\\u0020",
-                "\u2027=>\\u0020",
-                "\u0e03=>\u0e02",
-                "\u0e05=>\u0e04",
-                "\\u0e4d\\u0e32=>\\u0e33",
-                "\\u0e4d\\u0e48\\u0e32=>\\u0e48\\u0e33",
-                "\\u0e4d\\u0e49\\u0e32=>\\u0e49\\u0e33",
-                "\\u0e33\\u0e48=>\\u0e48\\u0e33",
-                "\\u0e33\\u0e49=>\\u0e49\\u0e33",
-                "\\u0E34\\u0E4D=>\\u0E36",
-                "\\u0E4D\\u0E34=>\\u0E36"
-            ]
+        "dedup_asciifolding": {
+            "type": "unique",
+            "only_on_same_position": true
+        },
+        "icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf"
+        },
+        "lowercase": {
+            "type": "lowercase"
+        },
+        "prefix_ngram_filter": {
+            "type": "edgeNGram",
+            "max_gram": 255
+        },
+        "remove_empty": {
+            "type": "length",
+            "min": 1
+        },
+        "suggest_shingle": {
+            "type": "shingle",
+            "min_shingle_size": 2,
+            "max_shingle_size": 3,
+            "output_unigrams": true
+        },
+        "thai_stop": {
+            "type": "stop",
+            "stopwords": "_thai_"
+        },
+        "truncate_keyword": {
+            "type": "truncate",
+            "length": 5000
+        }
+    },
+    "tokenizer": {
+        "no_splitting": {
+            "type": "keyword"
+        },
+        "prefix": {
+            "type": "edgeNGram",
+            "max_gram": 255
+        },
+        "trigram": {
+            "type": "nGram",
+            "min_gram": 3,
+            "max_gram": 3
         }
     }
 }

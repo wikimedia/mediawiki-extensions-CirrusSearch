@@ -81,6 +81,25 @@ trait CirrusTestCaseTrait {
 		);
 	}
 
+	public static function saveAnalysisFixture( $testFile, $fixture ) {
+		// sort top level and second level of analysis fixtures
+		// and third level for "analyzer"
+		ksort( $fixture );
+		foreach ( $fixture as $key => &$value ) {
+			if ( is_array( $value ) ) {
+				ksort( $value );
+			}
+			if ( $key == 'analyzer' ) {
+				foreach ( $fixture[ $key ] as &$analyzer ) {
+					if ( is_array( $analyzer ) ) {
+						ksort( $analyzer );
+					}
+				}
+			}
+		}
+		self::saveFixture( $testFile, $fixture );
+	}
+
 	public static function encodeFixture( $fixture ) {
 		$old = ini_set( 'serialize_precision', 14 );
 		try {

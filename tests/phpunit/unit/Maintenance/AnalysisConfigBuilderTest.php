@@ -694,7 +694,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$builder = new AnalysisConfigBuilder( $langCode, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		if ( is_string( $expected ) ) {
 			// generate fixture
-			CirrusIntegrationTestCase::saveFixture( $expected, $builder->buildConfig() );
+			CirrusIntegrationTestCase::saveAnalysisFixture( $expected, $builder->buildConfig() );
 			$this->markTestSkipped( "Generated new fixture" );
 		} else {
 			$this->assertEquals( $expected, $builder->buildConfig() );
@@ -828,7 +828,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			$expected = CirrusIntegrationTestCase::loadFixture( $expectedFile );
 			$this->assertEquals( $expected, $oldConfig );
 		} else {
-			CirrusIntegrationTestCase::saveFixture( $expectedFile, $oldConfig );
+			CirrusIntegrationTestCase::saveAnalysisFixture( $expectedFile, $oldConfig );
 			$this->markTestSkipped( "Generated new fixture" );
 		}
 
@@ -841,7 +841,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			$expected = CirrusIntegrationTestCase::loadFixture( $expectedFile );
 			$this->assertEquals( $expected, $oldConfig );
 		} else {
-			CirrusIntegrationTestCase::saveFixture( $expectedFile, $oldConfig );
+			CirrusIntegrationTestCase::saveAnalysisFixture( $expectedFile, $oldConfig );
 			$this->markTestSkipped( "Generated new fixture" );
 		}
 	}

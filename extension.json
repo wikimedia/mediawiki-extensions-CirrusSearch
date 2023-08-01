@@ -708,6 +708,14 @@
 		"CirrusSearchUseEventBusBridge": {
 			"description": "Emit page-rerenders events via EventBus (requires EventBus)",
 			"value": false
+		},
+		"CirrusSearchDeduplicateInQuery": {
+			"description": "Exclude duplicate results a priori by filtering based on 'local_sites_with_dupe'",
+			"value": true
+		},
+		"CirrusSearchDeduplicateInMemory": {
+			"description": "Exclude duplicate results afterwards in memory",
+			"value": false
 		}
 	},
 	"SearchMappings": {

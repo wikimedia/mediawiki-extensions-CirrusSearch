@@ -3,7 +3,9 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
+use CirrusSearch\Util;
 use Elastica\ResultSet as ElasticaResultSet;
+use Liuggio\StatsdClient\Factory\StatsdDataFactoryInterface;
 
 /**
  * Result type for a full text search.
@@ -29,21 +31,29 @@ final class FullTextResultsType extends BaseResultsType {
 	private $extraFieldsToExtract;
 
 	/**
+	 * @var bool if true, deduplicate results from file namespace
+	 */
+	private bool $deduplicate;
+
+	/**
 	 * @param FetchPhaseConfigBuilder $fetchPhaseBuilder
 	 * @param bool $searchContainedSyntax
 	 * @param TitleHelper $titleHelper
 	 * @param string[] $extraFieldsToExtract
+	 * @param bool $deduplicate
 	 */
 	public function __construct(
 		FetchPhaseConfigBuilder $fetchPhaseBuilder,
 		$searchContainedSyntax,
 		TitleHelper $titleHelper,
-		array $extraFieldsToExtract = []
+		array $extraFieldsToExtract = [],
+		bool $deduplicate = false
 	) {
 		$this->fetchPhaseBuilder = $fetchPhaseBuilder;
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->titleHelper = $titleHelper;
 		$this->extraFieldsToExtract = $extraFieldsToExtract;
+		$this->deduplicate = $deduplicate;
 	}
 
 	/**
@@ -85,7 +95,14 @@ final class FullTextResultsType extends BaseResultsType {
 	 */
 	public function transformElasticsearchResult( ElasticaResultSet $result ) {
 		// Should we make this a concrete class?
-		return new class( $this->titleHelper, $this->fetchPhaseBuilder, $result, $this->searchContainedSyntax, $this->extraFieldsToExtract )
+		return new class(
+			$this->titleHelper,
+			$this->fetchPhaseBuilder,
+			$result,
+			$this->searchContainedSyntax,
+			$this->extraFieldsToExtract,
+			$this->deduplicate
+		)
 				extends BaseCirrusSearchResultSet {
 			/** @var TitleHelper */
 			private $titleHelper;
@@ -95,25 +112,45 @@ final class FullTextResultsType extends BaseResultsType {
 			private $results;
 			/** @var bool */
 			private $searchContainedSyntax;
+			/** @var bool if true, deduplicate results from file namespace */
+			private bool $deduplicate;
+			/** @var string[] array of titles for counting duplicates */
+			private array $fileTitles = [];
+			/** @var StatsdDataFactoryInterface metrics facade */
+			private StatsdDataFactoryInterface $statsd;
 
 			public function __construct(
 				TitleHelper $titleHelper,
 				FetchPhaseConfigBuilder $builder,
 				ElasticaResultSet $results,
 				$searchContainedSyntax,
-				array $extraFieldsToExtract
+				array $extraFieldsToExtract,
+				bool $deduplicate
 			) {
 				$this->titleHelper = $titleHelper;
 				$this->resultBuilder = new FullTextCirrusSearchResultBuilder( $this->titleHelper,
 					$builder->getHLFieldsPerTargetAndPriority(), $extraFieldsToExtract );
 				$this->results = $results;
 				$this->searchContainedSyntax = $searchContainedSyntax;
+				$this->statsd = Util::getStatsDataFactory();
+				$this->deduplicate = $deduplicate;
 			}
 
 			/**
 			 * @inheritDoc
 			 */
 			protected function transformOneResult( \Elastica\Result $result ) {
+				$source = $result->getSource();
+				if ( $source['namespace'] === NS_FILE ) {
+					if ( in_array( $source['title'], $this->fileTitles ) ) {
+						$this->statsd->increment( 'CirrusSearch.results.file_duplicates' );
+						if ( $this->deduplicate ) {
+							return null;
+						}
+					} else {
+						$this->fileTitles[] = $source['title'];
+					}
+				}
 				return $this->resultBuilder->build( $result );
 			}
 
@@ -142,7 +179,7 @@ final class FullTextResultsType extends BaseResultsType {
 	 * @return FullTextResultsType
 	 */
 	public function withFetchPhaseBuilder( FetchPhaseConfigBuilder $builder ): FullTextResultsType {
-		return new self( $builder, $this->searchContainedSyntax, $this->titleHelper );
+		return new self( $builder, $this->searchContainedSyntax, $this->titleHelper, $this->extraFieldsToExtract, $this->deduplicate );
 	}
 
 	/**

@@ -58,7 +58,7 @@ class SearchRequestBuilder {
 
 		$extraIndexes = $this->searchContext->getExtraIndices();
 
-		if ( !empty( $extraIndexes ) ) {
+		if ( !empty( $extraIndexes ) && $this->searchContext->getConfig()->getElement( 'CirrusSearchDeduplicateInQuery' ) !== false ) {
 			$this->searchContext->addNotFilter( new \Elastica\Query\Term(
 				[ 'local_sites_with_dupe' => $this->indexBaseName ]
 			) );

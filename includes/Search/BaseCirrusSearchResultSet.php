@@ -57,7 +57,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 
 	/**
 	 * @param \Elastica\Result $result Result from search engine
-	 * @return CirrusSearchResult Elasticsearch result transformed into mediawiki
+	 * @return CirrusSearchResult|null Elasticsearch result transformed into mediawiki
 	 *  search result object.
 	 */
 	abstract protected function transformOneResult( \Elastica\Result $result );

@@ -182,8 +182,10 @@ class ResultSet extends BaseSearchResultSet implements CirrusSearchResultSet {
 				$this->preCacheContainedTitles( $this->result );
 				foreach ( $this->result->getResults() as $result ) {
 					$transformed = $this->transformOneResult( $result );
-					$this->augmentResult( $transformed );
-					$this->results[] = $transformed;
+					if ( $transformed != null ) {
+						$this->augmentResult( $transformed );
+						$this->results[] = $transformed;
+					}
 				}
 			}
 		}

@@ -89,8 +89,10 @@ class InterwikiSearcher extends Searcher {
 			$context = SearchContext::fromSearchQuery( $iwQuery,
 				FallbackRunner::create( $iwQuery, $this->interwikiResolver ), $this->cirrusSearchHookRunner );
 			$this->searchContext = $context;
-			$this->setResultsType( new FullTextResultsType( $this->searchContext->getFetchPhaseBuilder(),
-				$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ), $this->titleHelper ) );
+			$this->setResultsType( new FullTextResultsType(
+				$this->searchContext->getFetchPhaseBuilder(),
+				$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ),
+				$this->titleHelper, [], $this->searchContext->getConfig()->getElement( 'CirrusSearchDeduplicateInMemory' ) === true ) );
 			$this->config = $context->getConfig();
 			$this->limit = $iwQuery->getLimit();
 			$this->offset = $iwQuery->getOffset();

@@ -246,7 +246,7 @@ class ChangeListener implements
 				'docId' => $this->searchConfig->makeId( $pageid )
 			] );
 			// Push the job after DB commit but cancel on rollback
-			$this->loadBalancer->getConnectionRef( DB_PRIMARY )->onTransactionCommitOrIdle( function () use ( $job ) {
+			$this->loadBalancer->getConnection( DB_PRIMARY )->onTransactionCommitOrIdle( function () use ( $job ) {
 				$this->jobQueue->lazyPush( $job );
 			}, __METHOD__ );
 		}

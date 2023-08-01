@@ -159,7 +159,7 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 		$pageSelectQueryBuilder = $this->getMockBuilder( PageSelectQueryBuilder::class )
 			->setConstructorArgs(
 				[
-					$this->getServiceContainer()->getDBLoadBalancer()->getConnectionRef( DB_REPLICA ),
+					$this->getServiceContainer()->getDBLoadBalancer()->getConnection( DB_REPLICA ),
 					$pageStore
 				]
 			)

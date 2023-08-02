@@ -16,6 +16,7 @@ use Wikimedia\AtEase\AtEase;
 
 /**
  * @group CirrusSearch
+ * @group Database
  * @covers \CirrusSearch\CirrusConfigInterwikiResolver
  * @covers \CirrusSearch\SiteMatrixInterwikiResolver
  * @covers \CirrusSearch\BaseInterwikiResolver

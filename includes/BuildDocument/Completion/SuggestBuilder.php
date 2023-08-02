@@ -6,7 +6,6 @@ use CirrusSearch\Connection;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Search;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Title\Title;
 
 /**
  * Build a doc ready for the titlesuggest index.
@@ -135,6 +134,7 @@ class SuggestBuilder {
 	 * @return \Elastica\Document[] a set of suggest documents
 	 */
 	public function build( $inputDocs, $explain = false ) {
+		$titleFactory = MediaWikiServices::getInstance()->getTitleFactory();
 		// Cross namespace titles
 		$crossNsTitles = [];
 		$docs = [];
@@ -176,7 +176,7 @@ class SuggestBuilder {
 						$explainDetails = $this->scoringMethod->explain( $inputDoc );
 					}
 
-					$title = Title::makeTitle( $redir['namespace'], $redir['title'] );
+					$title = $titleFactory->makeTitle( $redir['namespace'], $redir['title'] );
 					$crossNsTitles[] = [
 						'title' => $title,
 						'score' => $score,

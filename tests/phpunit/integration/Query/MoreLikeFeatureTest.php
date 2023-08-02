@@ -11,6 +11,8 @@ use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use LinkCacheTestTrait;
 use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
+use Wikimedia\TestingAccessWrapper;
 
 /**
  * Test More Like This keyword feature.
@@ -216,8 +218,26 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 	 */
 	public function testApply( $term, $expectedQuery, $mltUsed, $featureClass, $remainingText = '' ) {
 		// Inject fake pages for MoreLikeTrait::collectTitles() to find
-		$this->addGoodLinkObject( 12345, Title::newFromText( 'Some page' ) );
-		$this->addGoodLinkObject( 23456, Title::newFromText( 'Other page' ) );
+		$fakeTitleIDs = [
+			'Some page' => 12345,
+			'Other page' => 23456
+		];
+		$titleFactory = $this->getMockBuilder( TitleFactory::class )
+			->onlyMethods( [ 'newFromText' ] )
+			->getMock();
+		$titleFactory->method( 'newFromText' )->willReturnCallback(
+			static function ( $text, $ns ) use ( $fakeTitleIDs ) {
+				$ret = Title::newFromText( $text, $ns );
+				// Force the article ID and the redirect flag to avoid DB queries.
+				$ret->resetArticleID( $fakeTitleIDs[$text] ?? 0 );
+				$wrapper = TestingAccessWrapper::newFromObject( $ret );
+				$wrapper->mRedirect = false;
+				return $wrapper->object;
+			} );
+		$this->setService( 'TitleFactory', $titleFactory );
+		foreach ( $fakeTitleIDs as $titleText => $id ) {
+			$this->addGoodLinkObject( $id, Title::newFromText( $titleText ) );
+		}
 
 		// @todo Use a HashConfig with explicit values?
 		$config = new HashSearchConfig( [ 'CirrusSearchMoreLikeThisTTL' => 600 ], [ HashSearchConfig::FLAG_INHERIT ] );
@@ -254,7 +274,26 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 	public function testExpandedData() {
 		$config = new SearchConfig();
 		$title = Title::newFromText( 'Some page' );
+
+		// Force the article ID and the redirect flag to avoid DB queries.
+		$title->resetArticleID( 12345 );
+		$wrapper = TestingAccessWrapper::newFromObject( $title );
+		$wrapper->mRedirect = false;
+		$title = $wrapper->object;
 		$this->addGoodLinkObject( 12345, $title );
+		$titleFactory = $this->getMockBuilder( TitleFactory::class )
+			->onlyMethods( [ 'newFromText' ] )
+			->getMock();
+		$titleFactory->method( 'newFromText' )
+			->willReturnCallback( static function ( $text, $ns ) use ( $title ) {
+				if ( $text === 'Some page' ) {
+					return $title;
+				}
+				$ret = Title::newFromText( $text, $ns );
+				$ret->resetArticleID( 0 );
+				return $ret;
+			} );
+		$this->setService( 'TitleFactory', $titleFactory );
 		$feature = new MoreLikeFeature( $config );
 
 		$this->assertExpandedData(

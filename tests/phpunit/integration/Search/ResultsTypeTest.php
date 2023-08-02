@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-use CirrusSearch\CirrusTestCase;
+use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Searcher;
@@ -34,8 +34,9 @@ use MediaWiki\Title\Title;
  * @covers \CirrusSearch\Search\Fetch\BaseHighlightedField
  * @covers \CirrusSearch\Search\Fetch\ExperimentalHighlightedFieldBuilder
  * @group CirrusSearch
+ * @todo Make this a unit test when moving away from Title(Factory)
  */
-class ResultsTypeTest extends CirrusTestCase {
+class ResultsTypeTest extends CirrusIntegrationTestCase {
 	public static function fancyRedirectHandlingProvider() {
 		return [
 			'typical title only match' => [

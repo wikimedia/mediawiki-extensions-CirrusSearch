@@ -27,8 +27,9 @@ use CirrusSearch\BuildDocument\Completion\SuggestScoringMethodFactory;
  *
  * @group CirrusSearch
  * @covers \CirrusSearch\BuildDocument\Completion\SuggestBuilder
+ * @todo Make this a unit test when moving away from Title(Factory)
  */
-class SuggestBuilderTest extends CirrusTestCase {
+class SuggestBuilderTest extends CirrusIntegrationTestCase {
 	public function testEinstein() {
 		$builder = $this->buildBuilder();
 		$score = 10;

@@ -5,17 +5,31 @@ namespace CirrusSearch;
 use CirrusSearch\BuildDocument\Completion\DefaultSortSuggestionsBuilder;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\BuildDocument\Completion\SuggestScoringMethodFactory;
+use MediaWiki\Cache\LinkBatchFactory;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 
 /**
  * @covers \CirrusSearch\BuildDocument\Completion\SuggestBuilder
  */
 class SuggestBuilderIntegrationTest extends \MediaWikiIntegrationTestCase {
 
+	protected function setUp(): void {
+		parent::setUp();
+		$this->setService( 'LinkBatchFactory', $this->createMock( LinkBatchFactory::class ) );
+	}
+
 	/**
-	 * Building crossns  suggestion call Title::getArticleID() which relies on MWServices
-	 * and this cannot be a unit test
+	 * @todo Make this a unit test when DI becomes possible.
 	 */
 	public function testCrossNSRedirects() {
+		$titleFactory = $this->createMock( TitleFactory::class );
+		$titleFactory->method( 'makeTitle' )->willReturnCallback( static function () {
+			$ret = Title::makeTitle( ...func_get_args() );
+			$ret->resetArticleID( 0 );
+			return $ret;
+		} );
+		$this->setService( 'TitleFactory', $titleFactory );
 		$builder = $this->buildBuilder();
 		$score = 10;
 		$doc = [
@@ -68,6 +82,14 @@ class SuggestBuilderIntegrationTest extends \MediaWikiIntegrationTestCase {
 	}
 
 	public function testDefaultSortAndCrossNS() {
+		$titleFactory = $this->createMock( TitleFactory::class );
+		$titleFactory->method( 'makeTitle' )->willReturnCallback( static function () {
+			$ret = Title::makeTitle( ...func_get_args() );
+			$ret->resetArticleID( 0 );
+			return $ret;
+		} );
+		$this->setService( 'TitleFactory', $titleFactory );
+
 		$score = 10;
 		$crossNsScore = (int)( $score * SuggestBuilder::CROSSNS_DISCOUNT );
 		// Test Cross namespace the defaultsort should not be added

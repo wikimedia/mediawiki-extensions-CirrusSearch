@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-use CirrusSearch\CirrusTestCase;
+use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Searcher;
 
@@ -12,8 +12,9 @@ use CirrusSearch\Searcher;
  * @covers \CirrusSearch\Search\Fetch\HighlightingTrait
  * @covers \CirrusSearch\Search\FullTextCirrusSearchResultBuilder
  * @covers \CirrusSearch\Search\CirrusSearchResult
+ * @todo Make this a unit test when moving away from Title(Factory)
  */
-class ResultTest extends CirrusTestCase {
+class ResultTest extends CirrusIntegrationTestCase {
 	private static $EXAMPLE_HIT = [
 		'_index' => 'eswiki_content_123456',
 		'_source' => [

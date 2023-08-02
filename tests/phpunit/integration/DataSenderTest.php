@@ -8,6 +8,8 @@ use Elastica\Bulk\ResponseSet;
 use Elastica\Client;
 use Elastica\Document;
 use Elastica\Response;
+use Wikimedia\Rdbms\IDatabase;
+use Wikimedia\Rdbms\ILoadBalancer;
 
 /**
  * Test Updater methods
@@ -32,6 +34,13 @@ use Elastica\Response;
  */
 class DataSenderTest extends CirrusIntegrationTestCase {
 	private $actualCalls;
+
+	protected function setUp(): void {
+		parent::setUp();
+		$lb = $this->createMock( ILoadBalancer::class );
+		$lb->method( 'getConnection' )->willReturn( $this->createMock( IDatabase::class ) );
+		$this->setService( 'DBLoadBalancer', $lb );
+	}
 
 	/**
 	 * @dataProvider provideDocs

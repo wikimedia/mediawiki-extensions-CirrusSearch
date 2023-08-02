@@ -70,9 +70,10 @@ trait MoreLikeTrait {
 	private function collectTitlesFromDB( $term ) {
 		$titles = [];
 		$found = [];
+		$titleFactory = MediaWikiServices::getInstance()->getTitleFactory();
 		$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();
 		foreach ( explode( '|', $term ) as $title ) {
-			$title = Title::newFromText( trim( $title ) );
+			$title = $titleFactory->newFromText( trim( $title ) );
 			while ( true ) {
 				if ( !$title ) {
 					continue 2;

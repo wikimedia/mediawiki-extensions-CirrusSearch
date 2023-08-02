@@ -10,10 +10,13 @@ use MediaWiki\DAO\WikiAwareEntity;
 use MediaWiki\Page\PageSelectQueryBuilder;
 use MediaWiki\Page\PageStore;
 use MediaWiki\Page\PageStoreRecord;
+use Wikimedia\Rdbms\IDatabase;
 
 /**
  * @covers \CirrusSearch\Query\InCategoryFeature
  * @group CirrusSearch
+ * @group Database
+ * @todo Remove this test from the Database group when DI becomes possible for the Category class.
  */
 class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 	use SimpleKeywordFeatureTestTrait;
@@ -159,7 +162,7 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 		$pageSelectQueryBuilder = $this->getMockBuilder( PageSelectQueryBuilder::class )
 			->setConstructorArgs(
 				[
-					$this->getServiceContainer()->getDBLoadBalancer()->getConnection( DB_REPLICA ),
+					$this->createMock( IDatabase::class ),
 					$pageStore
 				]
 			)

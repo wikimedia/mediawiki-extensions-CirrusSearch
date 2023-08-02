@@ -17,6 +17,7 @@ use MediaWiki\Title\Title;
 /**
  * @covers \CirrusSearch\Searcher
  * @group CirrusSearch
+ * @group Database
  * @group Standalone
  */
 class SearcherTest extends CirrusIntegrationTestCase {

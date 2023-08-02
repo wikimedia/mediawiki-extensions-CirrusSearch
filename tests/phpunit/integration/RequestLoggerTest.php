@@ -15,8 +15,11 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use Elastica\Response;
 use Elastica\Transport\AbstractTransport;
+use MediaWiki\Cache\LinkBatchFactory;
+use MediaWiki\Title\TitleFactory;
 use Psr\Log\AbstractLogger;
 use Symfony\Component\Yaml\Yaml;
+use Title;
 
 /**
  * Tests full text and completion search request logging. Could be expanded for
@@ -37,6 +40,8 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 
 		$schemaPath = self::$FIXTURE_DIR . 'requestLogging/mediawiki_cirrussearch_request.schema.yaml';
 		$this->schema = Yaml::parseFile( $schemaPath );
+		// Clear all hooks; some from the GrowthExperiments extension can cause DB queries.
+		$this->clearHooks();
 	}
 
 	public function testHasQueryLogs() {
@@ -145,6 +150,14 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			$globals['wgCirrusSearchEnableCrossProjectSearch'] = true;
 		}
 		$this->setMwGlobals( $globals );
+		$this->setService( 'LinkBatchFactory', $this->createMock( LinkBatchFactory::class ) );
+		$titleFactory = $this->createMock( TitleFactory::class );
+		$titleFactory->method( 'makeTitle' )->willReturnCallback( static function () {
+			$ret = Title::makeTitle( ...func_get_args() );
+			$ret->resetArticleID( 0 );
+			return $ret;
+		} );
+		$this->setService( 'TitleFactory', $titleFactory );
 
 		switch ( $query['type'] ) {
 		case 'fulltext':

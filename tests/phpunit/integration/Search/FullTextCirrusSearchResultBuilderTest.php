@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-use CirrusSearch\CirrusTestCase;
+use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Search\Fetch\HighlightedField;
 use CirrusSearch\Searcher;
@@ -14,8 +14,9 @@ use MediaWiki\Title\Title;
  * @covers \CirrusSearch\Search\Fetch\HighlightingTrait
  * @covers \CirrusSearch\Search\TitleHelper
  * @covers \CirrusSearch\Search\Result
+ * @todo Make this a unit test when moving away from Title(Factory)
  */
-class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
+class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 	private static $MINIMAL_HIT = [
 		'_index' => 'some_index',
 		'_source' => [

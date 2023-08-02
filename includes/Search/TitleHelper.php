@@ -52,12 +52,13 @@ class TitleHelper {
 	 */
 	public function makeTitle( \Elastica\Result $r ): Title {
 		$iwPrefix = $this->identifyInterwikiPrefix( $r );
+		$titleFactory = MediaWikiServices::getInstance()->getTitleFactory();
 		if ( empty( $iwPrefix ) && $r->namespace !== null && $r->title !== null ) {
-			return Title::makeTitle( $r->namespace, $r->title );
+			return $titleFactory->makeTitle( $r->namespace, $r->title );
 		}
 
 		$nsPrefix = $r->namespace_text ? $r->namespace_text . ':' : '';
-		return Title::makeTitle( 0, $nsPrefix . $r->title, '', $iwPrefix ?? '' );
+		return $titleFactory->makeTitle( 0, $nsPrefix . $r->title, '', $iwPrefix ?? '' );
 	}
 
 	/**

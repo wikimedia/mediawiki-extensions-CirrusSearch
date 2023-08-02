@@ -7,6 +7,8 @@ use Elastica\Query\MatchQuery;
 
 /**
  * @group CirrusSearch
+ * @group Database
+ * @todo Remove this test from the Database group when DI becomes possible for the Category class.
  * @covers \CirrusSearch\Query\QueryHelper
  */
 class QueryHelperTest extends CirrusIntegrationTestCase {

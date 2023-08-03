@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bangrapip"
+		]
+	},
+	"cirrussearch-desc": "Penyarian dorongan Elasticsearch bakal MédiaWiki",
+	"cirrussearch-backend-error": "Kita kaga' bisa ngrampungin lu punya penyarian lantaran atu mas'alah sementara. Padol dah, jal lagi entaran.",
+	"cirrussearch-parse-error": "Kuéri kaga' dingertiin. Tulung bikin ringkes dah. Kuéri direkem bakal nyempurnain sistim penyarian.",
+	"cirrussearch-too-busy-error": "Penyarian wayah gini lagi èpot. Padol dah, jal lagi entaran.",
+	"cirrussearch-regex-empty-expression": "$1 ngarepin ungkepan biasa nyang kaga' kosong.",
+	"cirrussearch-regex-syntax-error": "Nahwu ungkepan biasa ngablu di $2: $1",
+	"cirrussearch-regex-too-busy-error": "Kebanyakan penyarian ungkepan biasa nyang lagi jalan. Padol dah, jal lagi entaran.",
+	"cirrussearch-regex-too-complex-error": "Kebanyakan ungkepan keliwat ribet. Belajarin lebi lanjut bakal ngringkesinnya [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|di mari]].",
+	"cirrussearch-now-using": "Ni wiki maké mesin penyarian baru. ([[mw:Special:MyLanguage/Help:CirrusSearch|Belajarin lebi lanjut]])"
+}

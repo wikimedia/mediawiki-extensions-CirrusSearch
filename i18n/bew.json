@@ -12,5 +12,6 @@
 	"cirrussearch-regex-syntax-error": "Nahwu ungkepan biasa ngablu di $2: $1",
 	"cirrussearch-regex-too-busy-error": "Kebanyakan penyarian ungkepan biasa nyang lagi jalan. Padol dah, jal lagi entaran.",
 	"cirrussearch-regex-too-complex-error": "Kebanyakan ungkepan keliwat ribet. Belajarin lebi lanjut bakal ngringkesinnya [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|di mari]].",
-	"cirrussearch-now-using": "Ni wiki maké mesin penyarian baru. ([[mw:Special:MyLanguage/Help:CirrusSearch|Belajarin lebi lanjut]])"
+	"cirrussearch-now-using": "Ni wiki maké mesin penyarian baru. ([[mw:Special:MyLanguage/Help:CirrusSearch|Belajarin lebi lanjut]])",
+	"cirrussearch-ignored-headings": " # <pre>\n# Judul nyang bakalan dicuèkin ama penyarian.\n# Ni permakan bakalan diterepin abisnya halaman dengen ni judul diindèk.\n# Lu bisa maksain pengindèksan ni halaman lagi dengen ngelakonin permakan kosong (''null edit'')\n# Nahwunya begini:\n#   * Semuanya deri lèter \"#\" ke akir baris ièlah atu komèntar.\n#   * Saban baris trakosong ièlah judul perdatanya nyang bakalan dicuèkin.\nRuju'an\nSènggètan luar\nLiat juga'\n #</pre>"
 }

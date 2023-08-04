@@ -87,7 +87,7 @@
 		"APIAfterExecute": "CirrusSearch\\Hooks::onAPIAfterExecute",
 		"ApiBeforeMain": "CirrusSearch\\Hooks::onApiBeforeMain",
 		"APIQuerySiteInfoStatisticsInfo": "CirrusSearch\\Hooks::onAPIQuerySiteInfoStatisticsInfo",
-		"ArticleDelete": "changelistener",
+		"PageDelete": "changelistener",
 		"ArticleDeleteComplete": "changelistener",
 		"ArticleRevisionVisibilitySet": "changelistener",
 		"ArticleUndelete": "changelistener",
@@ -127,7 +127,8 @@
 			"services": [
 				"JobQueueGroup",
 				"ConfigFactory",
-				"DBLoadBalancer"
+				"DBLoadBalancer",
+				"RedirectLookup"
 			]
 		}
 	},

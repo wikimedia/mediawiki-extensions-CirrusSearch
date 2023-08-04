@@ -5,7 +5,11 @@ namespace CirrusSearch;
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate as CirrusLinksUpdate;
 use MediaWiki\Deferred\LinksUpdate\LinksUpdate;
+use MediaWiki\Page\PageIdentityValue;
+use MediaWiki\Page\RedirectLookup;
+use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
 use Wikimedia\Assert\Assert;
 
 class ChangeListenerTest extends CirrusTestCase {
@@ -16,7 +20,8 @@ class ChangeListenerTest extends CirrusTestCase {
 		$changeListener = new ChangeListener(
 			$this->createMock( \JobQueueGroup::class ),
 			$this->newHashSearchConfig( [] ),
-			$this->createMock( \LoadBalancer::class )
+			$this->createMock( \LoadBalancer::class ),
+			$this->createMock( RedirectLookup::class )
 		);
 		$titles = [ \Title::makeTitle( NS_MAIN, 'Title1' ), \Title::makeTitle( NS_MAIN, 'Title2' ) ];
 		$this->assertEqualsCanonicalizing(
@@ -73,7 +78,8 @@ class ChangeListenerTest extends CirrusTestCase {
 		$linksUpdate->method( 'isRecursive' )->willReturn( $recursive );
 		$linksUpdate->method( 'getCauseAction' )->willReturn( $causeAction );
 
-		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ), $this->createMock( \LoadBalancer::class ) );
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
+			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
 
 		$listener->onLinksUpdateComplete( $linksUpdate, null );
 	}
@@ -137,7 +143,8 @@ class ChangeListenerTest extends CirrusTestCase {
 		];
 		$jobqueue->expects( $this->once() )->method( 'push' )->with( new CirrusLinksUpdate( $title,  $expectedJobParam ) );
 
-		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(), $this->createMock( \LoadBalancer::class ) );
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
+			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
 		$listener->onUploadComplete( $uploadBase );
 	}
 
@@ -160,7 +167,8 @@ class ChangeListenerTest extends CirrusTestCase {
 			"root_event_time" => $now,
 		];
 		$jobqueue->expects( $this->once() )->method( 'push' )->with( new DeletePages( $title, $expectedJobParam ) );
-		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(), $this->createMock( \LoadBalancer::class ) );
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
+			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
 		$listener->onArticleDeleteComplete( $page, $this->createMock( \User::class ), "a reason", $pageId, null, $logEntry, 2 );
 	}
 
@@ -179,7 +187,33 @@ class ChangeListenerTest extends CirrusTestCase {
 			"prioritize" => true
 		];
 		$jobqueue->expects( $this->once() )->method( 'push' )->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
-		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(), $this->createMock( \LoadBalancer::class ) );
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
+			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
 		$listener->onArticleRevisionVisibilitySet( $title, [], [] );
+	}
+
+	/**
+	 * @covers \CirrusSearch\ChangeListener::onPageDelete
+	 */
+	public function testOnPageDelete() {
+		$jobqueue = $this->createMock( \JobQueueGroup::class );
+		$redirectLookup = $this->createMock( RedirectLookup::class );
+		$redirect = new PageIdentityValue( 123, 0, 'Deleted_Redirect', false );
+		$page = new PageIdentityValue( 124, 0, 'A_Page', false );
+		$deleter = $this->createMock( Authority::class );
+
+		$target = Title::makeTitle( 0, 'Redir_Target' );
+
+		$redirectLookup->expects( $this->exactly( 2 ) )
+			->method( 'getRedirectTarget' )
+			->withConsecutive( [ $redirect ], [ $page ] )
+			->willReturnOnConsecutiveCalls( $target, null );
+
+		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new Job\LinksUpdate( $target, [] ) );
+
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
+			$this->createMock( \LoadBalancer::class ), $redirectLookup );
+		$listener->onPageDelete( $redirect, $deleter, 'unused', new \StatusValue(), false );
+		$listener->onPageDelete( $page, $deleter, 'unused', new \StatusValue(), false );
 	}
 }

@@ -15,8 +15,11 @@ use MediaWiki\Hook\TitleMoveHook;
 use MediaWiki\Hook\UploadCompleteHook;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Page\Hook\ArticleDeleteCompleteHook;
-use MediaWiki\Page\Hook\ArticleDeleteHook;
 use MediaWiki\Page\Hook\ArticleUndeleteHook;
+use MediaWiki\Page\Hook\PageDeleteHook;
+use MediaWiki\Page\ProperPageIdentity;
+use MediaWiki\Page\RedirectLookup;
+use MediaWiki\Permissions\Authority;
 use Status;
 use Title;
 use User;
@@ -32,7 +35,7 @@ class ChangeListener implements
 	PageMoveCompleteHook,
 	UploadCompleteHook,
 	ArticleRevisionVisibilitySetHook,
-	ArticleDeleteHook,
+	PageDeleteHook,
 	ArticleDeleteCompleteHook,
 	ArticleUndeleteHook
 {
@@ -48,9 +51,17 @@ class ChangeListener implements
 	/** @var array state holding the titles being moved */
 	private $movingTitles = [];
 
-	public static function create( JobQueueGroup $jobQueue, ConfigFactory $configFactory, LoadBalancer $loadBalancer ): ChangeListener {
+	/** @var RedirectLookup */
+	private RedirectLookup $redirectLookup;
+
+	public static function create(
+		JobQueueGroup $jobQueue,
+		ConfigFactory $configFactory,
+		LoadBalancer $loadBalancer,
+		RedirectLookup $redirectLookup
+	): ChangeListener {
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
-		return new self( $jobQueue, $configFactory->makeConfig( "CirrusSearch" ), $loadBalancer );
+		return new self( $jobQueue, $configFactory->makeConfig( "CirrusSearch" ), $loadBalancer, $redirectLookup );
 	}
 
 	/**
@@ -58,10 +69,16 @@ class ChangeListener implements
 	 * @param SearchConfig $searchConfig
 	 * @param LoadBalancer $loadBalancer
 	 */
-	public function __construct( JobQueueGroup $jobQueue, SearchConfig $searchConfig, LoadBalancer $loadBalancer ) {
+	public function __construct(
+		JobQueueGroup $jobQueue,
+		SearchConfig $searchConfig,
+		LoadBalancer $loadBalancer,
+		RedirectLookup $redirectLookup
+	) {
 		$this->jobQueue = $jobQueue;
 		$this->searchConfig = $searchConfig;
 		$this->loadBalancer = $loadBalancer;
+		$this->redirectLookup = $redirectLookup;
 	}
 
 	/**
@@ -147,31 +164,37 @@ class ChangeListener implements
 	}
 
 	/**
-	 * Hook to call before an article is deleted
-	 * @param WikiPage $page WikiPage being deleted
-	 * @param User $user User deleting the article
-	 * @param string &$reason Reason the article is being deleted
-	 * @param string &$error If the deletion was prohibited, the (raw HTML) error message to display
-	 *   (added in 1.13)
-	 * @param Status &$status Modify this to throw an error. Overridden by $error
-	 *   (added in 1.20)
-	 * @param bool $suppress Whether this is a suppression deletion or not (added in 1.27)
-	 * @return bool|void True or no return value to continue or false to abort
+	 * This hook is called before a page is deleted.
+	 *
+	 * @since 1.37
+	 *
+	 * @param ProperPageIdentity $page Page being deleted.
+	 * @param Authority $deleter Who is deleting the page
+	 * @param string $reason Reason the page is being deleted
+	 * @param \StatusValue $status Add any error here
+	 * @param bool $suppress Whether this is a suppression deletion or not
+	 * @return bool|void True or no return value to continue; false to abort, which also requires adding
+	 * a fatal error to $status.
 	 */
-	public function onArticleDelete( WikiPage $page, User $user, &$reason, &$error, Status &$status, $suppress ) {
+	public function onPageDelete(
+		ProperPageIdentity $page,
+		Authority $deleter,
+		string $reason,
+		\StatusValue $status,
+		bool $suppress
+	) {
 		// We use this to pick up redirects so we can update their targets.
-		// Can't re-use ArticleDeleteComplete because the page info's
+		// Can't re-use PageDeleteComplete because the page info's
 		// already gone
 		// If we abort or fail deletion it's no big deal because this will
 		// end up being a no-op when it executes.
-		$target = $page->getRedirectTarget();
+		$targetLink = $this->redirectLookup->getRedirectTarget( $page );
+		$target = null;
+		if ( $targetLink != null ) {
+			$target = Title::castFromLinkTarget( $targetLink );
+		}
 		if ( $target ) {
-			// DeferredUpdate so we don't end up racing our own page deletion
-			\DeferredUpdates::addCallableUpdate( function () use ( $target ) {
-				$this->jobQueue->push(
-					new Job\LinksUpdate( $target, [] )
-				);
-			} );
+			$this->jobQueue->lazyPush( new Job\LinksUpdate( $target, [] ) );
 		}
 	}
 

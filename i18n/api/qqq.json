@@ -35,5 +35,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "{{doc-apihelp-param|query+compsuggestbuilddoc|method}}",
 	"apierror-compsuggestbuilddoc-bad-method": "{{doc-apierror}} Invalid value for param method",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "{{doc-apihelp-summary|query+cirruscompsuggestbuilddoc}}",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "{{doc-apihelp-example|query+cirruscompsuggestbuilddoc}}"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "{{doc-apihelp-example|query+cirruscompsuggestbuilddoc}}",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "{{doc-apihelp-param|query+cirruscompsuggestbuilddoc|method}}"
 }

@@ -24,5 +24,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "The scoring method to use",
 	"apierror-compsuggestbuilddoc-bad-method": "Unknown scoring method",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Dump of the document used by the completion suggester",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "Get a dump of the document used by the completion suggester"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Get a dump of the document used by the completion suggester",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Provide a score method name to be used by the completion suggester"
 }

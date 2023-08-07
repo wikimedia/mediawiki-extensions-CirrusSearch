@@ -27,5 +27,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "Die zu verwendende Scoring-Methode",
 	"apierror-compsuggestbuilddoc-bad-method": "Unbekannte Scoring-Methode",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Dump des Dokuments, das vom Vervollständigungsvorschlag verwendet wird",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "Abruf eines Dumps aus dem vom Vervollständigungsvorschlag verwendeten Dokument"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Abruf eines Dumps aus dem vom Vervollständigungsvorschlag verwendeten Dokument",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Angabe eines Score-Methodennamens, der vom Vervollständigungsvorschlag verwendet werden soll"
 }

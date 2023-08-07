@@ -26,5 +26,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "Le methodo de punctage a usar",
 	"apierror-compsuggestbuilddoc-bad-method": "Methodo de punctage incognite",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Copia del documento usate per le suggestor de completiones",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "Obtener un copia del documento usate per le suggestor de completiones"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Obtener un copia del documento usate per le suggestor de completiones",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Forni le nomine de un methodo de score a esser usate per le suggestor de completamento"
 }

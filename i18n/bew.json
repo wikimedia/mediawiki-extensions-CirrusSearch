@@ -21,5 +21,7 @@
 	"cirrussearch-query-too-long-with-exemptions": "Rekès penyarian lebi panjang deri panjang nyang diboléin. (Panjang sekarang: $1; panjang nyang bolé: $2, kaga' ngrèken $3)",
 	"cirrussearch-completion-profile-strict": "Propil ketat dengen berapa lèter tenger baca diapus cuman tenger hurup ama tenger tekenan tetep ada.",
 	"cirrussearch-completion-profile-classic": "Awalan klasik, berapa lèter tenger baca èn tenger hurup diapus.",
-	"cirrussearch-completion-profile-normal": "Berapa lèter tenger baca, tenger hurup, èn kata randekan diapus."
+	"cirrussearch-completion-profile-normal": "Berapa lèter tenger baca, tenger hurup, èn kata randekan diapus.",
+	"cirrussearch-completion-profile-normal-subphrases": "Berapa lèter tenger baca, tenger hurup, ama kata randekan diapus. Tu bakal coco ama anak-prase (bisa anak-prase atawa anak-halaman, begantung ama pengamplasan dalem wiki).",
+	"cirrussearch-completion-profile-fuzzy": "Mèmper ama keboléan nyang biasa denge pembetulan salah ketik (bisa buat dua salah ketik)."
 }

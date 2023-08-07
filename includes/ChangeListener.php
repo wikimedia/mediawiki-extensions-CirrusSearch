@@ -8,22 +8,24 @@ use CirrusSearch\Job\LinksUpdate;
 use ConfigFactory;
 use JobQueueGroup;
 use LoadBalancer;
+use ManualLogEntry;
 use MediaWiki\Hook\ArticleRevisionVisibilitySetHook;
 use MediaWiki\Hook\LinksUpdateCompleteHook;
 use MediaWiki\Hook\PageMoveCompleteHook;
 use MediaWiki\Hook\TitleMoveHook;
 use MediaWiki\Hook\UploadCompleteHook;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\Page\Hook\ArticleDeleteCompleteHook;
 use MediaWiki\Page\Hook\ArticleUndeleteHook;
+use MediaWiki\Page\Hook\PageDeleteCompleteHook;
 use MediaWiki\Page\Hook\PageDeleteHook;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Permissions\Authority;
+use MediaWiki\Revision\RevisionRecord;
 use Status;
 use Title;
 use User;
-use WikiPage;
+use Wikimedia\Assert\Assert;
 
 /**
  * Implementation to all the hooks that CirrusSearch needs to listen in order to keep its index
@@ -36,7 +38,7 @@ class ChangeListener implements
 	UploadCompleteHook,
 	ArticleRevisionVisibilitySetHook,
 	PageDeleteHook,
-	ArticleDeleteCompleteHook,
+	PageDeleteCompleteHook,
 	ArticleUndeleteHook
 {
 	/** @var JobQueueGroup */
@@ -199,23 +201,27 @@ class ChangeListener implements
 	}
 
 	/**
-	 * Hook to call after an article is deleted
-	 * @param WikiPage $wikiPage WikiPage that was deleted
-	 * @param User $user User that deleted the article
-	 * @param string $reason Reason the article was deleted
-	 * @param int $id ID of the article that was deleted
-	 * @param \Content|null $content Content of the deleted page (or null, when deleting a broken page)
-	 * @param \ManualLogEntry $logEntry ManualLogEntry used to record the deletion
-	 * @param int $archivedRevisionCount Number of revisions archived during the deletion
-	 * @return bool|void True or no return value to continue or false to abort
+	 * @param ProperPageIdentity $page
+	 * @param Authority $deleter
+	 * @param string $reason
+	 * @param int $pageID
+	 * @param RevisionRecord $deletedRev
+	 * @param ManualLogEntry $logEntry
+	 * @param int $archivedRevisionCount
+	 * @return void
 	 */
-	public function onArticleDeleteComplete( $wikiPage, $user, $reason, $id, $content, $logEntry, $archivedRevisionCount ) {
+	public function onPageDeleteComplete( ProperPageIdentity $page, Authority $deleter,
+		string $reason, int $pageID, RevisionRecord $deletedRev, ManualLogEntry $logEntry,
+		int $archivedRevisionCount
+	) {
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
 		// load it from the title because the page row has already been deleted.
+		$title = Title::castFromPageIdentity( $page );
+		Assert::postcondition( $title !== null, '$page can be cast to a Title' );
 		$this->jobQueue->push(
 			DeletePages::build(
-				$wikiPage->getTitle(),
-				$this->searchConfig->makeId( $id ),
+				$title,
+				$this->searchConfig->makeId( $pageID ),
 				$logEntry->getTimestamp() !== false ? \MWTimestamp::convert( TS_UNIX, $logEntry->getTimestamp() ) : \MWTimestamp::time()
 			)
 		);

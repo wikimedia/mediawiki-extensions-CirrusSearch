@@ -88,7 +88,7 @@
 		"ApiBeforeMain": "CirrusSearch\\Hooks::onApiBeforeMain",
 		"APIQuerySiteInfoStatisticsInfo": "CirrusSearch\\Hooks::onAPIQuerySiteInfoStatisticsInfo",
 		"PageDelete": "changelistener",
-		"ArticleDeleteComplete": "changelistener",
+		"PageDeleteComplete": "changelistener",
 		"ArticleRevisionVisibilitySet": "changelistener",
 		"ArticleUndelete": "changelistener",
 		"BeforeInitialize": "CirrusSearch\\Hooks::onBeforeInitialize",

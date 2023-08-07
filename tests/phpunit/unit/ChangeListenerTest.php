@@ -149,15 +149,15 @@ class ChangeListenerTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers \CirrusSearch\ChangeListener::onArticleDeleteComplete
+	 * @covers \CirrusSearch\ChangeListener::onPageDeleteComplete
 	 */
-	public function testOnArticleDeleteComplete() {
+	public function testOnPageDeleteComplete() {
 		$now = 321;
 		$pageId = 123;
 		$page = $this->createMock( \WikiPage::class );
 		$title = $this->createMock( \Title::class );
 		$page->method( 'getTitle' )->willReturn( $title );
-		$logEntry = $this->createMock( \LogEntry::class );
+		$logEntry = $this->createMock( \ManualLogEntry::class );
 		$logEntry->method( 'getTimestamp' )->willReturn( \MWTimestamp::convert( TS_MW, $now ) );
 		$jobqueue = $this->createMock( \JobQueueGroup::class );
 
@@ -169,7 +169,8 @@ class ChangeListenerTest extends CirrusTestCase {
 		$jobqueue->expects( $this->once() )->method( 'push' )->with( new DeletePages( $title, $expectedJobParam ) );
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
 			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
-		$listener->onArticleDeleteComplete( $page, $this->createMock( \User::class ), "a reason", $pageId, null, $logEntry, 2 );
+		$listener->onPageDeleteComplete( $page, $this->createMock( Authority::class ),
+			"a reason", $pageId, $this->createMock( RevisionRecord::class ), $logEntry, 2 );
 	}
 
 	/**

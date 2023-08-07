@@ -15,9 +15,9 @@ use MediaWiki\Hook\PageMoveCompleteHook;
 use MediaWiki\Hook\TitleMoveHook;
 use MediaWiki\Hook\UploadCompleteHook;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\Page\Hook\ArticleUndeleteHook;
 use MediaWiki\Page\Hook\PageDeleteCompleteHook;
 use MediaWiki\Page\Hook\PageDeleteHook;
+use MediaWiki\Page\Hook\PageUndeleteCompleteHook;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Permissions\Authority;
@@ -39,7 +39,7 @@ class ChangeListener implements
 	ArticleRevisionVisibilitySetHook,
 	PageDeleteHook,
 	PageDeleteCompleteHook,
-	ArticleUndeleteHook
+	PageUndeleteCompleteHook
 {
 	/** @var JobQueueGroup */
 	private $jobQueue;
@@ -343,24 +343,35 @@ class ChangeListener implements
 	/**
 	 * When article is undeleted - check the archive for other instances of the title,
 	 * if not there - drop it from the archive.
-	 *
-	 * @param Title $title Title corresponding to the article restored
-	 * @param bool $create Whether or not the restoration caused the page to be created (i.e. it
-	 *   didn't exist before)
-	 * @param string $comment Comment associated with the undeletion
-	 * @param int $oldPageId ID of page previously deleted (from archive table). This ID will be used
-	 *   for the restored page.
-	 * @param array $restoredPages Set of page IDs that have revisions restored for this undelete,
-	 *   with keys set to page IDs and values set to 'true'
-	 * @return bool|void True or no return value to continue or false to abort
+	 * @param ProperPageIdentity $page
+	 * @param Authority $restorer
+	 * @param string $reason
+	 * @param RevisionRecord $restoredRev
+	 * @param ManualLogEntry $logEntry
+	 * @param int $restoredRevisionCount
+	 * @param bool $created
+	 * @param array $restoredPageIds
+	 * @return void
 	 */
-	public function onArticleUndelete( $title, $create, $comment, $oldPageId, $restoredPages ) {
+	public function onPageUndeleteComplete(
+		ProperPageIdentity $page,
+		Authority $restorer,
+		string $reason,
+		RevisionRecord $restoredRev,
+		ManualLogEntry $logEntry,
+		int $restoredRevisionCount,
+		bool $created,
+		array $restoredPageIds
+	): void {
 		if ( !$this->searchConfig->get( 'CirrusSearchIndexDeletes' ) ) {
 			// Not indexing, thus nothing to remove here.
 			return;
 		}
+		$title = Title::castFromPageIdentity( $page );
+		Assert::postcondition( $title !== null, '$page can be cast to a Title' );
 		$this->jobQueue->push(
-			new Job\DeleteArchive( $title, [ 'docIds' => $restoredPages ] )
+			new Job\DeleteArchive( $title, [ 'docIds' => $restoredPageIds ] )
 		);
 	}
+
 }

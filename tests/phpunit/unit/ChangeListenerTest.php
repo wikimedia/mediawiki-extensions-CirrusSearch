@@ -217,4 +217,22 @@ class ChangeListenerTest extends CirrusTestCase {
 		$listener->onPageDelete( $redirect, $deleter, 'unused', new \StatusValue(), false );
 		$listener->onPageDelete( $page, $deleter, 'unused', new \StatusValue(), false );
 	}
+
+	/**
+	 * @covers \CirrusSearch\ChangeListener::onPageUndeleteComplete
+	 */
+	public function testOnPageUndeleteComplete() {
+		$jobqueue = $this->createMock( \JobQueueGroup::class );
+		$page = new PageIdentityValue( 124, 0, 'A_Restored_Page', false );
+		$title = Title::castFromPageIdentity( $page );
+		$restoredPageIds = [ 123, 124 ];
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( [ 'CirrusSearchIndexDeletes' => true ] ),
+			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
+		$jobqueue->expects( $this->once() )
+			->method( 'push' )
+			->with( new Job\DeleteArchive( $title, [ 'docIds' => $restoredPageIds ] ) );
+		$listener->onPageUndeleteComplete( $page, $this->createMock( Authority::class ),
+			'a reson',  $this->createMock( RevisionRecord::class ),
+			$this->createMock( \ManualLogEntry::class ), 2, true, $restoredPageIds );
+	}
 }

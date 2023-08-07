@@ -90,7 +90,7 @@
 		"PageDelete": "changelistener",
 		"PageDeleteComplete": "changelistener",
 		"ArticleRevisionVisibilitySet": "changelistener",
-		"ArticleUndelete": "changelistener",
+		"PageUndeleteHook": "changelistener",
 		"BeforeInitialize": "CirrusSearch\\Hooks::onBeforeInitialize",
 		"CirrusSearchAddQueryFeatures": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAddQueryFeatures",
 		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAnalysisConfig",

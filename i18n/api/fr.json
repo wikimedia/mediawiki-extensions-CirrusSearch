@@ -30,5 +30,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "La méthode de notation à utiliser",
 	"apierror-compsuggestbuilddoc-bad-method": "Méthode de notation inconnue",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Vidage du document utilisé par l’outil de suggestion de complétude",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "Obtenir un vidage du document utilisé par l’outil de suggestion de complétude"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Obtenir un vidage du document utilisé par l’outil de suggestion de complétude",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Fournir un nom de méthode d’évaluation à utiliser par l’outil de suggestion de complétude"
 }

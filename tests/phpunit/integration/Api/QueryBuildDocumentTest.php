@@ -17,6 +17,7 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 
 	protected $tablesUsed = [ 'page' ];
 
+	private const PAGE_TITLE = 'QueryBuildDocumentTest test page';
 	private const CONTENT_FIRST_REV = "== Head ==\n " .
 			"First revision " .
 			"[[http://test.local/1 ref1]] " .
@@ -64,14 +65,16 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 			],
 		];
 
-		$this->getNonexistingTestPage( 'QueryBuildDocumentTest_Page' );
-		$status = $this->editPage( Title::newFromText( "QueryBuildDocumentTest_Page" ), self::CONTENT_FIRST_REV );
-		/** @var RevisionRecord $firstRevision */
-		$firstRevision = $status->getValue()['revision-record'];
+		$page = $this->getNonexistingTestPage( Title::makeTitle( NS_MAIN, self::PAGE_TITLE ) );
 
-		$status = $this->editPage( Title::newFromText( "QueryBuildDocumentTest_Page" ), self::CONTENT_SECOND_REV );
-		/** @var RevisionRecord $secondRevision */
-		$secondRevision = $status->getValue()['revision-record'];
+		$status = $this->editPage( $page, self::CONTENT_FIRST_REV );
+		$firstRevision = $status->getNewRevision();
+		$this->assertNotNull( $firstRevision );
+		$pageId = $firstRevision->getPage()->getId();
+
+		$status = $this->editPage( $page, self::CONTENT_SECOND_REV );
+		$secondRevision = $status->getNewRevision();
+		$this->assertNotNull( $secondRevision );
 
 		// FIXME: Somehow, the parser cache can contain stale data at this point, and the test would fail.
 		// See investigation attempts in I0b7c194d5f4f8fb45236268330c5862764449915 and
@@ -83,11 +86,10 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 		// Case 1: test latest using pageids
 		$data = $this->doApiRequest( [
 				"action" => "query",
-				"pageids" => $firstRevision->getPage()->getId(),
+				"pageids" => $pageId,
 				"prop" => "cirrusbuilddoc",
 				"cbbuilders" => "content"
 			] );
-		$pageId = $firstRevision->getPage()->getId();
 		$doc = $data[0]["query"]["pages"][$pageId]["cirrusbuilddoc"];
 		$expectedDoc = $this->expectedSecondDoc( $secondRevision, $firstRevision );
 		// sadly we have to restrict the test case to the keys managed by CirrusSearch alone
@@ -142,7 +144,7 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 			'namespace' => 0,
 			'namespace_text' => '',
 			'wiki' => WikiMap::getCurrentWikiId(),
-			'title' => 'QueryBuildDocumentTest Page',
+			'title' => self::PAGE_TITLE,
 			'timestamp' => \MWTimestamp::convert( TS_ISO_8601, $revision->getTimestamp() ),
 			'create_timestamp' => \MWTimestamp::convert( TS_ISO_8601, $firstRevision->getTimestamp() ),
 			'category' => [ "Category2" ],
@@ -168,7 +170,7 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 			'namespace' => 0,
 			'namespace_text' => '',
 			'wiki' => WikiMap::getCurrentWikiId(),
-			'title' => 'QueryBuildDocumentTest Page',
+			'title' => self::PAGE_TITLE,
 			'timestamp' => \MWTimestamp::convert( TS_ISO_8601, $revision->getTimestamp() ),
 			'create_timestamp' => \MWTimestamp::convert( TS_ISO_8601, $firstRevision->getTimestamp() ),
 			'category' => [ "Category1" ],

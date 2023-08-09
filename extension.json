@@ -128,7 +128,8 @@
 				"JobQueueGroup",
 				"ConfigFactory",
 				"DBLoadBalancer",
-				"RedirectLookup"
+				"RedirectLookup",
+				"DeferredUpdatesManager"
 			]
 		}
 	},

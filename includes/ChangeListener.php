@@ -9,6 +9,7 @@ use ConfigFactory;
 use JobQueueGroup;
 use LoadBalancer;
 use ManualLogEntry;
+use MediaWiki\Deferred\DeferredUpdatesManager;
 use MediaWiki\Hook\ArticleRevisionVisibilitySetHook;
 use MediaWiki\Hook\LinksUpdateCompleteHook;
 use MediaWiki\Hook\PageMoveCompleteHook;
@@ -31,7 +32,7 @@ use Wikimedia\Assert\Assert;
  * Implementation to all the hooks that CirrusSearch needs to listen in order to keep its index
  * in sync with main SQL database.
  */
-class ChangeListener implements
+class ChangeListener extends PageChangeTracker implements
 	LinksUpdateCompleteHook,
 	TitleMoveHook,
 	PageMoveCompleteHook,
@@ -55,15 +56,17 @@ class ChangeListener implements
 
 	/** @var RedirectLookup */
 	private RedirectLookup $redirectLookup;
+	private DeferredUpdatesManager $deferredUpdatesManager;
 
 	public static function create(
 		JobQueueGroup $jobQueue,
 		ConfigFactory $configFactory,
 		LoadBalancer $loadBalancer,
-		RedirectLookup $redirectLookup
+		RedirectLookup $redirectLookup,
+		DeferredUpdatesManager $deferredUpdatesManager
 	): ChangeListener {
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
-		return new self( $jobQueue, $configFactory->makeConfig( "CirrusSearch" ), $loadBalancer, $redirectLookup );
+		return new self( $jobQueue, $configFactory->makeConfig( "CirrusSearch" ), $loadBalancer, $redirectLookup, $deferredUpdatesManager );
 	}
 
 	/**
@@ -75,12 +78,15 @@ class ChangeListener implements
 		JobQueueGroup $jobQueue,
 		SearchConfig $searchConfig,
 		LoadBalancer $loadBalancer,
-		RedirectLookup $redirectLookup
+		RedirectLookup $redirectLookup,
+		DeferredUpdatesManager $deferredUpdatesManager
 	) {
+		parent::__construct();
 		$this->jobQueue = $jobQueue;
 		$this->searchConfig = $searchConfig;
 		$this->loadBalancer = $loadBalancer;
 		$this->redirectLookup = $redirectLookup;
+		$this->deferredUpdatesManager = $deferredUpdatesManager;
 	}
 
 	/**
@@ -107,50 +113,52 @@ class ChangeListener implements
 	 * @param mixed $ticket Prior result of LBFactory::getEmptyTransactionTicket()
 	 */
 	public function onLinksUpdateComplete( $linksUpdate, $ticket ) {
-		$linkedArticlesToUpdate = $this->searchConfig->get( 'CirrusSearchLinkedArticlesToUpdate' );
-		$unLinkedArticlesToUpdate = $this->searchConfig->get( 'CirrusSearchUnlinkedArticlesToUpdate' );
-		$updateDelay = $this->searchConfig->get( 'CirrusSearchUpdateDelay' );
+		// defer processing the LinksUpdateComplete hook until other hooks tagged in PageChangeTracker
+		// have a chance to run. Reason is that we want to detect what are the links updates triggered
+		// by a "page change". The definition of a "page change" we use is the one used by EventBus
+		// PageChangeHooks.
+		$this->deferredUpdatesManager->addCallableUpdate( function () use ( $linksUpdate ) {
+			$linkedArticlesToUpdate = $this->searchConfig->get( 'CirrusSearchLinkedArticlesToUpdate' );
+			$unLinkedArticlesToUpdate = $this->searchConfig->get( 'CirrusSearchUnlinkedArticlesToUpdate' );
+			$updateDelay = $this->searchConfig->get( 'CirrusSearchUpdateDelay' );
 
-		// Titles that are created by a move don't need their own job.
-		if ( in_array( $linksUpdate->getTitle()->getPrefixedDBkey(), $this->movingTitles ) ) {
-			return;
-		}
-
-		$params = [];
-		if ( $this->searchConfig->get( 'CirrusSearchEnableIncomingLinkCounting' ) ) {
-			$params['addedLinks'] = self::prepareTitlesForLinksUpdate( $linksUpdate->getAddedLinks(),
-					$linkedArticlesToUpdate );
-			// We exclude links that contains invalid UTF-8 sequences, reason is that page created
-			// before T13143 was fixed might sill have bad links the pagelinks table
-			// and thus will cause LinksUpdate to believe that these links are removed.
-			$params['removedLinks'] = self::prepareTitlesForLinksUpdate( $linksUpdate->getRemovedLinks(),
-					$unLinkedArticlesToUpdate, true );
-		}
-
-		// We want to populate the prioritized queue with updates that reflect a change to the page
-		// itself. We identify those by checking if causeAction is 'edit-page'.
-		// This might exclude few corner cases like Special:Import and Special:FileImport
-		// But we prefer to not treat those as prioritized as they possibly trigger on old revisions
-		// messing up how lag is reported.
-		if ( $linksUpdate->getCauseAction() === 'edit-page' && $linksUpdate->isRecursive() ) {
-			$job = LinksUpdate::newPageChangeUpdate(
-				$linksUpdate->getTitle(),
-				$linksUpdate->getRevisionRecord(),
-				$params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class,  $updateDelay['prioritized'], $this->jobQueue ) );
-			if ( ( \MWTimestamp::time() - $job->params[CirrusTitleJob::ROOT_EVENT_TIME] ) > ( 3600 * 24 ) ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->debug(
-					"Scheduled a page-change-update for {title} on a revision created more than 24hours ago, the cause is {causeAction}",
-					[
-						'title' => $linksUpdate->getTitle()->getPrefixedDBkey(),
-						'causeAction' => $linksUpdate->getCauseAction()
-					] );
+			// Titles that are created by a move don't need their own job.
+			if ( in_array( $linksUpdate->getTitle()->getPrefixedDBkey(), $this->movingTitles ) ) {
+				return;
 			}
-		} else {
-			$job = LinksUpdate::newPageRefreshUpdate( $linksUpdate->getTitle(),
-				$params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class,  $updateDelay['default'], $this->jobQueue ) );
-		}
 
-		$this->jobQueue->lazyPush( $job );
+			$params = [];
+			if ( $this->searchConfig->get( 'CirrusSearchEnableIncomingLinkCounting' ) ) {
+				$params['addedLinks'] = self::prepareTitlesForLinksUpdate( $linksUpdate->getAddedLinks(),
+					$linkedArticlesToUpdate );
+				// We exclude links that contains invalid UTF-8 sequences, reason is that page created
+				// before T13143 was fixed might sill have bad links the pagelinks table
+				// and thus will cause LinksUpdate to believe that these links are removed.
+				$params['removedLinks'] = self::prepareTitlesForLinksUpdate( $linksUpdate->getRemovedLinks(),
+					$unLinkedArticlesToUpdate, true );
+			}
+
+			if ( $this->isPageChange( $linksUpdate->getPageId() ) ) {
+				$jobParams = $params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class,
+						$updateDelay['prioritized'], $this->jobQueue );
+				$job = LinksUpdate::newPageChangeUpdate( $linksUpdate->getTitle(),
+					$linksUpdate->getRevisionRecord(), $jobParams );
+				if ( ( \MWTimestamp::time() - $job->params[CirrusTitleJob::ROOT_EVENT_TIME] ) > ( 3600 * 24 ) ) {
+					LoggerFactory::getInstance( 'CirrusSearch' )->debug(
+						"Scheduled a page-change-update for {title} on a revision created more than 24hours ago, " .
+						"the cause is {causeAction}",
+						[
+							'title' => $linksUpdate->getTitle()->getPrefixedDBkey(),
+							'causeAction' => $linksUpdate->getCauseAction()
+						] );
+				}
+			} else {
+				$job = LinksUpdate::newPageRefreshUpdate( $linksUpdate->getTitle(),
+					$params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class,  $updateDelay['default'], $this->jobQueue ) );
+			}
+
+			$this->jobQueue->push( $job );
+		} );
 	}
 
 	/**
@@ -185,6 +193,7 @@ class ChangeListener implements
 		\StatusValue $status,
 		bool $suppress
 	) {
+		parent::onPageDelete( $page, $deleter, $reason, $status, $suppress );
 		// We use this to pick up redirects so we can update their targets.
 		// Can't re-use PageDeleteComplete because the page info's
 		// already gone
@@ -214,6 +223,7 @@ class ChangeListener implements
 		string $reason, int $pageID, RevisionRecord $deletedRev, ManualLogEntry $logEntry,
 		int $archivedRevisionCount
 	) {
+		parent::onPageDeleteComplete( $page, $deleter, $reason, $pageID, $deletedRev, $logEntry, 1 );
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
 		// load it from the title because the page row has already been deleted.
 		$title = Title::castFromPageIdentity( $page );
@@ -258,6 +268,7 @@ class ChangeListener implements
 		$old, $new, $user, $pageid, $redirid,
 		$reason, $revision
 	) {
+		parent::onPageMoveComplete( $old, $new, $user, $pageid, $redirid, $reason, $revision );
 		// When a page is moved the update and delete hooks are good enough to catch
 		// almost everything.  The only thing they miss is if a page moves from one
 		// index to another.  That only happens if it switches namespace.
@@ -363,6 +374,8 @@ class ChangeListener implements
 		bool $created,
 		array $restoredPageIds
 	): void {
+		parent::onPageUndeleteComplete( $page, $restorer, $reason, $restoredRev,  $logEntry,
+			$restoredRevisionCount, $created, $restoredPageIds );
 		if ( !$this->searchConfig->get( 'CirrusSearchIndexDeletes' ) ) {
 			// Not indexing, thus nothing to remove here.
 			return;
@@ -373,5 +386,4 @@ class ChangeListener implements
 			new Job\DeleteArchive( $title, [ 'docIds' => $restoredPageIds ] )
 		);
 	}
-
 }

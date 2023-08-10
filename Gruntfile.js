@@ -19,10 +19,7 @@ module.exports = function ( grunt ) {
 				cache: true,
 				fix: grunt.option( 'fix' )
 			},
-			all: [
-				'**/*.{js,json}',
-				'!{vendor,node_modules}/**'
-			]
+			all: '.'
 		},
 		banana: {
 			all: [

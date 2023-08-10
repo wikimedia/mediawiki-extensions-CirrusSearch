@@ -5,7 +5,9 @@
 		"wikimedia/mediawiki"
 	],
 	"ignorePatterns": [
-		"tests/**/fixtures/**/*"
+		"tests/**/fixtures/**/*",
+		"vendor/*",
+		"node_modules/*"
 	],
 	"rules": {
 		"no-useless-escape": "warn"

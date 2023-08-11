@@ -14,6 +14,8 @@ use MediaWiki\WikiMap\WikiMap;
 class QueryBuildDocumentTest extends \ApiTestCase {
 	use CirrusIntegrationTestCaseTrait;
 
+	protected $tablesUsed = [ 'page' ];
+
 	private const CONTENT_FIRST_REV = "== Head ==\n " .
 			"First revision " .
 			"[[http://test.local/1 ref1]] " .
@@ -69,6 +71,13 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 		$status = $this->editPage( \Title::newFromText( "QueryBuildDocumentTest_Page" ), self::CONTENT_SECOND_REV );
 		/** @var RevisionRecord $secondRevision */
 		$secondRevision = $status->getValue()['revision-record'];
+
+		// FIXME: Somehow, the parser cache can contain stale data at this point, and the test would fail.
+		// See investigation attempts in I0b7c194d5f4f8fb45236268330c5862764449915 and
+		// I81479dc521134433489bb17a714b4868598a94c8.
+		// Just reset the ParserOutputAccess service for now. This can probably be re-evaluated once T342301
+		// and T342428 have been resolved.
+		$this->getServiceContainer()->resetServiceForTesting( 'ParserOutputAccess' );
 
 		// Case 1: test latest using pageids
 		$data = $this->doApiRequest( [

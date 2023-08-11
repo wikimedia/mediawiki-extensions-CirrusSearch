@@ -12,6 +12,7 @@ use WikiPage;
  * @covers \CirrusSearch\BuildDocument\DefaultPageProperties
  */
 class DefaultPagePropertiesIntegrationTest extends \MediaWikiIntegrationTestCase {
+	protected $tablesUsed = [ 'page' ];
 
 	private function buildDoc( WikiPage $page, RevisionRecord $revision ): ?Document {
 		$doc = new Document( null, [] );

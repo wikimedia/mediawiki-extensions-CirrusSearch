@@ -26,5 +26,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "Кој начин на оценување да се користи",
 	"apierror-compsuggestbuilddoc-bad-method": "Непознат начин на оценување",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Склад на документот што го користи дополнувачкиот предлагач",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "Дај склад на документот што го користи дополнувачкиот предлагач"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Дај склад на документот што го користи дополнувачкиот предлагач",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Укажете име за начинот на бодување што ќе се користи од предлагачот на дополнување"
 }

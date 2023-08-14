@@ -27,5 +27,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "Metoda ocenjevanja, ki naj se uporabi",
 	"apierror-compsuggestbuilddoc-bad-method": "Neznana metoda točkovanja",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Izpis dokumenta, ki ga je uporabil predlagatelj dokončanja",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "Pridobi izpis dokumenta, ki ga uporablja predlagatelj dokončanja"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Pridobi izpis dokumenta, ki ga uporablja predlagatelj dokončanja",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Navedba imena metode ocenjevanja, ki jo bo uporabil predlagatelj dokončanja"
 }

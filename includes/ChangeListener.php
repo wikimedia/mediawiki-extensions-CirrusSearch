@@ -103,7 +103,7 @@ class ChangeListener extends PageChangeTracker implements
 	 *   [id => ['oldBits' => $oldBits, 'newBits' => $newBits], ... ]
 	 */
 	public function onArticleRevisionVisibilitySet( $title, $ids, $visibilityChangeMap ) {
-		$this->jobQueue->push( LinksUpdate::newPastRevisionVisibilityChange( $title ) );
+		$this->jobQueue->lazyPush( LinksUpdate::newPastRevisionVisibilityChange( $title ) );
 	}
 
 	/**
@@ -157,19 +157,21 @@ class ChangeListener extends PageChangeTracker implements
 					$params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class,  $updateDelay['default'], $this->jobQueue ) );
 			}
 
-			$this->jobQueue->push( $job );
+			$this->jobQueue->lazyPush( $job );
 		} );
 	}
 
 	/**
-	 * Hook into UploadComplete, overwritten files do not seem to trigger LinksUpdateComplete.
-	 * Since files do contain indexed metadata we need to refresh the search index when a file
-	 * is overwritten on an existing title.
+	 * Hook into UploadComplete, because overwritten files mistakenly do not trigger
+	 * LinksUpdateComplete (T344285). Since files do contain indexed metadata
+	 * we need to refresh the search index when a file is overwritten on an
+	 * existing title.
+	 *
 	 * @param \UploadBase $uploadBase
 	 */
 	public function onUploadComplete( $uploadBase ) {
 		if ( $uploadBase->getTitle()->exists() ) {
-			$this->jobQueue->push( LinksUpdate::newPageChangeUpdate( $uploadBase->getTitle(), null, [] ) );
+			$this->jobQueue->lazyPush( LinksUpdate::newPageChangeUpdate( $uploadBase->getTitle(), null, [] ) );
 		}
 	}
 
@@ -228,7 +230,7 @@ class ChangeListener extends PageChangeTracker implements
 		// load it from the title because the page row has already been deleted.
 		$title = Title::castFromPageIdentity( $page );
 		Assert::postcondition( $title !== null, '$page can be cast to a Title' );
-		$this->jobQueue->push(
+		$this->jobQueue->lazyPush(
 			DeletePages::build(
 				$title,
 				$this->searchConfig->makeId( $pageID ),
@@ -382,7 +384,7 @@ class ChangeListener extends PageChangeTracker implements
 		}
 		$title = Title::castFromPageIdentity( $page );
 		Assert::postcondition( $title !== null, '$page can be cast to a Title' );
-		$this->jobQueue->push(
+		$this->jobQueue->lazyPush(
 			new Job\DeleteArchive( $title, [ 'docIds' => $restoredPageIds ] )
 		);
 	}

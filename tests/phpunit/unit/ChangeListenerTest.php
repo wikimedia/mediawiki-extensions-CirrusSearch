@@ -93,7 +93,7 @@ class ChangeListenerTest extends CirrusTestCase {
 		$title->method( 'getPrefixedDBkey' )->willReturn( 'My_Title' );
 
 		$jobqueue = $this->createMock( \JobQueueGroup::class );
-		$jobqueue->expects( $this->once() )->method( 'push' )->with( new CirrusLinksUpdate( $title, $jobParams ) );
+		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new CirrusLinksUpdate( $title, $jobParams ) );
 
 		$linksUpdate = $this->createMock( LinksUpdate::class );
 		$linksUpdate->method( 'getTitle' )->willReturn( $title );
@@ -167,7 +167,7 @@ class ChangeListenerTest extends CirrusTestCase {
 			"root_event_time" => $now,
 			"prioritize" => true,
 		];
-		$jobqueue->expects( $this->once() )->method( 'push' )->with( new CirrusLinksUpdate( $title,  $expectedJobParam ) );
+		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new CirrusLinksUpdate( $title,  $expectedJobParam ) );
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
 			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ),
@@ -193,7 +193,7 @@ class ChangeListenerTest extends CirrusTestCase {
 			"update_kind" => "page_change",
 			"root_event_time" => $now,
 		];
-		$jobqueue->expects( $this->once() )->method( 'push' )->with( new DeletePages( $title, $expectedJobParam ) );
+		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new DeletePages( $title, $expectedJobParam ) );
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
 			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ),
 			$this->deferredUpdateManager );
@@ -215,7 +215,7 @@ class ChangeListenerTest extends CirrusTestCase {
 			"root_event_time" => $now,
 			"prioritize" => true
 		];
-		$jobqueue->expects( $this->once() )->method( 'push' )->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
+		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
 			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ),
 			$this->deferredUpdateManager );
@@ -259,7 +259,7 @@ class ChangeListenerTest extends CirrusTestCase {
 			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ),
 			$this->deferredUpdateManager );
 		$jobqueue->expects( $this->once() )
-			->method( 'push' )
+			->method( 'lazyPush' )
 			->with( new Job\DeleteArchive( $title, [ 'docIds' => $restoredPageIds ] ) );
 		$listener->onPageUndeleteComplete( $page, $this->createMock( Authority::class ),
 			'a reson',  $this->createMock( RevisionRecord::class ),

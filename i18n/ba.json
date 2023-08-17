@@ -7,7 +7,8 @@
 			"Лилиә",
 			"Ләйсән",
 			"Рустам Нурыев",
-			"Янмурза Баки"
+			"Янмурза Баки",
+			"Sagan"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch базаһында MediaWiki өсөн эҙләү",
@@ -23,7 +24,7 @@
 	"cirrussearch-pref-label": "Яңынан эҙләү",
 	"cirrussearch-pref-desc": "Күп телдәрҙе хуплаусы, яңы һөҙөмтәләр биреүсе, һәм дә хатта эске шаблондарҙан текстар табыусы беҙҙең яңы эҙләгесте һынап ҡарағыҙ.",
 	"cirrussearch-give-feedback": "Баһа ҡалдырығыҙ",
-	"cirrussearch-query-too-long": "Эҙләгән һорау  мөмкин тиклем булған максималь оҙонлоҡтан арта. ($1 > $2)",
+	"cirrussearch-query-too-long": "Эҙләү мөрәжәғәте  мөмкин булған максималь оҙонлоҡтан артып киткән. (Фактик:$1; рөхсәт ителгән: $2)",
 	"cirrussearch-explore-similar-categories": "Категориялар",
 	"cirrussearch-explore-similar-languages": "Телдәр",
 	"cirrussearch-article-words": "Барлыҡ мәҡәләләрҙә һүҙҙәр һаны"

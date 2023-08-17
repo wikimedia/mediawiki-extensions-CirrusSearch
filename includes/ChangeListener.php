@@ -6,10 +6,10 @@ use CirrusSearch\Job\CirrusTitleJob;
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
 use ConfigFactory;
+use DeferredUpdates;
 use JobQueueGroup;
 use LoadBalancer;
 use ManualLogEntry;
-use MediaWiki\Deferred\DeferredUpdatesManager;
 use MediaWiki\Hook\ArticleRevisionVisibilitySetHook;
 use MediaWiki\Hook\LinksUpdateCompleteHook;
 use MediaWiki\Hook\PageMoveCompleteHook;
@@ -56,37 +56,34 @@ class ChangeListener extends PageChangeTracker implements
 
 	/** @var RedirectLookup */
 	private RedirectLookup $redirectLookup;
-	private DeferredUpdatesManager $deferredUpdatesManager;
 
 	public static function create(
 		JobQueueGroup $jobQueue,
 		ConfigFactory $configFactory,
 		LoadBalancer $loadBalancer,
-		RedirectLookup $redirectLookup,
-		DeferredUpdatesManager $deferredUpdatesManager
+		RedirectLookup $redirectLookup
 	): ChangeListener {
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
-		return new self( $jobQueue, $configFactory->makeConfig( "CirrusSearch" ), $loadBalancer, $redirectLookup, $deferredUpdatesManager );
+		return new self( $jobQueue, $configFactory->makeConfig( "CirrusSearch" ), $loadBalancer, $redirectLookup );
 	}
 
 	/**
 	 * @param JobQueueGroup $jobQueue
 	 * @param SearchConfig $searchConfig
 	 * @param LoadBalancer $loadBalancer
+	 * @param RedirectLookup $redirectLookup
 	 */
 	public function __construct(
 		JobQueueGroup $jobQueue,
 		SearchConfig $searchConfig,
 		LoadBalancer $loadBalancer,
-		RedirectLookup $redirectLookup,
-		DeferredUpdatesManager $deferredUpdatesManager
+		RedirectLookup $redirectLookup
 	) {
 		parent::__construct();
 		$this->jobQueue = $jobQueue;
 		$this->searchConfig = $searchConfig;
 		$this->loadBalancer = $loadBalancer;
 		$this->redirectLookup = $redirectLookup;
-		$this->deferredUpdatesManager = $deferredUpdatesManager;
 	}
 
 	/**
@@ -117,7 +114,7 @@ class ChangeListener extends PageChangeTracker implements
 		// have a chance to run. Reason is that we want to detect what are the links updates triggered
 		// by a "page change". The definition of a "page change" we use is the one used by EventBus
 		// PageChangeHooks.
-		$this->deferredUpdatesManager->addCallableUpdate( function () use ( $linksUpdate ) {
+		DeferredUpdates::addCallableUpdate( function () use ( $linksUpdate ) {
 			$linkedArticlesToUpdate = $this->searchConfig->get( 'CirrusSearchLinkedArticlesToUpdate' );
 			$unLinkedArticlesToUpdate = $this->searchConfig->get( 'CirrusSearchUnlinkedArticlesToUpdate' );
 			$updateDelay = $this->searchConfig->get( 'CirrusSearchUpdateDelay' );

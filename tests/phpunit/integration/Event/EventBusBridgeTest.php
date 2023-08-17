@@ -2,43 +2,22 @@
 
 namespace CirrusSearch\Event;
 
-use CirrusSearch\CirrusTestCase;
+use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
+use DeferredUpdates;
 use LinksUpdate;
-use Liuggio\StatsdClient\Factory\StatsdDataFactoryInterface;
-use MediaWiki\Config\ServiceOptions;
-use MediaWiki\Deferred\DeferredUpdatesManager;
 use MediaWiki\Extension\EventBus\EventBus;
 use MediaWiki\Extension\EventBus\EventBusFactory;
-use MediaWiki\JobQueue\JobQueueGroupFactory;
 use MediaWiki\Page\ExistingPageRecord;
 use MediaWiki\Page\PageLookup;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
 use MediaWiki\User\UserIdentity;
-use Psr\Log\LoggerInterface;
-use Wikimedia\Rdbms\ILBFactory;
 use Wikimedia\UUID\GlobalIdGenerator;
 
-class EventBusBridgeTest extends CirrusTestCase {
-	private DeferredUpdatesManager $deferredUpdateManager;
-
+class EventBusBridgeTest extends CirrusIntegrationTestCase {
 	protected function setUp(): void {
 		parent::setUp();
-
-		$lbFactory = $this->createMock( ILBFactory::class );
-		$lbFactory->method( 'hasTransactionRound' )->willReturn( false );
-		$lbFactory->method( 'getEmptyTransactionTicket' )->willReturn( 'a ticket' );
-		$this->deferredUpdateManager = new DeferredUpdatesManager(
-			new ServiceOptions( DeferredUpdatesManager::CONSTRUCTOR_OPTIONS, [ 'CommandLineMode' => false ] ),
-			$this->createMock( LoggerInterface::class ), $lbFactory,
-			$this->createMock( StatsdDataFactoryInterface::class ),
-			$this->createMock( JobQueueGroupFactory::class )
-		);
-	}
-
-	protected function tearDown(): void {
-		$this->deferredUpdateManager->clearPendingUpdates();
 	}
 
 	/**
@@ -48,7 +27,6 @@ class EventBusBridgeTest extends CirrusTestCase {
 	public function testFactory( $enabled ) {
 		$configFactory = new \ConfigFactory();
 		$titleFormatter = $this->createMock( \TitleFormatter::class );
-		$deferredUpdateManager = $this->createMock( DeferredUpdatesManager::class );
 		$pageLookup = $this->createMock( PageLookup::class );
 		$globalIdGenerator = $this->createMock( GlobalIdGenerator::class );
 		$configFactory->register( 'CirrusSearch',
@@ -59,7 +37,7 @@ class EventBusBridgeTest extends CirrusTestCase {
 		if ( class_exists( EventBusFactory::class ) ) {
 			$eventBusFactory = $this->createMock( EventBusFactory::class );
 			$service = EventBusBridge::factory( $configFactory, new \HashConfig(), $globalIdGenerator,
-				$titleFormatter, $pageLookup, $this->deferredUpdateManager, $eventBusFactory );
+				$titleFormatter, $pageLookup, $eventBusFactory );
 			if ( $enabled ) {
 				$this->assertInstanceOf( EventBusBridge::class, $service );
 			} else {
@@ -68,7 +46,7 @@ class EventBusBridgeTest extends CirrusTestCase {
 		}
 		// Test that EventBusFactory is optional
 		$service = EventBusBridge::factory( $configFactory, new \HashConfig(),
-			$globalIdGenerator, $titleFormatter, $pageLookup, $deferredUpdateManager );
+			$globalIdGenerator, $titleFormatter, $pageLookup );
 		$this->assertNotInstanceOf( EventBusBridge::class, $service );
 	}
 
@@ -87,6 +65,7 @@ class EventBusBridgeTest extends CirrusTestCase {
 		if ( !class_exists( EventBusFactory::class ) ) {
 			$this->markTestSkipped( "EventBus not available" );
 		}
+		$this->overrideConfigValue( 'CommandLineMode', false );
 		$pageId = 123;
 		$streamName = 'mystream';
 		$event = [
@@ -119,14 +98,14 @@ class EventBusBridgeTest extends CirrusTestCase {
 			->with( $page, PageRerenderSerializer::LINKS_UPDATE_REASON, $this->anything() )
 			->willReturn( $event );
 
-		$bridge = new EventBusBridge( $eventBusFactory, $pageLookup, $pageRerenderSerializer, $this->deferredUpdateManager );
+		$bridge = new EventBusBridge( $eventBusFactory, $pageLookup, $pageRerenderSerializer );
 		$bridge->onLinksUpdateComplete( $linksUpdate, null );
 		if ( $withEdit ) {
 			$editResult = new EditResult( false, false, null, null, null, false, $nullEdit, [] );
 			$bridge->onPageSaveComplete( $page, $this->createMock( UserIdentity::class ), '', 0,
 				$this->createMock( RevisionRecord::class ), $editResult );
 		}
-		$this->deferredUpdateManager->doUpdates();
+		DeferredUpdates::doUpdates();
 	}
 
 	public function provideTestLinksUpdate(): array {

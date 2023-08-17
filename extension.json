@@ -128,8 +128,7 @@
 				"JobQueueGroup",
 				"ConfigFactory",
 				"DBLoadBalancer",
-				"RedirectLookup",
-				"DeferredUpdatesManager"
+				"RedirectLookup"
 			]
 		},
 		"eventbusbridge": {
@@ -140,8 +139,7 @@
 				"MainConfig",
 				"GlobalIdGenerator",
 				"TitleFormatter",
-				"PageStore",
-				"DeferredUpdatesManager"
+				"PageStore"
 			],
 			"optional_services": [
 				"EventBus.EventBusFactory"

@@ -5,7 +5,7 @@ namespace CirrusSearch\Event;
 use CirrusSearch\PageChangeTracker;
 use Config;
 use ConfigFactory;
-use MediaWiki\Deferred\DeferredUpdatesManager;
+use DeferredUpdates;
 use MediaWiki\Extension\EventBus\EventBusFactory;
 use MediaWiki\Page\PageLookup;
 use TitleFormatter;
@@ -18,26 +18,22 @@ class EventBusBridge extends PageChangeTracker implements EventBridge {
 	private EventBusFactory $eventBusFactory;
 	private PageLookup $pageLookup;
 	private PageRerenderSerializer $pageRerenderSerializer;
-	private DeferredUpdatesManager $deferredUpdatesManager;
 
 	/**
 	 * @param EventBusFactory $eventBusFactory
 	 * @param PageLookup $pageLookup
 	 * @param PageRerenderSerializer $pageRerenderSerializer
-	 * @param DeferredUpdatesManager $deferredUpdatesManager
 	 */
 	public function __construct(
 		EventBusFactory $eventBusFactory,
 		PageLookup $pageLookup,
 		PageRerenderSerializer $pageRerenderSerializer,
-		DeferredUpdatesManager $deferredUpdatesManager,
 		int $maxStateSize = 512
 	) {
 		parent::__construct( $maxStateSize );
 		$this->eventBusFactory = $eventBusFactory;
 		$this->pageLookup = $pageLookup;
 		$this->pageRerenderSerializer = $pageRerenderSerializer;
-		$this->deferredUpdatesManager = $deferredUpdatesManager;
 	}
 
 	/**
@@ -46,7 +42,6 @@ class EventBusBridge extends PageChangeTracker implements EventBridge {
 	 * @param GlobalIdGenerator $globalIdGenerator
 	 * @param TitleFormatter $titleFormatter
 	 * @param PageLookup $pageLookup
-	 * @param DeferredUpdatesManager $deferredUpdatesManager
 	 * @param EventBusFactory|null $eventBusFactory
 	 * @return EventBridge
 	 */
@@ -56,7 +51,6 @@ class EventBusBridge extends PageChangeTracker implements EventBridge {
 		GlobalIdGenerator $globalIdGenerator,
 		TitleFormatter $titleFormatter,
 		PageLookup $pageLookup,
-		DeferredUpdatesManager $deferredUpdatesManager,
 		$eventBusFactory = null
 	): EventBridge {
 		$config = $configFactory->makeConfig( "CirrusSearch" );
@@ -64,7 +58,7 @@ class EventBusBridge extends PageChangeTracker implements EventBridge {
 		if ( $eventBusFactory !== null && $config->get( 'CirrusSearchUseEventBusBridge' ) ) {
 			$pageRerenderSerializer = new PageRerenderSerializer( $mainConfig, $titleFormatter,
 				$config, $globalIdGenerator );
-			return new self( $eventBusFactory, $pageLookup, $pageRerenderSerializer, $deferredUpdatesManager );
+			return new self( $eventBusFactory, $pageLookup, $pageRerenderSerializer );
 		}
 		return new class() implements EventBridge {
 			/**
@@ -79,7 +73,7 @@ class EventBusBridge extends PageChangeTracker implements EventBridge {
 	 * @inheritDoc
 	 */
 	public function onLinksUpdateComplete( $linksUpdate, $ticket ) {
-		$this->deferredUpdatesManager->addCallableUpdate( function () use ( $linksUpdate ) {
+		DeferredUpdates::addCallableUpdate( function () use ( $linksUpdate ) {
 			if ( $this->isPageChange( $linksUpdate->getPageId() ) ) {
 				// Page changes are handled via the page-change stream
 				return;

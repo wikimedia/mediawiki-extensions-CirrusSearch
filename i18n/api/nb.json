@@ -26,5 +26,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "Poengmetoden som skal brukes",
 	"apierror-compsuggestbuilddoc-bad-method": "Ukjent poengmetode",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Dump av dokumentet som brukes av fullføringsforeslåingen",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "Hent en dump av dokumentet som brukes av fullføringsforeslåingen"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Hent en dump av dokumentet som brukes av fullføringsforeslåingen",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Gir et poengmetodenavn som skal brukes av fullføringsforslagsgiveren"
 }

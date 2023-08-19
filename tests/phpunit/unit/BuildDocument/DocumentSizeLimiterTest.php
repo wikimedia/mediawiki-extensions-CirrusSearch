@@ -105,7 +105,7 @@ class DocumentSizeLimiterTest extends TestCase {
 				[
 					'document' => [ 'original_length' => 242, 'new_length' => 214 ],
 					'mandatory_reduction' => [ 'file_text' => 1, 'external_links' => 4 ],
-					'oversize_reduction' => [ 'outgoing_links' => 4, 'auxiliary_text' => 27,'text' => 22 ]
+					'oversize_reduction' => [ 'outgoing_links' => 4, 'auxiliary_text' => 27, 'text' => 22 ]
 				]
 			]
 		];

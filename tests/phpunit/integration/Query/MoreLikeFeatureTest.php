@@ -10,7 +10,7 @@ use CirrusSearch\SearchConfig;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use LinkCacheTestTrait;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * Test More Like This keyword feature.

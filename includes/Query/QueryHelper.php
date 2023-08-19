@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Query;
 
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * helpers for building queries

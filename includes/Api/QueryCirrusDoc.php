@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Api;
 
-use Title;
+use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
 /**

@@ -31,14 +31,14 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			$this->createMock( \LoadBalancer::class ),
 			$this->createMock( RedirectLookup::class )
 		);
-		$titles = [ \Title::makeTitle( NS_MAIN, 'Title1' ), \Title::makeTitle( NS_MAIN, 'Title2' ) ];
+		$titles = [ Title::makeTitle( NS_MAIN, 'Title1' ), Title::makeTitle( NS_MAIN, 'Title2' ) ];
 		$this->assertEqualsCanonicalizing(
 			[ 'Title1', 'Title2' ],
 			$changeListener->prepareTitlesForLinksUpdate( $titles, 2 ),
 			'All titles must be returned'
 		);
 		$this->assertCount( 1, $changeListener->prepareTitlesForLinksUpdate( $titles, 1 ) );
-		$titles = [ \Title::makeTitle( NS_MAIN, 'Title1' ), \Title::makeTitle( NS_MAIN, 'Title' . chr( 130 ) ) ];
+		$titles = [ Title::makeTitle( NS_MAIN, 'Title1' ), Title::makeTitle( NS_MAIN, 'Title' . chr( 130 ) ) ];
 		$this->assertEqualsCanonicalizing( [ 'Title1', 'Title' . chr( 130 ) ],
 			$changeListener->prepareTitlesForLinksUpdate( $titles, 2 ),
 			'Bad UTF8 links are kept by default'
@@ -69,7 +69,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$this->overrideConfigValue( 'CommandLineMode', false );
 		\MWTimestamp::setFakeTime( $now );
 
-		$title = $this->createMock( \Title::class );
+		$title = $this->createMock( Title::class );
 		$title->method( 'getPrefixedDBkey' )->willReturn( 'My_Title' );
 
 		$jobqueue = $this->createMock( \JobQueueGroup::class );
@@ -133,7 +133,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 	public function testOnFileUploadComplete() {
 		$now = 123;
 		\MWTimestamp::setFakeTime( $now );
-		$title = $this->createMock( \Title::class );
+		$title = $this->createMock( Title::class );
 		$title->method( 'getPrefixedDBkey' )->willReturn( 'My_Title' );
 		$title->method( 'exists' )->willReturn( true );
 
@@ -160,7 +160,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$now = 321;
 		$pageId = 123;
 		$page = $this->createMock( \WikiPage::class );
-		$title = $this->createMock( \Title::class );
+		$title = $this->createMock( Title::class );
 		$page->method( 'getTitle' )->willReturn( $title );
 		$logEntry = $this->createMock( \ManualLogEntry::class );
 		$logEntry->method( 'getTimestamp' )->willReturn( \MWTimestamp::convert( TS_MW, $now ) );
@@ -185,7 +185,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 	public function testOnArticleRevisionVisibilitySet() {
 		$now = 321;
 		\MWTimestamp::setFakeTime( $now );
-		$title = $this->createMock( \Title::class );
+		$title = $this->createMock( Title::class );
 		$jobqueue = $this->createMock( \JobQueueGroup::class );
 		$expectedJobParam = [
 			"update_kind" => "visibility_change",

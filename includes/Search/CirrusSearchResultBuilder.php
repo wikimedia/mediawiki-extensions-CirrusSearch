@@ -3,8 +3,8 @@
 namespace CirrusSearch\Search;
 
 use InvalidArgumentException;
+use MediaWiki\Title\Title;
 use MWTimestamp;
-use Title;
 use Wikimedia\Assert\Assert;
 
 /**

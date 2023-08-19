@@ -9,7 +9,7 @@ use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * We emulate template syntax here as best as possible, so things in NS_MAIN

@@ -7,6 +7,7 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
 use JobQueueGroup;
+use MediaWiki\Title\Title;
 
 /**
  * @covers \CirrusSearch\Sanity\AllClustersQueueingRemediator
@@ -32,7 +33,7 @@ class AllClustersQueuingRemediatorTest extends CirrusTestCase {
 	public function testDelegation() {
 		$now = 123;
 		\MWTimestamp::setFakeTime( $now );
-		$title = \Title::makeTitle( NS_MAIN, 'Test' );
+		$title = Title::makeTitle( NS_MAIN, 'Test' );
 		$wp = $this->createMock( \WikiPage::class );
 		$wp->method( 'getTitle' )->willReturn( $title );
 		$wrongIndex = 'wrongType';

@@ -5,9 +5,9 @@ namespace CirrusSearch\Search;
 use BaseSearchResultSet;
 use HtmlArmor;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use SearchResult;
 use SearchResultSetTrait;
-use Title;
 use Wikimedia\Assert\Assert;
 
 /**

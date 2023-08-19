@@ -7,8 +7,8 @@ use Generator;
 use MalformedTitleException;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\ProperPageIdentity;
+use MediaWiki\Title\Title;
 use SplFileObject;
-use Title;
 
 /**
  * Update the weighted_tags field for a page for a specific tag.

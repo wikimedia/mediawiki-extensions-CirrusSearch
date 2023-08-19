@@ -5,7 +5,7 @@ namespace CirrusSearch\Search\Fetch;
 use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Searcher;
 use MediaWiki\Logger\LoggerFactory;
-use Title;
+use MediaWiki\Title\Title;
 
 trait HighlightingTrait {
 	/**

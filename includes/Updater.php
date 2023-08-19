@@ -8,9 +8,9 @@ use CirrusSearch\Profile\SearchProfileService;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\ProperPageIdentity;
+use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
 use TextContent;
-use Title;
 use Wikimedia\Assert\Assert;
 use WikiPage;
 

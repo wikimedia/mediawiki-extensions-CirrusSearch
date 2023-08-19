@@ -3,8 +3,8 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\Search\Fetch\HighlightingTrait;
+use MediaWiki\Title\Title;
 use MWTimestamp;
-use Title;
 
 /**
  * An individual search result from Elasticsearch.

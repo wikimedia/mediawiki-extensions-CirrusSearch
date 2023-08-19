@@ -5,8 +5,8 @@ namespace CirrusSearch\Search;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\Util;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
-use Title;
 
 /**
  * Utility class build MW Title from elastica Result/ResultSet classes

@@ -3,7 +3,7 @@
 namespace CirrusSearch\Sanity;
 
 use CirrusSearch\CirrusTestCase;
-use Title;
+use MediaWiki\Title\Title;
 use WikiPage;
 
 /**

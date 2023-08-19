@@ -3,7 +3,7 @@
 namespace CirrusSearch\Job;
 
 use CirrusSearch\Updater;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * Updates link counts to page when it is newly linked or unlinked.

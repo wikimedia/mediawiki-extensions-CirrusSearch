@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use CirrusSearch\LanguageDetector\LanguageDetectorFactory;
 use CirrusSearch\LanguageDetector\TextCat;
 use CirrusSearch\Test\MockLanguageDetector;
+use MediaWiki\Title\Title;
 
 /**
  * Completion Suggester Tests
@@ -75,7 +76,7 @@ class LanguageDetectTest extends CirrusTestCase {
 				[
 					'CirrusSearchLanguageDetectors' => [
 						'meh' => 'this.class.does.not.exist.Detector',
-						'Title can do many things' => \Title::class,
+						'Title can do many things' => Title::class,
 					],
 				],
 				[]

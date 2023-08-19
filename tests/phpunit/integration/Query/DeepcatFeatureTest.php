@@ -6,7 +6,7 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use MediaWiki\Sparql\SparqlClient;
 use MediaWiki\Sparql\SparqlException;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * @group CirrusSearch

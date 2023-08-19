@@ -2,8 +2,8 @@
 
 namespace CirrusSearch;
 
+use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
-use Title;
 
 /**
  * @covers \CirrusSearch\OtherIndexesUpdater
@@ -134,7 +134,7 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 			->getMock();
 		$oi->expects( $this->once() )
 			->method( 'runUpdates' )
-			->will( $this->returnCallback( function ( \Title $title, array $updates ) {
+			->will( $this->returnCallback( function ( Title $title, array $updates ) {
 				$this->assertCount( 1, $updates );
 				foreach ( $updates as $data ) {
 					list( $otherIndex, $actions ) = $data;

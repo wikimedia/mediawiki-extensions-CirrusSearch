@@ -3,7 +3,7 @@
 namespace CirrusSearch\Job;
 
 use CirrusSearch\Updater;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * Job wrapper around Updater::deletePages.  If indexSuffix parameter is

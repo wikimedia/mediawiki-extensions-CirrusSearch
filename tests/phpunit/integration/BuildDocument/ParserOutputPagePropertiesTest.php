@@ -7,8 +7,8 @@ use CirrusSearch\HashSearchConfig;
 use ContentHandler;
 use Elastica\Document;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
 use ParserOutput;
-use Title;
 use WikiPage;
 
 /**
@@ -162,9 +162,9 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 		return $page;
 	}
 
-	private static function forceTitleLang( \Title $title, $langCode ) {
+	private static function forceTitleLang( Title $title, $langCode ) {
 		global $wgLanguageCode;
-		$refl = new \ReflectionProperty( \Title::class, 'mPageLanguage' );
+		$refl = new \ReflectionProperty( Title::class, 'mPageLanguage' );
 		$refl->setAccessible( true );
 		$refl->setValue( $title, [ $langCode, $wgLanguageCode ] );
 	}

@@ -6,7 +6,7 @@ use CirrusSearch\Connection;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Search;
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * Build a doc ready for the titlesuggest index.

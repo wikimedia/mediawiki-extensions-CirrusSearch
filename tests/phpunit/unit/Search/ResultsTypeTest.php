@@ -8,6 +8,7 @@ use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Searcher;
 use Elastica\Query;
 use Elastica\Response;
+use MediaWiki\Title\Title;
 
 /**
  * Test escaping search strings.
@@ -154,7 +155,7 @@ class ResultsTypeTest extends CirrusTestCase {
 		$result = new \Elastica\Result( $hit );
 		$matches = $type->transformOneElasticResult( $result, $namespaces );
 		$title = FancyTitleResultsType::chooseBestTitleOrRedirect( $matches );
-		$this->assertEquals( \Title::makeTitle( $expectedNs, $expected ), $title );
+		$this->assertEquals( Title::makeTitle( $expectedNs, $expected ), $title );
 	}
 
 	/**

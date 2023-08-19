@@ -10,7 +10,7 @@ use MediaWiki\Cache\BacklinkCacheFactory;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
-use Title;
+use MediaWiki\Title\Title;
 use TitleFormatter;
 use Wikimedia\Rdbms\IDatabase;
 use WikiPage;

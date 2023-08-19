@@ -4,7 +4,7 @@ namespace CirrusSearch\BuildDocument;
 
 use Elastica\Document;
 use MediaWiki\Revision\RevisionRecord;
-use Title;
+use MediaWiki\Title\Title;
 use WikiPage;
 
 /**

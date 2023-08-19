@@ -5,6 +5,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\Searcher;
 use Elastica\ResultSet as ElasticaResultSet;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Title\Title;
 
 /**
  * Returns titles categorized based on how they matched - redirect or name.
@@ -97,7 +98,7 @@ class FancyTitleResultsType extends TitleResultsType {
 	/**
 	 * Finds best title or redirect
 	 * @param array $match array returned by self::transformOneElasticResult
-	 * @return \Title|false choose best
+	 * @return Title|false choose best
 	 */
 	public static function chooseBestTitleOrRedirect( array $match ) {
 		// TODO maybe dig around in the redirect matches and find the best one?
@@ -116,7 +117,7 @@ class FancyTitleResultsType extends TitleResultsType {
 	 *
 	 * @param \Elastica\Result $r
 	 * @param int[] $namespaces Prefer
-	 * @return \Title[] with the following keys :
+	 * @return Title[] with the following keys :
 	 *   titleMatch => a title if the title matched
 	 *   redirectMatches => an array of redirect matches, one per matched redirect
 	 */
@@ -173,7 +174,7 @@ class FancyTitleResultsType extends TitleResultsType {
 	 * @param string $redirectTitleString Highlighted string returned from elasticsearch
 	 * @param array $docRedirects Map from title string to list of redirects from elasticsearch source document
 	 * @param int[] $namespaces Prefered namespaces to source redirects from
-	 * @return \Title
+	 * @return Title
 	 */
 	private function resolveRedirectHighlight( \Elastica\Result $r, $redirectTitleString, array $docRedirects, $namespaces ) {
 		// The match was against a redirect so we should replace the $title with one that

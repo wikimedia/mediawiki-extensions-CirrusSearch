@@ -5,7 +5,7 @@ namespace CirrusSearch;
 use Elastica\Multi\ResultSet;
 use Elastica\Multi\Search as MultiSearch;
 use MediaWiki\Logger\LoggerFactory;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * Tracks whether a Title is known on other indexes.

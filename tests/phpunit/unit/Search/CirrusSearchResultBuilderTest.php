@@ -3,7 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * @covers \CirrusSearch\Search\CirrusSearchResultBuilder

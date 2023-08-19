@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use Title;
+use MediaWiki\Title\Title;
 
 class SearchRequestLog extends BaseRequestLog {
 	/**

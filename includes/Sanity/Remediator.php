@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Sanity;
 
-use Title;
+use MediaWiki\Title\Title;
 use WikiPage;
 
 /**

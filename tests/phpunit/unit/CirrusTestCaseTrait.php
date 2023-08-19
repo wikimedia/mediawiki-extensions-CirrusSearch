@@ -12,9 +12,9 @@ use CirrusSearch\Search\TitleHelper;
 use Config;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Interwiki\InterwikiLookup;
+use MediaWiki\Title\Title;
 use MediaWiki\User\StaticUserOptionsLookup;
 use MediaWiki\User\UserOptionsLookup;
-use Title;
 
 trait CirrusTestCaseTrait {
 	public static $FIXTURE_DIR = __DIR__ . '/../fixtures/';

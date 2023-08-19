@@ -96,7 +96,10 @@
 		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAnalysisConfig",
 		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchSimilarityConfig",
 		"GetPreferences": "default",
-		"LinksUpdateComplete": [ "changelistener", "eventbusbridge" ],
+		"LinksUpdateComplete": [
+			"changelistener",
+			"eventbusbridge"
+		],
 		"PrefixSearchExtractNamespace": "CirrusSearch\\Hooks::onPrefixSearchExtractNamespace",
 		"ResourceLoaderGetConfigVars": "CirrusSearch\\Hooks::onResourceLoaderGetConfigVars",
 		"SearchIndexFields": [

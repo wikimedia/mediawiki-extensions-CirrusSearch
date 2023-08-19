@@ -4,8 +4,8 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\Search\Fetch\HighlightedField;
 use CirrusSearch\Search\Fetch\HighlightingTrait;
+use MediaWiki\Title\Title;
 use MWTimestamp;
-use Title;
 
 class FullTextCirrusSearchResultBuilder {
 	use HighlightingTrait;

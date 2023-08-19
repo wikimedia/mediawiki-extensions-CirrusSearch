@@ -4,9 +4,9 @@ namespace CirrusSearch\Search;
 
 use File;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use SearchResult;
 use SearchResultTrait;
-use Title;
 
 /**
  * Base class for SearchResult

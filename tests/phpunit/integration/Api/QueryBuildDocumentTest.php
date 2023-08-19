@@ -6,6 +6,7 @@ use CirrusSearch\CirrusIntegrationTestCaseTrait;
 use CirrusSearch\CirrusSearch;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
 
 /**
@@ -64,11 +65,11 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 		];
 
 		$this->getNonexistingTestPage( 'QueryBuildDocumentTest_Page' );
-		$status = $this->editPage( \Title::newFromText( "QueryBuildDocumentTest_Page" ), self::CONTENT_FIRST_REV );
+		$status = $this->editPage( Title::newFromText( "QueryBuildDocumentTest_Page" ), self::CONTENT_FIRST_REV );
 		/** @var RevisionRecord $firstRevision */
 		$firstRevision = $status->getValue()['revision-record'];
 
-		$status = $this->editPage( \Title::newFromText( "QueryBuildDocumentTest_Page" ), self::CONTENT_SECOND_REV );
+		$status = $this->editPage( Title::newFromText( "QueryBuildDocumentTest_Page" ), self::CONTENT_SECOND_REV );
 		/** @var RevisionRecord $secondRevision */
 		$secondRevision = $status->getValue()['revision-record'];
 

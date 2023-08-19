@@ -4,7 +4,7 @@ namespace CirrusSearch\Sanity;
 
 use CirrusSearch\Assignment\ClusterAssignment;
 use JobQueueGroup;
-use Title;
+use MediaWiki\Title\Title;
 use WikiPage;
 
 /**

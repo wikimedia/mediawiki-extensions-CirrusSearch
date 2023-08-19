@@ -6,8 +6,8 @@ use BaseSearchResultSet;
 use Elastica\Response;
 use HtmlArmor;
 use ISearchResultSet;
+use MediaWiki\Title\Title;
 use SearchResultSetTrait;
-use Title;
 
 class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchResultSet, SearchMetricsProvider {
 	use SearchResultSetTrait;

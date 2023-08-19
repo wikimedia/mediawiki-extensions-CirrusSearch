@@ -6,9 +6,9 @@ use BaseSearchResultSet;
 use HtmlArmor;
 use ISearchResultSet;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use SearchResult;
 use SearchResultSetTrait;
-use Title;
 use Wikimedia\Assert\Assert;
 
 /**

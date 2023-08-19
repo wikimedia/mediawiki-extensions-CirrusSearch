@@ -14,7 +14,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Sparql\SparqlClient;
 use MediaWiki\Sparql\SparqlException;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * Filters by category or its subcategories. E.g. if category Vehicles includes Cars

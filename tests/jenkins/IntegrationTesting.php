@@ -5,7 +5,7 @@ namespace CirrusSearch\Jenkins;
 use DatabaseUpdater;
 use Language;
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * Sets up configuration expected by the CirrusSearch integration test suite.

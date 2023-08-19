@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-use Title;
+use MediaWiki\Title\Title;
 
 class ArrayCirrusSearchResult extends CirrusSearchResult {
 	public const DOC_ID = 'doc_id';

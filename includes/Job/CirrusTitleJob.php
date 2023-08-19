@@ -5,7 +5,7 @@ namespace CirrusSearch\Job;
 use CirrusSearch\SearchConfig;
 use Job;
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * CirrusSearch Job that is bound to a Title

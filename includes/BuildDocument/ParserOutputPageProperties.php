@@ -9,9 +9,9 @@ use Elastica\Document;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
 use ParserOutput;
 use Sanitizer;
-use Title;
 use Wikimedia\LightweightObjectStore\ExpirationAwareness;
 use WikiPage;
 

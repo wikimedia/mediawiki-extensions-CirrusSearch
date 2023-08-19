@@ -5,7 +5,7 @@ namespace CirrusSearch\Job;
 use CirrusSearch\Updater;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * Performs the appropriate updates to Elasticsearch after a LinksUpdate is

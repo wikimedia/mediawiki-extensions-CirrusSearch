@@ -5,7 +5,7 @@ namespace CirrusSearch\Job;
 use CirrusSearch\Connection;
 use CirrusSearch\Updater;
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * Job wrapper for deleting pages from archive.

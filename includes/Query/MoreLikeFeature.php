@@ -7,7 +7,7 @@ use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * Finds pages similar to another one.

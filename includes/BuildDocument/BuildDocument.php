@@ -12,6 +12,7 @@ use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionAccessException;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
+use MediaWiki\Title\Title;
 use TitleFormatter;
 use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
@@ -171,7 +172,7 @@ class BuildDocument {
 			}
 			try {
 				$revision ??= $this->revStore->getRevisionById( $docRevision );
-				$title = $revision ? \Title::castFromPageIdentity( $revision->getPage() ) : null;
+				$title = $revision ? Title::castFromPageIdentity( $revision->getPage() ) : null;
 			} catch ( RevisionAccessException $e ) {
 				$revision = null;
 			}

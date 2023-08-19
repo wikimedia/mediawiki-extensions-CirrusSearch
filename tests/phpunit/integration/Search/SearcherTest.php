@@ -12,7 +12,7 @@ use HtmlArmor;
 use LinkCacheTestTrait;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\FauxRequest;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * @covers \CirrusSearch\Searcher

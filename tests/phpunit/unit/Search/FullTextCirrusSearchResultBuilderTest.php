@@ -6,7 +6,7 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Search\Fetch\HighlightedField;
 use CirrusSearch\Searcher;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * @covers \CirrusSearch\Search\ArrayCirrusSearchResult
@@ -194,7 +194,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 					]
 				], self::$MINIMAL_HIT ),
 				[
-					'redirectTitle' => \Title::makeTitle( NS_MAIN, 'redirect <match' ),
+					'redirectTitle' => Title::makeTitle( NS_MAIN, 'redirect <match' ),
 					'redirectSnippetField' => 'redirect.title'
 				]
 			],
@@ -216,7 +216,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusTestCase {
 					]
 				] ),
 				[
-					'redirectTitle' => \Title::makeTitle( NS_MAIN, 'Šablona:redirect <match', '', 'cs' ),
+					'redirectTitle' => Title::makeTitle( NS_MAIN, 'Šablona:redirect <match', '', 'cs' ),
 					'redirectSnippetField' => 'redirect.title'
 				]
 			],

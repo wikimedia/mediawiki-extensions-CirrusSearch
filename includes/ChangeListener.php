@@ -23,8 +23,8 @@ use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
 use Status;
-use Title;
 use User;
 use Wikimedia\Assert\Assert;
 

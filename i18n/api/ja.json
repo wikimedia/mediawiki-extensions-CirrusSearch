@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Kokage si",
 			"Omotecho",
 			"Shirayuki",
 			"Yusuke1109"
@@ -12,7 +13,7 @@
 	"apihelp-cirrus-mapping-dump-example": "このウィキの CirrusSearch のマッピングのダンプを取得します。",
 	"apihelp-cirrus-settings-dump-summary": "このウィキの CirrusSearch の設定をダンプします。",
 	"apihelp-cirrus-settings-dump-example": "このウィキの CirrusSearch の設定のダンプを取得します。",
-	"apihelp-cirrus-profiles-dump-summary": "このウィキの CirrusSearch の設定をダンプします。",
+	"apihelp-cirrus-profiles-dump-summary": "このウィキの CirrusSearch のプロファイルをダンプします。",
 	"apihelp-cirrus-profiles-dump-example": "このウィキの CirrusSearch の設定のダンプを取得します。",
 	"apihelp-cirrus-profiles-dump-param-verbose": "設定の内容のダンプを取得",
 	"apihelp-query+cirrusdoc-summary": "データベースサーバにある単一の CirrusSearch 記事の説明文書のダンプ",

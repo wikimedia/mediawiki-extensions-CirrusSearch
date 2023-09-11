@@ -30,5 +30,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "De te gebruiken scoremethode",
 	"apierror-compsuggestbuilddoc-bad-method": "Onbekende scoremethode",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Dump van het document dat wordt gebruikt door de voltooiingssuggesties-generator",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "Een dump verkrijgen van het document dat wordt gebruikt door de voltooiingssuggestie-generator"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Een dump verkrijgen van het document dat wordt gebruikt door de voltooiingssuggestie-generator",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Geef een naam voor de scoremethode op die moet worden gebruikt voor de voltooiingssuggesties"
 }

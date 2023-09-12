@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
+			"З. ӘЙЛЕ",
 			"Янмурза Баки"
 		]
 	},
 	"apihelp-cirrus-config-dump-example": "CirrusSearch конфигурацияһы дампын алырға.",
-	"apihelp-cirrus-mapping-dump-example": "Был викиға CirrusSearch маппинганың дампын алырға.",
-	"apihelp-cirrus-settings-dump-example": "Был викиға CirrusSearch көйләүҙәр дампын алырға."
+	"apihelp-cirrus-mapping-dump-example": "Был вики өсөн CirrusSearch маппинганың дампын алырға.",
+	"apihelp-cirrus-settings-dump-example": "Был вики өсөн CirrusSearch көйләүҙәр дампын алырға."
 }

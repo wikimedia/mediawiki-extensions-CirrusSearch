@@ -140,7 +140,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "thai_repl_pat",
                 "dotted_I_fix",
@@ -161,7 +160,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "thai_repl_pat",
                 "dotted_I_fix",
@@ -201,11 +199,6 @@
         }
     },
     "char_filter": {
-        "acronym_fixer": {
-            "type": "pattern_replace",
-            "pattern": "(?<=(?:^|[^\\p{L}\\p{M}\\p{Cf}])[\\p{M}\\p{Cf}]{0,9}+\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
-            "replacement": "$1"
-        },
         "apostrophe_norm": {
             "type": "mapping",
             "mappings": [
@@ -254,8 +247,8 @@
         },
         "split_camelCase": {
             "type": "pattern_replace",
-            "pattern": "(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})",
-            "replacement": " $1"
+            "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
+            "replacement": "$1 $2"
         },
         "thai_charfilter": {
             "type": "mapping",

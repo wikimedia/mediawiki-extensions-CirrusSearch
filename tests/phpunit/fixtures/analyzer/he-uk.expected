@@ -31,7 +31,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -50,7 +49,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -94,11 +92,6 @@
         }
     },
     "char_filter": {
-        "acronym_fixer": {
-            "pattern": "(?<=(?:^|[^\\p{L}\\p{M}\\p{Cf}])[\\p{M}\\p{Cf}]{0,9}+\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
-            "replacement": "$1",
-            "type": "pattern_replace"
-        },
         "apostrophe_norm": {
             "mappings": [
                 "`=>'",
@@ -130,8 +123,8 @@
             "type": "mapping"
         },
         "split_camelCase": {
-            "pattern": "(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})",
-            "replacement": " $1",
+            "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
+            "replacement": "$1 $2",
             "type": "pattern_replace"
         },
         "word_break_helper": {

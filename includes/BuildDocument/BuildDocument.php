@@ -14,7 +14,7 @@ use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Title\Title;
 use TitleFormatter;
-use Wikimedia\Rdbms\IDatabase;
+use Wikimedia\Rdbms\IReadableDatabase;
 use WikiPage;
 
 /**
@@ -63,7 +63,7 @@ class BuildDocument {
 	private $config;
 	/** @var Connection */
 	private $connection;
-	/** @var IDatabase */
+	/** @var IReadableDatabase */
 	private $db;
 	/** @var RevisionStore */
 	private $revStore;
@@ -78,7 +78,7 @@ class BuildDocument {
 
 	/**
 	 * @param Connection $connection Cirrus connection to read page properties from
-	 * @param IDatabase $db Wiki database connection to read page properties from
+	 * @param IReadableDatabase $db Wiki database connection to read page properties from
 	 * @param RevisionStore $revStore Store for retrieving revisions by id
 	 * @param BacklinkCacheFactory $backlinkCacheFactory
 	 * @param DocumentSizeLimiter $docSizeLimiter
@@ -87,7 +87,7 @@ class BuildDocument {
 	 */
 	public function __construct(
 		Connection $connection,
-		IDatabase $db,
+		IReadableDatabase $db,
 		RevisionStore $revStore,
 		BacklinkCacheFactory $backlinkCacheFactory,
 		DocumentSizeLimiter $docSizeLimiter,

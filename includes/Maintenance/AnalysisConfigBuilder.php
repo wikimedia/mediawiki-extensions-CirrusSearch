@@ -648,24 +648,13 @@ class AnalysisConfigBuilder {
 						'\u202F=>\u0020',
 					],
 				],
-				// add a space between lowercase letter {Ll} and uppercase letter {Lu}
-				// allowing for 0–9 combining marks {M} or invisibles {Cf}
-				// {0-9}+ rather than * or *+ because they are too sloooooooow
+				// Add a space between lowercase letter {Ll} and uppercase {Lu} or
+				// titlecase {Lt} letter, allowing for optional combining marks {M}
+				// or invisibles {Cf}.
 				'split_camelCase' => [
 					'type' => 'pattern_replace',
-					'pattern' => '(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})',
-					'replacement' => ' $1'
-				],
-				// remove dots from letter-dot-letter-dot-letter... sequences
-				// Letters are {L} with optional combining marks {M} or invisibles {Cf}
-				// Acronym boundaries are non-letters {L} (with optional combining marks
-				// or invisibles) or string boundaries (so we don't remove dots from web
-				// domains, for example)
-				'acronym_fixer' => [
-					'type' => 'pattern_replace',
-					'pattern' => '(?<=(?:^|[^\\p{L}\\p{M}\\p{Cf}])[\\p{M}\\p{Cf}]{0,9}+\\p{L}[\\p{M}\\p{Cf}]{0,9}+)' .
-						'[.．]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)',
-					'replacement' => '$1'
+					'pattern' => '(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])',
+					'replacement' => '$1 $2'
 				],
 				// map lots of apostrophe-like characters to apostrophe (T315118)
 				'apostrophe_norm' => [
@@ -692,8 +681,9 @@ class AnalysisConfigBuilder {
 						"｀=>'",		 // fullwidth grave accent
 					],
 				],
-				// Converts things that don't always count as word breaks into spaces which always
-				// count as word breaks.
+				// Converts things that don't always count as word breaks into spaces
+				// which (almost) always count as word breaks (e.g., the Nori and SmartCN
+				// tokenizers do not always count spaces as word breaks!)
 				'word_break_helper' => [
 					'type' => 'mapping',
 					'mappings' => [
@@ -1742,8 +1732,6 @@ class AnalysisConfigBuilder {
 			'nnbsp_norm' => new GlobalCustomFilter( 'char_filter' ),
 			'apostrophe_norm' => new GlobalCustomFilter( 'char_filter' ),
 			'split_camelCase' => new GlobalCustomFilter( 'char_filter' ),
-			'acronym_fixer' => ( new GlobalCustomFilter( 'char_filter' ) )->
-				setMustFollowFilters( [ 'armenian_charfilter' ] ),
 			'word_break_helper' => ( new GlobalCustomFilter( 'char_filter' ) )->
 				setMustFollowFilters( [ 'acronym_fixer', 'armenian_charfilter' ] )->
 				setDenyList( [ 'ko', 'zh' ] ),

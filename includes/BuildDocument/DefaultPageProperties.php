@@ -8,20 +8,20 @@ use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
 use MWTimestamp;
-use Wikimedia\Rdbms\IDatabase;
+use Wikimedia\Rdbms\IReadableDatabase;
 use WikiPage;
 
 /**
  * Default properties attached to all page documents.
  */
 class DefaultPageProperties implements PagePropertyBuilder {
-	/** @var IDatabase Wiki database to query additional page properties from. */
+	/** @var IReadableDatabase Wiki database to query additional page properties from. */
 	private $db;
 
 	/**
-	 * @param IDatabase $db Wiki database to query additional page properties from.
+	 * @param IReadableDatabase $db Wiki database to query additional page properties from.
 	 */
-	public function __construct( IDatabase $db ) {
+	public function __construct( IReadableDatabase $db ) {
 		$this->db = $db;
 	}
 

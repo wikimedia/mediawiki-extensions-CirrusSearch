@@ -31,7 +31,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -52,7 +51,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -99,7 +97,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -121,7 +118,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -169,7 +165,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -191,7 +186,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -239,7 +233,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -258,7 +251,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -303,7 +295,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -324,7 +315,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -371,7 +361,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -385,7 +374,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -425,7 +413,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -445,7 +432,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -491,7 +477,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -512,7 +497,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -559,7 +543,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -578,7 +561,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -623,7 +605,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -642,7 +623,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -689,7 +669,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix",
                 "german_charfilter"
@@ -710,7 +689,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix",
                 "german_charfilter"
@@ -759,7 +737,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -777,7 +754,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -821,7 +797,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -842,7 +817,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -889,7 +863,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -910,7 +883,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -957,7 +929,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -978,7 +949,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -1025,7 +995,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -1039,7 +1008,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -1079,7 +1047,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1098,7 +1065,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1143,7 +1109,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1162,7 +1127,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1207,7 +1171,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1226,7 +1189,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1271,7 +1233,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix",
                 "zero_width_spaces"
@@ -1293,7 +1254,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix",
                 "zero_width_spaces"
@@ -1341,7 +1301,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1360,7 +1319,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1405,7 +1363,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix",
                 "french_charfilter"
@@ -1428,7 +1385,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix",
                 "french_charfilter"
@@ -1479,7 +1435,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "irish_charfilter"
             ],
@@ -1501,7 +1456,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "irish_charfilter"
             ],
@@ -1549,7 +1503,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1568,7 +1521,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1613,7 +1565,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -1627,7 +1578,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -1667,7 +1617,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1689,7 +1638,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1737,7 +1685,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -1751,7 +1698,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -1791,7 +1737,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1810,7 +1755,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -1857,7 +1801,6 @@
                 "split_camelCase",
                 "dotted_I_fix",
                 "armenian_charfilter",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -1878,7 +1821,6 @@
                 "split_camelCase",
                 "dotted_I_fix",
                 "armenian_charfilter",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -1923,7 +1865,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix",
                 "cjk_charfilter"
@@ -1944,7 +1885,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix",
                 "cjk_charfilter"
@@ -1991,7 +1931,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2010,7 +1949,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2055,7 +1993,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2074,7 +2011,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2119,7 +2055,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2138,7 +2073,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2183,7 +2117,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2203,7 +2136,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2249,7 +2181,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2268,7 +2199,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2313,7 +2243,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2332,7 +2261,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2377,7 +2305,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2396,7 +2323,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -2441,7 +2367,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix",
                 "romanian_charfilter"
@@ -2462,7 +2387,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix",
                 "romanian_charfilter"
@@ -2511,7 +2435,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix",
                 "russian_charfilter"
@@ -2531,7 +2454,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "dotted_I_fix",
                 "russian_charfilter"
@@ -2577,7 +2499,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -2591,7 +2512,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -2631,7 +2551,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -2652,7 +2571,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -2699,7 +2617,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -2713,7 +2630,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -2753,7 +2669,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -2767,7 +2682,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -2807,7 +2721,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -2827,7 +2740,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -2873,7 +2785,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "thai_repl_pat",
                 "dotted_I_fix",
@@ -2894,7 +2805,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper",
                 "thai_repl_pat",
                 "dotted_I_fix",
@@ -2943,7 +2853,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -2963,7 +2872,6 @@
                 "nnbsp_norm",
                 "apostrophe_norm",
                 "split_camelCase",
-                "acronym_fixer",
                 "word_break_helper"
             ],
             "filter": [
@@ -2980,11 +2888,6 @@
         }
     },
     "char_filter": {
-        "acronym_fixer": {
-            "pattern": "(?<=(?:^|[^\\p{L}\\p{M}\\p{Cf}])[\\p{M}\\p{Cf}]{0,9}+\\p{L}[\\p{M}\\p{Cf}]{0,9}+)[.\uff0e]\\p{Cf}*+(\\p{L}[\\p{M}\\p{Cf}]*+)(?=\\P{L}|$)",
-            "replacement": "$1",
-            "type": "pattern_replace"
-        },
         "apostrophe_norm": {
             "mappings": [
                 "`=>'",
@@ -3189,8 +3092,8 @@
             "type": "mapping"
         },
         "split_camelCase": {
-            "pattern": "(?<=\\p{Ll}[\\p{M}\\p{Cf}]{0,9}+)(\\p{Lu})",
-            "replacement": " $1",
+            "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
+            "replacement": "$1 $2",
             "type": "pattern_replace"
         },
         "thai_charfilter": {

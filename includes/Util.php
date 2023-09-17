@@ -159,7 +159,7 @@ class Util {
 	public static function parsePotentialPercent( $str ) {
 		$result = floatval( $str );
 		if ( strpos( $str, '%' ) === false ) {
-			return (float)$result;
+			return $result;
 		}
 		return $result / 100;
 	}

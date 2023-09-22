@@ -111,9 +111,9 @@ exports.config = {
 	 *
 	 * @param {Object} test Mocha Test object
 	 */
-	afterTest: function ( test ) {
+	afterTest: async function ( test ) {
 		if ( !test.passed ) {
-			const filePath = saveScreenshot( test.title );
+			const filePath = await saveScreenshot( test.title );
 			console.log( '\n\tScreenshot: ' + filePath + '\n' );
 		}
 	}

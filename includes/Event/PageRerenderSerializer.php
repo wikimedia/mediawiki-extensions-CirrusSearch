@@ -13,7 +13,7 @@ use Wikimedia\Assert\Assert;
 use Wikimedia\UUID\GlobalIdGenerator;
 
 class PageRerenderSerializer {
-	public const STREAM = 'mediawiki.cirrussearch_page_rerender';
+	public const STREAM = 'mediawiki.cirrussearch_page_rerender.v1';
 	public const SCHEMA = '/mediawiki/cirrussearch/page_rerender/1.0.0';
 	public const LINKS_UPDATE_REASON = 'links_update';
 	private TitleFormatter $titleFormatter;

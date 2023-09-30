@@ -9,6 +9,7 @@ use CirrusSearch\Query\HasRecommendationFeature;
 use CirrusSearch\SearchConfig;
 use Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Search\Hook\SearchIndexFieldsHook;
 use SearchEngine;
 
 /**
@@ -16,7 +17,7 @@ use SearchEngine;
  * @package CirrusSearch\Wikimedia
  * @see ArticleTopicFeature
  */
-class WeightedTagsHooks {
+class WeightedTagsHooks implements SearchIndexFieldsHook {
 	public const FIELD_NAME = 'weighted_tags';
 	public const FIELD_SIMILARITY = 'weighted_tags_similarity';
 	public const FIELD_INDEX_ANALYZER = 'weighted_tags';
@@ -66,7 +67,7 @@ class WeightedTagsHooks {
 	 * @param SearchEngine $engine the search engine requesting field definitions
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/SearchIndexFields
 	 */
-	public static function onSearchIndexFields( array &$fields, SearchEngine $engine ) {
+	public function onSearchIndexFields( &$fields, $engine ) {
 		if ( !( $engine instanceof CirrusSearch ) ) {
 			return;
 		}

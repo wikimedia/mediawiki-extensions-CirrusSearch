@@ -84,14 +84,14 @@
 		"remoteExtPath": "CirrusSearch"
 	},
 	"Hooks": {
-		"APIAfterExecute": "CirrusSearch\\Hooks::onAPIAfterExecute",
-		"ApiBeforeMain": "CirrusSearch\\Hooks::onApiBeforeMain",
-		"APIQuerySiteInfoStatisticsInfo": "CirrusSearch\\Hooks::onAPIQuerySiteInfoStatisticsInfo",
+		"APIAfterExecute": "default",
+		"ApiBeforeMain": "default",
+		"APIQuerySiteInfoStatisticsInfo": "default",
 		"PageDelete": "changelistener",
 		"PageDeleteComplete": "changelistener",
 		"ArticleRevisionVisibilitySet": "changelistener",
 		"PageUndeleteComplete": "changelistener",
-		"BeforeInitialize": "CirrusSearch\\Hooks::onBeforeInitialize",
+		"BeforeInitialize": "default",
 		"CirrusSearchAddQueryFeatures": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAddQueryFeatures",
 		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAnalysisConfig",
 		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchSimilarityConfig",
@@ -100,18 +100,18 @@
 			"changelistener",
 			"eventbusbridge"
 		],
-		"PrefixSearchExtractNamespace": "CirrusSearch\\Hooks::onPrefixSearchExtractNamespace",
-		"ResourceLoaderGetConfigVars": "CirrusSearch\\Hooks::onResourceLoaderGetConfigVars",
+		"PrefixSearchExtractNamespace": "default",
+		"ResourceLoaderGetConfigVars": "default",
 		"SearchIndexFields": [
-			"CirrusSearch\\Wikimedia\\WeightedTagsHooks::onSearchIndexFields",
-			"CirrusSearch\\Hooks\\CustomPageFields::onSearchIndexFields"
+			"wikimediatags",
+			"custompagefields"
 		],
-		"SearchGetNearMatch": "CirrusSearch\\Hooks::onSearchGetNearMatch",
-		"ShowSearchHitTitle": "CirrusSearch\\Hooks::onShowSearchHitTitle",
-		"SoftwareInfo": "CirrusSearch\\Hooks::onSoftwareInfo",
-		"SpecialSearchResults": "CirrusSearch\\Hooks::onSpecialSearchResults",
-		"SpecialSearchResultsAppend": "CirrusSearch\\Hooks::onSpecialSearchResultsAppend",
-		"SpecialStatsAddExtra": "CirrusSearch\\Hooks::onSpecialStatsAddExtra",
+		"SearchGetNearMatch": "default",
+		"ShowSearchHitTitle": "default",
+		"SoftwareInfo": "default",
+		"SpecialSearchResults": "default",
+		"SpecialSearchResultsAppend": "default",
+		"SpecialStatsAddExtra": "default",
 		"TitleMove": "changelistener",
 		"PageMoveComplete": "changelistener",
 		"UploadComplete": "changelistener",
@@ -123,6 +123,12 @@
 			"services": [
 				"ConfigFactory"
 			]
+		},
+		"wikimediatags": {
+			"class": "CirrusSearch\\Wikimedia\\WeightedTagsHooks"
+		},
+		"custompagefields": {
+			"class": "CirrusSearch\\Hooks\\CustomPageFields"
 		},
 		"changelistener": {
 			"class": "CirrusSearch\\ChangeListener",

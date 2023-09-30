@@ -5,6 +5,7 @@ namespace CirrusSearch\Hooks;
 use CirrusSearch\CirrusSearch;
 use Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Search\Hook\SearchIndexFieldsHook;
 use NullIndexField;
 use SearchEngine;
 use SearchIndexField;
@@ -12,7 +13,7 @@ use SearchIndexField;
 /**
  * Hooks to allow custom fields to be added to the search index for pages
  */
-class CustomPageFields {
+class CustomPageFields implements SearchIndexFieldsHook {
 	public const CONFIG_OPTION = 'CirrusSearchCustomPageFields';
 
 	/**
@@ -21,7 +22,7 @@ class CustomPageFields {
 	 * @param SearchEngine $engine the search engine requesting field definitions
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/SearchIndexFields
 	 */
-	public static function onSearchIndexFields( array &$fields, SearchEngine $engine ) {
+	public function onSearchIndexFields( &$fields, $engine ) {
 		if ( !( $engine instanceof CirrusSearch ) ) {
 			return;
 		}

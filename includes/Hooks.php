@@ -8,13 +8,28 @@ use ApiOpenSearch;
 use CirrusSearch\Search\FancyTitleResultsType;
 use ConfigFactory;
 use Html;
+use HtmlArmor;
 use ISearchResultSet;
+use MediaWiki\Api\Hook\APIAfterExecuteHook;
+use MediaWiki\Api\Hook\APIQuerySiteInfoStatisticsInfoHook;
+use MediaWiki\Config\Config;
+use MediaWiki\Hook\ApiBeforeMainHook;
+use MediaWiki\Hook\BeforeInitializeHook;
+use MediaWiki\Hook\SoftwareInfoHook;
+use MediaWiki\Hook\SpecialSearchResultsAppendHook;
+use MediaWiki\Hook\SpecialSearchResultsHook;
+use MediaWiki\Hook\SpecialStatsAddExtraHook;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Preferences\Hook\GetPreferencesHook;
+use MediaWiki\ResourceLoader\Hook\ResourceLoaderGetConfigVarsHook;
+use MediaWiki\Search\Hook\PrefixSearchExtractNamespaceHook;
+use MediaWiki\Search\Hook\SearchGetNearMatchHook;
+use MediaWiki\Search\Hook\ShowSearchHitTitleHook;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Hook\UserGetDefaultOptionsHook;
 use OutputPage;
 use RequestContext;
+use SearchResult;
 use SpecialSearch;
 use User;
 use WebRequest;
@@ -38,7 +53,22 @@ use Xml;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
+class Hooks implements
+	UserGetDefaultOptionsHook,
+	GetPreferencesHook,
+	APIAfterExecuteHook,
+	ApiBeforeMainHook,
+	APIQuerySiteInfoStatisticsInfoHook,
+	BeforeInitializeHook,
+	PrefixSearchExtractNamespaceHook,
+	ResourceLoaderGetConfigVarsHook,
+	SearchGetNearMatchHook,
+	ShowSearchHitTitleHook,
+	SoftwareInfoHook,
+	SpecialSearchResultsHook,
+	SpecialSearchResultsAppendHook,
+	SpecialStatsAddExtraHook
+{
 	/** @var ConfigFactory */
 	private $configFactory;
 
@@ -53,21 +83,21 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	 * Hooked to call initialize after the user is set up.
 	 *
 	 * @param Title $title
-	 * @param \Article $unused
+	 * @param null $unused
 	 * @param OutputPage $outputPage
 	 * @param User $user
 	 * @param \WebRequest $request
 	 * @param \MediaWiki $mediaWiki
 	 */
-	public static function onBeforeInitialize( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
+	public function onBeforeInitialize( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
 		self::initializeForRequest( $request );
 	}
 
 	/**
 	 * Hooked to call initialize after the user is set up.
-	 * @param ApiMain $apiMain The ApiMain instance being used
+	 * @param ApiMain &$apiMain The ApiMain instance being used
 	 */
-	public static function onApiBeforeMain( $apiMain ) {
+	public function onApiBeforeMain( &$apiMain ) {
 		self::initializeForRequest( $apiMain->getRequest() );
 	}
 
@@ -301,7 +331,7 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	 * Hook called to include Elasticsearch version info on Special:Version
 	 * @param array &$software Array of wikitext and version numbers
 	 */
-	public static function onSoftwareInfo( &$software ) {
+	public function onSoftwareInfo( &$software ) {
 		$version = new Version( self::getConnection() );
 		$status = $version->get();
 		if ( $status->isOK() ) {
@@ -315,7 +345,7 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	 * @param OutputPage $out
 	 * @param string $term
 	 */
-	public static function onSpecialSearchResultsAppend( $specialSearch, $out, $term ) {
+	public function onSpecialSearchResultsAppend( $specialSearch, $out, $term ) {
 		global $wgCirrusSearchFeedbackLink;
 
 		if ( $wgCirrusSearchFeedbackLink ) {
@@ -350,7 +380,7 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	 * @param string &$search
 	 * @return bool
 	 */
-	public static function onPrefixSearchExtractNamespace( &$namespaces, &$search ) {
+	public function onPrefixSearchExtractNamespace( &$namespaces, &$search ) {
 		global $wgSearchType;
 		if ( $wgSearchType !== 'CirrusSearch' ) {
 			return true;
@@ -391,13 +421,17 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 		return false;
 	}
 
+	public function onSearchGetNearMatch( $term, &$titleResult ) {
+		return self::handleSearchGetNearMatch( $term, $titleResult );
+	}
+
 	/**
 	 * Let Elasticsearch take a crack at getting near matches once mediawiki has tried all kinds of variants.
 	 * @param string $term the original search term and all language variants
 	 * @param null|Title &$titleResult resulting match.  A Title if we found something, unchanged otherwise.
 	 * @return bool return false if we find something, true otherwise so mediawiki can try its default behavior
 	 */
-	public static function onSearchGetNearMatch( $term, &$titleResult ) {
+	public static function handleSearchGetNearMatch( $term, &$titleResult ) {
 		global $wgSearchType;
 		if ( $wgSearchType !== 'CirrusSearch' ) {
 			return true;
@@ -444,8 +478,10 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ResourceLoaderGetConfigVars
 	 *
 	 * @param array &$vars
+	 * @param string $skin
+	 * @param Config $config
 	 */
-	public static function onResourceLoaderGetConfigVars( &$vars ) {
+	public function onResourceLoaderGetConfigVars( array &$vars, $skin, Config $config ): void {
 		global $wgCirrusSearchFeedbackLink;
 
 		$vars += [
@@ -472,14 +508,15 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 
 	/**
 	 * Add $wgCirrusSearchInterwikiProv to external results.
-	 * @param Title $title
-	 * @param mixed &$text
-	 * @param mixed $result
-	 * @param mixed $terms
-	 * @param mixed $page
-	 * @param array &$query
+	 * @param Title &$title
+	 * @param string|HtmlArmor|null &$text
+	 * @param SearchResult $result
+	 * @param array $terms
+	 * @param SpecialSearch $page
+	 * @param string[] &$query
+	 * @param string[] &$attributes
 	 */
-	public static function onShowSearchHitTitle( Title $title, &$text, $result, $terms, $page, &$query = [] ) {
+	public function onShowSearchHitTitle( &$title, &$text, $result, $terms, $page, &$query, &$attributes ) {
 		global $wgCirrusSearchInterwikiProv;
 		if ( $wgCirrusSearchInterwikiProv && $title->isExternal() ) {
 			$query["wprov"] = $wgCirrusSearchInterwikiProv;
@@ -489,7 +526,7 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 	/**
 	 * @param ApiBase $module
 	 */
-	public static function onAPIAfterExecute( $module ) {
+	public function onAPIAfterExecute( $module ) {
 		if ( !ElasticsearchIntermediary::hasQueryLogs() ) {
 			return;
 		}
@@ -505,10 +542,10 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 
 	/**
 	 * @param string $term
-	 * @param ISearchResultSet|null $titleMatches
-	 * @param ISearchResultSet|null $textMatches
+	 * @param ISearchResultSet|null &$titleMatches
+	 * @param ISearchResultSet|null &$textMatches
 	 */
-	public static function onSpecialSearchResults( $term, $titleMatches, $textMatches ) {
+	public function onSpecialSearchResults( $term, &$titleMatches, &$textMatches ) {
 		$context = RequestContext::getMain();
 		$out = $context->getOutput();
 
@@ -611,11 +648,11 @@ class Hooks implements UserGetDefaultOptionsHook, GetPreferencesHook {
 			$this->configFactory->makeConfig( 'CirrusSearch' )->get( 'CirrusSearchCompletionSettings' );
 	}
 
-	public static function onSpecialStatsAddExtra( &$extraStats, $context ) {
+	public function onSpecialStatsAddExtra( &$extraStats, $context ) {
 		self::addWordCount( $extraStats );
 	}
 
-	public static function onAPIQuerySiteInfoStatisticsInfo( &$extraStats ) {
+	public function onAPIQuerySiteInfoStatisticsInfo( &$extraStats ) {
 		self::addWordCount( $extraStats );
 	}
 }

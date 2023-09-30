@@ -55,7 +55,7 @@ trait MoreLikeTrait {
 		$titles = [];
 		foreach ( explode( '|', $terms ) as $term ) {
 			$title = null;
-			Hooks::onSearchGetNearMatch( $term, $title );
+			Hooks::handleSearchGetNearMatch( $term, $title );
 			if ( $title != null ) {
 				$titles[] = $title;
 			}

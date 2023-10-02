@@ -4,5 +4,8 @@
 			"ꠢꠣꠍꠘ ꠞꠣꠎꠣ"
 		]
 	},
-	"cirrussearch-pref-label": "ꠘꠄꠀꠔꠣ ꠕꠥꠇꠣꠁꠘ"
+	"cirrussearch-pref-label": "ꠘꠄꠀꠔꠣ ꠕꠥꠇꠣꠁꠘ",
+	"cirrussearch-give-feedback": "ꠝꠔꠣꠝꠔ ꠎꠣꠘꠣꠃꠇ꠆ꠇꠣ",
+	"prefs-completion": "ꠕꠥꠇꠣꠘꠤ ꠡꠦꠡ",
+	"cirrussearch-pref-completion-section-desc": "ꠔꠣꠉꠖꠣ ꠖꠦꠅꠞꠣ"
 }

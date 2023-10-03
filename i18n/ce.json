@@ -11,6 +11,7 @@
 	"cirrussearch-now-using": "ХӀокху викис лелош йу керла лахаран таро. ([[mw:Special:MyLanguage/Help:CirrusSearch|Мадарра]])",
 	"cirrussearch-pref-label": "Керла лахар",
 	"cirrussearch-pref-desc": "Леладе Википедин керла лахар, цо дукху меттанаш ловш ду, керла хилам а гойту, кхин тӀе кепаш чуьра йоза карадо.",
+	"cirrussearch-give-feedback": "Йазде хьайна хетарг",
 	"cirrussearch-query-too-long": "Лахаран дехар максимум магийначул деха ду. ($1 > $2)",
 	"prefs-completion": "Лахар чекхдаккхар",
 	"cirrussearch-pref-completion-section-desc": "АвтотӀеюзаран гӀоьнча",
@@ -23,5 +24,6 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Нийс ма де гӀалаташ. Гойту йогӀуш йолу дӀасахьажоргаш.",
 	"cirrussearch-completion-profile-classic-pref-name": "Префиксца классикан лахар",
 	"cirrussearch-completion-profile-classic-pref-desc": "ГӀалаташ нис цадо. Йазйечу хенахь гойту цӀерш.",
+	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Нийса доцу агӀонан ID}}: $1",
 	"cirrussearch-article-words": "Берриге йаззамашкахь ду дош"
 }

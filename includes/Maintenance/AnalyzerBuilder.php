@@ -377,7 +377,7 @@ class AnalyzerBuilder {
 			// filter: elision, aggressive_splitting, lowercase, stopwords, lang_norm,
 			//         stemmer_override, stemmer, asciifolding, remove_empty
 			if ( $this->useStemmer ) {
-				$this->stemmerLang = $this->stemmerLang ?? $this->langName;
+				$this->stemmerLang ??= $this->langName;
 			} else {
 				$langStem = '';
 			}

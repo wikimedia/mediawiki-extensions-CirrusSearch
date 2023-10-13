@@ -246,7 +246,7 @@ class ElasticaWrite extends CirrusGenericJob {
 		$eventTime = $params[CirrusTitleJob::ROOT_EVENT_TIME] ?? null;
 		if ( $updateKind !== null && $eventTime !== null ) {
 			$now = \MWTimestamp::time();
-			$statsdDataFactory = $statsdDataFactory ?? MediaWikiServices::getInstance()->getStatsdDataFactory();
+			$statsdDataFactory ??= MediaWikiServices::getInstance()->getStatsdDataFactory();
 			$statsdDataFactory->timing( "CirrusSearch.$cluster.updates.all.lag.$updateKind", $now - $eventTime );
 		}
 	}

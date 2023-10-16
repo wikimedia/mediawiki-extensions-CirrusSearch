@@ -139,6 +139,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "regex_acronym_fixer",
                 "regex_camelCase",
                 "dotted_I_fix",
                 "nori_charfilter",
@@ -158,6 +159,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "regex_acronym_fixer",
                 "regex_camelCase",
                 "dotted_I_fix",
                 "nori_charfilter",
@@ -256,6 +258,11 @@
             "type": "pattern_replace",
             "pattern": "[\\u0300-\\u0331]",
             "replacement": ""
+        },
+        "regex_acronym_fixer": {
+            "type": "pattern_replace",
+            "pattern": "(?<=(?:^|\\P{L})\\p{L})[.\uff0e](\\p{L})(?=\\P{L}|$)",
+            "replacement": "$1"
         },
         "regex_camelCase": {
             "type": "pattern_replace",

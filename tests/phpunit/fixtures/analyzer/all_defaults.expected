@@ -26,6 +26,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
             ],
@@ -39,6 +40,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
             ],
@@ -74,6 +76,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
             ],
@@ -87,6 +90,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
             ],
@@ -122,6 +126,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
             ],
@@ -135,6 +140,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
             ],
@@ -170,6 +176,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
             ],
@@ -183,6 +190,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
             ],
@@ -218,6 +226,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
             ],
@@ -231,6 +240,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
+                "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
             ],
@@ -271,6 +281,11 @@
                 "\\u202F=>\\u0020"
             ],
             "type": "mapping"
+        },
+        "regex_acronym_fixer": {
+            "pattern": "(?<=(?:^|\\P{L})\\p{L})[.\uff0e](\\p{L})(?=\\P{L}|$)",
+            "replacement": "$1",
+            "type": "pattern_replace"
         },
         "regex_camelCase": {
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",

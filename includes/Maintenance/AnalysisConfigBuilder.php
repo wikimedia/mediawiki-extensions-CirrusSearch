@@ -657,6 +657,15 @@ class AnalysisConfigBuilder {
 					'pattern' => '(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])',
 					'replacement' => '$1 $2'
 				],
+				// Replace period (regular or fullwidth) between [non-letter +
+				// letter] and [letter + non-letter]. This slow, and also only
+				// handles the simplest case. Use acronym_fixer in
+				// extra-analysis-textify instead, if available (T170625/T346051)
+				'regex_acronym_fixer' => [
+					'type' => 'pattern_replace',
+					'pattern' => '(?<=(?:^|\\P{L})\\p{L})[.．](\\p{L})(?=\\P{L}|$)',
+					'replacement' => '$1'
+				],
 				// map lots of apostrophe-like characters to apostrophe (T315118)
 				'apostrophe_norm' => [
 					'type' => 'mapping',
@@ -1729,14 +1738,26 @@ class AnalysisConfigBuilder {
 
 			'apostrophe_norm' => new GlobalCustomFilter( 'char_filter' ),
 
-			'camelCase_splitter' => ( new GlobalCustomFilter( 'char_filter' ) )->
+			'acronym_fixer' => ( new GlobalCustomFilter( 'char_filter' ) )->
+				// follow armenian_charfilter, which normalizes another period-like
+				// character, if it is being used
 				setRequiredPlugins( [ 'extra-analysis-textify' ] )->
-				setFallbackFilter( 'regex_camelCase' ),
+				setFallbackFilter( 'regex_acronym_fixer' )->
+				setMustFollowFilters( [ 'armenian_charfilter' ] ),
+
+			'camelCase_splitter' => ( new GlobalCustomFilter( 'char_filter' ) )->
+				// camelCase should generally follow acronyms so a.c.r.o.C.a.m.e.l.
+				// is treated the same as acroCamel (real example: G.m.b.H. vs GmbH)
+				setRequiredPlugins( [ 'extra-analysis-textify' ] )->
+				setFallbackFilter( 'regex_camelCase' )->
+				setMustFollowFilters( [ 'acronym_fixer', 'regex_acronym_fixer' ] ),
 
 			'word_break_helper' => ( new GlobalCustomFilter( 'char_filter' ) )->
+				// * acronyms should be fixed before converting period to spaces
 				// * follow armenian_charfilter, which normalizes another period-like
 				//   character, if it is being used
-				setMustFollowFilters( [ 'armenian_charfilter' ] )->
+				setMustFollowFilters( [ 'acronym_fixer', 'regex_acronym_fixer',
+					'armenian_charfilter' ] )->
 				setDenyList( [ 'ko', 'zh' ] ),
 
 			// filters

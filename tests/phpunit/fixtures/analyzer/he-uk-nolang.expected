@@ -30,7 +30,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase",
+                "regex_camelCase",
                 "word_break_helper"
             ],
             "filter": [
@@ -43,7 +43,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase",
+                "regex_camelCase",
                 "word_break_helper"
             ],
             "filter": [
@@ -78,7 +78,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase",
+                "regex_camelCase",
                 "word_break_helper"
             ],
             "filter": [
@@ -91,7 +91,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase",
+                "regex_camelCase",
                 "word_break_helper"
             ],
             "filter": [
@@ -132,7 +132,7 @@
             ],
             "type": "mapping"
         },
-        "split_camelCase": {
+        "regex_camelCase": {
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
             "replacement": "$1 $2",
             "type": "pattern_replace"

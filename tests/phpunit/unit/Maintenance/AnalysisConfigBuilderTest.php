@@ -753,6 +753,13 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				$allPlugins,
 				'en-ru-es-de-zh-ko',
 			],
+			// same as above, but with textify plugin
+			"en-ru-es-de-zh-ko textify" => [
+				[ 'en', 'ru', 'es', 'de', 'zh', 'ko' ],
+				$emptyConfig,
+				array_merge( $allPlugins, [ 'extra-analysis-textify' ] ),
+				'en-ru-es-de-zh-ko_textify',
+			],
 			// sv has custom icu_folding filter
 			"en-zh-sv" => [
 				[ 'en', 'zh', 'sv' ],

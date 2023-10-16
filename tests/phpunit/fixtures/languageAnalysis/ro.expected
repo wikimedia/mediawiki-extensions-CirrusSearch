@@ -139,7 +139,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase",
+                "regex_camelCase",
                 "word_break_helper",
                 "dotted_I_fix",
                 "romanian_charfilter"
@@ -159,7 +159,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase",
+                "regex_camelCase",
                 "word_break_helper",
                 "dotted_I_fix",
                 "romanian_charfilter"
@@ -245,6 +245,11 @@
                 "\\u202F=>\\u0020"
             ]
         },
+        "regex_camelCase": {
+            "type": "pattern_replace",
+            "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
+            "replacement": "$1 $2"
+        },
         "romanian_charfilter": {
             "type": "mapping",
             "mappings": [
@@ -261,11 +266,6 @@
                 "T\\u0326=>\u0162",
                 "T\\u0327=>\u0162"
             ]
-        },
-        "split_camelCase": {
-            "type": "pattern_replace",
-            "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
-            "replacement": "$1 $2"
         },
         "word_break_helper": {
             "type": "mapping",

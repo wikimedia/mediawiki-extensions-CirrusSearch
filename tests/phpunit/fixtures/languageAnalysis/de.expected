@@ -141,7 +141,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase",
+                "regex_camelCase",
                 "word_break_helper",
                 "dotted_I_fix",
                 "german_charfilter"
@@ -161,7 +161,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase",
+                "regex_camelCase",
                 "word_break_helper",
                 "dotted_I_fix",
                 "german_charfilter"
@@ -253,7 +253,7 @@
                 "\\u202F=>\\u0020"
             ]
         },
-        "split_camelCase": {
+        "regex_camelCase": {
             "type": "pattern_replace",
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
             "replacement": "$1 $2"

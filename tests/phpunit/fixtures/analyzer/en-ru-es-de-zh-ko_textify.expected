@@ -32,7 +32,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_camelCase",
+                "camelCase_splitter",
                 "word_break_helper",
                 "dotted_I_fix",
                 "german_charfilter"
@@ -52,7 +52,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_camelCase",
+                "camelCase_splitter",
                 "word_break_helper",
                 "dotted_I_fix",
                 "german_charfilter"
@@ -98,7 +98,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_camelCase",
+                "camelCase_splitter",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -118,7 +118,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_camelCase",
+                "camelCase_splitter",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -164,7 +164,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_camelCase",
+                "camelCase_splitter",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -182,7 +182,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_camelCase",
+                "camelCase_splitter",
                 "word_break_helper",
                 "dotted_I_fix"
             ],
@@ -222,7 +222,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_camelCase",
+                "camelCase_splitter",
                 "dotted_I_fix",
                 "nori_charfilter",
                 "nori_combo_filter"
@@ -240,7 +240,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_camelCase",
+                "camelCase_splitter",
                 "dotted_I_fix",
                 "nori_charfilter",
                 "nori_combo_filter"
@@ -286,7 +286,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_camelCase",
+                "camelCase_splitter",
                 "word_break_helper",
                 "dotted_I_fix",
                 "russian_charfilter"
@@ -305,7 +305,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_camelCase",
+                "camelCase_splitter",
                 "word_break_helper",
                 "dotted_I_fix",
                 "russian_charfilter"
@@ -348,7 +348,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_camelCase",
+                "camelCase_splitter",
                 "stconvertfix",
                 "tsconvert"
             ],
@@ -363,7 +363,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_camelCase",
+                "camelCase_splitter",
                 "stconvertfix",
                 "tsconvert"
             ],
@@ -521,11 +521,6 @@
         "nori_combo_filter": {
             "pattern": "[\\u0300-\\u0331]",
             "replacement": "",
-            "type": "pattern_replace"
-        },
-        "regex_camelCase": {
-            "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
-            "replacement": "$1 $2",
             "type": "pattern_replace"
         },
         "russian_charfilter": {

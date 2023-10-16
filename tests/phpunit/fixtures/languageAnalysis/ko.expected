@@ -139,7 +139,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase",
+                "regex_camelCase",
                 "dotted_I_fix",
                 "nori_charfilter",
                 "nori_combo_filter"
@@ -158,7 +158,7 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "split_camelCase",
+                "regex_camelCase",
                 "dotted_I_fix",
                 "nori_charfilter",
                 "nori_combo_filter"
@@ -257,7 +257,7 @@
             "pattern": "[\\u0300-\\u0331]",
             "replacement": ""
         },
-        "split_camelCase": {
+        "regex_camelCase": {
             "type": "pattern_replace",
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
             "replacement": "$1 $2"

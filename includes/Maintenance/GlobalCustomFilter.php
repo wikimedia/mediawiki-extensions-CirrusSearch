@@ -9,6 +9,9 @@ class GlobalCustomFilter {
 	/** @var string[] plugins that must be present to use the filter */
 	private $requiredPlugins = [];
 
+	/** @var string local filter to use instead if requiredPlugins are not available */
+	private $fallbackFilter = '';
+
 	/** @var string[] filters this one must come after. see T268730 */
 	private $mustFollowFilters = [];
 
@@ -28,6 +31,15 @@ class GlobalCustomFilter {
 	 */
 	public function setRequiredPlugins( array $requiredPlugins ): self {
 		$this->requiredPlugins = $requiredPlugins;
+		return $this;
+	}
+
+	/**
+	 * @param string $fallbackFilter
+	 * @return self
+	 */
+	public function setFallbackFilter( string $fallbackFilter ): self {
+		$this->fallbackFilter = $fallbackFilter;
 		return $this;
 	}
 
@@ -63,23 +75,52 @@ class GlobalCustomFilter {
 	}
 
 	/**
-	 * check to see if the filter is compatible with a given language and set of
-	 * installed plugins
+	 * check to see if the filter is compatible with the set of installed plugins
 	 *
-	 * @param string $language
 	 * @param string[] $installedPlugins
 	 * @return bool
 	 */
-	public function filterIsUsable( string $language, array $installedPlugins ): bool {
-		if ( in_array( $language, $this->denyList ) ) {
-			return false;
-		}
+	public function pluginsAvailable( array $installedPlugins ): bool {
 		foreach ( $this->requiredPlugins as $reqPlugin ) {
 			if ( !in_array( $reqPlugin, $installedPlugins ) ) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * update languages with global custom filters (e.g., homoglyph & nnbsp filters)
+	 *
+	 * @param mixed[] $config
+	 * @param string $language
+	 * @param GlobalCustomFilter[] $customFilters list of filters and info
+	 * @param string[] $installedPlugins
+	 * @return mixed[] updated config
+	 */
+	public static function enableGlobalCustomFilters( array $config, string $language,
+			array $customFilters, array $installedPlugins ) {
+		foreach ( $customFilters as $gcf => $gcfInfo ) {
+			$filterName = $gcf;
+
+			if ( !in_array( $language, $gcfInfo->denyList ) ) {
+				$filterIsUsable = $gcfInfo->pluginsAvailable( $installedPlugins );
+
+				if ( !$filterIsUsable && $gcfInfo->fallbackFilter ) {
+					$filterName = $gcfInfo->fallbackFilter;
+					$filterIsUsable = true;
+				}
+
+				if ( $filterIsUsable ) {
+					foreach ( $gcfInfo->getApplyToAnalyzers() as $analyzer ) {
+						$config = $gcfInfo->insertGlobalCustomFilter( $config, $analyzer,
+							$filterName, $gcfInfo );
+					}
+				}
+			}
+		}
+
+		return $config;
 	}
 
 	/**

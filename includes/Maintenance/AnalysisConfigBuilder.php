@@ -650,8 +650,9 @@ class AnalysisConfigBuilder {
 				],
 				// Add a space between lowercase letter {Ll} and uppercase {Lu} or
 				// titlecase {Lt} letter, allowing for optional combining marks {M}
-				// or invisibles {Cf}.
-				'split_camelCase' => [
+				// or invisibles {Cf}. This is expensive, so use camelCase_splitter
+				// in extra-analysis-textify instead, if available (T219108/T346051)
+				'regex_camelCase' => [
 					'type' => 'pattern_replace',
 					'pattern' => '(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])',
 					'replacement' => '$1 $2'
@@ -1475,10 +1476,12 @@ class AnalysisConfigBuilder {
 		if ( !empty( $analyzer[ 'char_filter' ] ) ) {
 			// Add private char_filters for this analyzer
 			foreach ( $analyzer[ 'char_filter' ] as $filter ) {
-				// Here unlike above we do not check for $langConfig since we assume
-				// language config is not broken and all char filters are namespaced
-				// nicely, so if the filter is mentioned in analyzer it is also defined.
-				if ( !isset( $config[ 'char_filter' ][ $filter ] ) ) {
+				// Copy char_filters that are in lang config but not in the main config.
+				// Need to check whether the filter exists in langConfig because some
+				// non-configurable filters are defined in plugins and do not have a
+				// local definition (e.g., camelCase_splitter)
+				if ( isset( $langConfig[ 'char_filter' ][ $filter ] ) &&
+					!isset( $config[ 'char_filter' ][ $filter ] ) ) {
 					$config[ 'char_filter' ][ $filter ] = $langConfig[ 'char_filter' ][ $filter ];
 				}
 			}
@@ -1529,21 +1532,14 @@ class AnalysisConfigBuilder {
 
 	/**
 	 * update languages with global custom filters (e.g., homoglyph & nnbsp filters)
+	 *
 	 * @param mixed[] $config
 	 * @param string $language language to add plugin to
 	 * @return mixed[] updated config
 	 */
 	public function enableGlobalCustomFilters( array $config, string $language ) {
-		foreach ( $this->globalCustomFilters as $gcf => $gcfInfo ) {
-			if ( $gcfInfo->filterIsUsable( $language, $this->plugins ) ) {
-				foreach ( $gcfInfo->getApplyToAnalyzers() as $analyzer ) {
-					$config = $gcfInfo->insertGlobalCustomFilter( $config, $analyzer,
-						$gcf, $gcfInfo );
-				}
-			}
-		}
-
-		return $config;
+		return GlobalCustomFilter::enableGlobalCustomFilters( $config, $language,
+			$this->globalCustomFilters, $this->plugins );
 	}
 
 	/**
@@ -1730,13 +1726,23 @@ class AnalysisConfigBuilder {
 		$gcf = [
 			// char filters
 			'nnbsp_norm' => new GlobalCustomFilter( 'char_filter' ),
+
 			'apostrophe_norm' => new GlobalCustomFilter( 'char_filter' ),
-			'split_camelCase' => new GlobalCustomFilter( 'char_filter' ),
+
+			'camelCase_splitter' => ( new GlobalCustomFilter( 'char_filter' ) )->
+				setRequiredPlugins( [ 'extra-analysis-textify' ] )->
+				setFallbackFilter( 'regex_camelCase' ),
+
 			'word_break_helper' => ( new GlobalCustomFilter( 'char_filter' ) )->
-				setMustFollowFilters( [ 'acronym_fixer', 'armenian_charfilter' ] )->
+				// * follow armenian_charfilter, which normalizes another period-like
+				//   character, if it is being used
+				setMustFollowFilters( [ 'armenian_charfilter' ] )->
 				setDenyList( [ 'ko', 'zh' ] ),
+
 			// filters
 			'homoglyph_norm' => ( new GlobalCustomFilter( 'filter' ) )->
+				// aggressive_splitting has weird graph problems and creating
+				// multiple tokens makes it blow up
 				setRequiredPlugins( [ 'extra-analysis-homoglyph' ] )->
 				setMustFollowFilters( [ 'aggressive_splitting' ] ),
 		];

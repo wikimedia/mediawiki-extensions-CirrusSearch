@@ -50,7 +50,7 @@ class TermFreq extends AbstractQuery {
 			$operator,
 			"operator must be one of " . implode( ', ', array_keys( self::$map ) )
 		);
-		if ( !empty( $field ) && !empty( $term ) ) {
+		if ( $field !== '' && $term !== '' ) {
 			$this->setParam( 'field', $field );
 			$this->setParam( 'term', $term );
 			$this->setParam( self::$map[ $operator ], $number );

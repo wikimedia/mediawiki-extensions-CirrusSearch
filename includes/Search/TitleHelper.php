@@ -53,7 +53,7 @@ class TitleHelper {
 	public function makeTitle( \Elastica\Result $r ): Title {
 		$iwPrefix = $this->identifyInterwikiPrefix( $r );
 		$titleFactory = MediaWikiServices::getInstance()->getTitleFactory();
-		if ( empty( $iwPrefix ) && $r->namespace !== null && $r->title !== null ) {
+		if ( $iwPrefix === null && $r->namespace !== null && $r->title !== null ) {
 			return $titleFactory->makeTitle( $r->namespace, $r->title );
 		}
 
@@ -74,7 +74,7 @@ class TitleHelper {
 	 */
 	public function makeRedirectTitle( \Elastica\Result $r, $redirectText, $redirNamespace ) {
 		$iwPrefix = self::identifyInterwikiPrefix( $r );
-		if ( empty( $iwPrefix ) ) {
+		if ( $iwPrefix === null ) {
 			return Title::makeTitle( $redirNamespace, $redirectText );
 		}
 		if ( $redirNamespace === $r->namespace ) {

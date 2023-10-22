@@ -259,7 +259,7 @@ class AnalysisConfigBuilder {
 		$filter = [
 			'type' => 'icu_folding',
 		];
-		if ( !empty( $unicodeSetFilter ) ) {
+		if ( $unicodeSetFilter !== null ) {
 			$filter[ 'unicodeSetFilter' ] = $unicodeSetFilter;
 		}
 		$config[ 'filter' ][ 'icu_folding' ] = $filter;
@@ -736,7 +736,7 @@ class AnalysisConfigBuilder {
 				'name' => 'nfkc_cf',
 			];
 			$unicodeSetFilter = $this->getICUNormSetFilter( $language );
-			if ( !empty( $unicodeSetFilter ) ) {
+			if ( $unicodeSetFilter !== null ) {
 				$defaults[ 'filter' ][ 'icu_normalizer' ][ 'unicodeSetFilter' ] = $unicodeSetFilter;
 			}
 		}

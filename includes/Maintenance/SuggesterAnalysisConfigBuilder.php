@@ -46,7 +46,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 			// Use ICU Folding if the plugin is available and activated in the config
 			$folding_type = [ 'type' => 'icu_folding' ];
 			$unicodeSetFilter = $this->getICUSetFilter( $language );
-			if ( !empty( $unicodeSetFilter ) ) {
+			if ( $unicodeSetFilter !== null ) {
 				$folding_type['unicodeSetFilter'] = $unicodeSetFilter;
 			}
 		}

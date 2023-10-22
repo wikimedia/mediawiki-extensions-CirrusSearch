@@ -70,7 +70,7 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 		$this->depth = (int)$config->get( 'CirrusSearchCategoryDepth' );
 		$this->limit = (int)$config->get( 'CirrusSearchCategoryMax' );
 		$endpoint = $config->get( 'CirrusSearchCategoryEndpoint' );
-		if ( !empty( $endpoint ) ) {
+		if ( $endpoint !== null && $endpoint !== '' ) {
 			$this->client = $client ?: MediaWikiServices::getInstance()->getService( 'CirrusCategoriesClient' );
 		}
 	}

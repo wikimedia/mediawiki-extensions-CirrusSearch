@@ -388,7 +388,7 @@ class Reindexer {
 		$url = $innerConnection->hasConfig( 'url' )
 			? $innerConnection->getConfig( 'url' )
 			: '';
-		if ( empty( $url ) ) {
+		if ( $url === '' ) {
 			$scheme = ( $transport instanceof Https )
 				? 'https'
 				: 'http';

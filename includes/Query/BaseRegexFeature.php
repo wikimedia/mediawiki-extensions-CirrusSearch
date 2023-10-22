@@ -112,7 +112,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 
 			$pattern = $this->trimFirstOccurrenceOfSlash( $quotedValue );
 
-			if ( empty( $pattern ) ) {
+			if ( $pattern === '' ) {
 				$warningCollector->addWarning( 'cirrussearch-regex-empty-expression', $key );
 			}
 
@@ -169,7 +169,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			$pattern = $parsedValue['pattern'];
 			$insensitive = $parsedValue['insensitive'];
 
-			if ( empty( $pattern ) ) {
+			if ( $pattern === '' ) {
 				$context->setResultsPossible( false );
 
 				return [ null, false ];

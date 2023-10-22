@@ -593,7 +593,7 @@ class CirrusSearch extends SearchEngine {
 
 		$term = trim( $term );
 
-		if ( empty( $term ) ) {
+		if ( $term === '' ) {
 			return Status::newGood( [] );
 		}
 

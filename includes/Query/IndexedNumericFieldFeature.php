@@ -103,7 +103,7 @@ class IndexedNumericFieldFeature extends SimpleKeywordFeature implements FilterQ
 			return null;
 		} elseif ( $sign || strpos( $number, ',' ) === false ) {
 			if ( !is_numeric( $number ) ) {
-				$this->nanWarning( $warningCollector, $key, empty( $number ) ? $value : $number );
+				$this->nanWarning( $warningCollector, $key, $number === '' ? $value : $number );
 				return null;
 			}
 			$parsedValue['value'] = intval( $number );

@@ -33,7 +33,7 @@ class DeleteArchive extends CirrusTitleJob {
 			unset( $docs[$rev->ar_page_id] );
 		}
 
-		if ( empty( $docs ) ) {
+		if ( !$docs ) {
 			// If we have more deleted instances of the same title, no need to bother.
 			return true;
 		}

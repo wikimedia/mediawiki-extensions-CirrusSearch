@@ -140,7 +140,7 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	 * @return array
 	 */
 	private function doExpand( $value, WarningCollector $warningCollector ) {
-		if ( empty( $this->client ) ) {
+		if ( !$this->client ) {
 			$warningCollector->addWarning( 'cirrussearch-feature-deepcat-endpoint' );
 			return [];
 		}

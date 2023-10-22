@@ -597,7 +597,7 @@ class Hooks implements
 	public function onGetPreferences( $user, &$prefs ) {
 		$search = new CirrusSearch();
 		$profiles = $search->getProfiles( \SearchEngine::COMPLETION_PROFILE_TYPE, $user );
-		if ( empty( $profiles ) ) {
+		if ( !$profiles ) {
 			return;
 		}
 		$options = self::autoCompleteOptionsForPreferences( $profiles );

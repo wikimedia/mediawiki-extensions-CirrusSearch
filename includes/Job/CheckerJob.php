@@ -135,7 +135,7 @@ class CheckerJob extends CirrusGenericJob {
 		}
 
 		$connections = $this->decideClusters();
-		if ( empty( $connections ) ) {
+		if ( !$connections ) {
 			return true;
 		}
 

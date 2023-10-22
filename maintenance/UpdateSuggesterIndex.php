@@ -435,7 +435,7 @@ class UpdateSuggesterIndex extends Maintenance {
 				$docIds[] = $result->getId();
 			}
 			$this->outputProgress( $docsDumped, $totalDocsToDump );
-			if ( empty( $docIds ) ) {
+			if ( !$docIds ) {
 				continue;
 			}
 
@@ -553,7 +553,7 @@ class UpdateSuggesterIndex extends Maintenance {
 				}
 
 				$suggestDocs = $this->builder->build( $inputDocs );
-				if ( empty( $suggestDocs ) ) {
+				if ( !$suggestDocs ) {
 					continue;
 				}
 				$this->outputProgress( $docsDumped, $totalDocsToDump );

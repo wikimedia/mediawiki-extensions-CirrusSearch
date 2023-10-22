@@ -248,7 +248,7 @@ class Util {
 		}
 
 		$fromMessage = self::getOnWikiBoostTemplates( $config );
-		if ( empty( $fromMessage ) ) {
+		if ( !$fromMessage ) {
 			// the onwiki config is empty (or unknown for non-local
 			// config), we can fallback to templates from config
 			return $fromConfig;

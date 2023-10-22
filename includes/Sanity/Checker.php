@@ -316,7 +316,7 @@ class Checker {
 		// care of the cleaning.
 		$cache = $this->pageCache ?: new ArrayObject();
 		$pageIds = array_diff( $pageIds, array_keys( $cache->getArrayCopy() ) );
-		if ( empty( $pageIds ) ) {
+		if ( !$pageIds ) {
 			return $cache->getArrayCopy();
 		}
 		$dbr = $this->getDB();

@@ -230,7 +230,7 @@ class RequestLogger {
 					$requestContext, 'namespaces', $requestEntry, 'namespaces',
 					// Make sure namespace values are all integers.
 					static function ( $v ) {
-						if ( empty( $v ) ) {
+						if ( !$v ) {
 							return $v;
 						} else {
 							return array_values( array_map( 'intval', $v ) );
@@ -332,7 +332,7 @@ class RequestLogger {
 		];
 
 		$webRequestValues = $webrequest->getValues();
-		if ( !empty( $webRequestValues ) ) {
+		if ( $webRequestValues ) {
 			$requestEvent['params'] = [];
 			// Make sure all params are string keys and values
 			foreach ( $webRequestValues as $k => $v ) {
@@ -350,10 +350,10 @@ class RequestLogger {
 		}
 
 		// Don't set these fields if there is no data.
-		if ( !empty( $resultHits ) ) {
+		if ( $resultHits ) {
 			$requestEvent['hits'] = $resultHits;
 		}
-		if ( !empty( $elasticSearchRequests ) ) {
+		if ( $elasticSearchRequests ) {
 			$requestEvent['elasticsearch_requests'] = $elasticSearchRequests;
 		}
 		// Should always be true, but don't accidently instantiate user testing if somehow

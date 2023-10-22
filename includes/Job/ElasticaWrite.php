@@ -148,7 +148,7 @@ class ElasticaWrite extends CirrusGenericJob {
 		// While we can only have a single connection per job, we still
 		// use decideClusters() which includes a variety of safeguards.
 		$connections = $this->decideClusters();
-		if ( empty( $connections ) ) {
+		if ( !$connections ) {
 			// Chosen cluster no longer exists in configuration.
 			return true;
 		}

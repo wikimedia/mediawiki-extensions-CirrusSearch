@@ -77,7 +77,7 @@ class TextCat implements Detector {
 			}
 		}
 		$languages = $textcat->classify( $text, $this->config->getElement( 'CirrusSearchTextcatLanguages' ) );
-		if ( !empty( $languages ) ) {
+		if ( $languages ) {
 			// For now, just return the best option
 			// TODO: think what else we could do
 			reset( $languages );

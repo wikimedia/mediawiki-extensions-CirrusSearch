@@ -115,7 +115,7 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 				continue;
 			}
 			$iwPrefixAndConfig = $this->interwikiResolver->getSameProjectConfigByLang( $lang );
-			if ( !empty( $iwPrefixAndConfig ) ) {
+			if ( $iwPrefixAndConfig ) {
 				// it might be more accurate to attach these to the 'next'
 				// log context? It would be inconsistent with the
 				// langdetect => false condition which does not have a next

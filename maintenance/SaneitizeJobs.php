@@ -273,7 +273,7 @@ EOD
 	private function initMetaStores() {
 		$connections = Connection::getClusterConnections( $this->clusters, $this->getSearchConfig() );
 
-		if ( empty( $connections ) ) {
+		if ( !$connections ) {
 			$this->fatalError( "No writable cluster found." );
 		}
 

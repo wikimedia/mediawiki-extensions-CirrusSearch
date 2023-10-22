@@ -76,7 +76,7 @@ class QueryCirrusDoc extends \ApiQueryBase {
 		$sourceFiltering = (array)$params['includes'];
 		$includeAll = in_array( 'all', $sourceFiltering );
 
-		if ( empty( $sourceFiltering ) || $includeAll ) {
+		if ( !$sourceFiltering || $includeAll ) {
 			return true;
 		} else {
 			return $sourceFiltering;

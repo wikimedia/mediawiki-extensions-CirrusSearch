@@ -189,7 +189,7 @@ class SuggestBuilder {
 		}
 
 		// Build cross ns suggestions
-		if ( !empty( $crossNsTitles ) ) {
+		if ( $crossNsTitles ) {
 			$titles = array_column( $crossNsTitles, 'title' );
 			$lb = MediaWikiServices::getInstance()->getLinkBatchFactory()->newLinkBatch( $titles );
 			$lb->setCaller( __METHOD__ );

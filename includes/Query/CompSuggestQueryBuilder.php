@@ -97,7 +97,7 @@ class CompSuggestQueryBuilder {
 		$suggest = $this->buildSuggestQueries( $this->profile, $term, $queryLen );
 
 		// Handle variants, update the set of profiles and suggest queries
-		if ( !empty( $variants ) ) {
+		if ( $variants ) {
 			$this->handleVariants( $suggest, $variants, $queryLen, $origTerm );
 		}
 		return $suggest;

@@ -111,7 +111,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	 */
 	public function getSameProjectConfigByLang( $lang ) {
 		$wikiAndPrefix = $this->getSameProjectWikiByLang( $lang );
-		if ( empty( $wikiAndPrefix ) ) {
+		if ( !$wikiAndPrefix ) {
 			return [];
 		}
 		list( $wiki, $prefix ) = $wikiAndPrefix;
@@ -177,7 +177,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 			$endpoints[$prefix] = [ 'url' => $api, 'wiki' => $wiki ];
 		}
 
-		if ( !empty( $endpoints ) ) {
+		if ( $endpoints ) {
 			$prefixes = array_keys( $endpoints );
 			asort( $prefixes );
 			$cacheKey = implode( '-', $prefixes );
@@ -227,7 +227,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 				]
 			];
 		}
-		if ( empty( $reqs ) ) {
+		if ( !$reqs ) {
 			return [];
 		}
 		$responses = $this->httpClient->runMulti( $reqs );

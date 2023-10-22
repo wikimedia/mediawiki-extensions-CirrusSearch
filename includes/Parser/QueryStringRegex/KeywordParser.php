@@ -158,7 +158,7 @@ class KeywordParser implements WarningCollector {
 						   // but also accept to escape the captured delimiter
 						   "(?<quoted>(?:\\\\\g{delim}|(?!\g{delim}).)*)" .
 						   "\g{delim}";
-			if ( !empty( $optionalSuffixes ) ) {
+			if ( $optionalSuffixes ) {
 				$quotedValue .= "(?<suffixes>" . implode( '|', $optionalSuffixes ) . ')?';
 			}
 			// XXX: we support only " to break the unquoted value

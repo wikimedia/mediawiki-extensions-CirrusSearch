@@ -58,7 +58,7 @@ class SearchRequestBuilder {
 
 		$extraIndexes = $this->searchContext->getExtraIndices();
 
-		if ( !empty( $extraIndexes ) && $this->searchContext->getConfig()->getElement( 'CirrusSearchDeduplicateInQuery' ) !== false ) {
+		if ( $extraIndexes && $this->searchContext->getConfig()->getElement( 'CirrusSearchDeduplicateInQuery' ) !== false ) {
 			$this->searchContext->addNotFilter( new \Elastica\Query\Term(
 				[ 'local_sites_with_dupe' => $this->indexBaseName ]
 			) );
@@ -77,7 +77,7 @@ class SearchRequestBuilder {
 		}
 
 		$suggestQueries = $this->searchContext->getFallbackRunner()->getElasticSuggesters();
-		if ( !empty( $suggestQueries ) ) {
+		if ( $suggestQueries ) {
 			$query->setParam( 'suggest', [
 				// TODO: remove special case on 1-elt array, added to not change the test fixtures
 				// We should switch to explicit naming

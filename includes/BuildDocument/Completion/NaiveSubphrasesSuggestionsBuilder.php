@@ -111,7 +111,7 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 		}
 
 		$subPages = $this->tokenize( $inputDoc['title'], $language );
-		if ( !empty( $subPages ) ) {
+		if ( $subPages ) {
 			$suggest = $suggestDoc->get( 'suggest' );
 			$suggest['input'] = $subPages;
 			foreach ( $this->getExtraFields() as $field ) {

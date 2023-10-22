@@ -425,7 +425,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * Using getSyntaxUsed() is better in most cases.
 	 */
 	public function getSearchType() {
-		if ( empty( $this->syntaxUsed ) ) {
+		if ( !$this->syntaxUsed ) {
 			return 'full_text';
 		}
 		arsort( $this->syntaxUsed );
@@ -501,7 +501,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 *  from the query used for selecting.
 	 */
 	private function getHighlightQuery( AbstractQuery $mainQuery ) {
-		if ( empty( $this->nonTextHighlightQueries ) ) {
+		if ( !$this->nonTextHighlightQueries ) {
 			// If no explicit highlight query is provided elastic
 			// will fallback to $mainQuery without specifying it.
 			return $this->highlightQuery;
@@ -541,7 +541,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 *  the main quedry, non text queries, and any additional filters.
 	 */
 	public function getQuery() {
-		if ( empty( $this->nonTextQueries ) ) {
+		if ( !$this->nonTextQueries ) {
 			$mainQuery = $this->mainQuery ?: new \Elastica\Query\MatchAll();
 		} else {
 			$mainQuery = new \Elastica\Query\BoolQuery();

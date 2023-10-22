@@ -35,12 +35,9 @@ class MultiSearchRequestLog extends SearchRequestLog {
 		// by two lines, first a metadata line about the request and second the
 		// actual query.
 		$lines = explode( "\n", trim( $this->request->getData(), "\n" ) );
-		// @phan-suppress-next-line PhanImpossibleCondition
-		if ( !empty( $lines ) ) {
-			$vars += $this->extractRequestVariables(
-				array_slice( $lines, 0, 2 )
-			);
-		}
+		$vars += $this->extractRequestVariables(
+			array_slice( $lines, 0, 2 )
+		);
 
 		$responseData = $this->response->getData();
 		if ( !empty( $responseData['responses'] ) ) {

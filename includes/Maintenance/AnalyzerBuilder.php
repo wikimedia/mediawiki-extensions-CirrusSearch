@@ -46,6 +46,9 @@ class AnalyzerBuilder {
 	/** @var string[]|null list of lang-specific character filter mappings */
 	private $charMap;
 
+	/** @var bool */
+	private $charMapLimited = false;
+
 	/** @var string|null */
 	private $charMapName;
 
@@ -161,12 +164,23 @@ class AnalyzerBuilder {
 	/**
 	 * @param string[] $mappings
 	 * @param string|null $name
+	 * @param bool $limited
 	 * @return self
 	 */
-	public function withCharMap( array $mappings, string $name = null ): self {
+	public function withCharMap( array $mappings, string $name = null, bool $limited = false ): self {
 		$this->charMap = $mappings;
 		$this->charMapName = $name ?? "{$this->langName}_charfilter";
+		$this->charMapLimited = false;
 		return $this;
+	}
+
+	/**
+	 * @param string[] $mappings
+	 * @param string|null $name
+	 * @return self
+	 */
+	public function withLimitedCharMap( array $mappings, string $name = null ): self {
+		return $this->withCharMap( $mappings, $name, true );
 	}
 
 	/**
@@ -435,7 +449,7 @@ class AnalyzerBuilder {
 
 		if ( $this->charMapName ) {
 			$config[ 'char_filter' ][ $this->charMapName ] =
-				$this->mappingCharFilter( $this->charMap );
+				$this->mappingCharFilter( $this->charMap, $this->charMapLimited );
 		}
 
 		if ( $this->numCharMapName ) {
@@ -500,13 +514,15 @@ class AnalyzerBuilder {
 	}
 
 	/**
-	 * Create a mapping character filter with the mappings provided.
+	 * Create a mapping or limited_mapping character filter with the mappings provided.
 	 *
 	 * @param string[] $mappings
+	 * @param bool $limited
 	 * @return mixed[] character filter
 	 */
-	public static function mappingCharFilter( array $mappings ): array {
-		return [ 'type' => 'mapping', 'mappings' => $mappings ];
+	public static function mappingCharFilter( array $mappings, bool $limited ): array {
+		$type = $limited ? 'limited_mapping' : 'mapping';
+		return [ 'type' => $type, 'mappings' => $mappings ];
 	}
 
 	/**
@@ -522,7 +538,7 @@ class AnalyzerBuilder {
 		for ( $i = 0; $i <= 9; $i++ ) {
 		  $numMap[] = sprintf( '\\u%04x=>%d', $langZero + $i, $i );
 		}
-		return self::mappingCharFilter( $numMap );
+		return self::mappingCharFilter( $numMap, true );
 	}
 
 	/**

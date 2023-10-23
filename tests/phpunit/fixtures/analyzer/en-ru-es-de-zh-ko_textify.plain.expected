@@ -166,7 +166,7 @@
             "mappings": [
                 "\\u202F=>\\u0020"
             ],
-            "type": "mapping"
+            "type": "limited_mapping"
         },
         "russian_charfilter": {
             "mappings": [
@@ -189,7 +189,7 @@
                 "\uff3f=>\\u0020",
                 "\uff1a=>\\u0020"
             ],
-            "type": "mapping"
+            "type": "limited_mapping"
         }
     },
     "filter": {

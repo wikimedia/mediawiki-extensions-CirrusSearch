@@ -143,8 +143,8 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_acronym_fixer",
-                "regex_camelCase",
+                "acronym_fixer",
+                "camelCase_splitter",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -164,8 +164,8 @@
             "char_filter": [
                 "nnbsp_norm",
                 "apostrophe_norm",
-                "regex_acronym_fixer",
-                "regex_camelCase",
+                "acronym_fixer",
+                "camelCase_splitter",
                 "word_break_helper",
                 "kana_map"
             ],
@@ -206,7 +206,7 @@
     },
     "char_filter": {
         "apostrophe_norm": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "`=>'",
                 "\u00b4=>'",
@@ -230,7 +230,7 @@
             ]
         },
         "dotted_I_fix": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\u0130=>I"
             ]
@@ -327,7 +327,7 @@
             ]
         },
         "near_space_flattener": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "'=>\\u0020",
                 "\\u2019=>\\u0020",
@@ -337,7 +337,7 @@
             ]
         },
         "nnbsp_norm": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\\u202F=>\\u0020"
             ]
@@ -353,7 +353,7 @@
             "replacement": "$1 $2"
         },
         "word_break_helper": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "_=>\\u0020",
                 ":=>\\u0020",
@@ -366,7 +366,7 @@
             ]
         },
         "word_break_helper_source_text": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "_=>\\u0020",
                 ".=>\\u0020",

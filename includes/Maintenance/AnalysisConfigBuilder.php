@@ -200,6 +200,9 @@ class AnalysisConfigBuilder {
 		}
 		$config = $this->fixAsciiFolding( $config );
 		$config = $this->standardTokenizerOnlyCleanup( $config );
+		if ( !in_array( 'extra-analysis-textify', $this->plugins ) ) {
+			$config = $this->disableLimitedMappings( $config );
+		}
 
 		return $config;
 	}
@@ -244,6 +247,21 @@ class AnalysisConfigBuilder {
 				// replace the magic value with the actual standard tokenizer
 				$value[ 'tokenizer' ] = 'standard';
 			}
+		}
+		return $config;
+	}
+
+	/**
+	 * replace limited_mappings with mappings if limited_mapping is unavailable
+	 * @param mixed[] $config
+	 * @return mixed[] update config
+	 */
+	public function disableLimitedMappings( array $config ) {
+		foreach ( $config[ 'char_filter' ] as $name => &$value ) {
+			if ( !isset( $value[ 'type' ] ) || $value[ 'type' ] != 'limited_mapping' ) {
+				continue;
+			}
+			$value[ 'type' ] = 'mapping';
 		}
 		return $config;
 	}
@@ -630,7 +648,7 @@ class AnalysisConfigBuilder {
 			'char_filter' => [
 				// Flattens things that are space like to spaces in the near_match style analyzers
 				'near_space_flattener' => [
-					'type' => 'mapping',
+					'type' => 'limited_mapping',
 					'mappings' => [
 						"'=>\u0020",       // Useful for finding names
 						'\u2019=>\u0020',  // Unicode right single quote
@@ -643,7 +661,7 @@ class AnalysisConfigBuilder {
 				// map narrow no-break space to plain space to compensate for ES6.x+
 				// analyzers generally not doing so
 				'nnbsp_norm' => [
-					'type' => 'mapping',
+					'type' => 'limited_mapping',
 					'mappings' => [
 						'\u202F=>\u0020',
 					],
@@ -668,7 +686,7 @@ class AnalysisConfigBuilder {
 				],
 				// map lots of apostrophe-like characters to apostrophe (T315118)
 				'apostrophe_norm' => [
-					'type' => 'mapping',
+					'type' => 'limited_mapping',
 					'mappings' => [
 						"`=>'",		 // grave accent
 						"´=>'",		 // acute accent
@@ -695,7 +713,7 @@ class AnalysisConfigBuilder {
 				// which (almost) always count as word breaks (e.g., the Nori and SmartCN
 				// tokenizers do not always count spaces as word breaks!)
 				'word_break_helper' => [
-					'type' => 'mapping',
+					'type' => 'limited_mapping',
 					'mappings' => [
 						'_=>\u0020',
 						':=>\u0020',
@@ -710,7 +728,7 @@ class AnalysisConfigBuilder {
 					],
 				],
 				'word_break_helper_source_text' => [
-					'type' => 'mapping',
+					'type' => 'limited_mapping',
 					'mappings' => [
 						'_=>\u0020',
 						// These are more useful for code:
@@ -724,7 +742,7 @@ class AnalysisConfigBuilder {
 					// A common regression caused by unpacking is that İ is no longer
 					// treated correctly, so specify the mapping just once and re-use
 					// in analyzer/text/char_filter as needed.
-					'type' => 'mapping',
+					'type' => 'limited_mapping',
 					'mappings' => [
 						'İ=>I',
 					],
@@ -816,7 +834,7 @@ class AnalysisConfigBuilder {
 			// stopwords նաև & և get normalized to նաեւ & եւ, so pick those up, too.
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
-				withCharMap( [ '․=>.' ] )->
+				withLimitedCharMap( [ '․=>.' ] )->
 				withExtraStop( [ 'նաեւ', 'եւ' ],  'armenian_norm_stop', 'armenian_stop' )->
 				build( $config );
 			break;
@@ -880,7 +898,7 @@ class AnalysisConfigBuilder {
 			// an). Stop words are searchable via 'plain' anyway, so just use _english_
 			$config = ( new AnalyzerBuilder( 'cjk' ) )->
 				withUnpackedAnalyzer()->
-				withCharMap( $dakutenMap )->
+				withLimitedCharMap( $dakutenMap )->
 				withTokenizer( self::STANDARD_TOKENIZER_ONLY )->
 				withStop( '_english_' )->
 				omitStemmer()->
@@ -912,7 +930,7 @@ class AnalysisConfigBuilder {
 			// Replace English analyzer with a rebuilt copy with asciifolding inserted before stemming
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142037
 			$config = ( new AnalyzerBuilder( $langName ) )->
-				withCharMap( $hkmap, 'kana_map' )->
+				withLimitedCharMap( $hkmap, 'kana_map' )->
 				withCharFilters( [ 'kana_map' ] )->
 				withExtraStemmer( 'possessive_english' )->
 				withStemmerOverride( 'guidelines => guideline', 'custom_stem' )->
@@ -938,7 +956,7 @@ class AnalysisConfigBuilder {
 
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
-				withCharMap( [ '\u02BC=>\u0027' ] )->
+				withLimitedCharMap( [ '\u02BC=>\u0027' ] )->
 				withElision( [ 'l', 'm', 't', 'qu', 'n', 's', 'j', 'd', 'c',
 								'jusqu', 'quoiqu', 'lorsqu', 'puisqu' ] )->
 				withLightStemmer()->
@@ -950,7 +968,7 @@ class AnalysisConfigBuilder {
 			// char map: We have to explicitly map capital ẞ to lowercase ß
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
-				withCharMap( [ 'ẞ=>ß' ] )->
+				withLimitedCharMap( [ 'ẞ=>ß' ] )->
 				withLightStemmer()->
 				insertFiltersBefore( 'german_stemmer', [ 'german_normalization' ] )->
 				build( $config );
@@ -1073,7 +1091,7 @@ class AnalysisConfigBuilder {
 			];
 
 			$config = ( new AnalyzerBuilder( $langName ) )->
-				withCharMap( $noriMap, 'nori_charfilter' )->
+				withLimitedCharMap( $noriMap, 'nori_charfilter' )->
 				withCharFilters( [ 'dotted_I_fix', 'nori_charfilter', 'nori_combo_filter' ] )->
 				withTokenizer( 'nori_tok' )->
 				withFilters( [ 'nori_posfilter', 'nori_readingform', 'lowercase', 'remove_empty' ] )->
@@ -1092,7 +1110,7 @@ class AnalysisConfigBuilder {
 		case 'persian': // Unpack Persian analyzer T325090
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
-				withCharMap( [ '\u200C=>\u0020' ], 'zero_width_spaces' )->
+				withLimitedCharMap( [ '\u200C=>\u0020' ], 'zero_width_spaces' )->
 				withDecimalDigit()->
 				omitStemmer()->
 				insertFiltersBefore( 'persian_stop',
@@ -1289,7 +1307,7 @@ class AnalysisConfigBuilder {
 			$ukFilters = [ 'lowercase', 'ukrainian_stop', 'ukrainian_stemmer',
 					'lowercase', 'remove_duplicates', 'asciifolding' ];
 			$config = ( new AnalyzerBuilder( 'ukrainian' ) )->
-				withCharMap( $ukCharMap )->
+				withLimitedCharMap( $ukCharMap )->
 				withCharFilters( [ 'dotted_I_fix', 'ukrainian_charfilter' ] )->
 				withFilters( $ukFilters )->
 				build( $config );

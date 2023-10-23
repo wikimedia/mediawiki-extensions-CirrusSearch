@@ -410,13 +410,13 @@
                 "\uff07=>'",
                 "\uff40=>'"
             ],
-            "type": "mapping"
+            "type": "limited_mapping"
         },
         "dotted_I_fix": {
             "mappings": [
                 "\u0130=>I"
             ],
-            "type": "mapping"
+            "type": "limited_mapping"
         },
         "german_charfilter": {
             "mappings": [
@@ -519,7 +519,7 @@
             "mappings": [
                 "\\u202F=>\\u0020"
             ],
-            "type": "mapping"
+            "type": "limited_mapping"
         },
         "nori_charfilter": {
             "mappings": [
@@ -569,7 +569,7 @@
                 "\uff3f=>\\u0020",
                 "\uff1a=>\\u0020"
             ],
-            "type": "mapping"
+            "type": "limited_mapping"
         }
     },
     "filter": {

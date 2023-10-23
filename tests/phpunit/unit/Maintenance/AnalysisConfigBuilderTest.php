@@ -685,7 +685,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			'extra-analysis-serbian', 'extra-analysis-slovak',
 			'extra-analysis-esperanto', 'analysis-nori',
 			'extra-analysis-homoglyph', 'extra-analysis-khmer',
-			'extra-analysis-turkish',
+			'extra-analysis-turkish', 'extra-analysis-textify',
 		];
 		if ( array_key_exists( 'withPlugins', $extraConfig ) ) {
 			array_push( $plugins, ...$extraConfig[ 'withPlugins' ] );

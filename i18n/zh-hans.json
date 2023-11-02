@@ -23,7 +23,8 @@
 			"佛壁灯",
 			"夢蝶葬花",
 			"御坂美琴",
-			"LittlePaw365"
+			"LittlePaw365",
+			"星海"
 		]
 	},
 	"cirrussearch-desc": "以Elasticsearch为基础的MediaWiki搜索工具",
@@ -81,6 +82,7 @@
 	"cirrussearch-feature-too-many-conditions": "为“$1”提供了太多条件，截短为$2。",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint应设置为有效的SPARQL端点以使用深度分类搜索。",
 	"cirrussearch-feature-deepcat-exception": "深度分类搜索SPARQL查询失败",
+	"cirrussearch-feature-deepcat-timeout": "深层分类搜索超时。该分类可能有太多子分类",
 	"cirrussearch-feature-deepcat-toomany": "深度分类查询返回了太多分类",
 	"cirrussearch-feature-deepcat-invalid-title": "提供的类别无效。",
 	"cirrussearch-feature-pageid-invalid-id": "无效页面{{PLURAL:$2|ID|IDs}}：$1",

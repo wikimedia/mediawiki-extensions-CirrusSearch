@@ -7,5 +7,7 @@
 	"cirrussearch-pref-label": "ꠘꠄꠀꠔꠣ ꠕꠥꠇꠣꠁꠘ",
 	"cirrussearch-give-feedback": "ꠝꠔꠣꠝꠔ ꠎꠣꠘꠣꠃꠇ꠆ꠇꠣ",
 	"prefs-completion": "ꠕꠥꠇꠣꠘꠤ ꠡꠦꠡ",
-	"cirrussearch-pref-completion-section-desc": "ꠔꠣꠉꠖꠣ ꠖꠦꠅꠞꠣ"
+	"cirrussearch-pref-completion-section-desc": "ꠔꠣꠉꠖꠣ ꠖꠦꠅꠞꠣ",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "ꠖꠤꠀꠖꠦꠅꠀ (ꠛꠣꠔꠣꠁꠀꠖꠦꠅꠀ)",
+	"cirrussearch-explore-similar-related-none": "ꠁꠟꠣꠘ ꠀꠞ ꠙꠣꠔꠣꠁꠘ ꠘꠣꠁ"
 }

@@ -19,6 +19,7 @@
 	"cirrussearch-give-feedback": "Йазде хьайна хетарг",
 	"cirrussearch-query-too-long": "Лахаран дехар максимум магийначул деха ду. ($1 > $2)",
 	"cirrussearch-completion-profile-fast-fuzzy": "Экспериментан билгала йоцу профиль (муьлхачу хенахь дӀайаккха мега)",
+	"cirrussearch-qi-profile-wsum-inclinks": "Оьзна сумма чуйогӀучу хьажоргийн бух тӀехь",
 	"prefs-completion": "Лахар чекхдаккхар",
 	"cirrussearch-pref-completion-section-desc": "АвтотӀеюзаран гӀоьнча",
 	"cirrussearch-pref-completion-profile-help": "Лохуш дерг ша кховдадо (Лоху чуйоккхушехь).",
@@ -30,7 +31,10 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Нийс ма де гӀалаташ. Гойту йогӀуш йолу дӀасахьажоргаш.",
 	"cirrussearch-completion-profile-classic-pref-name": "Префиксца классикан лахар",
 	"cirrussearch-completion-profile-classic-pref-desc": "ГӀалаташ нис цадо. Йазйечу хенахь гойту цӀерш.",
+	"cirrussearch-feature-not-available": "Коьрта '$1' дош кху вики чохь жигарадаьккхина дац.",
+	"cirrussearch-feature-too-many-conditions": "ТӀех дукха бехкамаш '$1' чубихкина, '$2' тӀе кхаччалц хадина.",
 	"cirrussearch-feature-deepcat-invalid-title": "Билгалйина категори нийса йац.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Нийса доцу агӀонан ID}}: $1",
+	"cirrussearch-explore-similar-related-none": "Йихкина агӀонаш тӀекхочуш йац",
 	"cirrussearch-article-words": "Берриге йаззамашкахь ду дош"
 }

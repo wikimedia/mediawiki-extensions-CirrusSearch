@@ -1,88 +1,90 @@
+import getopt
 import json
 import math
 import multiprocessing
-import traceback
 import sys
-
+import traceback
 from collections import OrderedDict
 
 import requests
 
 
-batch_size = 2000
-clusters = OrderedDict(
-    eqiad='search.svc.eqiad.wmnet',
-    codfw='search.svc.codfw.wmnet',
-)
-
-
-def do_request(session, cluster, wiki, type, ids):
-    host = clusters[cluster]
-    path = "%(wiki)s_%(type)s/page/_mget" % locals()
-    url = 'http://%(host)s:9200/%(path)s?fields=_id' % locals()
+def fetch_docs(session, index_uri, ids):
+    url = f'{index_uri}/_doc/_mget?stored_fields=_id&_source_includes=version,title'
     payload = json.dumps({'ids': ids})
 
-    r = session.post(url, data=payload)
+    r = session.post(url, headers={'Content-Type': 'application/json'}, data=payload)
     docs = json.loads(r.text)['docs']
     by_id = {}
     for doc in docs:
-        by_id[doc['_id']] = doc['found']
+        source = doc['_source'] if '_source' in doc else {'version': -1, 'title': ''}
+        by_id[doc['_id']] = {
+            'found': doc['found'],
+            'rev': source['version'],
+            'title': source['title']
+        }
     return by_id
 
 
-def request(session, cluster, wiki, type, ids):
+def fetch_docs_with_retry(session, index_uri, ids):
     attempt = 0
     while attempt < 3:
         try:
-            return do_request(session, cluster, wiki, type, ids)
+            return fetch_docs(session, index_uri, ids)
         except Exception:
             attempt += 1
-    raise Exception('failed requesting data...')
+    raise Exception('Failed fetching docs…')
 
 
-def compare(wiki, q, lists):
-    keys = list(lists.keys())
+def compare(q, docs_by_cluster):
+    keys = list(docs_by_cluster.keys())
     head = keys[0]
     other = keys[1:]
-    expected_len = len(lists[head])
+    expected_len = len(docs_by_cluster[head])
     for cluster in other:
-        if len(lists[cluster]) != expected_len:
-            raise Exception("Counts dont match: %d != %d" %
-                            (len(lists[cluster]), expected_len))
-    for id, found in lists[head].items():
+        if len(docs_by_cluster[cluster]) != expected_len:
+            raise Exception(f'Counts dont match: {len(docs_by_cluster[cluster]):d} != {expected_len:d}')
+    for page_id, head_doc in docs_by_cluster[head].items():
         error = False
         for cluster in other:
-            if not error and not found == lists[cluster][id]:
-                error = True
-                q.put_nowait(id)
-            del lists[cluster][id]
+            if not error:
+                if not head_doc['found'] == docs_by_cluster[cluster][page_id]['found']:
+                    error = True
+                    q.put_nowait({'id': page_id, 'reason': 'not_found', 'expected': True, 'actual': False})
+                elif not head_doc['rev'] == docs_by_cluster[cluster][page_id]['rev']:
+                    error = True
+                    q.put_nowait({'id': page_id, 'reason': 'rev_missmatch', 'expected': head_doc['rev'],
+                                  'actual': docs_by_cluster[cluster][page_id]['rev']})
+                elif not head_doc['title'] == docs_by_cluster[cluster][page_id]['title']:
+                    error = True
+                    q.put_nowait({'id': page_id, 'reason': 'title_missmatch', 'expected': head_doc['title'],
+                                  'actual': docs_by_cluster[cluster][page_id]['title']})
+            del docs_by_cluster[cluster][page_id]
     for cluster in other:
-        if lists[cluster]:
-            raise Exception('Doc(s) returned from {} but not {}: {}'
-                            .format(head, cluster, ','.join(lists[cluster])))
+        if docs_by_cluster[cluster]:
+            raise Exception(f'Doc(s) returned from {head} but not {cluster}: {",".join(docs_by_cluster[cluster])}')
 
 
-def run(wiki, start, end, q):
+def run(wiki, clusters, index_types, batch_size, start, end, q):
+    print(f'Comparing wiki {wiki} in {clusters} for index types {index_types}; processing page IDs [{start}, {end}]')
     session = requests.Session()
     for value in range(start, end, batch_size):
         ids = list(range(value, value + batch_size))
-        for type in ['content', 'general']:
-            lists = OrderedDict()
-            for cluster in clusters:
-                lists[cluster] = request(session, cluster, wiki, type, ids)
-            compare(wiki, q, lists)
+        for cluster in clusters:
+            docs_by_cluster = OrderedDict()
+            for index_type in index_types:
+                index_uri = f'{clusters[cluster]}/{wiki}_{index_type}'
+                docs_by_cluster[cluster] = fetch_docs_with_retry(session, index_uri, ids)
+                compare(q, docs_by_cluster)
 
 
 def listen(wiki, q):
-    line_format = ("mwscript extensions/CirrusSearch/maintenance/Saneitize.php"
-                   " --wiki %s --cluster %s --fromId %s --toId %s")
     while True:
         try:
-            id = q.get()
-            if id is None:
+            error = q.get()
+            if error is None:
                 break
-            for cluster in clusters:
-                print(line_format % (wiki, cluster, id, id))
+            print(f'wiki: {wiki} error: {error}')
         except (KeyboardInterrupt, SystemExit):
             raise
         except Exception:
@@ -90,26 +92,72 @@ def listen(wiki, q):
             traceback.print_exc(file=sys.stderr)
 
 
-def get_max_id(wiki):
-    from subprocess import Popen, PIPE
-    p = Popen(['sql', wiki], stdin=PIPE, stdout=PIPE)
-    out, err = p.communicate(input='select max(page_id) from page')
-    if p.returncode > 0:
-        raise Exception("Failed requesting max id, invalid wiki?")
-    return int(out.split("\n")[1])
+def fetch_max_id(session, index_uri):
+    url = f'{index_uri}/_doc/_search'
+    payload = json.dumps({'size': 0, 'aggs': {'max_page_id': {'max': {'field': 'page_id'}}}})
+
+    r = session.post(url, headers={'Content-Type': 'application/json'}, data=payload)
+    if r.status_code != 200:
+        print(f'Looks like this index does not exist: POST {url} results in {r.status_code} {r.text}')
+        return 0
+    aggregations = json.loads(r.text)['aggregations']
+
+    return int(float(aggregations['max_page_id']['value']))
 
 
-if __name__ == "__main__":
+def print_help(clusters, batch_size, index_types):
+    print(f'Usage: {sys.argv[0]} <options> <wiki>\n'
+          f'options:\n'
+          f'-l --left\t\tleft cluster URI (value: {clusters["left"]})\n'
+          f'-r --right\t\tright cluster URI (value: {clusters["right"]})\n'
+          f'-b --batch-size\tbatch size (int, value: {batch_size})\n'
+          f'-t --type\t index type to check (value: [{", ".join(index_types)}], cardinality: 1+)')
 
-    if not len(sys.argv) == 2:
-        print('Usage: {} <wiki>\n'.format(sys.argv[0]))
+
+def main():
+    batch_size = 2000
+    index_types = ['general', 'content', 'file']
+    clear_index_types = True
+    clusters = {
+        "left": 'http://localhost:9200',
+        "right": 'http://localhost:9200',
+    }
+
+    opts, args = getopt.getopt(sys.argv[1:], ':hl:r:b:t:',
+                               ['help', 'left=', 'right=', 'batch-size=', 'type='])
+
+    for o, v in opts:
+        if o in ['-l', '--left']:
+            clusters['left'] = v
+        if o in ['-r', '--right']:
+            clusters['right'] = v
+        if o in ['-b', '--batch-size']:
+            batch_size = int(v)
+        if o in ['-t', '--type']:
+            if clear_index_types:
+                index_types.clear()
+                clear_index_types = False
+            index_types.append(v)
+        if o in ['-h']:
+            print_help(clusters, batch_size, index_types)
+            sys.exit(1)
+
+    if not len(args) == 1:
+        print_help(clusters, batch_size, index_types)
         sys.exit(1)
 
-    wiki = sys.argv[1]
-    max_id = get_max_id(wiki) + 5000
+    wiki = args[0]
+
+    max_id = 0
+    with requests.Session() as session:
+        for cluster in clusters:
+            index_uri = f'{clusters[cluster]}/{wiki}'
+            max_id = max(max_id, fetch_max_id(session, index_uri))
+
+    max_id += 5000
     min_per_process = batch_size * 10
     num_processes = min(40, int(math.ceil(max_id / float(min_per_process))))
-    step = int(math.ceil(max_id/float(num_processes)))
+    step = int(math.ceil(max_id / float(num_processes)))
 
     q = multiprocessing.Queue()
     workers = []
@@ -118,7 +166,7 @@ if __name__ == "__main__":
         listener.start()
 
         for start in range(1, max_id, step):
-            args = (wiki, start, start + step, q)
+            args = (wiki, clusters, index_types, batch_size, start, start + step, q)
             worker = multiprocessing.Process(target=run, args=args)
             workers.append(worker)
             worker.start()
@@ -130,3 +178,7 @@ if __name__ == "__main__":
         for w in workers:
             w.terminate()
         listener.terminate()
+
+
+if __name__ == '__main__':
+    main()

@@ -18,6 +18,7 @@
 	"cirrussearch-give-feedback": "Йазде хьайна хетарг",
 	"cirrussearch-query-too-long": "Лахаран дехар максимум магийначул деха ду. ($1 > $2)",
 	"cirrussearch-completion-profile-fast-fuzzy": "Экспериментан билгала йоцу профиль (муьлхачу хенахь дӀайаккха мега)",
+	"cirrussearch-qi-profile-wsum-inclinks": "Оьзна сумма чуйогӀучу хьажоргийн бух тӀехь",
 	"prefs-completion": "Лахар чекхдаккхар",
 	"cirrussearch-pref-completion-section-desc": "АвтотӀеюзаран гӀоьнча",
 	"cirrussearch-pref-completion-profile-help": "Лохуш дерг ша кховдадо (Лоху чуйоккхушехь).",

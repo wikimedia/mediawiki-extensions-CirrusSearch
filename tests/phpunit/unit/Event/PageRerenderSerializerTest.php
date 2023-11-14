@@ -60,7 +60,7 @@ class PageRerenderSerializerTest extends CirrusTestCase {
 		$expectedEvent = [
 			'$schema' => '/mediawiki/cirrussearch/page_rerender/1.0.0',
 			'meta' => [
-				'stream' => 'mediawiki.cirrussearch_page_rerender.v1',
+				'stream' => 'mediawiki.cirrussearch.page_rerender.v1',
 				'uid' => '00000000-0000-0000-0000-000000000000',
 				'request_id' => 'my_request_id',
 				'domain' => 'myserver.unittest.local',

@@ -212,8 +212,10 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 
 		$redirectLookup->expects( $this->exactly( 2 ) )
 			->method( 'getRedirectTarget' )
-			->withConsecutive( [ $redirect ], [ $page ] )
-			->willReturnOnConsecutiveCalls( $target, null );
+			->willReturnMap( [
+				[ $redirect, $target ],
+				[ $page, null ]
+			] );
 
 		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new Job\LinksUpdate( $target, [] ) );
 

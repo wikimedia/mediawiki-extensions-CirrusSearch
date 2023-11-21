@@ -62,17 +62,20 @@ class AllClustersQueuingRemediatorTest extends CirrusTestCase {
 		$clusterAssigment->expects( $this->once() )
 			->method( 'getWritableClusters' )
 			->willReturn( [ 'one', 'two' ] );
-		$jobQueueGroup->expects( $this->exactly( 7 ) )
+		$expectedJobs = [
+			$linksUpdateJob, // oldDocument
+			$linksUpdateJob, // pageNotIndex
+			$linksUpdateJob, // redirectInIndex
+			$linksUpdateJob, // oldVersionInIndex
+			$wrongIndexDelete, // pageInWrongIndex step1
+			$linksUpdateJob, // pageInWrongIndex step2
+			$deletePageJob // ghostPageInIndex
+		];
+		$jobQueueGroup->expects( $this->exactly( count( $expectedJobs ) ) )
 			->method( 'push' )
-			->withConsecutive(
-				[ $linksUpdateJob ], // oldDocument
-				[ $linksUpdateJob ], // pageNotIndex
-				[ $linksUpdateJob ], // redirectInIndex
-				[ $linksUpdateJob ], // oldVersionInIndex
-				[ $wrongIndexDelete ], // pageInWrongIndex step1
-				[ $linksUpdateJob ], // pageInWrongIndex step2
-				[ $deletePageJob ] // ghostPageInIndex
-			);
+			->willReturnCallback( function ( $jobs ) use ( &$expectedJobs ): void {
+				$this->assertEquals( array_shift( $expectedJobs ), $jobs );
+			} );
 
 		$allClustersRemediator = new AllClustersQueueingRemediator( $clusterAssigment, $jobQueueGroup );
 		$allClustersRemediator->oldDocument( $wp );

@@ -65,15 +65,11 @@ class QueueingRemediatorTest extends CirrusTestCase {
 	public function testJobIsSent( $methodCall, array $methodParams, array $jobs, $cluster ) {
 		\MWTimestamp::setFakeTime( self::NOW );
 		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
-		call_user_func_array(
-			[ $jobQueueGroup->expects( $this->exactly( count( $jobs ) ) )->method( 'push' ), 'withConsecutive' ],
-			array_map(
-				function ( $j ) {
-					return [ $this->equalTo( $j ) ];
-				},
-				$jobs
-			)
-		);
+		$jobQueueGroup->expects( $this->exactly( count( $jobs ) ) )
+			->method( 'push' )
+			->willReturnCallback( function ( $j ) use ( &$jobs ): void {
+				$this->assertEquals( array_shift( $jobs ), $j );
+			} );
 		$remediator = new QueueingRemediator( $cluster, $jobQueueGroup );
 		call_user_func_array( [ $remediator, $methodCall ], $methodParams );
 	}

@@ -13,7 +13,7 @@ use HtmlArmor;
  * @covers \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod
  * @covers \CirrusSearch\Fallbacks\FallbackMethodTrait
  */
-class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
+class PhraseSuggestFallbackMethodTest extends FallbackMethodTestBase {
 
 	public function provideTest() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'phraseSuggestResponses/*.config' ) as $testFile ) {

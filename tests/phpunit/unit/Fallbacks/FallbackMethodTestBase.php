@@ -13,7 +13,7 @@ use Elastica\Response;
 use Elastica\ResultSet;
 use Elastica\ResultSet\DefaultBuilder;
 
-abstract class BaseFallbackMethodTest extends CirrusTestCase {
+abstract class FallbackMethodTestBase extends CirrusTestCase {
 
 	public function getSearcherFactoryMock( SearchQuery $query = null, CirrusSearchResultSet $resultSet = null ) {
 		$searcherMock = $this->createMock( Searcher::class );

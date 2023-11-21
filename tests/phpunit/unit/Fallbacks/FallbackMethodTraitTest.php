@@ -9,7 +9,7 @@ use Elastica\Query;
 use Elastica\Response;
 use Elastica\Result;
 
-class FallbackMethodTraitTest extends BaseFallbackMethodTest {
+class FallbackMethodTraitTest extends FallbackMethodTestBase {
 	public static function provideTestResultThreshold() {
 		return [
 			'threshold is not reached' => [

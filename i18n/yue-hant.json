@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Winston Sung"
+			"Winston Sung",
+			"H78c67c"
 		]
 	},
+	"cirrussearch-desc": "基於 Elasticsearch 嘅 MediaWiki 搜索工具",
 	"cirrussearch-too-busy-error": "搜索引擎而家太忙。請遲啲再試過。",
 	"cirrussearch-pref-label": "新搜尋",
 	"cirrussearch-give-feedback": "畀意見我哋",

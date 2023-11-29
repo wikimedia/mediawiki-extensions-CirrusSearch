@@ -10,7 +10,7 @@ use EmptyBagOStuff;
 use MediaWiki\Interwiki\NullInterwikiLookup;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Session\TestBagOStuff;
-use MediaWiki\User\StaticUserOptionsLookup;
+use MediaWiki\User\Options\StaticUserOptionsLookup;
 use MediaWiki\User\UserIdentityValue;
 
 /**

@@ -3,7 +3,7 @@
 namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusTestCase;
-use MediaWiki\User\StaticUserOptionsLookup;
+use MediaWiki\User\Options\StaticUserOptionsLookup;
 use MediaWiki\User\UserIdentityValue;
 use const null;
 

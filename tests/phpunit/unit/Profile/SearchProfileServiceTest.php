@@ -7,7 +7,7 @@ use CirrusSearch\Dispatch\BasicSearchQueryRoute;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchQuery;
 use MediaWiki\Request\FauxRequest;
-use MediaWiki\User\StaticUserOptionsLookup;
+use MediaWiki\User\Options\StaticUserOptionsLookup;
 use MediaWiki\User\UserIdentityValue;
 
 /**

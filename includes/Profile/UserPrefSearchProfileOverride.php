@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Profile;
 
+use MediaWiki\User\Options\UserOptionsLookup;
 use MediaWiki\User\UserIdentity;
-use MediaWiki\User\UserOptionsLookup;
 
 /**
  * Overrider based on user preference.

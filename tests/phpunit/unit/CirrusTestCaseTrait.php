@@ -13,8 +13,8 @@ use Config;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Interwiki\InterwikiLookup;
 use MediaWiki\Title\Title;
+use MediaWiki\User\Options\UserOptionsLookup;
 use MediaWiki\User\StaticUserOptionsLookup;
-use MediaWiki\User\UserOptionsLookup;
 
 trait CirrusTestCaseTrait {
 	public static $FIXTURE_DIR = __DIR__ . '/../fixtures/';

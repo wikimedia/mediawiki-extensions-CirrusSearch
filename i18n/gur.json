@@ -1,0 +1,36 @@
+{
+	"@metadata": {
+		"authors": [
+			"Akakiiri",
+			"Amoramah"
+		]
+	},
+	"cirrussearch-desc": "\"Elasticsearch-powered\" ɛ mediawiki",
+	"cirrussearch-backend-error": "Yɛsera la daaŋɔ n kan yue Zuo, tu ka ta'am ba'asɛ fu ɛ sɛla la. Zaam zaam malegɛ iŋɛ pooren",
+	"cirrussearch-parse-error": "Ba daa ka bɔkɛ solegirega la.\nN beleni mɛ, iŋɛ n naana.\nSolegirega la ba'am wɔgɛ ni mɛ ti a ta'am suŋa eere zi'an la.",
+	"cirrussearch-too-busy-error": "Eere la ba'am gãrɛ mɛ nananawa. N beleni mɛ malum iŋɛ pooren.",
+	"cirrussearch-regex-empty-expression": "$1 gura saŋa woo yelesum duma n ka de vɔ.",
+	"cirrussearch-regex-syntax-error": "Saŋa woo \"syntax\" yelesum tuure n boi $2:$1",
+	"cirrussearch-regex-too-busy-error": "Saŋa woo yelesum duma zo'e zo'e n lagum ɛɛra nananawa. N beleni mɛ le malum iŋɛ pooren.",
+	"cirrussearch-regex-too-complex-error": "Saŋa woo yelesum la ba'am kɛ'ɛm mɛ. Zamese ayela zo'e iŋɛ n naana [[mw: Special: MyLanguage/Helep:CirruSeaech/RegexTooComplex|gere]].",
+	"cirrussearch-now-using": "Wiki kaŋa wa tarı la \"engine\" paalega tuna. ([[mw: Special:MyLanguage/Helon:VirrusSearch|Lesem more]])",
+	"cirrussearch-pref-label": "Ɛ paalega",
+	"cirrussearch-pref-desc": "Tɛɛsum tu eere paalega wa suŋɛri yetɔgum duma zo'e zo'e wa, bɔ'ɔra wuruzɔɔsi pa'ara wuu zina zo'e zo'e, dee ta'am na nyɛ yelesum duma n boi \"templates\" puan.",
+	"cirrussearch-give-feedback": "Bo tu fu lebesego",
+	"cirrussearch-query-too-long": "Eeri sɛla la wɔgɛ gãŋɛ woko la beene mɛ (Actual\n: $1, allowed: $2, not counting $3)",
+	"cirrussearch-query-too-long-with-exemptions": "Fu eeri sɛla la wɔgɛ gãŋɛ woko la beene mɛ (Actual\n: $1, allowed: $2, not counting $3)",
+	"cirrussearch-completion-profile-classic": "\"Prefix\" suŋa, naanɛ gu'usum fii wa la \"diactritics\" basɛba n yese.",
+	"cirrussearch-completion-profile-normal": "Naana gu'usum fii, \"diactritics\" basɛba la \"stopwords\" n yese.",
+	"cirrussearch-completion-profile-normal-subphrases": "Naana gu'usum fii, \"diactritics la stopwords\" asi'a n yese. La wan mɛ kelum tɔ' la \"subphrases\"(can be subphrases or subpages depending on internal wiki configuration).",
+	"cirrussearch-completion-profile-fuzzy": "Ŋwɔna la gulesegɔ tuntɔɔ demesego la(two typos supported).",
+	"prefs-completion": "Iya ba'asegɔ",
+	"cirrussearch-pref-completion-section-desc": "Ba'asegɔ putɛpa'asegɔ",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Demeseri paara tuure buyi. Yɛsera pa'alegɔ si'a n kɔ'ɔm ŋwɔna la yelezure la miŋa",
+	"cirrussearch-completion-profile-classic-pref-desc": "Demesego ka boi bini. Doli zuo la m pɔsɛ se'em la",
+	"cirrussearch-timed-out": "Iŋa la saŋa tole mɛ, bala la lebesego n paɛ n boi",
+	"cirrussearch-feature-pageid-invalid-id": "Pɛgese'ere n dagi ma'a {{PLURAL:$2|ID|IDs}}: $1",
+	"cirrussearch-incategory-feature-no-valid-categories": "Buuri buuri la dagi ma'a bɔ'ɔra '$1'.",
+	"cirrussearch-explore-similar-related-none": "Pɛgera n ŋwɔni bala ka boi",
+	"cirrussearch-article-words": "Yelebɛa n boi pɛgera la za'a puan",
+	"cirrussearch-articletopic-invalid-topic": "Ba ka baŋɛ zuo{{PLURAL:$2|name|names}} for the <kbd>articletopic:</kbd> keyword: $1"
+}

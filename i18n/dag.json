@@ -5,5 +5,7 @@
 		]
 	},
 	"cirrussearch-pref-label": "Vihiri palli",
-	"cirrussearch-give-feedback": "Ti mi ti a tɔɣino"
+	"cirrussearch-give-feedback": "Ti mi ti a tɔɣino",
+	"prefs-completion": "Vihigu naabu",
+	"cirrussearch-pref-completion-section-desc": "Buɣisiri naabu"
 }

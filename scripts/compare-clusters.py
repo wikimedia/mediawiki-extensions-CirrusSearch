@@ -13,7 +13,7 @@ def fetch_docs(session, index_uri, ids):
     url = f'{index_uri}/_doc/_mget?stored_fields=_id&_source_includes=version,title'
     payload = json.dumps({'ids': ids})
 
-    r = session.post(url, headers={'Content-Type': 'application/json'}, data=payload)
+    r = session.get(url, headers={'Content-Type': 'application/json'}, data=payload)
     docs = json.loads(r.text)['docs']
     by_id = {}
     for doc in docs:
@@ -40,6 +40,8 @@ def compare(q, docs_by_cluster):
     keys = list(docs_by_cluster.keys())
     head = keys[0]
     other = keys[1:]
+    if not other:
+        raise Exception('Cannot compare, only one cluster of docs provided')
     expected_len = len(docs_by_cluster[head])
     for cluster in other:
         if len(docs_by_cluster[cluster]) != expected_len:
@@ -70,12 +72,11 @@ def run(wiki, clusters, index_types, batch_size, start, end, q):
     session = requests.Session()
     for value in range(start, end, batch_size):
         ids = list(range(value, value + batch_size))
-        for cluster in clusters:
-            docs_by_cluster = OrderedDict()
-            for index_type in index_types:
-                index_uri = f'{clusters[cluster]}/{wiki}_{index_type}'
-                docs_by_cluster[cluster] = fetch_docs_with_retry(session, index_uri, ids)
-                compare(q, docs_by_cluster)
+        for index_type in index_types:
+            compare(q, {
+                cluster: fetch_docs_with_retry(session, f'{clusters[cluster]}/{wiki}_{index_type}', ids)
+                for cluster in clusters
+            })
 
 
 def listen(wiki, q):
@@ -96,7 +97,7 @@ def fetch_max_id(session, index_uri):
     url = f'{index_uri}/_doc/_search'
     payload = json.dumps({'size': 0, 'aggs': {'max_page_id': {'max': {'field': 'page_id'}}}})
 
-    r = session.post(url, headers={'Content-Type': 'application/json'}, data=payload)
+    r = session.get(url, headers={'Content-Type': 'application/json'}, data=payload)
     if r.status_code != 200:
         print(f'Looks like this index does not exist: POST {url} results in {r.status_code} {r.text}')
         return 0

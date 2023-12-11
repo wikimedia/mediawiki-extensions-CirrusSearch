@@ -4,6 +4,7 @@ namespace CirrusSearch\Wikimedia;
 
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Query\ArticleTopicFeature;
+use MediaWiki\Config\HashConfig;
 
 /**
  * @covers \CirrusSearch\Wikimedia\WeightedTagsHooks
@@ -12,7 +13,7 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 	public function testConfigureWeightedTagsSimilarity() {
 		$sim = [];
 		$maxScore = 17389;
-		$config = new \HashConfig( [
+		$config = new HashConfig( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [
 				WeightedTagsHooks::CONFIG_OPTIONS => [
 					WeightedTagsHooks::BUILD_OPTION => true,
@@ -27,7 +28,7 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 	}
 
 	public function testConfigureWeightedTagsSimilarityDisabled() {
-		$config = new \HashConfig( [
+		$config = new HashConfig( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [
 				WeightedTagsHooks::CONFIG_OPTIONS => [
 					WeightedTagsHooks::BUILD_OPTION => false,
@@ -40,7 +41,7 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 	}
 
 	public function testConfigureWeightedTagsFieldMapping() {
-		$config = new \HashConfig( [
+		$config = new HashConfig( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [
 				WeightedTagsHooks::CONFIG_OPTIONS => [
 					WeightedTagsHooks::BUILD_OPTION => true,
@@ -64,7 +65,7 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 	}
 
 	public function testConfigureWeightedTagsFieldMappingDisabled() {
-		$config = new \HashConfig( [
+		$config = new HashConfig( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [
 				WeightedTagsHooks::CONFIG_OPTIONS => [
 					WeightedTagsHooks::BUILD_OPTION => false,
@@ -78,7 +79,7 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 
 	public function testConfigureWeightedTagsFieldAnalysis() {
 		$maxScore = 41755;
-		$config = new \HashConfig( [
+		$config = new HashConfig( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [
 				WeightedTagsHooks::CONFIG_OPTIONS => [
 					WeightedTagsHooks::BUILD_OPTION => true,
@@ -98,7 +99,7 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 	}
 
 	public function testConfigureWeightedTagsFieldAnalysisDisabled() {
-		$config = new \HashConfig( [
+		$config = new HashConfig( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [
 				WeightedTagsHooks::CONFIG_OPTIONS => [
 					WeightedTagsHooks::BUILD_OPTION => false,

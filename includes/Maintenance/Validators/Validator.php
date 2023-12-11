@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\Maintenance\Printer;
+use MediaWiki\Status\Status;
 
 abstract class Validator {
 	/**
@@ -23,7 +24,7 @@ abstract class Validator {
 	}
 
 	/**
-	 * @return \Status
+	 * @return Status
 	 */
 	abstract public function validate();
 

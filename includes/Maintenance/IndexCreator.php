@@ -3,7 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use Elastica\Index;
-use Status;
+use MediaWiki\Status\Status;
 
 class IndexCreator {
 

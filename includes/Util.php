@@ -5,14 +5,14 @@ namespace CirrusSearch;
 use IBufferingStatsdDataFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Request\WebRequest;
+use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
 use MediaWiki\WikiMap\WikiMap;
 use NullStatsdDataFactory;
 use PoolCounterWorkViaCallback;
-use Status;
 use UIDGenerator;
-use WebRequest;
 use Wikimedia\Assert\Assert;
 use Wikimedia\IPUtils;
 

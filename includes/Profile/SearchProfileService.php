@@ -9,11 +9,11 @@ use CirrusSearch\Dispatch\DefaultSearchQueryDispatchService;
 use CirrusSearch\Dispatch\SearchQueryDispatchService;
 use CirrusSearch\Dispatch\SearchQueryRoute;
 use CirrusSearch\Search\SearchQuery;
-use Config;
+use MediaWiki\Config\Config;
+use MediaWiki\Request\WebRequest;
 use MediaWiki\User\Options\UserOptionsLookup;
 use MediaWiki\User\UserIdentity;
 use RequestContext;
-use WebRequest;
 use Wikimedia\Assert\Assert;
 
 /**

@@ -3,12 +3,13 @@
 namespace CirrusSearch\Event;
 
 use CirrusSearch\PageChangeTracker;
-use Config;
-use ConfigFactory;
-use DeferredUpdates;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\ConfigFactory;
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\EventBus\EventBusFactory;
 use MediaWiki\Page\PageLookup;
-use TitleFormatter;
+use MediaWiki\Request\WebRequest;
+use MediaWiki\Title\TitleFormatter;
 use Wikimedia\UUID\GlobalIdGenerator;
 
 /**
@@ -47,7 +48,7 @@ class EventBusBridge extends PageChangeTracker implements EventBridge {
 	 */
 	public static function factory(
 		ConfigFactory $configFactory,
-		\Config $mainConfig,
+		Config $mainConfig,
 		GlobalIdGenerator $globalIdGenerator,
 		TitleFormatter $titleFormatter,
 		PageLookup $pageLookup,
@@ -91,7 +92,7 @@ class EventBusBridge extends PageChangeTracker implements EventBridge {
 				return;
 			}
 			$event = $this->pageRerenderSerializer->eventDataForPage( $page,
-				PageRerenderSerializer::LINKS_UPDATE_REASON, \WebRequest::getRequestId() );
+				PageRerenderSerializer::LINKS_UPDATE_REASON, WebRequest::getRequestId() );
 			// Fire and forget, we do not check the return value, problems should be already logged by
 			// EventBus
 			$this->eventBusFactory

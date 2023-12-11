@@ -8,9 +8,9 @@ use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
-use Config;
 use Elastica\Query;
 use Elastica\Query\AbstractQuery;
+use MediaWiki\Config\Config;
 
 /**
  * File type features:

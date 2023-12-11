@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Parser\QueryStringRegex;
 
+use MediaWiki\Status\Status;
+
 class SearchQueryParseException extends \Exception {
 	/**
 	 * @var string
@@ -21,9 +23,9 @@ class SearchQueryParseException extends \Exception {
 
 	/**
 	 * Transform this exception as a Status object containing the message to display to the user
-	 * @return \Status
+	 * @return Status
 	 */
-	public function asStatus(): \Status {
-		return \Status::newFatal( $this->messageId, ...$this->params );
+	public function asStatus(): Status {
+		return Status::newFatal( $this->messageId, ...$this->params );
 	}
 }

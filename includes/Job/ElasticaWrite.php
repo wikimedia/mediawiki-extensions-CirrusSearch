@@ -8,7 +8,8 @@ use CirrusSearch\DataSender;
 use Liuggio\StatsdClient\Factory\StatsdDataFactoryInterface;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use Status;
+use MediaWiki\Status\Status;
+use MediaWiki\Utils\MWTimestamp;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -245,7 +246,7 @@ class ElasticaWrite extends CirrusGenericJob {
 		$updateKind = $params[CirrusTitleJob::UPDATE_KIND] ?? null;
 		$eventTime = $params[CirrusTitleJob::ROOT_EVENT_TIME] ?? null;
 		if ( $updateKind !== null && $eventTime !== null ) {
-			$now = \MWTimestamp::time();
+			$now = MWTimestamp::time();
 			$statsdDataFactory ??= MediaWikiServices::getInstance()->getStatsdDataFactory();
 			$statsdDataFactory->timing( "CirrusSearch.$cluster.updates.all.lag.$updateKind", $now - $eventTime );
 		}

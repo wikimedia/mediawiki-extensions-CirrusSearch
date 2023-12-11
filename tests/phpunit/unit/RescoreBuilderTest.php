@@ -16,7 +16,7 @@ use CirrusSearch\Search\Rescore\NamespacesFunctionScoreBuilder;
 use CirrusSearch\Search\Rescore\PreferRecentFunctionScoreBuilder;
 use CirrusSearch\Search\Rescore\RescoreBuilder;
 use CirrusSearch\Search\Rescore\ScriptScoreFunctionScoreBuilder;
-use NamespaceInfo;
+use MediaWiki\Title\NamespaceInfo;
 
 /**
  * @group CirrusSearch

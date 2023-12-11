@@ -10,7 +10,7 @@ use CirrusSearch\Search\Rescore\PreferRecentFunctionScoreBuilder;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
-use Config;
+use MediaWiki\Config\Config;
 
 /**
  * Matches "prefer-recent:" and then an optional floating point number <= 1 but

@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use HashConfig;
+use MediaWiki\Config\HashConfig;
 use RequestContext;
 use Wikimedia\Assert\Assert;
 

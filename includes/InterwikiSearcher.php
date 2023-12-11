@@ -13,8 +13,8 @@ use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Search\TitleHelper;
 use MediaWiki\MediaWikiServices;
-use Status;
-use User;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 
 /**
  * Performs searches using Elasticsearch -- on interwikis!

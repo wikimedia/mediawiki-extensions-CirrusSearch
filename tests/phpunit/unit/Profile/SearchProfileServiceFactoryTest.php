@@ -11,6 +11,7 @@ use MediaWiki\Interwiki\NullInterwikiLookup;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Session\TestBagOStuff;
 use MediaWiki\User\Options\StaticUserOptionsLookup;
+use MediaWiki\User\User;
 use MediaWiki\User\UserIdentityValue;
 
 /**
@@ -65,7 +66,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 		$userOption = [];
 
 		// Don't use TestUser it may have been polluted with default config from other tests.
-		$user = $this->createMock( \User::class );
+		$user = $this->createMock( User::class );
 		$user->method( 'getOption' )
 			->willReturn( null );
 

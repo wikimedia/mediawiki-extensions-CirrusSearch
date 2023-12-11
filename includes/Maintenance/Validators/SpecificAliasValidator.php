@@ -6,7 +6,7 @@ use CirrusSearch\Maintenance\Printer;
 use CirrusSearch\Maintenance\Reindexer;
 use Elastica\Client;
 use MediaWiki\Language\RawMessage;
-use Status;
+use MediaWiki\Status\Status;
 
 class SpecificAliasValidator extends IndexAliasValidator {
 	/**

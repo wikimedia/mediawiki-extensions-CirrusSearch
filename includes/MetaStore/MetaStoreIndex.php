@@ -8,7 +8,7 @@ use CirrusSearch\Maintenance\AnalysisFilter;
 use CirrusSearch\Maintenance\ConfigUtils;
 use CirrusSearch\Maintenance\Printer;
 use CirrusSearch\SearchConfig;
-use Status;
+use MediaWiki\Status\Status;
 
 /**
  * This program is free software; you can redistribute it and/or modify

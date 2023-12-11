@@ -9,7 +9,7 @@ use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Search\TitleHelper;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Interwiki\InterwikiLookup;
 use MediaWiki\Title\Title;

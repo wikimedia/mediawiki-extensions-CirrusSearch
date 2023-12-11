@@ -16,10 +16,11 @@ use CirrusSearch\Searcher;
 use Elastica\Response;
 use Elastica\Transport\AbstractTransport;
 use MediaWiki\Cache\LinkBatchFactory;
+use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
 use Psr\Log\AbstractLogger;
 use Symfony\Component\Yaml\Yaml;
-use Title;
 
 /**
  * Tests full text and completion search request logging. Could be expanded for
@@ -113,7 +114,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		$test( $config, $connection );
 
 		// Force the logger to flush
-		\DeferredUpdates::doUpdates();
+		DeferredUpdates::doUpdates();
 
 		$logs = $this->collectLogs( $loggers );
 

@@ -7,7 +7,7 @@ use Elastica\Exception\Connection\HttpException;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
 use MediaWiki\Logger\LoggerFactory;
-use Status;
+use MediaWiki\Status\Status;
 
 /**
  * Generic functions for extracting and reporting on errors/exceptions

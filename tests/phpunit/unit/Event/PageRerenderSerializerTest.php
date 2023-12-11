@@ -3,8 +3,11 @@
 namespace CirrusSearch\Event;
 
 use CirrusSearch\CirrusTestCase;
+use MediaWiki\Config\HashConfig;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Page\PageRecord;
+use MediaWiki\Title\TitleFormatter;
+use MediaWiki\Utils\MWTimestamp;
 use Wikimedia\UUID\GlobalIdGenerator;
 
 class PageRerenderSerializerTest extends CirrusTestCase {
@@ -24,7 +27,7 @@ class PageRerenderSerializerTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Event\PageRerenderSerializer::eventDataForPage
 	 */
 	public function testEventDataForPage() {
-		$mainConfig = new \HashConfig( [
+		$mainConfig = new HashConfig( [
 			MainConfigNames::ServerName => 'myserver.unittest.local',
 			MainConfigNames::CanonicalServer => 'https://myserver.unittest.local',
 			MainConfigNames::ArticlePath => '/wiki/$1',
@@ -43,7 +46,7 @@ class PageRerenderSerializerTest extends CirrusTestCase {
 		] );
 
 		$titleString = 'MyPage';
-		$titleFormatter = $this->createMock( \TitleFormatter::class );
+		$titleFormatter = $this->createMock( TitleFormatter::class );
 
 		$serializer = new PageRerenderSerializer( $mainConfig, $titleFormatter, $searchConfig,
 			$this->globalIdGenerator );
@@ -56,7 +59,7 @@ class PageRerenderSerializerTest extends CirrusTestCase {
 		$titleFormatter->method( 'getPrefixedDBkey' )
 			->with( $page )->willReturn( $titleString );
 
-		\MWTimestamp::setFakeTime( 0 );
+		MWTimestamp::setFakeTime( 0 );
 		$expectedEvent = [
 			'$schema' => '/mediawiki/cirrussearch/page_rerender/1.0.0',
 			'meta' => [

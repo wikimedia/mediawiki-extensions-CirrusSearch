@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Maintenance;
 
+use MediaWiki\Config\ConfigException;
+
 /**
  * Builds one elasticsearch analyzer to add to an analysis config array.
  *
@@ -276,7 +278,7 @@ class AnalyzerBuilder {
 	private function unpackedCheck(): void {
 		if ( !$this->unpacked ) {
 			$caller = debug_backtrace()[1]['function'];
-			throw new \ConfigException( "$caller() is only compatible with unpacked analyzers;" .
+			throw new ConfigException( "$caller() is only compatible with unpacked analyzers;" .
 				"call withUnpackedAnalyzer() before calling $caller()." );
 		}
 	}

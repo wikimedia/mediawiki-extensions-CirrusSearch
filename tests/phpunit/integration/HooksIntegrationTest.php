@@ -4,9 +4,10 @@ namespace CirrusSearch;
 
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
-use ConfigFactory;
+use MediaWiki\Config\ConfigFactory;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\Request\FauxRequest;
-use User;
+use MediaWiki\User\User;
 
 /**
  * Make sure cirrus doens't break any hooks.
@@ -345,7 +346,7 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 	}
 
 	private function preferencesForCompletionProfiles( array $profiles ) {
-		\OutputPage::setupOOUI();
+		OutputPage::setupOOUI();
 		$this->setMwGlobals( [
 			'wgCirrusSearchUseCompletionSuggester' => true,
 		] );

@@ -4,7 +4,7 @@ namespace CirrusSearch;
 
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate as CirrusLinksUpdate;
-use DeferredUpdates;
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Deferred\LinksUpdate\LinksUpdate;
 use MediaWiki\Page\PageIdentityValue;
 use MediaWiki\Page\RedirectLookup;
@@ -14,6 +14,8 @@ use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
 use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentityValue;
+use MediaWiki\Utils\MWTimestamp;
+use Wikimedia\Rdbms\LoadBalancer;
 
 class ChangeListenerTest extends CirrusIntegrationTestCase {
 
@@ -28,7 +30,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$changeListener = new ChangeListener(
 			$this->createMock( \JobQueueGroup::class ),
 			$this->newHashSearchConfig( [] ),
-			$this->createMock( \LoadBalancer::class ),
+			$this->createMock( LoadBalancer::class ),
 			$this->createMock( RedirectLookup::class )
 		);
 		$titles = [ Title::makeTitle( NS_MAIN, 'Title1' ), Title::makeTitle( NS_MAIN, 'Title2' ) ];
@@ -67,7 +69,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			]
 		];
 		$this->overrideConfigValue( 'CommandLineMode', false );
-		\MWTimestamp::setFakeTime( $now );
+		MWTimestamp::setFakeTime( $now );
 
 		$title = $this->createMock( Title::class );
 		$title->method( 'getPrefixedDBkey' )->willReturn( 'My_Title' );
@@ -79,13 +81,13 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$linksUpdate->method( 'getTitle' )->willReturn( $title );
 		if ( $revTimestamp !== null ) {
 			$revision = $this->createMock( RevisionRecord::class );
-			$revision->method( 'getTimestamp' )->willReturn( \MWTimestamp::convert( TS_MW, $revTimestamp ) );
+			$revision->method( 'getTimestamp' )->willReturn( MWTimestamp::convert( TS_MW, $revTimestamp ) );
 			$linksUpdate->method( 'getRevisionRecord' )->willReturn( $revision );
 		}
 		$linksUpdate->method( 'getPageId' )->willReturn( $pageId );
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
-			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
+			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
 
 		$page = $this->createMock( \WikiPage::class );
 		$page->method( 'getId' )->willReturn( $pageId );
@@ -132,7 +134,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 	 */
 	public function testOnFileUploadComplete() {
 		$now = 123;
-		\MWTimestamp::setFakeTime( $now );
+		MWTimestamp::setFakeTime( $now );
 		$title = $this->createMock( Title::class );
 		$title->method( 'getPrefixedDBkey' )->willReturn( 'My_Title' );
 		$title->method( 'exists' )->willReturn( true );
@@ -149,7 +151,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new CirrusLinksUpdate( $title,  $expectedJobParam ) );
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
-			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
+			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
 		$listener->onUploadComplete( $uploadBase );
 	}
 
@@ -163,7 +165,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$title = $this->createMock( Title::class );
 		$page->method( 'getTitle' )->willReturn( $title );
 		$logEntry = $this->createMock( \ManualLogEntry::class );
-		$logEntry->method( 'getTimestamp' )->willReturn( \MWTimestamp::convert( TS_MW, $now ) );
+		$logEntry->method( 'getTimestamp' )->willReturn( MWTimestamp::convert( TS_MW, $now ) );
 		$jobqueue = $this->createMock( \JobQueueGroup::class );
 
 		$expectedJobParam = [
@@ -173,7 +175,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		];
 		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new DeletePages( $title, $expectedJobParam ) );
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
-			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
+			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
 		$listener->onPageDeleteComplete( $page, $this->createMock( Authority::class ),
 			"a reason", $pageId, $this->createMock( RevisionRecord::class ), $logEntry, 2 );
 	}
@@ -184,7 +186,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 	 */
 	public function testOnArticleRevisionVisibilitySet() {
 		$now = 321;
-		\MWTimestamp::setFakeTime( $now );
+		MWTimestamp::setFakeTime( $now );
 		$title = $this->createMock( Title::class );
 		$jobqueue = $this->createMock( \JobQueueGroup::class );
 		$expectedJobParam = [
@@ -194,7 +196,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		];
 		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
-			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
+			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
 		$listener->onArticleRevisionVisibilitySet( $title, [], [] );
 	}
 
@@ -217,10 +219,10 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 				[ $page, null ]
 			] );
 
-		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new Job\LinksUpdate( $target, [] ) );
+		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new CirrusLinksUpdate( $target, [] ) );
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
-			$this->createMock( \LoadBalancer::class ), $redirectLookup );
+			$this->createMock( LoadBalancer::class ), $redirectLookup );
 		$listener->onPageDelete( $redirect, $deleter, 'unused', new \StatusValue(), false );
 		$listener->onPageDelete( $page, $deleter, 'unused', new \StatusValue(), false );
 	}
@@ -234,7 +236,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$title = Title::castFromPageIdentity( $page );
 		$restoredPageIds = [ 123, 124 ];
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( [ 'CirrusSearchIndexDeletes' => true ] ),
-			$this->createMock( \LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
+			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
 		$jobqueue->expects( $this->once() )
 			->method( 'lazyPush' )
 			->with( new Job\DeleteArchive( $title, [ 'docIds' => $restoredPageIds ] ) );

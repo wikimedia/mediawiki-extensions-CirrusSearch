@@ -2,13 +2,15 @@
 
 namespace CirrusSearch\Profile;
 
+use MediaWiki\Config\Config;
+
 /**
  * Overrider that gets its name using an entry in a Config object
  */
 class ConfigSearchProfileOverride implements SearchProfileOverride {
 
 	/**
-	 * @var \Config
+	 * @var Config
 	 */
 	private $config;
 
@@ -23,11 +25,11 @@ class ConfigSearchProfileOverride implements SearchProfileOverride {
 	private $priority;
 
 	/**
-	 * @param \Config $config
+	 * @param Config $config
 	 * @param string $configEntry the name of the config entry holding the name of the overridden profile
 	 * @param int $priority
 	 */
-	public function __construct( \Config $config, $configEntry, $priority = SearchProfileOverride::CONFIG_PRIO ) {
+	public function __construct( Config $config, $configEntry, $priority = SearchProfileOverride::CONFIG_PRIO ) {
 		$this->config = $config;
 		$this->configEntry = $configEntry;
 		$this->priority = $priority;

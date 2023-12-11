@@ -17,9 +17,9 @@ use Elastica\Query;
 use Elastica\ResultSet;
 use Elastica\Search;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 use SearchSuggestionSet;
-use Status;
-use User;
 use Wikimedia\Assert\Assert;
 
 /**

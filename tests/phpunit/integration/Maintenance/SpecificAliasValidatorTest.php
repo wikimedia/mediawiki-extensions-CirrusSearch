@@ -6,6 +6,7 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Maintenance\Validators\SpecificAliasValidator;
 use Elastica\Client;
 use Elastica\Index;
+use MediaWiki\Status\Status;
 
 /**
  * @covers \CirrusSearch\Maintenance\Validators\SpecificAliasValidator
@@ -33,7 +34,7 @@ class SpecificAliasValidatorTest extends CirrusIntegrationTestCase {
 		);
 
 		$this->assertEquals(
-			\Status::newGood(),
+			Status::newGood(),
 			$validator->updateFreeIndices( [ "indexName" ] )
 		);
 	}

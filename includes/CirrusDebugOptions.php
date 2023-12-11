@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use Elastica\Query;
+use MediaWiki\Request\WebRequest;
 
 /**
  * Cirrus debug options generally set via *unofficial* URI param (&cirrusXYZ=ZYX)
@@ -48,10 +49,10 @@ class CirrusDebugOptions {
 	}
 
 	/**
-	 * @param \WebRequest $request
+	 * @param WebRequest $request
 	 * @return CirrusDebugOptions
 	 */
-	public static function fromRequest( \WebRequest $request ) {
+	public static function fromRequest( WebRequest $request ) {
 		$options = new self();
 		$options->cirrusCompletionVariant = $request->getArray( 'cirrusCompletionVariant' );
 		$options->cirrusDumpQuery = $request->getCheck( 'cirrusDumpQuery' );
@@ -96,12 +97,12 @@ class CirrusDebugOptions {
 	/**
 	 * Inspect the param names $param and return its value only
 	 * if it belongs to the set of allowed values declared in $allowedValues
-	 * @param \WebRequest $request
+	 * @param WebRequest $request
 	 * @param string $param
 	 * @param string[] $allowedValues
 	 * @return string|null the debug option or null
 	 */
-	private static function debugOption( \WebRequest $request, $param, array $allowedValues ) {
+	private static function debugOption( WebRequest $request, $param, array $allowedValues ) {
 		$val = $request->getVal( $param );
 		if ( $val === null ) {
 			return null;

@@ -3,7 +3,7 @@
 namespace CirrusSearch\Hooks;
 
 use CirrusSearch\CirrusSearch;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Search\Hook\SearchIndexFieldsHook;
 use NullIndexField;

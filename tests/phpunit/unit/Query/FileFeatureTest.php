@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
+use MediaWiki\Config\HashConfig;
 
 /**
  * @covers \CirrusSearch\Query\FileTypeFeature
@@ -123,7 +124,7 @@ class FileFeatureTest extends CirrusTestCase {
 	 * @dataProvider parseProviderType
 	 */
 	public function testParseType( $expectedParsed, $expectedQuery, $term ) {
-		$config = new \HashConfig( [ 'CirrusSearchFiletypeAliases' => [
+		$config = new HashConfig( [ 'CirrusSearchFiletypeAliases' => [
 			'doc' => 'office',
 		] ] );
 		$feature = new FileTypeFeature( $config );
@@ -154,7 +155,7 @@ class FileFeatureTest extends CirrusTestCase {
 	 * @dataProvider warningTypeProvider
 	 */
 	public function testWarningType( $expectedWarnings, $expectedParsed, $term ) {
-		$config = new \HashConfig( [ 'CirrusSearchFiletypeAliases' => [] ] );
+		$config = new HashConfig( [ 'CirrusSearchFiletypeAliases' => [] ] );
 		$feature = new FileTypeFeature( $config );
 		$this->assertParsedValue( $feature, $term, $expectedParsed, $expectedWarnings );
 	}

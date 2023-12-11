@@ -2,10 +2,12 @@
 
 namespace CirrusSearch\Profile;
 
+use MediaWiki\Request\WebRequest;
+
 class UriParamSearchProfileOverride implements SearchProfileOverride {
 
 	/**
-	 * @var \WebRequest
+	 * @var WebRequest
 	 */
 	private $request;
 
@@ -20,11 +22,11 @@ class UriParamSearchProfileOverride implements SearchProfileOverride {
 	private $priority;
 
 	/**
-	 * @param \WebRequest $request
+	 * @param WebRequest $request
 	 * @param string $uriParam
 	 * @param int $priority
 	 */
-	public function __construct( \WebRequest $request, $uriParam, $priority = SearchProfileOverride::URI_PARAM_PRIO ) {
+	public function __construct( WebRequest $request, $uriParam, $priority = SearchProfileOverride::URI_PARAM_PRIO ) {
 		$this->request = $request;
 		$this->uriParam = $uriParam;
 		$this->priority = $priority;

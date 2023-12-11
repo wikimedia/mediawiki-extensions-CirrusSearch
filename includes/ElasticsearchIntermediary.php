@@ -9,10 +9,11 @@ use Elastica\Exception\RuntimeException;
 use Elastica\Multi\ResultSet as MultiResultSet;
 use Elastica\Multi\Search;
 use ISearchResultSet;
+use MediaWiki\Config\ConfigException;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Status\Status;
 use MediaWiki\User\UserIdentity;
 use RequestContext;
-use Status;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -329,7 +330,7 @@ abstract class ElasticsearchIntermediary {
 		if ( $timeout !== null ) {
 			return $timeout;
 		}
-		throw new \ConfigException( "wgCirrusSearchSearchShardTimeout should have at least a 'default' entry configured" );
+		throw new ConfigException( "wgCirrusSearchSearchShardTimeout should have at least a 'default' entry configured" );
 	}
 
 	/**
@@ -345,7 +346,7 @@ abstract class ElasticsearchIntermediary {
 		if ( $timeout !== null ) {
 			return $timeout;
 		}
-		throw new \ConfigException( "wgCirrusSearchClientSideSearchTimeout should have at least a 'default' entry configured" );
+		throw new ConfigException( "wgCirrusSearchClientSideSearchTimeout should have at least a 'default' entry configured" );
 	}
 
 	/**

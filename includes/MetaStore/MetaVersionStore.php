@@ -10,7 +10,7 @@ use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
 use CirrusSearch\Maintenance\SuggesterMappingConfigBuilder;
 use Elastica\Index;
 use Elastica\Query\BoolQuery;
-use GitInfo;
+use MediaWiki\Utils\GitInfo;
 use MediaWiki\WikiMap\WikiMap;
 
 class MetaVersionStore implements MetaStore {

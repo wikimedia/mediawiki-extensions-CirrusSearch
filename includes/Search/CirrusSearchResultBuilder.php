@@ -4,7 +4,7 @@ namespace CirrusSearch\Search;
 
 use InvalidArgumentException;
 use MediaWiki\Title\Title;
-use MWTimestamp;
+use MediaWiki\Utils\MWTimestamp;
 use Wikimedia\Assert\Assert;
 
 /**

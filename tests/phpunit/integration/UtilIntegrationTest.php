@@ -3,8 +3,8 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
-use Config;
 use Language;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\WikiMap\WikiMap;
 

@@ -6,6 +6,7 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\ClusterSettings;
 use CirrusSearch\HashSearchConfig;
 use Liuggio\StatsdClient\Factory\StatsdDataFactoryInterface;
+use MediaWiki\Utils\MWTimestamp;
 
 /**
  * @covers \CirrusSearch\Job\ElasticaWrite
@@ -43,7 +44,7 @@ class ElasticaWriteTest extends CirrusIntegrationTestCase {
 			CirrusTitleJob::UPDATE_KIND => "my_update_kind",
 			CirrusTitleJob::ROOT_EVENT_TIME => 0
 		] );
-		\MWTimestamp::setFakeTime( 10 );
+		MWTimestamp::setFakeTime( 10 );
 		$myJob->reportUpdateLag( "my_cluster", $statsD );
 	}
 

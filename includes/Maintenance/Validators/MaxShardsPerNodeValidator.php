@@ -4,7 +4,7 @@ namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\Maintenance\Printer;
 use Elastica\Index;
-use Status;
+use MediaWiki\Status\Status;
 
 class MaxShardsPerNodeValidator extends Validator {
 	/**

@@ -13,6 +13,7 @@ use Elastica\Index;
 use Elastica\Request;
 use Elastica\Transport\Http;
 use Elastica\Transport\Https;
+use MediaWiki\Utils\MWTimestamp;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -500,7 +501,7 @@ class Reindexer {
 			$rate = ( $prevRemain - $remain ) / $elapsed;
 			if ( $rate > 0 ) {
 				$estimatedCompletion = $now + ( $remain / $rate );
-				$estimatedStr = \MWTimestamp::convert( TS_RFC2822, $estimatedCompletion );
+				$estimatedStr = MWTimestamp::convert( TS_RFC2822, $estimatedCompletion );
 			}
 		}
 	}

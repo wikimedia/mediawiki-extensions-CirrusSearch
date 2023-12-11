@@ -6,6 +6,7 @@ use CirrusSearch\Updater;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
+use MediaWiki\Utils\MWTimestamp;
 
 /**
  * Performs the appropriate updates to Elasticsearch after a LinksUpdate is
@@ -59,9 +60,9 @@ class LinksUpdate extends CirrusTitleJob {
 	 */
 	public static function newPageChangeUpdate( Title $title, ?RevisionRecord $revisionRecord, array $params ): LinksUpdate {
 		if ( $revisionRecord !== null && $revisionRecord->getTimestamp() !== null ) {
-			$ts = (int)\MWTimestamp::convert( TS_UNIX, $revisionRecord->getTimestamp() );
+			$ts = (int)MWTimestamp::convert( TS_UNIX, $revisionRecord->getTimestamp() );
 		} else {
-			$ts = \MWTimestamp::time();
+			$ts = MWTimestamp::time();
 		}
 		$params += [
 			self::PRIORITIZE => true,
@@ -82,7 +83,7 @@ class LinksUpdate extends CirrusTitleJob {
 		$params = [
 			self::PRIORITIZE => true,
 			self::UPDATE_KIND => self::VISIBILITY_CHANGE,
-			self::ROOT_EVENT_TIME => \MWTimestamp::time(),
+			self::ROOT_EVENT_TIME => MWTimestamp::time(),
 		];
 
 		return new self( $title, $params );
@@ -100,7 +101,7 @@ class LinksUpdate extends CirrusTitleJob {
 		$params += [
 			self::PRIORITIZE => false,
 			self::UPDATE_KIND => self::PAGE_REFRESH,
-			self::ROOT_EVENT_TIME => \MWTimestamp::time(),
+			self::ROOT_EVENT_TIME => MWTimestamp::time(),
 		];
 		return new self( $title, $params );
 	}
@@ -115,7 +116,7 @@ class LinksUpdate extends CirrusTitleJob {
 		$params = [
 			self::PRIORITIZE => false,
 			self::UPDATE_KIND => self::SANEITIZER,
-			self::ROOT_EVENT_TIME => \MWTimestamp::time(),
+			self::ROOT_EVENT_TIME => MWTimestamp::time(),
 			self::CLUSTER => $cluster
 		];
 		return new self( $title, $params );

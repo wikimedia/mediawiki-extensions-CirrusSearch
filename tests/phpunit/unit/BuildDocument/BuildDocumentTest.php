@@ -11,7 +11,7 @@ use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Title\Title;
-use TitleFormatter;
+use MediaWiki\Title\TitleFormatter;
 use Wikimedia\Rdbms\IDatabase;
 use WikiPage;
 

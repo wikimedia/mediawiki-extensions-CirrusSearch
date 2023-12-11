@@ -5,6 +5,7 @@ namespace CirrusSearch\BuildDocument;
 use Elastica\Document;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
+use MediaWiki\Utils\MWTimestamp;
 use WikiPage;
 
 /**
@@ -33,7 +34,7 @@ class DefaultPagePropertiesIntegrationTest extends \MediaWikiIntegrationTestCase
 
 		// Control time to ensure the revision timestamps differ
 		$currentTime = 12345;
-		\MWTimestamp::setFakeTime( static function () use ( &$currentTime ) {
+		MWTimestamp::setFakeTime( static function () use ( &$currentTime ) {
 			return $currentTime;
 		} );
 		try {
@@ -57,7 +58,7 @@ class DefaultPagePropertiesIntegrationTest extends \MediaWikiIntegrationTestCase
 			$doc = $this->buildDoc( $page, $revision );
 			$this->assertEquals( $created, $doc->get( 'create_timestamp' ) );
 		} finally {
-			\MWTimestamp::setFakeTime( null );
+			MWTimestamp::setFakeTime( null );
 		}
 	}
 }

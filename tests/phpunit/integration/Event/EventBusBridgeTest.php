@@ -4,14 +4,17 @@ namespace CirrusSearch\Event;
 
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
-use DeferredUpdates;
-use LinksUpdate;
+use MediaWiki\Config\ConfigFactory;
+use MediaWiki\Config\HashConfig;
+use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Deferred\LinksUpdate\LinksUpdate;
 use MediaWiki\Extension\EventBus\EventBus;
 use MediaWiki\Extension\EventBus\EventBusFactory;
 use MediaWiki\Page\ExistingPageRecord;
 use MediaWiki\Page\PageLookup;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
+use MediaWiki\Title\TitleFormatter;
 use MediaWiki\User\UserIdentity;
 use Wikimedia\UUID\GlobalIdGenerator;
 
@@ -25,8 +28,8 @@ class EventBusBridgeTest extends CirrusIntegrationTestCase {
 	 * @covers \CirrusSearch\Event\EventBusBridge::factory
 	 */
 	public function testFactory( $enabled ) {
-		$configFactory = new \ConfigFactory();
-		$titleFormatter = $this->createMock( \TitleFormatter::class );
+		$configFactory = new ConfigFactory();
+		$titleFormatter = $this->createMock( TitleFormatter::class );
 		$pageLookup = $this->createMock( PageLookup::class );
 		$globalIdGenerator = $this->createMock( GlobalIdGenerator::class );
 		$configFactory->register( 'CirrusSearch',
@@ -36,7 +39,7 @@ class EventBusBridgeTest extends CirrusIntegrationTestCase {
 
 		if ( class_exists( EventBusFactory::class ) ) {
 			$eventBusFactory = $this->createMock( EventBusFactory::class );
-			$service = EventBusBridge::factory( $configFactory, new \HashConfig(), $globalIdGenerator,
+			$service = EventBusBridge::factory( $configFactory, new HashConfig(), $globalIdGenerator,
 				$titleFormatter, $pageLookup, $eventBusFactory );
 			if ( $enabled ) {
 				$this->assertInstanceOf( EventBusBridge::class, $service );
@@ -45,7 +48,7 @@ class EventBusBridgeTest extends CirrusIntegrationTestCase {
 			}
 		}
 		// Test that EventBusFactory is optional
-		$service = EventBusBridge::factory( $configFactory, new \HashConfig(),
+		$service = EventBusBridge::factory( $configFactory, new HashConfig(),
 			$globalIdGenerator, $titleFormatter, $pageLookup );
 		$this->assertNotInstanceOf( EventBusBridge::class, $service );
 	}

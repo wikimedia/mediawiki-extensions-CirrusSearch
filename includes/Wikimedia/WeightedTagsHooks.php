@@ -7,7 +7,7 @@ use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Query\ArticleTopicFeature;
 use CirrusSearch\Query\HasRecommendationFeature;
 use CirrusSearch\SearchConfig;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Search\Hook\SearchIndexFieldsHook;
 use SearchEngine;

@@ -12,6 +12,7 @@ use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet;
 use Elastica\ResultSet\DefaultBuilder;
+use MediaWiki\Status\Status;
 
 abstract class FallbackMethodTestBase extends CirrusTestCase {
 
@@ -20,7 +21,7 @@ abstract class FallbackMethodTestBase extends CirrusTestCase {
 		$searcherMock->expects( $query != null ? $this->once() : $this->never() )
 			->method( 'search' )
 			->with( $query )
-			->willReturn( $resultSet === null ? \Status::newFatal( 'Error' ) : \Status::newGood( $resultSet ) );
+			->willReturn( $resultSet === null ? Status::newFatal( 'Error' ) : Status::newGood( $resultSet ) );
 		$searcherMock->expects( $query != null ? $this->atMost( 1 ) : $this->never() )
 			->method( 'getSearchMetrics' )
 			->willReturn( [ 'searcherMetrics' => 'called' ] );

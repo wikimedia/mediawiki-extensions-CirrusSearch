@@ -4,6 +4,7 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
 use MediaWiki\Title\Title;
+use MediaWiki\Utils\MWTimestamp;
 
 /**
  * @covers \CirrusSearch\Search\CirrusSearchResultBuilder
@@ -26,7 +27,7 @@ class CirrusSearchResultBuilderTest extends CirrusTestCase {
 	}
 
 	public static function provideTest() {
-		$now = new \MWTimestamp();
+		$now = new MWTimestamp();
 		return [
 			'score' => [ 'score', 2.3, 0.0 ],
 			'explanation' => [ 'explanation', [ 'some' => 'array' ], null ],

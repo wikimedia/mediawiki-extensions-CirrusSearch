@@ -6,7 +6,7 @@ use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use NamespaceInfo;
+use MediaWiki\Title\NamespaceInfo;
 
 /**
  * Builds a set of functions with namespaces.

@@ -8,7 +8,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\UserTestingEngine;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Settings\SettingsBuilder;
-use Status;
+use MediaWiki\Status\Status;
 
 // Maintenance class is loaded before autoload, so we need to pull the interface
 require_once __DIR__ . '/Printer.php';

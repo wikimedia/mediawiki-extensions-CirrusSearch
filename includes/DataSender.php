@@ -16,8 +16,8 @@ use Elastica\Response;
 use Liuggio\StatsdClient\Factory\StatsdDataFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
-use Status;
 use Wikimedia\Assert\Assert;
 use WikiPage;
 

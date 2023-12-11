@@ -5,11 +5,10 @@ namespace CirrusSearch;
 use CirrusSearch\Job\CirrusTitleJob;
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
-use ConfigFactory;
-use DeferredUpdates;
 use JobQueueGroup;
-use LoadBalancer;
 use ManualLogEntry;
+use MediaWiki\Config\ConfigFactory;
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Hook\ArticleRevisionVisibilitySetHook;
 use MediaWiki\Hook\LinksUpdateCompleteHook;
 use MediaWiki\Hook\PageMoveCompleteHook;
@@ -23,10 +22,12 @@ use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
-use Status;
-use User;
+use MediaWiki\User\User;
+use MediaWiki\Utils\MWTimestamp;
 use Wikimedia\Assert\Assert;
+use Wikimedia\Rdbms\LoadBalancer;
 
 /**
  * Implementation to all the hooks that CirrusSearch needs to listen in order to keep its index
@@ -106,7 +107,7 @@ class ChangeListener extends PageChangeTracker implements
 	/**
 	 * Hooked to update the search index when pages change directly or when templates that
 	 * they include change.
-	 * @param \LinksUpdate $linksUpdate
+	 * @param \MediaWiki\Deferred\LinksUpdate\LinksUpdate $linksUpdate
 	 * @param mixed $ticket Prior result of LBFactory::getEmptyTransactionTicket()
 	 */
 	public function onLinksUpdateComplete( $linksUpdate, $ticket ) {
@@ -140,7 +141,7 @@ class ChangeListener extends PageChangeTracker implements
 						$updateDelay['prioritized'], $this->jobQueue );
 				$job = LinksUpdate::newPageChangeUpdate( $linksUpdate->getTitle(),
 					$linksUpdate->getRevisionRecord(), $jobParams );
-				if ( ( \MWTimestamp::time() - $job->params[CirrusTitleJob::ROOT_EVENT_TIME] ) > ( 3600 * 24 ) ) {
+				if ( ( MWTimestamp::time() - $job->params[CirrusTitleJob::ROOT_EVENT_TIME] ) > ( 3600 * 24 ) ) {
 					LoggerFactory::getInstance( 'CirrusSearch' )->debug(
 						"Scheduled a page-change-update for {title} on a revision created more than 24hours ago, " .
 						"the cause is {causeAction}",
@@ -231,7 +232,7 @@ class ChangeListener extends PageChangeTracker implements
 			DeletePages::build(
 				$title,
 				$this->searchConfig->makeId( $pageID ),
-				$logEntry->getTimestamp() !== false ? \MWTimestamp::convert( TS_UNIX, $logEntry->getTimestamp() ) : \MWTimestamp::time()
+				$logEntry->getTimestamp() !== false ? MWTimestamp::convert( TS_UNIX, $logEntry->getTimestamp() ) : MWTimestamp::time()
 			)
 		);
 	}

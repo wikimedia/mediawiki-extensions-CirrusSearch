@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use CirrusSearch\Wikimedia\WeightedTagsHooks;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Page\PageIdentityValue;
+use MediaWiki\Status\Status;
 use Wikimedia\Assert\AssertionException;
 
 /**
@@ -85,7 +86,7 @@ class CirrusSearchTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideExtractProfileFromFeatureData
 	 * @covers \CirrusSearch\CirrusSearch::extractProfileFromFeatureData
-	 * @throws \ConfigException
+	 * @throws \MediaWiki\Config\ConfigException
 	 */
 	public function testExtractProfileFromFeatureData( $type, $setValue, $expected ) {
 		$engine = $this->getSearchEngine( [ 'CirrusSearchUseCompletionSuggester' => 'yes' ] );
@@ -121,13 +122,13 @@ class CirrusSearchTest extends CirrusTestCase {
 		$engine->setHookContainer( $this->createMock( HookContainer::class ) );
 		$status = $engine->searchText( str_repeat( "a", 11 ) );
 		$this->assertEquals( $status,
-			\Status::newFatal( 'cirrussearch-query-too-long', 11, 10 ) );
+			Status::newFatal( 'cirrussearch-query-too-long', 11, 10 ) );
 	}
 
 	/**
 	 * @param array|null $config
 	 * @return CirrusSearch
-	 * @throws \ConfigException
+	 * @throws \MediaWiki\Config\ConfigException
 	 */
 	private function getSearchEngine( array $config = null ) {
 		// use cirrus base profiles

@@ -7,6 +7,7 @@ use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
 use JobQueueGroup;
 use MediaWiki\Title\Title;
+use MediaWiki\Utils\MWTimestamp;
 
 /**
  * @covers \CirrusSearch\Sanity\QueueingRemediator
@@ -63,7 +64,7 @@ class QueueingRemediatorTest extends CirrusTestCase {
 	 * @param string|null $cluster
 	 */
 	public function testJobIsSent( $methodCall, array $methodParams, array $jobs, $cluster ) {
-		\MWTimestamp::setFakeTime( self::NOW );
+		MWTimestamp::setFakeTime( self::NOW );
 		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
 		$jobQueueGroup->expects( $this->exactly( count( $jobs ) ) )
 			->method( 'push' )

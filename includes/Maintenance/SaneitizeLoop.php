@@ -5,7 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Job\CheckerJob;
 use Elastica\Document;
 use MediaWiki\MediaWikiServices;
-use MWTimestamp;
+use MediaWiki\Utils\MWTimestamp;
 
 /**
  * Create saneitize jobs for a single execution of a saneitizer loop

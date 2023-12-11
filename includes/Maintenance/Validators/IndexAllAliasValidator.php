@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\Maintenance\Printer;
 use Elastica\Client;
+use MediaWiki\Status\Status;
 
 class IndexAllAliasValidator extends IndexAliasValidator {
 	/**
@@ -27,7 +28,7 @@ class IndexAllAliasValidator extends IndexAliasValidator {
 	/**
 	 * @param string[] $add
 	 * @param string[] $remove
-	 * @return \Status
+	 * @return Status
 	 */
 	protected function updateIndices( array $add, array $remove ) {
 		$data = [];

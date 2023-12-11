@@ -4,7 +4,7 @@ namespace CirrusSearch\Profile;
 
 use BagOStuff;
 use CirrusSearch\Util;
-use Config;
+use MediaWiki\Config\Config;
 
 /**
  * Wrapper to augment the phrase suggester profile settings

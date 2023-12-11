@@ -4,11 +4,11 @@ namespace CirrusSearch\Event;
 
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Page\PageRecord;
 use MediaWiki\Page\PageReference;
-use TitleFormatter;
+use MediaWiki\Title\TitleFormatter;
 use Wikimedia\Assert\Assert;
 use Wikimedia\UUID\GlobalIdGenerator;
 

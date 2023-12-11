@@ -7,6 +7,7 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Maintenance\AnalyzerBuilder;
 use CirrusSearch\Maintenance\GlobalCustomFilter;
+use MediaWiki\Config\ConfigException;
 use Normalizer;
 
 /**
@@ -903,14 +904,14 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		build( $config );
 
 		// Should fail if called before withUnpackedAnalyzer()
-		$this->expectException( \ConfigException::class );
+		$this->expectException( ConfigException::class );
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
 		$name()->
 		withUnpackedAnalyzer()->
 		build( $config );
 
 		// Should fail if called without withUnpackedAnalyzer()
-		$this->expectException( \ConfigException::class );
+		$this->expectException( ConfigException::class );
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
 		$name()->
 		build( $config );

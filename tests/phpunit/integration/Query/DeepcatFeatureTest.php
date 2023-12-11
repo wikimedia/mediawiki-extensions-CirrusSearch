@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
+use MediaWiki\Config\HashConfig;
 use MediaWiki\Sparql\SparqlClient;
 use MediaWiki\Sparql\SparqlException;
 use MediaWiki\Title\Title;
@@ -142,7 +143,7 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 	 */
 	public function testFilter( $term, $result, $filters ) {
 		$maxRes = 3;
-		$config = new \HashConfig( [
+		$config = new HashConfig( [
 			'CirrusSearchCategoryDepth' => '3',
 			'CirrusSearchCategoryMax' => $maxRes,
 			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'
@@ -174,7 +175,7 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testTooManyCats() {
-		$config = new \HashConfig( [
+		$config = new HashConfig( [
 			'CirrusSearchCategoryDepth' => '3',
 			'CirrusSearchCategoryMax' => 3,
 			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'
@@ -208,7 +209,7 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 	 * @dataProvider provideQueries
 	 */
 	public function testFilterNoEndpoint( $term, $result, $filters ) {
-		$config = new \HashConfig( [
+		$config = new HashConfig( [
 			'CirrusSearchCategoryDepth' => '3',
 			'CirrusSearchCategoryMax' => 100,
 			'CirrusSearchCategoryEndpoint' => null
@@ -224,7 +225,7 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testSparqlError() {
-		$config = new \HashConfig( [
+		$config = new HashConfig( [
 			'CirrusSearchCategoryDepth' => '3',
 			'CirrusSearchCategoryMax' => 100,
 			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'

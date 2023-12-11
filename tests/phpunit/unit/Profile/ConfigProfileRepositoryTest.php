@@ -3,6 +3,7 @@
 namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusTestCase;
+use MediaWiki\Config\HashConfig;
 
 /**
  * @group CirrusSearch
@@ -11,10 +12,10 @@ use CirrusSearch\CirrusTestCase;
 class ConfigProfileRepositoryTest extends CirrusTestCase {
 
 	/**
-	 * @throws \ConfigException
+	 * @throws \MediaWiki\Config\ConfigException
 	 */
 	public function test() {
-		$config = new \HashConfig( [
+		$config = new HashConfig( [
 			'profiles' => [
 				'prof1' => [],
 				'prof2' => [],
@@ -31,21 +32,21 @@ class ConfigProfileRepositoryTest extends CirrusTestCase {
 	}
 
 	public function testNoConfig() {
-		$config = new \HashConfig( [] );
+		$config = new HashConfig( [] );
 		$repo = new ConfigProfileRepository( 'my_type', 'my_name',  'profiles', $config );
 		$this->assertFalse( $repo->hasProfile( 'prof3' ) );
 		$this->assertNull( $repo->getProfile( 'prof3' ) );
 	}
 
 	public function testBadConfigWithHas() {
-		$config = new \HashConfig( [ 'profiles' => 123 ] );
+		$config = new HashConfig( [ 'profiles' => 123 ] );
 		$repo = new ConfigProfileRepository( 'my_type', 'my_name',  'profiles', $config );
 		$this->expectException( SearchProfileException::class );
 		$repo->hasProfile( 'prof3' );
 	}
 
 	public function testBadConfigWithGet() {
-		$config = new \HashConfig( [ 'profiles' => 123 ] );
+		$config = new HashConfig( [ 'profiles' => 123 ] );
 		$repo = new ConfigProfileRepository( 'my_type', 'my_name',  'profiles', $config );
 		$this->expectException( SearchProfileException::class );
 		$repo->getProfile( 'prof3' );

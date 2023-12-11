@@ -5,7 +5,8 @@ namespace CirrusSearch;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
-use Config;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\GlobalVarConfig;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\WikiMap\WikiMap;
 use RequestContext;
@@ -16,7 +17,7 @@ use Wikimedia\Assert\Assert;
  * This config class can import settings from the environment globals,
  * or from specific wiki configuration.
  */
-class SearchConfig implements \Config {
+class SearchConfig implements Config {
 	// Constants for referring to various config values. Helps prevent fat-fingers
 	public const INDEX_BASE_NAME = 'CirrusSearchIndexBaseName';
 	private const PREFIX_IDS = 'CirrusSearchPrefixIds';
@@ -69,7 +70,7 @@ class SearchConfig implements \Config {
 	 * @param SearchProfileServiceFactoryFactory|null $searchProfileServiceFactoryFactory
 	 */
 	public function __construct( SearchProfileServiceFactoryFactory $searchProfileServiceFactoryFactory = null ) {
-		$this->source = new \GlobalVarConfig();
+		$this->source = new GlobalVarConfig();
 		$this->wikiId = WikiMap::getCurrentWikiId();
 		// The only ability to mutate SearchConfig is via a protected method, setSource.
 		// As long as we have an instance of SearchConfig it must then be the hostConfig.
@@ -117,7 +118,7 @@ class SearchConfig implements \Config {
 		// FIXME: this test is somewhat obscure (very indirect to say the least)
 		// problem is that testing $this->wikiId === WikiMap::getCurrentWikiId()
 		// would not work properly during unit tests.
-		return $this->source instanceof \GlobalVarConfig;
+		return $this->source instanceof GlobalVarConfig;
 	}
 
 	/**

@@ -7,6 +7,7 @@ use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
+use MediaWiki\Title\TitleValue;
 use MediaWiki\User\UserIdentity;
 
 /**
@@ -33,7 +34,7 @@ class PageChangeTrackerTest extends CirrusTestCase {
 
 	public function testOnPageMoveComplete() {
 		$tracker = new PageChangeTracker();
-		$tracker->onPageMoveComplete( new \TitleValue( 0, '' ), new \TitleValue( 0, '' ),
+		$tracker->onPageMoveComplete( new TitleValue( 0, '' ), new TitleValue( 0, '' ),
 			$this->createMock( UserIdentity::class ), 1, 2, '', $this->createMock( RevisionRecord::class ) );
 		$this->assertPageIsTracked( $tracker, 1 );
 		$this->assertPageIsTracked( $tracker, 2 );

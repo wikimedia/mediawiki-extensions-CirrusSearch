@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Profile;
 
-use Config;
+use MediaWiki\Config\Config;
 
 /**
  * Profile repository backed by a Config object.

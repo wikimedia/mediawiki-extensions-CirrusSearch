@@ -4,6 +4,7 @@ namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusTestCase;
 use MediaWiki\User\Options\StaticUserOptionsLookup;
+use MediaWiki\User\User;
 use MediaWiki\User\UserIdentityValue;
 use const null;
 
@@ -46,7 +47,7 @@ class UserPrefSearchProfileOverrideTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @return \User
+	 * @return User
 	 */
 	private function getMyTestUser() {
 		$testUser = $this->getTestUser();

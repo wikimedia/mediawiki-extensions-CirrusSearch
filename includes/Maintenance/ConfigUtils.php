@@ -6,7 +6,7 @@ use Elastica\Client;
 use Elastica\Exception\ResponseException;
 use Elasticsearch\Endpoints;
 use MediaWiki\Extension\Elastica\MWElasticUtils;
-use Status;
+use MediaWiki\Status\Status;
 
 /**
  * This program is free software; you can redistribute it and/or modify

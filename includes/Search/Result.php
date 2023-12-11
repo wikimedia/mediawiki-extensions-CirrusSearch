@@ -4,7 +4,7 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\Search\Fetch\HighlightingTrait;
 use MediaWiki\Title\Title;
-use MWTimestamp;
+use MediaWiki\Utils\MWTimestamp;
 
 /**
  * An individual search result from Elasticsearch.

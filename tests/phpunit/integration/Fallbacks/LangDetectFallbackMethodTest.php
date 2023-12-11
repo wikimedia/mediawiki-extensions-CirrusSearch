@@ -15,6 +15,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use CirrusSearch\Test\DummySearchResultSet;
 use ISearchResultSet;
+use MediaWiki\Status\Status;
 
 /**
  * @covers \CirrusSearch\Fallbacks\LangDetectFallbackMethod
@@ -26,7 +27,7 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 		$searcherMock->expects( $query != null ? $this->once() : $this->never() )
 			->method( 'search' )
 			->with( $query )
-			->willReturn( $resultSet === null ? \Status::newFatal( 'Error' ) : \Status::newGood( $resultSet ) );
+			->willReturn( $resultSet === null ? Status::newFatal( 'Error' ) : Status::newGood( $resultSet ) );
 		$searcherMock->expects( $query != null ? $this->atMost( 1 ) : $this->never() )
 			->method( 'getSearchMetrics' )
 			->willReturn( [ 'searcherMetrics' => 'called' ] );

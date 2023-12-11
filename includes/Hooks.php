@@ -6,33 +6,33 @@ use ApiBase;
 use ApiMain;
 use ApiOpenSearch;
 use CirrusSearch\Search\FancyTitleResultsType;
-use ConfigFactory;
-use Html;
 use HtmlArmor;
 use ISearchResultSet;
 use MediaWiki\Api\Hook\APIAfterExecuteHook;
 use MediaWiki\Api\Hook\APIQuerySiteInfoStatisticsInfoHook;
 use MediaWiki\Config\Config;
+use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Hook\ApiBeforeMainHook;
 use MediaWiki\Hook\BeforeInitializeHook;
 use MediaWiki\Hook\SoftwareInfoHook;
 use MediaWiki\Hook\SpecialSearchResultsAppendHook;
 use MediaWiki\Hook\SpecialSearchResultsHook;
 use MediaWiki\Hook\SpecialStatsAddExtraHook;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\Preferences\Hook\GetPreferencesHook;
+use MediaWiki\Request\WebRequest;
 use MediaWiki\ResourceLoader\Hook\ResourceLoaderGetConfigVarsHook;
 use MediaWiki\Search\Hook\PrefixSearchExtractNamespaceHook;
 use MediaWiki\Search\Hook\SearchGetNearMatchHook;
 use MediaWiki\Search\Hook\ShowSearchHitTitleHook;
+use MediaWiki\Specials\SpecialSearch;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Hook\UserGetDefaultOptionsHook;
-use OutputPage;
+use MediaWiki\User\User;
 use RequestContext;
 use SearchResult;
-use SpecialSearch;
-use User;
-use WebRequest;
 use Xml;
 
 /**
@@ -86,7 +86,7 @@ class Hooks implements
 	 * @param null $unused
 	 * @param OutputPage $outputPage
 	 * @param User $user
-	 * @param \WebRequest $request
+	 * @param WebRequest $request
 	 * @param \MediaWiki $mediaWiki
 	 */
 	public function onBeforeInitialize( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {

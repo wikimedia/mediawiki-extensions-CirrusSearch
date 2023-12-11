@@ -7,6 +7,7 @@ use Elastica\Client;
 use Elastica\Index;
 use Elastica\Query\MatchQuery;
 use Elastica\Response;
+use MediaWiki\Status\Status;
 
 /**
  * @covers \CirrusSearch\Search\MSearchRequests
@@ -57,7 +58,7 @@ class MSearchRequestsTest extends CirrusIntegrationTestCase {
 		$search1 = ( new Index( new Client(), "test_one" ) )
 			->createSearch( new MatchQuery( 'one', 'test' ), [ 'terminate_after' => 10 ] );
 		$requests = MSearchRequests::build( 'first', $search1 );
-		$status = \Status::newFatal( 'blow' );
+		$status = Status::newFatal( 'blow' );
 		$failed = $requests->failure( $status );
 		$this->assertTrue( $failed->hasFailure() );
 		$this->assertFalse( $failed->hasTimeout() );

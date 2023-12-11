@@ -20,7 +20,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Page\PageIdentity;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
-use TitleFormatter;
+use MediaWiki\Title\TitleFormatter;
 use WikiPage;
 
 /**

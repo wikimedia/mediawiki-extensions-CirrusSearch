@@ -4,7 +4,7 @@ namespace CirrusSearch\Search;
 
 use Elastica\ResultSet as ElasticaResultSet;
 use Elastica\Search;
-use Status;
+use MediaWiki\Status\Status;
 use Wikimedia\Assert\Assert;
 
 /**

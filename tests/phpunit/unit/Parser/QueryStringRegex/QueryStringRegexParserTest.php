@@ -16,6 +16,7 @@ use CirrusSearch\Parser\QueryParser;
 use CirrusSearch\Query\IndexedNumericFieldFeature;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\SearchConfig;
+use MediaWiki\Status\Status;
 
 /**
  * @covers \CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser
@@ -55,7 +56,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 			$this->fail( "Expected exception" );
 		} catch ( SearchQueryParseException $e ) {
 			$this->assertEquals( $e->asStatus(),
-				\Status::newFatal( 'cirrussearch-query-too-long',
+				Status::newFatal( 'cirrussearch-query-too-long',
 					QueryStringRegexParser::QUERY_LEN_HARD_LIMIT + 1,
 					QueryStringRegexParser::QUERY_LEN_HARD_LIMIT ) );
 		}

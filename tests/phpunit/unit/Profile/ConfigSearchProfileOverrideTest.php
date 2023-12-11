@@ -3,6 +3,7 @@
 namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusTestCase;
+use MediaWiki\Config\HashConfig;
 
 /**
  * @group CirrusSearch
@@ -11,7 +12,7 @@ use CirrusSearch\CirrusTestCase;
 class ConfigSearchProfileOverrideTest extends CirrusTestCase {
 
 	public function testNormalUseCase() {
-		$config = new \HashConfig( [ 'paramOverride' => 'overridden' ] );
+		$config = new HashConfig( [ 'paramOverride' => 'overridden' ] );
 		$override = new ConfigSearchProfileOverride( $config, 'paramOverride' );
 		$this->assertEquals( SearchProfileOverride::CONFIG_PRIO, $override->priority() );
 		$this->assertEquals( 'overridden', $override->getOverriddenName( [] ) );
@@ -27,13 +28,13 @@ class ConfigSearchProfileOverrideTest extends CirrusTestCase {
 	}
 
 	public function testWithoutConfigParam() {
-		$config = new \HashConfig( [ 'paramOverride' => 'overridden' ] );
+		$config = new HashConfig( [ 'paramOverride' => 'overridden' ] );
 		$override = new ConfigSearchProfileOverride( $config, 'paramOverride2' );
 		$this->assertNull( $override->getOverriddenName( [] ) );
 	}
 
 	public function testCustomPrio() {
-		$config = new \HashConfig( [ 'paramOverride' => 'overridden' ] );
+		$config = new HashConfig( [ 'paramOverride' => 'overridden' ] );
 		$override = new ConfigSearchProfileOverride( $config, 'paramOverride2', 123 );
 		$this->assertEquals( 123, $override->priority() );
 	}

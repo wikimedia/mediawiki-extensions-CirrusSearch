@@ -4,9 +4,9 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\CirrusSearch;
 use Generator;
-use MalformedTitleException;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\ProperPageIdentity;
+use MediaWiki\Title\MalformedTitleException;
 use MediaWiki\Title\Title;
 use SplFileObject;
 

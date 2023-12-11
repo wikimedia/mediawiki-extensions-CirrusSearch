@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use Config;
+use MediaWiki\Config\Config;
 use Wikimedia\Assert\Assert;
 
 /**

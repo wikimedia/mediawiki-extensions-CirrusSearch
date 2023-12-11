@@ -21,6 +21,7 @@ use Elastica\Response;
 use Elastica\ResultSet;
 use Elastica\ResultSet\DefaultBuilder;
 use Elastica\Search;
+use MediaWiki\Status\Status;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
 
@@ -380,7 +381,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$mock = $this->createMock( Searcher::class );
 		$mock->expects( $this->once() )
 			->method( 'search' )
-			->willReturn( \Status::newGood( $resultSet ) );
+			->willReturn( Status::newGood( $resultSet ) );
 		return $mock;
 	}
 
@@ -409,7 +410,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$requests = new MSearchRequests();
 		$runner->attachSearchRequests( $requests, $client );
 		$this->assertSame( [], $requests->getRequests() );
-		$mresponses = $requests->failure( \Status::newFatal( 'error' ) );
+		$mresponses = $requests->failure( Status::newFatal( 'error' ) );
 		$this->assertSame( $inital, $runner->run( $this->createMock( SearcherFactory::class ), $inital, $mresponses,
 			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() ) );
 

@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use Status;
+use MediaWiki\Status\Status;
 
 /**
  * Fetch the Elasticsearch version

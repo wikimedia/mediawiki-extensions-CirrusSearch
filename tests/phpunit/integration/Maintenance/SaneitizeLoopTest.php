@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Job\CheckerJob;
+use MediaWiki\Utils\MWTimestamp;
 
 /**
  * @covers \CirrusSearch\Maintenance\SaneitizeLoop
@@ -104,14 +105,14 @@ class SaneitizeLoopTest extends CirrusIntegrationTestCase {
 		$maxPageId = 120; // highest page id on wiki. divisible by lots of things.
 
 		try {
-			$oldFakeTime = \MWTimestamp::setFakeTime( 500 );
+			$oldFakeTime = MWTimestamp::setFakeTime( 500 );
 
 			foreach ( $commands as $i => $command ) {
 				$args = reset( $command );
 				try {
 					switch ( key( $command ) ) {
 					case 'set_time':
-						\MWTimestamp::setFakeTime( $args );
+						MWTimestamp::setFakeTime( $args );
 						break;
 					case 'run':
 						$jobs = $loop->run( $jobInfo, $numJobs, $minPageId, $maxPageId );
@@ -129,7 +130,7 @@ class SaneitizeLoopTest extends CirrusIntegrationTestCase {
 				}
 			}
 		} finally {
-			\MWTimestamp::setFakeTime( $oldFakeTime );
+			MWTimestamp::setFakeTime( $oldFakeTime );
 		}
 	}
 

@@ -6,6 +6,7 @@ use ArrayIterator;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
+use MediaWiki\Config\HashConfig;
 use MediaWiki\DAO\WikiAwareEntity;
 use MediaWiki\Page\PageSelectQueryBuilder;
 use MediaWiki\Page\PageStore;
@@ -133,7 +134,7 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 	 * @dataProvider parseProvider
 	 */
 	public function testParse( ?array $expected, array $warnings, $term ) {
-		$feature = new InCategoryFeature( new \HashConfig( [
+		$feature = new InCategoryFeature( new HashConfig( [
 			'CirrusSearchMaxIncategoryOptions' => 2,
 		] ), $this->mockPageStore() );
 		$this->assertFilter( $feature, $term, $expected, $warnings );
@@ -218,7 +219,7 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 
 	public function testTooManyCategoriesWarning() {
 		$this->assertParsedValue(
-			new InCategoryFeature( new \HashConfig( [
+			new InCategoryFeature( new HashConfig( [
 				'CirrusSearchMaxIncategoryOptions' => 2,
 			] ), $this->mockPageStore() ),
 			'incategory:a|b|c',
@@ -229,7 +230,7 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 
 	public function testCategoriesMustExistWarning() {
 		$this->assertExpandedData(
-			new InCategoryFeature( new \HashConfig( [
+			new InCategoryFeature( new HashConfig( [
 				'CirrusSearchMaxIncategoryOptions' => 2,
 			] ), $this->mockPageStore() ),
 			'incategory:id:23892835|id:23892834',

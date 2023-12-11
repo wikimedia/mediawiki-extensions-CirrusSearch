@@ -4,8 +4,8 @@ namespace CirrusSearch\Search;
 
 use ArrayIterator;
 use Elastica\Search;
+use MediaWiki\Status\Status;
 use MultipleIterator;
-use Status;
 use Wikimedia\Assert\Assert;
 
 /**

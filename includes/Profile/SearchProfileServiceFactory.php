@@ -7,9 +7,9 @@ use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\SearchConfig;
 use ExtensionRegistry;
+use MediaWiki\Request\WebRequest;
 use MediaWiki\User\Options\UserOptionsLookup;
 use MediaWiki\User\UserIdentity;
-use WebRequest;
 
 /**
  * Default factory to build and prepare search profiles.

@@ -5,6 +5,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\Util;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
 
@@ -37,7 +38,7 @@ class TitleHelper {
 	public function __construct( $hostWikiID = null, InterwikiResolver $interwikiResolver = null, callable $linkSanitizer = null ) {
 		$this->hostWikiID = $hostWikiID ?: WikiMap::getCurrentWikiId();
 		$this->interwikiResolver = $interwikiResolver ?: MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
-		$this->linkSanitizer = $linkSanitizer ?: [ \Sanitizer::class, 'escapeIdForLink' ];
+		$this->linkSanitizer = $linkSanitizer ?: [ Sanitizer::class, 'escapeIdForLink' ];
 	}
 
 	/**

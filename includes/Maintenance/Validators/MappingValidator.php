@@ -8,7 +8,7 @@ use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
 use Elastica\Mapping;
 use MediaWiki\Language\RawMessage;
-use Status;
+use MediaWiki\Status\Status;
 use Wikimedia\Assert\Assert;
 
 class MappingValidator extends Validator {

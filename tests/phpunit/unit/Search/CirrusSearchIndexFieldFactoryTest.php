@@ -33,7 +33,7 @@ class CirrusSearchIndexFieldFactoryTest extends CirrusTestCase {
 	 * @param string $name
 	 * @param string $type
 	 * @param string $expectedClass
-	 * @throws \ConfigException
+	 * @throws \MediaWiki\Config\ConfigException
 	 * @covers \CirrusSearch\CirrusSearch::makeSearchFieldMapping()
 	 * @covers \CirrusSearch\Search\CirrusSearchIndexFieldFactory::makeSearchFieldMapping()
 	 */

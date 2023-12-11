@@ -7,6 +7,7 @@ use CirrusSearch\CirrusSearch;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
+use MediaWiki\Utils\MWTimestamp;
 use MediaWiki\WikiMap\WikiMap;
 
 /**
@@ -145,8 +146,8 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 			'namespace_text' => '',
 			'wiki' => WikiMap::getCurrentWikiId(),
 			'title' => self::PAGE_TITLE,
-			'timestamp' => \MWTimestamp::convert( TS_ISO_8601, $revision->getTimestamp() ),
-			'create_timestamp' => \MWTimestamp::convert( TS_ISO_8601, $firstRevision->getTimestamp() ),
+			'timestamp' => MWTimestamp::convert( TS_ISO_8601, $revision->getTimestamp() ),
+			'create_timestamp' => MWTimestamp::convert( TS_ISO_8601, $firstRevision->getTimestamp() ),
 			'category' => [ "Category2" ],
 			'external_link' => [ "http://test.local/2" ],
 			'outgoing_link' => [ "Page1", "Page2", "Template:Template2" ],
@@ -171,8 +172,8 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 			'namespace_text' => '',
 			'wiki' => WikiMap::getCurrentWikiId(),
 			'title' => self::PAGE_TITLE,
-			'timestamp' => \MWTimestamp::convert( TS_ISO_8601, $revision->getTimestamp() ),
-			'create_timestamp' => \MWTimestamp::convert( TS_ISO_8601, $firstRevision->getTimestamp() ),
+			'timestamp' => MWTimestamp::convert( TS_ISO_8601, $revision->getTimestamp() ),
+			'create_timestamp' => MWTimestamp::convert( TS_ISO_8601, $firstRevision->getTimestamp() ),
 			'category' => [ "Category1" ],
 			'external_link' => [ "http://test.local/1" ],
 			'outgoing_link' => [ "Page1", "Template:Template1" ],

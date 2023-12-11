@@ -19,15 +19,16 @@ use CirrusSearch\Wikimedia\WeightedTagsHooks;
 use ISearchResultSet;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\ProperPageIdentity;
+use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Request\WebRequest;
+use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MediaWiki\WikiMap\WikiMap;
 use RequestContext;
 use SearchEngine;
 use SearchIndexField;
 use SearchSuggestionSet;
-use Status;
-use User;
-use WebRequest;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -186,7 +187,7 @@ class CirrusSearch extends SearchEngine {
 		$this->debugOptions = $debugOptions ?? CirrusDebugOptions::fromRequest( $this->request );
 		$this->titleHelper = $titleHelper ?: new TitleHelper( WikiMap::getCurrentWikiId(), $interwikiResolver,
 			static function ( $v ) {
-				return \Sanitizer::escapeIdForLink( $v );
+				return Sanitizer::escapeIdForLink( $v );
 			}
 		);
 		$extraFieldsInSearchResults = $this->config->get( 'CirrusSearchExtraFieldsInSearchResults' );

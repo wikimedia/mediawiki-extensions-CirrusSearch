@@ -10,6 +10,7 @@ use CirrusSearch\InterwikiResolver;
 use CirrusSearch\InterwikiResolverFactory;
 use CirrusSearch\SiteMatrixInterwikiResolver;
 use LogicException;
+use MediaWiki\Config\SiteConfiguration;
 use MediaWiki\MediaWikiServices;
 use MockHttpTrait;
 use Wikimedia\AtEase\AtEase;
@@ -386,7 +387,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	 */
 	private function getSiteMatrixInterwikiResolver( $wikiId, array $blockList,
 		array $overrides, \MultiHttpClient $client = null ) {
-		$conf = new \SiteConfiguration;
+		$conf = new SiteConfiguration;
 		$conf->settings = include __DIR__ . '/../resources/wmf/SiteMatrix_SiteConf_IS.php';
 		$conf->suffixes = include __DIR__ . '/../resources/wmf/suffixes.php';
 		$conf->wikis = self::readDbListFile( __DIR__ . '/../resources/wmf/all.dblist' );

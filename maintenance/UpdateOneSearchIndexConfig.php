@@ -7,6 +7,7 @@ use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\Maintenance\Validators\MappingValidator;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
+use MediaWiki\Config\ConfigException;
 
 /**
  * Update the search configuration on the search backend.
@@ -480,7 +481,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * @throws \ConfigException
+	 * @throws ConfigException
 	 */
 	protected function initMappingConfigBuilder() {
 		$configFlags = 0;

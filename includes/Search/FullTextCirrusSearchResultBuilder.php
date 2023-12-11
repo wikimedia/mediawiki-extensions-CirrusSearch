@@ -5,7 +5,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\Search\Fetch\HighlightedField;
 use CirrusSearch\Search\Fetch\HighlightingTrait;
 use MediaWiki\Title\Title;
-use MWTimestamp;
+use MediaWiki\Utils\MWTimestamp;
 
 class FullTextCirrusSearchResultBuilder {
 	use HighlightingTrait;

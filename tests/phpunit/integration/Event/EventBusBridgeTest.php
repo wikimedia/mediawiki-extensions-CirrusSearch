@@ -68,7 +68,7 @@ class EventBusBridgeTest extends CirrusIntegrationTestCase {
 		if ( !class_exists( EventBusFactory::class ) ) {
 			$this->markTestSkipped( "EventBus not available" );
 		}
-		$this->overrideConfigValue( 'CommandLineMode', false );
+		$cleanup = DeferredUpdates::preventOpportunisticUpdates();
 		$pageId = 123;
 		$streamName = 'mystream';
 		$event = [

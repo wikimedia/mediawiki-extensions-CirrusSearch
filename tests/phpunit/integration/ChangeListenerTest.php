@@ -68,7 +68,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 				'default' => 0,
 			]
 		];
-		$this->overrideConfigValue( 'CommandLineMode', false );
+		$cleanup = DeferredUpdates::preventOpportunisticUpdates();
 		MWTimestamp::setFakeTime( $now );
 
 		$title = $this->createMock( Title::class );

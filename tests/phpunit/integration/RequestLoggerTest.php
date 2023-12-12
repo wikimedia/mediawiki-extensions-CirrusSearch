@@ -48,9 +48,8 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 	public function testHasQueryLogs() {
 		// Prevent Deferred updates from running. This basically means RequestLogger is
 		// broken for cli scripts (but considered not too important).
-		$this->setMwGlobals( [
-			'wgCommandLineMode' => false,
-		] );
+		$cleanup = DeferredUpdates::preventOpportunisticUpdates();
+
 		$logger = new RequestLogger();
 		$this->assertFalse( $logger->hasQueryLogs() );
 		$log = $this->createMock( RequestLog::class );
@@ -101,18 +100,15 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		}
 
 		$this->setMwGlobals( [
-			// Disable opportunistic execution of deferred updates in CLI mode
-			'wgCommandLineMode' => false,
 			// Default config of SiteMatrix in vagrant is broken
 			'wgSiteMatrixSites' => [],
 			// Make sure OtherIndex is configured for use as well
 			'wgCirrusSearchExtraIndexes' => [ NS_FILE => [ 'commonswiki_file' ] ],
 		] );
-		// This ends up breaking WebRequest::getIP(), so
-		// provide an explicit value
-		\RequestContext::getMain()->getRequest()->setIP( '127.0.0.1' );
-		$test( $config, $connection );
 
+		// Disable opportunistic execution of deferred updates
+		$cleanup = DeferredUpdates::preventOpportunisticUpdates();
+		$test( $config, $connection );
 		// Force the logger to flush
 		DeferredUpdates::doUpdates();
 

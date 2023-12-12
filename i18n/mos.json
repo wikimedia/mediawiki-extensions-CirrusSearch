@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Soumaya"
+			"Soumaya",
+			"Raizkgh"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki baoob sẽn yaa ne baoob sẽn pa tar pãng",
@@ -11,8 +12,8 @@
 	"cirrussearch-regex-empty-expression": "A $1 gũudame tɩ b wilg tɩ b pa yɩ zaalem ye.",
 	"cirrussearch-regex-syntax-error": "Yel-wẽn-kãseng sẽn be sõn-vɩɩs sẽn pa maandã pʋgẽ: $2: $1",
 	"cirrussearch-regex-too-busy-error": "Sẽn yaa tɩlae ne-b tɩ b bao b sẽn na n yeel bũmb ningã. Bas-y tɩ b le maan dẽ poore.",
-	"cirrussearch-regex-too-complex-error": "Yaa toog tɩ d gom ne nebã. Bao n bãng bũmb wʋsg sẽn tõe n sõng-y tɩ y tõog n yɩ sõss n paas n paas y sẽn tõe n maan to-to [[mw: Special: MyLanguage/Help: CirrusSearch/Regex Too complex|here]]",
-	"cirrussearch-now-using": "Wiki kãngã tũnugda ne baoosg kʋɩlen-kãseng a ye([[mw:Special:MyLanguage/Help:Cirrus search|Learn more]])",
+	"cirrussearch-regex-too-complex-error": "Yaa toog tɩ d gom ne nebã. Bao n bãng bũmb wʋsg sẽn tõe n sõng-y tɩ y tõog n yɩ sõss n paas n paas y sẽn tõe n maan to-to [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|here]].",
+	"cirrussearch-now-using": "Wiki kãngã tũnugda ne baoosg kʋɩlen-kãseng a ye. ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])",
 	"cirrussearch-ignored-headings": "# # Sõss nins b sẽn na n bao n pa getẽ wã. # Sẽn na yɩl n tõog n bãng tɩ b pa segd n maan bũmb ning sẽn pa segdã, b segd n toeemame. # Y tõe n kɩtame tɩ seb-kãngã lebg n lebg n ningd a taab n maan sõor sẽn pa zems ye. # B sẽn gʋlsd bũmb ningã yaa woto: # * B sẽn gʋls bũmb fãa, \"#\" wã n tãag sõorã baasg yaa sõsg. * Bõn-kãng fãa yaa yʋ-peelem sẽn yaa sõma n na n yɩg n pa yã ye. Sõsg ning sẽn be sɛb nins sẽn be sɛbã pʋgẽ",
 	"cirrussearch-boost-templates": "# # Pag sã n tar makr-kãensã a yembr, a baoobã sõor yaa b sẽn yãkd sõorã n paas n paas sõor sẽn yaa sõor sẽn be a pʋgẽ wã. # B sẽn toeem bũmb ning fãa wã na n kẽe n kẽame. # B sẽn gʋlsd bũmb ningã yaa woto: # * B sẽn gʋls bũmb fãa, hal tɩ sɩng ne \"#\" wã n ta rʋʋngã baasgẽ, yaa gom-biis bala. * Bõn-vẽng fãa sẽn pa yɩ zaalem yaa malɛk yʋʋr sẽn zems tɩ b paas, yʋy zĩiga, zĩiga la bũmb fãa, tɩ \"#di\" karẽn-biis pʋgd ne sõor sẽn pʋgd ne \"%\" karẽn. # Makda sõor sẽn yaa sõma: # Makda:Rõog sẽn yaa sõma 150 # Makda::Rõog-rõog sẽn ya sõma 300% # Makda:\"Rõog n yaa wẽnga 50% # Makda sẽn yaa sõma n pa tʋmd ye: # Makd:Rõogo:Rõgo:Rõoga 1500.234234% &lt;-- pa tar sor n na n yãk sõor sẽn pa zems ye! # Foo ka 150% &lt;--- sẽn yaa sõma, la f sã n dat n dɩk f Foo wã n yiis f sõssã zĩigẽ, f tõe n maana mak-sõngã n mak f sõss-sõssã n mak f sẽn dat n maan bũmb ningã. # Sogs-kãensã sẽn wilgd tɩ b rat n paasd bũmb nins sẽn be zĩ-kãngã pʋgẽ wã yaa: \"XX\" # Yaa sɩd tɩ yaa sõma",
 	"cirrussearch-pref-label": "Baoosg a ye",

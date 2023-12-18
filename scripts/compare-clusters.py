@@ -4,16 +4,18 @@ import math
 import multiprocessing
 import sys
 import traceback
-from collections import OrderedDict
-
 import requests
+import urllib3
 
+proxies = {} # {'https': 'socks5h://127.0.0.1:1337'} # when tunneling
+verify = True # False # when tunneling and local OS does not have the certificates
+#urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) # when verify = False
 
 def fetch_docs(session, index_uri, ids):
     url = f'{index_uri}/_doc/_mget?stored_fields=_id&_source_includes=version,title'
     payload = json.dumps({'ids': ids})
 
-    r = session.get(url, headers={'Content-Type': 'application/json'}, data=payload)
+    r = session.get(url, headers={'Content-Type': 'application/json'}, data=payload, proxies=proxies, verify=verify)
     docs = json.loads(r.text)['docs']
     by_id = {}
     for doc in docs:
@@ -36,7 +38,7 @@ def fetch_docs_with_retry(session, index_uri, ids):
     raise Exception('Failed fetching docs…')
 
 
-def compare(q, docs_by_cluster):
+def compare(q, docs_by_cluster, stats, index_type):
     keys = list(docs_by_cluster.keys())
     head = keys[0]
     other = keys[1:]
@@ -47,27 +49,31 @@ def compare(q, docs_by_cluster):
         if len(docs_by_cluster[cluster]) != expected_len:
             raise Exception(f'Counts dont match: {len(docs_by_cluster[cluster]):d} != {expected_len:d}')
     for page_id, head_doc in docs_by_cluster[head].items():
+        stats[0] += 1
         error = False
         for cluster in other:
             if not error:
                 if not head_doc['found'] == docs_by_cluster[cluster][page_id]['found']:
+                    stats[1] += 1
                     error = True
-                    q.put_nowait({'id': page_id, 'reason': 'not_found', 'expected': True, 'actual': False})
+                    q.put_nowait({'id': page_id, 'reason': 'not_found', 'expected': True, 'actual': False, 'index': index_type})
                 elif not head_doc['rev'] == docs_by_cluster[cluster][page_id]['rev']:
+                    stats[2] += 1
                     error = True
                     q.put_nowait({'id': page_id, 'reason': 'rev_missmatch', 'expected': head_doc['rev'],
-                                  'actual': docs_by_cluster[cluster][page_id]['rev']})
+                                  'actual': docs_by_cluster[cluster][page_id]['rev'], 'index': index_type})
                 elif not head_doc['title'] == docs_by_cluster[cluster][page_id]['title']:
+                    stats[3] += 1
                     error = True
                     q.put_nowait({'id': page_id, 'reason': 'title_missmatch', 'expected': head_doc['title'],
-                                  'actual': docs_by_cluster[cluster][page_id]['title']})
+                                  'actual': docs_by_cluster[cluster][page_id]['title'], 'index': index_type})
             del docs_by_cluster[cluster][page_id]
     for cluster in other:
         if docs_by_cluster[cluster]:
             raise Exception(f'Doc(s) returned from {head} but not {cluster}: {",".join(docs_by_cluster[cluster])}')
 
 
-def run(wiki, clusters, index_types, batch_size, start, end, q):
+def run(wiki, clusters, index_types, batch_size, start, end, q, stats):
     print(f'Comparing wiki {wiki} in {clusters} for index types {index_types}; processing page IDs [{start}, {end}]')
     session = requests.Session()
     for value in range(start, end, batch_size):
@@ -76,7 +82,7 @@ def run(wiki, clusters, index_types, batch_size, start, end, q):
             compare(q, {
                 cluster: fetch_docs_with_retry(session, f'{clusters[cluster]}/{wiki}_{index_type}', ids)
                 for cluster in clusters
-            })
+            }, stats, index_type)
 
 
 def listen(wiki, q):
@@ -97,7 +103,7 @@ def fetch_max_id(session, index_uri):
     url = f'{index_uri}/_doc/_search'
     payload = json.dumps({'size': 0, 'aggs': {'max_page_id': {'max': {'field': 'page_id'}}}})
 
-    r = session.get(url, headers={'Content-Type': 'application/json'}, data=payload)
+    r = session.get(url, headers={'Content-Type': 'application/json'}, data=payload, proxies=proxies, verify=verify)
     if r.status_code != 200:
         print(f'Looks like this index does not exist: POST {url} results in {r.status_code} {r.text}')
         return 0
@@ -116,6 +122,8 @@ def print_help(clusters, batch_size, index_types):
 
 
 def main():
+    stats = multiprocessing.Array('i', [0, 0, 0, 0])
+
     batch_size = 2000
     index_types = ['general', 'content', 'file']
     clear_index_types = True
@@ -167,7 +175,7 @@ def main():
         listener.start()
 
         for start in range(1, max_id, step):
-            args = (wiki, clusters, index_types, batch_size, start, start + step, q)
+            args = (wiki, clusters, index_types, batch_size, start, start + step, q, stats)
             worker = multiprocessing.Process(target=run, args=args)
             workers.append(worker)
             worker.start()
@@ -175,6 +183,12 @@ def main():
             w.join()
         q.put_nowait(None)
         listener.join()
+        print(f'Results:'
+              f'\n\ttotal: {stats[0]}'
+              f'\n\terrors: {sum(stats[1:])} ({"{:.2f}".format(sum(stats[1:])/stats[0]*100)}%)'
+              f'\n\t- not_found: {stats[1]}'
+              f'\n\t- rev_missmatch: {stats[2]}'
+              f'\n\t- title_missmatch: {stats[3]}')
     except KeyboardInterrupt:
         for w in workers:
             w.terminate()

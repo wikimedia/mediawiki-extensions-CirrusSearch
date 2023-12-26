@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bugirbiig"
+		]
+	},
+	"cirrussearch-desc": "Mediawiki ieb anɛ ieb linɛ ka' paŋa",
+	"cirrussearch-backend-error": "Yɛlsi'a kɛ ka ti pʋ nyaŋi naae fʋn ied si'el la. M bɛlimnɛ, li ya'a niŋ bi'ela fʋ mɔɔ gɔs ya'as.",
+	"cirrussearch-parse-error": "Ti pʋ gban'e fʋ bu'osʋg la gbinnɛ. M bɛlimnɛ maligim bu'os sʋ'ʋŋa. Ti su'a fʋ bu'osʋg la nɛ ye ti maal ieb bʋn la sʋ'ʋŋa.",
+	"cirrussearch-too-busy-error": "Ieb la galisnɛ nannanna nwa. M bɛlimnɛ, maligim ie saŋa bi'ela.",
+	"cirrussearch-regex-empty-expression": "O $1 mɔr ti'er ye ban yɛt si'el saŋa wʋsa la ka' zaalimm.",
+	"cirrussearch-regex-syntax-error": "Ban yɛt si'el saŋa wʋsa la gbɛlima dinɛ bɛ $2: $1",
+	"cirrussearch-regex-too-busy-error": "Ban yɛt si'el saŋa wʋsa ka ba ied nannanna la zu'oenɛ galis. M bɛlimnɛ maligim ia nya'aŋ.",
+	"cirrussearch-regex-too-complex-error": "Ban yɛt si'el saŋa wʋsa la tɔinɛ galis. Zamisim fʋn na niŋ si'em ka li niŋ na'ana [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|here]].",
+	"cirrussearch-now-using": "Wiki kaŋa mɔri ieb bʋmpaal. ([[mw:Special:MyLanguage/Help:CirrusSearch|Zamisim paas]])",
+	"cirrussearch-pref-label": "Ie paal",
+	"cirrussearch-pref-desc": "Makkimi ti ieb bʋn paal linɛ sʋŋid buudi pian'ad bɛdegʋ ka mɛ tisid fʋn ied si'ela tɔ'ɔtɔ hali ka na tun'e nyɛ sɔb tempiletnamin.",
+	"cirrussearch-give-feedback": "Tisimi ti fʋ lɛbisʋg.",
+	"cirrussearch-query-too-long": "Fʋn ied si'el la wa'am gat ban tis suor ye li wa'am si'em la. (Actual: $1; tis suor: $2)",
+	"cirrussearch-query-too-long-with-exemptions": "Fʋn ied si'el la wa'am gat ban tis suor ye li wa'am si'em la. (Actual: $1, tis suor: $2, hali ka pʋ kaan $3)",
+	"cirrussearch-completion-profile-fuzzy": "Li nwɛnɛ li anɛ din nar si'em ka dɛmisa lɛɛ bɛ (sɔb ayi' banɛ ka ba siaki tis).",
+	"cirrussearch-completion-profile-fuzzy-subphrases": "Li nwɛnɛ li anɛ din nar si'em ka dɛmisa lɛɛ bɛ (sɔb ayi' banɛ ka ba siaki tis).Di mɛ na tun'e zaŋi tis sɔb-gima (li tun'e an sɔb-gima bɛɛ lak-gima ka li bɛnɛ wiki maali li si'em)"
+}

@@ -8,6 +8,7 @@ use ApiOpenSearch;
 use CirrusSearch\Search\FancyTitleResultsType;
 use HtmlArmor;
 use ISearchResultSet;
+use MediaWiki\Actions\ActionEntryPoint;
 use MediaWiki\Api\Hook\APIAfterExecuteHook;
 use MediaWiki\Api\Hook\APIQuerySiteInfoStatisticsInfoHook;
 use MediaWiki\Config\Config;
@@ -87,7 +88,7 @@ class Hooks implements
 	 * @param OutputPage $outputPage
 	 * @param User $user
 	 * @param WebRequest $request
-	 * @param \MediaWiki $mediaWiki
+	 * @param ActionEntryPoint $mediaWiki
 	 */
 	public function onBeforeInitialize( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
 		self::initializeForRequest( $request );

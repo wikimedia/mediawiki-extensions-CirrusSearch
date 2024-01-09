@@ -66,7 +66,7 @@ class RunSearch extends Maintenance {
 		$this->addOption( 'i-know-what-im-doing', 'Allow setting unknown options from --options', false, false );
 	}
 
-	public function finalSetup( SettingsBuilder $settingsBuilder = null ) {
+	public function finalSetup( SettingsBuilder $settingsBuilder ) {
 		parent::finalSetup( $settingsBuilder );
 		$this->applyGlobals();
 	}

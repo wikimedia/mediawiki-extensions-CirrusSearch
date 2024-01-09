@@ -56,7 +56,7 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		$this->requireExtension( 'CirrusSearch' );
 	}
 
-	public function finalSetup( SettingsBuilder $settingsBuilder = null ) {
+	public function finalSetup( SettingsBuilder $settingsBuilder ) {
 		parent::finalSetup( $settingsBuilder );
 
 		if ( $this->hasOption( 'userTestTrigger' ) ) {

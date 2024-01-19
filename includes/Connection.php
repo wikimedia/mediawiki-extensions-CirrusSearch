@@ -92,6 +92,11 @@ class Connection extends ElasticaConnection {
 	private $clusterSettings;
 
 	/**
+	 * @var bool
+	 */
+	private $readOnly;
+
+	/**
 	 * @var Connection[][]
 	 */
 	private static $pool = [];
@@ -134,6 +139,7 @@ class Connection extends ElasticaConnection {
 		// are places that expect they can wrap config with new values and use them.
 		$clusterId = $assignment->uniqueId( $this->cluster );
 		self::$pool[$config->getWikiId()][$clusterId] = $this;
+		$this->readOnly = (bool)array_search( $cluster, $assignment->getReadOnlyClusters() );
 	}
 
 	/**
@@ -334,5 +340,12 @@ class Connection extends ElasticaConnection {
 	 */
 	public function getConfig() {
 		return $this->config;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isReadOnly(): bool {
+		return $this->readOnly;
 	}
 }

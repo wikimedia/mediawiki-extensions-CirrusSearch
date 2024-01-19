@@ -86,4 +86,15 @@ class AllClustersQueuingRemediatorTest extends CirrusTestCase {
 		$allClustersRemediator->pageInWrongIndex( $docId, $wp, $wrongIndex );
 		$allClustersRemediator->ghostPageInIndex( $docId, $title );
 	}
+
+	public function testNoOptimizationWithReadOnly() {
+		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
+		$clusterAssigment = $this->createMock( ClusterAssignment::class );
+		$clusterAssigment->expects( $this->once() )
+			->method( 'getWritableClusters' )
+			->willReturn( [ 'one', 'two' ] );
+		$allClustersRemediator = new AllClustersQueueingRemediator( $clusterAssigment, $jobQueueGroup );
+
+		$this->assertFalse( $allClustersRemediator->canSendOptimizedJob( [ 'one', 'two', 'readonly' ] ) );
+	}
 }

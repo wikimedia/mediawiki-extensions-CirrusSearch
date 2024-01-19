@@ -163,6 +163,7 @@
 			"value": false
 		},
 		"CirrusSearchClusters": {
+			"description": "If both CirrusSearchClusters and CirrusSearchWriteClusters are specified, those clusters only appearing in CirrusSearchClusters are considered read-only.",
 			"value": {
 				"default": [
 					"localhost"

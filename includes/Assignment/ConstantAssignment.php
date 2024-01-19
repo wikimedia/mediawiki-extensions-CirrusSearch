@@ -33,6 +33,14 @@ class ConstantAssignment implements ClusterAssignment {
 		return [ 'default' ];
 	}
 
+	public function getReadOnlyClusters(): array {
+		return [];
+	}
+
+	public function hasCluster( string $clusterName ): bool {
+		return true;
+	}
+
 	public function canWriteToCluster( $clusterName ) {
 		return true;
 	}

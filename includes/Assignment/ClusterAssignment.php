@@ -23,6 +23,17 @@ interface ClusterAssignment {
 	public function getWritableClusters(): array;
 
 	/**
+	 * @return string[] List of the cluster groups to check (read) only
+	 */
+	public function getReadOnlyClusters(): array;
+
+	/**
+	 * @param string $clusterName
+	 * @return bool True if the cluster is defined
+	 */
+	public function hasCluster( string $clusterName ): bool;
+
+	/**
 	 * @param string $clusterName
 	 * @return bool True when the named cluster is writable
 	 */

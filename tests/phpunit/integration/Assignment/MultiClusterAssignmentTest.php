@@ -206,6 +206,7 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 		$this->assertTrue( $assignment->canWriteToCluster( 'one' ) );
 		$this->assertTrue( $assignment->canWriteToCluster( 'unknown' ) );
 		$this->assertFalse( $assignment->canWriteToCluster( 'readonly' ) );
+		$this->assertEquals( [ 'readonly' ], $assignment->getReadOnlyClusters() );
 	}
 
 	public function testReplicasMustExist() {

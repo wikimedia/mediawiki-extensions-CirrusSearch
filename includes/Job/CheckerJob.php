@@ -8,6 +8,7 @@ use CirrusSearch\Sanity\AllClustersQueueingRemediator;
 use CirrusSearch\Sanity\BufferedRemediator;
 use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\CheckerException;
+use CirrusSearch\Sanity\LogOnlyRemediator;
 use CirrusSearch\Sanity\MultiClusterRemediatorHelper;
 use CirrusSearch\Sanity\QueueingRemediator;
 use CirrusSearch\Searcher;
@@ -193,9 +194,10 @@ class CheckerJob extends CirrusGenericJob {
 		$checkers = [];
 		$perClusterRemediators = [];
 		$perClusterBufferedRemediators = [];
+		$logger = LoggerFactory::getInstance( 'CirrusSearch' );
 		foreach ( $connections as $cluster => $connection ) {
 			$searcher = new Searcher( $connection, 0, 0, $this->searchConfig, [], null );
-			$remediator = new QueueingRemediator( $cluster );
+			$remediator = $connection->isReadOnly() ? new LogOnlyRemediator( $logger ) : new QueueingRemediator( $cluster );
 			$bufferedRemediator = new BufferedRemediator();
 			$checker = new Checker(
 				$this->searchConfig,

@@ -27,7 +27,7 @@ class MultiClusterRemediatorHelper {
 	private $perClusterBufferedRemediator;
 
 	/**
-	 * @param QueueingRemediator[] $perClusterRemediators
+	 * @param Remediator[] $perClusterRemediators
 	 * @param BufferedRemediator[] $perClusterBufferedRemediator
 	 * @param AllClustersQueueingRemediator $allClusterRemediator
 	 * @see \CirrusSearch\Job\CirrusGenericJob::decideClusters()

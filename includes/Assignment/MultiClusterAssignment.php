@@ -90,6 +90,17 @@ class MultiClusterAssignment implements ClusterAssignment {
 	}
 
 	/**
+	 * @return string[] List of CirrusSearch cluster names that are listed under {@link MultiClusterAssignment::$clusters}
+	 *   but not under {@link MultiClusterAssignment::getWritableClusters()}.
+	 */
+	public function getReadOnlyClusters(): array {
+		if ( $this->clusters === null ) {
+			$this->clusters = $this->initClusters();
+		}
+		return array_values( array_diff( array_keys( $this->clusters ), $this->getWritableClusters() ) );
+	}
+
+	/**
 	 * Check if a cluster is configured to accept writes
 	 *
 	 * @param string $cluster
@@ -97,6 +108,19 @@ class MultiClusterAssignment implements ClusterAssignment {
 	 */
 	public function canWriteToCluster( $cluster ) {
 		return in_array( $cluster, $this->getWritableClusters() );
+	}
+
+	/**
+	 * Check if a cluster is defined
+	 *
+	 * @param string $cluster
+	 * @return bool
+	 */
+	public function hasCluster( string $cluster ): bool {
+		if ( $this->clusters === null ) {
+			$this->clusters = $this->initClusters();
+		}
+		return isset( $this->clusters[$cluster] );
 	}
 
 	/**

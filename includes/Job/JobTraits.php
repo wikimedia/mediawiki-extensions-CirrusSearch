@@ -59,9 +59,10 @@ trait JobTraits {
 	 * NOTE: only suited for jobs that work on multiple clusters by
 	 * inspecting the 'cluster' job param
 	 *
+	 * @param bool $includeReadOnly
 	 * @return Connection[] indexed by cluster name
 	 */
-	protected function decideClusters() {
+	protected function decideClusters( bool $includeReadOnly = false ) {
 		$params = $this->getParams();
 		$searchConfig = $this->getSearchConfig();
 		$jobType = $this->getType();
@@ -70,7 +71,12 @@ trait JobTraits {
 		$assignment = $searchConfig->getClusterAssignment();
 		if ( $cluster === null ) {
 			$clusterNames = $assignment->getWritableClusters();
-		} elseif ( $assignment->canWriteToCluster( $cluster ) ) {
+			if ( $includeReadOnly ) {
+				$clusterNames = array_merge( $clusterNames, $assignment->getReadOnlyClusters() );
+			}
+		} elseif ( !$includeReadOnly && $assignment->canWriteToCluster( $cluster ) ) {
+			$clusterNames = [ $cluster ];
+		} elseif ( $includeReadOnly && $assignment->hasCluster( $cluster ) ) {
 			$clusterNames = [ $cluster ];
 		} else {
 			// Just in case a job is present in the queue but its cluster
@@ -113,6 +119,7 @@ trait JobTraits {
 		}
 
 		$conns = Connection::getClusterConnections( $clusterNames, $config );
+
 		$timeout = $config->get( 'CirrusSearchClientSideUpdateTimeout' );
 		foreach ( $conns as $connection ) {
 			$connection->setTimeout( $timeout );

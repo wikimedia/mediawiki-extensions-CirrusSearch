@@ -118,18 +118,13 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 
 	public function testgetDefaultBoostTemplatesLocal() {
 		$services = MediaWikiServices::getInstance();
-		try {
-			TestingAccessWrapper::newFromClass( \MessageCache::class )->instance = $this->getMockCache();
-		} catch ( \ReflectionException $e ) {
-			// Service-ized already
-			$services->resetServiceForTesting( 'MessageCache' );
-			$services->redefineService(
-				'MessageCache',
-				function () {
-					return $this->getMockCache();
-				}
-			);
-		}
+		$services->resetServiceForTesting( 'MessageCache' );
+		$services->redefineService(
+			'MessageCache',
+			function () {
+				return $this->getMockCache();
+			}
+		);
 		TestingAccessWrapper::newFromClass( Util::class )->defaultBoostTemplates = null;
 
 		$cache = $this->makeLocalCache();
@@ -169,11 +164,6 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	}
 
 	protected function tearDown(): void {
-		if ( method_exists( \MessageCache::class, 'destroyInstance' ) ) {
-			// reset cache so that our mock won't pollute other tests (in 1.33
-			// this is handled automatically by service reset)
-			\MessageCache::destroyInstance();
-		}
 		TestingAccessWrapper::newFromClass( Util::class )->defaultBoostTemplates = null;
 		parent::tearDown();
 	}

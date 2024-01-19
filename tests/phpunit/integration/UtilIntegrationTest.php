@@ -7,6 +7,7 @@ use Language;
 use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\WikiMap\WikiMap;
+use Wikimedia\TestingAccessWrapper;
 
 /**
  * @covers \CirrusSearch\Util
@@ -118,7 +119,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	public function testgetDefaultBoostTemplatesLocal() {
 		$services = MediaWikiServices::getInstance();
 		try {
-			$this->setPrivateVar( \MessageCache::class, 'instance', $this->getMockCache() );
+			TestingAccessWrapper::newFromClass( \MessageCache::class )->instance = $this->getMockCache();
 		} catch ( \ReflectionException $e ) {
 			// Service-ized already
 			$services->resetServiceForTesting( 'MessageCache' );
@@ -129,7 +130,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 				}
 			);
 		}
-		$this->setPrivateVar( Util::class, 'defaultBoostTemplates', null );
+		TestingAccessWrapper::newFromClass( Util::class )->defaultBoostTemplates = null;
 
 		$cache = $this->makeLocalCache();
 		$config = $this->getHashConfig( WikiMap::getCurrentWikiId() );
@@ -167,28 +168,13 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		return $mock;
 	}
 
-	/**
-	 * Set message cache instance to given object.
-	 * TODO: we wouldn't have to do this if we had some proper way to mock message cache.
-	 * @param string $class
-	 * @param string $var
-	 * @param mixed $value
-	 */
-	private function setPrivateVar( $class, $var, $value ) {
-		// nasty hack - reset message cache instance
-		$mc = new \ReflectionClass( $class );
-		$mcInstance = $mc->getProperty( $var );
-		$mcInstance->setAccessible( true );
-		$mcInstance->setValue( $value );
-	}
-
 	protected function tearDown(): void {
 		if ( method_exists( \MessageCache::class, 'destroyInstance' ) ) {
 			// reset cache so that our mock won't pollute other tests (in 1.33
 			// this is handled automatically by service reset)
 			\MessageCache::destroyInstance();
 		}
-		$this->setPrivateVar( Util::class, 'defaultBoostTemplates', null );
+		TestingAccessWrapper::newFromClass( Util::class )->defaultBoostTemplates = null;
 		parent::tearDown();
 	}
 

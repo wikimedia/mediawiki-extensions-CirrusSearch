@@ -21,6 +21,7 @@ use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
 use Psr\Log\AbstractLogger;
 use Symfony\Component\Yaml\Yaml;
+use Wikimedia\TestingAccessWrapper;
 
 /**
  * Tests full text and completion search request logging. Could be expanded for
@@ -222,9 +223,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 	private function buildDependencies( $responses ) {
 		// Plugin in a request logger that we know is empty
 		$requestLogger = new RequestLogger;
-		$requestLoggerProp = new \ReflectionProperty( ElasticsearchIntermediary::class, 'requestLogger' );
-		$requestLoggerProp->setAccessible( true );
-		$requestLoggerProp->setValue( $requestLogger );
+		TestingAccessWrapper::newFromClass( ElasticsearchIntermediary::class )->requestLogger = $requestLogger;
 
 		// Override the logging channel with our own so we can capture logs
 		$loggers = [

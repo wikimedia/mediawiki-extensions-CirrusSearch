@@ -16,8 +16,6 @@ use MediaWiki\WikiMap\WikiMap;
 class QueryBuildDocumentTest extends \ApiTestCase {
 	use CirrusIntegrationTestCaseTrait;
 
-	protected $tablesUsed = [ 'page' ];
-
 	private const PAGE_TITLE = 'QueryBuildDocumentTest test page';
 	private const CONTENT_FIRST_REV = "== Head ==\n " .
 			"First revision " .

@@ -26,5 +26,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "O método de classificação a utilizar",
 	"apierror-compsuggestbuilddoc-bad-method": "Método de classificação desconhecido",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Cópia em ficheiro do documento usado pelas sugestões de preenchimento",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "Obter uma cópia em ficheiro do documento usado pelas sugestões de preenchimento"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Obter uma cópia em ficheiro do documento usado pelas sugestões de preenchimento",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Fornecer o nome de um método de classificação a ser usado pelas sugestões de preenchimento"
 }

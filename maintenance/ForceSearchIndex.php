@@ -8,6 +8,7 @@ use CirrusSearch\Iterator\CallbackIterator;
 use CirrusSearch\Job;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Updater;
+use IDBAccessObject;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
@@ -545,7 +546,7 @@ class ForceSearchIndex extends Maintenance {
 			foreach ( $batch as $row ) {
 				// No need to call Updater::traceRedirects here because we know this is a valid page
 				// because it is in the database.
-				$page = $wikiPageFactory->newFromRow( $row, WikiPage::READ_LATEST );
+				$page = $wikiPageFactory->newFromRow( $row, IDBAccessObject::READ_LATEST );
 
 				// null pages still get attached to keep the counts the same. They will be filtered
 				// later on.

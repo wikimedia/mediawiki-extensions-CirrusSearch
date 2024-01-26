@@ -13,13 +13,13 @@ use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Exception\RuntimeException;
 use Elastica\JSON;
 use Elastica\Response;
+use IDBAccessObject;
 use Liuggio\StatsdClient\Factory\StatsdDataFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use Wikimedia\Assert\Assert;
-use WikiPage;
 
 /**
  * Handles non-maintenance write operations to the elastic search cluster.
@@ -566,7 +566,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	protected function decideRequiredSetAction( Title $title ) {
 		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
-		$page->loadPageData( WikiPage::READ_LATEST );
+		$page->loadPageData( IDBAccessObject::READ_LATEST );
 		if ( $page->exists() ) {
 			return 'add';
 		} else {

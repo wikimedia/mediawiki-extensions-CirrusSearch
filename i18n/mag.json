@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"ऐक्टिवेटेड्"
+		]
+	},
+	"cirrussearch-desc": "मीडियाविकि लागि Elasticsearch सञ्चालित खोज",
+	"cirrussearch-pref-label": "नया खोज",
+	"cirrussearch-give-feedback": "हमनीके अपन प्रतिक्रिया दी",
+	"prefs-completion": "खोज पूर्णकरण",
+	"cirrussearch-pref-completion-section-desc": "सुझाव पुरा करेवाला"
+}

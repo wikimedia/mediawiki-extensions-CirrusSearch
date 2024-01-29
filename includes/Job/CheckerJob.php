@@ -135,7 +135,7 @@ class CheckerJob extends CirrusGenericJob {
 			return true;
 		}
 
-		$connections = $this->decideClusters();
+		$connections = $this->decideClusters( true );
 		if ( !$connections ) {
 			return true;
 		}
@@ -235,7 +235,7 @@ class CheckerJob extends CirrusGenericJob {
 				try {
 					$checker->check( $pageIds );
 				} catch ( CheckerException $checkerException ) {
-					$this->retry( "Failed to verify ids: " . $checkerException->getMessage(), reset( $pageIds ), $cluster );
+					$this->retry( "Failed to verify ids on $cluster: " . $checkerException->getMessage(), reset( $pageIds ), $cluster );
 					unset( $checkers[$cluster] );
 				}
 			}

@@ -468,7 +468,7 @@ class Hooks implements
 			$titleResult = $best;
 			return false;
 		}
-		// Didn't find a result so let Mediawiki have a crack at it.
+		// Didn't find a result so let MediaWiki have a crack at it.
 		return true;
 	}
 

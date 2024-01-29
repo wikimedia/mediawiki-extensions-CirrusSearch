@@ -81,7 +81,7 @@ properties:
   # -- cirrussearchrequestset .payload.host
   mediawiki_host:
     type: string
-    description: Hostname of Mediawiki server handling these CirrusSearch requests
+    description: Hostname of MediaWiki server handling these CirrusSearch requests
 
   params:
     type: object
@@ -99,7 +99,7 @@ properties:
       so downstream analysis can join between this search request set
       and clicked on results via webrequest referrer field.  E.g.
       a result page URI might be /wiki/Special:Search?searchToken=asdhlajsflkafd
-      Requests that come from the Mediawiki API will have this sent via
+      Requests that come from the MediaWiki API will have this sent via
       the X-Search-ID response header.
 
   source:
@@ -158,7 +158,7 @@ properties:
   elasticsearch_requests:
     type: array
     description: >
-      A list of requests made between Mediawiki CirrusSearch extension
+      A list of requests made between MediaWiki CirrusSearch extension
       and elasticsearch in a single execution context
     items:
       type: object

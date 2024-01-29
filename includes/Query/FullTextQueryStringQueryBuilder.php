@@ -54,7 +54,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 */
 	public function build( SearchContext $searchContext, $term ) {
 		$searchContext->addSyntaxUsed( 'full_text' );
-		// Transform Mediawiki specific syntax to filters and extra
+		// Transform MediaWiki specific syntax to filters and extra
 		// (pre-escaped) query string
 		foreach ( $this->features as $feature ) {
 			$term = $feature->apply( $searchContext, $term );

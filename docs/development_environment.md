@@ -14,7 +14,7 @@ Pre-Requisites
 * phpstorm 2022.1 (maybe others)
 
 
-Install Mediawiki + CirrusSearch
+Install MediaWiki + CirrusSearch
 --------------------------------
 
 ```sh

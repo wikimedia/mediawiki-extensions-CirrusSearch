@@ -653,7 +653,7 @@ class AnalysisConfigBuilder {
 						"'=>\u0020",       // Useful for finding names
 						'\u2019=>\u0020',  // Unicode right single quote
 						'\u02BC=>\u0020',  // Unicode modifier letter apostrophe
-						'_=>\u0020',       // Mediawiki loves _ and people are used to it but
+						'_=>\u0020',       // MediaWiki loves _ and people are used to it but
 										   // it usually means space
 						'-=>\u0020',       // Useful for finding hyphenated names unhyphenated
 					],

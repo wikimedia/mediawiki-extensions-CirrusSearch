@@ -5,7 +5,7 @@
 # CirrusSearch, including this file, may be copied, modified, propagated, or
 # distributed except according to the terms contained in the COPYING file.
 #
-# Copyright 2012-2014 by the Mediawiki developers. See the CREDITS file in the
+# Copyright 2012-2014 by the MediaWiki developers. See the CREDITS file in the
 # CirrusSearch top-level directory and at
 # https://phabricator.wikimedia.org/diffusion/ECIR/browse/master/CREDITS
 #

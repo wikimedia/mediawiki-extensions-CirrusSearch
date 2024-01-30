@@ -164,6 +164,7 @@
 		},
 		"CirrusSearchClusters": {
 			"description": "If both CirrusSearchClusters and CirrusSearchWriteClusters are specified, those clusters only appearing in CirrusSearchClusters are considered read-only.",
+			"merge_strategy": "provide_default",
 			"value": {
 				"default": [
 					"localhost"

@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Aefgh39622",
-			"NP-chaonay"
+			"NP-chaonay",
+			"RidJasper"
 		]
 	},
 	"cirrussearch-desc": "เครื่องมือค้นหาที่ขับเคลื่อนโดย Elasticsearch สำหรับ MediaWiki",
@@ -29,6 +30,7 @@
 	"cirrussearch-explore-similar-related": "ที่เกี่ยวข้อง",
 	"cirrussearch-explore-similar-categories": "หมวดหมู่",
 	"cirrussearch-explore-similar-languages": "ภาษา",
+	"cirrussearch-explore-similar-related-none": "ไม่มีหน้าที่เกี่ยวข้อง",
 	"cirrussearch-explore-similar-categories-none": "ไม่มีหมวดหมู่",
 	"cirrussearch-explore-similar-languages-none": "ไม่มีในภาษาอื่น",
 	"cirrussearch-article-words": "จำนวนคำในหน้าเนื้อหาทั้งหมด"

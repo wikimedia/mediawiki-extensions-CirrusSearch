@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Aefgh39622",
-			"NP-chaonay"
+			"NP-chaonay",
+			"RidJasper"
 		]
 	},
 	"cirrussearch-desc": "เครื่องมือค้นหาที่ขับเคลื่อนโดย Elasticsearch สำหรับ MediaWiki",
@@ -26,5 +27,6 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "ไม่มีการแก้ไขคำที่พิมพ์ผิด และแปลงที่อยู่เป็นหน้าเปลี่ยนทางที่ใกล้เคียง",
 	"cirrussearch-completion-profile-classic-pref-name": "การค้นหาคำนำหน้าแบบดั้งเดิม",
 	"cirrussearch-completion-profile-classic-pref-desc": "ไม่มีการแก้ไขคำที่พิมพ์ผิด ผลลัพธ์ที่ได้จะตรงกับคำที่ขึ้นต้นชื่อเรื่อง",
+	"cirrussearch-explore-similar-related-none": "ไม่มีหน้าที่เกี่ยวข้อง",
 	"cirrussearch-article-words": "จำนวนคำในหน้าเนื้อหาทั้งหมด"
 }

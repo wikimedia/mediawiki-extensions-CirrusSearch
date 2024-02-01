@@ -29,15 +29,11 @@ class NearMatchQueryBuilder {
 			'title.near_match', 'redirect.title.near_match',
 			'title.near_match_asciifolding', 'redirect.title.near_match_asciifolding',
 		] );
-		if ( $searchContext->getConfig()->getElement( 'CirrusSearchAllFields', 'use' ) ) {
-			// Instead of using the highlight query we need to make one like it that uses the all_near_match field.
-			$allQuery = new MultiMatch();
-			$allQuery->setQuery( $term );
-			$allQuery->setFields( [ 'all_near_match', 'all_near_match.asciifolding' ] );
-			$searchContext->addFilter( $allQuery );
-		} else {
-			$searchContext->addFilter( $highlightQuery );
-		}
+		// Instead of using the highlight query we need to make one like it that uses the all_near_match field.
+		$allQuery = new MultiMatch();
+		$allQuery->setQuery( $term );
+		$allQuery->setFields( [ 'all_near_match', 'all_near_match.asciifolding' ] );
+		$searchContext->addFilter( $allQuery );
 		$searchContext->setHighlightQuery( $highlightQuery );
 		$searchContext->addSyntaxUsed( 'near_match' );
 	}

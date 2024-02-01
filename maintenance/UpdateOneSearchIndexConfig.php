@@ -323,7 +323,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @param string $msg
 	 */
 	private function createIndex( $rebuild, $msg ) {
-		global $wgCirrusSearchAllFields, $wgCirrusSearchExtraIndexSettings;
+		global $wgCirrusSearchExtraIndexSettings;
 
 		$this->canCleanupCreatedIndex = true;
 		$index = $this->getIndex();
@@ -343,7 +343,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getReplicaCount(),
 			$this->refreshInterval,
 			$this->getMergeSettings(),
-			$wgCirrusSearchAllFields['build'],
 			$wgCirrusSearchExtraIndexSettings
 		) );
 

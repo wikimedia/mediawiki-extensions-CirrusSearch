@@ -97,20 +97,6 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 				'blah',
 				10
 			],
-			'wgCirrusSearchAllFields normal' => [
-				'wgCirrusSearchAllFields',
-				[ 'use' => false ],
-				'cirrusUseAllFields',
-				'yes',
-				[ 'use' => true ],
-			],
-			'wgCirrusSearchAllFields disable' => [
-				'wgCirrusSearchAllFields',
-				[ 'use' => true ],
-				'cirrusUseAllFields',
-				'no',
-				[ 'use' => false ],
-			],
 			'wgCirrusSearchPhraseRescoreBoost' => [
 				'wgCirrusSearchPhraseRescoreBoost',
 				10,

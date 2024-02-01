@@ -354,12 +354,6 @@
 				"redirect_asciifolding": 0.7
 			}
 		},
-		"CirrusSearchAllFields": {
-			"value": {
-				"build": true,
-				"use": true
-			}
-		},
 		"CirrusSearchBoostOpening": {
 			"value": "first_heading"
 		},

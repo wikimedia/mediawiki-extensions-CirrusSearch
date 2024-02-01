@@ -111,7 +111,6 @@ class Hooks implements
 		global $wgCirrusSearchPhraseRescoreWindowSize,
 			$wgCirrusSearchFunctionRescoreWindowSize,
 			$wgCirrusSearchFragmentSize,
-			$wgCirrusSearchAllFields,
 			$wgCirrusSearchPhraseRescoreBoost,
 			$wgCirrusSearchPhraseSlop,
 			$wgCirrusSearchLogElasticRequests,
@@ -131,8 +130,6 @@ class Hooks implements
 			$request, 'cirrusFunctionWindow', 10000 );
 		self::overrideNumeric( $wgCirrusSearchFragmentSize,
 			$request, 'cirrusFragmentSize', 1000 );
-		self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ],
-			$request, 'cirrusUseAllFields' );
 		if ( $wgCirrusSearchUseCompletionSuggester === 'yes' || $wgCirrusSearchUseCompletionSuggester === true ) {
 			// Only allow disabling the completion suggester, enabling it from request params might cause failures
 			// as the index might not be present.

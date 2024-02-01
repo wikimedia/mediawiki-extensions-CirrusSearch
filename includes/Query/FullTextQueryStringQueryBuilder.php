@@ -213,26 +213,18 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 		// The highlighter doesn't know about the weighting from the all fields so we have to send
 		// it a query without the all fields.  This swaps one in.
-		if ( $this->config->getElement( 'CirrusSearchAllFields', 'use' ) ) {
-			$nonAllFields = array_merge(
-				self::buildFullTextSearchFields( $searchContext, 1, '.plain', false ),
-				self::buildFullTextSearchFields( $searchContext,
-					$this->config->get( 'CirrusSearchStemmedWeight' ), '', false ) );
-			$nonAllQueryString = $searchContext->escaper()
-				->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
-			$searchContext->setHighlightQuery(
-				$this->buildHighlightQuery( $searchContext, $nonAllFields, $nonAllQueryString, 1 )
-			);
-		} else {
-			$nonAllFields = $fields;
-		}
+		$nonAllFields = array_merge(
+			self::buildFullTextSearchFields( $searchContext, 1, '.plain', false ),
+			self::buildFullTextSearchFields( $searchContext,
+				$this->config->get( 'CirrusSearchStemmedWeight' ), '', false ) );
+		$nonAllQueryString = $searchContext->escaper()
+			->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
+		$searchContext->setHighlightQuery(
+			$this->buildHighlightQuery( $searchContext, $nonAllFields, $nonAllQueryString, 1 )
+		);
 
 		if ( $this->isPhraseRescoreNeeded( $searchContext ) ) {
 			$rescoreFields = $fields;
-			if ( !$this->config->getElement( 'CirrusSearchAllFields', 'use' ) ) {
-				$rescoreFields = $nonAllFields;
-			}
-
 			$searchContext->setPhraseRescoreQuery( $this->buildPhraseRescoreQuery(
 						$searchContext,
 						$rescoreFields,
@@ -357,10 +349,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	}
 
 	/**
-	 * Expand wildcard queries to the all.plain and title.plain fields if
-	 * wgCirrusSearchAllFields[ 'use' ] is set to true. Fallback to all
-	 * the possible fields otherwise. This prevents applying and compiling
-	 * costly wildcard queries too many times.
+	 * Expand wildcard queries to the all.plain and title.plain fields.
 	 *
 	 * @param SearchContext $context
 	 * @param string $term
@@ -370,16 +359,12 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// Try to limit the expansion of wildcards to all the subfields
 		// We still need to add title.plain with a high boost otherwise
 		// match in titles be poorly scored (actually it breaks some tests).
-		if ( $context->getConfig()->getElement( 'CirrusSearchAllFields', 'use' ) ) {
-			$titleWeight = $context->getConfig()->getElement( 'CirrusSearchWeights', 'title' );
-			$fields = [];
-			$fields[] = "title.plain:$term^{$titleWeight}";
-			$fields[] = "all.plain:$term";
-			$exact = implode( ' OR ', $fields );
-			return "($exact)";
-		} else {
-			return self::switchSearchToExact( $context, $term, false );
-		}
+		$titleWeight = $context->getConfig()->getElement( 'CirrusSearchWeights', 'title' );
+		$fields = [];
+		$fields[] = "title.plain:$term^{$titleWeight}";
+		$fields[] = "all.plain:$term";
+		$exact = implode( ' OR ', $fields );
+		return "($exact)";
 	}
 
 	/**
@@ -417,7 +402,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	) {
 		$searchWeights = $context->getConfig()->get( 'CirrusSearchWeights' );
 
-		if ( $allFieldAllowed && $context->getConfig()->getElement( 'CirrusSearchAllFields', 'use' ) ) {
+		if ( $allFieldAllowed ) {
 			if ( $fieldSuffix === '.near_match' ) {
 				// The near match fields can't shard a root field because field fields need it -
 				// thus no suffix all.

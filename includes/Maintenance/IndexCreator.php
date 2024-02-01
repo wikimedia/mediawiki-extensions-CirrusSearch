@@ -65,7 +65,6 @@ class IndexCreator {
 	 * @param string $replicaCount
 	 * @param int $refreshInterval
 	 * @param array $mergeSettings
-	 * @param bool $searchAllFields
 	 * @param array $extraSettings
 	 *
 	 * @return Status
@@ -77,7 +76,6 @@ class IndexCreator {
 		$replicaCount,
 		$refreshInterval,
 		array $mergeSettings,
-		$searchAllFields,
 		array $extraSettings
 	) {
 		$args = $this->buildArgs(
@@ -86,7 +84,6 @@ class IndexCreator {
 			$replicaCount,
 			$refreshInterval,
 			$mergeSettings,
-			$searchAllFields,
 			$extraSettings
 		);
 
@@ -116,7 +113,6 @@ class IndexCreator {
 	 * @param string $replicaCount
 	 * @param int $refreshInterval
 	 * @param array $mergeSettings
-	 * @param bool $searchAllFields
 	 * @param array $extraSettings
 	 *
 	 * @return array
@@ -127,7 +123,6 @@ class IndexCreator {
 		$replicaCount,
 		$refreshInterval,
 		array $mergeSettings,
-		$searchAllFields,
 		array $extraSettings
 	) {
 		$indexSettings = [
@@ -149,10 +144,8 @@ class IndexCreator {
 			$indexSettings['similarity'] = $similarity;
 		}
 
-		if ( $searchAllFields ) {
-			// Use our weighted all field as the default rather than _all which is disabled.
-			$indexSettings['query.default_field'] = 'all';
-		}
+		// Use our weighted all field as the default rather than _all which is disabled.
+		$indexSettings['query.default_field'] = 'all';
 
 		// ideally we should merge $extraSettings to $indexSettings
 		// but existing config might declare keys like "index.mapping.total_fields.limit"

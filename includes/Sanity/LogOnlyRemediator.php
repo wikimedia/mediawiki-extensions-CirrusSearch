@@ -45,7 +45,7 @@ class LogOnlyRemediator implements Remediator {
 	 */
 	public function redirectInIndex( WikiPage $page ) {
 		$this->logger->log( $this->level, $this->prefix . '::' . __FUNCTION__,
-			[ 'page' => $page->getId(), 'title' => $page->getTitle() ] );
+			[ 'page' => $page->getId(), 'title' => $page->getTitle()->getPrefixedText() ] );
 	}
 
 	/**
@@ -53,7 +53,7 @@ class LogOnlyRemediator implements Remediator {
 	 */
 	public function pageNotInIndex( WikiPage $page ) {
 		$this->logger->log( $this->level, $this->prefix . '::' . __FUNCTION__,
-			[ 'page' => $page->getId(), 'title' => $page->getTitle() ] );
+			[ 'page' => $page->getId(), 'title' => $page->getTitle()->getPrefixedText() ] );
 	}
 
 	/**
@@ -61,7 +61,7 @@ class LogOnlyRemediator implements Remediator {
 	 */
 	public function ghostPageInIndex( $docId, Title $title ) {
 		$this->logger->log( $this->level, $this->prefix . '::' . __FUNCTION__,
-			[ 'doc' => $docId, 'title' => $title ] );
+			[ 'doc' => $docId, 'title' => $title->getPrefixedText() ] );
 	}
 
 	/**
@@ -69,7 +69,7 @@ class LogOnlyRemediator implements Remediator {
 	 */
 	public function pageInWrongIndex( $docId, WikiPage $page, $indexSuffix ) {
 		$this->logger->log( $this->level, $this->prefix . '::' . __FUNCTION__,
-			[ 'doc' => $docId, 'page' => $page->getId(), 'title' => $page->getTitle(), 'indexSuffix' => $indexSuffix ] );
+			[ 'doc' => $docId, 'page' => $page->getId(), 'title' => $page->getTitle()->getPrefixedText(), 'indexSuffix' => $indexSuffix ] );
 	}
 
 	/**
@@ -77,7 +77,7 @@ class LogOnlyRemediator implements Remediator {
 	 */
 	public function oldVersionInIndex( $docId, WikiPage $page, $indexSuffix ) {
 		$this->logger->log( $this->level, $this->prefix . '::' . __FUNCTION__,
-			[ 'doc' => $docId, 'page' => $page->getId(), 'title' => $page->getTitle(), 'indexSuffix' => $indexSuffix ] );
+			[ 'doc' => $docId, 'page' => $page->getId(), 'title' => $page->getTitle()->getPrefixedText(), 'indexSuffix' => $indexSuffix ] );
 	}
 
 	/**

@@ -23,7 +23,7 @@ return [
 	},
 
 	// SPARQL client for deep category search
-	'CirrusCategoriesClient' => static function ( MediaWikiServices $services ) {
+	'CirrusCategoriesClient' => static function ( MediaWikiServices $services ): SparqlClient {
 		$config = $services->getMainConfig();
 		$client = new SparqlClient( $config->get( 'CirrusSearchCategoryEndpoint' ),
 			$services->getHttpRequestFactory() );
@@ -33,17 +33,17 @@ return [
 		] );
 		return $client;
 	},
-	InterwikiResolverFactory::SERVICE => static function ( MediaWikiServices $services ) {
+	InterwikiResolverFactory::SERVICE => static function ( MediaWikiServices $services ): InterwikiResolverFactory {
 		return InterwikiResolverFactory::newFactory();
 	},
-	InterwikiResolver::SERVICE => static function ( MediaWikiServices $services ) {
+	InterwikiResolver::SERVICE => static function ( MediaWikiServices $services ): InterwikiResolver {
 		$config = $services->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
 		return $services
 			->getService( InterwikiResolverFactory::SERVICE )
 			->getResolver( $config );
 	},
-	SearchProfileServiceFactory::SERVICE_NAME => static function ( MediaWikiServices $services ) {
+	SearchProfileServiceFactory::SERVICE_NAME => static function ( MediaWikiServices $services ): SearchProfileServiceFactory {
 		$config = $services->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
 		return new SearchProfileServiceFactory( $services->getService( InterwikiResolver::SERVICE ),

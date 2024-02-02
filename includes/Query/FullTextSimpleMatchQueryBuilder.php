@@ -4,6 +4,8 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
+use Elastica\Query\AbstractQuery;
+use Elastica\Query\MatchNone;
 
 /**
  * Simple Match query builder, currently based on
@@ -72,26 +74,24 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	 *
 	 * @param SearchContext $context
 	 * @param string[] $fields
-	 * @param string[] $nearMatchFields
+	 * @param AbstractQuery $nearMatchQuery
 	 * @param string $queryString
-	 * @param string $nearMatchQuery
 	 * @return \Elastica\Query\AbstractQuery
 	 */
 	protected function buildSearchTextQuery(
 		SearchContext $context,
 		array $fields,
-		array $nearMatchFields,
-		$queryString,
-		$nearMatchQuery
+		AbstractQuery $nearMatchQuery,
+		$queryString
 	) {
 		if ( $context->isSyntaxUsed( 'query_string' ) ) {
 			return parent::buildSearchTextQuery( $context, $fields,
-				$nearMatchFields, $queryString, $nearMatchQuery );
+				$nearMatchQuery, $queryString );
 		}
 		$context->addSyntaxUsed( 'full_text_simple_match', 5 );
 		$this->usedExpQuery = true;
 		$queryForMostFields = $this->buildExpQuery( $queryString );
-		if ( !$nearMatchQuery ) {
+		if ( $nearMatchQuery instanceof MatchNone ) {
 			return $queryForMostFields;
 		}
 
@@ -100,10 +100,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		$bool = new \Elastica\Query\BoolQuery();
 		$bool->setMinimumShouldMatch( 1 );
 		$bool->addShould( $queryForMostFields );
-		$nearMatch = new \Elastica\Query\MultiMatch();
-		$nearMatch->setFields( $nearMatchFields );
-		$nearMatch->setQuery( $nearMatchQuery );
-		$bool->addShould( $nearMatch );
+		$bool->addShould( $nearMatchQuery );
 
 		return $bool;
 	}

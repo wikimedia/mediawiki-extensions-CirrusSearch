@@ -30,17 +30,23 @@ class BooleanClause implements Visitable {
 	 */
 	private $explicit;
 
+	private ?NegatedNode $negatedNode;
+
 	/**
 	 * @param ParsedNode $node
 	 * @param string $occur Specifies how this clause is to occur in matching documents.
 	 * @param bool $explicit whether or not this node is explicitly connected
+	 * @param NegatedNode|null $negatedNode when in a MUST_NOT, remember how this clause was negated
 	 * acceptable values are BooleanClause::MUST, BooleanClause::MUST_NOT and BooleanClause::SHOULD
 	 */
-	public function __construct( ParsedNode $node, $occur, $explicit ) {
+	public function __construct( ParsedNode $node, $occur, $explicit, ?NegatedNode $negatedNode = null ) {
 		$this->node = $node;
 		$this->occur = $occur;
 		self::validateOccur( $occur );
+		Assert::parameter( ( $occur === self::MUST_NOT ) === ( $negatedNode !== null ), '$negatedNode',
+			'A NegatedNode must be provided only if occur is MUST_NOT' );
 		$this->explicit = $explicit;
+		$this->negatedNode = $negatedNode;
 	}
 
 	/**
@@ -79,5 +85,13 @@ class BooleanClause implements Visitable {
 	 */
 	public function accept( Visitor $visitor ) {
 		$visitor->visitBooleanClause( $this );
+	}
+
+	/**
+	 *
+	 * @return NegatedNode|null
+	 */
+	public function getNegatedNode(): ?NegatedNode {
+		return $this->negatedNode;
 	}
 }

@@ -21,6 +21,7 @@ abstract class LeafVisitor implements Visitor {
 	 * @var bool true when this branch is "negated".
 	 */
 	private $inNegation;
+	private ?BooleanClause $currentClause = null;
 
 	/**
 	 * @param int[] $excludeOccurs
@@ -66,12 +67,15 @@ abstract class LeafVisitor implements Visitor {
 		}
 
 		$oldNegated = $this->inNegation;
+		$oldClause = $this->currentClause;
 		if ( $node->getOccur() === BooleanClause::MUST_NOT ) {
 			$this->inNegation = !$this->inNegation;
 		}
+		$this->currentClause = $node;
 
 		$node->getNode()->accept( $this );
 		$this->inNegation = $oldNegated;
+		$this->currentClause = $oldClause;
 	}
 
 	/**
@@ -79,5 +83,12 @@ abstract class LeafVisitor implements Visitor {
 	 */
 	final public function negated() {
 		return $this->inNegation;
+	}
+
+	/**
+	 * @return BooleanClause|null the boolean clause the visited node is in or null if top-level
+	 */
+	final public function getCurrentBooleanClause(): ?BooleanClause {
+		return $this->currentClause;
 	}
 }

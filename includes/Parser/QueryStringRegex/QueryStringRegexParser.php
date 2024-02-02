@@ -326,7 +326,7 @@ class QueryStringRegexParser implements QueryParser {
 			// so simply do what lucene QueryString does: force MUST_NOT whenever
 			// we encounter a negated clause.
 			return new BooleanClause( $node->getChild(), BooleanClause::MUST_NOT,
-				$explicit || $node->getNegationType() === 'NOT' );
+				$explicit || $node->getNegationType() === 'NOT', $node );
 		}
 		return new BooleanClause( $node, $occur ?? self::DEFAULT_OCCUR, $explicit );
 	}

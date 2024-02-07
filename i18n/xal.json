@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Алия"
+		]
+	},
+	"cirrussearch-backend-error": "Түр-зуурын асудлас болҗ, хәәлтиг күцәҗ чадсн уга. Хөөннь дакн орлдтн.",
+	"cirrussearch-parse-error": "Күслтиг медҗ чадсн уга. Үүг килвршүлҗ үзтн. Хәәлтин системиг сәәҗрүлхин төлә күслтиг бичәд авв.",
+	"cirrussearch-too-busy-error": "Хәәлтнь ода дегәд ик ацаллта. Хөөннь дәкн орлдтн.",
+	"cirrussearch-regex-empty-expression": "$1 хоосн биш тогтмл илркәллиг күләҗәнә.",
+	"cirrussearch-regex-syntax-error": "$2-т тогтмл илркәллин синтаксисин эндү һарв:\n$1",
+	"cirrussearch-regex-too-busy-error": "Одаһин бәәдләр дегәд ик тогтмл илкәрлл болвсргдҗана. Хөөннь дәкн орлдтн.",
+	"cirrussearch-regex-too-complex-error": "Тогтмл илркәлл дегәд кецү болҗана. Түүг килвршүлхин талар [mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|энд]]-әс үлү икиг медҗ автн.",
+	"cirrussearch-now-using": "Эн вики шин хәәлтин көдлгүриг ашглҗана.\n([[mw:Special:MyLanguage/Help:CirrusSearch|Үлү икиг медх\n]])",
+	"cirrussearch-pref-label": "Шин хәәлт",
+	"cirrussearch-pref-desc": "Үлү ик кел демҗҗ, үлү шин үр-дүңгинь олһҗ, загвр дотрас бичвриг олҗ чаддг мана шин хәәлтиг керглҗ үзтн.",
+	"cirrussearch-give-feedback": "Санл-бодлан хувалцтн"
+}

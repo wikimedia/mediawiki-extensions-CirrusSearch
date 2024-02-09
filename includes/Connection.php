@@ -139,7 +139,7 @@ class Connection extends ElasticaConnection {
 		// are places that expect they can wrap config with new values and use them.
 		$clusterId = $assignment->uniqueId( $this->cluster );
 		self::$pool[$config->getWikiId()][$clusterId] = $this;
-		$this->readOnly = (bool)array_search( $cluster, $assignment->getReadOnlyClusters() );
+		$this->readOnly = array_search( $cluster, $assignment->getReadOnlyClusters() ) !== false;
 	}
 
 	/**

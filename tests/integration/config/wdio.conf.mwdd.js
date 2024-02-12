@@ -11,7 +11,7 @@ exports.config = merge( wdioConf.config, {
 			{
 				outputDir: __dirname + '/../log',
 				outputFileFormat: function ( options ) {
-					return `results-${options.cid}-junit.xml`;
+					return `results-${ options.cid }-junit.xml`;
 				}
 
 			}

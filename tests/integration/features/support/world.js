@@ -33,9 +33,9 @@ class TagClient {
 			if ( this.tags[ tag ] ) {
 				return this.tags[ tag ];
 			}
-			log( `[D] TAG >> ${tag}`, this.silentLog );
+			log( `[D] TAG >> ${ tag }`, this.silentLog );
 			const response = yield this.post( { check: tag } );
-			log( `[D] TAG << ${tag}`, this.silentLog );
+			log( `[D] TAG << ${ tag }`, this.silentLog );
 			if ( response.status === 'complete' || response.status === 'reject' ) {
 				this.tags[ tag ] = response.status;
 			}
@@ -55,7 +55,7 @@ class TagClient {
 
 	post( data ) {
 		return request.post( {
-			uri: `http://unix:${this.unixSocketPath}:/tracker`,
+			uri: `http://unix:${ this.unixSocketPath }:/tracker`,
 			json: data
 		} );
 	}
@@ -102,7 +102,7 @@ function World( { attach, parameters } ) {
 
 		if ( !this.config.wikis[ wiki ] ) {
 			const available = Object.keys( this.config.wikis ).join( ', ' );
-			throw new Error( `In "World.onWiki(wiki)" wiki is not found: wiki=${wiki}; available=${available}` );
+			throw new Error( `In "World.onWiki(wiki)" wiki is not found: wiki=${ wiki }; available=${ available }` );
 		}
 
 		const w = this.config.wikis[ wiki ];
@@ -157,13 +157,13 @@ function World( { attach, parameters } ) {
 			params = 'title=' + page;
 		}
 		if ( !params ) {
-			throw new Error( `In "World.visit(page)" page is falsy: page=${page}` );
+			throw new Error( `In "World.visit(page)" page is falsy: page=${ page }` );
 		}
 		const tmpUrl = this.config.wikis[ wiki ].baseUrl + '?' + params;
-		log( `[D] Visiting page: ${tmpUrl}`, this.tags.silentLog );
+		log( `[D] Visiting page: ${ tmpUrl }`, this.tags.silentLog );
 		await browser.url( tmpUrl );
 		// logs full URL in case of typos, misplaced backslashes.
-		log( `[D] Visited page: ${browser.getUrl()}`, this.tags.silentLog );
+		log( `[D] Visited page: ${ browser.getUrl() }`, this.tags.silentLog );
 	};
 }
 

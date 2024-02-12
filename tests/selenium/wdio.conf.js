@@ -87,7 +87,7 @@ exports.config = {
 			{
 				outputDir: logPath,
 				outputFileFormat: function ( options ) {
-					return `results-${options.cid}-junit.xml`;
+					return `results-${ options.cid }-junit.xml`;
 				}
 
 			}

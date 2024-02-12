@@ -14,7 +14,7 @@ class SearchResultsPage extends Page {
 	 * @return {SearchResultsPage}
 	 */
 	search( search ) {
-		this.url_params = `title=Special:Search&search=${encodeURIComponent( search )}`;
+		this.url_params = `title=Special:Search&search=${ encodeURIComponent( search ) }`;
 		return this;
 	}
 
@@ -59,7 +59,7 @@ class SearchResultsPage extends Page {
 	async get_result_element_at( nth ) {
 		// Needs to use xpath to access an arbitrary parent from the child anchor
 		const resultLink = await browser.$(
-			`//a[@data-serp-pos="${nth - 1}"]//ancestor::li[contains(@class, "mw-search-result")]` );
+			`//a[@data-serp-pos="${ nth - 1 }"]//ancestor::li[contains(@class, "mw-search-result")]` );
 		if ( !await resultLink.isExisting() ) {
 			return null;
 		}
@@ -80,7 +80,7 @@ class SearchResultsPage extends Page {
 
 	async has_search_data_in_results( data ) {
 		const elt = await this.results_block();
-		return elt.$( `div.mw-search-result-data*=${data}` ).isExisting();
+		return elt.$( `div.mw-search-result-data*=${ data }` ).isExisting();
 	}
 
 	async get_search_alt_title_at( nth ) {
@@ -97,12 +97,12 @@ class SearchResultsPage extends Page {
 
 	async get_result_at( nth ) {
 		const elt = await this.results_block();
-		return elt.$( `a[data-serp-pos="${nth - 1}"]` ).getAttribute( 'title' );
+		return elt.$( `a[data-serp-pos="${ nth - 1 }"]` ).getAttribute( 'title' );
 	}
 
 	async in_search_results( title ) {
 		const elt = await this.results_block();
-		return elt.$( `a[title="${title}"]` ).isExisting();
+		return elt.$( `a[title="${ title }"]` ).isExisting();
 	}
 
 	async results_block() {
@@ -128,7 +128,7 @@ class SearchResultsPage extends Page {
 	 * @param {string} filter
 	 */
 	async click_filter( filter ) {
-		const linkSel = `a=${filter}`;
+		const linkSel = `a=${ filter }`;
 		return browser.$( 'div.search-types' ).$( linkSel ).click();
 	}
 
@@ -142,7 +142,7 @@ class SearchResultsPage extends Page {
 			throw new Error( "Cannot find the namespace filters, did you click on 'Advanced' first?" );
 		}
 		for ( const nsLabel of namespaceLabels ) {
-			const labelSel = `label=${nsLabel}`;
+			const labelSel = `label=${ nsLabel }`;
 			const label = await elt.$( labelSel );
 			if ( await label.isExisting() ) {
 				await label.click();
@@ -150,11 +150,11 @@ class SearchResultsPage extends Page {
 					return;
 				}
 			} else if ( !first ) {
-				throw new Error( `Count not find namespace labeled as ${nsLabel}` );
+				throw new Error( `Count not find namespace labeled as ${ nsLabel }` );
 			}
 		}
 		if ( first ) {
-			throw new Error( `Count not find any namespace link labeled as ${namespaceLabels.join()}` );
+			throw new Error( `Count not find any namespace link labeled as ${ namespaceLabels.join() }` );
 		}
 	}
 }

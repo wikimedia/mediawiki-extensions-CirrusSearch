@@ -26,7 +26,7 @@ When( /^I search for (.+)$/, async function ( search ) {
 } );
 
 Then( /^there is (no|a) link to create a new page from the search result$/, async function ( no_or_a ) {
-	const msg = `there is ${no_or_a} link to create a new page from the search result`;
+	const msg = `there is ${ no_or_a } link to create a new page from the search result`;
 	expect( await SearchResultsPage.has_create_page_link(), msg ).to.equal( no_or_a !== 'no' );
 } );
 
@@ -41,7 +41,7 @@ Then( /^there are no errors reported$/, async function () {
 } );
 
 Then( /^(.+) is the first search result( and has an image link)?$/, async function ( result, imagelink ) {
-	const msg = `${result} is the first search result`;
+	const msg = `${ result } is the first search result`;
 	if ( result === 'none' ) {
 		expect( await SearchResultsPage.has_search_results(), msg ).to.equal( false );
 	} else {
@@ -49,13 +49,13 @@ Then( /^(.+) is the first search result( and has an image link)?$/, async functi
 		expect( await SearchResultsPage.has_search_results(), msg ).to.equal( true );
 		expect( await SearchResultsPage.get_result_at( 1 ), msg ).to.equal( result );
 		if ( imagelink ) {
-			expect( await SearchResultsPage.get_result_image_link_at( 1 ), `${msg} : imagelink must exist` ).to.not.equal( null );
+			expect( await SearchResultsPage.get_result_image_link_at( 1 ), `${ msg } : imagelink must exist` ).to.not.equal( null );
 		}
 	}
 } );
 
 Then( /^(.+) is( not)? in the search results$/, async function ( result, not ) {
-	const msg = `${result} is${not === null ? '' : not} in the search results`;
+	const msg = `${ result } is${ not === null ? '' : not } in the search results`;
 	expect( await SearchResultsPage.is_on_srp(), msg ).to.equal( true );
 	if ( not === null ) {
 		expect( await SearchResultsPage.has_search_results(), msg ).to.equal( true );
@@ -91,7 +91,7 @@ Then( /^there is not alttitle on the first search result$/, async function () {
 } );
 
 Then( /^there are search results with \((.+)\) in the data$/, async function ( what ) {
-	const msg = `there are search results with ${what} in the data`;
+	const msg = `there are search results with ${ what } in the data`;
 	expect( await SearchResultsPage.is_on_srp() ).to.equal( true );
 	expect( await SearchResultsPage.has_search_results(), msg ).to.equal( true );
 	expect( await SearchResultsPage.has_search_data_in_results( what ), msg ).to.equal( true );

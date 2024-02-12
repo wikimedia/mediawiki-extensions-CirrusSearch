@@ -22,7 +22,7 @@ class SpecialUndelete extends TitlePage {
 
 	// nth is 1-indexed, not 0 like might be expected
 	async get_result_at( nth ) {
-		return browser.$( `.undeleteResult:nth-child(${nth}) a` ).getText();
+		return browser.$( `.undeleteResult:nth-child(${ nth }) a` ).getText();
 	}
 }
 

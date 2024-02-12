@@ -102,7 +102,7 @@ class Server {
 				server.close();
 			}
 			// The explicit design is to exit when requested by controlling process.
-			// eslint-disable-next-line no-process-exit
+
 			process.exit();
 		}
 	} );

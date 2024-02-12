@@ -214,7 +214,7 @@ class StepHelpers {
 					}
 				}
 				if ( Date.now() - start >= timeoutMs ) {
-					throw lastError || new Error( `Timeout out waiting for ${title}` );
+					throw lastError || new Error( `Timeout out waiting for ${ title }` );
 				}
 				yield this.waitForMs( 200 );
 			}
@@ -251,7 +251,7 @@ class StepHelpers {
 			const start = new Date();
 
 			const done = [];
-			const failedOps = ( ops, doneOps ) => ops.filter( ( v, idx ) => !doneOps.includes( idx ) ).map( ( v ) => `[${v[ 0 ]}:${v[ 1 ]}]` ).join();
+			const failedOps = ( ops, doneOps ) => ops.filter( ( v, idx ) => !doneOps.includes( idx ) ).map( ( v ) => `[${ v[ 0 ] }:${ v[ 1 ] }]` ).join();
 			while ( done.length !== operations.length ) {
 				let consecutiveFailures = 0;
 				for ( let i = 0; i < operations.length; i++ ) {
@@ -290,7 +290,7 @@ class StepHelpers {
 
 				if ( Date.now() - start >= timeoutMs ) {
 					const failed_ops = failedOps( operations, done );
-					throw new Error( `Timed out waiting for ${failed_ops}` );
+					throw new Error( `Timed out waiting for ${ failed_ops }` );
 				}
 				yield this.waitForMs( 50 );
 			}

@@ -304,7 +304,7 @@ exports.config = {
 		try {
 			forkedTracker.send( { exit: true } );
 		} catch ( err ) {
-			console.log( `Failed to send exit signal to tracker: ${err}` );
+			console.log( `Failed to send exit signal to tracker: ${ err }` );
 			// Force unlinking the socket
 			fs.unlinkSync( unixSocket );
 		}

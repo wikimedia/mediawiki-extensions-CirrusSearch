@@ -23,7 +23,7 @@ describe( 'Smoke test for search', function () {
 		assert.ok( await ArticlePage.has_search_suggestions() );
 		const expectedSuggestion = 'Main Page';
 		assert.equal( await ArticlePage.get_search_suggestion_at( 1 ), expectedSuggestion,
-			`${expectedSuggestion} is the first suggestion` );
+			`${ expectedSuggestion } is the first suggestion` );
 	} );
 
 	/**
@@ -38,7 +38,7 @@ describe( 'Smoke test for search', function () {
 		await ArticlePage.submit_search_top_right();
 		const expectedPage = 'Search results';
 		assert.equal( await ArticlePage.articleTitle(), expectedPage,
-			`I am on a page named ${expectedPage}` );
+			`I am on a page named ${ expectedPage }` );
 	} );
 
 	/**
@@ -52,7 +52,7 @@ describe( 'Smoke test for search', function () {
 		await ArticlePage.submit_search_top_right();
 		const expectedPage = 'África';
 		assert.equal( await ArticlePage.articleTitle(), expectedPage,
-			`I am on a page named ${expectedPage}` );
+			`I am on a page named ${ expectedPage }` );
 	} );
 
 } );

@@ -29,12 +29,12 @@ function withApi( world, fn ) {
 			const qs = Object.assign( {}, request.qs, request.form ),
 				href = request.uri + '?' + querystring.stringify( qs );
 
-			e.message += `\nLast Api: ${href}\nExtra: ` + JSON.stringify( world.apiResponse || world.apiError );
+			e.message += `\nLast Api: ${ href }\nExtra: ` + JSON.stringify( world.apiResponse || world.apiError );
 		} else {
 			e.message += '\nLast Api: UNKNOWN';
 		}
 		if ( world.apiError ) {
-			e.message += `\nError reported: ${JSON.stringify( world.apiError )}`;
+			e.message += `\nError reported: ${ JSON.stringify( world.apiError ) }`;
 		}
 		throw e;
 	}
@@ -59,7 +59,7 @@ const transformer = ( s ) => {
 	s = s.replace( /%ideographic_whitspace%/g, '\u3000' );
 
 	// Replace %{\uXXXX}% with the appropriate unicode code point
-	s = s.replace( /%\{\\u([\dA-Fa-f]{4,6})\}%/g, ( match, codepoint ) => JSON.parse( `"\\u${codepoint}"` ) );
+	s = s.replace( /%\{\\u([\dA-Fa-f]{4,6})\}%/g, ( match, codepoint ) => JSON.parse( `"\\u${ codepoint }"` ) );
 	s = Object.keys( searchVars ).reduce( ( str, pattern ) => str.replace( pattern, searchVars[ pattern ] ), s );
 	return s.replace( /%{exact:([^}]*)}/g, '$1' );
 };
@@ -193,7 +193,7 @@ function checkApiSearchResultStep( title, in_ok, indexes ) {
 			// Chai doesnt (yet) have a native assertion for this:
 			// https://github.com/chaijs/chai/issues/858
 			const ok = found.reduce( ( a, b ) => a || b.includes( title ), false );
-			expect( ok, `expected ${JSON.stringify( found )} to include "${title}"` ).to.equal( true );
+			expect( ok, `expected ${ JSON.stringify( found ) } to include "${ title }"` ).to.equal( true );
 		} else {
 			expect( found ).to.include( title );
 		}
@@ -212,7 +212,7 @@ Then( /^(.+) is( not)? part of the api search result$/, function ( title, not_se
 		// https://github.com/chaijs/chai/issues/858
 		const found = this.apiResponse.query.search.map( ( result ) => result.title );
 		const ok = found.reduce( ( a, b ) => a || b.includes( title ), false );
-		const msg = `Expected ${JSON.stringify( found )} to${not_searching ? ' not' : ''} include ${title}`;
+		const msg = `Expected ${ JSON.stringify( found ) } to${ not_searching ? ' not' : '' } include ${ title }`;
 
 		if ( not_searching ) {
 			expect( ok, msg ).to.equal( false );
@@ -372,7 +372,7 @@ Then( /^a file named (.+) exists( on commons)? with contents (.+) and descriptio
 } );
 
 Then( /^I am on a page titled (.+)$/, async function ( title ) {
-	expect( await ArticlePage.articleTitle(), `I am on ${title}` ).to.equal( title );
+	expect( await ArticlePage.articleTitle(), `I am on ${ title }` ).to.equal( title );
 } );
 
 Given( /^I am at a random page$/, async function () {
@@ -589,7 +589,7 @@ Then( /^A valid query dump for (.+) is produced$/, function ( query ) {
 		expect( this.apiResponse.__main__ ).to.include.keys(
 			'description', 'path', 'params', 'query', 'options' );
 		expect( this.apiResponse.__main__.description ).to.equal(
-			`full_text search for '${query}'` );
+			`full_text search for '${ query }'` );
 	} );
 } );
 

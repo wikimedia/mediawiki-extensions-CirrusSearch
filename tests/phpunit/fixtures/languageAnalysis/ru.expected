@@ -238,7 +238,7 @@
             ]
         },
         "near_space_flattener": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "'=>\\u0020",
                 "\\u2019=>\\u0020",

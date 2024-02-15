@@ -1175,7 +1175,9 @@ class AnalysisConfigBuilder {
 				withCharMap( $ruCharMap )->
 				build( $config );
 
-			// add Russian character mappings to near_space_flattener
+			// add Russian character mappings to near_space_flattener, and convert it from
+			// limited_mapping to mapping to handle multi-char maps
+			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'type' ] = 'mapping';
 			array_push( $config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ],
 				...$ruCharMap );
 

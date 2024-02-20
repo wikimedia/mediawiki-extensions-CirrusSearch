@@ -12,11 +12,14 @@ class GlobalCustomFilter {
 	/** @var string local filter to use instead if requiredPlugins are not available */
 	private $fallbackFilter = '';
 
+	/** @var string tokenizer that must be present to use the filter */
+	private $requiredTokenizer = '';
+
 	/** @var string[] filters this one must come after. see T268730 */
 	private $mustFollowFilters = [];
 
 	/** @var string[] languages where this filter should not be used, by language codes */
-	private $denyList = [];
+	private $languageDenyList = [];
 
 	/** @var string[] which analyzers to apply to; 'text' and 'text_search' by default */
 	private $applyToAnalyzers = [ 'text', 'text_search' ];
@@ -31,6 +34,15 @@ class GlobalCustomFilter {
 	 */
 	public function setRequiredPlugins( array $requiredPlugins ): self {
 		$this->requiredPlugins = $requiredPlugins;
+		return $this;
+	}
+
+	/**
+	 * @param string $requiredTokenizer
+	 * @return self
+	 */
+	public function setRequiredTokenizer( string $requiredTokenizer ): self {
+		$this->requiredTokenizer = $requiredTokenizer;
 		return $this;
 	}
 
@@ -53,11 +65,11 @@ class GlobalCustomFilter {
 	}
 
 	/**
-	 * @param string[] $denyList
+	 * @param string[] $languageDenyList
 	 * @return self
 	 */
-	public function setDenyList( array $denyList ): self {
-		$this->denyList = $denyList;
+	public function setLanguageDenyList( array $languageDenyList ): self {
+		$this->languageDenyList = $languageDenyList;
 		return $this;
 	}
 
@@ -90,6 +102,22 @@ class GlobalCustomFilter {
 	}
 
 	/**
+	 * check to see if the filter is compatible with the configured tokenizer
+	 *
+	 * @param mixed[] $analyzerConfig
+	 * @return bool
+	 */
+	public function requiredTokenizerUsed( array $analyzerConfig ): bool {
+		if ( $this->requiredTokenizer ) {
+			if ( !array_key_exists( 'tokenizer', $analyzerConfig ) ||
+					$analyzerConfig[ 'tokenizer' ] != $this->requiredTokenizer ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * update languages with global custom filters (e.g., homoglyph & nnbsp filters)
 	 *
 	 * @param mixed[] $config
@@ -103,7 +131,7 @@ class GlobalCustomFilter {
 		foreach ( $customFilters as $gcf => $gcfInfo ) {
 			$filterName = $gcf;
 
-			if ( !in_array( $language, $gcfInfo->denyList ) ) {
+			if ( !in_array( $language, $gcfInfo->languageDenyList ) ) {
 				$filterIsUsable = $gcfInfo->pluginsAvailable( $installedPlugins );
 
 				if ( !$filterIsUsable && $gcfInfo->fallbackFilter ) {
@@ -137,7 +165,9 @@ class GlobalCustomFilter {
 			return $config;
 		}
 
-		if ( $config['analyzer'][$analyzer]['type'] == 'custom' ) {
+		if ( $config['analyzer'][$analyzer]['type'] == 'custom' &&
+				$filterInfo->requiredTokenizerUsed( $config['analyzer'][$analyzer] )
+				) {
 			$filters = $config['analyzer'][$analyzer][$filterInfo->type] ?? [];
 
 			$lastMustFollow = -1;

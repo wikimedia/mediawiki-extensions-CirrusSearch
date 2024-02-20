@@ -137,44 +137,46 @@
         },
         "text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
                 "thai_repl_pat",
                 "dotted_I_fix",
-                "thai_charfilter"
+                "thai_charfilter",
+                "thai_reversed_numbers"
             ],
             "filter": [
+                "icu_token_repair",
                 "homoglyph_norm",
                 "icu_normalizer",
                 "decimal_digit",
                 "thai_stop",
                 "asciifolding"
             ],
-            "tokenizer": "icu_tokenizer",
+            "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
         },
         "text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
                 "thai_repl_pat",
                 "dotted_I_fix",
-                "thai_charfilter"
+                "thai_charfilter",
+                "thai_reversed_numbers"
             ],
             "filter": [
+                "icu_token_repair",
                 "homoglyph_norm",
                 "icu_normalizer",
                 "decimal_digit",
                 "thai_stop",
                 "asciifolding"
             ],
-            "tokenizer": "icu_tokenizer",
+            "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
         },
         "token_reverse": {
@@ -201,7 +203,13 @@
         }
     },
     "char_filter": {
-        "apostrophe_norm": {
+        "dotted_I_fix": {
+            "type": "limited_mapping",
+            "mappings": [
+                "\u0130=>I"
+            ]
+        },
+        "globo_norm": {
             "type": "limited_mapping",
             "mappings": [
                 "`=>'",
@@ -222,13 +230,17 @@
                 "\u2035=>'",
                 "\ua78c=>'",
                 "\uff07=>'",
-                "\uff40=>'"
-            ]
-        },
-        "dotted_I_fix": {
-            "type": "limited_mapping",
-            "mappings": [
-                "\u0130=>I"
+                "\uff40=>'",
+                "\\u202F=>\\u0020",
+                "\u02c8=>",
+                "\u02cc=>",
+                "\\u0640=>",
+                "\u066c=>,",
+                "\u060c=>,",
+                "\u055b=>",
+                "\u055c=>",
+                "\u055e=>",
+                "\u00b5=>\u03bc"
             ]
         },
         "near_space_flattener": {
@@ -281,6 +293,21 @@
             "pattern": "(?<=\\p{Nd})([\u0e01-\u0e4f])|(?<=[\u0e01-\u0e4f])(\\p{Nd})|(?<=[\u0e01-\u0e4f])\\.([\u0e01-\u0e4f])",
             "replacement": " $1$2$3"
         },
+        "thai_reversed_numbers": {
+            "type": "limited_mapping",
+            "mappings": [
+                "0=>\\u0e50",
+                "1=>\\u0e51",
+                "2=>\\u0e52",
+                "3=>\\u0e53",
+                "4=>\\u0e54",
+                "5=>\\u0e55",
+                "6=>\\u0e56",
+                "7=>\\u0e57",
+                "8=>\\u0e58",
+                "9=>\\u0e59"
+            ]
+        },
         "word_break_helper": {
             "type": "limited_mapping",
             "mappings": [
@@ -291,7 +318,8 @@
                 ")=>\\u0020",
                 "\uff0e=>\\u0020",
                 "\uff3f=>\\u0020",
-                "\uff1a=>\\u0020"
+                "\uff1a=>\\u0020",
+                "\u00b7=>\\u0020"
             ]
         },
         "word_break_helper_source_text": {

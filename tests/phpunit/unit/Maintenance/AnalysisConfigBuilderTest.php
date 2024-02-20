@@ -149,7 +149,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$this->assertEquals( [ 'text', 'text_search' ],
 			$builder->globalCustomFilters[ 'homoglyph_norm' ]->getApplyToAnalyzers() );
 
-		$builder->globalCustomFilters[ 'homoglyph_norm' ]->setDenyList( [ 'xx' ] );
+		$builder->globalCustomFilters[ 'homoglyph_norm' ]->setLanguageDenyList( [ 'xx' ] );
 		$result = $builder->enableGlobalCustomFilters( $input, 'xx' );
 		$this->assertEquals( $input[ 'analyzer' ], $result[ 'analyzer' ] );
 	}

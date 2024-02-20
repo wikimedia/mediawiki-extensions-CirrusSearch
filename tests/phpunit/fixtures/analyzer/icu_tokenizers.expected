@@ -24,8 +24,7 @@
         },
         "bo_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -38,8 +37,7 @@
         },
         "bo_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -74,8 +72,7 @@
         },
         "bug_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -88,8 +85,7 @@
         },
         "bug_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -124,8 +120,7 @@
         },
         "cdo_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -138,8 +133,7 @@
         },
         "cdo_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -174,8 +168,7 @@
         },
         "cr_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -188,8 +181,7 @@
         },
         "cr_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -224,8 +216,7 @@
         },
         "dz_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -238,8 +229,7 @@
         },
         "dz_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -274,8 +264,7 @@
         },
         "gan_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -288,8 +277,7 @@
         },
         "gan_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -324,8 +312,7 @@
         },
         "hak_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -338,8 +325,7 @@
         },
         "hak_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -378,8 +364,7 @@
         },
         "ja_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
@@ -399,8 +384,7 @@
         },
         "ja_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
@@ -442,8 +426,7 @@
         },
         "jv_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -456,8 +439,7 @@
         },
         "jv_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -492,8 +474,7 @@
         },
         "km_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -506,8 +487,7 @@
         },
         "km_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -542,8 +522,7 @@
         },
         "lo_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -556,8 +535,7 @@
         },
         "lo_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -592,8 +570,7 @@
         },
         "lzh_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -606,8 +583,7 @@
         },
         "lzh_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -642,8 +618,7 @@
         },
         "my_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -656,8 +631,7 @@
         },
         "my_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -692,8 +666,7 @@
         },
         "nan_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -706,8 +679,7 @@
         },
         "nan_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -746,8 +718,7 @@
         },
         "th_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
@@ -767,8 +738,7 @@
         },
         "th_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
@@ -810,8 +780,7 @@
         },
         "wuu_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -824,8 +793,7 @@
         },
         "wuu_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -860,8 +828,7 @@
         },
         "yue_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -874,8 +841,7 @@
         },
         "yue_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -910,8 +876,7 @@
         },
         "zh-classical_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -924,8 +889,7 @@
         },
         "zh-classical_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -960,8 +924,7 @@
         },
         "zh-min-nan_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -974,8 +937,7 @@
         },
         "zh-min-nan_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -1010,8 +972,7 @@
         },
         "zh-yue_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -1024,8 +985,7 @@
         },
         "zh-yue_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -1060,8 +1020,7 @@
         },
         "zh_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase"
             ],
@@ -1073,8 +1032,7 @@
         },
         "zh_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase"
             ],
@@ -1086,7 +1044,20 @@
         }
     },
     "char_filter": {
-        "apostrophe_norm": {
+        "cjk_charfilter": {
+            "mappings": [
+                "\u309b=>\\u3099",
+                "\u309c=>\\u309a"
+            ],
+            "type": "mapping"
+        },
+        "dotted_I_fix": {
+            "mappings": [
+                "\u0130=>I"
+            ],
+            "type": "mapping"
+        },
+        "globo_norm": {
             "mappings": [
                 "`=>'",
                 "\u00b4=>'",
@@ -1106,20 +1077,17 @@
                 "\u2035=>'",
                 "\ua78c=>'",
                 "\uff07=>'",
-                "\uff40=>'"
-            ],
-            "type": "mapping"
-        },
-        "cjk_charfilter": {
-            "mappings": [
-                "\u309b=>\\u3099",
-                "\u309c=>\\u309a"
-            ],
-            "type": "mapping"
-        },
-        "dotted_I_fix": {
-            "mappings": [
-                "\u0130=>I"
+                "\uff40=>'",
+                "\\u202F=>\\u0020",
+                "\u02c8=>",
+                "\u02cc=>",
+                "\\u0640=>",
+                "\u066c=>,",
+                "\u060c=>,",
+                "\u055b=>",
+                "\u055c=>",
+                "\u055e=>",
+                "\u00b5=>\u03bc"
             ],
             "type": "mapping"
         },
@@ -1172,7 +1140,8 @@
                 ")=>\\u0020",
                 "\uff0e=>\\u0020",
                 "\uff3f=>\\u0020",
-                "\uff1a=>\\u0020"
+                "\uff1a=>\\u0020",
+                "\u00b7=>\\u0020"
             ],
             "type": "mapping"
         }

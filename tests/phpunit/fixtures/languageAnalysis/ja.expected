@@ -137,8 +137,7 @@
         },
         "text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
@@ -157,8 +156,7 @@
         },
         "text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
@@ -199,7 +197,28 @@
         }
     },
     "char_filter": {
-        "apostrophe_norm": {
+        "dotted_I_fix": {
+            "type": "limited_mapping",
+            "mappings": [
+                "\u0130=>I"
+            ]
+        },
+        "fullwidthnumfix": {
+            "type": "limited_mapping",
+            "mappings": [
+                "\\uff10=>0",
+                "\\uff11=>1",
+                "\\uff12=>2",
+                "\\uff13=>3",
+                "\\uff14=>4",
+                "\\uff15=>5",
+                "\\uff16=>6",
+                "\\uff17=>7",
+                "\\uff18=>8",
+                "\\uff19=>9"
+            ]
+        },
+        "globo_norm": {
             "type": "limited_mapping",
             "mappings": [
                 "`=>'",
@@ -220,28 +239,17 @@
                 "\u2035=>'",
                 "\ua78c=>'",
                 "\uff07=>'",
-                "\uff40=>'"
-            ]
-        },
-        "dotted_I_fix": {
-            "type": "limited_mapping",
-            "mappings": [
-                "\u0130=>I"
-            ]
-        },
-        "fullwidthnumfix": {
-            "type": "limited_mapping",
-            "mappings": [
-                "\\uff10=>0",
-                "\\uff11=>1",
-                "\\uff12=>2",
-                "\\uff13=>3",
-                "\\uff14=>4",
-                "\\uff15=>5",
-                "\\uff16=>6",
-                "\\uff17=>7",
-                "\\uff18=>8",
-                "\\uff19=>9"
+                "\uff40=>'",
+                "\\u202F=>\\u0020",
+                "\u02c8=>",
+                "\u02cc=>",
+                "\\u0640=>",
+                "\u066c=>,",
+                "\u060c=>,",
+                "\u055b=>",
+                "\u055c=>",
+                "\u055e=>",
+                "\u00b5=>\u03bc"
             ]
         },
         "near_space_flattener": {
@@ -280,7 +288,8 @@
                 ")=>\\u0020",
                 "\uff0e=>\\u0020",
                 "\uff3f=>\\u0020",
-                "\uff1a=>\\u0020"
+                "\uff1a=>\\u0020",
+                "\u00b7=>\\u0020"
             ]
         },
         "word_break_helper_source_text": {

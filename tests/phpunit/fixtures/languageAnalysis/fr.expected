@@ -139,8 +139,7 @@
         },
         "text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
@@ -161,8 +160,7 @@
         },
         "text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
@@ -205,7 +203,19 @@
         }
     },
     "char_filter": {
-        "apostrophe_norm": {
+        "dotted_I_fix": {
+            "type": "limited_mapping",
+            "mappings": [
+                "\u0130=>I"
+            ]
+        },
+        "french_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\\u02BC=>\\u0027"
+            ]
+        },
+        "globo_norm": {
             "type": "limited_mapping",
             "mappings": [
                 "`=>'",
@@ -226,19 +236,17 @@
                 "\u2035=>'",
                 "\ua78c=>'",
                 "\uff07=>'",
-                "\uff40=>'"
-            ]
-        },
-        "dotted_I_fix": {
-            "type": "limited_mapping",
-            "mappings": [
-                "\u0130=>I"
-            ]
-        },
-        "french_charfilter": {
-            "type": "mapping",
-            "mappings": [
-                "\\u02BC=>\\u0027"
+                "\uff40=>'",
+                "\\u202F=>\\u0020",
+                "\u02c8=>",
+                "\u02cc=>",
+                "\\u0640=>",
+                "\u066c=>,",
+                "\u060c=>,",
+                "\u055b=>",
+                "\u055c=>",
+                "\u055e=>",
+                "\u00b5=>\u03bc"
             ]
         },
         "near_space_flattener": {
@@ -277,7 +285,8 @@
                 ")=>\\u0020",
                 "\uff0e=>\\u0020",
                 "\uff3f=>\\u0020",
-                "\uff1a=>\\u0020"
+                "\uff1a=>\\u0020",
+                "\u00b7=>\\u0020"
             ]
         },
         "word_break_helper_source_text": {

@@ -54,6 +54,16 @@ class AnalysisConfigBuilder {
 	private $icu;
 
 	/**
+	 * @var bool is the textify plugin available?
+	 */
+	private $textify;
+
+	/**
+	 * @var string which ICU tokenizer should be used
+	 */
+	private $icu_tokenizer = 'icu_tokenizer';
+
+	/**
 	 * @var array Similarity algo (tf/idf, bm25, etc) configuration
 	 */
 	private $similarity;
@@ -114,6 +124,11 @@ class AnalysisConfigBuilder {
 			}
 		}
 		$this->icu = in_array( 'analysis-icu', $plugins );
+		$this->textify = in_array( 'extra-analysis-textify', $plugins );
+		if ( $this->isTextifyAvailable() ) {
+			// icu_token_repair can only work with the textify icu_tokenizer clone
+			$this->icu_tokenizer = 'textify_icu_tokenizer';
+		}
 		$config ??= MediaWikiServices::getInstance()->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
 		$similarity = $config->getProfileService()->loadProfile( SearchProfileService::SIMILARITY );
@@ -159,13 +174,13 @@ class AnalysisConfigBuilder {
 	}
 
 	/**
-	 * Determine if the icu tokenizer can be enabled
+	 * Determine if the icu_tokenizer can replace the standard tokenizer for this language
 	 * @param string $language Config language
 	 * @return bool
 	 */
 	public function shouldActivateIcuTokenization( $language ) {
-		if ( !$this->isIcuAvailable() ) {
-			// requires the icu plugin
+		if ( !$this->isIcuAvailable() && !$this->isTextifyAvailable() ) {
+			// requires the icu or textify plugin
 			return false;
 		}
 		$in_config = $this->config->get( 'CirrusSearchUseIcuTokenizer' );
@@ -175,7 +190,10 @@ class AnalysisConfigBuilder {
 		case 'no':
 			return false;
 		case 'default':
-			return $this->languagesWithIcuTokenization[$language] ?? false;
+			// languagesWithIcuTokenization[] gives absolute answers for specific languages.
+			// If the textify plugin is available, the default is 'yes'/true because we
+			// have icu_token_repair available; if not, the default is 'no'/false
+			return $this->languagesWithIcuTokenization[$language] ?? $this->isTextifyAvailable();
 		default:
 			return false;
 		}
@@ -191,16 +209,19 @@ class AnalysisConfigBuilder {
 		$language ??= $this->defaultLanguage;
 		$config = $this->customize( $this->defaults( $language ), $language );
 		$this->cirrusSearchHookRunner->onCirrusSearchAnalysisConfig( $config, $this );
-		$config = $this->enableGlobalCustomFilters( $config, $language );
 		if ( $this->shouldActivateIcuTokenization( $language ) ) {
 			$config = $this->enableICUTokenizer( $config );
 		}
+
+		// must follow enableICUTokenizer()
+		$config = $this->enableGlobalCustomFilters( $config, $language );
+
 		if ( $this->shouldActivateIcuFolding( $language ) ) {
 			$config = $this->enableICUFolding( $config, $language );
 		}
 		$config = $this->fixAsciiFolding( $config );
 		$config = $this->standardTokenizerOnlyCleanup( $config );
-		if ( !in_array( 'extra-analysis-textify', $this->plugins ) ) {
+		if ( !$this->isTextifyAvailable() ) {
 			$config = $this->disableLimitedMappings( $config );
 		}
 
@@ -225,7 +246,7 @@ class AnalysisConfigBuilder {
 				continue;
 			}
 			if ( isset( $value[ 'tokenizer' ] ) && $value[ 'tokenizer' ] === 'standard' ) {
-				$value[ 'tokenizer' ] = 'icu_tokenizer';
+				$value[ 'tokenizer' ] = $this->icu_tokenizer;
 			}
 		}
 		return $config;
@@ -684,10 +705,13 @@ class AnalysisConfigBuilder {
 					'pattern' => '(?<=(?:^|\\P{L})\\p{L})[.．](\\p{L})(?=\\P{L}|$)',
 					'replacement' => '$1'
 				],
-				// map lots of apostrophe-like characters to apostrophe (T315118)
-				'apostrophe_norm' => [
+				// combine universally-applied mappings into one mapping to save on the
+				// overhead of calling multiple mappings
+				'globo_norm' => [
 					'type' => 'limited_mapping',
 					'mappings' => [
+						// map lots of apostrophe-like characters to apostrophe (T315118);
+						// formerly apostrophe_norm
 						"`=>'",		 // grave accent
 						"´=>'",		 // acute accent
 						"ʹ=>'",		 // modifier letter prime
@@ -707,6 +731,28 @@ class AnalysisConfigBuilder {
 						"ꞌ=>'",		 // Latin small letter saltillo
 						"＇=>'",		 // fullwidth apostrophe
 						"｀=>'",		 // fullwidth grave accent
+						// map narrow no-break space to plain space to compensate for ES6.x+
+						// analyzers generally not doing so; copied from nnbsp_norm, which
+						// is still needed elsewhere
+						'\u202F=>\u0020',
+						// Delete primary and secondary stress markers, which are
+						// inconsistently used across phonetic transcriptions
+						"ˈ=>", // modifier letter vertical line
+						"ˌ=>", // modifier letter low vertical line
+						// Delete Arabic tatweel (ـ) (used largely for cosmetic purposes)
+						"\u0640=>", // tatweel
+						// Convert Arabic thousand separator and Arabic comma to comma for
+						// more consistent number parsing
+						"٬=>,", // Arabic thousands separator
+						"،=>,", // Arabic comma
+						// delete Armenian emphasis marks, exclamation marks, and question
+						// marks, since they modify words rather than follow them.
+						"՛=>", // Armenian emphasis mark
+						"՜=>", // Armenian exclamation mark
+						"՞=>", // Armenian question mark
+						// micro sign to mu, to prevent some unneeded ICU tokenizer splits
+						// icu_normalize does this, too.. just later
+						"µ=>μ",
 					],
 				],
 				// Converts things that don't always count as word breaks into spaces
@@ -725,6 +771,8 @@ class AnalysisConfigBuilder {
 						'．=>\u0020',
 						'＿=>\u0020',
 						'：=>\u0020',
+						// middle dot
+						'·=>\u0020',
 					],
 				],
 				'word_break_helper_source_text' => [
@@ -757,6 +805,12 @@ class AnalysisConfigBuilder {
 					'filter' => [ 'lowercase' ],
 				];
 			}
+		}
+		if ( $this->isTextifyAvailable() && $this->shouldActivateIcuTokenization( $language ) ) {
+			$defaults[ 'filter' ][ 'icutokrep_no_camel_split' ] = [
+				'type' => 'icu_token_repair',
+				'keep_camel_split' => false
+			];
 		}
 		if ( $this->isIcuAvailable() ) {
 			$defaults[ 'filter' ][ 'icu_normalizer' ] = [
@@ -1234,17 +1288,18 @@ class AnalysisConfigBuilder {
 				'\u0E4D\u0E34=>\u0E36', // .. in either order
 			];
 
-			// by default use the Thai tokenizer
-			$thaiTokenizer = 'thai';
-			$thCharPatReplFilters = [];
+			// instantiate basic unpacked analyzer builder, plus thai tokenizer by default
+			$thBuilder = ( new AnalyzerBuilder( $langName ) )
+				->withUnpackedAnalyzer()
+				->withTokenizer( 'thai' );
 
 			if ( $this->isIcuAvailable() ) {
-				// ICU tokenizer is preferred in general. If it is available, also
-				// add char pattern_replace filter to accommodate some of its weaknesses
-				$thaiTokenizer = 'icu_tokenizer';
+				// ICU tokenizer is preferred in general. If it is available, replace
+				// default tokenizer. Also add thai_repl_pat char filter to accommodate
+				// some of its weaknesses.
+				$thBuilder->withTokenizer( $this->icu_tokenizer );
 
 				$thaiLetterPat = '[ก-๏]'; // Thai characters, except for digits.
-
 				$config[ 'char_filter' ][ 'thai_repl_pat' ] =
 					// break between any digits and Thai letters, or vice versa
 					// break *Thai* tokens on periods (by making them spaces)
@@ -1253,7 +1308,13 @@ class AnalysisConfigBuilder {
 						"|(?<=$thaiLetterPat)(\\p{Nd})" .
 						"|(?<=$thaiLetterPat)\.($thaiLetterPat)",
 						' $1$2$3' );
-				$thCharPatReplFilters = [ 'thai_repl_pat' ];
+				$thBuilder->withCharFilters( [ 'thai_repl_pat' ] );
+
+				// if icu_token_repair (in the textify plugin) is available, we need a
+				// reverse number map so it doesn't rejoin split-off Arabic numbers.
+				if ( $this->isTextifyAvailable() ) {
+					$thBuilder->withReversedNumberCharFilter( 0x0e50 );
+				}
 			} else {
 				// if we have to settle for the Thai tokenizer, add some additional
 				// character filters to accommodate some of its weaknesses
@@ -1270,11 +1331,8 @@ class AnalysisConfigBuilder {
 				array_push( $thCharMap, ...$thThaiTokSplits );
 			}
 
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withCharMap( $thCharMap )->
-				withCharFilters( $thCharPatReplFilters )->
-				withTokenizer( $thaiTokenizer )->
+			// add in the rest of the bits that are always needed, and build
+			$config = $thBuilder->withCharMap( $thCharMap )->
 				withDecimalDigit()->
 				omitStemmer()->
 				build( $config );
@@ -1560,6 +1618,13 @@ class AnalysisConfigBuilder {
 	}
 
 	/**
+	 * @return bool true if the textify plugin is available.
+	 */
+	public function isTextifyAvailable() {
+		return $this->textify;
+	}
+
+	/**
 	 * update languages with global custom filters (e.g., homoglyph & nnbsp filters)
 	 *
 	 * @param mixed[] $config
@@ -1681,10 +1746,15 @@ class AnalysisConfigBuilder {
 	];
 
 	/**
-	 * @var bool[] indexed by language code, languages where ICU tokenization
-	 * can be enabled by default
+	 * @var bool[] indexed by language code, indicates whether languages should always
+	 * replace the standard tokenizer with the icu_tokenizer by default (true), or should
+	 * never use any version of the icu_tokenizer, even when icu_token_repair is
+	 * available (false). (Reminder to future readers of this code: languages with
+	 * non-standard tokenizers in the text field, like zh/Chinese, still use icu_tokenizer
+	 * in the plain fields & suggest fields.)
 	 */
 	private $languagesWithIcuTokenization = [
+		// true => use any version of icu_tokenizer available over the standard tokenizer
 		'bo' => true,
 		'dz' => true,
 		'gan' => true,
@@ -1707,6 +1777,10 @@ class AnalysisConfigBuilder {
 		'jv' => true,
 		'nan' => true, // zh-min-nan
 		'zh-min-nan' => true, // deprecated code for nan
+
+		// false => do not use any version of icu_tokenizer (i.e., textify_icu_tokenzier)
+		// over the standard tokenizer, even when icu_token_repair is available
+		// 'xyz' => false, // <-- example entry for now, since there are no actual instances
 	];
 
 	/**
@@ -1753,10 +1827,9 @@ class AnalysisConfigBuilder {
 	 */
 	private static function buildGlobalCustomFilters(): array {
 		$gcf = [
+			//////////////////////////
 			// char filters
-			'nnbsp_norm' => new GlobalCustomFilter( 'char_filter' ),
-
-			'apostrophe_norm' => new GlobalCustomFilter( 'char_filter' ),
+			'globo_norm' => new GlobalCustomFilter( 'char_filter' ),
 
 			'acronym_fixer' => ( new GlobalCustomFilter( 'char_filter' ) )->
 				// follow armenian_charfilter, which normalizes another period-like
@@ -1778,9 +1851,24 @@ class AnalysisConfigBuilder {
 				//   character, if it is being used
 				setMustFollowFilters( [ 'acronym_fixer', 'regex_acronym_fixer',
 					'armenian_charfilter' ] )->
-				setDenyList( [ 'ko', 'zh' ] ),
+				setLanguageDenyList( [ 'ko', 'zh' ] ),
 
-			// filters
+			//////////////////////////
+			// token filters
+			'icu_token_repair' => ( new GlobalCustomFilter( 'filter' ) )->
+				// apply icu_token_repair to icu_tokenizer-using analyzers
+				// (default == text & text_search)
+				setRequiredPlugins( [ 'extra-analysis-textify' ] )->
+				setRequiredTokenizer( 'textify_icu_tokenizer' ),
+
+			'icutokrep_no_camel_split' => ( new GlobalCustomFilter( 'filter' ) )->
+				// apply icu_token_repair variant to non-camelCase-splitting
+				// icu_tokenizer-using analyzers when textify_icu_tokenizer is used
+				setRequiredPlugins( [ 'extra-analysis-textify' ] )->
+				setApplyToAnalyzers( [ 'plain', 'plain_search', 'suggest', 'suggest_reverse',
+					'source_text_plain', 'source_text_plain_search', 'word_prefix' ] )->
+				setRequiredTokenizer( 'textify_icu_tokenizer' ),
+
 			'homoglyph_norm' => ( new GlobalCustomFilter( 'filter' ) )->
 				// aggressive_splitting has weird graph problems and creating
 				// multiple tokens makes it blow up

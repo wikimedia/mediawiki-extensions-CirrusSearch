@@ -57,6 +57,9 @@ class AnalyzerBuilder {
 	/** @var int|null Unicode value for script-specific zero */
 	private $langZero;
 
+	/** @var bool should langZero's map be reversed (Arabic to non-Arabic)? */
+	private $numCharMapReversed = false;
+
 	/** @var string|null name of char filter mapping digits (using $langZero) */
 	private $numCharMapName;
 
@@ -190,9 +193,22 @@ class AnalyzerBuilder {
 	 * @param string|null $name
 	 * @return self
 	 */
-	public function withNumberCharFilter( int $langZero, string $name = null ): self {
+	public function withReversedNumberCharFilter( int $langZero, string $name = null ): self {
+		$this->withNumberCharFilter( $langZero, $name, true );
+		return $this;
+	}
+
+	/**
+	 * @param int $langZero
+	 * @param string|null $name
+	 * @param bool $reversed reverse the mapping from Arabic to non-Arabic
+	 * @return self
+	 */
+	public function withNumberCharFilter( int $langZero, string $name = null, bool $reversed = false ): self {
+		$defName = $reversed ? "{$this->langName}_reversed_numbers" : "{$this->langName}_numbers";
 		$this->langZero = $langZero;
-		$this->numCharMapName = $name ?? "{$this->langName}_numbers";
+		$this->numCharMapName = $name ?? $defName;
+		$this->numCharMapReversed = $reversed;
 		return $this;
 	}
 
@@ -456,7 +472,7 @@ class AnalyzerBuilder {
 
 		if ( $this->numCharMapName ) {
 			$config[ 'char_filter' ][ $this->numCharMapName ] =
-				$this->numberCharFilter( $this->langZero );
+				$this->numberCharFilter( $this->langZero, $this->numCharMapReversed );
 		}
 
 		if ( $this->elisionName ) {
@@ -530,15 +546,24 @@ class AnalyzerBuilder {
 	/**
 	 * Create a character filter that maps non-Arabic digits (e.g., ០-៩ or ０-９) to
 	 * Arabic digits (0-9). Since they are usually all in a row, we just need the
-	 * starting digit (equal to 0)
+	 * starting digit (equal to 0).
+	 *
+	 * Optionally reverse the mapping from Arabic to non-Arabic. For example, the ICU
+	 * tokenizer works better on tokenizing Thai digits in Thai text than it does on
+	 * Arabic digits.
 	 *
 	 * @param int $langZero
+	 * @param bool $reversed reverse the mapping from Arabic to non-Arabic
 	 * @return mixed[] character filter
 	 */
-	public static function numberCharFilter( int $langZero ): array {
+	public static function numberCharFilter( int $langZero, bool $reversed = false ): array {
 		$numMap = [];
 		for ( $i = 0; $i <= 9; $i++ ) {
-		  $numMap[] = sprintf( '\\u%04x=>%d', $langZero + $i, $i );
+			if ( $reversed ) {
+				$numMap[] = sprintf( '%d=>\\u%04x', $i, $langZero + $i );
+			} else {
+				$numMap[] = sprintf( '\\u%04x=>%d', $langZero + $i, $i );
+			}
 		}
 		return self::mappingCharFilter( $numMap, true );
 	}

@@ -28,8 +28,7 @@
         },
         "he_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -42,8 +41,7 @@
         },
         "he_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -78,8 +76,7 @@
         },
         "uk_text": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -92,8 +89,7 @@
         },
         "uk_text_search": {
             "char_filter": [
-                "nnbsp_norm",
-                "apostrophe_norm",
+                "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper"
@@ -106,7 +102,7 @@
         }
     },
     "char_filter": {
-        "apostrophe_norm": {
+        "globo_norm": {
             "mappings": [
                 "`=>'",
                 "\u00b4=>'",
@@ -126,7 +122,17 @@
                 "\u2035=>'",
                 "\ua78c=>'",
                 "\uff07=>'",
-                "\uff40=>'"
+                "\uff40=>'",
+                "\\u202F=>\\u0020",
+                "\u02c8=>",
+                "\u02cc=>",
+                "\\u0640=>",
+                "\u066c=>,",
+                "\u060c=>,",
+                "\u055b=>",
+                "\u055c=>",
+                "\u055e=>",
+                "\u00b5=>\u03bc"
             ],
             "type": "mapping"
         },
@@ -155,7 +161,8 @@
                 ")=>\\u0020",
                 "\uff0e=>\\u0020",
                 "\uff3f=>\\u0020",
-                "\uff1a=>\\u0020"
+                "\uff1a=>\\u0020",
+                "\u00b7=>\\u0020"
             ],
             "type": "mapping"
         }

@@ -2,18 +2,19 @@
 	"@metadata": {
 		"authors": [
 			"Snævar",
-			"Sveinn í Felli"
+			"Sveinn í Felli",
+			"Stefán Örvar Sigmundsson"
 		]
 	},
 	"cirrussearch-desc": "Leit fyrir MediaWiki, knúin af Elasticsearch",
 	"cirrussearch-backend-error": "Við gátum ekki lokið leitinni þinni vegna tímabundinnar villu. Vinsamlegast reyndu aftur síðar.",
 	"cirrussearch-parse-error": "Fyrirspurnin skildist ekki. Vinsamlegast gerðu hana einfaldari. Fyrirspurnin hefur verið skráð til að bæta leitarkerfið.",
 	"cirrussearch-too-busy-error": "Of mikið álag er á leitina. Vinsamlegast reyndu aftur síðar.",
-	"cirrussearch-regex-syntax-error": "Málskipunar villa í reglulegri segð við $2: $1",
+	"cirrussearch-regex-syntax-error": "Málskipanarvilla reglulegrar segðar við $2 : $1",
 	"cirrussearch-regex-too-busy-error": "Það eru of margar leitir með reglulegum segðum í gangi. Vinsamlegast reyndu aftur síðar.",
 	"cirrussearch-regex-too-complex-error": "Reglulega segðin er of flókin. Lærðu meira um hvernig þú getur einfaldað hana [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|hér]].",
 	"cirrussearch-now-using": "Þessi wiki notar nýja leitarvél. ([[mw:Special:MyLanguage/Help:CirrusSearch|Læra meira]])",
-	"cirrussearch-ignored-headings": " #<!-- leave this line exactly as it is --> <pre>\n# Headings that will be ignored by search.\n# Changes to this take effect as soon as the page with the heading is indexed.\n# You can force page reindexing by doing a null edit.\n# The syntax is as follows:\n#   * Everything from a \"#\" character to the end of the line is a comment.\n#   * Every non-blank line is the exact title to ignore, case and everything.\nReferences\nExternal links\nSee also\n #</pre> <!-- leave this line exactly as it is -->",
+	"cirrussearch-ignored-headings": " #<!-- skildu eftir þessa línu nákvæmlega eins og hún er --> <pre>\n# Fyrirsagnir sem verða hunsaðar við leit.\n# Breytingar á þessu taka gildi um leið og síðan með fyrirsögninni er atriðaskráð.\n# Þú getur þvingað enduratriðaskráningu síðu með því að gera núllbreytingu.\n# Málskipan er sem hér segir:\n#   * Allt frá „#“-rittákninu til loka línunnar er athugasemd.\n#   * Sérhver lína sem ekki er auð er nákvæmlega titillinn til að hunsa, hástafanæmi og allt.\nHeimildir\nYtri tenglar\nSjá einnig\n #</pre> <!-- skildu eftir þessa línu nákvæmlega eins og hún er -->",
 	"cirrussearch-pref-label": "Ný leit",
 	"cirrussearch-give-feedback": "Gefðu okkur svörun",
 	"cirrussearch-explore-similar-related": "Tengt",

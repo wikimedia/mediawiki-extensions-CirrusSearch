@@ -69,7 +69,10 @@ class ExpectedIndices extends Maintenance {
 				? [ $requested ]
 				: [];
 		}
-		return $assignment->getWritableClusters();
+		return array_merge(
+			$assignment->getWritableClusters(),
+			$assignment->getReadOnlyClusters()
+		);
 	}
 
 	private function allIndexNames( Connection $conn ): array {

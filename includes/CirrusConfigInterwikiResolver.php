@@ -15,10 +15,10 @@ class CirrusConfigInterwikiResolver extends BaseInterwikiResolver {
 	 * @return bool true if this resolver can run with the specified config
 	 */
 	public static function accepts( SearchConfig $config ) {
-		if ( !empty( $config->get( 'CirrusSearchInterwikiSources' ) ) ) {
+		if ( $config->get( 'CirrusSearchInterwikiSources' ) ) {
 			return true;
 		}
-		if ( !empty( $config->get( 'CirrusSearchWikiToNameMap' ) ) ) {
+		if ( $config->get( 'CirrusSearchWikiToNameMap' ) ) {
 			return true;
 		}
 		return false;

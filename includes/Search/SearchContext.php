@@ -387,14 +387,14 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	public function isSpecialKeywordUsed() {
 		// full_text is not considered a special keyword
 		// TODO: investigate using BasicQueryClassifier::SIMPLE_BAG_OF_WORDS instead
-		return !empty( array_diff_key( $this->syntaxUsed, [
+		return array_diff_key( $this->syntaxUsed, [
 			'full_text' => true,
 			'full_text_simple_match' => true,
 			'full_text_querystring' => true,
 			BasicQueryClassifier::SIMPLE_BAG_OF_WORDS => true,
 			BasicQueryClassifier::SIMPLE_PHRASE => true,
 			BasicQueryClassifier::BAG_OF_WORDS_WITH_PHRASE => true,
-		] ) );
+		] ) !== [];
 	}
 
 	/**

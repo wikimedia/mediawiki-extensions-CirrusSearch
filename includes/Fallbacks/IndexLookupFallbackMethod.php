@@ -241,7 +241,7 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 			return FallbackStatus::noSuggestion();
 		}
 		$resultSet = $context->getMethodResponse();
-		if ( empty( $resultSet->getResults() ) ) {
+		if ( !$resultSet->getResults() ) {
 			return FallbackStatus::noSuggestion();
 		}
 		$res = $resultSet->getResults()[0];

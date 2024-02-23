@@ -235,11 +235,11 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		// on other wikis.
 		if ( $config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'use' )
 			&& ( !$this->query->getCrossSearchStrategy()->isExtraIndicesSearchSupported()
-				|| empty( OtherIndexesUpdater::getExtraIndexesForNamespaces(
+				|| !OtherIndexesUpdater::getExtraIndexesForNamespaces(
 					$config,
 					$this->query->getNamespaces()
 				)
-			 ) )
+			 )
 		) {
 			$settings['phrase']['direct_generator'][] = [
 				'field' => $field . '.reverse',

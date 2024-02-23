@@ -4,7 +4,6 @@ $cfg = require __DIR__ . '/../vendor/mediawiki/mediawiki-phan-config/src/config.
 
 // To migrate later
 $cfg['suppress_issue_types'][] = 'MediaWikiNoBaseException';
-$cfg['suppress_issue_types'][] = 'MediaWikiNoEmptyIfDefined';
 
 $cfg['directory_list'] = array_merge(
 	$cfg['directory_list'],

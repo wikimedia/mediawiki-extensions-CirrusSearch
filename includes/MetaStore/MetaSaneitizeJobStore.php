@@ -3,6 +3,7 @@
 namespace CirrusSearch\MetaStore;
 
 use Elastica\Index;
+use InvalidArgumentException;
 use MediaWiki\WikiMap\WikiMap;
 
 class MetaSaneitizeJobStore implements MetaStore {
@@ -78,7 +79,7 @@ class MetaSaneitizeJobStore implements MetaStore {
 	 */
 	public function update( \Elastica\Document $jobInfo ) {
 		if ( $jobInfo->get( 'type' ) != self::METASTORE_TYPE ) {
-			throw new \Exception( "Wrong document type" );
+			throw new InvalidArgumentException( "Wrong document type" );
 		}
 		$jobInfo->set( 'sanitize_job_updated', time() );
 		$params = $jobInfo->getParams();

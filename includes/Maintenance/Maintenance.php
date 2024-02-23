@@ -9,6 +9,7 @@ use CirrusSearch\UserTestingEngine;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Settings\SettingsBuilder;
 use MediaWiki\Status\Status;
+use RuntimeException;
 
 // Maintenance class is loaded before autoload, so we need to pull the interface
 require_once __DIR__ . '/Printer.php';
@@ -233,7 +234,7 @@ abstract class Maintenance extends \Maintenance implements Printer {
 	protected function requireCirrusReady() {
 		// If the version does not exist it's certainly because nothing has been indexed.
 		if ( !$this->getMetaStore()->cirrusReady() ) {
-			throw new \Exception(
+			throw new RuntimeException(
 				"Cirrus meta store does not exist, you must index your data first"
 			);
 		}

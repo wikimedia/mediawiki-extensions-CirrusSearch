@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-use Exception;
+use LogicException;
 
 class EmptySearchResultSet extends BaseCirrusSearchResultSet {
 	/** @var bool */
@@ -20,7 +20,7 @@ class EmptySearchResultSet extends BaseCirrusSearchResultSet {
 	 */
 	protected function transformOneResult( \Elastica\Result $result ) {
 		// @phan-suppress-previous-line PhanPluginNeverReturnMethod
-		throw new Exception( "An empty ResultSet has nothing to transform" );
+		throw new LogicException( "An empty ResultSet has nothing to transform" );
 	}
 
 	/**

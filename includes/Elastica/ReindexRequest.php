@@ -7,6 +7,7 @@ use Elastica\Index;
 use Elastica\Request;
 use Elastica\Response;
 use InvalidArgumentException;
+use RuntimeException;
 
 class ReindexRequest {
 	/** @var array */
@@ -111,7 +112,7 @@ class ReindexRequest {
 		$response = $this->client->request( '_reindex', Request::POST, $this->toArray(), $query );
 
 		if ( !$response->isOK() ) {
-			throw new \Exception( $response->hasError()
+			throw new RuntimeException( $response->hasError()
 				? 'Failed reindex request: ' . $response->getErrorMessage()
 				: 'Unknown reindex failure: ' . $response->getStatus()
 			);

@@ -6,6 +6,7 @@ use Elastica\Client;
 use Elastica\Exception\ResponseException;
 use Elastica\Exception\RuntimeException;
 use Elastica\Request;
+use LogicException;
 use MediaWiki\Logger\LoggerFactory;
 
 class ReindexTask {
@@ -51,7 +52,7 @@ class ReindexTask {
 	 */
 	public function cancel() {
 		if ( $this->response ) {
-			throw new \Exception( 'Cannot cancel completed task' );
+			throw new LogicException( 'Cannot cancel completed task' );
 		}
 
 		$response = $this->client->request( "_tasks/{$this->taskId}/_cancel", Request::POST );
@@ -67,7 +68,7 @@ class ReindexTask {
 	 */
 	public function delete() {
 		if ( !$this->response ) {
-			throw new \Exception( 'Cannot delete in-progress task' );
+			throw new LogicException( 'Cannot delete in-progress task' );
 		}
 		$response =
 			$this->client->getIndex( '.tasks' )->deleteById( $this->taskId );

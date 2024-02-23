@@ -21,6 +21,7 @@ use CirrusSearch\Query\KeywordFeature;
 use CirrusSearch\Query\PrefixFeature;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\Util;
+use LogicException;
 use Message;
 use Wikimedia\Assert\Assert;
 
@@ -439,7 +440,7 @@ class QueryStringRegexParser implements QueryParser {
 					Assert::postcondition( $left !== null, '$left must not be null' );
 					break;
 				default:
-					throw new \Exception( "BUG: unexpected token type {$this->token->getType()}" );
+					throw new LogicException( "BUG: unexpected token type {$this->token->getType()}" );
 			}
 		}
 

@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Elastica;
 
-use Exception;
+use LogicException;
 
 class ReindexResponse extends ReindexStatus {
 	/**
@@ -14,7 +14,6 @@ class ReindexResponse extends ReindexStatus {
 
 	/**
 	 * @return string The reason the reindex was unsuccessful
-	 * @throws Exception If the reindex completed successfully
 	 */
 	public function getUnsuccessfulReason() {
 		if ( $this->isCanceled() ) {
@@ -22,7 +21,7 @@ class ReindexResponse extends ReindexStatus {
 		} elseif ( $this->isFailed() ) {
 			return "Failed: " . json_encode( $this->getFailures() );
 		} else {
-			throw new Exception( "Request was successful" );
+			throw new LogicException( "Request was successful" );
 		}
 	}
 

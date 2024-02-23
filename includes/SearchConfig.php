@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
+use LogicException;
 use MediaWiki\Config\Config;
 use MediaWiki\Config\GlobalVarConfig;
 use MediaWiki\MediaWikiServices;
@@ -216,7 +217,7 @@ class SearchConfig implements Config {
 			// instead?
 			return (int)$docId;
 		default:
-			throw new \Exception( "Invalid document id: $docId" );
+			throw new LogicException( "Invalid document id: $docId" );
 		}
 	}
 

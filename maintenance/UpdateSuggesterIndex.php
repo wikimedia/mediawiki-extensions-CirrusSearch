@@ -13,6 +13,7 @@ use Elastica\Query;
 use Elastica\Request;
 use Elastica\Status;
 use MediaWiki\Extension\Elastica\MWElasticUtils;
+use RuntimeException;
 
 /**
  * Update the search configuration on the search backend for the title
@@ -629,7 +630,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	private function createIndex() {
 		// This is "create only" for now.
 		if ( $this->getIndex()->exists() ) {
-			throw new \Exception( "Index already exists." );
+			throw new RuntimeException( "Index already exists." );
 		}
 
 		$mappingConfigBuilder = new SuggesterMappingConfigBuilder();

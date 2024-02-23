@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use Exception;
+use LogicException;
 use MediaWiki\Extension\Elastica\ElasticaConnection;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\Assert\Assert;
@@ -244,7 +245,7 @@ class Connection extends ElasticaConnection {
 		$matches = [];
 		$possible = implode( '|', array_map( 'preg_quote', $this->getAllIndexSuffixes( null ) ) );
 		if ( !preg_match( "/_($possible)_[^_]+$/", $name, $matches ) ) {
-			throw new Exception( "Can't parse index name: $name" );
+			throw new LogicException( "Can't parse index name: $name" );
 		}
 
 		return $matches[1];

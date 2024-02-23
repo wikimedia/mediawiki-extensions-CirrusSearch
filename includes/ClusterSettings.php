@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use RuntimeException;
+
 /**
  * Handles resolving configuration variables into specific settings
  * for a specific cluster.
@@ -54,7 +56,7 @@ class ClusterSettings {
 		} elseif ( isset( $settings[$indexSuffix] ) ) {
 			return $settings[$indexSuffix];
 		}
-		throw new \Exception( "Could not find a shard count for "
+		throw new RuntimeException( "Could not find a shard count for "
 			. "{$indexSuffix}. Did you add an index to "
 			. "\$wgCirrusSearchNamespaceMappings but forget to "
 			. "add it to \$wgCirrusSearchShardCount?" );
@@ -75,7 +77,7 @@ class ClusterSettings {
 		} elseif ( isset( $settings[$indexSuffix] ) ) {
 			return $settings[$indexSuffix];
 		}
-		throw new \Exception( "If \$wgCirrusSearchReplicas is " .
+		throw new RuntimeException( "If \$wgCirrusSearchReplicas is " .
 			"an array it must contain all index types." );
 	}
 

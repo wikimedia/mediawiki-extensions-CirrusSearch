@@ -234,7 +234,7 @@ class MetaStoreIndex {
 			}
 			$overlap = array_intersect_key( $properties, $storeProperties );
 			if ( $overlap ) {
-				throw new \Exception( 'Metastore property overlap on: ' . implode( ', ', array_keys( $overlap ) ) );
+				throw new \RuntimeException( 'Metastore property overlap on: ' . implode( ', ', array_keys( $overlap ) ) );
 			}
 			$properties += $storeProperties;
 		}
@@ -259,7 +259,7 @@ class MetaStoreIndex {
 		}
 
 		if ( $oldIndexName == $name ) {
-			throw new \Exception(
+			throw new \RuntimeException(
 				"Cannot switch aliases old and new index names are identical: $name"
 			);
 		}
@@ -306,7 +306,7 @@ class MetaStoreIndex {
 		foreach ( $resp->getData() as $index => $aliases ) {
 			if ( isset( $aliases['aliases'][self::INDEX_NAME] ) ) {
 				if ( $indexName !== null ) {
-					throw new \Exception( "Multiple indices are aliased with " . self::INDEX_NAME .
+					throw new \RuntimeException( "Multiple indices are aliased with " . self::INDEX_NAME .
 						", please fix manually." );
 				}
 				$indexName = $index;
@@ -321,7 +321,7 @@ class MetaStoreIndex {
 			throw new \RuntimeException( (string)$pluginsStatus );
 		}
 		if ( !array_search( 'reindex', $pluginsStatus->getValue() ) ) {
-			throw new \Exception( "The reindex module is mandatory to upgrade the metastore" );
+			throw new \RuntimeException( "The reindex module is mandatory to upgrade the metastore" );
 		}
 		$index = $this->createNewIndex( (string)time() );
 		// Reindex everything except the internal type, it's not clear

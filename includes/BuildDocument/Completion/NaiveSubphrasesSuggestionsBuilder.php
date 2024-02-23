@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\BuildDocument\Completion;
 
+use UnexpectedValueException;
+
 /**
  * Simple class for SuggestionsBuilder that needs to munge the title
  * into a list of "subphrases" suggestions.
@@ -52,7 +54,7 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 	public static function create( array $config ) {
 		$limit = $config['limit'] ?? self::MAX_SUBPHRASES;
 		if ( !isset( self::$RANGES_BY_TYPE[$config['type']] ) ) {
-			throw new \Exception( "Unsupported NaiveSubphrasesSuggestionsBuilder type " .
+			throw new UnexpectedValueException( "Unsupported NaiveSubphrasesSuggestionsBuilder type " .
 				$config['type'] );
 		}
 		$cr = self::$RANGES_BY_TYPE[$config['type']];

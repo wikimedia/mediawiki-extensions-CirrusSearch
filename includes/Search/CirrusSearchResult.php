@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use File;
+use LogicException;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use SearchResult;
@@ -98,7 +99,7 @@ abstract class CirrusSearchResult extends SearchResult {
 	 * @return never
 	 */
 	final protected function initText() {
-		throw new \Exception( "initText() should not be called on CirrusSearchResult, " .
+		throw new LogicException( "initText() should not be called on CirrusSearchResult, " .
 			"content must be fetched directly from the backend at query time." );
 	}
 

@@ -17,6 +17,8 @@
 	"cirrussearch-now-using": "Овај вики користи нови претраживач. ([[mw:Special:MyLanguage/Help:CirrusSearch|Сазнајте више]])",
 	"cirrussearch-pref-label": "Нова претрага",
 	"cirrussearch-give-feedback": "Дајте нам Ваше мишљење.",
+	"cirrussearch-query-too-long": "Прекорачен максималан број карактера за претрагу. ($1; максимум: $2)",
+	"cirrussearch-query-too-long-with-exemptions": "Прекорачен максималан број карактера за претрагу. ($1; максимум: $2, не рачунајући $3)",
 	"cirrussearch-completion-profile-fast-fuzzy": "Експериментални фази профил (може се уклонити било када)",
 	"cirrussearch-qi-profile-wsum-inclinks-pv": "Пондерисана сума на основу долазних веза и седмичног броја прегледа",
 	"cirrussearch-qi-profile-wsum-inclinks": "Пондерисана сума на основу долазних веза",

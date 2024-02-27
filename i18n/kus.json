@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Bugirbiig"
+			"Bugirbiig",
+			"Reedy"
 		]
 	},
-	"cirrussearch-desc": "Mediawiki ieb anɛ ieb linɛ ka' paŋa",
+	"cirrussearch-desc": "MediaWiki ieb anɛ ieb linɛ ka' paŋa",
 	"cirrussearch-backend-error": "Yɛlsi'a kɛ ka ti pʋ nyaŋi naae fʋn ied si'el la. M bɛlimnɛ, li ya'a niŋ bi'ela fʋ mɔɔ gɔs ya'as.",
 	"cirrussearch-parse-error": "Ti pʋ gban'e fʋ bu'osʋg la gbinnɛ. M bɛlimnɛ maligim bu'os sʋ'ʋŋa. Ti su'a fʋ bu'osʋg la nɛ ye ti maal ieb bʋn la sʋ'ʋŋa.",
 	"cirrussearch-too-busy-error": "Ieb la galisnɛ nannanna nwa. M bɛlimnɛ, maligim ie saŋa bi'ela.",

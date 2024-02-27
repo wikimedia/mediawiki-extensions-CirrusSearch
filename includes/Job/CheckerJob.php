@@ -180,7 +180,7 @@ class CheckerJob extends CirrusGenericJob {
 		$isOld = null;
 		$reindexAfterLoops = $profile['reindex_after_loops'] ?? null;
 		if ( $reindexAfterLoops ) {
-			$isOld = self::makeIsOldClosure(
+			$isOld = Checker::makeIsOldClosure(
 				$this->params['loopId'],
 				$reindexAfterLoops
 			);
@@ -224,8 +224,7 @@ class CheckerJob extends CirrusGenericJob {
 			) );
 
 		$ranges = array_chunk( range( $from, $to ), $batchSize );
-		// @phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-		while ( $pageIds = array_shift( $ranges ) ) {
+		foreach ( $ranges as $pageIds ) {
 			if ( self::getPressure() > $maxPressure ) {
 				$this->retry( "too much pressure on update jobs", reset( $pageIds ) );
 				return true;
@@ -246,29 +245,6 @@ class CheckerJob extends CirrusGenericJob {
 			$multiClusterRemediator->sendBatch();
 		}
 		return true;
-	}
-
-	/**
-	 * Decide if a document should be reindexed based on time since last reindex
-	 *
-	 * Consider a page as old every $numCycles times the saneitizer loops over
-	 * the same document. This ensures documents have been reindexed within the
-	 * last `$numCycles * actual_loop_duration` (note that the configured
-	 * duration is min_loop_duration, but in practice configuration ensures min
-	 * and actual are typically the same).
-	 *
-	 * @param int $loopId The number of times the checker has looped over
-	 *  the document set.
-	 * @param int $numCycles The number of loops after which a document
-	 *  is considered old.
-	 * @return \Closure
-	 */
-	private static function makeIsOldClosure( $loopId, $numCycles ) {
-		$loopMod = $loopId % $numCycles;
-		return static function ( \WikiPage $page ) use ( $numCycles, $loopMod ) {
-			$pageIdMod = $page->getId() % $numCycles;
-			return $pageIdMod == $loopMod;
-		};
 	}
 
 	/**

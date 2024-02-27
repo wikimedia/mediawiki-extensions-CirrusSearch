@@ -56,7 +56,7 @@ class BufferedRemediator implements Remediator {
 	}
 
 	/**
-	 * The list of recorded actions (for Unit Tests)
+	 * The list of recorded actions
 	 * @return array
 	 */
 	public function getActions() {

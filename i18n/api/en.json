@@ -25,5 +25,12 @@
 	"apierror-compsuggestbuilddoc-bad-method": "Unknown scoring method",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Dump of the document used by the completion suggester",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "Get a dump of the document used by the completion suggester",
-	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Provide a score method name to be used by the completion suggester"
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Provide a score method name to be used by the completion suggester",
+	"apihelp-cirrus-check-sanity-summary": "Reports on the correctness of a range of page ids in the search index",
+	"apihelp-cirrus-check-sanity-example": "Get a report on the correctness of a range of page ids in the search index",
+	"apihelp-cirrus-check-sanity-param-cluster": "The search cluster to check indices in",
+	"apihelp-cirrus-check-sanity-param-from": "Page id to start checking at",
+	"apihelp-cirrus-check-sanity-param-limit": "The number of page ids to check",
+	"apihelp-cirrus-check-sanity-param-sequenceid": "The number of times this set of page ids has been checked",
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Number of checks after which a page should be rerendered. Based off the provided sequenceid."
 }

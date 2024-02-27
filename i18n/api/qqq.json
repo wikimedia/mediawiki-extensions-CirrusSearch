@@ -36,5 +36,12 @@
 	"apierror-compsuggestbuilddoc-bad-method": "{{doc-apierror}} Invalid value for param method",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "{{doc-apihelp-summary|query+cirruscompsuggestbuilddoc}}",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "{{doc-apihelp-example|query+cirruscompsuggestbuilddoc}}",
-	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "{{doc-apihelp-param|query+cirruscompsuggestbuilddoc|method}}"
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "{{doc-apihelp-param|query+cirruscompsuggestbuilddoc|method}}",
+	"apihelp-cirrus-check-sanity-summary": "{{doc-apihelp-summary|cirrus-check-sanity}}",
+	"apihelp-cirrus-check-sanity-example": "{{doc-apihelp-example|cirrus-check-sanity}}",
+	"apihelp-cirrus-check-sanity-param-cluster": "{{doc-apihelp-param|cirrus-check-sanity|cluster}}",
+	"apihelp-cirrus-check-sanity-param-from": "{{doc-apihelp-param|cirrus-check-sanity|from}}",
+	"apihelp-cirrus-check-sanity-param-limit": "{{doc-apihelp-param|cirrus-check-sanity|limit}}",
+	"apihelp-cirrus-check-sanity-param-sequenceid": "{{doc-apihelp-param|cirrus-check-sanity|sequenceid}}",
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "{{doc-apihelp-param|cirrus-check-sanity|rerenderfrequency}}"
 }

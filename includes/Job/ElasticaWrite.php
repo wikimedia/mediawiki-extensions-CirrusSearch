@@ -5,6 +5,7 @@ namespace CirrusSearch\Job;
 use CirrusSearch\ClusterSettings;
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
+use CirrusSearch\UpdateGroup;
 use Liuggio\StatsdClient\Factory\StatsdDataFactoryInterface;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -46,6 +47,7 @@ class ElasticaWrite extends CirrusGenericJob {
 
 	/**
 	 * @param ClusterSettings $cluster
+	 * @param string $updateGroup UpdateGroup::* constant
 	 * @param string $method
 	 * @param array $arguments
 	 * @param array $params
@@ -55,6 +57,7 @@ class ElasticaWrite extends CirrusGenericJob {
 	 */
 	public static function build(
 		ClusterSettings $cluster,
+		string $updateGroup,
 		string $method,
 		array $arguments,
 		array $params = [],
@@ -69,6 +72,7 @@ class ElasticaWrite extends CirrusGenericJob {
 			// to use during partitioning. The job queue must be separately
 			// configured to utilize this value.
 			'jobqueue_partition' => self::partitioningKey( $cluster ),
+			'update_group' => $updateGroup,
 			CirrusTitleJob::UPDATE_KIND => $updateKind,
 			CirrusTitleJob::ROOT_EVENT_TIME => $rootEventTime
 		] + $params );
@@ -121,7 +125,9 @@ class ElasticaWrite extends CirrusGenericJob {
 			'retryCount' => 0,
 			'cluster' => null,
 			CirrusTitleJob::UPDATE_KIND => null,
-			CirrusTitleJob::ROOT_EVENT_TIME => null
+			CirrusTitleJob::ROOT_EVENT_TIME => null,
+			// BC for jobs created pre-1.42
+			'update_group' => UpdateGroup::PAGE,
 		] );
 	}
 
@@ -148,7 +154,7 @@ class ElasticaWrite extends CirrusGenericJob {
 	protected function doJob() {
 		// While we can only have a single connection per job, we still
 		// use decideClusters() which includes a variety of safeguards.
-		$connections = $this->decideClusters();
+		$connections = $this->decideClusters( $this->params['update_group'] );
 		if ( !$connections ) {
 			// Chosen cluster no longer exists in configuration.
 			return true;

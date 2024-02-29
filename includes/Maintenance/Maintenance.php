@@ -106,12 +106,6 @@ abstract class Maintenance extends \Maintenance implements Printer {
 	 */
 	public function getConnection( $cluster = null ) {
 		if ( $cluster ) {
-			if ( !$this->getSearchConfig() instanceof SearchConfig ) {
-				// We shouldn't ever get here ... but the makeConfig type signature returns the parent
-				// class of SearchConfig so just being extra careful...
-				throw new \RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' .
-					get_class( $this->getSearchConfig() ) );
-			}
 			$connection = Connection::getPool( $this->getSearchConfig(), $cluster );
 		} else {
 			if ( $this->connection === null ) {
@@ -131,6 +125,12 @@ abstract class Maintenance extends \Maintenance implements Printer {
 			$this->searchConfig = MediaWikiServices::getInstance()
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );
+			if ( !$this->searchConfig instanceof SearchConfig ) {
+				// We shouldn't ever get here ... but the makeConfig type signature returns the parent
+				// class of SearchConfig so just being extra careful...
+				throw new \RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' .
+					get_class( $this->searchConfig ) );
+			}
 		}
 		return $this->searchConfig;
 	}

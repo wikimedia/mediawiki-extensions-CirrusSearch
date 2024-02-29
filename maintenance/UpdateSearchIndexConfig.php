@@ -94,7 +94,7 @@ class UpdateSearchIndexConfig extends Maintenance {
 
 	/**
 	 * Convenience method to interperet the 'all' cluster
-	 * as a request to run against each of the writable clusters.
+	 * as a request to run against each of the known clusters.
 	 *
 	 * @return string[]
 	 */
@@ -103,7 +103,7 @@ class UpdateSearchIndexConfig extends Maintenance {
 		if ( $cluster === 'all' ) {
 			return $this->getSearchConfig()
 				->getClusterAssignment()
-				->getWritableClusters();
+				->getAllKnownClusters();
 		} else {
 			// single specified cluster. May be null, which
 			// indirectly selects the default search cluster.

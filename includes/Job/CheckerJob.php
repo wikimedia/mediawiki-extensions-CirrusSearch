@@ -12,6 +12,7 @@ use CirrusSearch\Sanity\LogOnlyRemediator;
 use CirrusSearch\Sanity\MultiClusterRemediatorHelper;
 use CirrusSearch\Sanity\QueueingRemediator;
 use CirrusSearch\Searcher;
+use CirrusSearch\UpdateGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 
@@ -135,7 +136,7 @@ class CheckerJob extends CirrusGenericJob {
 			return true;
 		}
 
-		$connections = $this->decideClusters( true );
+		$connections = $this->decideClusters( UpdateGroup::CHECK_SANITY );
 		if ( !$connections ) {
 			return true;
 		}
@@ -195,9 +196,11 @@ class CheckerJob extends CirrusGenericJob {
 		$perClusterRemediators = [];
 		$perClusterBufferedRemediators = [];
 		$logger = LoggerFactory::getInstance( 'CirrusSearch' );
+		$assignment = $this->searchConfig->getClusterAssignment();
 		foreach ( $connections as $cluster => $connection ) {
 			$searcher = new Searcher( $connection, 0, 0, $this->searchConfig, [], null );
-			$remediator = $connection->isReadOnly() ? new LogOnlyRemediator( $logger ) : new QueueingRemediator( $cluster );
+			$remediator = $assignment->canWriteToCluster( $cluster, UpdateGroup::SANEITIZER )
+				? new QueueingRemediator( $cluster ) : new LogOnlyRemediator( $logger );
 			$bufferedRemediator = new BufferedRemediator();
 			$checker = new Checker(
 				$this->searchConfig,

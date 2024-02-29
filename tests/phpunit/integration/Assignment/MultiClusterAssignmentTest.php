@@ -5,6 +5,7 @@ namespace CirrusSearch\Assignment;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\UpdateGroup;
 
 /**
  * @covers \CirrusSearch\Assignment\MultiClusterAssignment
@@ -21,7 +22,7 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 			'CirrusSearchReplicaGroup' => 'default',
 		] ) );
 		$this->assertEquals( 'mycluster', $clusters->getSearchCluster() );
-		$this->assertEquals( [ 'mycluster' ], $clusters->getWritableClusters() );
+		$this->assertEquals( [ 'mycluster' ], $clusters->getWritableClusters( 'default' ) );
 		$this->assertEquals( [ '127.0.0.1' ], $clusters->getServerList( 'mycluster' ) );
 		// Should this throw exception? Cross cluster usage is invalid
 		// with a single elasticsearch cluster, but it probably doesn't matter.
@@ -88,7 +89,7 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 
 		$this->assertEquals( $name, $clusters->getCrossClusterName() );
 		$this->assertEquals( $search, $clusters->getSearchCluster() );
-		$this->assertEquals( $writable, $clusters->getWritableClusters() );
+		$this->assertEquals( $writable, $clusters->getWritableClusters( 'default' ) );
 	}
 
 	public function testMultipleGroupsRequiresReplicaGroupConfiguration() {
@@ -179,7 +180,7 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 			'_wikiID' => 'aawiki',
 		] + $defaults ) );
 
-		$this->assertEquals( [ 'eqiad', 'codfw', 'cloud' ], $clusters->getWritableClusters() );
+		$this->assertEquals( [ 'eqiad', 'codfw', 'cloud' ], $clusters->getWritableClusters( 'default' ) );
 		$this->assertEquals( 'eqiad', $clusters->getSearchCluster() );
 		$this->assertEquals( 'b', $clusters->getCrossClusterName() );
 		$this->assertEquals( [ 'search-b.svc.eqiad.wmnet:9201' ], $clusters->getServerList() );
@@ -189,7 +190,7 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 		$this->assertNotEquals( $clusters->uniqueId( 'eqiad' ), $clusters->uniqueId( 'codfw' ) );
 	}
 
-	public function testWritableClusters() {
+	public function testGenericWritableClusters() {
 		$this->setMwGlobals( [
 			'wgCirrusSearchClusters' => [
 				'one' => [],
@@ -202,11 +203,28 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 		// Unclear if it's right to not filter out with available cluster
 		// ElasticaWrite should error out if the cluster is unknown tho.
 		$assignment = $config->getClusterAssignment();
-		$this->assertEquals( [ 'one', 'two', 'unknown' ], $assignment->getWritableClusters() );
-		$this->assertTrue( $assignment->canWriteToCluster( 'one' ) );
-		$this->assertTrue( $assignment->canWriteToCluster( 'unknown' ) );
-		$this->assertFalse( $assignment->canWriteToCluster( 'readonly' ) );
-		$this->assertEquals( [ 'readonly' ], $assignment->getReadOnlyClusters() );
+		$this->assertEquals( [ 'one', 'two', 'unknown' ], $assignment->getWritableClusters( 'default' ) );
+		$this->assertTrue( $assignment->canWriteToCluster( 'one', UpdateGroup::PAGE ) );
+		$this->assertTrue( $assignment->canWriteToCluster( 'unknown', UpdateGroup::PAGE ) );
+		$this->assertFalse( $assignment->canWriteToCluster( 'readonly', UpdateGroup::PAGE ) );
+	}
+
+	public function testUseCaseWritableClusters() {
+		$this->setMwGlobals( [
+			'wgCirrusSearchClusters' => [
+			],
+			'wgCirrusSearchWriteClusters' => [
+				'default' => [ 'one', 'two', 'unknown' ],
+				'archive' => [ 'one' ],
+			],
+		] );
+		$config = new SearchConfig();
+		$assignment = $config->getClusterAssignment();
+		$this->assertEquals( [ 'one', 'two', 'unknown' ], $assignment->getWritableClusters( UpdateGroup::PAGE ) );
+		$this->assertEquals( [ 'one' ], $assignment->getWritableClusters( UpdateGroup::ARCHIVE ) );
+		$this->assertTrue( $assignment->canWriteToCluster( 'one', UpdateGroup::ARCHIVE ) );
+		$this->assertFalse( $assignment->canWriteToCluster( 'two', UpdateGroup::ARCHIVE ) );
+		$this->assertTrue( $assignment->canWriteToCluster( 'two', UpdateGroup::SANEITIZER ) );
 	}
 
 	public function testReplicasMustExist() {

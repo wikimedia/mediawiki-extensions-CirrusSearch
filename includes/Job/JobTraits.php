@@ -59,10 +59,10 @@ trait JobTraits {
 	 * NOTE: only suited for jobs that work on multiple clusters by
 	 * inspecting the 'cluster' job param
 	 *
-	 * @param bool $includeReadOnly
+	 * @param string $updateGroup UpdateGroup::* constant
 	 * @return Connection[] indexed by cluster name
 	 */
-	protected function decideClusters( bool $includeReadOnly = false ) {
+	protected function decideClusters( string $updateGroup ) {
 		$params = $this->getParams();
 		$searchConfig = $this->getSearchConfig();
 		$jobType = $this->getType();
@@ -70,13 +70,8 @@ trait JobTraits {
 		$cluster = $params['cluster'] ?? null;
 		$assignment = $searchConfig->getClusterAssignment();
 		if ( $cluster === null ) {
-			$clusterNames = $assignment->getWritableClusters();
-			if ( $includeReadOnly ) {
-				$clusterNames = array_merge( $clusterNames, $assignment->getReadOnlyClusters() );
-			}
-		} elseif ( !$includeReadOnly && $assignment->canWriteToCluster( $cluster ) ) {
-			$clusterNames = [ $cluster ];
-		} elseif ( $includeReadOnly && $assignment->hasCluster( $cluster ) ) {
+			$clusterNames = $assignment->getWritableClusters( $updateGroup );
+		} elseif ( $assignment->canWriteToCluster( $cluster, $updateGroup ) ) {
 			$clusterNames = [ $cluster ];
 		} else {
 			// Just in case a job is present in the queue but its cluster
@@ -89,7 +84,7 @@ trait JobTraits {
 				]
 			);
 			// this job does not allow retries so we just need to throw an exception
-			throw new \RuntimeException( "Received {$jobType} job for an unwritable cluster $cluster." );
+			throw new \RuntimeException( "Received {$jobType} job with {$updateGroup} updates for an unwritable cluster $cluster." );
 		}
 
 		$config = $searchConfig;

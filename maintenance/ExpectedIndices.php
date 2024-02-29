@@ -64,15 +64,11 @@ class ExpectedIndices extends Maintenance {
 	private function requestedClusters( ?string $requested ): array {
 		$assignment = $this->getSearchConfig()->getClusterAssignment();
 		if ( $requested !== null ) {
-			// Single cluster
-			return $assignment->canWriteToCluster( $requested )
+			return $assignment->hasCluster( $requested )
 				? [ $requested ]
 				: [];
 		}
-		return array_merge(
-			$assignment->getWritableClusters(),
-			$assignment->getReadOnlyClusters()
-		);
+		return $assignment->getAllKnownClusters();
 	}
 
 	private function allIndexNames( Connection $conn ): array {

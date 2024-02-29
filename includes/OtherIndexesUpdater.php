@@ -157,19 +157,23 @@ class OtherIndexesUpdater extends Updater {
 		// isolation of writes between clusters so one slow cluster doesn't
 		// drag down the others.
 		foreach ( $updates as [ $otherIndex, $actions ] ) {
-			$this->pushElasticaWriteJobs( $actions, function ( array $chunk, ClusterSettings $cluster ) use ( $otherIndex ) {
-				// Name of the index to write to on whatever cluster is connected to
-				$indexName = $otherIndex->getIndexName();
-				// Index name and, potentially, a replica group identifier. Needed to
-				// create an appropriate ExternalIndex instance in the job.
-				$externalIndex = $otherIndex->getGroupAndIndexName();
-				return Job\ElasticaWrite::build(
-					$cluster,
-					'sendOtherIndexUpdates',
-					[ $this->localSite, $indexName, $chunk ],
-					[ 'external-index' => $externalIndex ]
-				);
-			} );
+			$this->pushElasticaWriteJobs(
+				UpdateGroup::PAGE,
+				$actions,
+				function ( array $chunk, ClusterSettings $cluster ) use ( $otherIndex ) {
+					// Name of the index to write to on whatever cluster is connected to
+					$indexName = $otherIndex->getIndexName();
+					// Index name and, potentially, a replica group identifier. Needed to
+					// create an appropriate ExternalIndex instance in the job.
+					$externalIndex = $otherIndex->getGroupAndIndexName();
+					return Job\ElasticaWrite::build(
+						$cluster,
+						UpdateGroup::PAGE,
+						'sendOtherIndexUpdates',
+						[ $this->localSite, $indexName, $chunk ],
+						[ 'external-index' => $externalIndex ],
+					);
+				} );
 		}
 	}
 

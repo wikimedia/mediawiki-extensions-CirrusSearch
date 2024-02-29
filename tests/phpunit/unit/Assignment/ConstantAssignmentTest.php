@@ -12,7 +12,7 @@ class ConstantAssignmentTest extends CirrusTestCase {
 		$clusters = new ConstantAssignment( [ 'localhost:9200' ] );
 		$this->assertEquals( 'default', $clusters->uniqueId( 'anything' ) );
 		$this->assertEquals( 'default', $clusters->getSearchCluster() );
-		$this->assertEquals( [ 'default' ], $clusters->getWritableClusters() );
+		$this->assertEquals( [ 'default' ], $clusters->getWritableClusters( 'anything' ) );
 		$this->assertEquals( [ 'localhost:9200' ], $clusters->getServerList() );
 		$this->assertEquals( [ 'localhost:9200' ], $clusters->getServerList( 'default' ) );
 		$this->assertNull( $clusters->getCrossClusterName() );

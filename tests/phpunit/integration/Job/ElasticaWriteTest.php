@@ -5,6 +5,7 @@ namespace CirrusSearch\Job;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\ClusterSettings;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\UpdateGroup;
 use Liuggio\StatsdClient\Factory\StatsdDataFactoryInterface;
 use MediaWiki\Utils\MWTimestamp;
 
@@ -26,7 +27,7 @@ class ElasticaWriteTest extends CirrusIntegrationTestCase {
 		// get multiple values back.
 		$seen = [];
 		for ( $i = 0; $i < 100; $i++ ) {
-			$job = ElasticaWrite::build( $settings, 'unreferenced', [], [] );
+			$job = ElasticaWrite::build( $settings, UpdateGroup::PAGE, 'unreferenced', [], [] );
 			$seen[$job->params['jobqueue_partition']] = true;
 		}
 		ksort( $seen );

@@ -209,7 +209,45 @@ cluster count | # roundrobin partitions | partitions per cluster
 11 | 27720 | 2520
 
 
-== Single cluster replicas
+== Update Groups ==
+
+Updates of a common purpose are identified by their update group. The
+current update groups are:
+
+* page - Set of clusters receiving page updates. These are the primary searchable content.
+* archive - Set of clusters receiving archive index updates.
+* check_sanity - Set of clusters available for Saneitizer checking
+* saneitizer - Set of clusters to fix with Saneitizer
+
+By default known clusters receive writes from all groups.  $wgCirrusSearchWriteClusters 
+can be configured in two different ways to limit writes to select group of clusters.
+First is a simplified method that uses the same clusters for all write operations:
+
+```
+$wgCirrusSearchWriteClusters = ['dc1'];
+```
+
+This simplified form expands into the following form:
+```
+$wgCirrusSearchWriteClusters = [
+	'default' => ['dc1'],
+];
+
+In the expanded form we can specify any of the update groups from above
+and assign specific clusters to them.
+```
+$wgCirrusSearchWriteClusters = [
+	'default' => ['dc1', 'dc2'],
+	'archive' => ['dc1'],
+];
+
+Note that this has no effect on most maintenance scripts. Mapping updates,
+title suggester updates, and such operate on one cluster at a time and
+will generally accept any cluster they are told.
+
+```
+
+== Single cluster replicas ==
 
 There are use cases where production search may be split across multiple
 cluster groups, but you want to replicate all of the wikis into a single

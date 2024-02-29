@@ -75,14 +75,24 @@ class MultiClusterAssignment implements ClusterAssignment {
 	}
 
 	/**
+	 * @param string $updateGroup UpdateGroup::* constant
 	 * @return string[] List of CirrusSearch cluster names to write to.
 	 */
-	public function getWritableClusters(): array {
+	public function getWritableClusters( string $updateGroup ): array {
 		$clusters = $this->config->get( 'CirrusSearchWriteClusters' );
-		if ( $clusters !== null ) {
+		if ( $clusters === null ) {
+			// No explicitly configured set of write clusters. Write to all known replicas.
+			return $this->getAllKnownClusters();
+		}
+		if ( count( $clusters ) === 0 || isset( $clusters[0] ) ) {
+			// Simple list of writable clusters
 			return $clusters;
 		}
-		// No explicitly configured set of write clusters. Write to all known replicas.
+		// Writable clusters defined per update group
+		return $clusters[$updateGroup] ?? $clusters['default'];
+	}
+
+	public function getAllKnownClusters(): array {
 		if ( $this->clusters === null ) {
 			$this->clusters = $this->initClusters();
 		}
@@ -90,24 +100,14 @@ class MultiClusterAssignment implements ClusterAssignment {
 	}
 
 	/**
-	 * @return string[] List of CirrusSearch cluster names that are listed under {@link MultiClusterAssignment::$clusters}
-	 *   but not under {@link MultiClusterAssignment::getWritableClusters()}.
-	 */
-	public function getReadOnlyClusters(): array {
-		if ( $this->clusters === null ) {
-			$this->clusters = $this->initClusters();
-		}
-		return array_values( array_diff( array_keys( $this->clusters ), $this->getWritableClusters() ) );
-	}
-
-	/**
 	 * Check if a cluster is configured to accept writes
 	 *
 	 * @param string $cluster
+	 * @param string $updateGroup UpdateGroup::* constant
 	 * @return bool
 	 */
-	public function canWriteToCluster( $cluster ) {
-		return in_array( $cluster, $this->getWritableClusters() );
+	public function canWriteToCluster( $cluster, $updateGroup ) {
+		return in_array( $cluster, $this->getWritableClusters( $updateGroup ) );
 	}
 
 	/**

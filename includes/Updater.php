@@ -179,7 +179,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param WikiPage[] $pages pages to update
 	 * @param int $flags Bit field containing instructions about how the document should be built
 	 *   and sent to Elasticsearch.
-	 * @param string|null $updateKind the kind of update to perform (used for monitoring)
+	 * @param string|null $updateKind kind of update to perform (used for monitoring)
 	 * @param int|null $rootEventTime the time of MW event that caused this update (used for monitoring)
 	 * @return int Number of documents updated
 	 */
@@ -219,10 +219,13 @@ class Updater extends ElasticsearchIntermediary {
 
 		$count = 0;
 		foreach ( $allDocuments as $indexSuffix => $documents ) {
-			$this->pushElasticaWriteJobs( $documents,
+			$this->pushElasticaWriteJobs(
+				UpdateGroup::PAGE,
+				$documents,
 				static function ( array $chunk, ClusterSettings $cluster ) use ( $indexSuffix, $updateKind, $rootEventTime ) {
 					return Job\ElasticaWrite::build(
 						$cluster,
+						UpdateGroup::PAGE,
 						'sendData',
 						[ $indexSuffix, $chunk ],
 						[],
@@ -249,16 +252,20 @@ class Updater extends ElasticsearchIntermediary {
 		Assert::precondition( $page->exists(), "page must exist" );
 		$docId = $this->connection->getConfig()->makeId( $page->getId() );
 		$indexSuffix = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
-		$this->pushElasticaWriteJobs( [ $docId ], static function ( array $docIds, ClusterSettings $cluster ) use (
-			$docId, $indexSuffix, $tagField, $tagPrefix, $tagNames, $tagWeights
-		) {
-			$tagWeights = ( $tagWeights === null ) ? null : [ $docId => $tagWeights ];
-			return Job\ElasticaWrite::build(
-				$cluster,
-				'sendUpdateWeightedTags',
-				[ $indexSuffix, $docIds, $tagField, $tagPrefix, $tagNames, $tagWeights ]
-			);
-		} );
+		$this->pushElasticaWriteJobs(
+			UpdateGroup::PAGE,
+			[ $docId ],
+			static function ( array $docIds, ClusterSettings $cluster ) use (
+				$docId, $indexSuffix, $tagField, $tagPrefix, $tagNames, $tagWeights
+			) {
+				$tagWeights = ( $tagWeights === null ) ? null : [ $docId => $tagWeights ];
+				return Job\ElasticaWrite::build(
+					$cluster,
+					UpdateGroup::PAGE,
+					'sendUpdateWeightedTags',
+					[ $indexSuffix, $docIds, $tagField, $tagPrefix, $tagNames, $tagWeights ],
+				);
+			} );
 	}
 
 	/**
@@ -270,15 +277,19 @@ class Updater extends ElasticsearchIntermediary {
 		Assert::precondition( $page->exists(), "page must exist" );
 		$docId = $this->connection->getConfig()->makeId( $page->getId() );
 		$indexSuffix = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
-		$this->pushElasticaWriteJobs( [ $docId ], static function (
-			array $docIds, ClusterSettings $cluster
-		) use ( $indexSuffix, $tagField, $tagPrefix ) {
-			return Job\ElasticaWrite::build(
-				$cluster,
-				'sendResetWeightedTags',
-				[ $indexSuffix, $docIds, $tagField, $tagPrefix ]
-			);
-		} );
+		$this->pushElasticaWriteJobs(
+			UpdateGroup::PAGE,
+			[ $docId ],
+			static function (
+				array $docIds, ClusterSettings $cluster
+			) use ( $indexSuffix, $tagField, $tagPrefix ) {
+				return Job\ElasticaWrite::build(
+					$cluster,
+					UpdateGroup::PAGE,
+					'sendResetWeightedTags',
+					[ $indexSuffix, $docIds, $tagField, $tagPrefix ],
+				);
+			} );
 	}
 
 	/**
@@ -298,10 +309,12 @@ class Updater extends ElasticsearchIntermediary {
 		// chunks. Unlikely a batch this large ever comes through.
 		$batchSize = 50;
 		$this->pushElasticaWriteJobs(
+			UpdateGroup::PAGE,
 			$docIds,
 			static function ( array $chunk, ClusterSettings $cluster ) use ( $indexSuffix, $writeJobParams ) {
 				return Job\ElasticaWrite::build(
 					$cluster,
+					UpdateGroup::PAGE,
 					'sendDeletes',
 					[ $chunk, $indexSuffix ],
 					$writeJobParams
@@ -322,14 +335,18 @@ class Updater extends ElasticsearchIntermediary {
 			return true;
 		}
 		$docs = $this->buildArchiveDocuments( $archived );
-		$this->pushElasticaWriteJobs( $docs, static function ( array $chunk, ClusterSettings $cluster ) {
-			return Job\ElasticaWrite::build(
-				$cluster,
-				'sendData',
-				[ Connection::ARCHIVE_INDEX_SUFFIX, $chunk ],
-				[ 'private_data' => true ]
-			);
-		} );
+		$this->pushElasticaWriteJobs(
+			UpdateGroup::ARCHIVE,
+			$docs,
+			static function ( array $chunk, ClusterSettings $cluster ) {
+				return Job\ElasticaWrite::build(
+					$cluster,
+					UpdateGroup::ARCHIVE,
+					'sendData',
+					[ Connection::ARCHIVE_INDEX_SUFFIX, $chunk ],
+					[ 'private_data' => true ],
+				);
+			} );
 
 		return true;
 	}
@@ -425,16 +442,17 @@ class Updater extends ElasticsearchIntermediary {
 	}
 
 	/**
+	 * @param string $updateGroup UpdateGroup::* constant
 	 * @param mixed[] $items
 	 * @param callable $factory
 	 * @param int $batchSize
 	 */
-	protected function pushElasticaWriteJobs( array $items, $factory, int $batchSize = 10 ): void {
+	protected function pushElasticaWriteJobs( string $updateGroup, array $items, $factory, int $batchSize = 10 ): void {
 		// Elasticsearch has a queue capacity of 50 so if $documents contains 50 pages it could bump up
 		// against the max.  So we chunk it and do them sequentially.
 		$jobs = [];
 		$config = $this->connection->getConfig();
-		$clusters = $this->elasticaWriteClusters();
+		$clusters = $this->elasticaWriteClusters( $updateGroup );
 
 		foreach ( array_chunk( $items, $batchSize ) as $chunked ) {
 			// Queueing one job per cluster ensures isolation. If one clusters falls
@@ -459,14 +477,14 @@ class Updater extends ElasticsearchIntermediary {
 		}
 	}
 
-	private function elasticaWriteClusters(): array {
+	private function elasticaWriteClusters( string $updateGroup ): array {
 		if ( $this->writeToClusterName !== null ) {
 			return [ $this->writeToClusterName ];
 		} else {
 			return $this->connection
 				->getConfig()
 				->getClusterAssignment()
-				->getWritableClusters();
+				->getWritableClusters( $updateGroup );
 		}
 	}
 

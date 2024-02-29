@@ -29,19 +29,19 @@ class ConstantAssignment implements ClusterAssignment {
 		return 'default';
 	}
 
-	public function getWritableClusters(): array {
+	public function getWritableClusters( string $updateGroup ): array {
 		return [ 'default' ];
 	}
 
-	public function getReadOnlyClusters(): array {
-		return [];
+	public function getAllKnownClusters(): array {
+		return [ 'default' ];
 	}
 
 	public function hasCluster( string $clusterName ): bool {
 		return true;
 	}
 
-	public function canWriteToCluster( $clusterName ) {
+	public function canWriteToCluster( $clusterName, $updateGroup ) {
 		return true;
 	}
 

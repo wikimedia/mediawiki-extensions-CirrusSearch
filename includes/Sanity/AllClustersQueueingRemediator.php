@@ -3,6 +3,7 @@
 namespace CirrusSearch\Sanity;
 
 use CirrusSearch\Assignment\ClusterAssignment;
+use CirrusSearch\UpdateGroup;
 use JobQueueGroup;
 use MediaWiki\Title\Title;
 use WikiPage;
@@ -29,7 +30,7 @@ class AllClustersQueueingRemediator implements Remediator {
 	 * @param JobQueueGroup $jobQueueGroup
 	 */
 	public function __construct( ClusterAssignment $clusterAssignment, JobQueueGroup $jobQueueGroup ) {
-		$this->clusters = $clusterAssignment->getWritableClusters();
+		$this->clusters = $clusterAssignment->getWritableClusters( UpdateGroup::SANEITIZER );
 		$this->inner = new QueueingRemediator( null, $jobQueueGroup );
 	}
 

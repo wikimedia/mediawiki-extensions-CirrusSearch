@@ -6,6 +6,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\Job\CheckerJob;
 use CirrusSearch\MetaStore\MetaSaneitizeJobStore;
 use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\UpdateGroup;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -259,14 +260,14 @@ EOD
 		$assignment = $this->getSearchConfig()->getClusterAssignment();
 		if ( $this->hasOption( 'cluster' ) ) {
 			$cluster = $this->getOption( 'cluster' );
-			if ( $assignment->canWriteToCluster( $cluster ) ) {
-				$this->fatalError( "$cluster is not in the set of writable clusters\n" );
+			if ( $assignment->canWriteToCluster( $cluster, UpdateGroup::CHECK_SANITY ) ) {
+				$this->fatalError( "$cluster is not in the set of check_sanity clusters\n" );
 			}
 			$this->clusters = [ $this->getOption( 'cluster' ) ];
 		}
-		$this->clusters = $assignment->getWritableClusters();
+		$this->clusters = $assignment->getWritableClusters( UpdateGroup::CHECK_SANITY );
 		if ( count( $this->clusters ) === 0 ) {
-			$this->fatalError( 'No clusters are writable...' );
+			$this->fatalError( 'No clusters are available...' );
 		}
 	}
 
@@ -274,7 +275,7 @@ EOD
 		$connections = Connection::getClusterConnections( $this->clusters, $this->getSearchConfig() );
 
 		if ( !$connections ) {
-			$this->fatalError( "No writable cluster found." );
+			$this->fatalError( "No available cluster found." );
 		}
 
 		$this->metaStores = [];

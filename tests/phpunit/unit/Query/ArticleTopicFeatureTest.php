@@ -6,6 +6,8 @@ use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchContext;
+use MediaWiki\Message\Message;
+use Wikimedia\Message\ListType;
 
 /**
  * @covers \CirrusSearch\Query\ArticleTopicFeature
@@ -134,7 +136,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 	public function testParse_invalid( string $keyword ) {
 		$feature = new ArticleTopicFeature();
 		$this->assertWarnings( $feature, [ [ 'cirrussearch-articletopic-invalid-topic',
-											 [ 'list' => [ 'foo' ], 'type' => 'comma' ], 1 ] ], "$keyword:foo" );
+											 Message::listParam( [ 'foo' ], ListType::COMMA ), 1 ] ], "$keyword:foo" );
 		$this->assertNoResultsPossible( $feature, "$keyword:foo" );
 	}
 

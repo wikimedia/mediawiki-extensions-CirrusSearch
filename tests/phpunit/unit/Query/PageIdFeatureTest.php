@@ -3,6 +3,8 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\CirrusTestCase;
+use MediaWiki\Message\Message;
+use Wikimedia\Message\ListType;
 
 /**
  * @covers \CirrusSearch\Query\PageIdFeature
@@ -28,7 +30,7 @@ class PageIdFeatureTest extends CirrusTestCase {
 				'pageid:1|x|3|y|5',
 				[ [
 					'cirrussearch-feature-pageid-invalid-id',
-					[ 'list' => [ 'x', 'y' ], 'type' => 'comma' ],
+					Message::listParam( [ 'x', 'y' ], ListType::COMMA ),
 					2,
 				] ]
 			],
@@ -38,7 +40,7 @@ class PageIdFeatureTest extends CirrusTestCase {
 				'pageid:a|b|c',
 				[ [
 					'cirrussearch-feature-pageid-invalid-id',
-					[ 'list' => [ 'a', 'b', 'c' ], 'type' => 'comma' ],
+					Message::listParam( [ 'a', 'b', 'c' ], ListType::COMMA ),
 					3,
 				] ]
 			],
@@ -62,7 +64,7 @@ class PageIdFeatureTest extends CirrusTestCase {
 		$expectedParsedValue = [ 'pageids' => [ 1, 2, 3 ] ];
 		$expectedWarnings = [ [
 			'cirrussearch-feature-pageid-invalid-id',
-			[ 'list' => [ 'duck', 'goose' ], 'type' => 'comma' ],
+			Message::listParam( [ 'duck', 'goose' ], ListType::COMMA ),
 			2,
 		] ];
 		$this->assertParsedValue( $feature, 'pageid:1|2|duck|3|goose', $expectedParsedValue,

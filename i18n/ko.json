@@ -17,6 +17,7 @@
 	"cirrussearch-backend-error": "일시적인 문제 때문에 검색을 완료할 수 없습니다. 나중에 다시 시도하세요.",
 	"cirrussearch-parse-error": "쿼리를 이해할 수 없습니다. 간단하게 만들어 주세요. 쿼리는 검색 시스템을 개선하기 위해 기록이 남습니다.",
 	"cirrussearch-too-busy-error": "검색이 지연되고 있습니다. 잠시 후에 다시 시도해 주세요.",
+	"cirrussearch-regex-empty-expression": "$1에서는 비어있지 않은 정규 표현식을 예측합니다.",
 	"cirrussearch-regex-syntax-error": "$2에서 정규 표현식 구문 오류: $1",
 	"cirrussearch-regex-too-busy-error": "너무 많은 정규표현식 검색이 진행되고 있습니다. 잠시 후에 다시 시도해 주세요.",
 	"cirrussearch-regex-too-complex-error": "정규 표현식이 너무 복잡합니다. 단순하게 만드는 방법은  [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|여기]]에서 알아볼 수 있습니다.",

@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"EWDAja"
+		]
+	},
+	"cirrussearch-regex-empty-expression": "$1 ngaharapko ekspresi reguler sai mak bangkang.",
+	"cirrussearch-regex-syntax-error": "Error sintaksis ekspresi reguler di $2: $1",
+	"cirrussearch-regex-too-busy-error": "Kalamonan ga panyopokan ekspresi reguler sodong tilapahko. Payu cuba lagi nonti.",
+	"cirrussearch-pref-label": "Panyopokan ompai",
+	"cirrussearch-give-feedback": "Unjuki umpan balikmu.",
+	"cirrussearch-completion-profile-normal": "Samungkal rua karakter pamisah, diakritik rik kata andok tihapus.",
+	"cirrussearch-qi-profile-popular-pv": "Paringkat budasarko jumlah tampilan halaman",
+	"cirrussearch-qi-profile-popular-inclinks": "Paringkat budasarko jumlah tautan kuruk",
+	"prefs-completion": "Panyampurnaan panalusuran",
+	"cirrussearch-pref-completion-section-desc": "Saranan panyampurnaan",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Default (tisaranko)",
+	"cirrussearch-completion-profile-strict-pref-name": "Modus taliti (lanjutan)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Makka koreksi salah tik. Makka aksen lipat. Pancocokan ketat.",
+	"cirrussearch-completion-profile-normal-pref-name": "Modus pangalihan (lanjutan)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Makka koreksi salah tik. Putukko pangalihan sai mirip.",
+	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Modus pangalihan rik pancocokan subfrasa (lanjutan)",
+	"cirrussearch-completion-profile-classic-pref-name": "Panyopokan awalan klasik"
+}

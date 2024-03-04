@@ -16,7 +16,7 @@
 	"cirrussearch-now-using": "Þessi wiki notar nýja leitarvél. ([[mw:Special:MyLanguage/Help:CirrusSearch|Læra meira]])",
 	"cirrussearch-ignored-headings": " #<!-- skildu eftir þessa línu nákvæmlega eins og hún er --> <pre>\n# Fyrirsagnir sem verða hunsaðar við leit.\n# Breytingar á þessu taka gildi um leið og síðan með fyrirsögninni er atriðaskráð.\n# Þú getur þvingað enduratriðaskráningu síðu með því að gera núllbreytingu.\n# Málskipan er sem hér segir:\n#   * Allt frá „#“-rittákninu til loka línunnar er athugasemd.\n#   * Sérhver lína sem ekki er auð er nákvæmlega titillinn til að hunsa, hástafanæmi og allt.\nHeimildir\nYtri tenglar\nSjá einnig\n #</pre> <!-- skildu eftir þessa línu nákvæmlega eins og hún er -->",
 	"cirrussearch-pref-label": "Ný leit",
-	"cirrussearch-give-feedback": "Gefðu okkur svörun",
+	"cirrussearch-give-feedback": "Gefðu okkur þína ábendingu",
 	"cirrussearch-explore-similar-related": "Tengt",
 	"cirrussearch-explore-similar-categories": "Flokkar",
 	"cirrussearch-explore-similar-languages": "Tungumál",

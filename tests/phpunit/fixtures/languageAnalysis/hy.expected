@@ -139,7 +139,6 @@
             "char_filter": [
                 "globo_norm",
                 "camelCase_splitter",
-                "dotted_I_fix",
                 "armenian_charfilter",
                 "acronym_fixer",
                 "word_break_helper"
@@ -159,7 +158,6 @@
             "char_filter": [
                 "globo_norm",
                 "camelCase_splitter",
-                "dotted_I_fix",
                 "armenian_charfilter",
                 "acronym_fixer",
                 "word_break_helper"

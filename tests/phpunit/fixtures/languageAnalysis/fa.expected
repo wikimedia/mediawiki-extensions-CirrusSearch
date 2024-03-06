@@ -141,7 +141,6 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
                 "zero_width_spaces"
             ],
             "filter": [
@@ -162,7 +161,6 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
                 "zero_width_spaces"
             ],
             "filter": [

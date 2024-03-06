@@ -144,11 +144,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
-                "catalan_elision",
-                "lowercase",
-                "catalan_stop",
-                "catalan_stemmer",
-                "asciifolding"
+                "lowercase"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -162,11 +158,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
-                "catalan_elision",
-                "lowercase",
-                "catalan_stop",
-                "catalan_stemmer",
-                "asciifolding"
+                "lowercase"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -300,32 +292,13 @@
             "type": "asciifolding",
             "preserve_original": true
         },
-        "catalan_elision": {
-            "type": "elision",
-            "articles_case": true,
-            "articles": [
-                "d",
-                "l",
-                "m",
-                "n",
-                "s",
-                "t"
-            ]
-        },
-        "catalan_stemmer": {
-            "type": "stemmer",
-            "language": "catalan"
-        },
-        "catalan_stop": {
-            "type": "stop",
-            "stopwords": "_catalan_"
-        },
         "dedup_asciifolding": {
             "type": "unique",
             "only_on_same_position": true
         },
         "lowercase": {
-            "type": "lowercase"
+            "type": "lowercase",
+            "language": "turkish"
         },
         "prefix_ngram_filter": {
             "type": "edgeNGram",

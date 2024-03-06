@@ -34,7 +34,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "german_charfilter"
             ],
             "filter": [
@@ -54,7 +53,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "german_charfilter"
             ],
             "filter": [
@@ -165,8 +163,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -183,8 +180,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -288,7 +284,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "russian_charfilter"
             ],
             "filter": [
@@ -307,7 +302,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "russian_charfilter"
             ],
             "filter": [
@@ -349,6 +343,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
+                "dotted_I_fix",
                 "stconvertfix",
                 "tsconvert"
             ],
@@ -364,6 +359,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
+                "dotted_I_fix",
                 "stconvertfix",
                 "tsconvert"
             ],

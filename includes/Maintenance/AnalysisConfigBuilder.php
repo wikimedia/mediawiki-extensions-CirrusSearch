@@ -213,9 +213,6 @@ class AnalysisConfigBuilder {
 			$config = $this->enableICUTokenizer( $config );
 		}
 
-		// must follow enableICUTokenizer()
-		$config = $this->enableGlobalCustomFilters( $config, $language );
-
 		if ( $this->shouldActivateIcuFolding( $language ) ) {
 			$config = $this->enableICUFolding( $config, $language );
 		}
@@ -224,6 +221,9 @@ class AnalysisConfigBuilder {
 		if ( !$this->isTextifyAvailable() ) {
 			$config = $this->disableLimitedMappings( $config );
 		}
+
+		// should come after other upgrades to get the full context
+		$config = $this->enableGlobalCustomFilters( $config, $language );
 
 		return $config;
 	}
@@ -458,6 +458,7 @@ class AnalysisConfigBuilder {
 				return '[^ĀāČčĒēĢģĪīĶķĻļŅņŠšŪūŽž]';
 			case 'nb': // T289612
 			case 'nn': // T289612
+			case 'no':
 				return '[^ÆæØøÅå]';
 			case 'ro': // T325091
 				// including s&t with cedilla because we (have to) use it internally T330893
@@ -674,7 +675,8 @@ class AnalysisConfigBuilder {
 						"'=>\u0020", // Useful for finding names
 						'\u2019=>\u0020', // Unicode right single quote
 						'\u02BC=>\u0020', // Unicode modifier letter apostrophe
-						'_=>\u0020', // MediaWiki loves _ and people are used to it but it usually means space
+						'_=>\u0020', // MediaWiki loves _ and people are used to it but it
+									 // usually means space
 						'-=>\u0020', // Useful for finding hyphenated names unhyphenated
 					],
 				],
@@ -838,18 +840,18 @@ class AnalysisConfigBuilder {
 			// Please add languages in alphabetical order.
 
 			// usual unpacked languages
-			case 'basque':    // Unpack Basque analyzer T283366
-			case 'brazilian': // Unpack Brazilian analyzer T325092
-			case 'bulgarian': // Unpack Bulgarian analyzer T325090
-			case 'czech':     // Unpack Czech analyzer T284578
-			case 'danish':    // Unpack Danish analyzer T283366
-			case 'estonian':  // Unpack Estonian analyzer T332322
-			case 'finnish':   // Unpack Finnish analyzer T284578
-			case 'galician':  // Unpack Galician analyzer T284578
-			case 'hungarian': // Unpack Hungarian analyzer T325089
-			case 'latvian':   // Unpack Latvian analyzer T325089
+			case 'basque':     // Unpack Basque analyzer T283366
+			case 'brazilian':  // Unpack Brazilian analyzer T325092
+			case 'bulgarian':  // Unpack Bulgarian analyzer T325090
+			case 'czech':      // Unpack Czech analyzer T284578
+			case 'danish':     // Unpack Danish analyzer T283366
+			case 'estonian':   // Unpack Estonian analyzer T332322
+			case 'finnish':    // Unpack Finnish analyzer T284578
+			case 'galician':   // Unpack Galician analyzer T284578
+			case 'hungarian':  // Unpack Hungarian analyzer T325089
+			case 'latvian':    // Unpack Latvian analyzer T325089
 			case 'lithuanian': // Unpack Lithuanian analyzer T325090
-			case 'norwegian': // Unpack Norwegian analyzer T289612
+			case 'norwegian':  // Unpack Norwegian analyzer T289612
 				$config = ( new AnalyzerBuilder( $langName ) )->
 					withUnpackedAnalyzer()->
 					build( $config );
@@ -870,7 +872,7 @@ class AnalysisConfigBuilder {
 			case 'arabic-moroccan':
 				// Unpack Arabic analyzer T294147
 				$arBuilder = ( new AnalyzerBuilder( 'arabic' ) )->
-				withUnpackedAnalyzer()->
+					withUnpackedAnalyzer()->
 					withDecimalDigit()->
 					insertFiltersBefore( 'arabic_stemmer', [ 'arabic_normalization' ] );
 
@@ -891,9 +893,20 @@ class AnalysisConfigBuilder {
 					withExtraStop( [ 'նաեւ', 'եւ' ], 'armenian_norm_stop', 'armenian_stop' )->
 					build( $config );
 				break;
+			case 'azerbaijani':
+			case 'crimean-tatar':
+			case 'gagauz':
+			case 'kazakh':
+			case 'tatar':
+				// Turkic languages that use I/ı & İ/i, so need Turkish lowercasing
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withFilters( [ 'lowercase' ] )->
+					withLangLowercase( 'turkish' )->
+					build( $config );
+				break;
 			case 'bengali': // Unpack Bengali analyzer T294067
 				$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
+					withUnpackedAnalyzer()->
 					withDecimalDigit()->
 					insertFiltersBefore( 'bengali_stop', [ 'indic_normalization' ] )->
 					build( $config );
@@ -973,22 +986,24 @@ class AnalysisConfigBuilder {
 					build( $config );
 				break;
 			case 'english':
-				// Map hiragana (\u3041-\u3096) to katakana (\u30a1-\u30f6), currently only for English
+				// Map hiragana (\u3041-\u3096) to katakana (\u30a1-\u30f6), currently only for
+				// English
 				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T176197
 				$hkmap = [];
 				for ( $i = 0x3041; $i <= 0x3096; $i++ ) {
 					$hkmap[] = sprintf( '\\u%04x=>\\u%04x', $i, $i + 0x60 );
 				}
 
-				// Replace English analyzer with a rebuilt copy with asciifolding inserted before stemming
+				// Replace English analyzer with a rebuilt copy with asciifolding inserted
+				// before stemming
 				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142037
 				$config = ( new AnalyzerBuilder( $langName ) )->
 					withLimitedCharMap( $hkmap, 'kana_map' )->
 					withCharFilters( [ 'kana_map' ] )->
 					withExtraStemmer( 'possessive_english' )->
 					withStemmerOverride( 'guidelines => guideline', 'custom_stem' )->
-					withFilters( [ 'possessive_english', 'lowercase', 'stop', 'asciifolding', 'kstem',
-						'custom_stem' ] )->
+					withFilters( [ 'possessive_english', 'lowercase', 'stop', 'asciifolding',
+						'kstem', 'custom_stem' ] )->
 					build( $config );
 
 				// Add asciifolding_preserve to the plain analyzer as well (but not plain_search)
@@ -1011,7 +1026,7 @@ class AnalysisConfigBuilder {
 					withUnpackedAnalyzer()->
 					withLimitedCharMap( [ '\u02BC=>\u0027' ] )->
 					withElision( [ 'l', 'm', 't', 'qu', 'n', 's', 'j', 'd', 'c',
-								'jusqu', 'quoiqu', 'lorsqu', 'puisqu' ] )->
+									'jusqu', 'quoiqu', 'lorsqu', 'puisqu' ] )->
 					withLightStemmer()->
 					withAsciifoldingPreserve()->
 					build( $config );
@@ -1032,7 +1047,6 @@ class AnalysisConfigBuilder {
 			case 'greek':
 				$config = ( new AnalyzerBuilder( $langName ) )->
 					withUnpackedAnalyzer()->
-					omitDottedI()->
 					omitAsciifolding()->
 					withLangLowercase()->
 					withRemoveEmpty()->
@@ -1064,15 +1078,17 @@ class AnalysisConfigBuilder {
 				break;
 			case 'irish':
 				$gaCharMap = [ 'ḃ=>bh', 'ċ=>ch', 'ḋ=>dh', 'ḟ=>fh', 'ġ=>gh', 'ṁ=>mh', 'ṗ=>ph',
-				  'ṡ=>sh', 'ẛ=>sh', 'ṫ=>th', 'Ḃ=>BH', 'Ċ=>CH', 'Ḋ=>DH', 'Ḟ=>FH', 'Ġ=>GH',
-				  'Ṁ=>MH', 'Ṗ=>PH', 'Ṡ=>SH', 'Ṫ=>TH' ];
-				$gaHyphenStop = [ 'h', 'n', 't', 'b', 'bh', 'g', 'm' ]; // Add b, bh, g, m for camelCase cleanup
+					  'ṡ=>sh', 'ẛ=>sh', 'ṫ=>th', 'Ḃ=>BH', 'Ċ=>CH', 'Ḋ=>DH', 'Ḟ=>FH', 'Ġ=>GH',
+					  'Ṁ=>MH', 'Ṗ=>PH', 'Ṡ=>SH', 'Ṫ=>TH' ];
+
+				// Add b, bh, g, m for camelCase cleanup
+				$gaHyphenStop = [ 'h', 'n', 't', 'b', 'bh', 'g', 'm' ];
+
 				// Unpack Irish analyzer T289612
 				// See also https://www.mediawiki.org/wiki/User:TJones_(WMF)/T217602
 				$config = ( new AnalyzerBuilder( $langName ) )->
 					withUnpackedAnalyzer()->
 					withCharMap( $gaCharMap )->
-					omitDottedI()->
 					withExtraStop( $gaHyphenStop, 'irish_hyphenation', 'irish_elision', true )->
 					withElision( [ 'd', 'm', 'b' ] )->
 					withLangLowercase()->
@@ -1084,7 +1100,6 @@ class AnalysisConfigBuilder {
 					'gl', 'agl', 'dagl', 'degl', 'negl', 'sugl', 'un', 'm', 't', 's', 'v', 'd' ];
 				$config = ( new AnalyzerBuilder( $langName ) )->
 					withUnpackedAnalyzer()->
-					omitDottedI()->
 					withElision( $itElision )->
 					withLightStemmer()->
 					build( $config );
@@ -1139,15 +1154,17 @@ class AnalysisConfigBuilder {
 				// Nori-specific part of speech filter (add 'VCP', 'VCN', 'VX' to default)
 				$config[ 'filter' ][ 'nori_posfilter' ] = [
 					'type' => 'nori_part_of_speech',
-					'stoptags' => [ 'E', 'IC', 'J', 'MAG', 'MAJ', 'MM', 'SP', 'SSC', 'SSO', 'SC',
-						'SE', 'XPN', 'XSA', 'XSN', 'XSV', 'UNA', 'NA', 'VSV', 'VCP', 'VCN', 'VX' ],
+					'stoptags' => [ 'E', 'IC', 'J', 'MAG', 'MAJ', 'MM', 'SP', 'SSC', 'SSO',
+						'SC', 'SE', 'XPN', 'XSA', 'XSN', 'XSV', 'UNA', 'NA', 'VSV', 'VCP',
+						'VCN', 'VX' ],
 				];
 
 				$config = ( new AnalyzerBuilder( $langName ) )->
 					withLimitedCharMap( $noriMap, 'nori_charfilter' )->
-					withCharFilters( [ 'dotted_I_fix', 'nori_charfilter', 'nori_combo_filter' ] )->
+					withCharFilters( [ 'nori_charfilter', 'nori_combo_filter' ] )->
 					withTokenizer( 'nori_tok' )->
-					withFilters( [ 'nori_posfilter', 'nori_readingform', 'lowercase', 'remove_empty' ] )->
+					withFilters( [ 'nori_posfilter', 'nori_readingform', 'lowercase',
+						'remove_empty' ] )->
 					build( $config );
 				break;
 			case 'mirandese':
@@ -1217,9 +1234,9 @@ class AnalysisConfigBuilder {
 				// unpack built-in Russian analyzer and add character filter
 				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T124592
 				$ruCharMap = [
-					'\u0301=>', // combining acute accent, only used to show stress T102298
-					'\u0435\u0308=>\u0435', // T124592 fold ё=>е and Ё=>Е, with combining diacritic...
-					'\u0415\u0308=>\u0415',
+					'\u0301=>',	// combining acute accent, only used to show stress T102298
+					'\u0435\u0308=>\u0435',	// T124592 fold ё=>е and Ё=>Е, with combining
+					'\u0415\u0308=>\u0415',	// diacritic...
 					'\u0451=>\u0435', // ... or precomposed
 					'\u0401=>\u0415',
 				];
@@ -1264,7 +1281,6 @@ class AnalysisConfigBuilder {
 				// Unpack built-in swedish analyzer to add asciifolding_preserve
 				$config = ( new AnalyzerBuilder( $langName ) )->
 					withUnpackedAnalyzer()->
-					omitDottedI()->
 					withAsciifoldingPreserve()->
 					build( $config );
 				break;
@@ -1343,31 +1359,31 @@ class AnalysisConfigBuilder {
 				}
 				$config = ( new AnalyzerBuilder( $langName ) )->
 					withUnpackedAnalyzer()->
-					omitDottedI()->
 					withLangLowercase()->
 					insertFiltersBefore( 'turkish_stop', [ $trAposFilter ] )->
 					build( $config );
 				break;
 			case 'ukrainian-unpacked':
 				$this->languagesWithIcuFolding['uk'] = true;
-				$ukCharMap = [ '‘=>\'', // normalize apostrophes
-				   '’=>\'',
-				   '`=>\'',
-				   '´=>\'',
-				   'ʼ=>\'',
-				   '\u0301=>', // delete combining acute and soft hyphen
-				   '\u00AD=>',
-				   'ґ=>г', // normalize ghe with upturn
-				   'Ґ=>Г',
+				$ukCharMap = [
+					'‘=>\'', // normalize apostrophes
+					'’=>\'',
+					'`=>\'',
+					'´=>\'',
+					'ʼ=>\'',
+					'\u0301=>', // delete combining acute and soft hyphen
+					'\u00AD=>',
+					'ґ=>г', // normalize ghe with upturn
+					'Ґ=>Г',
 				];
 				// lowercase twice because stopwords are case sensitive, and the stemmer
 				// generates some output with uppercase initial letters, even for
 				// lowercase input (usually proper names)
 				$ukFilters = [ 'lowercase', 'ukrainian_stop', 'ukrainian_stemmer',
-					'lowercase', 'remove_duplicates', 'asciifolding' ];
+							   'lowercase', 'remove_duplicates', 'asciifolding' ];
 				$config = ( new AnalyzerBuilder( 'ukrainian' ) )->
 					withLimitedCharMap( $ukCharMap )->
-					withCharFilters( [ 'dotted_I_fix', 'ukrainian_charfilter' ] )->
+					withCharFilters( [ 'ukrainian_charfilter' ] )->
 					withFilters( $ukFilters )->
 					build( $config );
 				break;
@@ -1496,7 +1512,8 @@ class AnalysisConfigBuilder {
 	 * @param string $prefix Prefix for disambiguation
 	 * @return array[] The list of filters not in the old config.
 	 */
-	private function resolveFilters( array &$config, array $standardFilters, array $defaultFilters, $prefix ) {
+	private function resolveFilters( array &$config, array $standardFilters, array $defaultFilters,
+			string $prefix ) {
 		$resultFilters = [];
 		foreach ( $config[ 'filter' ] as $name => $filter ) {
 			$existingFilter = $standardFilters[$name] ?? $defaultFilters[$name] ?? null;
@@ -1649,11 +1666,13 @@ class AnalysisConfigBuilder {
 		'ary' => 'arabic-moroccan',
 		'arz' => 'arabic-egyptian',
 		'hy' => 'armenian',
+		'az' => 'azerbaijani',
 		'eu' => 'basque',
 		'bn' => 'bengali',
 		'pt-br' => 'brazilian',
 		'bg' => 'bulgarian',
 		'ca' => 'catalan',
+		'crh' => 'crimean-tatar',
 		'ja' => 'cjk',
 		'ko' => 'cjk',
 		'cs' => 'czech',
@@ -1666,6 +1685,7 @@ class AnalysisConfigBuilder {
 		'et' => 'estonian',
 		'fi' => 'finnish',
 		'fr' => 'french',
+		'gag' => 'gagauz',
 		'gl' => 'galician',
 		'de' => 'german',
 		'el' => 'greek',
@@ -1674,12 +1694,14 @@ class AnalysisConfigBuilder {
 		'id' => 'indonesian',
 		'ga' => 'irish',
 		'it' => 'italian',
+		'kk' => 'kazakh',
 		'lt' => 'lithuanian',
 		'lv' => 'latvian',
 		'ms' => 'malay',
 		'mwl' => 'mirandese',
 		'nb' => 'norwegian',
 		'nn' => 'norwegian',
+		'no' => 'norwegian',
 		'fa' => 'persian',
 		'pt' => 'portuguese',
 		'ro' => 'romanian',
@@ -1687,6 +1709,7 @@ class AnalysisConfigBuilder {
 		'ckb' => 'sorani',
 		'es' => 'spanish',
 		'sv' => 'swedish',
+		'tt' => 'tatar',
 		'tr' => 'turkish',
 		'th' => 'thai',
 	];
@@ -1703,8 +1726,8 @@ class AnalysisConfigBuilder {
 		'bn' => true,
 		'bs' => true,
 		'ca' => true,
-		'cs' => true,
 		'ckb' => true,
+		'cs' => true,
 		'da' => true,
 		'de' => true,
 		'el' => true,
@@ -1732,6 +1755,7 @@ class AnalysisConfigBuilder {
 		'nb' => true,
 		'nl' => true,
 		'nn' => true,
+		'no' => true,
 		'pt' => true,
 		'pt-br' => true,
 		'ro' => true,
@@ -1851,6 +1875,14 @@ class AnalysisConfigBuilder {
 				setMustFollowFilters( [ 'acronym_fixer', 'regex_acronym_fixer',
 					'armenian_charfilter' ] )->
 				setLanguageDenyList( [ 'ko', 'zh' ] ),
+
+			'dotted_I_fix' => ( new GlobalCustomFilter( 'char_filter' ) )->
+				// - if lowercase is present (because analysis-icu is not available, or
+				// as a language-specific version) we don't need dotted_I_fix, because
+				// lowercase prevents the problem.
+				// - if icu_folding is present, we don't need dotted_I_fix, because
+				// icu_folding also fixes it.
+				setDisallowedTokenFilters( [ 'lowercase', 'icu_folding' ] ),
 
 			//////////////////////////
 			// token filters

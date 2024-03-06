@@ -140,7 +140,6 @@
                 "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
-                "dotted_I_fix",
                 "nori_charfilter",
                 "nori_combo_filter"
             ],
@@ -159,7 +158,6 @@
                 "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
-                "dotted_I_fix",
                 "nori_charfilter",
                 "nori_combo_filter"
             ],

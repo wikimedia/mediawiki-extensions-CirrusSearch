@@ -159,6 +159,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
+                "dotted_I_fix",
                 "stconvertfix",
                 "tsconvert"
             ],
@@ -174,6 +175,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
+                "dotted_I_fix",
                 "stconvertfix",
                 "tsconvert"
             ],
@@ -186,6 +188,12 @@
         }
     },
     "char_filter": {
+        "dotted_I_fix": {
+            "mappings": [
+                "\u0130=>I"
+            ],
+            "type": "mapping"
+        },
         "globo_norm": {
             "mappings": [
                 "`=>'",

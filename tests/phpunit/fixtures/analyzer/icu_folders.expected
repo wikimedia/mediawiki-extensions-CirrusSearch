@@ -31,8 +31,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -51,8 +50,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -97,8 +95,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -118,8 +115,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -165,8 +161,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -186,8 +181,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -233,8 +227,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -251,8 +244,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -295,8 +287,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -315,8 +306,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -361,7 +351,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -374,7 +365,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -413,8 +405,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "catalan_elision",
@@ -432,8 +423,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "catalan_elision",
@@ -477,8 +467,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "sorani_normalization",
@@ -497,8 +486,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "sorani_normalization",
@@ -543,8 +531,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -561,8 +548,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -605,8 +591,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -623,8 +608,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -670,7 +654,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "german_charfilter"
             ],
             "filter": [
@@ -690,7 +673,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "german_charfilter"
             ],
             "filter": [
@@ -995,7 +977,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -1008,7 +991,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -1047,8 +1031,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1065,8 +1048,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1109,8 +1091,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1127,8 +1108,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1171,8 +1151,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1189,8 +1168,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1234,7 +1212,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "zero_width_spaces"
             ],
             "filter": [
@@ -1255,7 +1232,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "zero_width_spaces"
             ],
             "filter": [
@@ -1301,8 +1277,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1319,8 +1294,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1364,7 +1338,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "french_charfilter"
             ],
             "filter": [
@@ -1386,7 +1359,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "french_charfilter"
             ],
             "filter": [
@@ -1503,8 +1475,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1521,8 +1492,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1565,7 +1535,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -1578,7 +1549,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -1617,8 +1589,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1638,8 +1609,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1685,7 +1655,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -1698,7 +1669,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -1737,8 +1709,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1755,8 +1726,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1798,7 +1768,6 @@
             "char_filter": [
                 "globo_norm",
                 "regex_camelCase",
-                "dotted_I_fix",
                 "armenian_charfilter",
                 "regex_acronym_fixer",
                 "word_break_helper"
@@ -1818,7 +1787,6 @@
             "char_filter": [
                 "globo_norm",
                 "regex_camelCase",
-                "dotted_I_fix",
                 "armenian_charfilter",
                 "regex_acronym_fixer",
                 "word_break_helper"
@@ -1866,7 +1834,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "cjk_charfilter"
             ],
             "filter": [
@@ -1886,7 +1853,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "cjk_charfilter"
             ],
             "filter": [
@@ -1931,8 +1897,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1949,8 +1914,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -1993,8 +1957,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -2011,8 +1974,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -2055,8 +2017,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -2073,8 +2034,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -2117,8 +2077,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -2136,8 +2095,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -2181,8 +2139,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -2199,14 +2156,73 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
                 "norwegian_stop",
                 "norwegian_stemmer",
                 "nn_icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "no_plain": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "no_icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "no_plain_search": {
+            "char_filter": [
+                "nnbsp_norm",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "no_text": {
+            "char_filter": [
+                "globo_norm",
+                "regex_acronym_fixer",
+                "regex_camelCase",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "norwegian_stop",
+                "norwegian_stemmer",
+                "no_icu_folding",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "no_text_search": {
+            "char_filter": [
+                "globo_norm",
+                "regex_acronym_fixer",
+                "regex_camelCase",
+                "word_break_helper"
+            ],
+            "filter": [
+                "icu_normalizer",
+                "norwegian_stop",
+                "norwegian_stemmer",
+                "no_icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -2243,8 +2259,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -2261,8 +2276,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -2305,8 +2319,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -2323,8 +2336,7 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_normalizer",
@@ -2368,7 +2380,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "romanian_charfilter"
             ],
             "filter": [
@@ -2388,7 +2399,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "romanian_charfilter"
             ],
             "filter": [
@@ -2436,7 +2446,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "russian_charfilter"
             ],
             "filter": [
@@ -2455,7 +2464,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "russian_charfilter"
             ],
             "filter": [
@@ -2499,7 +2507,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -2512,7 +2521,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -2617,7 +2627,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -2630,7 +2641,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -2669,7 +2681,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -2682,7 +2695,8 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "word_break_helper"
+                "word_break_helper",
+                "dotted_I_fix"
             ],
             "filter": [
                 "icu_normalizer"
@@ -2787,7 +2801,6 @@
                 "regex_camelCase",
                 "word_break_helper",
                 "thai_repl_pat",
-                "dotted_I_fix",
                 "thai_charfilter"
             ],
             "filter": [
@@ -2807,7 +2820,6 @@
                 "regex_camelCase",
                 "word_break_helper",
                 "thai_repl_pat",
-                "dotted_I_fix",
                 "thai_charfilter"
             ],
             "filter": [
@@ -3625,6 +3637,10 @@
             "unicodeSetFilter": "[^\u00c6\u00e6\u00d8\u00f8\u00c5\u00e5]"
         },
         "nn_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00c6\u00e6\u00d8\u00f8\u00c5\u00e5]"
+        },
+        "no_icu_folding": {
             "type": "icu_folding",
             "unicodeSetFilter": "[^\u00c6\u00e6\u00d8\u00f8\u00c5\u00e5]"
         },

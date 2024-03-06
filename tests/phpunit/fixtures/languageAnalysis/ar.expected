@@ -140,8 +140,7 @@
                 "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "homoglyph_norm",
@@ -160,8 +159,7 @@
                 "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "homoglyph_norm",

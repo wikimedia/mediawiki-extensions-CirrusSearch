@@ -36,7 +36,6 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
                 "german_charfilter"
             ],
             "filter": [
@@ -57,7 +56,6 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
                 "german_charfilter"
             ],
             "filter": [
@@ -175,8 +173,7 @@
                 "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_token_repair",
@@ -194,8 +191,7 @@
                 "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
-                "word_break_helper",
-                "dotted_I_fix"
+                "word_break_helper"
             ],
             "filter": [
                 "icu_token_repair",
@@ -304,7 +300,6 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
                 "russian_charfilter"
             ],
             "filter": [
@@ -324,7 +319,6 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
                 "russian_charfilter"
             ],
             "filter": [
@@ -369,6 +363,7 @@
                 "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
+                "dotted_I_fix",
                 "stconvertfix",
                 "tsconvert"
             ],
@@ -384,6 +379,7 @@
                 "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
+                "dotted_I_fix",
                 "stconvertfix",
                 "tsconvert"
             ],

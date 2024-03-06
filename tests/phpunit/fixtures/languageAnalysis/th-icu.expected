@@ -141,8 +141,8 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "thai_repl_pat",
                 "dotted_I_fix",
+                "thai_repl_pat",
                 "thai_charfilter",
                 "thai_reversed_numbers"
             ],
@@ -163,8 +163,8 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "thai_repl_pat",
                 "dotted_I_fix",
+                "thai_repl_pat",
                 "thai_charfilter",
                 "thai_reversed_numbers"
             ],

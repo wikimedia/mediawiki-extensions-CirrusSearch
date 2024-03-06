@@ -72,8 +72,8 @@ class AnalyzerBuilder {
 	/** @var string|null */
 	private $elisionName;
 
-	/** @var bool use language-specific lowercasing? */
-	private $langLowercase = false;
+	/** @var string|null */
+	private $langLowercase;
 
 	/** @var mixed|null stopword _list_ or array of stopwords */
 	private $customStopList;
@@ -111,9 +111,6 @@ class AnalyzerBuilder {
 
 	/** @var array<int, array<string, string[]>> */
 	private $insertFilterList = [];
-
-	/** @var string */
-	private $dottedIFix = 'dotted_I_fix';
 
 	/** @var bool */
 	private $useStemmer = true;
@@ -224,9 +221,12 @@ class AnalyzerBuilder {
 		return $this;
 	}
 
-	/** @return self */
-	public function withLangLowercase(): self {
-		$this->langLowercase = true;
+	/**
+	 * @param string|null $name
+	 * @return self
+	 */
+	public function withLangLowercase( string $name = null ): self {
+		$this->langLowercase = $name ?: $this->langName;
 		return $this;
 	}
 
@@ -332,13 +332,6 @@ class AnalyzerBuilder {
 	}
 
 	/** @return self */
-	public function omitDottedI(): self {
-		$this->unpackedCheck();
-		$this->dottedIFix = '';
-		return $this;
-	}
-
-	/** @return self */
 	public function withLightStemmer(): self {
 		$this->unpackedCheck();
 		$this->stemmerLang = "light_{$this->langName}";
@@ -405,7 +398,7 @@ class AnalyzerBuilder {
 			//
 			// type: custom
 			// tokenizer: standard
-			// char_filter: dotted_I_fix, lang_charfilter, lang_numbers
+			// char_filter: lang_charfilter, lang_numbers
 			// filter: elision, aggressive_splitting, lowercase, stopwords, lang_norm,
 			//         stemmer_override, stemmer, asciifolding, remove_empty
 			if ( $this->useStemmer ) {
@@ -416,7 +409,6 @@ class AnalyzerBuilder {
 			$this->withStop( $this->customStopList ?? "_{$this->langName}_" );
 
 			// build up the char_filter list--everything is optional
-			$this->charFilters[] = $this->dottedIFix;
 			$this->charFilters[] = $this->charMapName;
 			$this->charFilters[] = $this->numCharMapName;
 
@@ -481,7 +473,7 @@ class AnalyzerBuilder {
 		}
 
 		if ( $this->langLowercase ) {
-			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = $this->langName;
+			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = $this->langLowercase;
 		}
 
 		if ( $this->overrideName ) {

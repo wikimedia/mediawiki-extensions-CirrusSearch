@@ -143,7 +143,6 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
                 "french_charfilter"
             ],
             "filter": [
@@ -164,7 +163,6 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
                 "french_charfilter"
             ],
             "filter": [

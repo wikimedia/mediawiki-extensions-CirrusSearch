@@ -111,18 +111,18 @@ class SaneitizeLoopTest extends CirrusIntegrationTestCase {
 				$args = reset( $command );
 				try {
 					switch ( key( $command ) ) {
-					case 'set_time':
-						MWTimestamp::setFakeTime( $args );
-						break;
-					case 'run':
-						$jobs = $loop->run( $jobInfo, $numJobs, $minPageId, $maxPageId );
-						$this->assertJobs( $args, $jobs );
-						break;
-					case 'job_info':
-						$this->assertJobInfo( $args, $jobInfo );
-						break;
-					default:
-						throw new \Exception( '...' );
+						case 'set_time':
+							MWTimestamp::setFakeTime( $args );
+							break;
+						case 'run':
+							$jobs = $loop->run( $jobInfo, $numJobs, $minPageId, $maxPageId );
+							$this->assertJobs( $args, $jobs );
+							break;
+						case 'job_info':
+							$this->assertJobInfo( $args, $jobInfo );
+							break;
+						default:
+							throw new \Exception( '...' );
 					}
 				} catch ( \Exception $e ) {
 					$pretty = json_encode( $command, JSON_PRETTY_PRINT );

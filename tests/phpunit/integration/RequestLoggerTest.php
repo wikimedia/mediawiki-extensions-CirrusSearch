@@ -158,57 +158,57 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		$this->setService( 'TitleFactory', $titleFactory );
 
 		switch ( $query['type'] ) {
-		case 'fulltext':
-			$work = static function ( $config, $connection ) use ( $query ) {
-				$offset = $query['offset'] ?? 0;
-				$limit = $query['limit'] ?? 20;
-				$namespaces = $query['namespaces'] ?? null;
-				$config = new HashSearchConfig(
-					[ SearchConfig::INDEX_BASE_NAME => 'wiki' ],
-					[ HashSearchConfig::FLAG_INHERIT ] );
-				$searchEngine = new CirrusSearch( $config );
-				$searchEngine->setConnection( $connection );
-				$searchEngine->setLimitOffset( $limit, $offset );
-				$searchEngine->setNamespaces( $namespaces );
-				$searchEngine->setShowSuggestion( $query['showSuggestion'] );
-				if ( isset( $query['sort'] ) ) {
-					$searchEngine->setSort( $query['sort'] );
-				}
-				$searchEngine->searchText( $query['term'] );
-			};
-			break;
+			case 'fulltext':
+				$work = static function ( $config, $connection ) use ( $query ) {
+					$offset = $query['offset'] ?? 0;
+					$limit = $query['limit'] ?? 20;
+					$namespaces = $query['namespaces'] ?? null;
+					$config = new HashSearchConfig(
+						[ SearchConfig::INDEX_BASE_NAME => 'wiki' ],
+						[ HashSearchConfig::FLAG_INHERIT ] );
+					$searchEngine = new CirrusSearch( $config );
+					$searchEngine->setConnection( $connection );
+					$searchEngine->setLimitOffset( $limit, $offset );
+					$searchEngine->setNamespaces( $namespaces );
+					$searchEngine->setShowSuggestion( $query['showSuggestion'] );
+					if ( isset( $query['sort'] ) ) {
+						$searchEngine->setSort( $query['sort'] );
+					}
+					$searchEngine->searchText( $query['term'] );
+				};
+				break;
 
-		case 'completion':
-			if ( is_array( $expectedLogs ) ) {
-				foreach ( $expectedLogs as $logIdx => $log ) {
-					if ( $log['channel'] === 'CirrusSearchRequests' ) {
-						if ( isset( $log['context']['maxScore'] ) ) {
-							// Again, json reound trips 0.0 into 0, so we need to get it back to being a float.
-							$expectedLogs[$logIdx]['context']['maxScore'] = (float)$log['context']['maxScore'];
+			case 'completion':
+				if ( is_array( $expectedLogs ) ) {
+					foreach ( $expectedLogs as $logIdx => $log ) {
+						if ( $log['channel'] === 'CirrusSearchRequests' ) {
+							if ( isset( $log['context']['maxScore'] ) ) {
+								// Again, json reound trips 0.0 into 0, so we need to get it back to being a float.
+								$expectedLogs[$logIdx]['context']['maxScore'] = (float)$log['context']['maxScore'];
+							}
 						}
 					}
 				}
-			}
 
-			$work = static function ( $config, $connection ) use ( $query ) {
-				$limit = $query['limit'] ?? 5;
-				$offset = $query['offset'] ?? 0;
-				$namespaces = $query['namespaces'] ?? null;
-				$suggester = new CompletionSuggester( $connection, $limit, $offset, $config, $namespaces, null, 'wiki' );
-				$suggester->suggest( $query['term'] );
-			};
-			break;
+				$work = static function ( $config, $connection ) use ( $query ) {
+					$limit = $query['limit'] ?? 5;
+					$offset = $query['offset'] ?? 0;
+					$namespaces = $query['namespaces'] ?? null;
+					$suggester = new CompletionSuggester( $connection, $limit, $offset, $config, $namespaces, null, 'wiki' );
+					$suggester->suggest( $query['term'] );
+				};
+				break;
 
-		case 'get':
-			$work = static function ( $config, $connection ) use ( $query ) {
-				$searcher = new Searcher( $connection, 0, 20, $config, null, null, 'wiki' );
-				$sourceFiltering = $query['sourceFiltering'] ?? true;
-				$searcher->get( $query['docIds'], $sourceFiltering );
-			};
-			break;
+			case 'get':
+				$work = static function ( $config, $connection ) use ( $query ) {
+					$searcher = new Searcher( $connection, 0, 20, $config, null, null, 'wiki' );
+					$sourceFiltering = $query['sourceFiltering'] ?? true;
+					$searcher->get( $query['docIds'], $sourceFiltering );
+				};
+				break;
 
-		default:
-			throw new \RuntimeException( "Unknown request type: " . $query['type'] );
+			default:
+				throw new \RuntimeException( "Unknown request type: " . $query['type'] );
 		}
 
 		$this->runFixture( $query, $responses, $expectedLogs, $work );

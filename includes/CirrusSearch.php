@@ -224,14 +224,14 @@ class CirrusSearch extends SearchEngine {
 	 */
 	public function supports( $feature ) {
 		switch ( $feature ) {
-		case 'search-update':
-		case 'list-redirects':
-			return false;
-		case self::FT_QUERY_INDEP_PROFILE_TYPE:
-		case self::EXTRA_FIELDS_TO_EXTRACT:
-			return true;
-		default:
-			return parent::supports( $feature );
+			case 'search-update':
+			case 'list-redirects':
+				return false;
+			case self::FT_QUERY_INDEP_PROFILE_TYPE:
+			case self::EXTRA_FIELDS_TO_EXTRACT:
+				return true;
+			default:
+				return parent::supports( $feature );
 		}
 	}
 
@@ -516,14 +516,14 @@ class CirrusSearch extends SearchEngine {
 		$profileService = $this->config->getProfileService();
 		$serviceProfileType = null;
 		switch ( $profileType ) {
-		case SearchEngine::COMPLETION_PROFILE_TYPE:
-			if ( $this->config->isCompletionSuggesterEnabled() ) {
-				$serviceProfileType = SearchProfileService::COMPLETION;
-			}
-			break;
-		case SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE:
-			$serviceProfileType = SearchProfileService::RESCORE;
-			break;
+			case SearchEngine::COMPLETION_PROFILE_TYPE:
+				if ( $this->config->isCompletionSuggesterEnabled() ) {
+					$serviceProfileType = SearchProfileService::COMPLETION;
+				}
+				break;
+			case SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE:
+				$serviceProfileType = SearchProfileService::RESCORE;
+				break;
 		}
 
 		if ( $serviceProfileType === null ) {

@@ -229,39 +229,39 @@ class Hooks implements
 			}
 			[ $k, $v ] = explode( ':', $line, 2 );
 			switch ( $k ) {
-			case 'min_doc_freq':
-			case 'max_doc_freq':
-			case 'max_query_terms':
-			case 'min_term_freq':
-			case 'min_word_length':
-			case 'max_word_length':
-				if ( is_numeric( $v ) && $v >= 0 ) {
-					$wgCirrusSearchMoreLikeThisConfig[$k] = intval( $v );
-				} elseif ( $v === 'null' ) {
-					unset( $wgCirrusSearchMoreLikeThisConfig[$k] );
-				}
-				break;
-			case 'percent_terms_to_match':
-				// @deprecated Use minimum_should_match now
-				$k = 'minimum_should_match';
-				if ( is_numeric( $v ) && $v > 0 && $v <= 1 ) {
-					$v = ( (int)( (float)$v * 100 ) ) . '%';
-				} else {
+				case 'min_doc_freq':
+				case 'max_doc_freq':
+				case 'max_query_terms':
+				case 'min_term_freq':
+				case 'min_word_length':
+				case 'max_word_length':
+					if ( is_numeric( $v ) && $v >= 0 ) {
+						$wgCirrusSearchMoreLikeThisConfig[$k] = intval( $v );
+					} elseif ( $v === 'null' ) {
+						unset( $wgCirrusSearchMoreLikeThisConfig[$k] );
+					}
 					break;
-				}
-				// intentional fall-through
-			case 'minimum_should_match':
-				if ( self::isMinimumShouldMatch( $v ) ) {
-					$wgCirrusSearchMoreLikeThisConfig[$k] = $v;
-				} elseif ( $v === 'null' ) {
-					unset( $wgCirrusSearchMoreLikeThisConfig[$k] );
-				}
-				break;
-			case 'fields':
-				$wgCirrusSearchMoreLikeThisFields = array_intersect(
-					array_map( 'trim', explode( ',', $v ) ),
-					$wgCirrusSearchMoreLikeThisAllowedFields );
-				break;
+				case 'percent_terms_to_match':
+					// @deprecated Use minimum_should_match now
+					$k = 'minimum_should_match';
+					if ( is_numeric( $v ) && $v > 0 && $v <= 1 ) {
+						$v = ( (int)( (float)$v * 100 ) ) . '%';
+					} else {
+						break;
+					}
+					// intentional fall-through
+				case 'minimum_should_match':
+					if ( self::isMinimumShouldMatch( $v ) ) {
+						$wgCirrusSearchMoreLikeThisConfig[$k] = $v;
+					} elseif ( $v === 'null' ) {
+						unset( $wgCirrusSearchMoreLikeThisConfig[$k] );
+					}
+					break;
+				case 'fields':
+					$wgCirrusSearchMoreLikeThisFields = array_intersect(
+						array_map( 'trim', explode( ',', $v ) ),
+						$wgCirrusSearchMoreLikeThisAllowedFields );
+					break;
 			}
 			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 			if ( $wgCirrusSearchMoreLikeThisConfig['max_query_terms'] > $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit ) {

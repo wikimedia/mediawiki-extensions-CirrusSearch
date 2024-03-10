@@ -82,30 +82,30 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 
 		$resolver = $this->getSiteMatrixInterwikiResolver( $wiki, $blockList, $overrides );
 		switch ( $what ) {
-		case 'sisters':
-			asort( $expected );
-			$actual = $resolver->getSisterProjectPrefixes();
-			asort( $actual );
+			case 'sisters':
+				asort( $expected );
+				$actual = $resolver->getSisterProjectPrefixes();
+				asort( $actual );
 
-			$this->assertEquals(
-				$expected,
-				$actual
-			);
-			break;
-		case 'interwiki':
-			$this->assertEquals(
-				$expected,
-				$resolver->getInterwikiPrefix( $arg )
-			);
-			break;
-		case 'crosslang':
-			$this->assertEquals(
-				$expected,
-				$resolver->getSameProjectWikiByLang( $arg )
-			);
-			break;
-		default:
-			throw new LogicException( "Invalid op $what" );
+				$this->assertEquals(
+					$expected,
+					$actual
+				);
+				break;
+			case 'interwiki':
+				$this->assertEquals(
+					$expected,
+					$resolver->getInterwikiPrefix( $arg )
+				);
+				break;
+			case 'crosslang':
+				$this->assertEquals(
+					$expected,
+					$resolver->getSameProjectWikiByLang( $arg )
+				);
+				break;
+			default:
+				throw new LogicException( "Invalid op $what" );
 		}
 	}
 

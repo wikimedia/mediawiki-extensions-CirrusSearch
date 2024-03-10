@@ -246,14 +246,14 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		$filter = null;
 
 		switch ( $type ) {
-		case 'default':
-			$filter = $this->buildSimpleAllFilter( $filterDef, $query );
-			break;
-		case 'constrain_title':
-			$filter = $this->buildTitleFilter( $filterDef, $query );
-			break;
-		default:
-			throw new \RuntimeException( "Cannot build the filter clause: unknown filter type $type" );
+			case 'default':
+				$filter = $this->buildSimpleAllFilter( $filterDef, $query );
+				break;
+			case 'constrain_title':
+				$filter = $this->buildTitleFilter( $filterDef, $query );
+				break;
+			default:
+				throw new \RuntimeException( "Cannot build the filter clause: unknown filter type $type" );
 		}
 
 		$boolQuery->addFilter( $filter );

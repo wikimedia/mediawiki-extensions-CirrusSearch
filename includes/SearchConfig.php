@@ -209,15 +209,15 @@ class SearchConfig implements Config {
 
 		$pieces = explode( '|', $docId );
 		switch ( count( $pieces ) ) {
-		case 2:
-			return (int)$pieces[1];
-		case 1:
-			// Broken doc id...assume somehow this didn't get prefixed.
-			// Attempt to continue on...but maybe should throw exception
-			// instead?
-			return (int)$docId;
-		default:
-			throw new LogicException( "Invalid document id: $docId" );
+			case 2:
+				return (int)$pieces[1];
+			case 1:
+				// Broken doc id...assume somehow this didn't get prefixed.
+				// Attempt to continue on...but maybe should throw exception
+				// instead?
+				return (int)$docId;
+			default:
+				throw new LogicException( "Invalid document id: $docId" );
 		}
 	}
 

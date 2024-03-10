@@ -120,15 +120,15 @@ class TokenCountRouter extends AbstractQuery {
 	 */
 	public function addCondition( $type, $value, AbstractQuery $query ) {
 		switch ( $type ) {
-		case self::GT:
-		case self::GTE:
-		case self::EQ:
-		case self::NEQ:
-		case self::LT:
-		case self::LTE:
-			break;
-		default:
-			throw new \InvalidArgumentException( "$type is not allowed as a condition type" );
+			case self::GT:
+			case self::GTE:
+			case self::EQ:
+			case self::NEQ:
+			case self::LT:
+			case self::LTE:
+				break;
+			default:
+				throw new \InvalidArgumentException( "$type is not allowed as a condition type" );
 		}
 		return $this->addParam( 'conditions', [
 			$type => $value,

@@ -35,16 +35,16 @@ class MultiClusterAssignment implements ClusterAssignment {
 	private function evalGroupStrategy( array $groupConfig ) {
 		// Determine which group this wiki belongs to
 		switch ( $groupConfig['type'] ) {
-		case 'constant':
-			return $groupConfig['group'];
-		case 'roundrobin':
-			$wikiId = $this->config->getWikiId();
-			$mod = count( $groupConfig['groups'] );
-			Assert::precondition( $mod > 0, "At least one replica group must be defined for roundrobin" );
-			$idx = crc32( $wikiId ) % $mod;
-			return $groupConfig['groups'][$idx];
-		default:
-			throw new \RuntimeException( "Unknown replica group type: {$groupConfig['type']}" );
+			case 'constant':
+				return $groupConfig['group'];
+			case 'roundrobin':
+				$wikiId = $this->config->getWikiId();
+				$mod = count( $groupConfig['groups'] );
+				Assert::precondition( $mod > 0, "At least one replica group must be defined for roundrobin" );
+				$idx = crc32( $wikiId ) % $mod;
+				return $groupConfig['groups'][$idx];
+			default:
+				throw new \RuntimeException( "Unknown replica group type: {$groupConfig['type']}" );
 		}
 	}
 

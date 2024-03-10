@@ -328,30 +328,30 @@ class RunSearch extends Maintenance {
 		$engine->setLimitOffset( $limit );
 
 		switch ( $searchType ) {
-		case 'full_text':
-			// @todo pass through $this->getConnection() ?
-			$result = $engine->searchText( $query );
-			if ( $result instanceof Status ) {
-				return $result;
-			} else {
-				return Status::newGood( $result );
-			}
+			case 'full_text':
+				// @todo pass through $this->getConnection() ?
+				$result = $engine->searchText( $query );
+				if ( $result instanceof Status ) {
+					return $result;
+				} else {
+					return Status::newGood( $result );
+				}
 
-		case 'prefix':
-			$titles = $engine->defaultPrefixSearch( $query );
-			$resultSet = SearchSuggestionSet::fromTitles( $titles );
-			return Status::newGood( $resultSet );
+			case 'prefix':
+				$titles = $engine->defaultPrefixSearch( $query );
+				$resultSet = SearchSuggestionSet::fromTitles( $titles );
+				return Status::newGood( $resultSet );
 
-		case 'suggest':
-			$result = $engine->completionSearch( $query );
-			if ( $result instanceof Status ) {
-				return $result;
-			} else {
-				return Status::newGood( $result );
-			}
+			case 'suggest':
+				$result = $engine->completionSearch( $query );
+				if ( $result instanceof Status ) {
+					return $result;
+				} else {
+					return Status::newGood( $result );
+				}
 
-		default:
-			$this->fatalError( "\nERROR: Unknown search type $searchType\n" );
+			default:
+				$this->fatalError( "\nERROR: Unknown search type $searchType\n" );
 		}
 	}
 }

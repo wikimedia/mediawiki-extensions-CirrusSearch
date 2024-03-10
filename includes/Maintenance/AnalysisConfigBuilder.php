@@ -162,14 +162,14 @@ class AnalysisConfigBuilder {
 			$in_config = 'no';
 		}
 		switch ( $in_config ) {
-		case 'yes':
-			return true;
-		case 'no':
-			return false;
-		case 'default':
-			return $this->languagesWithIcuFolding[$language] ?? false;
-		default:
-			return false;
+			case 'yes':
+				return true;
+			case 'no':
+				return false;
+			case 'default':
+				return $this->languagesWithIcuFolding[$language] ?? false;
+			default:
+				return false;
 		}
 	}
 
@@ -185,17 +185,17 @@ class AnalysisConfigBuilder {
 		}
 		$in_config = $this->config->get( 'CirrusSearchUseIcuTokenizer' );
 		switch ( $in_config ) {
-		case 'yes':
-			return true;
-		case 'no':
-			return false;
-		case 'default':
-			// languagesWithIcuTokenization[] gives absolute answers for specific languages.
-			// If the textify plugin is available, the default is 'yes'/true because we
-			// have icu_token_repair available; if not, the default is 'no'/false
-			return $this->languagesWithIcuTokenization[$language] ?? $this->isTextifyAvailable();
-		default:
-			return false;
+			case 'yes':
+				return true;
+			case 'no':
+				return false;
+			case 'default':
+				// languagesWithIcuTokenization[] gives absolute answers for specific languages.
+				// If the textify plugin is available, the default is 'yes'/true because we
+				// have icu_token_repair available; if not, the default is 'no'/false
+				return $this->languagesWithIcuTokenization[$language] ?? $this->isTextifyAvailable();
+			default:
+				return false;
 		}
 	}
 
@@ -410,70 +410,70 @@ class AnalysisConfigBuilder {
 			return $this->config->get( 'CirrusSearchICUFoldingUnicodeSetFilter' );
 		}
 		switch ( $language ) {
-		/* @todo: complete the default filters per language
-		 *
-		 * For Slovak (sk)—which has no folding configured here!—see:
-		 *   https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
-		 *
-		 * Exceptions are generally listed as Unicode characters for ease of
-		 *   inspection. However, combining characters (such as for Thai (th))
-		 *   are \u encoded to prevent problems with display or editing
-		 */
-		case 'bg': // T325090
-			return '[^Йй]';
-		case 'bs': // T192395
-		case 'hr': // T192395
-		case 'sh': // T192395
-		case 'sr': // T183015
-			return '[^ĐđŽžĆćŠšČč]';
-		case 'cs': // T284578
-			return '[^ÁáČčĎďÉéĚěÍíŇňÓóŘřŠšŤťÚúŮůÝýŽž]';
-		case 'da': // T283366
-			return '[^ÆæØøÅå]';
-		case 'de': // T281379
-			return '[^ÄäÖöÜüẞß]';
-		case 'eo': // T202173
-			return '[^ĈĉĜĝĤĥĴĵŜŝŬŭ]';
-		case 'es': // T277699
-			return '[^Ññ]';
-		case 'et': // T332322
-			return '[^ŠšŽžÕõÄäÖöÜü]';
-		case 'eu': // T283366
-			return '[^Ññ]';
-		case 'fi': // T284578
-			return '[^ÅåÄäÖö]';
-		case 'gl': // T284578
-			return '[^Ññ]';
-		case 'hu': // T325089
-			return '[^ÁáÉéÍíÓóÖöŐőÚúÜüŰű]';
-		case 'ja': // T326822
-			// This range includes characters that don't currently get ICU folded, in
-			// order to keep the overall regex a lot simpler. The specific targets are
-			// characters with dakuten and handakuten, the separate (han)dakuten
-			// characters (regular and combining) and the prolonged sound mark (chōonpu).
-			return '[^が-ヾ]';
-		case 'lt': // T325090
-			return '[^ĄąČčĘęĖėĮįŠšŲųŪūŽž]';
-		case 'lv': // T325089
-			return '[^ĀāČčĒēĢģĪīĶķĻļŅņŠšŪūŽž]';
-		case 'nb': // T289612
-		case 'nn': // T289612
-			return '[^ÆæØøÅå]';
-		case 'ro': // T325091
-			// including s&t with cedilla because we (have to) use it internally T330893
-			return '[^ĂăÂâÎîȘșȚțŞşŢţ]';
-		case 'ru':
-			return '[^Йй]';
-		case 'sv': // T160562
-			return '[^ÅåÄäÖö]';
-		case 'th': // T294147
-			return '[^\u0E47-\u0E4E]';
-		case 'tr': // T329762
-			// (I and i aren't strictly necessary but they keep the Turkish upper/lower
-			// pairs Iı & İi together and makes it clear both are intended.)
-			return '[^ÇçĞğIıİiÖöŞşÜü]';
-		default:
-			return null;
+			/* @todo: complete the default filters per language
+			 *
+			 * For Slovak (sk)—which has no folding configured here!—see:
+			 *   https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
+			 *
+			 * Exceptions are generally listed as Unicode characters for ease of
+			 *   inspection. However, combining characters (such as for Thai (th))
+			 *   are \u encoded to prevent problems with display or editing
+			 */
+			case 'bg': // T325090
+				return '[^Йй]';
+			case 'bs': // T192395
+			case 'hr': // T192395
+			case 'sh': // T192395
+			case 'sr': // T183015
+				return '[^ĐđŽžĆćŠšČč]';
+			case 'cs': // T284578
+				return '[^ÁáČčĎďÉéĚěÍíŇňÓóŘřŠšŤťÚúŮůÝýŽž]';
+			case 'da': // T283366
+				return '[^ÆæØøÅå]';
+			case 'de': // T281379
+				return '[^ÄäÖöÜüẞß]';
+			case 'eo': // T202173
+				return '[^ĈĉĜĝĤĥĴĵŜŝŬŭ]';
+			case 'es': // T277699
+				return '[^Ññ]';
+			case 'et': // T332322
+				return '[^ŠšŽžÕõÄäÖöÜü]';
+			case 'eu': // T283366
+				return '[^Ññ]';
+			case 'fi': // T284578
+				return '[^ÅåÄäÖö]';
+			case 'gl': // T284578
+				return '[^Ññ]';
+			case 'hu': // T325089
+				return '[^ÁáÉéÍíÓóÖöŐőÚúÜüŰű]';
+			case 'ja': // T326822
+				// This range includes characters that don't currently get ICU folded, in
+				// order to keep the overall regex a lot simpler. The specific targets are
+				// characters with dakuten and handakuten, the separate (han)dakuten
+				// characters (regular and combining) and the prolonged sound mark (chōonpu).
+				return '[^が-ヾ]';
+			case 'lt': // T325090
+				return '[^ĄąČčĘęĖėĮįŠšŲųŪūŽž]';
+			case 'lv': // T325089
+				return '[^ĀāČčĒēĢģĪīĶķĻļŅņŠšŪūŽž]';
+			case 'nb': // T289612
+			case 'nn': // T289612
+				return '[^ÆæØøÅå]';
+			case 'ro': // T325091
+				// including s&t with cedilla because we (have to) use it internally T330893
+				return '[^ĂăÂâÎîȘșȚțŞşŢţ]';
+			case 'ru':
+				return '[^Йй]';
+			case 'sv': // T160562
+				return '[^ÅåÄäÖö]';
+			case 'th': // T294147
+				return '[^\u0E47-\u0E4E]';
+			case 'tr': // T329762
+				// (I and i aren't strictly necessary but they keep the Turkish upper/lower
+				// pairs Iı & İi together and makes it clear both are intended.)
+				return '[^ÇçĞğIıİiÖöŞşÜü]';
+			default:
+				return null;
 		}
 	}
 
@@ -487,13 +487,13 @@ class AnalysisConfigBuilder {
 			return $this->config->get( 'CirrusSearchICUNormalizationUnicodeSetFilter' );
 		}
 		switch ( $language ) {
-		/* For German (de), see T281379
-		 */
-		case 'de':
-			return '[^ẞß]'; // Capital ẞ is lowercased to ß by german_charfilter
-							// lowercase ß is normalized to ss by german_normalization
-		default:
-			return null;
+			/* For German (de), see T281379
+			 */
+			case 'de':
+				return '[^ẞß]'; // Capital ẞ is lowercased to ß by german_charfilter
+								// lowercase ß is normalized to ss by german_normalization
+			default:
+				return null;
 		}
 	}
 
@@ -835,545 +835,545 @@ class AnalysisConfigBuilder {
 	private function customize( $config, $language ) {
 		$langName = $this->getDefaultTextAnalyzerType( $language );
 		switch ( $langName ) {
-		// Please add languages in alphabetical order.
+			// Please add languages in alphabetical order.
 
-		// usual unpacked languages
-		case 'basque':    // Unpack Basque analyzer T283366
-		case 'brazilian': // Unpack Brazilian analyzer T325092
-		case 'bulgarian': // Unpack Bulgarian analyzer T325090
-		case 'czech':     // Unpack Czech analyzer T284578
-		case 'danish':    // Unpack Danish analyzer T283366
-		case 'estonian':  // Unpack Estonian analyzer T332322
-		case 'finnish':   // Unpack Finnish analyzer T284578
-		case 'galician':  // Unpack Galician analyzer T284578
-		case 'hungarian': // Unpack Hungarian analyzer T325089
-		case 'latvian':   // Unpack Latvian analyzer T325089
-		case 'lithuanian': // Unpack Lithuanian analyzer T325090
-		case 'norwegian': // Unpack Norwegian analyzer T289612
-			$config = ( new AnalyzerBuilder( $langName ) )->
+			// usual unpacked languages
+			case 'basque':    // Unpack Basque analyzer T283366
+			case 'brazilian': // Unpack Brazilian analyzer T325092
+			case 'bulgarian': // Unpack Bulgarian analyzer T325090
+			case 'czech':     // Unpack Czech analyzer T284578
+			case 'danish':    // Unpack Danish analyzer T283366
+			case 'estonian':  // Unpack Estonian analyzer T332322
+			case 'finnish':   // Unpack Finnish analyzer T284578
+			case 'galician':  // Unpack Galician analyzer T284578
+			case 'hungarian': // Unpack Hungarian analyzer T325089
+			case 'latvian':   // Unpack Latvian analyzer T325089
+			case 'lithuanian': // Unpack Lithuanian analyzer T325090
+			case 'norwegian': // Unpack Norwegian analyzer T289612
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					build( $config );
+				break;
+
+			// usual unpacked languages, with "light" variant stemmer
+			case 'portuguese':  // Unpack Portuguese analyzer T281379
+			case 'spanish':     // Unpack Spanish analyzer T277699
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withLightStemmer()->
+					build( $config );
+				break;
+
+			// customized languages
+			case 'arabic':
+			case 'arabic-egyptian':
+			case 'arabic-moroccan':
+				// Unpack Arabic analyzer T294147
+				$arBuilder = ( new AnalyzerBuilder( 'arabic' ) )->
 				withUnpackedAnalyzer()->
-				build( $config );
-			break;
+					withDecimalDigit()->
+					insertFiltersBefore( 'arabic_stemmer', [ 'arabic_normalization' ] );
 
-		// usual unpacked languages, with "light" variant stemmer
-		case 'portuguese':  // Unpack Portuguese analyzer T281379
-		case 'spanish':     // Unpack Spanish analyzer T277699
-			$config = ( new AnalyzerBuilder( $langName ) )->
+				// load extra stopwords for Arabic varieties
+				if ( $langName == 'arabic-egyptian' || $langName == 'arabic-moroccan' ) {
+					$arStopwords = require __DIR__ . '/AnalysisLanguageData/arabicStopwords.php';
+					$arBuilder->withExtraStop( $arStopwords, 'arz_ary_stop', 'arabic_stop' );
+				}
+
+				$config = $arBuilder->build( $config );
+				break;
+			case 'armenian':  // Unpack Armenian analyzer T325089
+				// char map: Armenian uses ․ ("one-dot leader") about 10% as often as . (period)
+				// stopwords նաև & և get normalized to նաեւ & եւ, so pick those up, too.
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withLimitedCharMap( [ '․=>.' ] )->
+					withExtraStop( [ 'նաեւ', 'եւ' ], 'armenian_norm_stop', 'armenian_stop' )->
+					build( $config );
+				break;
+			case 'bengali': // Unpack Bengali analyzer T294067
+				$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
-				withLightStemmer()->
-				build( $config );
-			break;
+					withDecimalDigit()->
+					insertFiltersBefore( 'bengali_stop', [ 'indic_normalization' ] )->
+					build( $config );
+				break;
+			case 'bosnian':
+			case 'croatian':
+			case 'serbian':
+			case 'serbo-croatian':
+				// Unpack default analyzer to add Serbian stemming and custom folding
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
+				// and https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withFilters( [ 'lowercase', 'asciifolding', 'serbian_stemmer' ] )->
+					build( $config );
+				break;
+			case 'catalan':
+				// Unpack Catalan analyzer T283366
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withElision( [ 'd', 'l', 'm', 'n', 's', 't' ] )->
+					build( $config );
+				break;
+			case 'chinese':
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
+				$config[ 'char_filter' ][ 'tsconvert' ] = [
+					'type' => 'stconvert',
+					'delimiter' => '#',
+					'keep_both' => false,
+					'convert_type' => 't2s',
+				];
 
-		// customized languages
-		case 'arabic':
-		case 'arabic-egyptian':
-		case 'arabic-moroccan':
-			// Unpack Arabic analyzer T294147
-			$arBuilder = ( new AnalyzerBuilder( 'arabic' ) )->
-				withUnpackedAnalyzer()->
-				withDecimalDigit()->
-				insertFiltersBefore( 'arabic_stemmer', [ 'arabic_normalization' ] );
+				// char map: hack for STConvert errors (still present as of July 2023)
+				// see https://github.com/medcl/elasticsearch-analysis-stconvert/issues/13
+				// stop: SmartCN converts lots of punctuation to ',' but we don't want to index it
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withCharMap( [ '\u606d\u5f18=>\u606d \u5f18', '\u5138=>\u3469' ], 'stconvertfix' )->
+					withCharFilters( [ 'stconvertfix', 'tsconvert' ] )->
+					withTokenizer( 'smartcn_tokenizer' )->
+					withStop( [ ',' ], 'smartcn_stop' )->
+					withFilters( [ 'smartcn_stop', 'lowercase' ] )->
+					build( $config );
 
-			// load extra stopwords for Arabic varieties
-			if ( $langName == 'arabic-egyptian' || $langName == 'arabic-moroccan' ) {
-				$arStopwords = require __DIR__ . '/AnalysisLanguageData/arabicStopwords.php';
-				$arBuilder->withExtraStop( $arStopwords, 'arz_ary_stop', 'arabic_stop' );
-			}
+				$config[ 'analyzer' ][ 'plain' ][ 'filter' ] = [ 'smartcn_stop', 'lowercase' ];
+				$config[ 'analyzer' ][ 'plain_search' ][ 'filter' ] =
+					$config[ 'analyzer' ][ 'plain' ][ 'filter' ];
+				break;
+			case 'cjk':
+				// Unpack CJK analyzer T326822
+				// map (han)dakuten to combining forms or icu_normalizer will add spaces
+				$dakutenMap = [ '゛=>\u3099', '゜=>\u309a' ];
 
-			$config = $arBuilder->build( $config );
-			break;
-		case 'armenian':  // Unpack Armenian analyzer T325089
-			// char map: Armenian uses ․ ("one-dot leader") about 10% as often as . (period)
-			// stopwords նաև & և get normalized to նաեւ & եւ, so pick those up, too.
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withLimitedCharMap( [ '․=>.' ] )->
-				withExtraStop( [ 'նաեւ', 'եւ' ], 'armenian_norm_stop', 'armenian_stop' )->
-				build( $config );
-			break;
-		case 'bengali': // Unpack Bengali analyzer T294067
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withDecimalDigit()->
-				insertFiltersBefore( 'bengali_stop', [ 'indic_normalization' ] )->
-				build( $config );
-			break;
-		case 'bosnian':
-		case 'croatian':
-		case 'serbian':
-		case 'serbo-croatian':
-			// Unpack default analyzer to add Serbian stemming and custom folding
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
-			// and https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withFilters( [ 'lowercase', 'asciifolding', 'serbian_stemmer' ] )->
-				build( $config );
-			break;
-		case 'catalan':
-			// Unpack Catalan analyzer T283366
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withElision( [ 'd', 'l', 'm', 'n', 's', 't' ] )->
-				build( $config );
-			break;
-		case 'chinese':
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
-			$config[ 'char_filter' ][ 'tsconvert' ] = [
-				'type' => 'stconvert',
-				'delimiter' => '#',
-				'keep_both' => false,
-				'convert_type' => 't2s',
-			];
+				// cjk_bigram negates the benefits of the icu_tokenizer for CJK text. The
+				// icu_tokenizer also has a few bad side effects, so don't use it for cjk.
+				// Default cjk stop words are almost the same as _english_ (add s & t; drop
+				// an). Stop words are searchable via 'plain' anyway, so just use _english_
+				$config = ( new AnalyzerBuilder( 'cjk' ) )->
+					withUnpackedAnalyzer()->
+					withLimitedCharMap( $dakutenMap )->
+					withTokenizer( self::STANDARD_TOKENIZER_ONLY )->
+					withStop( '_english_' )->
+					omitStemmer()->
+					insertFiltersBefore( 'lowercase', [ 'cjk_width' ] )->
+					insertFiltersBefore( 'cjk_stop', [ 'cjk_bigram' ] )->
+					build( $config );
+				break;
+			case 'dutch':
+				// Unpack Dutch analyzer T281379
+				$nlOverride = [ // these are in the default Dutch analyzer
+					'fiets=>fiets',
+					'bromfiets=>bromfiets',
+					'ei=>eier',
+					'kind=>kinder'
+				];
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withStemmerOverride( $nlOverride )->
+					build( $config );
+				break;
+			case 'english':
+				// Map hiragana (\u3041-\u3096) to katakana (\u30a1-\u30f6), currently only for English
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T176197
+				$hkmap = [];
+				for ( $i = 0x3041; $i <= 0x3096; $i++ ) {
+					$hkmap[] = sprintf( '\\u%04x=>\\u%04x', $i, $i + 0x60 );
+				}
 
-			// char map: hack for STConvert errors (still present as of July 2023)
-			// see https://github.com/medcl/elasticsearch-analysis-stconvert/issues/13
-			// stop: SmartCN converts lots of punctuation to ',' but we don't want to index it
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withCharMap( [ '\u606d\u5f18=>\u606d \u5f18', '\u5138=>\u3469' ], 'stconvertfix' )->
-				withCharFilters( [ 'stconvertfix', 'tsconvert' ] )->
-				withTokenizer( 'smartcn_tokenizer' )->
-				withStop( [ ',' ], 'smartcn_stop' )->
-				withFilters( [ 'smartcn_stop', 'lowercase' ] )->
-				build( $config );
+				// Replace English analyzer with a rebuilt copy with asciifolding inserted before stemming
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142037
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withLimitedCharMap( $hkmap, 'kana_map' )->
+					withCharFilters( [ 'kana_map' ] )->
+					withExtraStemmer( 'possessive_english' )->
+					withStemmerOverride( 'guidelines => guideline', 'custom_stem' )->
+					withFilters( [ 'possessive_english', 'lowercase', 'stop', 'asciifolding', 'kstem',
+						'custom_stem' ] )->
+					build( $config );
 
-			$config[ 'analyzer' ][ 'plain' ][ 'filter' ] = [ 'smartcn_stop', 'lowercase' ];
-			$config[ 'analyzer' ][ 'plain_search' ][ 'filter' ] =
-				$config[ 'analyzer' ][ 'plain' ][ 'filter' ];
-			break;
-		case 'cjk':
-			// Unpack CJK analyzer T326822
-			// map (han)dakuten to combining forms or icu_normalizer will add spaces
-			$dakutenMap = [ '゛=>\u3099', '゜=>\u309a' ];
+				// Add asciifolding_preserve to the plain analyzer as well (but not plain_search)
+				$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
+				// Add asciifolding_preserve filters
+				$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
+				break;
+			case 'esperanto':
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withFilters( [ 'lowercase', 'asciifolding', 'esperanto_stemmer' ] )->
+					build( $config );
+				break;
+			case 'french':
+				// Add asciifolding_preserve to filters
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142620
+				$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
-			// cjk_bigram negates the benefits of the icu_tokenizer for CJK text. The
-			// icu_tokenizer also has a few bad side effects, so don't use it for cjk.
-			// Default cjk stop words are almost the same as _english_ (add s & t; drop
-			// an). Stop words are searchable via 'plain' anyway, so just use _english_
-			$config = ( new AnalyzerBuilder( 'cjk' ) )->
-				withUnpackedAnalyzer()->
-				withLimitedCharMap( $dakutenMap )->
-				withTokenizer( self::STANDARD_TOKENIZER_ONLY )->
-				withStop( '_english_' )->
-				omitStemmer()->
-				insertFiltersBefore( 'lowercase', [ 'cjk_width' ] )->
-				insertFiltersBefore( 'cjk_stop', [ 'cjk_bigram' ] )->
-				build( $config );
-			break;
-		case 'dutch':
-			// Unpack Dutch analyzer T281379
-			$nlOverride = [ // these are in the default Dutch analyzer
-				'fiets=>fiets',
-				'bromfiets=>bromfiets',
-				'ei=>eier',
-				'kind=>kinder'
-			];
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withStemmerOverride( $nlOverride )->
-				build( $config );
-			break;
-		case 'english':
-			// Map hiragana (\u3041-\u3096) to katakana (\u30a1-\u30f6), currently only for English
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T176197
-			$hkmap = [];
-			for ( $i = 0x3041; $i <= 0x3096; $i++ ) {
-			  $hkmap[] = sprintf( '\\u%04x=>\\u%04x', $i, $i + 0x60 );
-			}
-
-			// Replace English analyzer with a rebuilt copy with asciifolding inserted before stemming
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142037
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withLimitedCharMap( $hkmap, 'kana_map' )->
-				withCharFilters( [ 'kana_map' ] )->
-				withExtraStemmer( 'possessive_english' )->
-				withStemmerOverride( 'guidelines => guideline', 'custom_stem' )->
-				withFilters( [ 'possessive_english', 'lowercase', 'stop', 'asciifolding', 'kstem',
-					'custom_stem' ] )->
-				build( $config );
-
-			// Add asciifolding_preserve to the plain analyzer as well (but not plain_search)
-			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
-			// Add asciifolding_preserve filters
-			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
-			break;
-		case 'esperanto':
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withFilters( [ 'lowercase', 'asciifolding', 'esperanto_stemmer' ] )->
-				build( $config );
-			break;
-		case 'french':
-			// Add asciifolding_preserve to filters
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142620
-			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
-
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withLimitedCharMap( [ '\u02BC=>\u0027' ] )->
-				withElision( [ 'l', 'm', 't', 'qu', 'n', 's', 'j', 'd', 'c',
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withLimitedCharMap( [ '\u02BC=>\u0027' ] )->
+					withElision( [ 'l', 'm', 't', 'qu', 'n', 's', 'j', 'd', 'c',
 								'jusqu', 'quoiqu', 'lorsqu', 'puisqu' ] )->
-				withLightStemmer()->
-				withAsciifoldingPreserve()->
-				build( $config );
-			break;
-		case 'german':
-			// Unpack German analyzer T281379
-			// char map: We have to explicitly map capital ẞ to lowercase ß
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withLimitedCharMap( [ 'ẞ=>ß' ] )->
-				withLightStemmer()->
-				insertFiltersBefore( 'german_stemmer', [ 'german_normalization' ] )->
-				build( $config );
+					withLightStemmer()->
+					withAsciifoldingPreserve()->
+					build( $config );
+				break;
+			case 'german':
+				// Unpack German analyzer T281379
+				// char map: We have to explicitly map capital ẞ to lowercase ß
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withLimitedCharMap( [ 'ẞ=>ß' ] )->
+					withLightStemmer()->
+					insertFiltersBefore( 'german_stemmer', [ 'german_normalization' ] )->
+					build( $config );
 
-			$config[ 'analyzer' ][ 'plain' ][ 'char_filter' ][] = 'german_charfilter';
-			$config[ 'analyzer' ][ 'plain_search' ][ 'char_filter' ][] = 'german_charfilter';
-			break;
-		case 'greek':
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				omitDottedI()->
-				omitAsciifolding()->
-				withLangLowercase()->
-				withRemoveEmpty()->
-				build( $config );
-			break;
-		case 'hebrew':
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withTokenizer( 'hebrew' )->
-				withFilters( [ 'niqqud', 'hebrew_lemmatizer', 'remove_duplicates', 'lowercase',
-					'asciifolding' ] )->
-				build( $config );
-			break;
-		case 'hindi':
-			// Unpack Hindi analyzer T289612
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withDecimalDigit()->
-				insertFiltersBefore( 'hindi_stop',
-					[ 'indic_normalization', 'hindi_normalization' ] )->
-				build( $config );
-			break;
-		case 'indonesian':
-		case 'malay':
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T196780
-			$config = ( new AnalyzerBuilder( 'indonesian' ) )->
-				withUnpackedAnalyzer()->
-				omitAsciifolding()->
-				build( $config );
-			break;
-		case 'irish':
-			$gaCharMap = [ 'ḃ=>bh', 'ċ=>ch', 'ḋ=>dh', 'ḟ=>fh', 'ġ=>gh', 'ṁ=>mh', 'ṗ=>ph',
+				$config[ 'analyzer' ][ 'plain' ][ 'char_filter' ][] = 'german_charfilter';
+				$config[ 'analyzer' ][ 'plain_search' ][ 'char_filter' ][] = 'german_charfilter';
+				break;
+			case 'greek':
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					omitDottedI()->
+					omitAsciifolding()->
+					withLangLowercase()->
+					withRemoveEmpty()->
+					build( $config );
+				break;
+			case 'hebrew':
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withTokenizer( 'hebrew' )->
+					withFilters( [ 'niqqud', 'hebrew_lemmatizer', 'remove_duplicates', 'lowercase',
+						'asciifolding' ] )->
+					build( $config );
+				break;
+			case 'hindi':
+				// Unpack Hindi analyzer T289612
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withDecimalDigit()->
+					insertFiltersBefore( 'hindi_stop',
+						[ 'indic_normalization', 'hindi_normalization' ] )->
+					build( $config );
+				break;
+			case 'indonesian':
+			case 'malay':
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T196780
+				$config = ( new AnalyzerBuilder( 'indonesian' ) )->
+					withUnpackedAnalyzer()->
+					omitAsciifolding()->
+					build( $config );
+				break;
+			case 'irish':
+				$gaCharMap = [ 'ḃ=>bh', 'ċ=>ch', 'ḋ=>dh', 'ḟ=>fh', 'ġ=>gh', 'ṁ=>mh', 'ṗ=>ph',
 				  'ṡ=>sh', 'ẛ=>sh', 'ṫ=>th', 'Ḃ=>BH', 'Ċ=>CH', 'Ḋ=>DH', 'Ḟ=>FH', 'Ġ=>GH',
 				  'Ṁ=>MH', 'Ṗ=>PH', 'Ṡ=>SH', 'Ṫ=>TH' ];
-			$gaHyphenStop = [ 'h', 'n', 't', 'b', 'bh', 'g', 'm' ]; // Add b, bh, g, m for camelCase cleanup
-			// Unpack Irish analyzer T289612
-			// See also https://www.mediawiki.org/wiki/User:TJones_(WMF)/T217602
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withCharMap( $gaCharMap )->
-				omitDottedI()->
-				withExtraStop( $gaHyphenStop, 'irish_hyphenation', 'irish_elision', true )->
-				withElision( [ 'd', 'm', 'b' ] )->
-				withLangLowercase()->
-				build( $config );
-			break;
-		case 'italian':
-			// Replace the default Italian analyzer with a rebuilt copy with additional filters
-			$itElision = [ 'c', 'l', 'all', 'dall', 'dell', 'nell', 'sull', 'coll', 'pell',
-				'gl', 'agl', 'dagl', 'degl', 'negl', 'sugl', 'un', 'm', 't', 's', 'v', 'd' ];
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				omitDottedI()->
-				withElision( $itElision )->
-				withLightStemmer()->
-				build( $config );
+				$gaHyphenStop = [ 'h', 'n', 't', 'b', 'bh', 'g', 'm' ]; // Add b, bh, g, m for camelCase cleanup
+				// Unpack Irish analyzer T289612
+				// See also https://www.mediawiki.org/wiki/User:TJones_(WMF)/T217602
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withCharMap( $gaCharMap )->
+					omitDottedI()->
+					withExtraStop( $gaHyphenStop, 'irish_hyphenation', 'irish_elision', true )->
+					withElision( [ 'd', 'm', 'b' ] )->
+					withLangLowercase()->
+					build( $config );
+				break;
+			case 'italian':
+				// Replace the default Italian analyzer with a rebuilt copy with additional filters
+				$itElision = [ 'c', 'l', 'all', 'dall', 'dell', 'nell', 'sull', 'coll', 'pell',
+					'gl', 'agl', 'dagl', 'degl', 'negl', 'sugl', 'un', 'm', 't', 's', 'v', 'd' ];
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					omitDottedI()->
+					withElision( $itElision )->
+					withLightStemmer()->
+					build( $config );
 
-			// Add asciifolding_preserve to the plain analyzer as well (but not plain_search)
-			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
-			// Add asciifolding_preserve to filters
-			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
-			break;
-		case 'japanese':
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T166731
-			// pre-convert fullwidth numbers because Kuromoji tokenizer treats them weirdly
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withNumberCharFilter( 0xff10, 'fullwidthnumfix' )->
-				withCharFilters( [ 'fullwidthnumfix' ] )->
-				withTokenizer( 'kuromoji_tokenizer' )->
-				withFilters( [ 'kuromoji_baseform', 'cjk_width', 'ja_stop', 'kuromoji_stemmer',
-					'lowercase' ] )->
-				build( $config );
-			break;
-		case 'khmer':
-			// See Khmer: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T185721
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withNumberCharFilter( 0x17e0 )->
-				withCharFilters( [ 'khmer_syll_reorder', 'khmer_numbers' ] )->
-				withFilters( [ 'lowercase' ] )->
-				build( $config );
-			break;
-		case 'korean':
-			// Unpack nori analyzer to add ICU normalization and custom filters
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T206874
+				// Add asciifolding_preserve to the plain analyzer as well (but not plain_search)
+				$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
+				// Add asciifolding_preserve to filters
+				$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
+				break;
+			case 'japanese':
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T166731
+				// pre-convert fullwidth numbers because Kuromoji tokenizer treats them weirdly
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withNumberCharFilter( 0xff10, 'fullwidthnumfix' )->
+					withCharFilters( [ 'fullwidthnumfix' ] )->
+					withTokenizer( 'kuromoji_tokenizer' )->
+					withFilters( [ 'kuromoji_baseform', 'cjk_width', 'ja_stop', 'kuromoji_stemmer',
+						'lowercase' ] )->
+					build( $config );
+				break;
+			case 'khmer':
+				// See Khmer: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T185721
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withNumberCharFilter( 0x17e0 )->
+					withCharFilters( [ 'khmer_syll_reorder', 'khmer_numbers' ] )->
+					withFilters( [ 'lowercase' ] )->
+					build( $config );
+				break;
+			case 'korean':
+				// Unpack nori analyzer to add ICU normalization and custom filters
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T206874
 
-			// Nori-specific character filter
-			$noriMap = [
-				'\u00B7=>\u0020', // convert middle dot to space
-				'\u318D=>\u0020', // arae-a to space
-				'\u00AD=>', // remove soft hyphens
-				'\u200C=>', // remove zero-width non-joiners
-			];
+				// Nori-specific character filter
+				$noriMap = [
+					'\u00B7=>\u0020', // convert middle dot to space
+					'\u318D=>\u0020', // arae-a to space
+					'\u00AD=>', // remove soft hyphens
+					'\u200C=>', // remove zero-width non-joiners
+				];
 
-			// Nori-specific pattern_replace to strip combining diacritics
-			$config[ 'char_filter' ][ 'nori_combo_filter' ] =
-				AnalyzerBuilder::patternFilter( '[\\u0300-\\u0331]' );
+				// Nori-specific pattern_replace to strip combining diacritics
+				$config[ 'char_filter' ][ 'nori_combo_filter' ] =
+					AnalyzerBuilder::patternFilter( '[\\u0300-\\u0331]' );
 
-			// 'mixed' mode keeps the original token plus the compound parts
-			// the default is 'discard' which only keeps the parts
-			$config[ 'tokenizer' ][ 'nori_tok' ] = [
-				'type' => 'nori_tokenizer',
-				'decompound_mode' => 'mixed',
-			];
+				// 'mixed' mode keeps the original token plus the compound parts
+				// the default is 'discard' which only keeps the parts
+				$config[ 'tokenizer' ][ 'nori_tok' ] = [
+					'type' => 'nori_tokenizer',
+					'decompound_mode' => 'mixed',
+				];
 
-			// Nori-specific part of speech filter (add 'VCP', 'VCN', 'VX' to default)
-			$config[ 'filter' ][ 'nori_posfilter' ] = [
-				'type' => 'nori_part_of_speech',
-				'stoptags' => [ 'E', 'IC', 'J', 'MAG', 'MAJ', 'MM', 'SP', 'SSC', 'SSO', 'SC',
-					'SE', 'XPN', 'XSA', 'XSN', 'XSV', 'UNA', 'NA', 'VSV', 'VCP', 'VCN', 'VX' ],
-			];
+				// Nori-specific part of speech filter (add 'VCP', 'VCN', 'VX' to default)
+				$config[ 'filter' ][ 'nori_posfilter' ] = [
+					'type' => 'nori_part_of_speech',
+					'stoptags' => [ 'E', 'IC', 'J', 'MAG', 'MAJ', 'MM', 'SP', 'SSC', 'SSO', 'SC',
+						'SE', 'XPN', 'XSA', 'XSN', 'XSV', 'UNA', 'NA', 'VSV', 'VCP', 'VCN', 'VX' ],
+				];
 
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withLimitedCharMap( $noriMap, 'nori_charfilter' )->
-				withCharFilters( [ 'dotted_I_fix', 'nori_charfilter', 'nori_combo_filter' ] )->
-				withTokenizer( 'nori_tok' )->
-				withFilters( [ 'nori_posfilter', 'nori_readingform', 'lowercase', 'remove_empty' ] )->
-				build( $config );
-			break;
-		case 'mirandese':
-			// Unpack default analyzer to add Mirandese-specific elision and stop words
-			// See phab ticket T194941
-			$mwlStopwords = require __DIR__ . '/AnalysisLanguageData/mirandeseStopwords.php';
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withElision( [ 'l', 'd', 'qu' ] )->
-				withStop( $mwlStopwords )->
-				withFilters( [ 'lowercase', 'mirandese_elision', 'mirandese_stop' ] )->
-				build( $config );
-			break;
-		case 'persian': // Unpack Persian analyzer T325090
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withLimitedCharMap( [ '\u200C=>\u0020' ], 'zero_width_spaces' )->
-				withDecimalDigit()->
-				omitStemmer()->
-				insertFiltersBefore( 'persian_stop',
-					[ 'arabic_normalization', 'persian_normalization' ] )->
-				build( $config );
-			break;
-		case 'polish':
-			// these are real stop words for Polish
-			$plStopwords = require __DIR__ . '/AnalysisLanguageData/polishStopwords.php';
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withLimitedCharMap( $noriMap, 'nori_charfilter' )->
+					withCharFilters( [ 'dotted_I_fix', 'nori_charfilter', 'nori_combo_filter' ] )->
+					withTokenizer( 'nori_tok' )->
+					withFilters( [ 'nori_posfilter', 'nori_readingform', 'lowercase', 'remove_empty' ] )->
+					build( $config );
+				break;
+			case 'mirandese':
+				// Unpack default analyzer to add Mirandese-specific elision and stop words
+				// See phab ticket T194941
+				$mwlStopwords = require __DIR__ . '/AnalysisLanguageData/mirandeseStopwords.php';
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withElision( [ 'l', 'd', 'qu' ] )->
+					withStop( $mwlStopwords )->
+					withFilters( [ 'lowercase', 'mirandese_elision', 'mirandese_stop' ] )->
+					build( $config );
+				break;
+			case 'persian': // Unpack Persian analyzer T325090
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withLimitedCharMap( [ '\u200C=>\u0020' ], 'zero_width_spaces' )->
+					withDecimalDigit()->
+					omitStemmer()->
+					insertFiltersBefore( 'persian_stop',
+						[ 'arabic_normalization', 'persian_normalization' ] )->
+					build( $config );
+				break;
+			case 'polish':
+				// these are real stop words for Polish
+				$plStopwords = require __DIR__ . '/AnalysisLanguageData/polishStopwords.php';
 
-			// Stempel-specific stop words--additional unreliable stems
-			$stempelStopwords = [ 'ować', 'iwać', 'obić', 'snąć', 'ywać', 'ium', 'my', 'um' ];
+				// Stempel-specific stop words--additional unreliable stems
+				$stempelStopwords = [ 'ować', 'iwać', 'obić', 'snąć', 'ywać', 'ium', 'my', 'um' ];
 
-			// Stempel is statistical, and certain stems are really terrible, so we filter them
-			// after stemming. See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T186046
-			$config[ 'filter' ][ 'stempel_pattern_filter' ] =
-				AnalyzerBuilder::patternFilter( '^([a-zął]?[a-zćń]|..ć|\d.*ć)$' );
+				// Stempel is statistical, and certain stems are really terrible, so we filter them
+				// after stemming. See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T186046
+				$config[ 'filter' ][ 'stempel_pattern_filter' ] =
+					AnalyzerBuilder::patternFilter( '^([a-zął]?[a-zćń]|..ć|\d.*ć)$' );
 
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withStop( $plStopwords )->
-				omitStemmer()->
-				omitAsciiFolding()->
-				appendFilters( [ 'polish_stem', 'stempel_pattern_filter', 'remove_empty' ] )->
-				withExtraStop( $stempelStopwords, 'stempel_stop' )->
-				build( $config );
-			break;
-		case 'romanian':  // Unpack Romanian analyzer T325091 / T330893
-			// Counterintuitively, we need to map correct s&t (with commas) to older
-			// incorrect forms (with cedilla) so that the old Snowball stemmer (from before
-			// comma forms were available) will work; also normalize versions with
-			// combining diacritics to single characters.
-			$cedillaMap = [
-				'ș=>ş', 's\u0326=>ş', 's\u0327=>ş', 'ț=>ţ', 't\u0326=>ţ', 't\u0327=>ţ',
-				'Ș=>Ş', 'S\u0326=>Ş', 'S\u0327=>Ş', 'Ț=>Ţ', 'T\u0326=>Ţ', 'T\u0327=>Ţ',
-			];
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withStop( $plStopwords )->
+					omitStemmer()->
+					omitAsciiFolding()->
+					appendFilters( [ 'polish_stem', 'stempel_pattern_filter', 'remove_empty' ] )->
+					withExtraStop( $stempelStopwords, 'stempel_stop' )->
+					build( $config );
+				break;
+			case 'romanian':  // Unpack Romanian analyzer T325091 / T330893
+				// Counterintuitively, we need to map correct s&t (with commas) to older
+				// incorrect forms (with cedilla) so that the old Snowball stemmer (from before
+				// comma forms were available) will work; also normalize versions with
+				// combining diacritics to single characters.
+				$cedillaMap = [
+					'ș=>ş', 's\u0326=>ş', 's\u0327=>ş', 'ț=>ţ', 't\u0326=>ţ', 't\u0327=>ţ',
+					'Ș=>Ş', 'S\u0326=>Ş', 'S\u0327=>Ş', 'Ț=>Ţ', 'T\u0326=>Ţ', 'T\u0327=>Ţ',
+				];
 
-			// Add stopword variants with modern commas instead of old cedillas so that
-			// both are handled, regardless of the character mapping needed for the
-			// stemmer. In the future, Lucene should update their stopwords and these will
-			// be included.
-			$roStopwords = require __DIR__ . '/AnalysisLanguageData/romanianStopwords.php';
+				// Add stopword variants with modern commas instead of old cedillas so that
+				// both are handled, regardless of the character mapping needed for the
+				// stemmer. In the future, Lucene should update their stopwords and these will
+				// be included.
+				$roStopwords = require __DIR__ . '/AnalysisLanguageData/romanianStopwords.php';
 
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withCharMap( $cedillaMap )->
-				withExtraStop( $roStopwords, 'ro_comma_stop', 'romanian_stemmer' )->
-				build( $config );
-			break;
-		case 'russian':
-			// unpack built-in Russian analyzer and add character filter
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T124592
-			$ruCharMap = [
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withCharMap( $cedillaMap )->
+					withExtraStop( $roStopwords, 'ro_comma_stop', 'romanian_stemmer' )->
+					build( $config );
+				break;
+			case 'russian':
+				// unpack built-in Russian analyzer and add character filter
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T124592
+				$ruCharMap = [
 					'\u0301=>', // combining acute accent, only used to show stress T102298
 					'\u0435\u0308=>\u0435', // T124592 fold ё=>е and Ё=>Е, with combining diacritic...
 					'\u0415\u0308=>\u0415',
 					'\u0451=>\u0435', // ... or precomposed
 					'\u0401=>\u0415',
 				];
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withCharMap( $ruCharMap )->
-				build( $config );
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withCharMap( $ruCharMap )->
+					build( $config );
 
-			// add Russian character mappings to near_space_flattener, and convert it from
-			// limited_mapping to mapping to handle multi-char maps
-			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'type' ] = 'mapping';
-			array_push( $config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ],
-				...$ruCharMap );
+				// add Russian character mappings to near_space_flattener, and convert it from
+				// limited_mapping to mapping to handle multi-char maps
+				$config[ 'char_filter' ][ 'near_space_flattener' ][ 'type' ] = 'mapping';
+				array_push( $config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ],
+					...$ruCharMap );
 
-			// Drop acute stress marks and fold ё=>е everywhere
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T124592
-			$config[ 'analyzer' ][ 'plain' ][ 'char_filter' ][] = 'russian_charfilter';
-			$config[ 'analyzer' ][ 'plain_search' ][ 'char_filter' ][] = 'russian_charfilter';
+				// Drop acute stress marks and fold ё=>е everywhere
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T124592
+				$config[ 'analyzer' ][ 'plain' ][ 'char_filter' ][] = 'russian_charfilter';
+				$config[ 'analyzer' ][ 'plain_search' ][ 'char_filter' ][] = 'russian_charfilter';
 
-			$config[ 'analyzer' ][ 'suggest' ][ 'char_filter' ][] = 'russian_charfilter';
-			$config[ 'analyzer' ][ 'suggest_reverse' ][ 'char_filter' ][] = 'russian_charfilter';
-			break;
-		case 'slovak':
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
-			// and https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withFilters( [ 'lowercase', 'slovak_stemmer', 'asciifolding' ] )->
-				build( $config );
-			break;
-		case 'sorani':    // Unpack Sorani analyzer T325091
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				withDecimalDigit()->
-				insertFiltersBefore( 'lowercase', [ 'sorani_normalization' ] )->
-				build( $config );
-			break;
-		case 'swedish':
-			// Add asciifolding_preserve to lowercase_keyword
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
-			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
+				$config[ 'analyzer' ][ 'suggest' ][ 'char_filter' ][] = 'russian_charfilter';
+				$config[ 'analyzer' ][ 'suggest_reverse' ][ 'char_filter' ][] = 'russian_charfilter';
+				break;
+			case 'slovak':
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
+				// and https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withFilters( [ 'lowercase', 'slovak_stemmer', 'asciifolding' ] )->
+					build( $config );
+				break;
+			case 'sorani':    // Unpack Sorani analyzer T325091
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					withDecimalDigit()->
+					insertFiltersBefore( 'lowercase', [ 'sorani_normalization' ] )->
+					build( $config );
+				break;
+			case 'swedish':
+				// Add asciifolding_preserve to lowercase_keyword
+				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
+				$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
-			// Unpack built-in swedish analyzer to add asciifolding_preserve
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				omitDottedI()->
-				withAsciifoldingPreserve()->
-				build( $config );
-			break;
-		case 'thai':
-			// Unpack and improve Thai analyzer: T294147
-			$thCharMap = [
-				'_=>\u0020', // split tokens on underscore ..
-				';=>\u0020', // .. semicolon
-				':=>\u0020', // .. colon
-				'·=>\u0020', // .. middle dot
-				'‧=>\u0020', // .. & hyphenation point
-				'ฃ=>ข', // replace obsolete ฃ
-				'ฅ=>ค', // replace obsolete ฅ
-				'\u0e4d\u0e32=>\u0e33', // compose nikhahit + sara aa = sara am
-				'\u0e4d\u0e48\u0e32=>\u0e48\u0e33', // recompose sara am split around..
-				'\u0e4d\u0e49\u0e32=>\u0e49\u0e33', // .. other diacritics
-				'\u0e33\u0e48=>\u0e48\u0e33', // sara am should consistently..
-				'\u0e33\u0e49=>\u0e49\u0e33', // .. come after other diacritics
-				'\u0E34\u0E4D=>\u0E36', // compose sara i + nikhahit = sara ue..
-				'\u0E4D\u0E34=>\u0E36', // .. in either order
-			];
-
-			// instantiate basic unpacked analyzer builder, plus thai tokenizer by default
-			$thBuilder = ( new AnalyzerBuilder( $langName ) )
-				->withUnpackedAnalyzer()
-				->withTokenizer( 'thai' );
-
-			if ( $this->isIcuAvailable() ) {
-				// ICU tokenizer is preferred in general. If it is available, replace
-				// default tokenizer. Also add thai_repl_pat char filter to accommodate
-				// some of its weaknesses.
-				$thBuilder->withTokenizer( $this->icu_tokenizer );
-
-				$thaiLetterPat = '[ก-๏]'; // Thai characters, except for digits.
-				$config[ 'char_filter' ][ 'thai_repl_pat' ] =
-					// break between any digits and Thai letters, or vice versa
-					// break *Thai* tokens on periods (by making them spaces)
-					// (regex look-behind is okay, but look-ahead breaks offsets)
-					AnalyzerBuilder::patternFilter( "(?<=\\p{Nd})($thaiLetterPat)" .
-						"|(?<=$thaiLetterPat)(\\p{Nd})" .
-						"|(?<=$thaiLetterPat)\.($thaiLetterPat)",
-						' $1$2$3' );
-				$thBuilder->withCharFilters( [ 'thai_repl_pat' ] );
-
-				// if icu_token_repair (in the textify plugin) is available, we need a
-				// reverse number map so it doesn't rejoin split-off Arabic numbers.
-				if ( $this->isTextifyAvailable() ) {
-					$thBuilder->withReversedNumberCharFilter( 0x0e50 );
-				}
-			} else {
-				// if we have to settle for the Thai tokenizer, add some additional
-				// character filters to accommodate some of its weaknesses
-				$thThaiTokSplits = [
-					'\u200B=>', // delete zero width space
-					'-=>\u0020', // split tokens on hyphen-minus ..
-					'‐=>\u0020', // .. hyphen
-					'–=>\u0020', // .. en dash
-					'—=>\u0020', // .. em dash
-					'―=>\u0020', // .. horizontal bar
-					'－=>\u0020', // .. fullwidth hyphen
-					'"=>\u0020', // .. & double quote
+				// Unpack built-in swedish analyzer to add asciifolding_preserve
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					omitDottedI()->
+					withAsciifoldingPreserve()->
+					build( $config );
+				break;
+			case 'thai':
+				// Unpack and improve Thai analyzer: T294147
+				$thCharMap = [
+					'_=>\u0020', // split tokens on underscore ..
+					';=>\u0020', // .. semicolon
+					':=>\u0020', // .. colon
+					'·=>\u0020', // .. middle dot
+					'‧=>\u0020', // .. & hyphenation point
+					'ฃ=>ข', // replace obsolete ฃ
+					'ฅ=>ค', // replace obsolete ฅ
+					'\u0e4d\u0e32=>\u0e33', // compose nikhahit + sara aa = sara am
+					'\u0e4d\u0e48\u0e32=>\u0e48\u0e33', // recompose sara am split around..
+					'\u0e4d\u0e49\u0e32=>\u0e49\u0e33', // .. other diacritics
+					'\u0e33\u0e48=>\u0e48\u0e33', // sara am should consistently..
+					'\u0e33\u0e49=>\u0e49\u0e33', // .. come after other diacritics
+					'\u0E34\u0E4D=>\u0E36', // compose sara i + nikhahit = sara ue..
+					'\u0E4D\u0E34=>\u0E36', // .. in either order
 				];
-				array_push( $thCharMap, ...$thThaiTokSplits );
-			}
 
-			// add in the rest of the bits that are always needed, and build
-			$config = $thBuilder->withCharMap( $thCharMap )->
-				withDecimalDigit()->
-				omitStemmer()->
-				build( $config );
-			break;
-		case 'turkish':
-			$trAposFilter = 'apostrophe';
-			if ( in_array( 'extra-analysis-turkish', $this->plugins ) ) {
-				$trAposFilter = 'better_apostrophe';
-			}
-			$config = ( new AnalyzerBuilder( $langName ) )->
-				withUnpackedAnalyzer()->
-				omitDottedI()->
-				withLangLowercase()->
-				insertFiltersBefore( 'turkish_stop', [ $trAposFilter ] )->
-				build( $config );
-			break;
-		case 'ukrainian-unpacked':
-			$this->languagesWithIcuFolding['uk'] = true;
-			$ukCharMap = [ '‘=>\'', // normalize apostrophes
-						   '’=>\'',
-						   '`=>\'',
-						   '´=>\'',
-						   'ʼ=>\'',
-						   '\u0301=>', // delete combining acute and soft hyphen
-						   '\u00AD=>',
-						   'ґ=>г', // normalize ghe with upturn
-						   'Ґ=>Г',
-			];
-			// lowercase twice because stopwords are case sensitive, and the stemmer
-			// generates some output with uppercase initial letters, even for
-			// lowercase input (usually proper names)
-			$ukFilters = [ 'lowercase', 'ukrainian_stop', 'ukrainian_stemmer',
+				// instantiate basic unpacked analyzer builder, plus thai tokenizer by default
+				$thBuilder = ( new AnalyzerBuilder( $langName ) )
+					->withUnpackedAnalyzer()
+					->withTokenizer( 'thai' );
+
+				if ( $this->isIcuAvailable() ) {
+					// ICU tokenizer is preferred in general. If it is available, replace
+					// default tokenizer. Also add thai_repl_pat char filter to accommodate
+					// some of its weaknesses.
+					$thBuilder->withTokenizer( $this->icu_tokenizer );
+
+					$thaiLetterPat = '[ก-๏]'; // Thai characters, except for digits.
+					$config[ 'char_filter' ][ 'thai_repl_pat' ] =
+						// break between any digits and Thai letters, or vice versa
+						// break *Thai* tokens on periods (by making them spaces)
+						// (regex look-behind is okay, but look-ahead breaks offsets)
+						AnalyzerBuilder::patternFilter( "(?<=\\p{Nd})($thaiLetterPat)" .
+							"|(?<=$thaiLetterPat)(\\p{Nd})" .
+							"|(?<=$thaiLetterPat)\.($thaiLetterPat)",
+							' $1$2$3' );
+					$thBuilder->withCharFilters( [ 'thai_repl_pat' ] );
+
+					// if icu_token_repair (in the textify plugin) is available, we need a
+					// reverse number map so it doesn't rejoin split-off Arabic numbers.
+					if ( $this->isTextifyAvailable() ) {
+						$thBuilder->withReversedNumberCharFilter( 0x0e50 );
+					}
+				} else {
+					// if we have to settle for the Thai tokenizer, add some additional
+					// character filters to accommodate some of its weaknesses
+					$thThaiTokSplits = [
+						'\u200B=>', // delete zero width space
+						'-=>\u0020', // split tokens on hyphen-minus ..
+						'‐=>\u0020', // .. hyphen
+						'–=>\u0020', // .. en dash
+						'—=>\u0020', // .. em dash
+						'―=>\u0020', // .. horizontal bar
+						'－=>\u0020', // .. fullwidth hyphen
+						'"=>\u0020', // .. & double quote
+					];
+					array_push( $thCharMap, ...$thThaiTokSplits );
+				}
+
+				// add in the rest of the bits that are always needed, and build
+				$config = $thBuilder->withCharMap( $thCharMap )->
+					withDecimalDigit()->
+					omitStemmer()->
+					build( $config );
+				break;
+			case 'turkish':
+				$trAposFilter = 'apostrophe';
+				if ( in_array( 'extra-analysis-turkish', $this->plugins ) ) {
+					$trAposFilter = 'better_apostrophe';
+				}
+				$config = ( new AnalyzerBuilder( $langName ) )->
+					withUnpackedAnalyzer()->
+					omitDottedI()->
+					withLangLowercase()->
+					insertFiltersBefore( 'turkish_stop', [ $trAposFilter ] )->
+					build( $config );
+				break;
+			case 'ukrainian-unpacked':
+				$this->languagesWithIcuFolding['uk'] = true;
+				$ukCharMap = [ '‘=>\'', // normalize apostrophes
+				   '’=>\'',
+				   '`=>\'',
+				   '´=>\'',
+				   'ʼ=>\'',
+				   '\u0301=>', // delete combining acute and soft hyphen
+				   '\u00AD=>',
+				   'ґ=>г', // normalize ghe with upturn
+				   'Ґ=>Г',
+				];
+				// lowercase twice because stopwords are case sensitive, and the stemmer
+				// generates some output with uppercase initial letters, even for
+				// lowercase input (usually proper names)
+				$ukFilters = [ 'lowercase', 'ukrainian_stop', 'ukrainian_stemmer',
 					'lowercase', 'remove_duplicates', 'asciifolding' ];
-			$config = ( new AnalyzerBuilder( 'ukrainian' ) )->
-				withLimitedCharMap( $ukCharMap )->
-				withCharFilters( [ 'dotted_I_fix', 'ukrainian_charfilter' ] )->
-				withFilters( $ukFilters )->
-				build( $config );
-			break;
-		default:
-			// do nothing--default config is already set up
-			break;
+				$config = ( new AnalyzerBuilder( 'ukrainian' ) )->
+					withLimitedCharMap( $ukCharMap )->
+					withCharFilters( [ 'dotted_I_fix', 'ukrainian_charfilter' ] )->
+					withFilters( $ukFilters )->
+					build( $config );
+				break;
+			default:
+				// do nothing--default config is already set up
+				break;
 		}
 
 		// text_search is just a copy of text

@@ -444,16 +444,16 @@ class AnalyzerBuilder {
 			foreach ( $this->insertFilterList as $filterPatch ) {
 				foreach ( $filterPatch as $beforeFilter => $filterList ) {
 					switch ( $beforeFilter ) {
-					case self::APPEND:
-						$this->filters = array_merge( $this->filters, $filterList );
-						break;
-					case self::PREPEND:
-						$this->filters = array_merge( $filterList, $this->filters );
-						break;
-					default:
-						$idx = array_search( $beforeFilter, $this->filters );
-						array_splice( $this->filters, $idx, 0, $filterList );
-						break;
+						case self::APPEND:
+							$this->filters = array_merge( $this->filters, $filterList );
+							break;
+						case self::PREPEND:
+							$this->filters = array_merge( $filterList, $this->filters );
+							break;
+						default:
+							$idx = array_search( $beforeFilter, $this->filters );
+							array_splice( $this->filters, $idx, 0, $filterList );
+							break;
 					}
 				}
 			}

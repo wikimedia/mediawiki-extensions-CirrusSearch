@@ -111,17 +111,17 @@ class RescoreBuilder {
 	 */
 	private function buildRescoreQuery( array $rescoreDef ) {
 		switch ( $rescoreDef['type'] ) {
-		case self::FUNCTION_SCORE_TYPE:
-			$funcChain = new FunctionScoreChain( $this->context, $rescoreDef['function_chain'],
-				$rescoreDef['function_chain_overrides'] ?? [], $this->cirrusSearchHookRunner );
-			return $funcChain->buildRescoreQuery();
-		case self::LTR_TYPE:
-			return $this->buildLtrQuery( $rescoreDef['model'] );
-		case self::PHRASE:
-			return $this->context->getPhraseRescoreQuery();
-		default:
-			throw new InvalidRescoreProfileException(
-				"Unsupported rescore query type: " . $rescoreDef['type'] );
+			case self::FUNCTION_SCORE_TYPE:
+				$funcChain = new FunctionScoreChain( $this->context, $rescoreDef['function_chain'],
+					$rescoreDef['function_chain_overrides'] ?? [], $this->cirrusSearchHookRunner );
+				return $funcChain->buildRescoreQuery();
+			case self::LTR_TYPE:
+				return $this->buildLtrQuery( $rescoreDef['model'] );
+			case self::PHRASE:
+				return $this->context->getPhraseRescoreQuery();
+			default:
+				throw new InvalidRescoreProfileException(
+					"Unsupported rescore query type: " . $rescoreDef['type'] );
 		}
 	}
 
@@ -257,21 +257,21 @@ class RescoreBuilder {
 	private function isProfileNamespaceSupported( array $profile ) {
 		if ( !is_array( $profile['supported_namespaces'] ) ) {
 			switch ( $profile['supported_namespaces'] ) {
-			case 'all':
-				return true;
-			case 'content':
-				$profileNs = $this->context->getConfig()->get( 'ContentNamespaces' );
-				// Default search namespaces are also considered content
-				$defaultSearch = $this->context->getConfig()->get( 'NamespacesToBeSearchedDefault' );
-				foreach ( $defaultSearch as $ns => $isDefault ) {
-					if ( $isDefault ) {
-						$profileNs[] = $ns;
+				case 'all':
+					return true;
+				case 'content':
+					$profileNs = $this->context->getConfig()->get( 'ContentNamespaces' );
+					// Default search namespaces are also considered content
+					$defaultSearch = $this->context->getConfig()->get( 'NamespacesToBeSearchedDefault' );
+					foreach ( $defaultSearch as $ns => $isDefault ) {
+						if ( $isDefault ) {
+							$profileNs[] = $ns;
+						}
 					}
-				}
-				break;
-			default:
-				throw new InvalidRescoreProfileException( "Invalid rescore profile: supported_namespaces " .
-					"should be 'all', 'content' or an array of namespaces" );
+					break;
+				default:
+					throw new InvalidRescoreProfileException( "Invalid rescore profile: supported_namespaces " .
+						"should be 'all', 'content' or an array of namespaces" );
 			}
 		} else {
 			$profileNs = $profile['supported_namespaces'];

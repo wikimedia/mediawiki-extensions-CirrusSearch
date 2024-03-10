@@ -161,7 +161,7 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 	 * @return string[] tokenized phrasal suggestions
 	 */
 	public function tokenize( $title, $language ) {
-		list( $title, $langSubPage ) = $this->splitTranslatedPage( $title, $language );
+		[ $title, $langSubPage ] = $this->splitTranslatedPage( $title, $language );
 
 		$cr = $this->getCharRange();
 		$matches = preg_split( "/[$cr]+/", $title, $this->maxSubPhrases + 1,

@@ -212,8 +212,8 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 		$suggest = $completion->build( $query, [] )->toArray()['suggest'];
 		$profiles = $completion->getMergedProfiles();
 		// Unused profiles are kept
-		$this->assertCount( count( $config->getProfileService()
-			->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' )['fst'] ), $profiles );
+		$this->assertSameSize( $config->getProfileService()
+			->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' )['fst'], $profiles );
 		// Never run more than 4 suggest query (without variants)
 		$this->assertLessThanOrEqual( 4, count( $suggest ) );
 		// small queries

@@ -236,7 +236,7 @@ class RescoreBuilder {
 
 				$profile = $this->context->getConfig()
 					->getProfileService()
-					->loadProfileByName( SearchProfileService::RESCORE,  $profileName );
+					->loadProfileByName( SearchProfileService::RESCORE, $profileName );
 				if ( !is_array( $profile ) ) {
 					throw new InvalidRescoreProfileException(
 						"Invalid fallback profile, must be array: $profileName" );

@@ -68,9 +68,9 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						',=>\u0020', // useful for "Lastname, Firstname"
 						'"=>\u0020', // " certainly phrase search?
 						'-=>\u0020', // useful for hyphenated names
-						"'=>\u0020",       // Useful for finding names
-						'\u2019=>\u0020',  // Unicode right single quote
-						'\u02BC=>\u0020',  // Unicode modifier letter apostrophe
+						"'=>\u0020", // Useful for finding names
+						'\u2019=>\u0020', // Unicode right single quote
+						'\u02BC=>\u0020', // Unicode modifier letter apostrophe
 						// Not sure about ( and )...
 						// very useful to search for :
 						// "john smith explo" instead of "john smith (expl"

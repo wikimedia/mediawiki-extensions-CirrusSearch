@@ -95,7 +95,7 @@ class ExternalIndexTest extends CirrusTestCase {
 			'CirrusSearchReplicaGroup' => 'default'
 		] );
 		$idx = new ExternalIndex( $config, 'testindex' );
-		list( $wiki, $boosts ) = $idx->getBoosts();
+		[ $wiki, $boosts ] = $idx->getBoosts();
 		$this->assertEquals( $expectedWiki, $wiki );
 		$this->assertEquals( $expectedBoosts, $boosts );
 	}

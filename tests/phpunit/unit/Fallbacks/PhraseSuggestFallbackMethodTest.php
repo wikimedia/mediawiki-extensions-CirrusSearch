@@ -20,7 +20,7 @@ class PhraseSuggestFallbackMethodTest extends FallbackMethodTestBase {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$resultSet = $this->newResultSet( $fixture['response'] );
-			 yield $testName => [
+			yield $testName => [
 				$fixture['query'],
 				$resultSet,
 				$fixture['approxScore'],

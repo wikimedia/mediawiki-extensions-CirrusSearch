@@ -22,7 +22,7 @@ trait MoreLikeTrait {
 		// in $this->getConfig()->get( 'CirrusSearchMoreLikeThisAllowedFields' )
 		// (see Hooks.php)
 		if ( !$this->getConfig()->get( 'CirrusSearchMoreLikeThisFields' ) ) {
-			$warningCollector->addWarning( "cirrussearch-mlt-not-configured",  $key );
+			$warningCollector->addWarning( "cirrussearch-mlt-not-configured", $key );
 			return [];
 		}
 		$titles = $this->collectTitles( $term );

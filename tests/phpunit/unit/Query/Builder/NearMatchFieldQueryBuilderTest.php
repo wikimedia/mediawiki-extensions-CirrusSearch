@@ -10,7 +10,7 @@ class NearMatchFieldQueryBuilderTest extends CirrusTestCase {
 	public function provideTestExtraction(): array {
 		$profile = [ "fields" => [ [ "name" => "a_field", "weight" => 0.5 ] ] ];
 		$toMultiMatch = static function ( string $str ): array {
-			return [ 'multi_match' => [ 'query' => $str , 'fields' => [ 'a_field^0.5' ] ] ];
+			return [ 'multi_match' => [ 'query' => $str, 'fields' => [ 'a_field^0.5' ] ] ];
 		};
 		return [
 			'simple' => [
@@ -76,7 +76,7 @@ class NearMatchFieldQueryBuilderTest extends CirrusTestCase {
 		$nearMatchFieldQueryBuilder = NearMatchFieldQueryBuilder::defaultFromSearchConfig( $conf );
 		$actualQuery = $nearMatchFieldQueryBuilder->buildFromQueryString( "my text" );
 		$expectedQuery = [ 'multi_match' => [
-			'query' => 'my text' ,
+			'query' => 'my text',
 			'fields' => [ 'all_near_match^3', 'all_near_match.asciifolding^2.25' ]
 		] ];
 		$this->assertArrayEquals( $expectedQuery, $actualQuery->toArray() );

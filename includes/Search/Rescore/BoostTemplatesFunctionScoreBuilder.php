@@ -53,7 +53,7 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 
 		$extraIndexBoostTemplates = [];
 		foreach ( $otherIndices as $extraIndex ) {
-			list( $wiki, $boostTemplates ) = $extraIndex->getBoosts();
+			[ $wiki, $boostTemplates ] = $extraIndex->getBoosts();
 			if ( $boostTemplates ) {
 				$extraIndexBoostTemplates[$wiki] = $boostTemplates;
 			}

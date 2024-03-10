@@ -107,7 +107,7 @@ class LanguageDetectTest extends CirrusTestCase {
 		return [
 			// simple cases
 			[ "Welcome to Wikipedia, the free encyclopedia that anyone can edit", "en", "en" ],
-			[ "Добро пожаловать в Википедию", "ru", "uk" ],	// ru missing, uk present
+			[ "Добро пожаловать в Википедию", "ru", "uk" ], // ru missing, uk present
 
 			// more query-like cases
 			[ "who stars in Breaking Bad?", "en", "en" ],
@@ -115,8 +115,8 @@ class LanguageDetectTest extends CirrusTestCase {
 			[ "volviendose malo", "es", null ], // en boosted -> too ambiguous
 			[ "противоточный теплообменник", "ru", "uk" ], // ru missing, uk present
 			[ "שובר שורות", "he", "he" ],
-			[ "୨୪ ଅକ୍ଟୋବର", "or", null ],	// or missing, no alternative
-			[ "th", "en", null ],	// too short
+			[ "୨୪ ଅକ୍ଟୋବର", "or", null ], // or missing, no alternative
+			[ "th", "en", null ], // too short
 		];
 	}
 

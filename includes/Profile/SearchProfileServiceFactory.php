@@ -358,7 +358,7 @@ class SearchProfileServiceFactory {
 		if ( $iwPrefix === null ) {
 			return;
 		}
-		$profiles = $this->hostWikiConfig->getElement( 'CirrusSearchCrossProjectProfiles',  $iwPrefix );
+		$profiles = $this->hostWikiConfig->getElement( 'CirrusSearchCrossProjectProfiles', $iwPrefix );
 		if ( $profiles === null || !is_array( $profiles ) || $profiles === [] ) {
 			return;
 		}

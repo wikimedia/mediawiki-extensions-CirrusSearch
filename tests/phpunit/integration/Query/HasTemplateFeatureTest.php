@@ -20,7 +20,7 @@ class HasTemplateFeatureTest extends CirrusIntegrationTestCase {
 						'query' => 'Template:Coord',
 					],
 				] ],
-				[ 'templates' => [ 'Template:Coord' ],  'case_sensitive' => false ],
+				[ 'templates' => [ 'Template:Coord' ], 'case_sensitive' => false ],
 				'hastemplate:Coord',
 			],
 			'calling out Template NS directly' => [
@@ -103,6 +103,6 @@ class HasTemplateFeatureTest extends CirrusIntegrationTestCase {
 				'cirrussearch-feature-too-many-conditions',
 				'hastemplate',
 				HasTemplateFeature::MAX_CONDITIONS
-		] ] );
+			] ] );
 	}
 }

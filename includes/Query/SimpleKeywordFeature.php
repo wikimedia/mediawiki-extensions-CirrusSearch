@@ -280,7 +280,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 			}
 
 			$context->addSyntaxUsed( $this->getFeatureName( $key, $valueDelimiter ) );
-			list( $filter, $keepText ) = $this->doApplyExtended(
+			[ $filter, $keepText ] = $this->doApplyExtended(
 				$context,
 				$key,
 				$value,

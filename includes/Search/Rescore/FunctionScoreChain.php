@@ -168,15 +168,15 @@ class FunctionScoreChain {
 			case 'script':
 				return new ScriptScoreFunctionScoreBuilder( $config, $weight, $func['script'] );
 			case 'logscale_boost':
-				return new LogScaleBoostFunctionScoreBuilder( $config, $weight,  $func['params'] );
+				return new LogScaleBoostFunctionScoreBuilder( $config, $weight, $func['params'] );
 			case 'satu':
-				return new SatuFunctionScoreBuilder( $config, $weight,  $func['params'] );
+				return new SatuFunctionScoreBuilder( $config, $weight, $func['params'] );
 			case 'log_multi':
-				return new LogMultFunctionScoreBuilder( $config, $weight,  $func['params'] );
+				return new LogMultFunctionScoreBuilder( $config, $weight, $func['params'] );
 			case 'geomean':
-				return new GeoMeanFunctionScoreBuilder( $config, $weight,  $func['params'] );
+				return new GeoMeanFunctionScoreBuilder( $config, $weight, $func['params'] );
 			case 'term_boost':
-				return new TermBoostScoreBuilder( $config, $weight,  $func['params'] );
+				return new TermBoostScoreBuilder( $config, $weight, $func['params'] );
 			default:
 				$builder = null;
 				$this->cirrusSearchHookRunner->onCirrusSearchScoreBuilder( $func, $this->context, $builder );

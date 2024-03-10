@@ -62,7 +62,7 @@ class FancyTitleResultsType extends TitleResultsType {
 			];
 			$manyValues = [
 				'type' => 'plain',
-				'fragment_size' => 10000,   // We want the whole value but more than this is crazy
+				'fragment_size' => 10000, // We want the whole value but more than this is crazy
 				'order' => 'score',
 			];
 		}

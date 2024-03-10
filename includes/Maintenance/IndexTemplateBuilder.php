@@ -81,7 +81,7 @@ class IndexTemplateBuilder {
 		$indexTemplate = $this->createIndexTemplate();
 		$analysisConfigBuilder = new AnalysisConfigBuilder( $this->languageCode, $this->availablePlugins, $this->getSearchConfig() );
 		$filter = new AnalysisFilter();
-		list( $analysis, $mappings ) = $filter->filterAnalysis( $analysisConfigBuilder->buildConfig(),
+		[ $analysis, $mappings ] = $filter->filterAnalysis( $analysisConfigBuilder->buildConfig(),
 			$this->templateDefinition['mappings'], true );
 		$templateDefinition = array_merge_recursive( $this->templateDefinition, [ 'settings' => [ 'analysis' => $analysis ] ] );
 		$templateDefinition['mappings'] = $mappings;

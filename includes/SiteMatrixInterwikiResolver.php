@@ -80,7 +80,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 			$matrix = new SiteMatrix;
 			$iwLookup = MediaWikiServices::getInstance()->getInterwikiLookup();
 			$wikiDBname = $this->config->get( 'DBname' );
-			list( , $myLang ) = $wgConf->siteFromDB( $wikiDBname );
+			[ , $myLang ] = $wgConf->siteFromDB( $wikiDBname );
 			$siteConf = $this->config->get( 'SiteMatrixSites' );
 			$prefixOverrides = $this->config->get( 'CirrusSearchInterwikiPrefixOverrides' );
 			$sisterProjects = [];

@@ -169,7 +169,7 @@ class MetaStoreIndex {
 			throw new \RuntimeException( (string)$pluginsStatus );
 		}
 		$filter = new AnalysisFilter();
-		list( $analysis, $mappings ) = $filter->filterAnalysis(
+		[ $analysis, $mappings ] = $filter->filterAnalysis(
 			// Why 'aa'? It comes first? Hoping it receives generic language treatment.
 			( new AnalysisConfigBuilder( 'aa', $pluginsStatus->getValue() ) )->buildConfig(),
 			$this->buildMapping()

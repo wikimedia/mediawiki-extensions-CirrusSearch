@@ -95,9 +95,9 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 
 	private function runFixture( array $query, $responses, $expectedLogs, \Closure $test ) {
 		if ( is_string( $responses ) ) {
-			list( $loggers, $config, $connection, $transport ) = $this->buildDependencies( null );
+			[ $loggers, $config, $connection, $transport ] = $this->buildDependencies( null );
 		} else {
-			list( $loggers, $config, $connection, $transport ) = $this->buildDependencies( $responses );
+			[ $loggers, $config, $connection, $transport ] = $this->buildDependencies( $responses );
 		}
 
 		$this->setMwGlobals( [
@@ -255,11 +255,11 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			// Build up an elastica transport that will return our faked response
 			$transport = $this->createMock( AbstractTransport::class );
 			$transport->method( 'exec' )
-				->will( $this->onConsecutiveCalls(
+				->willReturnOnConsecutiveCalls(
 					...array_map( static function ( $response ) {
 						return new Response( $response, 200 );
 					}, $responses )
-				) );
+				);
 		}
 
 		$this->setMwGlobals( [

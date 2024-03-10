@@ -152,7 +152,7 @@ class ChangeListener extends PageChangeTracker implements
 				}
 			} else {
 				$job = LinksUpdate::newPageRefreshUpdate( $linksUpdate->getTitle(),
-					$params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class,  $updateDelay['default'], $this->jobQueue ) );
+					$params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class, $updateDelay['default'], $this->jobQueue ) );
 			}
 
 			$this->jobQueue->lazyPush( $job );
@@ -374,7 +374,7 @@ class ChangeListener extends PageChangeTracker implements
 		bool $created,
 		array $restoredPageIds
 	): void {
-		parent::onPageUndeleteComplete( $page, $restorer, $reason, $restoredRev,  $logEntry,
+		parent::onPageUndeleteComplete( $page, $restorer, $reason, $restoredRev, $logEntry,
 			$restoredRevisionCount, $created, $restoredPageIds );
 		if ( !$this->searchConfig->get( 'CirrusSearchIndexDeletes' ) ) {
 			// Not indexing, thus nothing to remove here.

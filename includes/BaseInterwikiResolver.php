@@ -114,7 +114,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 		if ( !$wikiAndPrefix ) {
 			return [];
 		}
-		list( $wiki, $prefix ) = $wikiAndPrefix;
+		[ $wiki, $prefix ] = $wikiAndPrefix;
 		return $this->loadConfigFromAPI(
 			[ $prefix => $wiki ],
 			[],

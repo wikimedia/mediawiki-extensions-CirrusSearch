@@ -180,7 +180,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 
 		$mockClient->expects( $this->once() )
 			->method( 'request' )
-			->will( $this->returnCallback(
+			->willReturnCallback(
 				function ( $path, $method, $data, $params, $contentType ) use ( $documents, $expectedFile ) {
 					$actual = [
 						'path' => $path,
@@ -202,7 +202,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 					);
 					return new ResponseSet( new Response( [], 200 ), $responses );
 				}
-			) );
+			);
 
 		$mockCon = $this->getMockBuilder( Connection::class )
 			->disableOriginalConstructor()
@@ -249,7 +249,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 
 		$mockClient->expects( $this->once() )
 			->method( 'request' )
-			->will( $this->returnCallback(
+			->willReturnCallback(
 				function ( $path, $method, $data, $params, $contentType ) use ( $ids, $expectedFile ) {
 					$actual = [
 						'path' => $path,
@@ -271,7 +271,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 					);
 					return new ResponseSet( new Response( [], 200 ), $responses );
 				}
-			) );
+			);
 
 		$mockCon = $this->getMockBuilder( Connection::class )
 			->disableOriginalConstructor()
@@ -497,7 +497,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 
 		$mockClient->expects( $this->exactly( $count ) )
 			->method( 'request' )
-			->will( $this->returnCallback( function ( $path, $method, $data, $params, $contentType
+			->willReturnCallback( function ( $path, $method, $data, $params, $contentType
 			) {
 				$lines = $this->unBulkify( $data );
 				$this->actualCalls[] = [
@@ -512,7 +512,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 				}, range( 0, count( $lines ) / 2 ) );
 
 				return new ResponseSet( new Response( [], 200 ), $responses );
-			} ) );
+			} );
 
 		return $mockClient;
 	}

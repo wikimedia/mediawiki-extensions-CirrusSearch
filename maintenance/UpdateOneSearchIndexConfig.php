@@ -239,7 +239,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$this->initMappingConfigBuilder();
 
-		try{
+		try {
 			$indexSuffixes = $this->getConnection()->getAllIndexSuffixes( null );
 			if ( !in_array( $this->indexSuffix, $indexSuffixes ) ) {
 				$this->fatalError( 'indexSuffix option must be one of ' .
@@ -585,7 +585,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			// A bit adhoc, this is the list of analyzers that should not be renamed, because
 			// they are referenced at query time.
 			$protected = [ 'token_reverse' ];
-			list( $this->analysisConfig, $this->mapping ) = $filter
+			[ $this->analysisConfig, $this->mapping ] = $filter
 				->filterAnalysis( $this->analysisConfig, $this->mapping, $deduplicate, $protected );
 		}
 		$this->similarityConfig = $analysisConfigBuilder->buildSimilarityConfig();

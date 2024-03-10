@@ -102,7 +102,7 @@ class ArticleTopicFeature extends SimpleKeywordFeature {
 		$labelsToTerms = array_flip( self::TERMS_TO_LABELS );
 		$topicScores = [];
 		foreach ( $rawTopicData as $rawTopic ) {
-			list( $oresLabel, $scaledScore ) = explode( '|', $rawTopic );
+			[ $oresLabel, $scaledScore ] = explode( '|', $rawTopic );
 			$topicId = $labelsToTerms[$oresLabel];
 			$topicScores[$topicId] = (int)$scaledScore / 1000;
 		}

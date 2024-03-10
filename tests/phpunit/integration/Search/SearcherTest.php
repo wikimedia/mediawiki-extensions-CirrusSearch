@@ -411,8 +411,9 @@ class SearcherTest extends CirrusIntegrationTestCase {
 					[
 						'hits' => [ 'total' => [ 'value' => 123456, 'relation' => 'eq' ], 'max_score' => 0.0, 'hits' => [] ]
 					]
-			] ] )
-		);
+				]
+			]
+		) );
 		$transport = $this->mockTransportWithResponse(
 			new Response( [
 				'status' => 200,

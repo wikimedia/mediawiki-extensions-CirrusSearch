@@ -110,7 +110,7 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 		if ( count( $ar ) != 2 ) {
 			throw new SearchProfileException( "Invalid profile parameter [$keyAndValue]" );
 		}
-		list( $key, $value ) = $ar;
+		[ $key, $value ] = $ar;
 		switch ( $key ) {
 			case 'params':
 				$paramValue = $this->profileParams[$value] ?? null;

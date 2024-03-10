@@ -75,7 +75,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param int|null $rootEventTime the time of MW event that caused this update (used for monitoring)
 	 */
 	public function updateFromTitle( $title, ?string $updateKind, ?int $rootEventTime ): void {
-		list( $page, $redirects ) = $this->traceRedirects( $title );
+		[ $page, $redirects ] = $this->traceRedirects( $title );
 		if ( $page ) {
 			$this->updatePages(
 				[ $page ],

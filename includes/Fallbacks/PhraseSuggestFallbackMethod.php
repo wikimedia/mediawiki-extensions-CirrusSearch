@@ -112,7 +112,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 			return FallbackStatus::noSuggestion();
 		}
 
-		list( $suggestion, $highlight ) = $this->fixDYMSuggestion( $firstPassResults );
+		[ $suggestion, $highlight ] = $this->fixDYMSuggestion( $firstPassResults );
 
 		return $this->maybeSearchAndRewrite( $context, $this->query,
 			$suggestion, $highlight );

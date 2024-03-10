@@ -20,7 +20,7 @@ class IndexTemplateBuilderTest extends CirrusIntegrationTestCase {
 		$client = $this->createMock( Client::class );
 		$client->expects( $this->once() )
 			->method( 'request' )
-			->will( $this->returnCallback(
+			->willReturnCallback(
 				function ( $path, $method, $data ) use( $expected ) {
 					$fixture = [
 						'path' => $path,
@@ -33,7 +33,7 @@ class IndexTemplateBuilderTest extends CirrusIntegrationTestCase {
 						CirrusIntegrationTestCase::canRebuildFixture()
 					);
 					return new Response( [], 200 );
-				} )
+				}
 			);
 		$config = new HashSearchConfig( [] );
 		$connection = $this->createMock( Connection::class );

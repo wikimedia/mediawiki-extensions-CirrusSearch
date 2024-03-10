@@ -175,7 +175,7 @@ class CirrusSearchTest extends CirrusTestCase {
 		$mockUpdater = $this->createPartialMock( Updater::class, [ 'updateWeightedTags' ] );
 		$mockUpdater->expects( $isValid ? $this->once() : $this->never() )
 			->method( 'updateWeightedTags' )
-			->with( $pageIdentity, $this->equalTo( WeightedTagsHooks::FIELD_NAME ), $tagPrefix, $tagNames, $tagWeights );
+			->with( $pageIdentity, WeightedTagsHooks::FIELD_NAME, $tagPrefix, $tagNames, $tagWeights );
 		$cirrusSearch = $this->createPartialMock( CirrusSearch::class, [ 'getUpdater' ] );
 		$cirrusSearch->method( 'getUpdater' )->willReturn( $mockUpdater );
 

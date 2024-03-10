@@ -110,7 +110,7 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 				// Skip improperly formatted lines without a key:value
 				continue;
 			}
-			list( $k, $v ) = $linePieces;
+			[ $k, $v ] = $linePieces;
 
 			switch ( $k ) {
 				case 'max_errors':

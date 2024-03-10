@@ -69,7 +69,7 @@ class UserTestingEngine {
 		if ( strpos( $trigger, ':' ) === false ) {
 			return UserTestingStatus::inactive();
 		}
-		list( $testName, $bucket ) = explode( ':', $trigger, 2 );
+		[ $testName, $bucket ] = explode( ':', $trigger, 2 );
 		if ( isset( $this->tests[$testName]['buckets'][$bucket] ) ) {
 			return UserTestingStatus::active( $testName, $bucket );
 		} else {

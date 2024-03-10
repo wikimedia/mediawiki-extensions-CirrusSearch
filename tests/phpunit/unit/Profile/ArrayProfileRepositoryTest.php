@@ -15,7 +15,7 @@ class ArrayProfileRepositoryTest extends CirrusTestCase {
 			'prof1' => [],
 			'prof2' => [],
 		];
-		$repo = ArrayProfileRepository::fromArray( 'my_type', 'my_name',  $profiles );
+		$repo = ArrayProfileRepository::fromArray( 'my_type', 'my_name', $profiles );
 		$this->assertEquals( 'my_type', $repo->repositoryType() );
 		$this->assertEquals( 'my_name', $repo->repositoryName() );
 		$this->assertTrue( $repo->hasProfile( 'prof1' ) );
@@ -35,7 +35,7 @@ class ArrayProfileRepositoryTest extends CirrusTestCase {
 			$loaded = true;
 			return $profiles;
 		};
-		$repo = ArrayProfileRepository::lazyLoaded( 'my_type', 'my_name',  $loader );
+		$repo = ArrayProfileRepository::lazyLoaded( 'my_type', 'my_name', $loader );
 		$this->assertEquals( 'my_type', $repo->repositoryType() );
 		$this->assertEquals( 'my_name', $repo->repositoryName() );
 		$this->assertFalse( $loaded, "accessing simple repo metadata should not load the array" );
@@ -51,7 +51,7 @@ class ArrayProfileRepositoryTest extends CirrusTestCase {
 		$loader = static function () {
 			return 'meh';
 		};
-		$repo = ArrayProfileRepository::lazyLoaded( 'my_type', 'my_name',  $loader );
+		$repo = ArrayProfileRepository::lazyLoaded( 'my_type', 'my_name', $loader );
 		$this->expectException( SearchProfileException::class );
 		$repo->hasProfile( 'meh' );
 	}

@@ -86,7 +86,7 @@ class IndexedNumericFieldFeature extends SimpleKeywordFeature implements FilterQ
 
 		$field = self::KEY_TABLE[$key];
 		$parsedValue['field'] = $field;
-		list( $sign, $number ) = $this->extractSign( $value );
+		[ $sign, $number ] = $this->extractSign( $value );
 		// filesize treats no sign as >, since exact file size matches make no sense
 		if ( !$sign && $key === 'filesize' && strpos( $number, ',' ) === false ) {
 			$sign = 1;

@@ -646,7 +646,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				$cacheResult = $cache->get( $key );
 				$statsKey = $this->getQueryCacheStatsKey();
 				if ( $cacheResult ) {
-					list( $logVariables, $multiResultSet ) = $cacheResult;
+					[ $logVariables, $multiResultSet ] = $cacheResult;
 					$requestStats->increment( "$statsKey.hit" );
 					$log->setCachedResult( $logVariables );
 					$this->successViaCache( $log );

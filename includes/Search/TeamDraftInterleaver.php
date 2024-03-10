@@ -37,7 +37,7 @@ class TeamDraftInterleaver {
 
 		$aResults = $this->extractResults( $a );
 		$bResults = $this->extractResults( $b );
-		list( $interleaved, $teamA, $teamB, $aOffset ) = $this->interleaveResults(
+		[ $interleaved, $teamA, $teamB, $aOffset ] = $this->interleaveResults(
 			$aResults,
 			$bResults,
 			$limit

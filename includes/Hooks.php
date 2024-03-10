@@ -227,7 +227,7 @@ class Hooks implements
 			if ( strpos( $line, ':' ) === false ) {
 				continue;
 			}
-			list( $k, $v ) = explode( ':', $line, 2 );
+			[ $k, $v ] = explode( ':', $line, 2 );
 			switch ( $k ) {
 			case 'min_doc_freq':
 			case 'max_doc_freq':

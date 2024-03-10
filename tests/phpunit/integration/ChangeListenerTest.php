@@ -148,7 +148,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			"root_event_time" => $now,
 			"prioritize" => true,
 		];
-		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new CirrusLinksUpdate( $title,  $expectedJobParam ) );
+		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
 			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
@@ -241,7 +241,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			->method( 'lazyPush' )
 			->with( new Job\DeleteArchive( $title, [ 'docIds' => $restoredPageIds ] ) );
 		$listener->onPageUndeleteComplete( $page, $this->createMock( Authority::class ),
-			'a reson',  $this->createMock( RevisionRecord::class ),
+			'a reson', $this->createMock( RevisionRecord::class ),
 			$this->createMock( \ManualLogEntry::class ), 2, true, $restoredPageIds );
 	}
 }

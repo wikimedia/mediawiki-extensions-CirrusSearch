@@ -230,11 +230,9 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$config = new HashSearchConfig( $settings );
 
 		$namespaceInfo = $this->createMock( NamespaceInfo::class );
-		$namespaceInfo->method( 'isSubject' )->will(
-			$this->returnCallback( static function ( $ns ) {
-				return in_array( $ns, [ NS_MAIN, NS_PROJECT, NS_HELP, NS_MEDIAWIKI ] );
-			}
-		) );
+		$namespaceInfo->method( 'isSubject' )->willReturnCallback( static function ( $ns ) {
+			return in_array( $ns, [ NS_MAIN, NS_PROJECT, NS_HELP, NS_MEDIAWIKI ] );
+		} );
 		$namespaceInfo->method( 'getSubject' )->with( NS_TALK )->willReturn( NS_MAIN );
 		// 5 namespaces in the query generates 5 filters
 		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_PROJECT, NS_HELP, NS_MEDIAWIKI, NS_TALK ],

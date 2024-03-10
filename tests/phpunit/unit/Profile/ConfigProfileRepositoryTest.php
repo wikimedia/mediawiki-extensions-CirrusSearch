@@ -21,7 +21,7 @@ class ConfigProfileRepositoryTest extends CirrusTestCase {
 				'prof2' => [],
 			]
 		] );
-		$repo = new ConfigProfileRepository( 'my_type', 'my_name',  'profiles', $config );
+		$repo = new ConfigProfileRepository( 'my_type', 'my_name', 'profiles', $config );
 		$this->assertEquals( 'my_type', $repo->repositoryType() );
 		$this->assertEquals( 'my_name', $repo->repositoryName() );
 		$this->assertTrue( $repo->hasProfile( 'prof1' ) );
@@ -33,21 +33,21 @@ class ConfigProfileRepositoryTest extends CirrusTestCase {
 
 	public function testNoConfig() {
 		$config = new HashConfig( [] );
-		$repo = new ConfigProfileRepository( 'my_type', 'my_name',  'profiles', $config );
+		$repo = new ConfigProfileRepository( 'my_type', 'my_name', 'profiles', $config );
 		$this->assertFalse( $repo->hasProfile( 'prof3' ) );
 		$this->assertNull( $repo->getProfile( 'prof3' ) );
 	}
 
 	public function testBadConfigWithHas() {
 		$config = new HashConfig( [ 'profiles' => 123 ] );
-		$repo = new ConfigProfileRepository( 'my_type', 'my_name',  'profiles', $config );
+		$repo = new ConfigProfileRepository( 'my_type', 'my_name', 'profiles', $config );
 		$this->expectException( SearchProfileException::class );
 		$repo->hasProfile( 'prof3' );
 	}
 
 	public function testBadConfigWithGet() {
 		$config = new HashConfig( [ 'profiles' => 123 ] );
-		$repo = new ConfigProfileRepository( 'my_type', 'my_name',  'profiles', $config );
+		$repo = new ConfigProfileRepository( 'my_type', 'my_name', 'profiles', $config );
 		$this->expectException( SearchProfileException::class );
 		$repo->getProfile( 'prof3' );
 	}

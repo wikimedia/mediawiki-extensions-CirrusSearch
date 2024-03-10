@@ -476,7 +476,7 @@ class ForceSearchIndex extends Maintenance {
 	protected function getUpdatesByIdIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		$pageQuery = WikiPage::getQueryInfo();
-		$it = new BatchRowIterator( $dbr,  $pageQuery['tables'], 'page_id', $this->getBatchSize() );
+		$it = new BatchRowIterator( $dbr, $pageQuery['tables'], 'page_id', $this->getBatchSize() );
 		$it->setFetchColumns( $pageQuery['fields'] );
 		$it->addJoinConditions( $pageQuery['joins'] );
 		$it->setCaller( __METHOD__ );
@@ -616,7 +616,7 @@ class ForceSearchIndex extends Maintenance {
 		// pages are totally possible, as well as fun stuff like redirect loops, we need to use
 		// Updater's redirect tracing logic which is very complete.  Also, it returns null on
 		// self redirects.  Great!
-		list( $page, ) = $updater->traceRedirects( $page->getTitle() );
+		[ $page, ] = $updater->traceRedirects( $page->getTitle() );
 
 		if ( $page != null &&
 			Title::makeTitleSafe( $page->getTitle()->getNamespace(), $page->getTitle()->getText() ) === null

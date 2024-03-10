@@ -143,9 +143,9 @@ class IndexLookupFallbackMethodTest extends FallbackMethodTestBase {
 		$searchQuery = null;
 		if ( $method !== null ) {
 			$client = $this->createMock( Client::class );
-			$client->method( 'getIndex' )->will( $this->returnCallback( static function ( $index ) use ( $client ) {
+			$client->method( 'getIndex' )->willReturnCallback( static function ( $index ) use ( $client ) {
 				return new Index( $client, $index );
-			} ) );
+			} );
 			$query = $method->getSearchRequest( $client );
 			if ( $query !== null ) {
 				$searchQuery = [

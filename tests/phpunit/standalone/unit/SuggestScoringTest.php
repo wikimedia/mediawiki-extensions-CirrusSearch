@@ -123,7 +123,7 @@ class SuggestScoringTest extends CirrusTestCase {
 		$res = $qs->boost( 1.0, 1000.0 );
 		$this->assertSame( 1.0, $res,
 			"When score is 1 and boost is very high the score is still 1." );
-		$res = $qs->boost( 0.0,  0.0 );
+		$res = $qs->boost( 0.0, 0.0 );
 		$this->assertSame( 0.0, $res, "When score is 0 and boost is 0 the score is still 0." );
 	}
 

@@ -113,7 +113,7 @@ class ElasticaErrorHandlerTest extends CirrusTestCase {
 	 * @dataProvider extractMessageAndStatusProvider
 	 */
 	public function testExtractMessageAndStatus( $expected, $exception ) {
-		list( $status, $message ) = ElasticaErrorHandler::extractMessageAndStatus( $exception );
+		[ $status, $message ] = ElasticaErrorHandler::extractMessageAndStatus( $exception );
 		$this->assertEquals( $expected, $message );
 	}
 

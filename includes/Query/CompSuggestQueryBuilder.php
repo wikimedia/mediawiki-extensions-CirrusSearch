@@ -233,7 +233,7 @@ class CompSuggestQueryBuilder {
 						$targetTitle = $suggest['_source']['target_title']['title'];
 						$targetTitleNS = $suggest['_source']['target_title']['namespace'];
 					}
-					list( $docId, $type ) = $this->decodeId( $suggest['_id'] );
+					[ $docId, $type ] = $this->decodeId( $suggest['_id'] );
 					$score = $discount * $suggest['_score'];
 					$pageId = $this->searchContext->getConfig()->makePageId( $docId );
 					$suggestion = new SearchSuggestion( $score, null, null, $pageId );

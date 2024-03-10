@@ -507,7 +507,7 @@ class AnalysisFilterTest extends CirrusTestCase {
 				],
 			],
 		];
-		list( $analysis, $mappings ) = $filter->filterAnalysis(
+		[ $analysis, $mappings ] = $filter->filterAnalysis(
 			$initialAnalysis, $initialMappings, true );
 
 		$this->assertArrayHasKey( 'aa', $mappings['my_type']['properties']['labels']['properties'] );

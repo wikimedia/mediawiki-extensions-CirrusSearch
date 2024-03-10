@@ -224,6 +224,7 @@ class CheckerJob extends CirrusGenericJob {
 			) );
 
 		$ranges = array_chunk( range( $from, $to ), $batchSize );
+		// @phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 		while ( $pageIds = array_shift( $ranges ) ) {
 			if ( self::getPressure() > $maxPressure ) {
 				$this->retry( "too much pressure on update jobs", reset( $pageIds ) );

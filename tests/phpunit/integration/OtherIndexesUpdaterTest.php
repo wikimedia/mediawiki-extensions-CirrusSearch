@@ -80,7 +80,7 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 		] );
 
 		foreach ( $assertions as $assertion ) {
-			list( $namespaces, $indices ) = $assertion;
+			[ $namespaces, $indices ] = $assertion;
 			$found = array_map(
 				static function ( $other ) {
 					return $other->getSearchIndex( 'default' );
@@ -134,10 +134,10 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 			->getMock();
 		$oi->expects( $this->once() )
 			->method( 'runUpdates' )
-			->will( $this->returnCallback( function ( Title $title, array $updates ) {
+			->willReturnCallback( function ( Title $title, array $updates ) {
 				$this->assertCount( 1, $updates );
 				foreach ( $updates as $data ) {
-					list( $otherIndex, $actions ) = $data;
+					[ $otherIndex, $actions ] = $data;
 					$this->assertIsArray( $actions );
 					$this->assertCount( 1, $actions );
 					$action = $actions[0];
@@ -146,7 +146,7 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 					$this->assertArrayHasKey( 'dbKey', $action );
 					$this->assertEquals( 'otherplace:phpunit_other_index', $otherIndex->getGroupAndIndexName() );
 				}
-			} ) );
+			} );
 		$oi->updateOtherIndex( [ Title::newMainPage() ] );
 	}
 }

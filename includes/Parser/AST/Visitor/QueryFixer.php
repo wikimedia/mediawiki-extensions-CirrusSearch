@@ -125,7 +125,7 @@ class QueryFixer implements Visitor {
 		} elseif ( $this->node instanceof WordsQueryNode ) {
 			return $this->node->getWords();
 		} else {
-		/** @phan-suppress-next-line PhanImpossibleCondition I agree, this is impossible. */
+			/** @phan-suppress-next-line PhanImpossibleCondition I agree, this is impossible. */
 			Assert::invariant( false, "Unsupported node type " . get_class( $this->node ) );
 			return null;
 		}

@@ -20,7 +20,7 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 		for ( $i = 0; $i < 10; ++$i ) {
 			// Use a constant seed to allow determinism
 			mt_srand( 12345 * $i );
-			list( $interleave, $teamA, $teamB, $aOffset ) = TeamDraftInterleaver::interleaveResults( $a, $b, $limit );
+			[ $interleave, $teamA, $teamB, $aOffset ] = TeamDraftInterleaver::interleaveResults( $a, $b, $limit );
 			// Very basic assertions about the shape of results
 			$this->assertCount( 10, $teamA );
 			$this->assertCount( 10, $teamB );
@@ -125,7 +125,7 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 		$a = array_combine( $a, $a );
 		$b = array_combine( $b, $b );
 
-		list( $interleave, $teamA, $teamB, ) = TeamDraftInterleaver::interleaveResults( $a, $b, 15 );
+		[ $interleave, $teamA, $teamB, ] = TeamDraftInterleaver::interleaveResults( $a, $b, 15 );
 		$this->assertCount( 15, $interleave );
 		$this->assertCount( 5, $teamA );
 		$this->assertCount( 10, $teamB );
@@ -137,7 +137,7 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 		$a = array_combine( $a, $a );
 		$b = array_combine( $b, $b );
 
-		list( $interleave, $teamA, $teamB, ) = TeamDraftInterleaver::interleaveResults( $a, $b, 11 );
+		[ $interleave, $teamA, $teamB, ] = TeamDraftInterleaver::interleaveResults( $a, $b, 11 );
 		$this->assertCount( 11, $interleave );
 		$this->assertCount( 6, $teamA );
 		$this->assertCount( 5, $teamB );
@@ -149,7 +149,7 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 		$a = array_combine( $a, $a );
 		$b = array_combine( $b, $b );
 
-		list( $interleave, $teamA, $teamB, ) = TeamDraftInterleaver::interleaveResults( $a, $b, 20 );
+		[ $interleave, $teamA, $teamB, ] = TeamDraftInterleaver::interleaveResults( $a, $b, 20 );
 		$this->assertCount( 8, $interleave );
 		$this->assertCount( 3, $teamA );
 		$this->assertCount( 5, $teamB );
@@ -161,7 +161,7 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 		$a = array_combine( $a, $a );
 		$b = array_combine( $b, $b );
 
-		list( $interleave, $teamA, $teamB, ) = TeamDraftInterleaver::interleaveResults( $a, $b, 20 );
+		[ $interleave, $teamA, $teamB, ] = TeamDraftInterleaver::interleaveResults( $a, $b, 20 );
 		$this->assertCount( 10, $interleave );
 		$this->assertCount( 5, $teamA );
 		$this->assertCount( 5, $teamB );

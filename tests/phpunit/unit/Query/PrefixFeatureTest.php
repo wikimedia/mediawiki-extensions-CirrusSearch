@@ -380,6 +380,6 @@ class PrefixFeatureTest extends CirrusTestCase {
 		$filterBuilderMock->expects( $this->never() )->method( 'mustNot' );
 		$contextualFilter->populate( $filterBuilderMock );
 		$this->assertCount( 1, $filters );
-		$this->assertFilter( new PrefixFeature( $this->namespacePrefixParser() ), 'prefix:' . $prefix,  $filters[0], [] );
+		$this->assertFilter( new PrefixFeature( $this->namespacePrefixParser() ), 'prefix:' . $prefix, $filters[0], [] );
 	}
 }

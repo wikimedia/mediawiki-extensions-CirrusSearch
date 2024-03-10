@@ -130,7 +130,7 @@ class ReindexTaskTest extends CirrusTestCase {
 
 		$client->expects( $this->exactly( 2 ) )
 			->method( 'request' )
-			->will( $this->returnValueMap( [
+			->willReturnMap( [
 				[
 					'_tasks/abc:123',
 					Request::GET,
@@ -151,7 +151,7 @@ class ReindexTaskTest extends CirrusTestCase {
 						$this->sliceResponse( 2 )
 					), 200 )
 				],
-			] ) );
+			] );
 
 		$task = new ReindexTask( $client, 'abc:123' );
 		$status = $task->getStatus();

@@ -45,7 +45,7 @@ class OffsetTracker {
 	 * @return bool
 	 */
 	public function overlap( $start, $end ) {
-		Assert::precondition( $start < $end,  '$start < $end' );
+		Assert::precondition( $start < $end, '$start < $end' );
 		foreach ( $this->offsets as $s => $e ) {
 			if ( $e > $start && $s < $end ) {
 				return true;

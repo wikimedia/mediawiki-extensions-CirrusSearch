@@ -23,7 +23,7 @@ class FunctionScoreDecorator extends FunctionScore {
 		?AbstractQuery $filter = null,
 		?float $weight = null
 	): FunctionScore {
-		$this->size ++;
+		$this->size++;
 
 		parent::addFunction( $functionType, $functionParams, $filter, $weight );
 		return $this;

@@ -45,7 +45,7 @@ trait ApiTrait {
 	 * @return array
 	 */
 	public function loadDocuments( Title $title, $sourceFiltering = true ) {
-		list( $docId, $hasRedirects ) = $this->determineCirrusDocId( $title );
+		[ $docId, $hasRedirects ] = $this->determineCirrusDocId( $title );
 		if ( $docId === null ) {
 			return [];
 		}

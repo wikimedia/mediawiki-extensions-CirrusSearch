@@ -671,12 +671,11 @@ class AnalysisConfigBuilder {
 				'near_space_flattener' => [
 					'type' => 'limited_mapping',
 					'mappings' => [
-						"'=>\u0020",       // Useful for finding names
-						'\u2019=>\u0020',  // Unicode right single quote
-						'\u02BC=>\u0020',  // Unicode modifier letter apostrophe
-						'_=>\u0020',       // MediaWiki loves _ and people are used to it but
-										   // it usually means space
-						'-=>\u0020',       // Useful for finding hyphenated names unhyphenated
+						"'=>\u0020", // Useful for finding names
+						'\u2019=>\u0020', // Unicode right single quote
+						'\u02BC=>\u0020', // Unicode modifier letter apostrophe
+						'_=>\u0020', // MediaWiki loves _ and people are used to it but it usually means space
+						'-=>\u0020', // Useful for finding hyphenated names unhyphenated
 					],
 				],
 				// map narrow no-break space to plain space to compensate for ES6.x+
@@ -712,25 +711,25 @@ class AnalysisConfigBuilder {
 					'mappings' => [
 						// map lots of apostrophe-like characters to apostrophe (T315118);
 						// formerly apostrophe_norm
-						"`=>'",		 // grave accent
-						"´=>'",		 // acute accent
-						"ʹ=>'",		 // modifier letter prime
-						"ʻ=>'",		 // modifier letter turned comma
-						"ʼ=>'",		 // modifier letter apostrophe
-						"ʽ=>'",		 // modifier letter reversed comma
-						"ʾ=>'",		 // modifier letter right half ring
-						"ʿ=>'",		 // modifier letter left half ring
-						"ˋ=>'",		 // modifier letter grave accent
-						"՚=>'",		 // Armenian apostrophe
+						"`=>'", // grave accent
+						"´=>'", // acute accent
+						"ʹ=>'", // modifier letter prime
+						"ʻ=>'", // modifier letter turned comma
+						"ʼ=>'", // modifier letter apostrophe
+						"ʽ=>'", // modifier letter reversed comma
+						"ʾ=>'", // modifier letter right half ring
+						"ʿ=>'", // modifier letter left half ring
+						"ˋ=>'", // modifier letter grave accent
+						"՚=>'", // Armenian apostrophe
 						"\u05F3=>'", // Hebrew punctuation geresh
-						"‘=>'",		 // left single quotation mark
-						"’=>'",		 // right single quotation mark
-						"‛=>'",		 // single high-reversed-9 quotation mark
-						"′=>'",		 // prime
-						"‵=>'",		 // reversed prime
-						"ꞌ=>'",		 // Latin small letter saltillo
-						"＇=>'",		 // fullwidth apostrophe
-						"｀=>'",		 // fullwidth grave accent
+						"‘=>'", // left single quotation mark
+						"’=>'", // right single quotation mark
+						"‛=>'", // single high-reversed-9 quotation mark
+						"′=>'", // prime
+						"‵=>'", // reversed prime
+						"ꞌ=>'", // Latin small letter saltillo
+						"＇=>'", // fullwidth apostrophe
+						"｀=>'", // fullwidth grave accent
 						// map narrow no-break space to plain space to compensate for ES6.x+
 						// analyzers generally not doing so; copied from nnbsp_norm, which
 						// is still needed elsewhere
@@ -889,7 +888,7 @@ class AnalysisConfigBuilder {
 			$config = ( new AnalyzerBuilder( $langName ) )->
 				withUnpackedAnalyzer()->
 				withLimitedCharMap( [ '․=>.' ] )->
-				withExtraStop( [ 'նաեւ', 'եւ' ],  'armenian_norm_stop', 'armenian_stop' )->
+				withExtraStop( [ 'նաեւ', 'եւ' ], 'armenian_norm_stop', 'armenian_stop' )->
 				build( $config );
 			break;
 		case 'bengali': // Unpack Bengali analyzer T294067
@@ -1122,8 +1121,8 @@ class AnalysisConfigBuilder {
 			$noriMap = [
 				'\u00B7=>\u0020', // convert middle dot to space
 				'\u318D=>\u0020', // arae-a to space
-				'\u00AD=>',		  // remove soft hyphens
-				'\u200C=>',		  // remove zero-width non-joiners
+				'\u00AD=>', // remove soft hyphens
+				'\u200C=>', // remove zero-width non-joiners
 			];
 
 			// Nori-specific pattern_replace to strip combining diacritics
@@ -1218,10 +1217,10 @@ class AnalysisConfigBuilder {
 			// unpack built-in Russian analyzer and add character filter
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T124592
 			$ruCharMap = [
-					'\u0301=>',				// combining acute accent, only used to show stress T102298
-					'\u0435\u0308=>\u0435',	// T124592 fold ё=>е and Ё=>Е, with combining diacritic...
+					'\u0301=>', // combining acute accent, only used to show stress T102298
+					'\u0435\u0308=>\u0435', // T124592 fold ё=>е and Ё=>Е, with combining diacritic...
 					'\u0415\u0308=>\u0415',
-					'\u0451=>\u0435',		// ... or precomposed
+					'\u0451=>\u0435', // ... or precomposed
 					'\u0401=>\u0415',
 				];
 			$config = ( new AnalyzerBuilder( $langName ) )->
@@ -1277,9 +1276,9 @@ class AnalysisConfigBuilder {
 				':=>\u0020', // .. colon
 				'·=>\u0020', // .. middle dot
 				'‧=>\u0020', // .. & hyphenation point
-				'ฃ=>ข',     // replace obsolete ฃ
-				'ฅ=>ค',     // replace obsolete ฅ
-				'\u0e4d\u0e32=>\u0e33',  // compose nikhahit + sara aa = sara am
+				'ฃ=>ข', // replace obsolete ฃ
+				'ฅ=>ค', // replace obsolete ฅ
+				'\u0e4d\u0e32=>\u0e33', // compose nikhahit + sara aa = sara am
 				'\u0e4d\u0e48\u0e32=>\u0e48\u0e33', // recompose sara am split around..
 				'\u0e4d\u0e49\u0e32=>\u0e49\u0e33', // .. other diacritics
 				'\u0e33\u0e48=>\u0e48\u0e33', // sara am should consistently..
@@ -1319,7 +1318,7 @@ class AnalysisConfigBuilder {
 				// if we have to settle for the Thai tokenizer, add some additional
 				// character filters to accommodate some of its weaknesses
 				$thThaiTokSplits = [
-					'\u200B=>',  // delete zero width space
+					'\u200B=>', // delete zero width space
 					'-=>\u0020', // split tokens on hyphen-minus ..
 					'‐=>\u0020', // .. hyphen
 					'–=>\u0020', // .. en dash
@@ -1351,14 +1350,14 @@ class AnalysisConfigBuilder {
 			break;
 		case 'ukrainian-unpacked':
 			$this->languagesWithIcuFolding['uk'] = true;
-			$ukCharMap = [ '‘=>\'',    // normalize apostrophes
+			$ukCharMap = [ '‘=>\'', // normalize apostrophes
 						   '’=>\'',
 						   '`=>\'',
 						   '´=>\'',
 						   'ʼ=>\'',
 						   '\u0301=>', // delete combining acute and soft hyphen
 						   '\u00AD=>',
-						   'ґ=>г',     // normalize ghe with upturn
+						   'ґ=>г', // normalize ghe with upturn
 						   'Ґ=>Г',
 			];
 			// lowercase twice because stopwords are case sensitive, and the stemmer

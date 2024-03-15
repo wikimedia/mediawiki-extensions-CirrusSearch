@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Muhammad Shuaib"
+		]
+	},
+	"apihelp-cirrus-config-dump-summary": "CirrusSearch ترتیبات کا ذخیرہ",
+	"apihelp-cirrus-config-dump-example": "CirrusSearch کی ترتیبات کا ذخیرہ حاصل کریں۔"
+}

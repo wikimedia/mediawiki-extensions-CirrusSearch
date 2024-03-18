@@ -87,6 +87,7 @@
 		"APIAfterExecute": "default",
 		"ApiBeforeMain": "default",
 		"APIQuerySiteInfoStatisticsInfo": "default",
+		"APIQuerySiteInfoGeneralInfo": "apiquerysiteinfogeneralinfo",
 		"PageDelete": "changelistener",
 		"PageDeleteComplete": "changelistener",
 		"ArticleRevisionVisibilitySet": "changelistener",
@@ -152,6 +153,12 @@
 			],
 			"optional_services": [
 				"EventBus.EventBusFactory"
+			]
+		},
+		"apiquerysiteinfogeneralinfo": {
+			"class": "CirrusSearch\\Hooks\\CirrusSearchApiQuerySiteInfoGeneralInfoHook",
+			"services": [
+				"ConnectionProvider"
 			]
 		}
 	},

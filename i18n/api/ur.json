@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Muhammad Shuaib"
+		]
+	},
+	"apihelp-cirrus-config-dump-summary": "CirrusSearch ترتیبات کا ذخیرہ",
+	"apihelp-cirrus-config-dump-example": "CirrusSearch کی ترتیبات کا ذخیرہ حاصل کریں۔",
+	"apihelp-cirrus-mapping-dump-summary": "اس ویکی کے لیے CirrusSearch نقشوں کا ذخیرہ۔",
+	"apihelp-cirrus-mapping-dump-example": "اس ویکی کے لیے CirrusSearch نقشوں کا ذخیرہ حاصل کریں۔",
+	"apihelp-cirrus-settings-dump-summary": "اس ویکی کے لیے CirrusSearch ترتیبات کا ذخیرہ۔",
+	"apihelp-cirrus-settings-dump-example": "اس ویکی کے لیے CirrusSearch کی ترتیبات کا ذخیرہ حاصل کریں۔",
+	"apihelp-cirrus-profiles-dump-summary": "پیش نظر ویکی کے CirrusSearch پروفائلوں کا ذخیرہ۔",
+	"apihelp-cirrus-profiles-dump-example": "پیش نظر ویکی کے CirrusSearch پروفائلوں کا ذخیرہ حاصل کریں۔"
+}

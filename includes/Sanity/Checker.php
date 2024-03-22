@@ -344,10 +344,10 @@ class Checker {
 	}
 
 	/**
-	 * @return \Wikimedia\Rdbms\IDatabase
+	 * @return \Wikimedia\Rdbms\IReadableDatabase
 	 */
 	private function getDB() {
-		return wfGetDB( DB_REPLICA );
+		return MediaWikiServices::getInstance()->getConnectionProvider()->getReplicaDatabase();
 	}
 
 	/**

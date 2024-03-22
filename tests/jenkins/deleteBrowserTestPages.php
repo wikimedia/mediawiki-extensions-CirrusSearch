@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Jenkins;
 
+use BatchRowIterator;
 use Maintenance;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
@@ -61,13 +62,14 @@ class DeleteBrowserTestPages extends Maintenance {
 		] );
 		$pattern = "/$pattern/";
 
-		$dbw = wfGetDB( DB_PRIMARY );
-		$it = new \BatchRowIterator( $dbw, 'page', 'page_id', 500 );
+		$services = MediaWikiServices::getInstance();
+		$dbw = $services->getConnectionProvider()->getPrimaryDatabase();
+		$it = new BatchRowIterator( $dbw, 'page', 'page_id', 500 );
 		$it->setFetchColumns( [ '*' ] );
 		$it->setCaller( __METHOD__ );
 		$it = new \RecursiveIteratorIterator( $it );
 
-		$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();
+		$wikiPageFactory = $services->getWikiPageFactory();
 		$user = User::newSystemUser( User::MAINTENANCE_SCRIPT_USER, [ 'steal' => true ] );
 		foreach ( $it as $row ) {
 			if ( preg_match( $pattern, $row->page_title ) !== 1 ) {

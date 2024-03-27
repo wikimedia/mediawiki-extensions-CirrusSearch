@@ -59,6 +59,7 @@ class ForceSearchIndex extends Maintenance {
 	public $maxJobs;
 	public $pauseForJobs;
 	public $namespace;
+	/** @var string[] */
 	public $excludeContentTypes;
 	public $lastJobQueueCheckTime = 0;
 
@@ -405,7 +406,7 @@ class ForceSearchIndex extends Maintenance {
 			'EXISTS(select * from archive where ar_title = log_title and ar_namespace = log_namespace)',
 			// Prior to 2010 the logging table contains nulls. As the docs in elasticsearch use the page id
 			// as the document id we cannot handle these old rows.
-			'log_page IS NOT NULL',
+			$dbr->expr( 'log_page', '!=', null ),
 		] );
 
 		$it->setFetchColumns( [ 'log_timestamp', 'log_namespace', 'log_title', 'log_page' ] );
@@ -483,12 +484,12 @@ class ForceSearchIndex extends Maintenance {
 		$fromId = $this->getOption( 'fromId', 0 );
 		if ( $fromId > 0 ) {
 			$it->addConditions( [
-				'page_id >= ' . $dbr->addQuotes( $fromId ),
+				$dbr->expr( 'page_id', '>=', $fromId ),
 			] );
 		}
 		if ( $this->toId ) {
 			$it->addConditions( [
-				'page_id <= ' . $dbr->addQuotes( $this->toId ),
+				$dbr->expr( 'page_id', '<=', $this->toId ),
 			] );
 		}
 
@@ -504,10 +505,8 @@ class ForceSearchIndex extends Maintenance {
 		// the other has a sane default value.
 		if ( $this->fromDate !== null ) {
 			$it->addConditions( [
-				"{$columnPrefix}_timestamp >= " .
-					$dbr->addQuotes( $dbr->timestamp( $this->fromDate ) ),
-				"{$columnPrefix}_timestamp <= " .
-					$dbr->addQuotes( $dbr->timestamp( $this->toDate ) ),
+				$dbr->expr( "{$columnPrefix}_timestamp", '>=', $dbr->timestamp( $this->fromDate ) ),
+				$dbr->expr( "{$columnPrefix}_timestamp", '<=', $dbr->timestamp( $this->toDate ) ),
 			] );
 		}
 	}
@@ -519,9 +518,8 @@ class ForceSearchIndex extends Maintenance {
 			] );
 		}
 		if ( $this->excludeContentTypes ) {
-			$list = $dbr->makeList( $this->excludeContentTypes, LIST_COMMA );
 			$it->addConditions( [
-				"{$columnPrefix}_content_model NOT IN ($list)",
+				$dbr->expr( "{$columnPrefix}_content_model", '!=', $this->excludeContentTypes ),
 			] );
 		}
 		if ( $this->hasOption( 'useDbIndex' ) ) {

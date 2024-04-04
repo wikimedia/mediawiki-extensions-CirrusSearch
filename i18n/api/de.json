@@ -28,5 +28,12 @@
 	"apierror-compsuggestbuilddoc-bad-method": "Unbekannte Scoring-Methode",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Dump des Dokuments, das vom Vervollständigungsvorschlag verwendet wird",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "Abruf eines Dumps aus dem vom Vervollständigungsvorschlag verwendeten Dokument",
-	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Angabe eines Score-Methodennamens, der vom Vervollständigungsvorschlag verwendet werden soll"
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Angabe eines Score-Methodennamens, der vom Vervollständigungsvorschlag verwendet werden soll",
+	"apihelp-cirrus-check-sanity-summary": "Berichte über die Korrektheit eines Bereichs von Seiten-IDs im Suchindex",
+	"apihelp-cirrus-check-sanity-example": "Einen Bericht über die Korrektheit eines Bereichs von Seiten-IDs im Suchindex erhalten",
+	"apihelp-cirrus-check-sanity-param-cluster": "Der Suchcluster zur Überprüfung der Indizes in",
+	"apihelp-cirrus-check-sanity-param-from": "Seiten-ID, bei der mit der Überprüfung begonnen werden soll",
+	"apihelp-cirrus-check-sanity-param-limit": "Die Anzahl der zu prüfenden Seiten-IDs",
+	"apihelp-cirrus-check-sanity-param-sequenceid": "Die Häufigkeit, mit der dieser Satz von Seiten-IDs überprüft wurde",
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Anzahl der Prüfungen, nach denen eine Seite erneut gerendert werden soll. Basierend auf der bereitgestellten Sequenz-ID."
 }

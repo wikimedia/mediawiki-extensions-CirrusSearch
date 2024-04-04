@@ -27,5 +27,12 @@
 	"apierror-compsuggestbuilddoc-bad-method": "Непознат начин на оценување",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Склад на документот што го користи дополнувачкиот предлагач",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "Дај склад на документот што го користи дополнувачкиот предлагач",
-	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Укажете име за начинот на бодување што ќе се користи од предлагачот на дополнување"
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Укажете име за начинот на бодување што ќе се користи од предлагачот на дополнување",
+	"apihelp-cirrus-check-sanity-summary": "Известува за исправноста на опсег на опсези на страници во пребарувачкиот индекс",
+	"apihelp-cirrus-check-sanity-example": "Дај извештај за исправноста на опсег на опсези на страници во пребарувачкиот индекс",
+	"apihelp-cirrus-check-sanity-param-cluster": "Во кој пребарувачки грст да се проверат индекси",
+	"apihelp-cirrus-check-sanity-param-from": "Назнака на страницата за почеток на проверката",
+	"apihelp-cirrus-check-sanity-param-limit": "Број на назнаки на страници за проверка",
+	"apihelp-cirrus-check-sanity-param-sequenceid": "Колку пати е проверен овој збир од назнаки на страници",
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "После колку проверки да се испише страницата. Засновано на укажаната назнака на низата."
 }

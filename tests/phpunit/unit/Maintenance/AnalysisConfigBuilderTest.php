@@ -653,18 +653,75 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$this->assertEquals( $input[ 'analyzer' ], $result[ 'analyzer' ] );
 	}
 
+	private const FIXTURE_INFO_USE_CIRRUS = 0;
+	private const FIXTURE_INFO_EXTENDED_TEST = 1;
+	private const FIXTURE_INFO_PLUGIN_LIST = 2;
+
+	private const CONFIG_ENABLE_ICU_DEFAULTS = [
+		'CirrusSearchUseIcuFolding' => 'default',
+		'CirrusSearchUseIcuTokenizer' => 'default'
+	];
+
 	public static function provideLanguageAnalysis() {
+		// language-specific plugins
+		$lang_plugins = [
+			'analysis-hebrew', 'analysis-nori', 'analysis-smartcn',
+			'analysis-stconvert', 'analysis-stempel', 'analysis-ukrainian',
+			'extra-analysis-esperanto', 'extra-analysis-khmer', 'extra-analysis-serbian',
+			'extra-analysis-slovak', 'extra-analysis-turkish', 'extra-analysis-ukrainian',
+			];
+
+		// icu plugin (requires extra, too)
+		$icu_plugins = [ 'extra', 'analysis-icu' ];
+
+		// text-munging plugins
+		$text_plugins = [ 'extra-analysis-homoglyph', 'extra-analysis-textify' ];
+
+		$fixtureInfo = [ // 'tag' => [extraCirrusConfig, isExtendedTest?, pluginList]
+			'core' => [ [], false, [] ], // no plugins, no cirrus config
+
+			// all plugins + CirrusICUConfig (this should be what's in prod)
+			'prod' => [ self::CONFIG_ENABLE_ICU_DEFAULTS, false,
+				array_merge( $lang_plugins, $text_plugins, $icu_plugins ) ],
+
+			//////////////////
+			// extended tests
+
+			// all plugins, but no CirrusICUConfig
+			'no_cic' => [ [], true, array_merge( $lang_plugins, $icu_plugins, $text_plugins ) ],
+
+			// just language plugins
+			'lang' => [ self::CONFIG_ENABLE_ICU_DEFAULTS, true, $lang_plugins ],
+
+			// icu plugins + CirrusICUConfig
+			'icu' => [ self::CONFIG_ENABLE_ICU_DEFAULTS, true, array_merge( $lang_plugins, $icu_plugins ) ],
+
+			// text plugins + CirrusICUConfig; icu_folding should do nothing, but textify should
+			// enable icu_tokenization
+			'text' => [ self::CONFIG_ENABLE_ICU_DEFAULTS, true, array_merge( $lang_plugins, $text_plugins ) ],
+		];
+
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'languageAnalysis/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$extraConfig = CirrusIntegrationTestCase::loadFixture( $testFile );
-			$langCode = $extraConfig['LangCode'] ?? $testName;
-			$expectedFile = dirname( $testFile ) . "/$testName.expected";
-			if ( CirrusIntegrationTestCase::hasFixture( $expectedFile ) ) {
-				$expected = CirrusIntegrationTestCase::loadFixture( $expectedFile );
-			} else {
-				$expected = $expectedFile;
+			$langCode = $extraConfig['langCode'] ?? $testName;
+			$testDir = dirname( $testFile );
+
+			foreach ( $fixtureInfo as $tag => $info ) {
+				if ( $info[self::FIXTURE_INFO_EXTENDED_TEST] && !( $extraConfig['extended_tests'] ?? false ) ) {
+					continue;
+				}
+				$expectedFile = $testDir . "/$testName.$tag.expected";
+				if ( array_key_exists( 'expected.' . $tag, $extraConfig ) ) {
+					$expectedFile = $testDir . '/' . $extraConfig[ 'expected.' . $tag ] . ".$tag.expected";
+				} elseif ( array_key_exists( 'expected', $extraConfig ) ) {
+					$expectedFile = $testDir . '/' . $extraConfig[ 'expected' ] . ".$tag.expected";
+				}
+
+				$thisConfig = $info[self::FIXTURE_INFO_USE_CIRRUS] + $extraConfig;
+				yield $testName . "-$tag" => [ $expectedFile, $langCode, $thisConfig,
+					$info[self::FIXTURE_INFO_PLUGIN_LIST] ];
 			}
-			yield $testName => [ $expected, $langCode, $extraConfig ];
 		}
 	}
 
@@ -673,26 +730,36 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 	 *  the results of generation obvious and tracked in git
 	 *
 	 * @dataProvider provideLanguageAnalysis
-	 * @param mixed $expected
+	 * @param string $expectedFile
 	 * @param string $langCode
 	 * @param array $extraConfig
+	 * @param array $plugins
 	 */
-	public function testLanguageAnalysis( $expected, $langCode, array $extraConfig ) {
+	public function testLanguageAnalysis( $expectedFile, $langCode, $extraConfig, $plugins ) {
 		$config = $this->buildConfig( $extraConfig );
-		$plugins = [
-			'analysis-stempel', 'analysis-kuromoji',
-			'analysis-smartcn', 'analysis-hebrew',
-			'analysis-ukrainian', 'analysis-stconvert',
-			'extra-analysis-serbian', 'extra-analysis-slovak',
-			'extra-analysis-esperanto', 'analysis-nori',
-			'extra-analysis-homoglyph', 'extra-analysis-khmer',
-			'extra-analysis-turkish', 'extra-analysis-textify',
-		];
+
+		if ( CirrusIntegrationTestCase::hasFixture( $expectedFile ) ) {
+			$expected = CirrusIntegrationTestCase::loadFixture( $expectedFile );
+		} else {
+			$expected = $expectedFile;
+		}
+
 		if ( array_key_exists( 'withPlugins', $extraConfig ) ) {
 			array_push( $plugins, ...$extraConfig[ 'withPlugins' ] );
 		}
 
-		$builder = new AnalysisConfigBuilder( $langCode, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
+		if ( array_key_exists( 'withoutPlugins', $extraConfig ) ) {
+			foreach ( $extraConfig[ 'withoutPlugins' ] as $delPlug ) {
+				$key = array_search( $delPlug, $plugins );
+				if ( $key !== false ) {
+					unset( $plugins[$key] );
+				}
+			}
+		}
+
+		$builder = new AnalysisConfigBuilder( $langCode, $plugins, $config,
+			$this->createCirrusSearchHookRunner( [] ) );
+
 		if ( is_string( $expected ) ) {
 			// generate fixture
 			CirrusIntegrationTestCase::saveAnalysisFixture( $expected, $builder->buildConfig() );
@@ -725,7 +792,22 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		}
 	}
 
-	public static function languageConfigDataProvider() {
+	public function testAnalysisTestCoverage() {
+		// make sure all the right tests are being covered by testLanguageAnalysis fixtures
+		$reflACB = new \ReflectionClass( AnalysisConfigBuilder::class );
+		foreach ( $reflACB->getDefaultProperties()[ 'languagesWithIcuFolding' ] as $lang => $val ) {
+			$this->assertCount( 1,
+				CirrusIntegrationTestCase::findFixtures( "languageAnalysis/$lang.config" ),
+				"ICU Folding language $lang missing from fixtures" );
+		}
+		foreach ( $reflACB->getDefaultProperties()[ 'languagesWithIcuTokenization' ] as $lang => $val ) {
+			$this->assertCount( 1,
+				CirrusIntegrationTestCase::findFixtures( "languageAnalysis/$lang.config" ),
+				"ICU Tokenizing language $lang missing from fixtures" );
+		}
+	}
+
+	public static function multilingualConfigDataProvider() {
 		$emptyConfig = [
 			'analyzer' => [],
 			'filter' => [],
@@ -734,7 +816,6 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		];
 		$allPlugins = [
 			'extra',
-			'extra-analysis',
 			'analysis-icu',
 			'analysis-stempel',
 			'analysis-kuromoji',
@@ -743,102 +824,54 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			'analysis-ukrainian',
 			'analysis-stconvert',
 			'analysis-nori',
+			'extra-analysis-serbian',
+			'extra-analysis-slovak',
+			'extra-analysis-esperanto',
+			'extra-analysis-khmer',
+			'extra-analysis-turkish',
+			'extra-analysis-ukrainian',
 		];
 
-		$reflACB = new \ReflectionClass( AnalysisConfigBuilder::class );
-
 		return [
-			"en-ru-es-de-zh-ko" => [
-				[ 'en', 'ru', 'es', 'de', 'zh', 'ko' ],
+			"multilingual custom config sample" => [
+				[ 'en', 'ru', 'es', 'de', 'zh', // no plugins
+				  'ko', 'pl', 'he', 'uk', 'sr', 'sk', 'eo', 'km', 'tr', // need plugins
+				  ],
 				$emptyConfig,
 				$allPlugins,
-				'en-ru-es-de-zh-ko',
+				'multilingual_custom',
 			],
-			// same as above, but with textify plugin
-			"en-ru-es-de-zh-ko textify" => [
-				[ 'en', 'ru', 'es', 'de', 'zh', 'ko' ],
-				$emptyConfig,
-				array_merge( $allPlugins, [ 'extra-analysis-textify' ] ),
-				'en-ru-es-de-zh-ko_textify',
-			],
-			// sv has custom icu_folding filter
-			"en-zh-sv" => [
-				[ 'en', 'zh', 'sv' ],
+			"custom ICU config sample" => [
+				[ 'en', 'fr', 'zh', // ICU defaults
+				  'de', // custom ICU normalization
+				  'bg', 'cs', 'ja', 'cjk', 'sv', 'th', // custom ICU folding
+				  'bo', 'wuu', 'bug', 'cdo', 'jv', // use ICU tokenizer
+				  ],
 				$emptyConfig,
 				$allPlugins,
-				'en-zh-sv',
+				'custom_icu',
 			],
-			"he-uk with plugins" => [
-				[ 'he', 'uk' ],
-				$emptyConfig,
-				$allPlugins,
-				'he-uk',
-			],
-			"he-uk without language plugins" => [
-				[ 'he', 'uk' ],
-				$emptyConfig,
-				[ 'extra', 'analysis-icu' ],
-				'he-uk-nolang',
-			],
-			"he-uk without any plugins" => [
-				[ 'he', 'uk' ],
-				$emptyConfig,
-				[],
-				'he-uk-noplug',
-			],
-			"all default languages" => [
+			"default config sample" => [
 				[ 'ch', 'fy', 'kab', 'ti', 'xmf' ],
 				$emptyConfig,
 				[ 'extra', 'analysis-icu' ],
 				'all_defaults',
 			],
-			"icu folding languages" => [
-				array_keys( $reflACB->getDefaultProperties()[ 'languagesWithIcuFolding' ] ),
-				$emptyConfig,
-				[ 'extra', 'analysis-icu' ],
-				'icu_folders',
-			],
-			"icu tokenizing languages" => [
-				array_keys( $reflACB->getDefaultProperties()[ 'languagesWithIcuTokenization' ] ),
-				$emptyConfig,
-				[ 'extra', 'analysis-icu' ],
-				'icu_tokenizers',
-			],
-			"language-specific lowercasing" => [
-				[ 'el', 'ga', 'tr', 'az', 'crh', 'gag', 'kk', 'tt' ],
-				$emptyConfig,
-				[ 'extra', 'analysis-icu' ],
-				'custom_lowercase',
-			],
 		];
 	}
 
-	/** @dataProvider languageConfigDataProvider */
-	public function testAnalysisConfig( $languages, $oldConfig, $plugins, $expectedConfig ) {
+	/** @dataProvider multilingualConfigDataProvider */
+	public function testMultilingualAnalysisConfig( $languages, $oldConfig, $plugins, $expectedConfig ) {
 		// We use these static settings because we rely on tests in main
 		// AnalysisConfigBuilderTest to handle variations
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => 'default',
 										'CirrusSearchUseIcuTokenizer' => 'default' ] );
 
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
-		$prevConfig = $oldConfig;
 		$builder->buildLanguageConfigs( $oldConfig, $languages,
 			[ 'plain', 'plain_search', 'text', 'text_search' ] );
 		$oldConfig = $this->normalizeAnalysisConfig( $oldConfig );
 		$expectedFile = "analyzer/$expectedConfig.expected";
-		if ( CirrusIntegrationTestCase::hasFixture( $expectedFile ) ) {
-			$expected = CirrusIntegrationTestCase::loadFixture( $expectedFile );
-			$this->assertEquals( $expected, $oldConfig );
-		} else {
-			CirrusIntegrationTestCase::saveAnalysisFixture( $expectedFile, $oldConfig );
-			$this->markTestSkipped( "Generated new fixture" );
-		}
-
-		$oldConfig = $prevConfig;
-		$builder->buildLanguageConfigs( $oldConfig, $languages,
-			[ 'plain', 'plain_search' ] );
-		$oldConfig = $this->normalizeAnalysisConfig( $oldConfig );
-		$expectedFile = "analyzer/$expectedConfig.plain.expected";
 		if ( CirrusIntegrationTestCase::hasFixture( $expectedFile ) ) {
 			$expected = CirrusIntegrationTestCase::loadFixture( $expectedFile );
 			$this->assertEquals( $expected, $oldConfig );

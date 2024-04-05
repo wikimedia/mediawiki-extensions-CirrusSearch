@@ -209,6 +209,7 @@ class AnalysisConfigBuilder {
 		$language ??= $this->defaultLanguage;
 		$config = $this->customize( $this->defaults( $language ), $language );
 		$this->cirrusSearchHookRunner->onCirrusSearchAnalysisConfig( $config, $this );
+
 		if ( $this->shouldActivateIcuTokenization( $language ) ) {
 			$config = $this->enableICUTokenizer( $config );
 		}

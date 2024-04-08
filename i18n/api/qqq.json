@@ -43,5 +43,6 @@
 	"apihelp-cirrus-check-sanity-param-from": "{{doc-apihelp-param|cirrus-check-sanity|from}}",
 	"apihelp-cirrus-check-sanity-param-limit": "{{doc-apihelp-param|cirrus-check-sanity|limit}}",
 	"apihelp-cirrus-check-sanity-param-sequenceid": "{{doc-apihelp-param|cirrus-check-sanity|sequenceid}}",
-	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "{{doc-apihelp-param|cirrus-check-sanity|rerenderfrequency}}"
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "{{doc-apihelp-param|cirrus-check-sanity|rerenderfrequency}}",
+	"apiwarn-cirrus-ignore-revisions": "{{doc-apierror}}"
 }

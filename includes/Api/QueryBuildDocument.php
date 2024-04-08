@@ -61,8 +61,8 @@ class QueryBuildDocument extends \ApiQueryBase {
 		$revisionBased = false;
 		if ( $this->getPageSet()->getRevisionIDs() ) {
 			$revisionBased = true;
-			foreach ( $this->getPageSet()->getRevisionIDs() as $revId => $pageId ) {
-				$pages[$revId] = $revisionStore->getRevisionById( $revId );
+			foreach ( $this->getRevisionIDs() as $pageId => $revId ) {
+				$pages[$pageId] = $revisionStore->getRevisionById( $revId );
 			}
 		} else {
 			foreach ( $this->getPageSet()->getGoodPages() as $pageId => $title ) {
@@ -88,8 +88,8 @@ class QueryBuildDocument extends \ApiQueryBase {
 		}
 		$docs = $builder->initialize( $pages, $flags );
 		foreach ( $docs as $pageId => $doc ) {
-			$revisionId = $doc->get( 'version' );
-			$revision = $revisionBased ? $pages[$revisionId] : null;
+			$pageId = $doc->get( 'page_id' );
+			$revision = $revisionBased ? $pages[$pageId] : null;
 			if ( $builder->finalize( $doc, false, $revision ) ) {
 				$result->addValue(
 					[ 'query', 'pages', $pageId ],
@@ -114,6 +114,24 @@ class QueryBuildDocument extends \ApiQueryBase {
 					'cirrusbuilddoc_metadata', $metadata );
 			}
 		}
+	}
+
+	private function getRevisionIDs(): array {
+		$result = [];
+		$warning = false;
+		foreach ( $this->getPageSet()->getRevisionIDs() as $revId => $pageId ) {
+			if ( isset( $result[$pageId] ) ) {
+				$warning = true;
+				if ( $result[$pageId] >= $revId ) {
+					continue;
+				}
+			}
+			$result[$pageId] = $revId;
+		}
+		if ( $warning ) {
+			$this->addWarning( [ 'apiwarn-cirrus-ignore-revisions' ] );
+		}
+		return $result;
 	}
 
 	public function getAllowedParams() {

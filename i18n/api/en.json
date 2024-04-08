@@ -32,5 +32,6 @@
 	"apihelp-cirrus-check-sanity-param-from": "Page id to start checking at",
 	"apihelp-cirrus-check-sanity-param-limit": "The number of page ids to check",
 	"apihelp-cirrus-check-sanity-param-sequenceid": "The number of times this set of page ids has been checked",
-	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Number of checks after which a page should be rerendered. Based off the provided sequenceid."
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Number of checks after which a page should be rerendered. Based off the provided sequenceid.",
+	"apiwarn-cirrus-ignore-revisions": "More than one revision was provided for a page. Only the most recent revision will be returned."
 }

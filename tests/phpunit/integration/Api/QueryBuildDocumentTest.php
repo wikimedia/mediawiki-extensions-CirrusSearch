@@ -130,6 +130,22 @@ class QueryBuildDocumentTest extends \ApiTestCase {
 		unset( $cirrusMetadata['size_limiter_stats'] );
 		unset( $cirrusMetadata['index_name'] );
 		$this->assertEquals( $expectedMetadata, $cirrusMetadata );
+
+		// Case 3: Request both revids
+		$data = $this->doApiRequest( [
+			"action" => "query",
+			"revids" => implode( '|', [
+				$firstRevision->getId(),
+				$secondRevision->getId()
+			] ),
+			"prop" => "cirrusbuilddoc",
+			"cbbuilders" => "content"
+		] );
+
+		$warnings = $data[0]['warnings']['cirrusbuilddoc'];
+		$this->assertCount( 1, $warnings );
+		$revId = $data[0]['query']['pages'][$pageId]['cirrusbuilddoc']['version'];
+		$this->assertEquals( $secondRevision->getId(), $revId );
 	}
 
 	/**

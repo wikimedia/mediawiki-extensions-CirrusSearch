@@ -41,6 +41,9 @@ class QueryBuildDocument extends \ApiQueryBase {
 		$result = $this->getResult();
 		$services = MediaWikiServices::getInstance();
 		$engine = $services->getSearchEngineFactory()->create();
+		if ( !( $engine instanceof CirrusSearch ) ) {
+			throw new \RuntimeException( 'Could not create cirrus engine' );
+		}
 
 		$builders = $this->getParameter( 'builders' );
 		$profile = $this->getParameter( 'limiterprofile' );
@@ -52,68 +55,64 @@ class QueryBuildDocument extends \ApiQueryBase {
 			$flags |= BuildDocument::SKIP_LINKS;
 		}
 
-		if ( $engine instanceof CirrusSearch ) {
-			$pages = [];
-			$wikiPageFactory = $services->getWikiPageFactory();
-			$revisionStore = $services->getRevisionStore();
-			$revisionBased = false;
-			if ( $this->getPageSet()->getRevisionIDs() ) {
-				$revisionBased = true;
-				foreach ( $this->getPageSet()->getRevisionIDs() as $revId => $pageId ) {
-					$pages[$revId] = $revisionStore->getRevisionById( $revId );
-				}
-			} else {
-				foreach ( $this->getPageSet()->getGoodPages() as $pageId => $title ) {
-					$pages[$pageId] = $wikiPageFactory->newFromTitle( $title );
-				}
-			}
-
-			$searchConfig = $engine->getConfig();
-			$builder = new BuildDocument(
-				$this->getCirrusConnection(),
-				$this->getDB(),
-				$services->getRevisionStore(),
-				$services->getBacklinkCacheFactory(),
-				new DocumentSizeLimiter( $searchConfig->getProfileService()
-					->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER, SearchProfileService::CONTEXT_DEFAULT, $profile ) ),
-				$services->getTitleFormatter(),
-				$services->getWikiPageFactory()
-			);
-			$baseMetadata = [];
-			$clusterGroup = $searchConfig->getClusterAssignment()->getCrossClusterName();
-			if ( $clusterGroup !== null ) {
-				$baseMetadata['cluster_group'] = $clusterGroup;
-			}
-			$docs = $builder->initialize( $pages, $flags );
-			foreach ( $docs as $pageId => $doc ) {
-				$revisionId = $doc->get( 'version' );
-				$revision = $revisionBased ? $pages[$revisionId] : null;
-				if ( $builder->finalize( $doc, false, $revision ) ) {
-					$result->addValue(
-						[ 'query', 'pages', $pageId ],
-						'cirrusbuilddoc', $doc->getData()
-					);
-					$hints = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
-					$metadata = [];
-					if ( $hints !== null ) {
-						$metadata = $baseMetadata + [ 'noop_hints' => $hints ];
-					}
-					$limiterStats = CirrusIndexField::getHint( $doc, DocumentSizeLimiter::HINT_DOC_SIZE_LIMITER_STATS );
-					if ( $limiterStats !== null ) {
-						$metadata += [ 'size_limiter_stats' => $limiterStats ];
-					}
-					$indexName = $this->getCirrusConnection()->getIndexName( $searchConfig->get( SearchConfig::INDEX_BASE_NAME ),
-						$this->getCirrusConnection()->getIndexSuffixForNamespace( $doc->get( 'namespace' ) ) );
-					$metadata += [
-						'index_name' => $indexName
-					];
-
-					$result->addValue( [ 'query', 'pages', $pageId ],
-						'cirrusbuilddoc_metadata', $metadata );
-				}
+		$pages = [];
+		$wikiPageFactory = $services->getWikiPageFactory();
+		$revisionStore = $services->getRevisionStore();
+		$revisionBased = false;
+		if ( $this->getPageSet()->getRevisionIDs() ) {
+			$revisionBased = true;
+			foreach ( $this->getPageSet()->getRevisionIDs() as $revId => $pageId ) {
+				$pages[$revId] = $revisionStore->getRevisionById( $revId );
 			}
 		} else {
-			throw new \RuntimeException( 'Could not create cirrus engine' );
+			foreach ( $this->getPageSet()->getGoodPages() as $pageId => $title ) {
+				$pages[$pageId] = $wikiPageFactory->newFromTitle( $title );
+			}
+		}
+
+		$searchConfig = $engine->getConfig();
+		$builder = new BuildDocument(
+			$this->getCirrusConnection(),
+			$this->getDB(),
+			$services->getRevisionStore(),
+			$services->getBacklinkCacheFactory(),
+			new DocumentSizeLimiter( $searchConfig->getProfileService()
+				->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER, SearchProfileService::CONTEXT_DEFAULT, $profile ) ),
+			$services->getTitleFormatter(),
+			$services->getWikiPageFactory()
+		);
+		$baseMetadata = [];
+		$clusterGroup = $searchConfig->getClusterAssignment()->getCrossClusterName();
+		if ( $clusterGroup !== null ) {
+			$baseMetadata['cluster_group'] = $clusterGroup;
+		}
+		$docs = $builder->initialize( $pages, $flags );
+		foreach ( $docs as $pageId => $doc ) {
+			$revisionId = $doc->get( 'version' );
+			$revision = $revisionBased ? $pages[$revisionId] : null;
+			if ( $builder->finalize( $doc, false, $revision ) ) {
+				$result->addValue(
+					[ 'query', 'pages', $pageId ],
+					'cirrusbuilddoc', $doc->getData()
+				);
+				$hints = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
+				$metadata = [];
+				if ( $hints !== null ) {
+					$metadata = $baseMetadata + [ 'noop_hints' => $hints ];
+				}
+				$limiterStats = CirrusIndexField::getHint( $doc, DocumentSizeLimiter::HINT_DOC_SIZE_LIMITER_STATS );
+				if ( $limiterStats !== null ) {
+					$metadata += [ 'size_limiter_stats' => $limiterStats ];
+				}
+				$indexName = $this->getCirrusConnection()->getIndexName( $searchConfig->get( SearchConfig::INDEX_BASE_NAME ),
+					$this->getCirrusConnection()->getIndexSuffixForNamespace( $doc->get( 'namespace' ) ) );
+				$metadata += [
+					'index_name' => $indexName
+				];
+
+				$result->addValue( [ 'query', 'pages', $pageId ],
+					'cirrusbuilddoc_metadata', $metadata );
+			}
 		}
 	}
 

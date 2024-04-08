@@ -62,7 +62,20 @@ class QueryBuildDocument extends \ApiQueryBase {
 		if ( $this->getPageSet()->getRevisionIDs() ) {
 			$revisionBased = true;
 			foreach ( $this->getRevisionIDs() as $pageId => $revId ) {
-				$pages[$pageId] = $revisionStore->getRevisionById( $revId );
+				$rev = $revisionStore->getRevisionById( $revId );
+				if ( $rev->audienceCan( $rev::DELETED_TEXT, $rev::FOR_PUBLIC ) ) {
+					$pages[$pageId] = $rev;
+				} else {
+					// While the user might have permissions, we want to limit
+					// what could possibly be indexed to that which is public.
+					// For an anon this would fail deeper in the system
+					// anyways, this early check mostly avoids blowing up deep
+					// in the bowels.
+					$result->addValue(
+						[ 'query', 'pages', $pageId ],
+						'texthidden', true
+					);
+				}
 			}
 		} else {
 			foreach ( $this->getPageSet()->getGoodPages() as $pageId => $title ) {

@@ -5,7 +5,8 @@
 			"Aviator",
 			"CyberTroopers",
 			"Jeluang Terluang",
-			"Tofeiku"
+			"Tofeiku",
+			"Hakimi97"
 		]
 	},
 	"cirrussearch-desc": "Enjin pencarian yang dikuasakan oleh Elasticsearch untuk MediaWiki",
@@ -23,6 +24,15 @@
 	"cirrussearch-query-too-long": "Permintaan carian lebih panjang daripada panjang maksimum yang dibenarkan. ($1> $2)",
 	"prefs-completion": "Penyempurnaan carian",
 	"cirrussearch-pref-completion-section-desc": "Saranan penyempurnaan",
+	"cirrussearch-pref-completion-profile-help": "Tetapkan tindak laku untuk cadangan autolengkap (cari-sambil-taip).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester] merupakan sebuah algoritma untuk cadangan carian dengan pembetulan taip dan perkaitan carian yang lebih baik. Carian awalan ialah algoritma cadangan cari-sambil-taip.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Lalai (disyorkan)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Membetulkan sehingga dua kesilapan. Mengalih keluar lencongan yang hampir sama dengan tajuk utama.",
+	"cirrussearch-completion-profile-strict-pref-name": "Mod ketat (lanjutan)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Tiada pembetulan kesilapan menaip. Tiada penyuaian aksen. Padanan yang ketat.",
+	"cirrussearch-completion-profile-normal-pref-name": "Mod lencongan (lanjutan)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Tiada pembetulan kesilapan menaip. Menyelesaikan lencongan yang rapat.",
+	"cirrussearch-completion-profile-classic-pref-name": "Carian awalan klasik",
+	"cirrussearch-completion-profile-classic-pref-desc": "Tiada pembetulan kesilapan menaip. Padan dengan permulaan tajuk.",
 	"cirrussearch-explore-similar-related": "Berkaitan",
 	"cirrussearch-explore-similar-categories": "Kategori",
 	"cirrussearch-explore-similar-languages": "Bahasa",

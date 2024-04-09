@@ -10,7 +10,8 @@
 			"Shirayuki",
 			"Siebrand",
 			"Srolanh",
-			"Umherirrender"
+			"Umherirrender",
+			"Hakimi97"
 		]
 	},
 	"cirrussearch-desc": "{{desc|name=Cirrus Search|url=https://www.mediawiki.org/wiki/Extension:CirrusSearch}}\n\"Elasticsearch\" is a full-text search engine. See http://www.elasticsearch.org/",
@@ -47,7 +48,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Incoming link count based query independent search profile (affects fulltext search ranking algorithm).",
 	"prefs-completion": "Section name for completion settings in the user preferences.",
 	"cirrussearch-pref-completion-section-desc": "Name of the subsection Completion Suggester in the user preferences.",
-	"cirrussearch-pref-completion-profile-help": "Help message for completion profile settings in the user preferences.",
+	"cirrussearch-pref-completion-profile-help": "Tetapkan tindak laku untuk cadangan autolengkap (cari-sambil-taip).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester] ialah algoritma untuk cadangan carian dengan pembetulan taip dan perkaitan carian yang lebih baik. Carian awalan ialah algoritma cadangan cari-sambil-taip.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Name of the completion profile fuzzy.",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Description of the completion profile fuzzy.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Name of the completion profile fuzzy-subphrases",

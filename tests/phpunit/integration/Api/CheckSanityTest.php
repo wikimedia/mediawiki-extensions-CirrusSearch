@@ -76,7 +76,7 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 					'target' => [
 						'pageId' => 42,
 						'namespaceId' => NS_TALK,
-						'indexName' => "${wikiId}_general",
+						'indexName' => "{$wikiId}_general",
 					],
 				],
 			],
@@ -104,8 +104,8 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 					$remediator->pageInWrongIndex( '1', $self->mockPage( NS_MAIN, 1 ), 'general' );
 				},
 				'extra' => [
-					'wrongIndexName' => "${wikiId}_general",
-					'indexName' => "${wikiId}_content",
+					'wrongIndexName' => "{$wikiId}_general",
+					'indexName' => "{$wikiId}_content",
 				],
 			],
 			[

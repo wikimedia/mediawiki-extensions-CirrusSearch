@@ -79,13 +79,14 @@ class CheckSanity extends ApiBase {
 			$searcher,
 			false, // logSane
 			false, // fastRedirectCheck
+			null, // pageCache
 			$this->makeIsOldClosure()
 		);
 	}
 
 	private function makeIsOldClosure() {
 		$sequenceId = $this->getParameter( 'sequenceid' );
-		if ( $sequenceId == null ) {
+		if ( $sequenceId === null ) {
 			return null;
 		}
 		return Checker::makeIsOldClosure(

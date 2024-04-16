@@ -14,13 +14,15 @@
 			"Takot",
 			"Tmv",
 			"Yusuke1109",
-			"しぃ"
+			"しぃ",
+			"Waki285"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki 用の Elasticsearch 検索",
 	"cirrussearch-backend-error": "一時的な問題により検索を実行できませんでした。後でやり直してください。",
 	"cirrussearch-parse-error": "クエリを理解できませんでした。より単純なものにしてください。検索システムの改善のため、クエリを記録しました。",
 	"cirrussearch-too-busy-error": "検索は現在ビジー状態です。あとでやり直してください。",
+	"cirrussearch-regex-empty-expression": "$1 には空でない正規表現が必要です。",
 	"cirrussearch-regex-syntax-error": "正規表現エラー ($2): $1",
 	"cirrussearch-regex-too-busy-error": "並行して正規表現検索を行う数が多すぎます。あとでやり直してください。",
 	"cirrussearch-regex-too-complex-error": "一般的表記では複雑すぎます。単純化についてさらに詳しく学ぶには[[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|ここ]].",

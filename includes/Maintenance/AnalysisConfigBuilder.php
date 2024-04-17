@@ -987,20 +987,10 @@ class AnalysisConfigBuilder {
 					build( $config );
 				break;
 			case 'english':
-				// Map hiragana (\u3041-\u3096) to katakana (\u30a1-\u30f6), currently only for
-				// English
-				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T176197
-				$hkmap = [];
-				for ( $i = 0x3041; $i <= 0x3096; $i++ ) {
-					$hkmap[] = sprintf( '\\u%04x=>\\u%04x', $i, $i + 0x60 );
-				}
-
 				// Replace English analyzer with a rebuilt copy with asciifolding inserted
 				// before stemming
 				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142037
 				$config = ( new AnalyzerBuilder( $langName ) )->
-					withLimitedCharMap( $hkmap, 'kana_map' )->
-					withCharFilters( [ 'kana_map' ] )->
 					withExtraStemmer( 'possessive_english' )->
 					withStemmerOverride( 'guidelines => guideline', 'custom_stem' )->
 					withFilters( [ 'possessive_english', 'lowercase', 'stop', 'asciifolding',

@@ -34,5 +34,6 @@
 	"apihelp-cirrus-check-sanity-param-from": "Le ID del pagina al qual comenciar le verification",
 	"apihelp-cirrus-check-sanity-param-limit": "Le numero de IDs de pagina a verificar",
 	"apihelp-cirrus-check-sanity-param-sequenceid": "Le numero de vices que iste gruppo de IDs de pagina ha essite verificate",
-	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Numero de verificationes post le qual un pagina debe esser regenerate. Basate sur le ID de sequentia fornite."
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Numero de verificationes post le qual un pagina debe esser regenerate. Basate sur le ID de sequentia fornite.",
+	"apiwarn-cirrus-ignore-revisions": "Plus de un version ha essite fornite pro un pagina. Solmente le version le plus recente essera restituite."
 }

@@ -36,5 +36,6 @@
 	"apihelp-cirrus-check-sanity-param-from": "Seiten-ID, bei der mit der Überprüfung begonnen werden soll",
 	"apihelp-cirrus-check-sanity-param-limit": "Die Anzahl der zu prüfenden Seiten-IDs",
 	"apihelp-cirrus-check-sanity-param-sequenceid": "Die Anzahl der durchgeführten Überprüfungen dieser Seiten-IDs",
-	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Anzahl der Prüfungen, nach denen eine Seite erneut gerendert werden soll. Basierend auf der bereitgestellten Sequenz-ID."
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Anzahl der Prüfungen, nach denen eine Seite erneut gerendert werden soll. Basierend auf der bereitgestellten Sequenz-ID.",
+	"apiwarn-cirrus-ignore-revisions": "Für eine Seite wurde mehr als eine Version angegeben. Es wird nur die aktuellste Version zurückgegeben."
 }

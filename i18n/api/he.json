@@ -35,5 +35,6 @@
 	"apihelp-cirrus-check-sanity-param-from": "מזהה דף שיש להתחיל לבדוק ממנו",
 	"apihelp-cirrus-check-sanity-param-limit": "כמה מזהי דפים לבדוק",
 	"apihelp-cirrus-check-sanity-param-sequenceid": "מספר הפעמים שערכת מזהי הדפים הזאת נבדקה",
-	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "מספר הבדיקות שאחריהן יש לתצג את הדף מחדש. מבוסס על ה־sequenceid שסופק."
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "מספר הבדיקות שאחריהן יש לתצג את הדף מחדש. מבוסס על ה־sequenceid שסופק.",
+	"apiwarn-cirrus-ignore-revisions": "יותר מגרסה אחת סופקה עבור דף. רק הגרסה העדכנית ביותר תוחזר."
 }

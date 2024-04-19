@@ -204,7 +204,7 @@
             ]
         },
         "globo_norm": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "`=>'",
                 "\u00b4=>'",
@@ -234,7 +234,12 @@
                 "\u055b=>",
                 "\u055c=>",
                 "\u055e=>",
-                "\u00b5=>\u03bc"
+                "\u00b5=>\u03bc",
+                "\\u05F0=>\\u05D5\\u05D5",
+                "\\u05F1=>\\u05D5\\u05D9",
+                "\\u05F2=>\\u05D9\\u05D9",
+                "\\uFB1F=>\\u05D9\\u05D9\\u05B7",
+                "\\u05D9\\u05B7\\u05D9=>\\u05D9\\u05D9\\u05B7"
             ]
         },
         "near_space_flattener": {

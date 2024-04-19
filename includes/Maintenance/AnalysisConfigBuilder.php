@@ -710,7 +710,7 @@ class AnalysisConfigBuilder {
 				// combine universally-applied mappings into one mapping to save on the
 				// overhead of calling multiple mappings
 				'globo_norm' => [
-					'type' => 'limited_mapping',
+					'type' => 'mapping',
 					'mappings' => [
 						// map lots of apostrophe-like characters to apostrophe (T315118);
 						// formerly apostrophe_norm
@@ -755,6 +755,12 @@ class AnalysisConfigBuilder {
 						// micro sign to mu, to prevent some unneeded ICU tokenizer splits
 						// icu_normalize does this, too.. just later
 						"µ=>μ",
+						// Yiddish Ligatures (T362501)
+						"\u05F0=>\u05D5\u05D5", // double vav
+						"\u05F1=>\u05D5\u05D9", // vav yod
+						"\u05F2=>\u05D9\u05D9", // double yod
+						"\uFB1F=>\u05D9\u05D9\u05B7", // single char yod-yod-patah decomposed
+						"\u05D9\u05B7\u05D9=>\u05D9\u05D9\u05B7", // rarer alternate order
 					],
 				],
 				// Converts things that don't always count as word breaks into spaces

@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Dirruw'o",
 			"Facenapalm",
 			"Kareyac",
 			"Katunchik",
@@ -21,5 +22,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "Используемый метод подсчета",
 	"apierror-compsuggestbuilddoc-bad-method": "Неизвестный метод подсчета",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Дамп документа, используемого подсказчиком завершения",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "Получить дамп документа, используемого подсказчиком завершения"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Получить дамп документа, используемого подсказчиком завершения",
+	"apiwarn-cirrus-ignore-revisions": "Для страницы было предоставлено более одной ревизии. Будет возвращена только самая последняя версия."
 }

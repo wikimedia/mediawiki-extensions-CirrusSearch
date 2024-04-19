@@ -28,5 +28,6 @@
 	"apihelp-cirrus-check-sanity-param-from": "ID de página para comenzar a verificar",
 	"apihelp-cirrus-check-sanity-param-limit": "El número de ID de página para verificar.",
 	"apihelp-cirrus-check-sanity-param-sequenceid": "El número de veces que se ha comprobado este conjunto de páginas",
-	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Número de comprobaciones después de las cuales se debe volver a representar una página. Basado en el ID de secuencia proporcionado."
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Número de comprobaciones después de las cuales se debe volver a representar una página. Basado en el ID de secuencia proporcionado.",
+	"apiwarn-cirrus-ignore-revisions": "Se proporcionó más de una revisión para una página. Sólo se devolverá la revisión más reciente."
 }

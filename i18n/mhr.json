@@ -2,12 +2,14 @@
 	"@metadata": {
 		"authors": [
 			"Lifeway",
-			"Валентина Семёнова"
+			"Валентина Семёнова",
+			"Mxalexandrov86"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch негызеш MediaWiki манмылан кычалаш",
 	"cirrussearch-backend-error": "Жап нелылыклан кӧра ме кычалмым мучашлен ышна шукто. Порылий, тӧчымашым варарак уэштаре.",
 	"cirrussearch-parse-error": "Йодмашым умылен кертме огыл. Порылий, тудым куштылгыракым ыште. Йодмаш кычалше системым саемдаш манын, возалтын.",
+	"cirrussearch-too-busy-error": "Кычалмаш кызыт утыж дене тич. Поро лий, варарак тӧчен ончо.",
 	"cirrussearch-regex-empty-expression": "$1 яра огыл регулярный выраженийым вуча.",
 	"cirrussearch-regex-too-busy-error": "Кызыт утыжден шуко регулярный выражений радамлалтеш. Порылий, тӧчымашым варарак уэштаре.",
 	"cirrussearch-regex-too-complex-error": "Регулярный выражений утыжден йӧсӧ. Кузе тудым куштылемдаш манын, [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|тыште]] пален нал.",

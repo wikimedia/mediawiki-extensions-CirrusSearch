@@ -34,5 +34,6 @@
 	"apihelp-cirrus-check-sanity-param-from": "Назнака на страницата за почеток на проверката",
 	"apihelp-cirrus-check-sanity-param-limit": "Број на назнаки на страници за проверка",
 	"apihelp-cirrus-check-sanity-param-sequenceid": "Колку пати е проверен овој збир од назнаки на страници",
-	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "После колку проверки да се испише страницата. Засновано на укажаната назнака на низата."
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "После колку проверки да се испише страницата. Засновано на укажаната назнака на низата.",
+	"apiwarn-cirrus-ignore-revisions": "За една страница е дадена повеќе од една преработка. Ќе се даде само најновата."
 }

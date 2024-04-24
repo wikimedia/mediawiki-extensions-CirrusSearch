@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Alien333",
 			"Gomoko",
 			"Orlodrim",
 			"Urhixidur",
@@ -31,5 +32,10 @@
 	"apierror-compsuggestbuilddoc-bad-method": "Méthode de notation inconnue",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Vidage du document utilisé par l’outil de suggestion de complétude",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "Obtenir un vidage du document utilisé par l’outil de suggestion de complétude",
-	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Fournir un nom de méthode d’évaluation à utiliser par l’outil de suggestion de complétude"
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Fournir un nom de méthode d’évaluation à utiliser par l’outil de suggestion de complétude",
+	"apihelp-cirrus-check-sanity-param-from": "Id de page où commencer la vérification",
+	"apihelp-cirrus-check-sanity-param-limit": "Le nombre d'ids de page à vérifier",
+	"apihelp-cirrus-check-sanity-param-sequenceid": "Le nombre de fois que cet ensemble d'ids de pages ont étés vérifiés",
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Nombre de vérifications après lequel une page doit être affichée. Basé sur le sequenceid fourni.",
+	"apiwarn-cirrus-ignore-revisions": "Plus d'une révision a été fournie pour une page. Seule la révision la plus récente sera renvoyée."
 }

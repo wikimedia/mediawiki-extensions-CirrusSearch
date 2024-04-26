@@ -34,7 +34,6 @@ use MediaWiki\User\Hook\UserGetDefaultOptionsHook;
 use MediaWiki\User\User;
 use RequestContext;
 use SearchResult;
-use Xml;
 
 /**
  * All CirrusSearch's external hooks.
@@ -363,7 +362,7 @@ class Hooks implements
 	 * @param OutputPage $out
 	 */
 	private static function addSearchFeedbackLink( $link, SpecialSearch $specialSearch, OutputPage $out ) {
-		$anchor = Xml::element(
+		$anchor = Html::element(
 			'a',
 			[ 'href' => $link ],
 			$specialSearch->msg( 'cirrussearch-give-feedback' )->text()

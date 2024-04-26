@@ -5,6 +5,7 @@ namespace CirrusSearch\Api;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
+use MediaWiki\Linker\LinkTarget;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
@@ -152,10 +153,10 @@ trait ApiTrait {
 
 	/**
 	 * @param array $source _source document from elasticsearch
-	 * @param Title $title Title to check for redirect
+	 * @param LinkTarget $title Title to check for redirect
 	 * @return bool True when $title is stored as a redirect in $source
 	 */
-	private function hasRedirect( array $source, Title $title ) {
+	private function hasRedirect( array $source, LinkTarget $title ) {
 		if ( !isset( $source['redirect'] ) ) {
 			return false;
 		}

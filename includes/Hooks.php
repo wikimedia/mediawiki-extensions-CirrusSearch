@@ -280,11 +280,11 @@ class Hooks implements
 			return true;
 		}
 		// percentage 0 < x <= 100
-		if ( substr( $v, -1 ) !== '%' ) {
+		if ( !str_ends_with( $v, '%' ) ) {
 			return false;
 		}
 		$v = substr( $v, 0, -1 );
-		if ( substr( $v, 0, 1 ) === '-' ) {
+		if ( str_starts_with( $v, '-' ) ) {
 			$v = substr( $v, 1 );
 		}
 		return ctype_digit( $v ) && $v > 0 && $v <= 100;

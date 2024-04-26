@@ -60,6 +60,6 @@ class IndexAllAliasValidator extends IndexAliasValidator {
 	protected function shouldRemoveFromAlias( $name ) {
 		// Only if the name starts with the type being processed otherwise we'd
 		// remove the content index from the all alias.
-		return strpos( $name, "$this->shouldRemovePrefix" ) === 0;
+		return str_starts_with( $name, $this->shouldRemovePrefix );
 	}
 }

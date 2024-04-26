@@ -128,7 +128,7 @@ class InCategoryFeature extends SimpleKeywordFeature implements FilterQueryFeatu
 		$names = [];
 
 		foreach ( $categories as $category ) {
-			if ( substr( $category, 0, 3 ) === 'id:' ) {
+			if ( str_starts_with( $category, 'id:' ) ) {
 				$pageId = substr( $category, 3 );
 				if ( ctype_digit( $pageId ) ) {
 					$pageIds[] = $pageId;

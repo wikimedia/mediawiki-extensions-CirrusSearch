@@ -236,7 +236,7 @@ class QueryFixer implements Visitor {
 	 * @param WildcardNode $node
 	 */
 	public function visitWildcardNode( WildcardNode $node ) {
-		if ( strpos( $node->getWildcardQuery(), '?' ) !== -1 ) {
+		if ( str_contains( $node->getWildcardQuery(), '?' ) ) {
 			$this->hasQMarkInWildcard = true;
 		}
 		$this->isComplex = true;

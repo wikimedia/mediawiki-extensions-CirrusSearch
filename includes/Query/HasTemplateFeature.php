@@ -69,7 +69,7 @@ class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeat
 		}
 		$templates = [];
 		foreach ( $values as $template ) {
-			if ( strpos( $template, ':' ) === 0 ) {
+			if ( str_starts_with( $template, ':' ) ) {
 				$template = substr( $template, 1 );
 			} else {
 				$title = Title::newFromText( $template );

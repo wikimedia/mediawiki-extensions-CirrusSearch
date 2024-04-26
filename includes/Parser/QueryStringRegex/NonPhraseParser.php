@@ -100,7 +100,7 @@ class NonPhraseParser {
 		$wholeStart = $start;
 		$wordStart = $start;
 		$negationType = '';
-		if ( $ret == 1 ) {
+		if ( $ret ) {
 			$wordStart = $start + strlen( $match[0][0] );
 			$negationType = $match[0][0];
 			$start = $match[0][1];
@@ -110,7 +110,7 @@ class NonPhraseParser {
 		while ( $start < $end ) {
 			$ret = preg_match( self::NON_QUOTE, $query, $match, PREG_OFFSET_CAPTURE, $start );
 			Assert::postcondition( $ret !== false, 'Regex failed: ' . preg_last_error() );
-			if ( $ret === 0 ) {
+			if ( !$ret ) {
 				$wholeEnd = $end;
 				break;
 			}
@@ -130,7 +130,7 @@ class NonPhraseParser {
 		$word = substr( $query, $wordStart, $wordLen );
 		$node = null;
 		$match = [];
-		if ( strpos( $word, '~' ) !== -1 && preg_match( self::FUZZY_WORD, $word, $match ) === 1 ) {
+		if ( str_contains( $word, '~' ) && preg_match( self::FUZZY_WORD, $word, $match ) ) {
 			$word = $match['word'];
 			if ( isset( $match['fuzzyness'] ) && strlen( $match['fuzzyness'] ) > 0 ) {
 				$fuzzyness = intval( $match['fuzzyness'] );
@@ -139,10 +139,10 @@ class NonPhraseParser {
 			}
 			// No need to unescape here, we don't match any punctuation except_
 			$node = new FuzzyNode( $wordStart, $wholeEnd, $word, $fuzzyness );
-		} elseif ( strpos( $word, '*' ) !== -1 || strpos( $word, '?' ) != -1 ) {
-			if ( preg_match( self::PREFIX_QUERY, $word, $match ) === 1 ) {
+		} elseif ( str_contains( $word, '*' ) || str_contains( $word, '?' ) ) {
+			if ( preg_match( self::PREFIX_QUERY, $word, $match ) ) {
 				$node = new PrefixNode( $wordStart, $wholeEnd, $match['prefix'] );
-			} elseif ( preg_match( $this->wildcardRegex, $word ) === 1 ) {
+			} elseif ( preg_match( $this->wildcardRegex, $word ) ) {
 				$node = new WildcardNode( $wordStart, $wholeEnd, $word );
 			}
 		}

@@ -180,22 +180,6 @@ class Util {
 	}
 
 	/**
-	 * Test if $string ends with $suffix
-	 *
-	 * @param string $string string to test
-	 * @param string $suffix
-	 * @return bool true if $string ends with $suffix
-	 */
-	public static function endsWith( $string, $suffix ) {
-		$strlen = strlen( $string );
-		$suffixlen = strlen( $suffix );
-		if ( $suffixlen > $strlen ) {
-			return false;
-		}
-		return substr_compare( $string, $suffix, $strlen - $suffixlen, $suffixlen ) === 0;
-	}
-
-	/**
 	 * Set $dest to the true/false from $request->getVal( $name ) if yes/no.
 	 *
 	 * @param mixed &$dest

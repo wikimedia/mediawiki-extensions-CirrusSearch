@@ -14,7 +14,7 @@ use Elastica\Exception\RuntimeException;
 use Elastica\JSON;
 use Elastica\Response;
 use IDBAccessObject;
-use Liuggio\StatsdClient\Factory\StatsdDataFactory;
+use Liuggio\StatsdClient\Factory\StatsdDataFactoryInterface;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Status\Status;
@@ -56,7 +56,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	private $searchConfig;
 
-	private $stats;
+	private StatsdDataFactoryInterface $stats;
 	/**
 	 * @var DocumentSizeLimiter
 	 */
@@ -65,13 +65,13 @@ class DataSender extends ElasticsearchIntermediary {
 	/**
 	 * @param Connection $conn
 	 * @param SearchConfig $config
-	 * @param StatsdDataFactory|null $stats
+	 * @param StatsdDataFactoryInterface|null $stats
 	 * @param DocumentSizeLimiter|null $docSizeLimiter
 	 */
 	public function __construct(
 		Connection $conn,
 		SearchConfig $config,
-		StatsdDataFactory $stats = null,
+		StatsdDataFactoryInterface $stats = null,
 		DocumentSizeLimiter $docSizeLimiter = null
 	) {
 		parent::__construct( $conn, null, 0 );

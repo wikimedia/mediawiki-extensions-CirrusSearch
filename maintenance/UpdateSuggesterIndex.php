@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\Connection;
+use CirrusSearch\Elastica\SearchAfter;
 use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\Maintenance\Validators\AnalyzersValidator;
 use CirrusSearch\SearchConfig;
@@ -410,19 +411,21 @@ class UpdateSuggesterIndex extends Maintenance {
 		$query->setQuery( $bool );
 		$query->setSize( $this->indexChunkSize );
 		$query->setSource( false );
-		$query->setSort( [ '_doc' ] );
+		$query->setSort( [
+			[ '_id' => 'asc' ],
+		] );
 		// Explicitly ask for accurate total_hits even-though we use a scroll request
 		$query->setTrackTotalHits( true );
 		$search = new \Elastica\Search( $this->getClient() );
 		$search->setQuery( $query );
 		$search->addIndex( $this->getIndex() );
-		$scroll = new \Elastica\Scroll( $search, '15m' );
+		$searchAfter = new SearchAfter( $search );
 
 		$totalDocsToDump = -1;
 		$docsDumped = 0;
 
 		$this->log( "Deleting remaining docs from previous batch\n" );
-		foreach ( $scroll as $results ) {
+		foreach ( $searchAfter as $results ) {
 			if ( $totalDocsToDump === -1 ) {
 				$totalDocsToDump = $results->getTotalHits();
 				if ( $totalDocsToDump === 0 ) {
@@ -518,7 +521,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		$bool->addFilter( $pageAndNs );
 
 		$query->setQuery( $bool );
-		$query->setSort( [ '_doc' ] );
+		$query->setSort( [
+			[ '_id' => 'asc' ],
+		] );
 		// Explicitly ask for accurate total_hits even-though we use a scroll request
 		$query->setTrackTotalHits( true );
 
@@ -529,12 +534,12 @@ class UpdateSuggesterIndex extends Maintenance {
 			$search->addIndex( $sourceIndex );
 			$query->setSize( $this->indexChunkSize );
 			$totalDocsToDump = -1;
-			$scroll = new \Elastica\Scroll( $search, '15m' );
+			$searchAfter = new SearchAfter( $search );
 
 			$docsDumped = 0;
 			$destinationIndex = $this->getIndex();
 
-			foreach ( $scroll as $results ) {
+			foreach ( $searchAfter as $results ) {
 				if ( $totalDocsToDump === -1 ) {
 					$totalDocsToDump = $results->getTotalHits();
 					if ( $totalDocsToDump === 0 ) {

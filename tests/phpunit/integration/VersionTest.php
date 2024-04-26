@@ -17,7 +17,7 @@ class VersionTest extends CirrusIntegrationTestCase {
 		$conn = $this->mockConnection( $response );
 		$version = new Version( $conn );
 		$status = $version->get();
-		$this->assertTrue( $status->isGood() );
+		$this->assertStatusGood( $status );
 		$this->assertEquals( '3.2.1', $status->getValue() );
 	}
 

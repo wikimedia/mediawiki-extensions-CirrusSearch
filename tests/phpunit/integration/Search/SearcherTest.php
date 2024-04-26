@@ -285,8 +285,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		$engine = new CirrusSearch();
 		// query is invalid, filesize:> needs an integer
 		$status = $engine->searchText( 'filesize:>q' );
-		$this->assertTrue( $status->isOK(), 'search didnt fail' );
-		$this->assertFalse( $status->isGood(), 'but it has warnings' );
+		$this->assertStatusWarning( 'cirrussearch-file-numeric-feature-not-a-number', $status );
 		$this->assertTrue( $status->getValue()->searchContainedSyntax(), 'it used special syntax' );
 		$this->assertSame( 0, $status->getValue()->numRows(), 'and returned no results' );
 	}

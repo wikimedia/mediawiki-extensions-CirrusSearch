@@ -130,7 +130,7 @@ class ResultTest extends CirrusIntegrationTestCase {
 			$this->assertTrue( $result->getTitle()->isExternal(), "isExternal namespace mismatch $msgSuffix" );
 			$this->assertEquals( "es:Help:Main Page", $result->getTitle()->getPrefixedText(),
 			"prefix text must match $msgSuffix" );
-			$this->assertTrue( $result->getRedirectTitle() === null,
+			$this->assertNull( $result->getRedirectTitle(),
 				"redirect is not built with ns mismatch $msgSuffix" );
 			$this->assertTrue( $result->getSectionTitle()->isExternal(), "section title isExternal $msgSuffix" );
 		}

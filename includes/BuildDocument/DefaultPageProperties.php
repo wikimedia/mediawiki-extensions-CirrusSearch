@@ -70,13 +70,13 @@ class DefaultPageProperties implements PagePropertyBuilder {
 	 * @return string|bool Formatted timestamp or false on failure
 	 */
 	private function loadCreateTimestamp( int $pageId, int $style ) {
-		$row = $this->db->selectRow(
-			'revision',
-			'rev_timestamp',
-			[ 'rev_page' => $pageId ],
-			__METHOD__,
-			[ 'ORDER BY' => 'rev_timestamp ASC' ]
-		);
+		$row = $this->db->newSelectQueryBuilder()
+			->select( 'rev_timestamp' )
+			->from( 'revision' )
+			->where( [ 'rev_page' => $pageId ] )
+			->orderBy( 'rev_timestamp' )
+			->caller( __METHOD__ )
+			->fetchRow();
 		if ( !$row ) {
 			return false;
 		}

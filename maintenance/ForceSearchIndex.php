@@ -638,14 +638,22 @@ class ForceSearchIndex extends Maintenance {
 	private function buildChunks( $buildChunks ) {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		if ( $this->toId === null ) {
-			$this->toId = $dbr->selectField( 'page', 'MAX(page_id)', [], __METHOD__ );
+			$this->toId = $dbr->newSelectQueryBuilder()
+				->select( 'MAX(page_id)' )
+				->from( 'page' )
+				->caller( __METHOD__ )
+				->fetchField();
 			if ( $this->toId === false ) {
 				$this->fatalError( "Couldn't find any pages to index." );
 			}
 		}
 		$fromId = $this->getOption( 'fromId' );
 		if ( $fromId === null ) {
-			$fromId = $dbr->selectField( 'page', 'MIN(page_id) - 1', [], __METHOD__ );
+			$fromId = $dbr->newSelectQueryBuilder()
+				->select( 'MIN(page_id) - 1' )
+				->from( 'page' )
+				->caller( __METHOD__ )
+				->fetchField();
 			if ( $fromId === false ) {
 				$this->fatalError( "Couldn't find any pages to index." );
 			}

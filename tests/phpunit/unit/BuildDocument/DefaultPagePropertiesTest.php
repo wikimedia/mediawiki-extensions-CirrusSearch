@@ -5,7 +5,8 @@ namespace CirrusSearch\BuildDocument;
 use Elastica\Document;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
-use Wikimedia\Rdbms\IDatabase;
+use Wikimedia\Rdbms\IReadableDatabase;
+use Wikimedia\Rdbms\SelectQueryBuilder;
 use WikiPage;
 
 /**
@@ -41,7 +42,13 @@ class DefaultPagePropertiesTest extends \MediaWikiUnitTestCase {
 	}
 
 	private function buildDoc( WikiPage $page, RevisionRecord $revision ): Document {
-		$props = new DefaultPageProperties( $this->createMock( IDatabase::class ) );
+		$queryBuilder = $this->createMock( SelectQueryBuilder::class );
+		$queryBuilder->method( $this->logicalOr( 'select', 'from', 'where', 'orderBy', 'caller' ) )->willReturnSelf();
+		$queryBuilder->method( 'fetchRow' )->willReturn( false );
+		$database = $this->createMock( IReadableDatabase::class );
+		$database->method( 'newSelectQueryBuilder' )
+			->willReturn( $queryBuilder );
+		$props = new DefaultPageProperties( $database );
 		$doc = new Document( '', [] );
 		$props->initialize( $doc, $page, $revision );
 		$props->finishInitializeBatch();

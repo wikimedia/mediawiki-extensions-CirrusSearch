@@ -1,11 +1,7 @@
 <?php
 
-/**
- * Egyptian Arabic (arz) and Moroccan Arabic (ary) stop word data for Elasticsearch
- * analysis config.
- */
-
-$arzAryArabicStopwords = [
+$arabicExtraStopwords = [
+	// More stop words based on Egyptian Arabic (arz) and Moroccan Arabic (ary)
 	'ألي', 'إِلَى', 'إلّا', 'إِلَّا', 'أمّا', 'إمّا', 'آلان', 'آن', 'آنه', 'أنّ',
 	'أَنَّ', 'أَنْ', 'إِنَّ', 'إِنَّهُ', 'الأن', 'أنتِ', 'أَوْ', 'آى', 'آي', 'أيْ',
 	'أَيْ', 'إى', 'إي', 'إيْ', 'أيضاً', 'أيضًا', 'بـ', 'بإن', 'بداه', 'بداها', 'وبدا',
@@ -19,6 +15,8 @@ $arzAryArabicStopwords = [
 	'منًها', 'منّها', 'هاد', 'هوّ', 'هُوَ', 'هوّا', 'هيّ', 'هِي', 'ؤ', 'وفى', 'وُكِّلَ',
 	'للولا', 'ولأّ', 'ولّأ', 'ولاً', 'ولاَ', 'ولاُ', 'ولاّ', 'ولّا', 'وْلا', 'وولا',
 	'وولاً', 'وْمن', 'وهِي', 'وَهُوَ',
-	];
+	// More stopwords based on arabic_extended_norm
+	'فى', 'فیها', 'وفى', 'حتى', 'على', 'لدى',
+];
 
-return $arzAryArabicStopwords;
+return $arabicExtraStopwords;

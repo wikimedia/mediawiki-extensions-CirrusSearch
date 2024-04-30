@@ -763,6 +763,26 @@ class AnalysisConfigBuilder {
 						"\u05D9\u05B7\u05D9=>\u05D9\u05D9\u05B7", // rarer alternate order
 					],
 				],
+				'arabic_extended_norm' => [
+					'type' => 'limited_mapping',
+					'mappings' => [
+						'\uFB8E=>\u0643', '\uFB8F=>\u0643', '\uFB90=>\u0643', // kaf
+						'\uFB91=>\u0643', '\u06A9=>\u0643', '\u06AA=>\u0643',
+						'\uFEDB=>\u0643', '\uFEDC=>\u0643', '\uFED9=>\u0643',
+						'\uFEDA=>\u0643',
+
+						'\uFBFC=>\u064A', '\uFBFD=>\u064A', '\uFBFE=>\u064A', // yeh
+						'\uFBFF=>\u064A', '\u06CC=>\u064A', '\uFBE8=>\u064A',
+						'\uFBE9=>\u064A', '\uFEEF=>\u064A', '\uFEF0=>\u064A',
+						'\u0649=>\u064A', '\u06CD=>\u064A', '\uFBE4=>\u064A',
+						'\uFBE5=>\u064A', '\uFBE6=>\u064A', '\uFBE7=>\u064A',
+						'\u06D0=>\u064A',
+
+						'\uFBA6=>\u0647', '\uFBA7=>\u0647', '\uFBA8=>\u0647', // heh
+						'\uFBA9=>\u0647', '\u06C1=>\u0647', '\u06C0=>\u0647',
+						'\uFBA4=>\u0647', '\uFBA5=>\u0647', '\u06D5=>\u0647',
+					],
+				],
 				// Converts things that don't always count as word breaks into spaces
 				// which (almost) always count as word breaks (e.g., the Nori and SmartCN
 				// tokenizers do not always count spaces as word breaks!)
@@ -883,11 +903,9 @@ class AnalysisConfigBuilder {
 					withDecimalDigit()->
 					insertFiltersBefore( 'arabic_stemmer', [ 'arabic_normalization' ] );
 
-				// load extra stopwords for Arabic varieties
-				if ( $langName == 'arabic-egyptian' || $langName == 'arabic-moroccan' ) {
-					$arStopwords = require __DIR__ . '/AnalysisLanguageData/arabicStopwords.php';
-					$arBuilder->withExtraStop( $arStopwords, 'arz_ary_stop', 'arabic_stop' );
-				}
+				// load extra stopwords for Arabic
+				$arabicExtraStopwords = require __DIR__ . '/AnalysisLanguageData/arabicStopwords.php';
+				$arBuilder->withExtraStop( $arabicExtraStopwords, 'arabic_extra_stop', 'arabic_stop' );
 
 				$config = $arBuilder->build( $config );
 				break;
@@ -1880,6 +1898,12 @@ class AnalysisConfigBuilder {
 				// - if icu_folding is present, we don't need dotted_I_fix, because
 				// icu_folding also fixes it.
 				setDisallowedTokenFilters( [ 'lowercase', 'icu_folding' ] ),
+
+			'arabic_extended_norm' => ( new GlobalCustomFilter( 'char_filter' ) )->
+				// Mappings that are best for Arabic and Persian; default for any other
+				// language except Sorani (ckb), which prefers Persian characters and
+				// has it's own mapping (TT72899)
+				setLanguageDenyList( [ 'ckb' ] ),
 
 			//////////////////////////
 			// token filters

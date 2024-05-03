@@ -67,8 +67,6 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 
 		// Don't use TestUser it may have been polluted with default config from other tests.
 		$user = $this->createMock( User::class );
-		$user->method( 'getOption' )
-			->willReturn( null );
 
 		if ( $overrideType === 'uri' ) {
 			$request = new FauxRequest( [ $overrideKey => $profileName ] );

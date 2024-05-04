@@ -10,6 +10,7 @@ use Elastica\Document;
 use Elastica\Response;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\ILoadBalancer;
+use Wikimedia\Rdbms\SelectQueryBuilder;
 
 /**
  * Test Updater methods
@@ -37,8 +38,15 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
+		// Query done in WikiPage::loadPageData
+		$queryBuilder = $this->createMock( SelectQueryBuilder::class );
+		$queryBuilder->method( $this->logicalOr( 'select', 'from', 'where', 'queryInfo', 'options', 'caller' ) )
+			->willReturnSelf();
+		$queryBuilder->method( 'fetchRow' )->willReturn( false );
+		$db = $this->createMock( IDatabase::class );
+		$db->method( 'newSelectQueryBuilder' )->willReturn( $queryBuilder );
 		$lb = $this->createMock( ILoadBalancer::class );
-		$lb->method( 'getConnection' )->willReturn( $this->createMock( IDatabase::class ) );
+		$lb->method( 'getConnection' )->willReturn( $db );
 		$this->setService( 'DBLoadBalancer', $lb );
 	}
 

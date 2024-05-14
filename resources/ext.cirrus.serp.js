@@ -1,8 +1,5 @@
 $( function () {
 	const router = require( 'mediawiki.router' );
-	if ( !router.isSupported() ) {
-		return;
-	}
 
 	// Always clean up the address bar, even (and especially) if the feature is disabled.
 	try {

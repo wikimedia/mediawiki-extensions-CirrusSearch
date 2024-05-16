@@ -58,5 +58,9 @@
 	"cirrussearch-feature-deepcat-timeout": "Категорийыште келге кычалмаш таймер почеш чарыме. Категогорийыште пеш шуко категорий ужаш лийын кертеш",
 	"cirrussearch-feature-deepcat-toomany": "Категорий-влак келге йодмаш утыжден шуко категорийым пӧртылта",
 	"cirrussearch-feature-deepcat-invalid-title": "Ончыктымо категорий чын огыл.",
-	"cirrussearch-incategory-feature-no-valid-categories": "'$1' значенийлан улдымо категорий-влак палемдыме."
+	"cirrussearch-feature-pageid-invalid-id": "Йоҥылыш велыж {{PLURAL:$2|ID|IDs}}: $1",
+	"cirrussearch-incategory-feature-no-valid-categories": "'$1' значенийлан улдымо категорий-влак палемдыме.",
+	"cirrussearch-mlt-feature-no-valid-titles": " '$1'ик келшыше лӱмат ончыктымо огыл.",
+	"cirrussearch-explore-similar-related-none": "Теме ден кучылташ лийше велыж-влак уке улыт",
+	"cirrussearch-article-words": "Мут-влак контентын чыла лаштыклаштыже."
 }

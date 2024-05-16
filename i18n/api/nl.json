@@ -31,5 +31,12 @@
 	"apierror-compsuggestbuilddoc-bad-method": "Onbekende scoremethode",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Dump van het document dat wordt gebruikt door de voltooiingssuggesties-generator",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "Een dump verkrijgen van het document dat wordt gebruikt door de voltooiingssuggestie-generator",
-	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Geef een naam voor de scoremethode op die moet worden gebruikt voor de voltooiingssuggesties"
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Geef een naam voor de scoremethode op die moet worden gebruikt voor de voltooiingssuggesties",
+	"apihelp-cirrus-check-sanity-summary": "Rapporteert over de juistheid van een reeks pagina-ID’s in de zoekindex",
+	"apihelp-cirrus-check-sanity-example": "Een rapportage verkrijgen over de juistheid van een reeks pagina-ID’s in de zoekindex",
+	"apihelp-cirrus-check-sanity-param-cluster": "De zoekcluster om indices in te controleren",
+	"apihelp-cirrus-check-sanity-param-from": "Pagina-ID om te beginnen met het controleren",
+	"apihelp-cirrus-check-sanity-param-limit": "Het aantal pagina-ID’s dat moet worden gecontroleerd",
+	"apihelp-cirrus-check-sanity-param-sequenceid": "Het aantal keren dat deze groep pagina-ID’s is gecontroleerd",
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Aantal controles waarna een pagina opnieuw moet worden weergegeven. Gebaseerd op de opgegeven sequenceid."
 }

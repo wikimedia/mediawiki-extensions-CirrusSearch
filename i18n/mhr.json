@@ -49,9 +49,21 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Префикс дене тыглай кычалмаш",
 	"cirrussearch-completion-profile-classic-pref-desc": "Опечатке тӧрлымӧ деч посна. Лӱм-влак тӱҥалтыш дене келшен толеш.",
 	"cirrussearch-timed-out": "Кычалмаш шуйна, садлан ужаш лектыш веле уло.",
+	"cirrussearch-regex-timed-out": "Радаман ой дене кычалмаш кӱрылтын, садлан лектыш ужаш веле уло. Тичмаш лектышым налаш манын, радаман ойетым куштылемдаш тырше.",
+	"cirrussearch-file-numeric-feature-not-a-number": "'$1' кычалмаш йодышлан чотан значений кӱлеш, '$2' ончыктымо лийын.",
+	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "'$1'Кычалмаш йодышлан чот значений-влак кӱлыт, но ончыктымо '$2'.",
 	"cirrussearch-feature-not-available": "'$1' кычалмашлан тиде викиште тӱҥ мутым пуртымо огыл.",
 	"cirrussearch-feature-too-many-conditions": "'$1' деке утыжден шуко келыштарымаш, $2 марте пӱчмаш.",
 	"cirrussearch-feature-deepcat-exception": " SPARQL дене категорий келге кычалмаш лектын огыл",
 	"cirrussearch-feature-deepcat-timeout": "Категорийыште келге кычалмаш таймер почеш чарыме. Категогорийыште пеш шуко категорий ужаш лийын кертеш",
-	"cirrussearch-feature-deepcat-invalid-title": "Ончыктымо категорий чын огыл."
+	"cirrussearch-feature-deepcat-toomany": "Категорий-влак келге йодмаш утыжден шуко категорийым пӧртылта",
+	"cirrussearch-feature-deepcat-invalid-title": "Ончыктымо категорий чын огыл.",
+	"cirrussearch-feature-pageid-invalid-id": "Йоҥылыш велыж {{PLURAL:$2|ID|IDs}}: $1",
+	"cirrussearch-incategory-feature-no-valid-categories": "'$1' значенийлан улдымо категорий-влак палемдыме.",
+	"cirrussearch-mlt-feature-no-valid-titles": " '$1'ик келшыше лӱмат ончыктымо огыл.",
+	"cirrussearch-explore-similar-related-none": "Теме ден кучылташ лийше велыж-влак уке улыт",
+	"cirrussearch-article-words": "Мут-влак контентын чыла лаштыклаштыже.",
+	"cirrussearch-keyword-prefix-ns-mismatch": "<code>prefix:</code> кычалмаш йодмашыште мумо лӱм кумдык йодмо лӱм кумдык-влак дене келшен ок тол.Тый тидым шке йодмашыштет <code>all:</code> префиксым пуртен тӧрлатен кертат.",
+	"cirrussearch-autoselect-profile": "Тек кычалмаш системе могай профильым кучылташ шкеже палемда.",
+	"cirrussearch-offset-too-large": "Лектышым налаш лийын огыл. $1 марте кычалмаш лектыш пашам ышта, но $2 гыч тӱҥалше лектышым йодмо."
 }

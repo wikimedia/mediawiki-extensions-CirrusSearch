@@ -51,6 +51,7 @@ class DeletePages extends CirrusTitleJob {
 		$indexSuffix = $this->params['indexSuffix'] ?? $this->params['indexType'] ?? null;
 		$updater->deletePages( [ $this->title ], [ $this->params['docId'] ], $indexSuffix );
 
+		// TODO: drop once inflight jobs are consumed
 		if ( $this->getSearchConfig()->get( 'CirrusSearchIndexDeletes' ) ) {
 			$updater->archivePages( [
 				[

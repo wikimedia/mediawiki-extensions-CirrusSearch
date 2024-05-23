@@ -17,7 +17,6 @@ use MediaWiki\Hook\UploadCompleteHook;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Page\Hook\PageDeleteCompleteHook;
 use MediaWiki\Page\Hook\PageDeleteHook;
-use MediaWiki\Page\Hook\PageUndeleteCompleteHook;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Permissions\Authority;
@@ -40,8 +39,7 @@ class ChangeListener extends PageChangeTracker implements
 	UploadCompleteHook,
 	ArticleRevisionVisibilitySetHook,
 	PageDeleteHook,
-	PageDeleteCompleteHook,
-	PageUndeleteCompleteHook
+	PageDeleteCompleteHook
 {
 	/** @var JobQueueGroup */
 	private $jobQueue;
@@ -88,6 +86,18 @@ class ChangeListener extends PageChangeTracker implements
 	}
 
 	/**
+	 * Check whether at least one cluster is writeable or not.
+	 * If not there are no reasons to schedule a job.
+	 *
+	 * @return bool true if at least one cluster is writeable
+	 */
+	private function isEnabled(): bool {
+		return $this->searchConfig
+			->getClusterAssignment()
+			->getWritableClusters( UpdateGroup::PAGE ) != [];
+	}
+
+	/**
 	 * Called when a revision is deleted. In theory, we shouldn't need to to this since
 	 * you can't delete the current text of a page (so we should've already updated when
 	 * the page was updated last). But we're paranoid, because deleted revisions absolutely
@@ -101,6 +111,9 @@ class ChangeListener extends PageChangeTracker implements
 	 *   [id => ['oldBits' => $oldBits, 'newBits' => $newBits], ... ]
 	 */
 	public function onArticleRevisionVisibilitySet( $title, $ids, $visibilityChangeMap ) {
+		if ( !$this->isEnabled() ) {
+			return;
+		}
 		$this->jobQueue->lazyPush( LinksUpdate::newPastRevisionVisibilityChange( $title ) );
 	}
 
@@ -111,6 +124,9 @@ class ChangeListener extends PageChangeTracker implements
 	 * @param mixed $ticket Prior result of LBFactory::getEmptyTransactionTicket()
 	 */
 	public function onLinksUpdateComplete( $linksUpdate, $ticket ) {
+		if ( !$this->isEnabled() ) {
+			return;
+		}
 		// defer processing the LinksUpdateComplete hook until other hooks tagged in PageChangeTracker
 		// have a chance to run. Reason is that we want to detect what are the links updates triggered
 		// by a "page change". The definition of a "page change" we use is the one used by EventBus
@@ -168,6 +184,9 @@ class ChangeListener extends PageChangeTracker implements
 	 * @param \UploadBase $uploadBase
 	 */
 	public function onUploadComplete( $uploadBase ) {
+		if ( !$this->isEnabled() ) {
+			return;
+		}
 		if ( $uploadBase->getTitle()->exists() ) {
 			$this->jobQueue->lazyPush( LinksUpdate::newPageChangeUpdate( $uploadBase->getTitle(), null, [] ) );
 		}
@@ -193,6 +212,9 @@ class ChangeListener extends PageChangeTracker implements
 		\StatusValue $status,
 		bool $suppress
 	) {
+		if ( !$this->isEnabled() ) {
+			return;
+		}
 		parent::onPageDelete( $page, $deleter, $reason, $status, $suppress );
 		// We use this to pick up redirects so we can update their targets.
 		// Can't re-use PageDeleteComplete because the page info's
@@ -223,6 +245,9 @@ class ChangeListener extends PageChangeTracker implements
 		string $reason, int $pageID, RevisionRecord $deletedRev, ManualLogEntry $logEntry,
 		int $archivedRevisionCount
 	) {
+		if ( !$this->isEnabled() ) {
+			return;
+		}
 		parent::onPageDeleteComplete( $page, $deleter, $reason, $pageID, $deletedRev, $logEntry, 1 );
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
 		// load it from the title because the page row has already been deleted.
@@ -249,6 +274,9 @@ class ChangeListener extends PageChangeTracker implements
 	 * @return bool|void True or no return value to continue or false to abort
 	 */
 	public function onTitleMove( Title $old, Title $nt, User $user, $reason, Status &$status ) {
+		if ( !$this->isEnabled() ) {
+			return;
+		}
 		$this->movingTitles[] = $old->getPrefixedDBkey();
 	}
 
@@ -268,6 +296,9 @@ class ChangeListener extends PageChangeTracker implements
 		$old, $new, $user, $pageid, $redirid,
 		$reason, $revision
 	) {
+		if ( !$this->isEnabled() ) {
+			return;
+		}
 		parent::onPageMoveComplete( $old, $new, $user, $pageid, $redirid, $reason, $revision );
 		// When a page is moved the update and delete hooks are good enough to catch
 		// almost everything.  The only thing they miss is if a page moves from one
@@ -349,41 +380,5 @@ class ChangeListener extends PageChangeTracker implements
 			$this->connection = new Connection( $this->searchConfig );
 		}
 		return $this->connection;
-	}
-
-	/**
-	 * When article is undeleted - check the archive for other instances of the title,
-	 * if not there - drop it from the archive.
-	 * @param ProperPageIdentity $page
-	 * @param Authority $restorer
-	 * @param string $reason
-	 * @param RevisionRecord $restoredRev
-	 * @param ManualLogEntry $logEntry
-	 * @param int $restoredRevisionCount
-	 * @param bool $created
-	 * @param array $restoredPageIds
-	 * @return void
-	 */
-	public function onPageUndeleteComplete(
-		ProperPageIdentity $page,
-		Authority $restorer,
-		string $reason,
-		RevisionRecord $restoredRev,
-		ManualLogEntry $logEntry,
-		int $restoredRevisionCount,
-		bool $created,
-		array $restoredPageIds
-	): void {
-		parent::onPageUndeleteComplete( $page, $restorer, $reason, $restoredRev, $logEntry,
-			$restoredRevisionCount, $created, $restoredPageIds );
-		if ( !$this->searchConfig->get( 'CirrusSearchIndexDeletes' ) ) {
-			// Not indexing, thus nothing to remove here.
-			return;
-		}
-		$title = Title::castFromPageIdentity( $page );
-		Assert::postcondition( $title !== null, '$page can be cast to a Title' );
-		$this->jobQueue->lazyPush(
-			new Job\DeleteArchive( $title, [ 'docIds' => $restoredPageIds ] )
-		);
 	}
 }

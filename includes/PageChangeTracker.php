@@ -7,7 +7,6 @@ use MediaWiki\Hook\PageMoveCompleteHook;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Page\Hook\PageDeleteCompleteHook;
 use MediaWiki\Page\Hook\PageDeleteHook;
-use MediaWiki\Page\Hook\PageUndeleteCompleteHook;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
@@ -27,7 +26,6 @@ class PageChangeTracker implements
 	PageSaveCompleteHook,
 	PageMoveCompleteHook,
 	PageDeleteCompleteHook,
-	PageUndeleteCompleteHook,
 	PageDeleteHook
 {
 	/**
@@ -118,24 +116,6 @@ class PageChangeTracker implements
 		if ( !$editResult->isNullEdit() ) {
 			$this->flag( $wikiPage->getId() );
 		}
-	}
-
-	/**
-	 * @param ProperPageIdentity $page
-	 * @param Authority $restorer
-	 * @param string $reason
-	 * @param RevisionRecord $restoredRev
-	 * @param ManualLogEntry $logEntry
-	 * @param int $restoredRevisionCount
-	 * @param bool $created
-	 * @param array $restoredPageIds
-	 * @return void
-	 */
-	public function onPageUndeleteComplete( ProperPageIdentity $page, Authority $restorer,
-		string $reason, RevisionRecord $restoredRev, ManualLogEntry $logEntry,
-		int $restoredRevisionCount, bool $created, array $restoredPageIds
-	): void {
-		$this->flag( $page->getId() );
 	}
 
 	/**

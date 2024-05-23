@@ -18,13 +18,6 @@ class PageChangeTrackerTest extends CirrusTestCase {
 		return new PageIdentityValue( $pageId, 0, 'unused', false );
 	}
 
-	public function testOnPageUndeleteComplete() {
-		$tracker = new PageChangeTracker();
-		$tracker->onPageUndeleteComplete( $this->pageIdentity( 1 ), $this->createMock( Authority::class ), '',
-			$this->createMock( RevisionRecord::class ), $this->createMock( \ManualLogEntry::class ), 1, false, [] );
-		$this->assertPageIsTracked( $tracker, 1 );
-	}
-
 	public function testOnPageDelete() {
 		$tracker = new PageChangeTracker();
 		$tracker->onPageDelete( $this->pageIdentity( 1 ), $this->createMock( Authority::class ),

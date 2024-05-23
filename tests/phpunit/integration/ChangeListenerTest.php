@@ -19,8 +19,47 @@ use Wikimedia\Rdbms\LoadBalancer;
 
 class ChangeListenerTest extends CirrusIntegrationTestCase {
 
-	protected function setUp(): void {
-		parent::setUp();
+	public static function provideConfig(): array {
+		return [
+			'default cluster setup' => [
+				[
+					'CirrusSearchClusters' => [
+						'mycluster' => [ '127.0.0.1' ],
+					],
+					'CirrusSearchDefaultCluster' => 'mycluster',
+					'CirrusSearchWriteClusters' => null,
+					'CirrusSearchReplicaGroup' => 'default',
+				],
+				true
+			],
+			'writable cluster set' => [
+				[
+					'CirrusSearchClusters' => [
+						'mycluster' => [ '127.0.0.1' ],
+					],
+					'CirrusSearchDefaultCluster' => 'mycluster',
+					'CirrusSearchWriteClusters' => [
+						'default' => [],
+						UpdateGroup::PAGE => [ 'mycluster' ]
+					],
+					'CirrusSearchReplicaGroup' => 'default',
+				],
+				true
+			],
+			'no writable cluster set' => [
+				[
+					'CirrusSearchClusters' => [
+						'mycluster' => [ '127.0.0.1' ],
+					],
+					'CirrusSearchDefaultCluster' => 'mycluster',
+					'CirrusSearchWriteClusters' => [
+						'default' => [],
+					],
+					'CirrusSearchReplicaGroup' => 'default',
+				],
+				false
+			],
+		];
 	}
 
 	/**
@@ -29,7 +68,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 	public function testPrepareTitlesForLinksUpdate() {
 		$changeListener = new ChangeListener(
 			$this->createMock( \JobQueueGroup::class ),
-			$this->newHashSearchConfig( [] ),
+			$this->newHashSearchConfig(),
 			$this->createMock( LoadBalancer::class ),
 			$this->createMock( RedirectLookup::class )
 		);
@@ -58,7 +97,15 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 	 * @param int|null $revTimestamp
 	 * @param array $jobParams
 	 */
-	public function testOnLinksUpdateComplete( int $now, callable $callable, int $pageId, ?int $revTimestamp, array $jobParams ) {
+	public function testOnLinksUpdateComplete(
+		int $now,
+		callable $callable,
+		int $pageId,
+		?int $revTimestamp,
+		array $jobParams,
+		array $config,
+		bool $withJob
+	) {
 		$config = [
 			'CirrusSearchLinkedArticlesToUpdate' => 10,
 			'CirrusSearchUnlinkedArticlesToUpdate' => 10,
@@ -67,7 +114,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 				'prioritized' => 0,
 				'default' => 0,
 			]
-		];
+		] + $config;
 		$cleanup = DeferredUpdates::preventOpportunisticUpdates();
 		MWTimestamp::setFakeTime( $now );
 
@@ -75,7 +122,9 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$title->method( 'getPrefixedDBkey' )->willReturn( 'My_Title' );
 
 		$jobqueue = $this->createMock( \JobQueueGroup::class );
-		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new CirrusLinksUpdate( $title, $jobParams ) );
+		$jobqueue->expects( $this->exactly( $withJob ? 1 : 0 ) )
+			->method( 'lazyPush' )
+			->with( new CirrusLinksUpdate( $title, $jobParams ) );
 
 		$linksUpdate = $this->createMock( LinksUpdate::class );
 		$linksUpdate->method( 'getTitle' )->willReturn( $title );
@@ -97,14 +146,15 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 	}
 
 	public static function provideTestOnLinksUpdateComplete(): array {
-		return [
-			'simple page edit' => [
+		$cases = [];
+		foreach ( self::provideConfig() as $case => $setup ) {
+			$cases["simple page edit with $case"] = [
 				123,
 				static function ( ChangeListener $listener, \WikiPage $page ) {
 					$editResult = new EditResult( false, 1, null,
-					null, null, false, false, [] );
+						null, null, false, false, [] );
 					$listener->onPageSaveComplete( $page, new UserIdentityValue( 1, '' ),
-					'', 0, new MutableRevisionRecord( $page ), $editResult );
+						'', 0, new MutableRevisionRecord( $page ), $editResult );
 				},
 				1,
 				124,
@@ -112,9 +162,11 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 					"update_kind" => "page_change",
 					"root_event_time" => 124,
 					"prioritize" => true
-				]
-			],
-			'' => [
+				],
+				$setup[0],
+				$setup[1]
+			];
+			$cases["simple page page refresh with $case"] = [
 				123,
 				static function ( ChangeListener $listener, \WikiPage $page ) {
 				},
@@ -124,15 +176,19 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 					"update_kind" => "page_refresh",
 					"root_event_time" => 123,
 					"prioritize" => false
-				]
-			]
-		];
+				],
+				$setup[0],
+				$setup[1]
+			];
+		}
+		return $cases;
 	}
 
 	/**
 	 * @covers \CirrusSearch\ChangeListener::onUploadComplete
+	 * @dataProvider provideConfig
 	 */
-	public function testOnFileUploadComplete() {
+	public function testOnFileUploadComplete( array $config, bool $expectedJob ) {
 		$now = 123;
 		MWTimestamp::setFakeTime( $now );
 		$title = $this->createMock( Title::class );
@@ -148,17 +204,20 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			"root_event_time" => $now,
 			"prioritize" => true,
 		];
-		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
+		$jobqueue->expects( $this->exactly( $expectedJob ? 1 : 0 ) )
+			->method( 'lazyPush' )
+			->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
 
-		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
 			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
 		$listener->onUploadComplete( $uploadBase );
 	}
 
 	/**
 	 * @covers \CirrusSearch\ChangeListener::onPageDeleteComplete
+	 * @dataProvider provideConfig
 	 */
-	public function testOnPageDeleteComplete() {
+	public function testOnPageDeleteComplete( array $config, bool $expectedJob ) {
 		$now = 321;
 		$pageId = 123;
 		$page = $this->createMock( \WikiPage::class );
@@ -173,8 +232,10 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			"update_kind" => "page_change",
 			"root_event_time" => $now,
 		];
-		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new DeletePages( $title, $expectedJobParam ) );
-		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
+		$jobqueue->expects( $this->exactly( $expectedJob ? 1 : 0 ) )
+			->method( 'lazyPush' )
+			->with( new DeletePages( $title, $expectedJobParam ) );
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
 			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
 		$listener->onPageDeleteComplete( $page, $this->createMock( Authority::class ),
 			"a reason", $pageId, $this->createMock( RevisionRecord::class ), $logEntry, 2 );
@@ -183,8 +244,9 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 	/**
 	 * @covers \CirrusSearch\ChangeListener::onArticleRevisionVisibilitySet
 	 * @covers \CirrusSearch\Job\LinksUpdate::newPastRevisionVisibilityChange
+	 * @dataProvider provideConfig
 	 */
-	public function testOnArticleRevisionVisibilitySet() {
+	public function testOnArticleRevisionVisibilitySet( array $config, bool $expectedJob ) {
 		$now = 321;
 		MWTimestamp::setFakeTime( $now );
 		$title = $this->createMock( Title::class );
@@ -194,16 +256,19 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			"root_event_time" => $now,
 			"prioritize" => true
 		];
-		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
-		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
+		$jobqueue->expects( $this->exactly( $expectedJob ? 1 : 0 ) )
+			->method( 'lazyPush' )
+			->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
 			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
 		$listener->onArticleRevisionVisibilitySet( $title, [], [] );
 	}
 
 	/**
 	 * @covers \CirrusSearch\ChangeListener::onPageDelete
+	 * @dataProvider provideConfig
 	 */
-	public function testOnPageDelete() {
+	public function testOnPageDelete( array $config, bool $expectedJob ) {
 		$jobqueue = $this->createMock( \JobQueueGroup::class );
 		$redirectLookup = $this->createMock( RedirectLookup::class );
 		$redirect = new PageIdentityValue( 123, 0, 'Deleted_Redirect', false );
@@ -212,36 +277,20 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 
 		$target = Title::makeTitle( 0, 'Redir_Target' );
 
-		$redirectLookup->expects( $this->exactly( 2 ) )
+		$redirectLookup->expects( $this->exactly( $expectedJob ? 2 : 0 ) )
 			->method( 'getRedirectTarget' )
 			->willReturnMap( [
 				[ $redirect, $target ],
 				[ $page, null ]
 			] );
 
-		$jobqueue->expects( $this->once() )->method( 'lazyPush' )->with( new CirrusLinksUpdate( $target, [] ) );
+		$jobqueue->expects( $this->exactly( $expectedJob ? 1 : 0 ) )
+			->method( 'lazyPush' )
+			->with( new CirrusLinksUpdate( $target, [] ) );
 
-		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig(),
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
 			$this->createMock( LoadBalancer::class ), $redirectLookup );
 		$listener->onPageDelete( $redirect, $deleter, 'unused', new \StatusValue(), false );
 		$listener->onPageDelete( $page, $deleter, 'unused', new \StatusValue(), false );
-	}
-
-	/**
-	 * @covers \CirrusSearch\ChangeListener::onPageUndeleteComplete
-	 */
-	public function testOnPageUndeleteComplete() {
-		$jobqueue = $this->createMock( \JobQueueGroup::class );
-		$page = new PageIdentityValue( 124, 0, 'A_Restored_Page', false );
-		$title = Title::castFromPageIdentity( $page );
-		$restoredPageIds = [ 123, 124 ];
-		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( [ 'CirrusSearchIndexDeletes' => true ] ),
-			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
-		$jobqueue->expects( $this->once() )
-			->method( 'lazyPush' )
-			->with( new Job\DeleteArchive( $title, [ 'docIds' => $restoredPageIds ] ) );
-		$listener->onPageUndeleteComplete( $page, $this->createMock( Authority::class ),
-			'a reson', $this->createMock( RevisionRecord::class ),
-			$this->createMock( \ManualLogEntry::class ), 2, true, $restoredPageIds );
 	}
 }

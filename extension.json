@@ -42,6 +42,7 @@
 		"cirrusSearchOtherIndex": "CirrusSearch\\Job\\OtherIndex",
 		"cirrusSearchElasticaWrite": "CirrusSearch\\Job\\ElasticaWrite",
 		"cirrusSearchCheckerJob": "CirrusSearch\\Job\\CheckerJob",
+		"cirrusSearchIndexArchive": "CirrusSearch\\Job\\IndexArchive",
 		"cirrusSearchDeleteArchive": "CirrusSearch\\Job\\DeleteArchive"
 	},
 	"MessagesDirs": {
@@ -90,9 +91,12 @@
 		"APIQuerySiteInfoStatisticsInfo": "default",
 		"APIQuerySiteInfoGeneralInfo": "apiquerysiteinfogeneralinfo",
 		"PageDelete": "changelistener",
-		"PageDeleteComplete": "changelistener",
+		"PageDeleteComplete": [
+			"changelistener",
+			"archivechangelistener"
+		],
 		"ArticleRevisionVisibilitySet": "changelistener",
-		"PageUndeleteComplete": "changelistener",
+		"PageUndeleteComplete": "archivechangelistener",
 		"BeforeInitialize": "default",
 		"CirrusSearchAddQueryFeatures": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAddQueryFeatures",
 		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAnalysisConfig",
@@ -140,6 +144,14 @@
 				"ConfigFactory",
 				"DBLoadBalancer",
 				"RedirectLookup"
+			]
+		},
+		"archivechangelistener": {
+			"class": "CirrusSearch\\ArchiveChangeListener",
+			"factory": "CirrusSearch\\ArchiveChangeListener::create",
+			"services": [
+				"JobQueueGroup",
+				"ConfigFactory"
 			]
 		},
 		"eventbusbridge": {

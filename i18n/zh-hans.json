@@ -77,7 +77,7 @@
 	"cirrussearch-timed-out": "搜索超时，只找到部分结果。",
 	"cirrussearch-regex-timed-out": "正则表达式搜索超时，只找到部分结果。请尝试简化您的正则表达式以获取完整搜索结果。",
 	"cirrussearch-file-numeric-feature-not-a-number": "搜索词“$1”需要数字值，但提供的是“$2”。",
-	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "搜索关键词“$1”不允许提供多个参数和标识“$2”。",
+	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "搜索词“$1”不允许提供多个参数和“$2”符号。",
 	"cirrussearch-feature-not-available": "搜索关键词“$1”未在此wiki启用。",
 	"cirrussearch-feature-too-many-conditions": "为“$1”提供了太多条件，截短为$2。",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint应设置为有效的SPARQL端点以使用深度分类搜索。",
@@ -100,6 +100,6 @@
 	"cirrussearch-autoselect-profile": "让搜索引擎决定使用的最佳个人资料。",
 	"cirrussearch-offset-too-large": "无法检索结果。最多支持$1搜索结果，但请求从$2开始的结果。",
 	"cirrussearch-offset-not-allowed-with-random-sort": "忽略分页随机排序结果的请求。",
-	"cirrussearch-articletopic-invalid-topic": "<kbd>articletopic:</kbd>关键字无法识别的主题{{PLURAL:$2|名}}：$1",
-	"cirrussearch-inlanguage-deprecate-comma": "不推荐使用逗号作为inlanguage关键字的分隔符。请使用|（管道）分隔语言。"
+	"cirrussearch-articletopic-invalid-topic": "<kbd>articletopic:</kbd>关键词有无法识别的话题{{PLURAL:$2|名称}}：$1",
+	"cirrussearch-inlanguage-deprecate-comma": "已不再使用半角逗号作为inlanguage关键词的分隔符。请使用“|”（竖线）分隔语言。"
 }

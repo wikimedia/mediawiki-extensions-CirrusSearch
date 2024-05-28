@@ -615,6 +615,13 @@ Default:
 
 Maximum number of redirects per target page to index.
 
+; $wgCirrusSearchIndexFieldsToCleanup
+
+Default:
+	$wgCirrusSearchIndexFieldsToCleanup = []
+
+List of strings identifying the fields to remove from the index when the next in-place re-index is run.
+
 ; $wgCirrusSearchLinkedArticlesToUpdate
 
 Default:

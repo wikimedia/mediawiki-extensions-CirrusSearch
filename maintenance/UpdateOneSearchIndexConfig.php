@@ -196,14 +196,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	public function execute() {
-		global $wgLanguageCode,
-			$wgCirrusSearchPhraseSuggestUseText,
-			$wgCirrusSearchPrefixSearchStartsWithAnyWord,
-			$wgCirrusSearchBannedPlugins,
-			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter,
-			$wgCirrusSearchRefreshInterval,
-			$wgCirrusSearchMasterTimeout;
-
 		$this->disablePoolCountersAndLogging();
 
 		$utils = new ConfigUtils( $this->getConnection()->getClient(), $this );
@@ -218,13 +210,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getOption( 'reindexAcceptableCountDeviation', '5%' ) );
 		$this->reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
 		$this->printDebugCheckConfig = $this->getOption( 'debugCheckConfig', false );
-		$this->langCode = $wgLanguageCode;
-		$this->prefixSearchStartsWithAny = $wgCirrusSearchPrefixSearchStartsWithAnyWord;
-		$this->phraseSuggestUseText = $wgCirrusSearchPhraseSuggestUseText;
-		$this->bannedPlugins = $wgCirrusSearchBannedPlugins;
-		$this->optimizeIndexForExperimentalHighlighter = $wgCirrusSearchOptimizeIndexForExperimentalHighlighter;
-		$this->masterTimeout = $wgCirrusSearchMasterTimeout;
-		$this->refreshInterval = $wgCirrusSearchRefreshInterval;
+		$this->langCode = $this->getSearchConfig()->get( "LanguageCode" );
+		$this->prefixSearchStartsWithAny = $this->getSearchConfig()->get( "CirrusSearchPrefixSearchStartsWithAnyWord" );
+		$this->phraseSuggestUseText = $this->getSearchConfig()->get( "CirrusSearchPhraseSuggestUseText" );
+		$this->bannedPlugins = $this->getSearchConfig()->get( "CirrusSearchBannedPlugins" );
+		$this->optimizeIndexForExperimentalHighlighter = $this->getSearchConfig()
+			->get( "CirrusSearchOptimizeIndexForExperimentalHighlighter" );
+		$this->masterTimeout = $this->getSearchConfig()->get( "CirrusSearchMasterTimeout" );
+		$this->refreshInterval = $this->getSearchConfig()->get( "CirrusSearchRefreshInterval" );
 
 		if ( $this->indexSuffix === Connection::ARCHIVE_INDEX_SUFFIX ) {
 			if ( !$this->getSearchConfig()->get( 'CirrusSearchEnableArchive' ) ) {
@@ -323,8 +316,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @param string $msg
 	 */
 	private function createIndex( $rebuild, $msg ) {
-		global $wgCirrusSearchExtraIndexSettings;
-
 		$this->canCleanupCreatedIndex = true;
 		$index = $this->getIndex();
 		$indexCreator = new \CirrusSearch\Maintenance\IndexCreator(
@@ -343,7 +334,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getReplicaCount(),
 			$this->refreshInterval,
 			$this->getMergeSettings(),
-			$wgCirrusSearchExtraIndexSettings
+			$this->getSearchConfig()->get( "CirrusSearchExtraIndexSettings" )
 		) );
 
 		$this->outputIndented( "Index created.\n" );
@@ -412,6 +403,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateSpecificAlias() {
 		$connection = $this->getConnection();
 
+		$fieldsToCleanup = array_filter( explode( ',', $this->getOption( 'fieldsToDelete', '' ) ) );
+		$fieldsToCleanup += $this->getSearchConfig()->get( "CirrusSearchIndexFieldsToCleanup" );
 		$reindexer = new Reindexer(
 			$this->getSearchConfig(),
 			$connection,
@@ -419,7 +412,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getIndex(),
 			$this->getOldIndex(),
 			$this,
-			array_filter( explode( ',', $this->getOption( 'fieldsToDelete', '' ) ) )
+			$fieldsToCleanup
 		);
 
 		$validator = new \CirrusSearch\Maintenance\Validators\SpecificAliasValidator(
@@ -456,9 +449,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return \CirrusSearch\Maintenance\Validators\Validator
 	 */
 	private function getShardAllocationValidator() {
-		global $wgCirrusSearchIndexAllocation;
 		return new \CirrusSearch\Maintenance\Validators\ShardAllocationValidator(
-			$this->getIndex(), $wgCirrusSearchIndexAllocation, $this );
+			$this->getIndex(), $this->getSearchConfig()->get( "CirrusSearchIndexAllocation" ), $this );
 	}
 
 	protected function validateShardAllocation() {
@@ -543,12 +535,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return array
 	 */
 	private function getMergeSettings() {
-		global $wgCirrusSearchMergeSettings;
+		$mergeSettings = $this->getSearchConfig()->get( "CirrusSearchMergeSettings" );
 
-		return $wgCirrusSearchMergeSettings[$this->indexSuffix]
+		return $mergeSettings[$this->indexSuffix]
 			// If there aren't configured merge settings for this index type
 			// default to the content type.
-			?? $wgCirrusSearchMergeSettings['content']
+			?? $mergeSettings['content']
 			// It's also fine to not specify merge settings.
 			?? [];
 	}

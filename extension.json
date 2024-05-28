@@ -339,6 +339,9 @@
 		"CirrusSearchAllowLeadingWildcard": {
 			"value": true
 		},
+		"CirrusSearchIndexFieldsToCleanup": {
+			"value": []
+		},
 		"CirrusSearchIndexedRedirects": {
 			"value": 1024
 		},

@@ -218,6 +218,7 @@ current update groups are:
 * archive - Set of clusters receiving archive index updates.
 * check_sanity - Set of clusters available for Saneitizer checking
 * saneitizer - Set of clusters to fix with Saneitizer
+* weighted_tags - Set of clusters receiving php sourced weighted tags.
 
 By default known clusters receive writes from all groups.  $wgCirrusSearchWriteClusters 
 can be configured in two different ways to limit writes to select group of clusters.

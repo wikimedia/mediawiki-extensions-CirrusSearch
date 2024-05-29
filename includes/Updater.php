@@ -253,7 +253,7 @@ class Updater extends ElasticsearchIntermediary {
 		$docId = $this->connection->getConfig()->makeId( $page->getId() );
 		$indexSuffix = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
 		$this->pushElasticaWriteJobs(
-			UpdateGroup::PAGE,
+			UpdateGroup::WEIGHTED_TAGS,
 			[ $docId ],
 			static function ( array $docIds, ClusterSettings $cluster ) use (
 				$docId, $indexSuffix, $tagField, $tagPrefix, $tagNames, $tagWeights
@@ -261,7 +261,7 @@ class Updater extends ElasticsearchIntermediary {
 				$tagWeights = ( $tagWeights === null ) ? null : [ $docId => $tagWeights ];
 				return Job\ElasticaWrite::build(
 					$cluster,
-					UpdateGroup::PAGE,
+					UpdateGroup::WEIGHTED_TAGS,
 					'sendUpdateWeightedTags',
 					[ $indexSuffix, $docIds, $tagField, $tagPrefix, $tagNames, $tagWeights ],
 				);
@@ -278,14 +278,14 @@ class Updater extends ElasticsearchIntermediary {
 		$docId = $this->connection->getConfig()->makeId( $page->getId() );
 		$indexSuffix = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
 		$this->pushElasticaWriteJobs(
-			UpdateGroup::PAGE,
+			UpdateGroup::WEIGHTED_TAGS,
 			[ $docId ],
 			static function (
 				array $docIds, ClusterSettings $cluster
 			) use ( $indexSuffix, $tagField, $tagPrefix ) {
 				return Job\ElasticaWrite::build(
 					$cluster,
-					UpdateGroup::PAGE,
+					UpdateGroup::WEIGHTED_TAGS,
 					'sendResetWeightedTags',
 					[ $indexSuffix, $docIds, $tagField, $tagPrefix ],
 				);

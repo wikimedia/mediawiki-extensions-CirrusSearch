@@ -11,4 +11,6 @@ class UpdateGroup {
 	public const CHECK_SANITY = "check_sanity";
 	// Set of clusters being fixed by saneitizer
 	public const SANEITIZER = "saneitize";
+	// Set of clusters receiving weighted_tags updates
+	public const WEIGHTED_TAGS = "weighted_tags";
 }

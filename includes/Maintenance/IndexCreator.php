@@ -25,7 +25,7 @@ class IndexCreator {
 	/**
 	 * @var array
 	 */
-	private $mapping;
+	private $mappings;
 
 	/**
 	 * @var ConfigUtils
@@ -41,6 +41,7 @@ class IndexCreator {
 	 * @param Index $index
 	 * @param ConfigUtils $utils
 	 * @param array $analysisConfig
+	 * @param array $mappings
 	 * @param array|null $similarityConfig
 	 * @param int $greenTimeout How long to wait for index to become green, in seconds
 	 */
@@ -48,6 +49,7 @@ class IndexCreator {
 		Index $index,
 		ConfigUtils $utils,
 		array $analysisConfig,
+		array $mappings,
 		array $similarityConfig = null,
 		$greenTimeout = 120
 	) {
@@ -55,6 +57,7 @@ class IndexCreator {
 		$this->utils = $utils;
 		$this->analysisConfig = $analysisConfig;
 		$this->similarityConfig = $similarityConfig;
+		$this->mappings = $mappings;
 		$this->greenTimeout = $greenTimeout;
 	}
 
@@ -78,14 +81,17 @@ class IndexCreator {
 		array $mergeSettings,
 		array $extraSettings
 	) {
-		$args = $this->buildArgs(
-			$maxShardsPerNode,
-			$shardCount,
-			$replicaCount,
-			$refreshInterval,
-			$mergeSettings,
-			$extraSettings
-		);
+		$args = [
+			'settings' => $this->buildSettings(
+				$maxShardsPerNode,
+				$shardCount,
+				$replicaCount,
+				$refreshInterval,
+				$mergeSettings,
+				$extraSettings
+			),
+			'mappings' => $this->mappings,
+		];
 
 		try {
 			$response = $this->index->create( $args, [ 'recreate' => $rebuild ] );
@@ -117,7 +123,7 @@ class IndexCreator {
 	 *
 	 * @return array
 	 */
-	private function buildArgs(
+	private function buildSettings(
 		$maxShardsPerNode,
 		$shardCount,
 		$replicaCount,
@@ -150,8 +156,7 @@ class IndexCreator {
 		// ideally we should merge $extraSettings to $indexSettings
 		// but existing config might declare keys like "index.mapping.total_fields.limit"
 		// which would not work under the 'index' key.
-		$settings = [ 'index' => $indexSettings ] + $extraSettings;
-		return [ 'settings' => $settings ];
+		return [ 'index' => $indexSettings ] + $extraSettings;
 	}
 
 }

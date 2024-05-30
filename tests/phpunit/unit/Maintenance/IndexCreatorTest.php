@@ -40,7 +40,7 @@ class IndexCreatorTest extends CirrusTestCase {
 		$utils->method( 'waitForGreen' )
 			->willReturn( $this->arrayAsGenerator( [], true ) );
 
-		$indexCreator = new IndexCreator( $index, $utils, [], [] );
+		$indexCreator = new IndexCreator( $index, $utils, [], [], [] );
 
 		$status = $indexCreator->createIndex(
 			$rebuild,

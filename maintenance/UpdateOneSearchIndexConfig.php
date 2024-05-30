@@ -339,7 +339,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$index,
 			new ConfigUtils( $index->getClient(), $this ),
 			$this->analysisConfig,
-			$this->similarityConfig
+			$this->mapping,
+			$this->similarityConfig,
 		);
 
 		$this->outputIndented( $msg );

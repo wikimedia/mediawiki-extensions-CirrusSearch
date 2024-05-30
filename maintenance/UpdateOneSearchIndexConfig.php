@@ -255,10 +255,27 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->initAnalysisConfig();
 			$this->indexIdentifier = $this->unwrap( $utils->pickIndexIdentifierFromOption(
 				$this->getOption( 'indexIdentifier', 'current' ), $this->getIndexAliasName() ) );
+			// At this point everything is initialized and we start to mutate the cluster
+			// This creates the index if needed, such as when --indexIdentifier=now is provided.
 			$this->validateIndex();
+			// Compares analyzers against expected. If the index is newly
+			// created this should do nothing. If the index was not created
+			// this may fail the build if it needs to be recreated.
 			$this->validateAnalyzers();
+			// Compares mapping against expected. Same behavior as analyzers,
+			// but some mapping changes can be applied to a live index.
 			$this->validateMapping();
+			// If we have a replacement index, check that it is actually different
+			// from the live index in some way. If they are the same then do nothing.
+			if ( !$this->validateIndexHasChanged() ) {
+				$this->cleanupCreatedIndex( "Cleaning up unnecessary index" );
+				return true;
+			}
+			// Makes sure the index is part of the production aliases. This will
+			// reindex into the new index if necessary, promote the new index,
+			// and delete the old index.
 			$this->validateAlias();
+			// Flag the index version information in metadata
 			$this->updateVersions();
 		} catch ( \Elastica\Exception\Connection\HttpException $e ) {
 			$message = $e->getMessage();
@@ -445,6 +462,16 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->unwrap( $validator->validate() );
 	}
 
+	public function validateIndexHasChanged(): bool {
+		$validator = new \CirrusSearch\Maintenance\Validators\IndexHasChangedValidator(
+			$this->getConnection()->getClient(),
+			$this->getOldIndex(),
+			$this->getIndex(),
+			$this,
+		);
+		return $this->unwrap( $validator->validate() );
+	}
+
 	/**
 	 * @return \CirrusSearch\Maintenance\Validators\Validator
 	 */
@@ -583,6 +610,20 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->similarityConfig = $analysisConfigBuilder->buildSimilarityConfig();
 	}
 
+	private function cleanupCreatedIndex( $msg ) {
+		if ( $this->canCleanupCreatedIndex && $this->getIndex()->exists() ) {
+			$utils = new ConfigUtils( $this->getConnection()->getClient(), $this );
+			$indexName = $this->getSpecificIndexName();
+			$status = $utils->isIndexLive( $indexName );
+			if ( !$status->isGood() ) {
+				$this->output( (string)$status );
+			} elseif ( $status->getValue() === false ) {
+				$this->output( "$msg $indexName\n" );
+				$this->getIndex()->delete();
+			}
+		}
+	}
+
 	/**
 	 * Output a message and terminate the current script.
 	 *
@@ -592,17 +633,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	protected function fatalError( $msg, $exitCode = 1 ) {
 		try {
-			if ( $this->canCleanupCreatedIndex && $this->getIndex()->exists() ) {
-				$utils = new ConfigUtils( $this->getConnection()->getClient(), $this );
-				$indexName = $this->getSpecificIndexName();
-				$status = $utils->isIndexLive( $indexName );
-				if ( !$status->isGood() ) {
-					$this->output( (string)$status );
-				} elseif ( $status->getValue() === false ) {
-					$this->output( "Cleaning up incomplete index {$indexName}\n" );
-					$this->getIndex()->delete();
-				}
-			}
+			$this->cleanupCreatedIndex( "Cleaning up incomplete index" );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$this->output( "Exception thrown while cleaning up created index: $e\n" );
 		} finally {

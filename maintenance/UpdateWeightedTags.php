@@ -164,6 +164,7 @@ class UpdateWeightedTags extends Maintenance {
 			if ( count( $identifiers ) >= $batchSize || $file->eof() ) {
 				if ( $useIds ) {
 					yield $pageStore->newSelectQueryBuilder()->wherePageIds( $identifiers )
+						->caller( __METHOD__ )
 						->fetchPageRecordArray();
 				} else {
 					$linkBatch = $linkBatchFactory->newLinkBatch( $identifiers );

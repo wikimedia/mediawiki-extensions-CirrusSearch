@@ -72,6 +72,8 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	 */
 	public function testSearchText( array $config, $expectedFile, $queryString, $sort ) {
 		// Override some config for parsing purposes
+		// TODO: Load defaults from extension.json and apply those? Otherwise
+		// local config changes break the tests.
 		$this->setMwGlobals( $config + [
 			// We want to override the wikiid for consistent output, but this might break everything else...
 			'wgCirrusSearchExtraIndexes' => [],
@@ -82,6 +84,8 @@ class SearcherTest extends CirrusIntegrationTestCase {
 				'regex' => [ 'build', 'use' ],
 			],
 			'wgCirrusSearchQueryStringMaxDeterminizedStates' => 500,
+			'wgCirrusSearchLanguageWeight' => [],
+			'wgCirrusSearchAllowLeadingWildcard' => true,
 			'wgContentNamespaces' => [ NS_MAIN ],
 		] );
 

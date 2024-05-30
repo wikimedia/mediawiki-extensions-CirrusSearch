@@ -11,8 +11,7 @@
         },
         "page_id": {
             "type": "long",
-            "index": false,
-            "doc_values": true
+            "index": false
         },
         "wiki": {
             "type": "text",

@@ -157,7 +157,6 @@ class MappingConfigBuilder {
 				'page_id' => [
 					'type' => 'long',
 					'index' => false,
-					'doc_values' => true,
 				],
 				'wiki' => $this->searchIndexFieldFactory
 					->newKeywordField( 'wiki' )

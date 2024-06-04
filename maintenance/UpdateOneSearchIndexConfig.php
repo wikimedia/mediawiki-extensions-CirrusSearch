@@ -193,6 +193,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$maintenance->addOption( 'fieldsToDelete', 'List of of comma separated field names to delete ' .
 			'while reindexing documents (defaults to empty)', false, true );
 		$maintenance->addOption( 'justMapping', 'Just try to update the mapping.' );
+		$maintenance->addOption( 'ignoreIndexChanged', 'Skip checking if the new index is different ' .
+			'from the old index.', false, false );
 	}
 
 	public function execute() {
@@ -269,7 +271,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			// from the live index in some way. If they are the same then do nothing.
 			if ( !$this->validateIndexHasChanged() ) {
 				$this->cleanupCreatedIndex( "Cleaning up unnecessary index" );
-				return true;
+				// Orchestration needs some way to know that we are refusing to
+				// create the index. Simplest way is to signal with an arbitrary
+				// exit code.
+				$this->fatalError( "Use --ignoreIndexChanged to do it anyways", 10 );
 			}
 			// Makes sure the index is part of the production aliases. This will
 			// reindex into the new index if necessary, promote the new index,
@@ -464,6 +469,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	public function validateIndexHasChanged(): bool {
+		if ( $this->getOption( 'ignoreIndexChanged' ) ) {
+			return true;
+		}
 		$validator = new \CirrusSearch\Maintenance\Validators\IndexHasChangedValidator(
 			$this->getConnection()->getClient(),
 			$this->getOldIndex(),

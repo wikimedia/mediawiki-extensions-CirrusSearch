@@ -9,7 +9,7 @@ const assert = require( 'assert' ),
  * prerequisites:
  *  - the África page is expected to exist
  */
-describe( 'Smoke test for search', function () {
+describe( 'Smoke test for search', () => {
 
 	/**
 	 * Given I am at a random page
@@ -17,7 +17,7 @@ describe( 'Smoke test for search', function () {
 	 * Then suggestions should appear
 	 * And Main Page is the first suggestion
 	 */
-	it( 'Search suggestions', async function () {
+	it( 'Search suggestions', async () => {
 		await RandomPage.open();
 		await ArticlePage.set_search_query_top_right( 'main p' );
 		assert.ok( await ArticlePage.has_search_suggestions() );
@@ -32,7 +32,7 @@ describe( 'Smoke test for search', function () {
 	 * And I click the search button
 	 * Then I am on a page titled Search results
 	 */
-	it( 'Fill in search term and click search', async function () {
+	it( 'Fill in search term and click search', async () => {
 		RandomPage.open();
 		await ArticlePage.search_query_top_right( 'ma' );
 		await ArticlePage.submit_search_top_right();
@@ -46,7 +46,7 @@ describe( 'Smoke test for search', function () {
 	 * When I search for África
 	 * Then I am on a page titled África
 	 */
-	it( 'Search with accent yields result page with accent', async function () {
+	it( 'Search with accent yields result page with accent', async () => {
 		RandomPage.open();
 		await ArticlePage.set_search_query_top_right( 'África' );
 		await ArticlePage.submit_search_top_right();

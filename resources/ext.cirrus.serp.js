@@ -1,4 +1,4 @@
-$( function () {
+$( () => {
 	const router = require( 'mediawiki.router' );
 
 	// Always clean up the address bar, even (and especially) if the feature is disabled.
@@ -52,7 +52,7 @@ $( function () {
 
 	// Bind to content area (instead of document.body) to avoid most potential
 	// issues and overhead from clicks that are definitely not to a search result.
-	mw.hook( 'wikipage.content' ).add( function ( $content ) {
+	mw.hook( 'wikipage.content' ).add( ( $content ) => {
 		// Optimisation: Avoid overhead from finding, iterating, and creating event bindings
 		// for every result. Use a delegate selector instead.
 		$content.on( 'click', 'a', handlePossiblyNavigatingClick );

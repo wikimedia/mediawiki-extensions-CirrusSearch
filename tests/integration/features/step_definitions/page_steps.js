@@ -174,9 +174,7 @@ Then( /^I get api near matches for (.+)$/, function ( search ) {
 } );
 
 function checkApiSearchResultStep( title, in_ok, indexes ) {
-	indexes = indexes.split( ' or ' ).map( ( index ) => {
-		return namedPositions.indexOf( index );
-	} );
+	indexes = indexes.split( ' or ' ).map( ( index ) => namedPositions.indexOf( index ) );
 	if ( title === 'none' ) {
 		expect( this.apiResponse.query.search ).to.have.lengthOf.below( 1 + Math.min.apply( null, indexes ) );
 	} else {
@@ -201,9 +199,7 @@ function checkApiSearchResultStep( title, in_ok, indexes ) {
 }
 
 Then( /^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) api search result$/, function ( title, in_ok, indexes ) {
-	return withApi( this, () => {
-		return checkApiSearchResultStep.call( this, title, in_ok, indexes );
-	} );
+	return withApi( this, () => checkApiSearchResultStep.call( this, title, in_ok, indexes ) );
 } );
 
 Then( /^(.+) is( not)? part of the api search result$/, function ( title, not_searching ) {
@@ -371,7 +367,7 @@ Then( /^a file named (.+) exists( on commons)? with contents (.+) and descriptio
 	return stepHelpers.uploadFile( title, fileName, description );
 } );
 
-Then( /^I am on a page titled (.+)$/, async function ( title ) {
+Then( /^I am on a page titled (.+)$/, async ( title ) => {
 	expect( await ArticlePage.articleTitle(), `I am on ${ title }` ).to.equal( title );
 } );
 
@@ -438,7 +434,7 @@ Then( /^I search deleted pages for (.+)$/, async function ( title ) {
 	return SpecialUndelete.click_search_button();
 } );
 
-Then( /^deleted page search returns (.+) as first result$/, async function ( title ) {
+Then( /^deleted page search returns (.+) as first result$/, async ( title ) => {
 	expect( await SpecialUndelete.get_result_at( 1 ) ).to.equal( title );
 } );
 
@@ -446,7 +442,7 @@ When( /^I dump the cirrus data for (.+)$/, async function ( title ) {
 	return this.visit( new TitlePage( title + '&action=cirrusDump' ) );
 } );
 
-Then( /^the page text contains (.+)$/, async function ( text ) {
+Then( /^the page text contains (.+)$/, async ( text ) => {
 	expect( await browser.$( 'body' ).getText() ).to.contains( text );
 } );
 
@@ -459,12 +455,10 @@ Then( /^there are( no)? api search results with (.+) in the data$/, function ( s
 } );
 
 Then( /^I wait for (.+) to not include (.+) in redirects$/, function ( title, source ) {
-	return withApi( this, () => {
-		return this.stepHelpers.waitForDocument( title, ( doc ) => {
-			const titles = doc.source.redirect.map( ( redirect ) => redirect.title );
-			expect( titles ).to.not.include( source );
-		} );
-	} );
+	return withApi( this, () => this.stepHelpers.waitForDocument( title, ( doc ) => {
+		const titles = doc.source.redirect.map( ( redirect ) => redirect.title );
+		expect( titles ).to.not.include( source );
+	} ) );
 } );
 
 Then( /^I wait for (.+?)(?: on (.+))? to include (.+) in (.+)$/, function ( title, wiki, value, field ) {
@@ -484,11 +478,9 @@ Then( /^I wait for (.+?)(?: on (.+))? to include (.+) in (.+)$/, function ( titl
 } );
 
 Then( /^I wait for (.+) to have (.+) of (.+)$/, function ( title, field, value ) {
-	return withApi( this, () => {
-		return this.stepHelpers.waitForDocument( title, ( doc ) => {
-			expect( String( doc.source[ field ] ) ).to.equal( value );
-		} );
-	} );
+	return withApi( this, () => this.stepHelpers.waitForDocument( title, ( doc ) => {
+		expect( String( doc.source[ field ] ) ).to.equal( value );
+	} ) );
 } );
 
 When( /^I dump the cirrus config$/, Promise.coroutine( function* () {

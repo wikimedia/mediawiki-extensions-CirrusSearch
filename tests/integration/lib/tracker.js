@@ -22,7 +22,7 @@ class Server {
 			resolvers: {}
 		};
 
-		this.server.post( '/tracker', function ( req, res, next ) {
+		this.server.post( '/tracker', ( req, res, next ) => {
 			const data = req.body;
 
 			if ( globals.resolvers[ data.complete ] ) {
@@ -45,7 +45,7 @@ class Server {
 			}
 
 			if ( globals.pending[ data.check ] ) {
-				globals.pending[ data.check ].then( function ( sendData ) {
+				globals.pending[ data.check ].then( ( sendData ) => {
 					res.send( sendData );
 					next();
 				} );

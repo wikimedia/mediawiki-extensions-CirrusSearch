@@ -203,7 +203,7 @@ class Updater extends ElasticsearchIntermediary {
 			$this->connection->getConfig()->getProfileService()->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER ) );
 		$builder = new BuildDocument(
 			$this->connection,
-			$services->getDBLoadBalancer()->getConnection( DB_REPLICA ),
+			$services->getConnectionProvider()->getReplicaDatabase(),
 			$services->getRevisionStore(),
 			$services->getBacklinkCacheFactory(),
 			$docSizeLimiter,

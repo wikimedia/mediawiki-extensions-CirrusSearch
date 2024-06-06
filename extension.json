@@ -142,7 +142,7 @@
 			"services": [
 				"JobQueueGroup",
 				"ConfigFactory",
-				"DBLoadBalancer",
+				"ConnectionProvider",
 				"RedirectLookup"
 			]
 		},

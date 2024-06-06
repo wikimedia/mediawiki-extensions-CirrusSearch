@@ -261,7 +261,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$services = MediaWikiServices::getInstance();
 		$builder = new BuildDocument(
 			$this->connection,
-			$services->getDBLoadBalancer()->getConnection( DB_REPLICA ),
+			$services->getConnectionProvider()->getReplicaDatabase(),
 			$services->getRevisionStore(),
 			$services->getBacklinkCacheFactory(),
 			$this->docSizeLimiter,

@@ -26,7 +26,7 @@ use MediaWiki\Title\Title;
 use MediaWiki\User\User;
 use MediaWiki\Utils\MWTimestamp;
 use Wikimedia\Assert\Assert;
-use Wikimedia\Rdbms\LoadBalancer;
+use Wikimedia\Rdbms\IConnectionProvider;
 
 /**
  * Implementation to all the hooks that CirrusSearch needs to listen in order to keep its index
@@ -41,47 +41,37 @@ class ChangeListener extends PageChangeTracker implements
 	PageDeleteHook,
 	PageDeleteCompleteHook
 {
-	/** @var JobQueueGroup */
-	private $jobQueue;
-	/** @var SearchConfig */
-	private $searchConfig;
-	/** @var LoadBalancer */
-	private $loadBalancer;
+	private JobQueueGroup $jobQueue;
+	private SearchConfig $searchConfig;
+	private IConnectionProvider $dbProvider;
+	private RedirectLookup $redirectLookup;
+
 	/** @var Connection */
 	private $connection;
 
 	/** @var array state holding the titles being moved */
 	private $movingTitles = [];
 
-	/** @var RedirectLookup */
-	private RedirectLookup $redirectLookup;
-
 	public static function create(
 		JobQueueGroup $jobQueue,
 		ConfigFactory $configFactory,
-		LoadBalancer $loadBalancer,
+		IConnectionProvider $dbProvider,
 		RedirectLookup $redirectLookup
 	): ChangeListener {
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
-		return new self( $jobQueue, $configFactory->makeConfig( "CirrusSearch" ), $loadBalancer, $redirectLookup );
+		return new self( $jobQueue, $configFactory->makeConfig( "CirrusSearch" ), $dbProvider, $redirectLookup );
 	}
 
-	/**
-	 * @param JobQueueGroup $jobQueue
-	 * @param SearchConfig $searchConfig
-	 * @param LoadBalancer $loadBalancer
-	 * @param RedirectLookup $redirectLookup
-	 */
 	public function __construct(
 		JobQueueGroup $jobQueue,
 		SearchConfig $searchConfig,
-		LoadBalancer $loadBalancer,
+		IConnectionProvider $dbProvider,
 		RedirectLookup $redirectLookup
 	) {
 		parent::__construct();
 		$this->jobQueue = $jobQueue;
 		$this->searchConfig = $searchConfig;
-		$this->loadBalancer = $loadBalancer;
+		$this->dbProvider = $dbProvider;
 		$this->redirectLookup = $redirectLookup;
 	}
 
@@ -317,7 +307,7 @@ class ChangeListener extends PageChangeTracker implements
 				'docId' => $this->searchConfig->makeId( $pageid )
 			] );
 			// Push the job after DB commit but cancel on rollback
-			$this->loadBalancer->getConnection( DB_PRIMARY )->onTransactionCommitOrIdle( function () use ( $job ) {
+			$this->dbProvider->getPrimaryDatabase()->onTransactionCommitOrIdle( function () use ( $job ) {
 				$this->jobQueue->lazyPush( $job );
 			}, __METHOD__ );
 		}

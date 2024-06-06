@@ -15,7 +15,7 @@ use MediaWiki\Storage\EditResult;
 use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentityValue;
 use MediaWiki\Utils\MWTimestamp;
-use Wikimedia\Rdbms\LoadBalancer;
+use Wikimedia\Rdbms\IConnectionProvider;
 
 class ChangeListenerTest extends CirrusIntegrationTestCase {
 
@@ -69,7 +69,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$changeListener = new ChangeListener(
 			$this->createMock( \JobQueueGroup::class ),
 			$this->newHashSearchConfig(),
-			$this->createMock( LoadBalancer::class ),
+			$this->createMock( IConnectionProvider::class ),
 			$this->createMock( RedirectLookup::class )
 		);
 		$titles = [ Title::makeTitle( NS_MAIN, 'Title1' ), Title::makeTitle( NS_MAIN, 'Title2' ) ];
@@ -136,7 +136,9 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$linksUpdate->method( 'getPageId' )->willReturn( $pageId );
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
-			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
+			$this->createMock( IConnectionProvider::class ),
+			$this->createMock( RedirectLookup::class )
+		);
 
 		$page = $this->createMock( \WikiPage::class );
 		$page->method( 'getId' )->willReturn( $pageId );
@@ -209,7 +211,9 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
-			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
+			$this->createMock( IConnectionProvider::class ),
+			$this->createMock( RedirectLookup::class )
+		);
 		$listener->onUploadComplete( $uploadBase );
 	}
 
@@ -236,7 +240,9 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			->method( 'lazyPush' )
 			->with( new DeletePages( $title, $expectedJobParam ) );
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
-			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
+			$this->createMock( IConnectionProvider::class ),
+			$this->createMock( RedirectLookup::class )
+		);
 		$listener->onPageDeleteComplete( $page, $this->createMock( Authority::class ),
 			"a reason", $pageId, $this->createMock( RevisionRecord::class ), $logEntry, 2 );
 	}
@@ -260,7 +266,9 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			->method( 'lazyPush' )
 			->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
-			$this->createMock( LoadBalancer::class ), $this->createMock( RedirectLookup::class ) );
+			$this->createMock( IConnectionProvider::class ),
+			$this->createMock( RedirectLookup::class )
+		);
 		$listener->onArticleRevisionVisibilitySet( $title, [], [] );
 	}
 
@@ -289,7 +297,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			->with( new CirrusLinksUpdate( $target, [] ) );
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
-			$this->createMock( LoadBalancer::class ), $redirectLookup );
+			$this->createMock( IConnectionProvider::class ), $redirectLookup );
 		$listener->onPageDelete( $redirect, $deleter, 'unused', new \StatusValue(), false );
 		$listener->onPageDelete( $page, $deleter, 'unused', new \StatusValue(), false );
 	}

@@ -6,6 +6,7 @@ use SearchEngine;
 use SearchIndexField;
 
 class NestedIndexField extends CirrusIndexField {
+	/** @inheritDoc */
 	protected $typeName = "nested";
 
 	/**

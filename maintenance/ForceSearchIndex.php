@@ -389,6 +389,9 @@ class ForceSearchIndex extends Maintenance {
 		return true;
 	}
 
+	/**
+	 * @return CallbackIterator
+	 */
 	protected function getDeletesIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		$it = new BatchRowIterator(
@@ -439,6 +442,9 @@ class ForceSearchIndex extends Maintenance {
 		} );
 	}
 
+	/**
+	 * @return CallbackIterator
+	 */
 	protected function getIdsIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		$pageQuery = WikiPage::getQueryInfo();
@@ -452,6 +458,9 @@ class ForceSearchIndex extends Maintenance {
 		return $this->wrapDecodeResults( $it, 'page_id' );
 	}
 
+	/**
+	 * @return CallbackIterator
+	 */
 	protected function getUpdatesByDateIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		$pageQuery = WikiPage::getQueryInfo();
@@ -474,6 +483,9 @@ class ForceSearchIndex extends Maintenance {
 		return $this->wrapDecodeResults( $it, 'rev_timestamp' );
 	}
 
+	/**
+	 * @return CallbackIterator
+	 */
 	protected function getUpdatesByIdIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		$pageQuery = WikiPage::getQueryInfo();

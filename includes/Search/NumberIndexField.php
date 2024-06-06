@@ -7,5 +7,6 @@ namespace CirrusSearch\Search;
  * @package CirrusSearch
  */
 class NumberIndexField extends CirrusIndexField {
+	/** @inheritDoc */
 	protected $typeName = 'double';
 }

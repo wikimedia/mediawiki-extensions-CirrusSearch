@@ -102,8 +102,8 @@ final class FullTextResultsType extends BaseResultsType {
 			$this->searchContainedSyntax,
 			$this->extraFieldsToExtract,
 			$this->deduplicate
-		)
-				extends BaseCirrusSearchResultSet {
+		) extends BaseCirrusSearchResultSet
+		{
 			/** @var TitleHelper */
 			private $titleHelper;
 			/** @var FullTextCirrusSearchResultBuilder */

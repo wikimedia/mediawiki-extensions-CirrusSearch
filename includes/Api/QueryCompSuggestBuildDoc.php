@@ -34,6 +34,7 @@ class QueryCompSuggestBuildDoc extends ApiQueryBase {
 		}
 	}
 
+	/** @inheritDoc */
 	protected function getAllowedParams() {
 		return [
 			'method' => [

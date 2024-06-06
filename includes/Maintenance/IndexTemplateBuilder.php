@@ -106,8 +106,7 @@ class IndexTemplateBuilder {
 		return $this->connection->getConfig();
 	}
 
-	//
-	private function createIndexTemplate() {
+	private function createIndexTemplate(): IndexTemplate {
 		// Can go back to plain IndexTemplate when upgrading to Elastica 7
 		return new class( $this->connection->getClient(), $this->templateName ) extends IndexTemplate {
 			public function request( $method, $data = [], array $query = [] ) {

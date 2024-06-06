@@ -10,6 +10,7 @@ use SearchEngine;
  */
 class DatetimeIndexField extends CirrusIndexField {
 
+	/** @inheritDoc */
 	protected $typeName = 'date';
 
 	public function getMapping( SearchEngine $engine ) {

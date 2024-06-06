@@ -70,6 +70,10 @@ class QualityScore implements SuggestScoringMethod {
 		return intval( $this->intermediateScore( $doc ) * self::SCORE_RANGE );
 	}
 
+	/**
+	 * @param array $doc
+	 * @return float
+	 */
 	protected function intermediateScore( array $doc ) {
 		$incLinks = $this->scoreNormLog2( $doc['incoming_links'] ?? 0,
 			$this->incomingLinksNorm );

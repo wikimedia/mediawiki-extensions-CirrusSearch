@@ -8,6 +8,7 @@ use Iterator;
  * Applies a callback to all values returned from the iterator
  */
 class CallbackIterator extends IteratorDecorator {
+	/** @var callable */
 	protected $callable;
 
 	public function __construct( Iterator $iterator, $callable ) {

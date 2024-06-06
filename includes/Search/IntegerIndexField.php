@@ -7,5 +7,6 @@ namespace CirrusSearch\Search;
  * @package CirrusSearch
  */
 class IntegerIndexField extends CirrusIndexField {
+	/** @inheritDoc */
 	protected $typeName = 'long';
 }

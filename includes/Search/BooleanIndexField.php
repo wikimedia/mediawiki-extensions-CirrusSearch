@@ -7,5 +7,6 @@ namespace CirrusSearch\Search;
  * @package CirrusSearch
  */
 class BooleanIndexField extends CirrusIndexField {
+	/** @inheritDoc */
 	protected $typeName = 'boolean';
 }

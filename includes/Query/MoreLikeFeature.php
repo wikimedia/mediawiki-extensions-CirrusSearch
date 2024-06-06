@@ -45,6 +45,7 @@ class MoreLikeFeature extends SimpleKeywordFeature implements LegacyKeywordFeatu
 		return true;
 	}
 
+	/** @inheritDoc */
 	protected function getKeywords() {
 		return [ self::MORE_LIKE_THIS ];
 	}

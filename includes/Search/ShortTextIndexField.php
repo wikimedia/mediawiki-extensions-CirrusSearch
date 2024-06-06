@@ -8,6 +8,7 @@ namespace CirrusSearch\Search;
  * @package CirrusSearch
  */
 class ShortTextIndexField extends CirrusIndexField {
+	/** @inheritDoc */
 	protected $typeName = 'text';
 
 	public function getMapping( \SearchEngine $engine ) {

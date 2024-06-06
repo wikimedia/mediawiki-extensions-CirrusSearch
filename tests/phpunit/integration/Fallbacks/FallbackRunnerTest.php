@@ -433,7 +433,8 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			$approx,
 			$expectedResponse,
 			$rewritten
-		) implements FallbackMethod, ElasticSearchRequestFallbackMethod {
+		) implements FallbackMethod, ElasticSearchRequestFallbackMethod
+		{
 			private $query;
 			private $approx;
 			private $expectedResponse;

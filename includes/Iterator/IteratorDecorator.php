@@ -9,7 +9,7 @@ use Iterator;
  * reduced boilerplate.
  */
 abstract class IteratorDecorator implements Iterator {
-	protected $iterator;
+	protected Iterator $iterator;
 
 	public function __construct( Iterator $iterator ) {
 		$this->iterator = $iterator;

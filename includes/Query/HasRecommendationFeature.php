@@ -27,11 +27,13 @@ class HasRecommendationFeature extends SimpleKeywordFeature implements FilterQue
 	 */
 	public const QUERY_LIMIT = 5;
 
+	/** @inheritDoc */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
 		return [ $this->doGetFilterQuery( $parsedValue ), false ];
 	}
 
+	/** @inheritDoc */
 	protected function getKeywords() {
 		return [ 'hasrecommendation' ];
 	}

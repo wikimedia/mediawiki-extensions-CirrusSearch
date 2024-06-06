@@ -562,6 +562,11 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		return false;
 	}
 
+	/**
+	 * @param string $queryText
+	 * @param AbstractQuery $query
+	 * @return AbstractQuery
+	 */
 	protected function maybeWrapWithTokenCountRouter( $queryText, \Elastica\Query\AbstractQuery $query ) {
 		if ( $this->useTokenCountRouter ) {
 			$tokCount = new TokenCountRouter(

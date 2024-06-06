@@ -205,7 +205,8 @@ trait CirrusTestCaseTrait {
 			$this,
 			$cirrusSearchHookRunner,
 			$userOptionsLookup
-		) implements SearchProfileServiceFactoryFactory {
+		) implements SearchProfileServiceFactoryFactory
+		{
 			/** @var CirrusTestCaseTrait */
 			private $testCase;
 			/** @var CirrusSearchHookRunner */
@@ -283,7 +284,8 @@ trait CirrusTestCaseTrait {
 			static function ( $v ) {
 				return self::sanitizeLinkFragment( $v );
 			}
-		) extends TitleHelper {
+		) extends TitleHelper
+		{
 			public function __construct( $hostWikiId,
 				InterwikiResolver $interwikiResolver = null, callable $linkSanitizer = null
 			) {

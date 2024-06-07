@@ -9,8 +9,8 @@ use Elastica\Client;
 use Elastica\Document;
 use Elastica\Response;
 use Wikimedia\Rdbms\IConnectionProvider;
-use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\ILoadBalancer;
+use Wikimedia\Rdbms\IReadableDatabase;
 use Wikimedia\Rdbms\SelectQueryBuilder;
 
 /**
@@ -44,7 +44,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$queryBuilder->method( $this->logicalOr( 'select', 'from', 'where', 'queryInfo', 'options', 'caller' ) )
 			->willReturnSelf();
 		$queryBuilder->method( 'fetchRow' )->willReturn( false );
-		$db = $this->createMock( IDatabase::class );
+		$db = $this->createMock( IReadableDatabase::class );
 		$db->method( 'newSelectQueryBuilder' )->willReturn( $queryBuilder );
 		$lb = $this->createMock( ILoadBalancer::class );
 		$lb->method( 'getConnection' )->willReturn( $db );

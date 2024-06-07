@@ -12,7 +12,7 @@ use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFormatter;
-use Wikimedia\Rdbms\IDatabase;
+use Wikimedia\Rdbms\IReadableDatabase;
 use WikiPage;
 
 /**
@@ -48,7 +48,7 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 
 		return new class(
 			$connection,
-			$this->createNoOpMock( IDatabase::class ),
+			$this->createNoOpMock( IReadableDatabase::class ),
 			$this->revStore,
 			$this->createNoOpMock( BacklinkCacheFactory::class ),
 			new DocumentSizeLimiter( [] ),

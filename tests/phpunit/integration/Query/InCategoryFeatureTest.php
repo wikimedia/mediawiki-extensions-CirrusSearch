@@ -11,7 +11,7 @@ use MediaWiki\DAO\WikiAwareEntity;
 use MediaWiki\Page\PageSelectQueryBuilder;
 use MediaWiki\Page\PageStore;
 use MediaWiki\Page\PageStoreRecord;
-use Wikimedia\Rdbms\IDatabase;
+use Wikimedia\Rdbms\IReadableDatabase;
 
 /**
  * @covers \CirrusSearch\Query\InCategoryFeature
@@ -163,7 +163,7 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 		$pageSelectQueryBuilder = $this->getMockBuilder( PageSelectQueryBuilder::class )
 			->setConstructorArgs(
 				[
-					$this->createMock( IDatabase::class ),
+					$this->createMock( IReadableDatabase::class ),
 					$pageStore
 				]
 			)

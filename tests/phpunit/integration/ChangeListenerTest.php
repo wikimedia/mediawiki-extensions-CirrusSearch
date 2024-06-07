@@ -67,10 +67,10 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 	 */
 	public function testPrepareTitlesForLinksUpdate() {
 		$changeListener = new ChangeListener(
-			$this->createMock( \JobQueueGroup::class ),
+			$this->createNoOpMock( \JobQueueGroup::class ),
 			$this->newHashSearchConfig(),
-			$this->createMock( IConnectionProvider::class ),
-			$this->createMock( RedirectLookup::class )
+			$this->createNoOpMock( IConnectionProvider::class ),
+			$this->createNoOpMock( RedirectLookup::class )
 		);
 		$titles = [ Title::makeTitle( NS_MAIN, 'Title1' ), Title::makeTitle( NS_MAIN, 'Title2' ) ];
 		$this->assertEqualsCanonicalizing(
@@ -136,8 +136,8 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$linksUpdate->method( 'getPageId' )->willReturn( $pageId );
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
-			$this->createMock( IConnectionProvider::class ),
-			$this->createMock( RedirectLookup::class )
+			$this->createNoOpMock( IConnectionProvider::class ),
+			$this->createNoOpMock( RedirectLookup::class )
 		);
 
 		$page = $this->createMock( \WikiPage::class );
@@ -211,8 +211,8 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
-			$this->createMock( IConnectionProvider::class ),
-			$this->createMock( RedirectLookup::class )
+			$this->createNoOpMock( IConnectionProvider::class ),
+			$this->createNoOpMock( RedirectLookup::class )
 		);
 		$listener->onUploadComplete( $uploadBase );
 	}
@@ -240,11 +240,13 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			->method( 'lazyPush' )
 			->with( new DeletePages( $title, $expectedJobParam ) );
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
-			$this->createMock( IConnectionProvider::class ),
-			$this->createMock( RedirectLookup::class )
+			$this->createNoOpMock( IConnectionProvider::class ),
+			$this->createNoOpMock( RedirectLookup::class )
 		);
-		$listener->onPageDeleteComplete( $page, $this->createMock( Authority::class ),
-			"a reason", $pageId, $this->createMock( RevisionRecord::class ), $logEntry, 2 );
+		$listener->onPageDeleteComplete( $page,
+			$this->createNoOpMock( Authority::class ),
+			"a reason", $pageId,
+			$this->createNoOpMock( RevisionRecord::class ), $logEntry, 2 );
 	}
 
 	/**
@@ -266,8 +268,8 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			->method( 'lazyPush' )
 			->with( new CirrusLinksUpdate( $title, $expectedJobParam ) );
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
-			$this->createMock( IConnectionProvider::class ),
-			$this->createMock( RedirectLookup::class )
+			$this->createNoOpMock( IConnectionProvider::class ),
+			$this->createNoOpMock( RedirectLookup::class )
 		);
 		$listener->onArticleRevisionVisibilitySet( $title, [], [] );
 	}
@@ -281,7 +283,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$redirectLookup = $this->createMock( RedirectLookup::class );
 		$redirect = new PageIdentityValue( 123, 0, 'Deleted_Redirect', false );
 		$page = new PageIdentityValue( 124, 0, 'A_Page', false );
-		$deleter = $this->createMock( Authority::class );
+		$deleter = $this->createNoOpMock( Authority::class );
 
 		$target = Title::makeTitle( 0, 'Redir_Target' );
 
@@ -297,7 +299,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			->with( new CirrusLinksUpdate( $target, [] ) );
 
 		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $config ),
-			$this->createMock( IConnectionProvider::class ), $redirectLookup );
+			$this->createNoOpMock( IConnectionProvider::class ), $redirectLookup );
 		$listener->onPageDelete( $redirect, $deleter, 'unused', new \StatusValue(), false );
 		$listener->onPageDelete( $page, $deleter, 'unused', new \StatusValue(), false );
 	}

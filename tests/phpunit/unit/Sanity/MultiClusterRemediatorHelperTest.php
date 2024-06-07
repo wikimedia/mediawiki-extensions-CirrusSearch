@@ -11,12 +11,10 @@ use InvalidArgumentException;
 class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 
 	public function testSendOptimized() {
-		$wp = $this->createMock( \WikiPage::class );
+		$wp = $this->createNoOpMock( \WikiPage::class );
 
-		$r1 = $this->createMock( Remediator::class );
-		$r1->expects( $this->never() )->method( 'redirectInIndex' );
-		$r2 = $this->createMock( Remediator::class );
-		$r2->expects( $this->never() )->method( 'redirectInIndex' );
+		$r1 = $this->createNoOpMock( Remediator::class );
+		$r2 = $this->createNoOpMock( Remediator::class );
 
 		$allClustersRemediator = $this->createMock( AllClustersQueueingRemediator::class );
 		$allClustersRemediator->method( 'canSendOptimizedJob' )
@@ -36,7 +34,7 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 	}
 
 	public function testSendUnoptimized() {
-		$wp = $this->createMock( \WikiPage::class );
+		$wp = $this->createNoOpMock( \WikiPage::class );
 
 		$r1 = $this->createMock( Remediator::class );
 		$r1->expects( $this->once() )
@@ -47,12 +45,7 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 			->method( 'pageNotInIndex' )
 			->with( $wp );
 
-		$allClustersRemediator = $this->createMock( AllClustersQueueingRemediator::class );
-		$allClustersRemediator->method( 'canSendOptimizedJob' )
-			->with( [ 'c1', 'c2' ] )
-			->willReturn( true );
-		$allClustersRemediator->expects( $this->never() )->method( 'redirectInIndex' );
-		$allClustersRemediator->expects( $this->never() )->method( 'pageNotInIndex' );
+		$allClustersRemediator = $this->createNoOpMock( AllClustersQueueingRemediator::class );
 
 		$b1 = new BufferedRemediator();
 		$b2 = new BufferedRemediator();
@@ -65,15 +58,15 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 	}
 
 	public function testNotSimilarClusters() {
-		$wp = $this->createMock( \WikiPage::class );
+		$wp = $this->createNoOpMock( \WikiPage::class );
 
 		$r1 = $this->createMock( Remediator::class );
 		$r1->expects( $this->once() )
 			->method( 'redirectInIndex' )
 			->with( $wp );
 
-		$allClustersRemediator = $this->createMock( AllClustersQueueingRemediator::class );
-		$allClustersRemediator->expects( $this->never() )->method( 'redirectInIndex' );
+		$allClustersRemediator = $this->createNoOpMock( AllClustersQueueingRemediator::class,
+			[ 'canSendOptimizedJob' ] );
 
 		$allClustersRemediator->method( 'canSendOptimizedJob' )
 			->with( [ 'c1' ] )
@@ -87,9 +80,9 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 	}
 
 	public function testBadCtorParams() {
-		$r1 = $this->createMock( Remediator::class );
-		$r2 = $this->createMock( Remediator::class );
-		$allClustersRemediator = $this->createMock( AllClustersQueueingRemediator::class );
+		$r1 = $this->createNoOpMock( Remediator::class );
+		$r2 = $this->createNoOpMock( Remediator::class );
+		$allClustersRemediator = $this->createNoOpMock( AllClustersQueueingRemediator::class );
 
 		$b1 = new BufferedRemediator();
 		$b2 = new BufferedRemediator();

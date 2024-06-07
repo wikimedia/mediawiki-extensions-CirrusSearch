@@ -12,7 +12,7 @@ use WikiPage;
 class BufferedRemediatorTest extends CirrusTestCase {
 
 	public function testGetActions() {
-		$wp = $this->createMock( WikiPage::class );
+		$wp = $this->createNoOpMock( WikiPage::class );
 		$docId = "123";
 		$indexSuffix = "content";
 		$title = Title::makeTitle( NS_MAIN, "Test" );
@@ -49,7 +49,7 @@ class BufferedRemediatorTest extends CirrusTestCase {
 	}
 
 	public function testReplayOn() {
-		$wp = $this->createMock( WikiPage::class );
+		$wp = $this->createNoOpMock( WikiPage::class );
 		$docId = "123";
 		$indexSuffix = "content";
 		$title = Title::makeTitle( NS_MAIN, "Test" );
@@ -85,7 +85,7 @@ class BufferedRemediatorTest extends CirrusTestCase {
 	}
 
 	public function testHasSameActions() {
-		$wp = $this->createMock( WikiPage::class );
+		$wp = $this->createNoOpMock( WikiPage::class );
 		$docId = "123";
 		$title = Title::makeTitle( NS_MAIN, "Test" );
 

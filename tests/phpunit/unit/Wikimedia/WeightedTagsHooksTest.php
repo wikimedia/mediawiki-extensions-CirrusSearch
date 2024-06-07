@@ -48,7 +48,7 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 				]
 			]
 		] );
-		$searchEngine = $this->createMock( \SearchEngine::class );
+		$searchEngine = $this->createNoOpMock( \SearchEngine::class );
 		/**
 		 * @var \SearchIndexField $fields
 		 */

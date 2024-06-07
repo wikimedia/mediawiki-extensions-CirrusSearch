@@ -321,7 +321,8 @@ trait CirrusTestCaseTrait {
 	}
 
 	public function newManualInterwikiResolver( SearchConfig $config ): InterwikiResolver {
-		return new CirrusConfigInterwikiResolver( $config, $this->createMock( \MultiHttpClient::class ), null, new \EmptyBagOStuff(),
+		return new CirrusConfigInterwikiResolver( $config,
+			$this->createNoOpMock( \MultiHttpClient::class ), null, new \EmptyBagOStuff(),
 			$this->createMock( InterwikiLookup::class ) );
 	}
 

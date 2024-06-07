@@ -106,7 +106,8 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 	public function testParse( string $term, array $expectedParsedValue, array $expectedQuery ) {
 		$config = new HashSearchConfig( [] );
 		$context = new SearchContext(
-			$config, null, null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+			$config, null, null, null, null,
+			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
 		$feature = new ArticleTopicFeature();
 

@@ -161,7 +161,8 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		if ( $query ) {
 			// TODO: switch to new parser.
 			$context = new SearchContext(
-				$config, [], null, null, $fetchPhaseBuilder, $this->createMock( CirrusSearchHookRunner::class )
+				$config, [], null, null, $fetchPhaseBuilder,
+				$this->createNoOpMock( CirrusSearchHookRunner::class )
 			);
 			$fullTextKeywordRegistry = new FullTextKeywordRegistry( $config, $this->createCirrusSearchHookRunner(),
 					$this->namespacePrefixParser() );

@@ -20,6 +20,7 @@ use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\AbstractQuery;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Assertions method for testing KeywordFeature implementation.
@@ -40,7 +41,7 @@ class KeywordFeatureAssertions {
 	/**
 	 * @param SearchConfig|null $config
 	 * @param FetchPhaseConfigBuilder|null $fetchPhaseConfigBuilder
-	 * @return SearchContext
+	 * @return SearchContext|MockObject
 	 */
 	private function mockContext( SearchConfig $config = null, FetchPhaseConfigBuilder $fetchPhaseConfigBuilder = null ) {
 		$context = $this->testCase->getMockBuilder( SearchContext::class )
@@ -61,7 +62,7 @@ class KeywordFeatureAssertions {
 	 * @param array|AbstractQuery|callable|null $expectedQuery
 	 * @param bool $negated
 	 * @param SearchConfig $config
-	 * @return SearchContext
+	 * @return SearchContext|MockObject
 	 */
 	private function mockContextExpectingAddFilter(
 		$expectedQuery,
@@ -536,7 +537,7 @@ class KeywordFeatureAssertions {
 	 * @param array $data
 	 * @param SearchConfig $config
 	 * @param HighlightFieldGenerator|null $fetchPhaseConfigBuilder
-	 * @return \PHPUnit\Framework\MockObject\MockObject
+	 * @return QueryBuildingContext|MockObject
 	 */
 	private function mockBuilderContext( $data, SearchConfig $config, HighlightFieldGenerator $fetchPhaseConfigBuilder = null ) {
 		$mock = $this->testCase->getMockBuilder( QueryBuildingContext::class )

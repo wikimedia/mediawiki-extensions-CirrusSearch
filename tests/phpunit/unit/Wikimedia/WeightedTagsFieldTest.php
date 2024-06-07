@@ -7,7 +7,7 @@ namespace CirrusSearch\Wikimedia;
  */
 class WeightedTagsFieldTest extends \MediaWikiUnitTestCase {
 	public function testField() {
-		$searchEngine = $this->createMock( \SearchEngine::class );
+		$searchEngine = $this->createNoOpMock( \SearchEngine::class );
 		$indexAnalyzer = 'indexAnalyzer';
 		$searchAnalyzer = 'searchAnalyzer';
 		$similarity = 'sim';

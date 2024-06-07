@@ -94,8 +94,10 @@ class ArchiveChangeListenerTest extends CirrusIntegrationTestCase {
 			->with( new IndexArchive( $title, $expectedJobParam ) );
 		$listener = new ArchiveChangeListener( $jobqueue,
 			$this->newHashSearchConfig( [ 'CirrusSearchIndexDeletes' => $withDeletesEnabled ] + $config ) );
-		$listener->onPageDeleteComplete( $page, $this->createMock( Authority::class ),
-			"a reason", $pageId, $this->createMock( RevisionRecord::class ), $logEntry, 2 );
+		$listener->onPageDeleteComplete( $page,
+			$this->createNoOpMock( Authority::class ),
+			"a reason", $pageId,
+			$this->createNoOpMock( RevisionRecord::class ), $logEntry, 2 );
 	}
 
 	/**
@@ -112,8 +114,10 @@ class ArchiveChangeListenerTest extends CirrusIntegrationTestCase {
 		$jobqueue->expects( $this->exactly( $expectedJob ? 1 : 0 ) )
 			->method( 'lazyPush' )
 			->with( new Job\DeleteArchive( $title, [ 'docIds' => $restoredPageIds, 'private_data' => true ] ) );
-		$listener->onPageUndeleteComplete( $page, $this->createMock( Authority::class ),
-			'a reason', $this->createMock( RevisionRecord::class ),
-			$this->createMock( \ManualLogEntry::class ), 2, true, $restoredPageIds );
+		$listener->onPageUndeleteComplete( $page,
+			$this->createNoOpMock( Authority::class ),
+			'a reason',
+			$this->createNoOpMock( RevisionRecord::class ),
+			$this->createNoOpMock( \ManualLogEntry::class ), 2, true, $restoredPageIds );
 	}
 }

@@ -154,7 +154,8 @@ class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 		] );
 		$builder = new FullTextQueryStringQueryBuilder( $config, [] );
 		$searchContext = new SearchContext(
-			$config, null, null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+			$config, null, null, null, null,
+			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
 		$builder->build( $searchContext, $term );
 		$actual = $searchContext->getSyntaxUsed();

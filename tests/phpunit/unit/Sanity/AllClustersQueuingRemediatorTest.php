@@ -16,7 +16,7 @@ use MediaWiki\Utils\MWTimestamp;
 class AllClustersQueuingRemediatorTest extends CirrusTestCase {
 
 	public function testCanSendOptimizedJob() {
-		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
+		$jobQueueGroup = $this->createNoOpMock( JobQueueGroup::class );
 		$clusters = [ 'one', 'two' ];
 		$clusterAssigment = $this->createMock( ClusterAssignment::class );
 		$clusterAssigment->expects( $this->once() )
@@ -88,7 +88,7 @@ class AllClustersQueuingRemediatorTest extends CirrusTestCase {
 	}
 
 	public function testNoOptimizationWithReadOnly() {
-		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
+		$jobQueueGroup = $this->createNoOpMock( JobQueueGroup::class );
 		$clusterAssigment = $this->createMock( ClusterAssignment::class );
 		$clusterAssigment->expects( $this->once() )
 			->method( 'getWritableClusters' )

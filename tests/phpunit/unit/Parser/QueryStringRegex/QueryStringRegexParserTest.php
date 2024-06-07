@@ -74,7 +74,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 			},
 			$this->createMock( Escaper::class ),
 			'all',
-			$this->createMock( ParsedQueryClassifiersRepository::class ),
+			$this->createNoOpMock( ParsedQueryClassifiersRepository::class ),
 			$this->namespacePrefixParser(),
 			null
 		);

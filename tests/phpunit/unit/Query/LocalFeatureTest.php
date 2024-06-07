@@ -51,7 +51,8 @@ class LocalFeatureTest extends CirrusTestCase {
 		}
 		$this->assertRemaining( $feature, $term, $expectedRemaining );
 		$context = new SearchContext(
-			new HashSearchConfig( [] ), null, null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+			new HashSearchConfig( [] ), null, null, null, null,
+			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
 		$feature->apply( $context, $term );
 		$this->assertEquals( $isLocal, $context->getLimitSearchToLocalWiki() );

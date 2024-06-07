@@ -215,7 +215,8 @@ class PrefixFeatureTest extends CirrusTestCase {
 		$this->assertRemaining( $feature, $query, $expectedRemaining );
 
 		$context = new SearchContext(
-			new HashSearchConfig( [] ), [ -1 ], null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+			new HashSearchConfig( [] ), [ -1 ], null, null, null,
+			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
 		$feature->apply( $context, $query );
 		if ( $namespace === null ) {
@@ -291,7 +292,8 @@ class PrefixFeatureTest extends CirrusTestCase {
 	public function testRequiredNamespaces( $query, $namespace, $expectedNamespaces, $additionalNs ) {
 		$config = new HashSearchConfig( [] );
 		$context = new SearchContext(
-			$config, $namespace, null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+			$config, $namespace, null, null, null,
+			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
 		$feature = new PrefixFeature( $this->namespacePrefixParser() );
 		$feature->apply( $context, $query );
@@ -336,7 +338,8 @@ class PrefixFeatureTest extends CirrusTestCase {
 	public function testPrepareSearchContext( $initialNs, $prefix, $expectedNs ) {
 		$config = new HashSearchConfig( [] );
 		$context = new SearchContext(
-			$config, $initialNs, null, null, null, $this->createMock( CirrusSearchHookRunner::class )
+			$config, $initialNs, null, null, null,
+			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
 		PrefixFeature::prepareSearchContext( $context, $prefix, $this->namespacePrefixParser() );
 		$this->assertEquals( $expectedNs, $context->getNamespaces() );
@@ -372,12 +375,11 @@ class PrefixFeatureTest extends CirrusTestCase {
 	public function testContextualFilter( $prefix, $expectedNs ) {
 		$contextualFilter = PrefixFeature::asContextualFilter( $prefix, $this->namespacePrefixParser() );
 		$this->assertEquals( $expectedNs, $contextualFilter->requiredNamespaces() );
-		$filterBuilderMock = $this->createMock( FilterBuilder::class );
+		$filterBuilderMock = $this->createNoOpMock( FilterBuilder::class, [ 'must' ] );
 		$filters = [];
 		$filterBuilderMock->expects( $this->once() )
 			->method( 'must' )
 			->with( $this->captureArgs( $filters ) );
-		$filterBuilderMock->expects( $this->never() )->method( 'mustNot' );
 		$contextualFilter->populate( $filterBuilderMock );
 		$this->assertCount( 1, $filters );
 		$this->assertFilter( new PrefixFeature( $this->namespacePrefixParser() ), 'prefix:' . $prefix, $filters[0], [] );

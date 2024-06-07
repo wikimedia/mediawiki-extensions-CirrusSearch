@@ -304,7 +304,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$context = SearchContext::fromSearchQuery(
 			$this->getNewFTSearchQueryBuilder( $config, 'test' )->build(),
 			null,
-			$this->createMock( CirrusSearchHookRunner::class )
+			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
 		$this->assertEquals( $config, $context->getConfig() );
 		$this->assertEquals( [ NS_MAIN ], $context->getNamespaces() );
@@ -339,7 +339,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$context = SearchContext::fromSearchQuery(
 			$query,
 			$myFallbackRunner,
-			$this->createMock( CirrusSearchHookRunner::class )
+			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
 		$this->assertEquals( $config, $context->getConfig() );
 		// the help prefix overrides NS_MAIN

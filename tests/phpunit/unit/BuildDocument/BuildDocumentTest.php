@@ -48,12 +48,12 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 
 		return new class(
 			$connection,
-			$this->createMock( IDatabase::class ),
+			$this->createNoOpMock( IDatabase::class ),
 			$this->revStore,
-			$this->createMock( BacklinkCacheFactory::class ),
+			$this->createNoOpMock( BacklinkCacheFactory::class ),
 			new DocumentSizeLimiter( [] ),
-			$this->createMock( TitleFormatter::class ),
-			$this->createMock( WikiPageFactory::class )
+			$this->createNoOpMock( TitleFormatter::class ),
+			$this->createNoOpMock( WikiPageFactory::class )
 		) extends BuildDocument
 		{
 			/** Override create builders to avoid testing those implementations */

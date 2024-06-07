@@ -13,7 +13,7 @@ use Elastica\Response;
  */
 class ReindexRequestTest extends CirrusTestCase {
 	public function testAcceptsIndexSourceAndDest() {
-		$client = $this->createMock( Client::class );
+		$client = $this->createNoOpMock( Client::class );
 		$sourceIndex = new Index( $client, 'source_idx' );
 		$destIndex = new Index( $client, 'dest_idx' );
 
@@ -103,7 +103,7 @@ class ReindexRequestTest extends CirrusTestCase {
 	}
 
 	public function testProvideScript() {
-		$client = $this->createMock( Client::class );
+		$client = $this->createNoOpMock( Client::class );
 		$sourceIndex = new Index( $client, 'source_idx' );
 		$destIndex = new Index( $client, 'dest_idx' );
 		$req = new ReindexRequest( $sourceIndex, $destIndex );
@@ -128,7 +128,7 @@ class ReindexRequestTest extends CirrusTestCase {
 	}
 
 	public function setProvideRemoteInfo() {
-		$client = $this->createMock( Client::class );
+		$client = $this->createNoOpMock( Client::class );
 		$sourceIndex = new Index( $client, 'source_idx' );
 		$destIndex = new Index( $client, 'dest_idx' );
 		$req = new ReindexRequest( $sourceIndex, $destIndex );
@@ -150,10 +150,9 @@ class ReindexRequestTest extends CirrusTestCase {
 	}
 
 	public function testPerformsRequestAgainstDestinationCluster() {
-		$sourceClient = $this->createMock( Client::class );
+		$sourceClient = $this->createNoOpMock( Client::class );
 		$destClient = $this->createMock( Client::class );
 
-		$sourceClient->expects( $this->never() )->method( 'request' );
 		$destClient->expects( $this->once() )
 			->method( 'request' )
 			->willReturn( new Response( '{}', 200 ) );

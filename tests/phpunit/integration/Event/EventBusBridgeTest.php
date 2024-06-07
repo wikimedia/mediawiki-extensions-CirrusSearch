@@ -29,16 +29,16 @@ class EventBusBridgeTest extends CirrusIntegrationTestCase {
 	 */
 	public function testFactory( $enabled ) {
 		$configFactory = new ConfigFactory();
-		$titleFormatter = $this->createMock( TitleFormatter::class );
-		$pageLookup = $this->createMock( PageLookup::class );
-		$globalIdGenerator = $this->createMock( GlobalIdGenerator::class );
+		$titleFormatter = $this->createNoOpMock( TitleFormatter::class );
+		$pageLookup = $this->createNoOpMock( PageLookup::class );
+		$globalIdGenerator = $this->createNoOpMock( GlobalIdGenerator::class );
 		$configFactory->register( 'CirrusSearch',
 			static function () use ( $enabled ) {
 				return new HashSearchConfig( [ 'CirrusSearchUseEventBusBridge' => $enabled ] );
 			} );
 
 		if ( class_exists( EventBusFactory::class ) ) {
-			$eventBusFactory = $this->createMock( EventBusFactory::class );
+			$eventBusFactory = $this->createNoOpMock( EventBusFactory::class );
 			$service = EventBusBridge::factory( $configFactory, new HashConfig(), $globalIdGenerator,
 				$titleFormatter, $pageLookup, $eventBusFactory );
 			if ( $enabled ) {
@@ -105,8 +105,9 @@ class EventBusBridgeTest extends CirrusIntegrationTestCase {
 		$bridge->onLinksUpdateComplete( $linksUpdate, null );
 		if ( $withEdit ) {
 			$editResult = new EditResult( false, false, null, null, null, false, $nullEdit, [] );
-			$bridge->onPageSaveComplete( $page, $this->createMock( UserIdentity::class ), '', 0,
-				$this->createMock( RevisionRecord::class ), $editResult );
+			$bridge->onPageSaveComplete( $page,
+				$this->createNoOpMock( UserIdentity::class ), '', 0,
+				$this->createNoOpMock( RevisionRecord::class ), $editResult );
 		}
 		DeferredUpdates::doUpdates();
 	}

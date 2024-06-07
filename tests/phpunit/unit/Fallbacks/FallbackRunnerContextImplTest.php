@@ -13,10 +13,10 @@ class FallbackRunnerContextImplTest extends CirrusTestCase {
 
 	public function testMethodResponse() {
 		$context = new FallbackRunnerContextImpl( DummySearchResultSet::emptyResultSet(),
-			$this->createMock( SearcherFactory::class ), $this->namespacePrefixParser(),
+			$this->createNoOpMock( SearcherFactory::class ), $this->namespacePrefixParser(),
 			$this->createCirrusSearchHookRunner() );
 		$this->assertFalse( $context->hasMethodResponse() );
-		$methodResponse = $this->createMock( ResultSet::class );
+		$methodResponse = $this->createNoOpMock( ResultSet::class );
 		$context->setSuggestResponse( $methodResponse );
 		$this->assertTrue( $context->hasMethodResponse() );
 		$this->assertSame( $methodResponse, $context->getMethodResponse() );

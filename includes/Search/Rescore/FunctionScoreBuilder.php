@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search\Rescore;
 
 use CirrusSearch\SearchConfig;
+use MediaWiki\Context\RequestContext;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -63,7 +64,7 @@ abstract class FunctionScoreBuilder implements BoostFunctionBuilder {
 			if ( isset( $value['uri_param_override'] ) ) {
 				// Override factor with uri param
 				$uriParam = $value['uri_param_override'];
-				$request = \RequestContext::getMain()->getRequest();
+				$request = RequestContext::getMain()->getRequest();
 				if ( $request ) {
 					$fromUri = $request->getVal( $uriParam );
 					if ( $fromUri !== null && is_numeric( $fromUri ) ) {

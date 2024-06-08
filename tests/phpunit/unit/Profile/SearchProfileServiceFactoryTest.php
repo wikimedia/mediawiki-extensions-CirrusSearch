@@ -9,7 +9,7 @@ use CirrusSearch\InterwikiResolverFactory;
 use EmptyBagOStuff;
 use MediaWiki\Interwiki\NullInterwikiLookup;
 use MediaWiki\Request\FauxRequest;
-use MediaWiki\Session\TestBagOStuff;
+use MediaWiki\Tests\Session\TestBagOStuff;
 use MediaWiki\User\Options\StaticUserOptionsLookup;
 use MediaWiki\User\User;
 use MediaWiki\User\UserIdentityValue;

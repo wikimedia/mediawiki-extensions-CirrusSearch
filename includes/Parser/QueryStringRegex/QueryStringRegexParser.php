@@ -22,7 +22,7 @@ use CirrusSearch\Query\PrefixFeature;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\Util;
 use LogicException;
-use Message;
+use MediaWiki\Message\Message;
 use Wikimedia\Assert\Assert;
 
 /**

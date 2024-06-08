@@ -4,7 +4,7 @@ namespace CirrusSearch\Search\Rescore;
 
 use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
-use RequestContext;
+use MediaWiki\Context\RequestContext;
 
 /**
  * Boosts documents in user language and in wiki language if different

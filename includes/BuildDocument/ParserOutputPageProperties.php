@@ -8,10 +8,10 @@ use CirrusSearch\SearchConfig;
 use Elastica\Document;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
-use ParserOutput;
 use Wikimedia\LightweightObjectStore\ExpirationAwareness;
 use WikiPage;
 

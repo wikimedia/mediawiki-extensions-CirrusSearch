@@ -1,6 +1,7 @@
 <?php
 
 use CirrusSearch\Api\ConfigDump;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Request\FauxRequest;
 
 /**

@@ -12,8 +12,8 @@ use MediaWiki\Page\Hook\PageUndeleteCompleteHook;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
 use MediaWiki\Utils\MWTimestamp;
-use Title;
 use Wikimedia\Assert\Assert;
 
 /**

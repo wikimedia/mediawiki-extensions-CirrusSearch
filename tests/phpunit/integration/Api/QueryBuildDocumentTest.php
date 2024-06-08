@@ -6,6 +6,7 @@ use CirrusSearch\CirrusIntegrationTestCaseTrait;
 use CirrusSearch\CirrusSearch;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Tests\Api\ApiTestCase;
 use MediaWiki\Title\Title;
 use MediaWiki\Utils\MWTimestamp;
 use MediaWiki\WikiMap\WikiMap;
@@ -13,7 +14,7 @@ use MediaWiki\WikiMap\WikiMap;
 /**
  * @group Database
  */
-class QueryBuildDocumentTest extends \ApiTestCase {
+class QueryBuildDocumentTest extends ApiTestCase {
 	use CirrusIntegrationTestCaseTrait;
 
 	private const PAGE_TITLE = 'QueryBuildDocumentTest test page';

@@ -3,7 +3,7 @@
 namespace CirrusSearch;
 
 use MediaWiki\Config\HashConfig;
-use RequestContext;
+use MediaWiki\Context\RequestContext;
 use Wikimedia\Assert\Assert;
 
 /**

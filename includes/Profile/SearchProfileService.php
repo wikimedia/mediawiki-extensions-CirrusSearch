@@ -10,10 +10,10 @@ use CirrusSearch\Dispatch\SearchQueryDispatchService;
 use CirrusSearch\Dispatch\SearchQueryRoute;
 use CirrusSearch\Search\SearchQuery;
 use MediaWiki\Config\Config;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Request\WebRequest;
 use MediaWiki\User\Options\UserOptionsLookup;
 use MediaWiki\User\UserIdentity;
-use RequestContext;
 use Wikimedia\Assert\Assert;
 
 /**

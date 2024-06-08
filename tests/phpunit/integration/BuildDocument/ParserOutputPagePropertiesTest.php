@@ -6,9 +6,9 @@ use CirrusSearch\CirrusSearch;
 use CirrusSearch\HashSearchConfig;
 use ContentHandler;
 use Elastica\Document;
+use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
-use ParserOutput;
 use WikiPage;
 
 /**

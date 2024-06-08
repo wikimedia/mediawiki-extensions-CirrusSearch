@@ -10,10 +10,10 @@ use Elastica\Multi\ResultSet as MultiResultSet;
 use Elastica\Multi\Search;
 use ISearchResultSet;
 use MediaWiki\Config\ConfigException;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Status\Status;
 use MediaWiki\User\UserIdentity;
-use RequestContext;
 use Wikimedia\Assert\Assert;
 
 /**

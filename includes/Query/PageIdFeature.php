@@ -9,7 +9,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\Ids;
-use Message;
+use MediaWiki\Message\Message;
 
 /**
  * Filter by a set of page IDs. This is useful for re-validating cached query results.

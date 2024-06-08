@@ -3,15 +3,16 @@
 namespace CirrusSearch;
 
 use IBufferingStatsdDataFactory;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Request\WebRequest;
 use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
 use MediaWiki\WikiMap\WikiMap;
 use NullStatsdDataFactory;
-use PoolCounterWorkViaCallback;
 use UIDGenerator;
 use Wikimedia\Assert\Assert;
 use Wikimedia\IPUtils;
@@ -373,7 +374,7 @@ class Util {
 	 * @return string A token that identifies the source of the request
 	 */
 	public static function generateIdentToken( $extraData = '' ) {
-		$request = \RequestContext::getMain()->getRequest();
+		$request = RequestContext::getMain()->getRequest();
 		try {
 			$ip = $request->getIP();
 		} catch ( \MWException $e ) {
@@ -593,7 +594,7 @@ class Util {
 			}
 
 			// When dumping the query we skip _everything_ but echoing the query.
-			\RequestContext::getMain()->getOutput()->disable();
+			RequestContext::getMain()->getOutput()->disable();
 			// @phan-suppress-next-line PhanTypeMismatchArgumentNullable $header can't be null here
 			$request->response()->header( $header );
 			echo $output;

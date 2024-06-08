@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Jenkins;
 
-use DatabaseUpdater;
 use Language;
+use MediaWiki\Installer\DatabaseUpdater;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 

@@ -8,10 +8,10 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\CheckerException;
 use CirrusSearch\Sanity\Remediator;
-use FauxRequest;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
-use RequestContext;
 use WikiPage;
 
 /**

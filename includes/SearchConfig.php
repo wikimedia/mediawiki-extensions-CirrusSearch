@@ -8,9 +8,9 @@ use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use LogicException;
 use MediaWiki\Config\Config;
 use MediaWiki\Config\GlobalVarConfig;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\WikiMap\WikiMap;
-use RequestContext;
 use Wikimedia\Assert\Assert;
 
 /**

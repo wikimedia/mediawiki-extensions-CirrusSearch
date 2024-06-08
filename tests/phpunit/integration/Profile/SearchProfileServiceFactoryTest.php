@@ -9,7 +9,7 @@ use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use EmptyBagOStuff;
 use MediaWiki\Interwiki\NullInterwikiLookup;
-use MediaWiki\Session\TestBagOStuff;
+use MediaWiki\Tests\Session\TestBagOStuff;
 use MediaWiki\User\Options\StaticUserOptionsLookup;
 
 /**

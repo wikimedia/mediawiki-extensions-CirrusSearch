@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use ISearchResultSet;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\User\User;
@@ -452,7 +453,7 @@ class RequestLogger {
 	 * @return int The number of ms the php request took
 	 */
 	private function getPhpRequestTookMs() {
-		$timing = \RequestContext::getMain()->getTiming();
+		$timing = RequestContext::getMain()->getTiming();
 		$startMark = $timing->getEntryByName( 'requestStart' );
 		$endMark  = $timing->getEntryByName( 'requestShutdown' );
 		if ( $startMark && $endMark ) {

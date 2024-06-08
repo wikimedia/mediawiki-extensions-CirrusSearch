@@ -7,7 +7,7 @@ use CirrusSearch\WarningCollector;
 use CirrusSearch\Wikimedia\WeightedTagsHooks;
 use Elastica\Query\DisMax;
 use Elastica\Query\Term;
-use Message;
+use MediaWiki\Message\Message;
 
 /**
  * Finds pages based on how well they match a given topic, based on scores provided by the

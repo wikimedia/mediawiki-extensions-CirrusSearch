@@ -13,6 +13,7 @@ use MediaWiki\Api\Hook\APIAfterExecuteHook;
 use MediaWiki\Api\Hook\APIQuerySiteInfoStatisticsInfoHook;
 use MediaWiki\Config\Config;
 use MediaWiki\Config\ConfigFactory;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Hook\ApiBeforeMainHook;
 use MediaWiki\Hook\BeforeInitializeHook;
 use MediaWiki\Hook\SoftwareInfoHook;
@@ -32,7 +33,6 @@ use MediaWiki\Specials\SpecialSearch;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Hook\UserGetDefaultOptionsHook;
 use MediaWiki\User\User;
-use RequestContext;
 use SearchResult;
 
 /**

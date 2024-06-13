@@ -213,9 +213,8 @@ class ElasticaErrorHandler {
 	 * @return bool is this a parse error?
 	 */
 	public static function isParseError( Status $status ) {
-		/** @todo No good replacements for getErrorsArray */
-		foreach ( $status->getErrorsArray() as $errorMessage ) {
-			if ( $errorMessage[ 0 ] === 'cirrussearch-parse-error' ) {
+		foreach ( $status->getMessages() as $msg ) {
+			if ( $msg->getKey() === 'cirrussearch-parse-error' ) {
 				return true;
 			}
 		}

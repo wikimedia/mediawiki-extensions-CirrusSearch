@@ -127,9 +127,7 @@ class Util {
 		$key = "$type:$wgCirrusSearchPoolCounterKey";
 
 		$errorCallback = static function ( Status $status ) use ( $key, $busyErrorMsg ) {
-			/** @todo No good replacements for getErrorsArray */
-			$errors = $status->getErrorsArray();
-			$error = $errors[0][0];
+			$error = $status->getMessages()[0]->getKey();
 
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Pool error on {key}:  {error}",

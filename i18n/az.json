@@ -2,9 +2,15 @@
 	"@metadata": {
 		"authors": [
 			"NMW03",
-			"Toghrul Rahimli"
+			"Toghrul Rahimli",
+			"Nemoralis"
 		]
 	},
+	"cirrussearch-desc": "MediaWiki üçün Elasticsearch ilə dəstəklənən axtarış",
+	"cirrussearch-backend-error": "Müvəqqəti problemə görə axtarışınızı tamamlaya bilmədik. Zəhmət olmasa bir az sonra yenə cəhd edin.",
+	"cirrussearch-parse-error": "Sorğu başa düşülmədi. Zəhmət olmasa bunu sadələşdirin. Sorğu axtarış sistemini təkmilləşdirmək üçün daxil edilmişdir.",
+	"cirrussearch-too-busy-error": "Axtarış hazırda çox məşğuldur. Zəhmət olmasa bir az sonra yenə cəhd edin.",
+	"cirrussearch-regex-empty-expression": "$1 boş olmayan requlyar ifadə tələb edir.",
 	"prefs-completion": "Axtarışın tamamlanması",
 	"cirrussearch-pref-completion-profile-help": "Axtarış zamanı avtomatik tamamlama (yazdıqca axtarmaq) təklifləri üçün seçimləri təyin edin.\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Tamamlama təklifçisi] yazı səhvlərinin daha yaxşı düzəldilməsi və uyğun axtarış təklifləri üçün alqoritmdir. Prefiks axtarışı alqoritmin köhnə funksiyasıdır.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standart (tövsiyə olunan)",
@@ -15,5 +21,6 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Yazı səhvləri düzəldilmir. Yaxın istiqamətləndirmələri həll edir.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klassik prefiks axtarışı",
 	"cirrussearch-completion-profile-classic-pref-desc": "Yazı səhvləri düzəldilmir. Başlığın əvvəli uyğunlaşdırılır.",
+	"cirrussearch-regex-timed-out": "Regex axtarışının vaxtı bitdi, ona görə də yalnız qismən nəticələr göstərilir. Tam nəticələri əldə etmək üçün requlyar ifadənizi sadələşdirməyə çalışın.",
 	"cirrussearch-article-words": "Bütün məqalələrdəki sözlərin cəmi"
 }

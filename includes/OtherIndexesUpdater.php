@@ -151,7 +151,12 @@ class OtherIndexesUpdater extends Updater {
 		}
 	}
 
-	protected function runUpdates( Title $title, array $updates ) {
+	/**
+	 * @param Title $title
+	 * @param array $updates
+	 * @return void
+	 */
+	protected function runUpdates( Title $title, array $updates ): void {
 		// These are split into a job per index because the external indexes
 		// may be configured to write to different clusters. This maintains
 		// isolation of writes between clusters so one slow cluster doesn't

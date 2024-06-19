@@ -164,7 +164,11 @@ class ConfigDump extends ApiBase {
 		}
 	}
 
-	protected function addGlobals( ApiResult $result ) {
+	/**
+	 * @param ApiResult $result
+	 * @return void
+	 */
+	protected function addGlobals( ApiResult $result ): void {
 		$config = $this->getConfig();
 		foreach ( self::$PUBLICLY_SHAREABLE_CONFIG_VARS as $key ) {
 			if ( $config->has( $key ) ) {
@@ -224,7 +228,12 @@ class ConfigDump extends ApiBase {
 		}
 	}
 
-	protected function addUserTesting( ApiResult $result ) {
+	/**
+	 * @param ApiResult $result
+	 * @return void
+	 * @throws \CirrusSearch\NoActiveTestException
+	 */
+	protected function addUserTesting( ApiResult $result ): void {
 		// UserTesting only automatically assigns test buckets during web requests.
 		// This api call is different from a typical search request though, this is
 		// used from non-search pages to find out what bucket to provide to a new

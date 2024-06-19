@@ -190,9 +190,10 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	 */
 	private function logRequest( $startQueryTime ) {
 		$timeTaken = intval( 1000 * ( microtime( true ) - $startQueryTime ) );
-		MediaWikiServices::getInstance()->getStatsdDataFactory()->timing(
-			self::STATSD_SPARQL_KEY, $timeTaken
-		);
+		MediaWikiServices::getInstance()->getStatsFactory()
+			->getTiming( 'cirrus_search_deepcat_sparql_time' )
+			->copyToStatsdAt( self::STATSD_SPARQL_KEY )
+			->observe( $timeTaken );
 	}
 
 	/**
@@ -228,9 +229,10 @@ SPARQL;
 			// We went over the limit.
 			// According to T181549 this means we fail the filter application
 			$warningCollector->addWarning( 'cirrussearch-feature-deepcat-toomany' );
-			MediaWikiServices::getInstance()
-				->getStatsdDataFactory()
-				->increment( self::STATSD_TOOMANY_KEY );
+			MediaWikiServices::getInstance()->getStatsFactory()
+				->getCounter( 'cirrus_search_deepcat_toomany' )
+				->copyToStatsdAt( self::STATSD_TOOMANY_KEY )
+				->increment();
 			return [];
 		}
 

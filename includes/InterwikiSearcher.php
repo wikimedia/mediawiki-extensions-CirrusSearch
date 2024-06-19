@@ -15,6 +15,7 @@ use CirrusSearch\Search\TitleHelper;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Status\Status;
 use MediaWiki\User\User;
+use Wikimedia\Stats\StatsFactory;
 
 /**
  * Performs searches using Elasticsearch -- on interwikis!
@@ -123,11 +124,7 @@ class InterwikiSearcher extends Searcher {
 			} );
 	}
 
-	/**
-	 * @return string The stats key used for reporting hit/miss rates of the
-	 *  application side query cache.
-	 */
-	protected function getQueryCacheStatsKey() {
-		return 'CirrusSearch.query_cache.interwiki';
+	protected function recordQueryCacheMetrics( StatsFactory $requestStats, string $cacheStatus, ?string $type = null ): void {
+		parent::recordQueryCacheMetrics( $requestStats, $cacheStatus, "interwiki" );
 	}
 }

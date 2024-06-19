@@ -6,12 +6,12 @@ use CirrusSearch\ClusterSettings;
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
 use CirrusSearch\UpdateGroup;
-use Liuggio\StatsdClient\Factory\StatsdDataFactoryInterface;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Status\Status;
 use MediaWiki\Utils\MWTimestamp;
 use Wikimedia\Assert\Assert;
+use Wikimedia\Stats\StatsFactory;
 
 /**
  * Performs writes to elasticsearch indexes with requeuing and an
@@ -244,17 +244,21 @@ class ElasticaWrite extends CirrusGenericJob {
 	/**
 	 * Report the update lag based on stored params if set.
 	 * @param string $cluster
-	 * @param StatsdDataFactoryInterface|null $statsdDataFactory
+	 * @param StatsFactory|null $statsFactory
 	 * @return void
 	 */
-	public function reportUpdateLag( string $cluster, StatsdDataFactoryInterface $statsdDataFactory = null ): void {
+	public function reportUpdateLag( string $cluster, StatsFactory $statsFactory = null ): void {
 		$params = $this->getParams();
 		$updateKind = $params[CirrusTitleJob::UPDATE_KIND] ?? null;
 		$eventTime = $params[CirrusTitleJob::ROOT_EVENT_TIME] ?? null;
 		if ( $updateKind !== null && $eventTime !== null ) {
 			$now = MWTimestamp::time();
-			$statsdDataFactory ??= MediaWikiServices::getInstance()->getStatsdDataFactory();
-			$statsdDataFactory->timing( "CirrusSearch.$cluster.updates.all.lag.$updateKind", $now - $eventTime );
+			$statsFactory ??= MediaWikiServices::getInstance()->getStatsFactory();
+			$statsFactory->getTiming( "cirrus_search_update_lag" )
+				->setLabel( "cluster", $cluster )
+				->setLabel( "update_kind", $updateKind )
+				->copyToStatsdAt( "CirrusSearch.$cluster.updates.all.lag.$updateKind" )
+				->observe( $now - $eventTime );
 		}
 	}
 }

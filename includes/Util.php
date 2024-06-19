@@ -2,7 +2,6 @@
 
 namespace CirrusSearch;
 
-use IBufferingStatsdDataFactory;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -12,10 +11,10 @@ use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
 use MediaWiki\WikiMap\WikiMap;
-use NullStatsdDataFactory;
 use UIDGenerator;
 use Wikimedia\Assert\Assert;
 use Wikimedia\IPUtils;
+use Wikimedia\Stats\StatsFactory;
 
 /**
  * Random utility functions that don't have a better home
@@ -61,17 +60,24 @@ class Util {
 	}
 
 	/**
+	 * Set label and statsd BC setup for pool counter metrics
 	 * @param string $type The pool counter type, such as CirrusSearch-Search
 	 * @param bool $isSuccess If the pool counter gave a success, or failed the request
-	 * @return string The key used for collecting timing stats about this pool counter request
+	 * @param float $observation the time it took to update the counter
+	 * @return void
 	 */
-	private static function getPoolStatsKey( $type, $isSuccess ) {
+	private static function recordPoolStats( string $type, bool $isSuccess, float $observation ): void {
 		$pos = strpos( $type, '-' );
 		if ( $pos !== false ) {
 			$type = substr( $type, $pos + 1 );
 		}
 		$postfix = $isSuccess ? 'successMs' : 'failureMs';
-		return "CirrusSearch.poolCounter.$type.$postfix";
+		MediaWikiServices::getInstance()->getStatsFactory()
+			->getTiming( "cirrus_search_pool_counter" )
+			->setLabel( "pool_type", $type )
+			->setLabel( "outcome", $isSuccess ? "success" : "failure" )
+			->copyToStatsdAt( "CirrusSearch.poolCounter.$type.$postfix" )
+			->observe( $observation );
 	}
 
 	/**
@@ -87,10 +93,10 @@ class Util {
 		callable $callback
 	) {
 		return function () use ( $type, $isSuccess, $callback, $startPoolWork ) {
-			MediaWikiServices::getInstance()->getStatsdDataFactory()->timing(
-				self::getPoolStatsKey( $type, $isSuccess ),
-				intval( 1000 * ( microtime( true ) - $startPoolWork ) )
-			);
+			self::recordPoolStats(
+				$type,
+				$isSuccess,
+				1000 * ( microtime( true ) - $startPoolWork ) );
 
 			return $callback( ...func_get_args() );
 		};
@@ -517,14 +523,11 @@ class Util {
 		return $destArray;
 	}
 
-	/**
-	 * @return IBufferingStatsdDataFactory
-	 */
-	public static function getStatsDataFactory(): IBufferingStatsdDataFactory {
+	public static function getStatsFactory(): StatsFactory {
 		if ( defined( 'MW_PHPUNIT_TEST' ) ) {
-			return new NullStatsdDataFactory();
+			return StatsFactory::newNull();
 		}
-		return MediaWikiServices::getInstance()->getStatsdDataFactory();
+		return MediaWikiServices::getInstance()->getStatsFactory();
 	}
 
 	/**

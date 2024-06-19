@@ -6,8 +6,9 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\ClusterSettings;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\UpdateGroup;
-use Liuggio\StatsdClient\Factory\StatsdDataFactoryInterface;
 use MediaWiki\Utils\MWTimestamp;
+use Wikimedia\Stats\Metrics\TimingMetric;
+use Wikimedia\Stats\StatsFactory;
 
 /**
  * @covers \CirrusSearch\Job\ElasticaWrite
@@ -39,21 +40,40 @@ class ElasticaWriteTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testReportUpdateLog() {
-		$statsD = $this->createMock( StatsdDataFactoryInterface::class );
-		$statsD->expects( $this->once() )->method( 'timing' )->with( "CirrusSearch.my_cluster.updates.all.lag.my_update_kind", 10 );
+		$stats = $this->createMock( StatsFactory::class );
+
+		$timing = $this->createMock( TimingMetric::class );
+
+		$stats->expects( $this->once() )
+			->method( 'getTiming' )
+			->with( "cirrus_search_update_lag" )
+			->willReturn( $timing );
+		$timing->expects( $this->exactly( 2 ) )
+			->method( 'setLabel' )
+			->willReturnMap( [
+				[ 'cluster', 'my_cluster', $timing ],
+				[ 'update_kind', 'my_update_kind', $timing ] ] );
+		$timing->expects( $this->once() )
+			->method( 'copyToStatsdAt' )
+			->with( "CirrusSearch.my_cluster.updates.all.lag.my_update_kind" )
+			->willReturn( $timing );
+		$timing->expects( $this->once() )
+			->method( 'observe' )
+			->with( 10 );
+
 		$myJob = new ElasticaWrite( [
 			CirrusTitleJob::UPDATE_KIND => "my_update_kind",
 			CirrusTitleJob::ROOT_EVENT_TIME => 0
 		] );
 		MWTimestamp::setFakeTime( 10 );
-		$myJob->reportUpdateLag( "my_cluster", $statsD );
+		$myJob->reportUpdateLag( "my_cluster", $stats );
 	}
 
 	public function testNoLagReportedWithoutEventTime() {
-		$statsD = $this->createMock( StatsdDataFactoryInterface::class );
-		$statsD->expects( $this->never() )->method( 'timing' );
+		$stats = $this->createMock( StatsFactory::class );
+		$stats->expects( $this->never() )->method( 'getTiming' );
 		$myJob = new ElasticaWrite( [] );
-		$myJob->reportUpdateLag( "my_cluster", $statsD );
+		$myJob->reportUpdateLag( "my_cluster", $stats );
 	}
 
 }

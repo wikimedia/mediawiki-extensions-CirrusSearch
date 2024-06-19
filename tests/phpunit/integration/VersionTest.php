@@ -44,6 +44,8 @@ class VersionTest extends CirrusIntegrationTestCase {
 		$conn = $this->createMock( Connection::class );
 		$conn->method( 'getClient' )
 			->willReturn( $client );
+		$conn->method( 'getClusterName' )
+			->willReturn( 'default' );
 		$conn->expects( ( $this->any() ) )
 			->method( 'getConfig' )
 			->willReturn( $config );

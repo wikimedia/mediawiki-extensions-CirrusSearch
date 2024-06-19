@@ -224,12 +224,16 @@ abstract class ElasticsearchIntermediary {
 		// whatever else.
 		$context['error_message'] = mb_substr( $message, 0, 4096 );
 
-		$stats = Util::getStatsDataFactory();
+		$stats = Util::getStatsFactory();
 		$type = ElasticaErrorHandler::classifyError( $exception );
 		$clusterName = $connection->getClusterName();
 		$context['cirrussearch_error_type'] = $type;
 
-		$stats->increment( "CirrusSearch.$clusterName.backend_failure.$type" );
+		$stats->getCounter( "cirrus_search_backend_failure" )
+			->setLabel( "cluster", $clusterName )
+			->setLabel( "failure_type", $type )
+			->copyToStatsdAt( "CirrusSearch.$clusterName.backend_failure.$type" )
+			->increment();
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 			"Search backend error during {$logType} after {tookMs}: {error_message}",
@@ -266,12 +270,18 @@ abstract class ElasticsearchIntermediary {
 		$log->finish();
 		$tookMs = $log->getTookMs();
 		$clusterName = $connection->getClusterName();
-		$stats = Util::getStatsDataFactory();
-		$stats->timing( "CirrusSearch.$clusterName.requestTime", $tookMs );
 		$this->searchMetrics['wgCirrusTookMs'] = $tookMs;
 		self::$requestLogger->addRequest( $log, $this->user, $this->slowMillis );
 		$type = $log->getQueryType();
-		$stats->timing( "CirrusSearch.$clusterName.requestTimeMs.$type", $tookMs );
+		$stats = Util::getStatsFactory();
+		$stats->getTiming( "cirrus_search_request_time" )
+			->setLabel( "cluster", $clusterName )
+			->setLabel( "search_type", $type )
+			->copyToStatsdAt( [
+				"CirrusSearch.$clusterName.requestTimeMs.$type",
+				"CirrusSearch.$clusterName.requestTime"
+			] )
+			->observe( $tookMs );
 		if ( $log->getElasticTookMs() ) {
 			$this->searchMetrics['wgCirrusElasticTime'] = $log->getElasticTookMs();
 		}

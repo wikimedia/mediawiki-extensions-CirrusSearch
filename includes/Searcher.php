@@ -43,6 +43,7 @@ use MediaWiki\User\User;
 use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\Assert\Assert;
 use Wikimedia\ObjectFactory\ObjectFactory;
+use Wikimedia\Stats\StatsFactory;
 
 /**
  * Performs searches using Elasticsearch.  Note that each instance of this class
@@ -631,7 +632,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		if ( $this->searchContext->getCacheTtl() > 0 && !$skipCache ) {
 			$work = function () use ( $work, $searches, $log, $contextResultsType ) {
 				$services = MediaWikiServices::getInstance();
-				$requestStats = $services->getStatsdDataFactory();
+				$requestStats = $services->getStatsFactory();
 				$cache = $services->getMainWANObjectCache();
 				$keyParts = [];
 				foreach ( $searches as $key => $search ) {
@@ -644,10 +645,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 					implode( '|', $keyParts )
 				) );
 				$cacheResult = $cache->get( $key );
-				$statsKey = $this->getQueryCacheStatsKey();
 				if ( $cacheResult ) {
 					[ $logVariables, $multiResultSet ] = $cacheResult;
-					$requestStats->increment( "$statsKey.hit" );
+					$this->recordQueryCacheMetrics( $requestStats, "hit" );
 					$log->setCachedResult( $logVariables );
 					$this->successViaCache( $log );
 
@@ -663,17 +663,17 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 										'nb_queries' => count( $searches ),
 										'nb_responses' => count( $cachedMResultSet->getResultSets() )
 									] );
-							$requestStats->increment( "$statsKey.incoherent" );
+							$this->recordQueryCacheMetrics( $requestStats, "incoherent" );
 						} else {
 							return $multiResultSet;
 						}
 					} else {
 						LoggerFactory::getInstance( 'CirrusSearch' )
 							->warning( 'Cached a Status value that is not OK' );
-						$requestStats->increment( "$statsKey.nok" );
+						$this->recordQueryCacheMetrics( $requestStats, "nok" );
 					}
 				} else {
-					$requestStats->increment( "$statsKey.miss" );
+					$this->recordQueryCacheMetrics( $requestStats, "miss" );
 				}
 
 				$multiResultSet = $work();
@@ -688,7 +688,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 						}
 					}
 					if ( !$isPartialResult ) {
-						$requestStats->increment( "$statsKey.set" );
+						$this->recordQueryCacheMetrics( $requestStats, "set" );
 						$cache->set(
 							$key,
 							[ $log->getLogVariables(), $multiResultSet ],
@@ -838,13 +838,13 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		return $this->connection;
 	}
 
-	/**
-	 * @return string The stats key used for reporting hit/miss rates of the
-	 *  application side query cache.
-	 */
-	protected function getQueryCacheStatsKey() {
-		$type = $this->searchContext->getSearchType();
-		return "CirrusSearch.query_cache.$type";
+	protected function recordQueryCacheMetrics( StatsFactory $requestStats, string $cacheStatus, ?string $type = null ): void {
+		$type = $type ?: $this->getSearchContext()->getSearchType();
+		$requestStats->getCounter( "cirrus_search_query_cache" )
+			->setLabel( "search_type", $type )
+			->setLabel( "cache_status", $cacheStatus )
+			->copyToStatsdAt( "CirrusSearch.query_cache.$type.$cacheStatus" )
+			->increment();
 	}
 
 	/**

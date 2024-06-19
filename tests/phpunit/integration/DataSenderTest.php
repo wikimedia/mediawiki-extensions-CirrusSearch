@@ -141,6 +141,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 
 	private function buildConfig( array $extraHandlers ) {
 		return new HashSearchConfig( [
+			'CirrusSearchDefaultCluster' => 'default',
 			'CirrusSearchWikimediaExtraPlugin' => [
 				'super_detect_noop' => true,
 				'super_detect_noop_handlers' => $extraHandlers,
@@ -219,11 +220,14 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon = $this->getMockBuilder( Connection::class )
 			->disableOriginalConstructor()
 			->setProxyTarget( new Connection( $searchConfig, 'default' ) )
-			->onlyMethods( [ 'getClient' ] )
+			->onlyMethods( [ 'getClient', 'getClusterName' ] )
 			->getMock();
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
 			->willReturn( $mockClient );
+		$mockCon->expects( $this->atLeastOnce() )
+			->method( 'getClusterName' )
+			->willReturn( 'default' );
 		$sender = new DataSender( $mockCon, $searchConfig );
 		$sender->sendData( $indexSuffix, $documents );
 	}
@@ -288,11 +292,14 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon = $this->getMockBuilder( Connection::class )
 			->disableOriginalConstructor()
 			->setProxyTarget( new Connection( $searchConfig, 'default' ) )
-			->onlyMethods( [ 'getClient' ] )
+			->onlyMethods( [ 'getClient', 'getClusterName' ] )
 			->getMock();
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
 			->willReturn( $mockClient );
+		$mockCon->expects( $this->atLeastOnce() )
+			->method( 'getClusterName' )
+			->willReturn( 'default' );
 		$sender = new DataSender( $mockCon, $searchConfig );
 		$sender->sendDeletes( $ids, $indexSuffix );
 	}
@@ -487,11 +494,14 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockCon = $this->getMockBuilder( Connection::class )
 			->disableOriginalConstructor()
 			->setProxyTarget( new Connection( $searchConfig, 'default' ) )
-			->onlyMethods( [ 'getClient' ] )
+			->onlyMethods( [ 'getClient', 'getClusterName' ] )
 			->getMock();
 		$mockCon->expects( $this->atLeastOnce() )
 			->method( 'getClient' )
 			->willReturn( $client );
+		$mockCon->expects( $this->atLeastOnce() )
+			->method( 'getClusterName' )
+			->willReturn( 'default' );
 		return new DataSender( $mockCon, $searchConfig );
 	}
 

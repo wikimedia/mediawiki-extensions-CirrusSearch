@@ -15,4 +15,8 @@ class DummyConnection extends \CirrusSearch\Connection {
 	public function getServerList() {
 		return [ 'localhost' ];
 	}
+
+	public function getClusterName() {
+		return 'default';
+	}
 }

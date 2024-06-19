@@ -8,6 +8,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
+use Wikimedia\Stats\StatsFactory;
 use WikiPage;
 
 /**
@@ -167,11 +168,19 @@ class Checker {
 			}
 		}
 		$clusterName = $this->connection->getClusterName();
-		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
-		$stats->updateCount( "CirrusSearch.$clusterName.sanitization.fixed", $nbPagesFixed );
-		$stats->updateCount( "CirrusSearch.$clusterName.sanitization.checked", count( $pageIds ) );
-		$stats->updateCount( "CirrusSearch.$clusterName.sanitization.old", $nbPagesOld );
+		$stats = MediaWikiServices::getInstance()->getStatsFactory();
+		$this->recordStats( $stats, $clusterName, "fixed", $nbPagesFixed );
+		$this->recordStats( $stats, $clusterName, "checked", count( $pageIds ) );
+		$this->recordStats( $stats, $clusterName, "old", $nbPagesOld );
 		return $nbPagesFixed;
+	}
+
+	private function recordStats( StatsFactory $statsFactory, string $cluster, string $action, int $value ): void {
+		$statsFactory->getCounter( "cirrus_search_sanitization" )
+			->setLabel( "cluster", $cluster )
+			->setLabel( "action", $action )
+			->copyToStatsdAt( "CirrusSearch.$cluster.sanitization.$action" )
+			->incrementBy( $value );
 	}
 
 	/**

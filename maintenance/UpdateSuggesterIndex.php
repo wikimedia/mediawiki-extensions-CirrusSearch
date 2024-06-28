@@ -285,12 +285,16 @@ class UpdateSuggesterIndex extends Maintenance {
 		) );
 
 		$this->createIndex();
-		$this->indexData();
+		$totalSuggestDocs = $this->indexData();
 		if ( $this->optimizeIndex ) {
 			$this->optimize();
 		}
 		$this->enableReplicas();
 		$this->getIndex()->refresh();
+		$docsInIndex = $this->getIndex()->count();
+		if ( $docsInIndex != $totalSuggestDocs ) {
+			$this->error( "Prepared and indexed $totalSuggestDocs docs but the index has $docsInIndex" );
+		}
 		$this->validateAlias();
 		$this->updateVersions();
 		$this->deleteOldIndex();
@@ -385,7 +389,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	private function recycle() {
 		$this->log( "Recycling index {$this->getIndex()->getName()}\n" );
 		$this->recycle = true;
-		$this->indexData();
+		$indexedDocs = $this->indexData();
 		// This is fragile... hopefully most of the docs will be deleted from the old segments
 		// and will result in a fast operation.
 		// New segments should not be affected.
@@ -460,6 +464,10 @@ class UpdateSuggesterIndex extends Maintenance {
 		// Refresh the reader so it now uses the optimized FST,
 		// and actually free and delete old segments.
 		$this->getIndex()->refresh();
+		$docsInIndex = $this->getIndex()->count();
+		if ( $docsInIndex != $indexedDocs ) {
+			$this->error( "Prepared and indexed $indexedDocs docs but the index has $docsInIndex" );
+		}
 	}
 
 	private function deleteOldIndex() {
@@ -504,7 +512,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->output( "ok.\n" );
 	}
 
-	private function indexData() {
+	private function indexData(): int {
 		// We build the suggestions by reading CONTENT and GENERAL indices.
 		// This does not support extra indices like FILES on commons.
 		$sourceIndexSuffixes = [ Connection::CONTENT_INDEX_SUFFIX, Connection::GENERAL_INDEX_SUFFIX ];
@@ -527,6 +535,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		// Explicitly ask for accurate total_hits even-though we use a scroll request
 		$query->setTrackTotalHits( true );
 
+		$totalDocsDumpedFromAllIndices = 0;
+		$totalHitsFromAllIndices = 0;
+		$totalSuggestDocsIndexed = 0;
 		foreach ( $sourceIndexSuffixes as $sourceIndexSuffix ) {
 			$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexSuffix );
 			$search = new \Elastica\Search( $this->getClient() );
@@ -542,6 +553,8 @@ class UpdateSuggesterIndex extends Maintenance {
 			foreach ( $searchAfter as $results ) {
 				if ( $totalDocsToDump === -1 ) {
 					$totalDocsToDump = $results->getTotalHits();
+					$totalHitsFromAllIndices += $totalDocsToDump;
+					$this->log( "total hits: $totalDocsToDump\n" );
 					if ( $totalDocsToDump === 0 ) {
 						$this->log( "No documents to index from $sourceIndexSuffix\n" );
 						break;
@@ -562,6 +575,7 @@ class UpdateSuggesterIndex extends Maintenance {
 				if ( !$suggestDocs ) {
 					continue;
 				}
+				$totalSuggestDocsIndexed += count( $suggestDocs );
 				$this->outputProgress( $docsDumped, $totalDocsToDump );
 				MWElasticUtils::withRetry( $this->indexRetryAttempts,
 					static function () use ( $destinationIndex, $suggestDocs ) {
@@ -570,7 +584,11 @@ class UpdateSuggesterIndex extends Maintenance {
 				);
 			}
 			$this->log( "Indexing from $sourceIndexSuffix index done.\n" );
+			$totalDocsDumpedFromAllIndices += $docsDumped;
 		}
+		$this->log( "Exported $totalDocsDumpedFromAllIndices ($totalHitsFromAllIndices total hits) " .
+					"from the search indices and indexed $totalSuggestDocsIndexed.\n" );
+		return $totalSuggestDocsIndexed;
 	}
 
 	public function validateAlias() {

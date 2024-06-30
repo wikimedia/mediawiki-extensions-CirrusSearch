@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Api;
 
-use MediaWiki\Title\Title;
+use MediaWiki\Page\PageIdentity;
 use Wikimedia\ParamValidator\ParamValidator;
 
 /**
@@ -42,13 +42,13 @@ class QueryCirrusDoc extends \ApiQueryBase {
 
 	public function execute() {
 		$sourceFiltering = $this->generateSourceFiltering();
-		foreach ( $this->getPageSet()->getGoodTitles() as $origPageId => $title ) {
+		foreach ( $this->getPageSet()->getGoodPages() as $origPageId => $title ) {
 			$this->addByPageId( $origPageId, $title, $sourceFiltering );
 		}
 
 		// Not 100% sure we need deletedhistory, but better safe than sorry
 		if ( $this->getUser()->isAllowed( 'deletedhistory' ) ) {
-			foreach ( $this->getPageSet()->getMissingTitles() as $resultPageId => $title ) {
+			foreach ( $this->getPageSet()->getMissingPages() as $resultPageId => $title ) {
 				$this->addByPageId( $resultPageId, $title, $sourceFiltering );
 			}
 		}
@@ -58,10 +58,10 @@ class QueryCirrusDoc extends \ApiQueryBase {
 	 * @param int $resultPageId The page id as represented in the api result.
 	 *  This may be negative for missing pages. If those pages were recently
 	 *  deleted they could still be in the elastic index.
-	 * @param Title $title The requested title
+	 * @param PageIdentity $title The requested title
 	 * @param string[]|bool $sourceFiltering source filtering to apply
 	 */
-	private function addByPageId( $resultPageId, Title $title, $sourceFiltering ) {
+	private function addByPageId( $resultPageId, PageIdentity $title, $sourceFiltering ) {
 		$this->getResult()->addValue(
 			[ 'query', 'pages', $resultPageId ],
 			'cirrusdoc', $this->loadDocuments( $title, $sourceFiltering )

@@ -7,6 +7,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\PageIdentity;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
@@ -41,15 +42,16 @@ trait ApiTrait {
 	}
 
 	/**
-	 * @param Title $title
+	 * @param PageIdentity $title
 	 * @param string[]|bool $sourceFiltering source filtering to apply
 	 * @return array
 	 */
-	public function loadDocuments( Title $title, $sourceFiltering = true ) {
+	public function loadDocuments( PageIdentity $title, $sourceFiltering = true ) {
 		[ $docId, $hasRedirects ] = $this->determineCirrusDocId( $title );
 		if ( $docId === null ) {
 			return [];
 		}
+		$title = Title::newFromPageIdentity( $title );
 		// could be optimized by implementing multi-get but not
 		// expecting much usage except debugging/tests.
 		$searcher = new Searcher( $this->getCirrusConnection(), 0, 0, $this->getSearchConfig(), [], $this->getUser() );
@@ -99,14 +101,14 @@ trait ApiTrait {
 	 * further complicate things by looking into move logs but not sure that
 	 * is worth the complication.
 	 *
-	 * @param Title $title
+	 * @param PageIdentity $title
 	 * @return array Two element array containing first the cirrus doc id
 	 *  the title should have been indexed into elasticsearch and second a
 	 *  boolean indicating if redirects were followed. If the page would
 	 *  not be indexed (for example a redirect loop, or redirect to
 	 *  invalid page) the first array element will be null.
 	 */
-	private function determineCirrusDocId( Title $title ) {
+	private function determineCirrusDocId( PageIdentity $title ) {
 		$hasRedirects = false;
 		$seen = [];
 		$now = wfTimestamp( TS_MW );
@@ -114,10 +116,11 @@ trait ApiTrait {
 		$contentHandlerFactory = $services->getContentHandlerFactory();
 		$archivedRevisionLookup = $services->getArchivedRevisionLookup();
 		while ( true ) {
-			if ( isset( $seen[$title->getPrefixedText()] ) || count( $seen ) > 10 ) {
+			$keySeen = $title->getNamespace() . '|' . $title->getDBkey();
+			if ( isset( $seen[$keySeen] ) || count( $seen ) > 10 ) {
 				return [ null, $hasRedirects ];
 			}
-			$seen[$title->getPrefixedText()] = true;
+			$seen[$keySeen] = true;
 
 			// To help the integration tests figure out when a deleted page has
 			// been removed from the elasticsearch index we lookup the page in

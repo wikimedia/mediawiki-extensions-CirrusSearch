@@ -28,7 +28,7 @@ class QueryCompSuggestBuildDoc extends ApiQueryBase {
 			return;
 		}
 
-		foreach ( $this->getPageSet()->getGoodTitles() as $origPageId => $title ) {
+		foreach ( $this->getPageSet()->getGoodPages() as $origPageId => $title ) {
 			$docs = $this->loadDocuments( $title );
 			$this->addExplanation( $builder, $origPageId, $docs );
 		}

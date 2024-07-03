@@ -73,9 +73,9 @@ class Util {
 		}
 		$postfix = $isSuccess ? 'successMs' : 'failureMs';
 		MediaWikiServices::getInstance()->getStatsFactory()
-			->getTiming( "cirrus_search_pool_counter" )
-			->setLabel( "pool_type", $type )
-			->setLabel( "outcome", $isSuccess ? "success" : "failure" )
+			->getTiming( "pool_counter_seconds" )
+			->setLabel( "type", $type )
+			->setLabel( "status", $isSuccess ? "success" : "failure" )
 			->copyToStatsdAt( "CirrusSearch.poolCounter.$type.$postfix" )
 			->observe( $observation );
 	}
@@ -523,11 +523,11 @@ class Util {
 		return $destArray;
 	}
 
+	/**
+	 * @return StatsFactory prefixed with the "CirrusSearch" component
+	 */
 	public static function getStatsFactory(): StatsFactory {
-		if ( defined( 'MW_PHPUNIT_TEST' ) ) {
-			return StatsFactory::newNull();
-		}
-		return MediaWikiServices::getInstance()->getStatsFactory();
+		return MediaWikiServices::getInstance()->getStatsFactory()->withComponent( "CirrusSearch" );
 	}
 
 	/**

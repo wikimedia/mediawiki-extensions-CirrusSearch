@@ -840,10 +840,10 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 
 	protected function recordQueryCacheMetrics( StatsFactory $requestStats, string $cacheStatus, ?string $type = null ): void {
 		$type = $type ?: $this->getSearchContext()->getSearchType();
-		$requestStats->getCounter( "cirrus_search_query_cache" )
-			->setLabel( "search_type", $type )
-			->setLabel( "cache_status", $cacheStatus )
-			->copyToStatsdAt( "CirrusSearch.query_cache.$type.$cacheStatus" )
+		$requestStats->getCounter( "query_cache_total" )
+			->setLabel( "type", $type )
+			->setLabel( "status", $cacheStatus )
+			->copyToStatsdAt( "query_cache.$type.$cacheStatus" )
 			->increment();
 	}
 

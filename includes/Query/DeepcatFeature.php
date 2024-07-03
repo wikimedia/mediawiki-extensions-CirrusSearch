@@ -7,6 +7,7 @@ use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Util;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
 use MediaWiki\Config\Config;
@@ -53,14 +54,6 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	 * TODO: make configurable?
 	 */
 	public const TIMEOUT = 3;
-	/**
-	 * Stats key for SPARQL requests
-	 */
-	private const STATSD_SPARQL_KEY = 'CirrusSearch.deepcat.sparql';
-	/**
-	 * Stats key for reporting too many categories
-	 */
-	private const STATSD_TOOMANY_KEY = 'CirrusSearch.deepcat.toomany';
 
 	/**
 	 * @param Config $config
@@ -190,9 +183,9 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	 */
 	private function logRequest( $startQueryTime ) {
 		$timeTaken = intval( 1000 * ( microtime( true ) - $startQueryTime ) );
-		MediaWikiServices::getInstance()->getStatsFactory()
-			->getTiming( 'cirrus_search_deepcat_sparql_time' )
-			->copyToStatsdAt( self::STATSD_SPARQL_KEY )
+		Util::getStatsFactory()
+			->getTiming( 'deepcat_sparql_query_seconds' )
+			->copyToStatsdAt( 'deepcat.sparql' )
 			->observe( $timeTaken );
 	}
 
@@ -229,9 +222,9 @@ SPARQL;
 			// We went over the limit.
 			// According to T181549 this means we fail the filter application
 			$warningCollector->addWarning( 'cirrussearch-feature-deepcat-toomany' );
-			MediaWikiServices::getInstance()->getStatsFactory()
-				->getCounter( 'cirrus_search_deepcat_toomany' )
-				->copyToStatsdAt( self::STATSD_TOOMANY_KEY )
+			Util::getStatsFactory()
+				->getCounter( 'deepcat_too_many_total' )
+				->copyToStatsdAt( 'deepcat.toomany' )
 				->increment();
 			return [];
 		}

@@ -6,6 +6,7 @@ use CirrusSearch\ClusterSettings;
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
 use CirrusSearch\UpdateGroup;
+use CirrusSearch\Util;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Status\Status;
@@ -244,7 +245,7 @@ class ElasticaWrite extends CirrusGenericJob {
 	/**
 	 * Report the update lag based on stored params if set.
 	 * @param string $cluster
-	 * @param StatsFactory|null $statsFactory
+	 * @param StatsFactory|null $statsFactory already prefixed with the right component
 	 * @return void
 	 */
 	public function reportUpdateLag( string $cluster, StatsFactory $statsFactory = null ): void {
@@ -253,12 +254,15 @@ class ElasticaWrite extends CirrusGenericJob {
 		$eventTime = $params[CirrusTitleJob::ROOT_EVENT_TIME] ?? null;
 		if ( $updateKind !== null && $eventTime !== null ) {
 			$now = MWTimestamp::time();
-			$statsFactory ??= MediaWikiServices::getInstance()->getStatsFactory();
-			$statsFactory->getTiming( "cirrus_search_update_lag" )
-				->setLabel( "cluster", $cluster )
-				->setLabel( "update_kind", $updateKind )
-				->copyToStatsdAt( "CirrusSearch.$cluster.updates.all.lag.$updateKind" )
-				->observe( $now - $eventTime );
+			$lagInSeconds = $now - $eventTime;
+			$statsFactory ??= Util::getStatsFactory();
+			$statsFactory->getTiming( "update_lag_seconds" )
+				->setLabel( "search_cluster", $cluster )
+				->setLabel( "type", $updateKind )
+				->observe( $lagInSeconds * 1000 );
+			// This metric was improperly recorded as seconds, we have to copy to statsd by hand
+			MediaWikiServices::getInstance()->getStatsdDataFactory()
+				->timing( "CirrusSearch.$cluster.updates.all.lag.$updateKind", $lagInSeconds );
 		}
 	}
 }

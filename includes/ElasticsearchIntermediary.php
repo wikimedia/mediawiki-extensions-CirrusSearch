@@ -229,10 +229,10 @@ abstract class ElasticsearchIntermediary {
 		$clusterName = $connection->getClusterName();
 		$context['cirrussearch_error_type'] = $type;
 
-		$stats->getCounter( "cirrus_search_backend_failure" )
-			->setLabel( "cluster", $clusterName )
-			->setLabel( "failure_type", $type )
-			->copyToStatsdAt( "CirrusSearch.$clusterName.backend_failure.$type" )
+		$stats->getCounter( "backend_failures_total" )
+			->setLabel( "search_cluster", $clusterName )
+			->setLabel( "type", $type )
+			->copyToStatsdAt( "$clusterName.backend_failure.$type" )
 			->increment();
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->warning(
@@ -274,12 +274,12 @@ abstract class ElasticsearchIntermediary {
 		self::$requestLogger->addRequest( $log, $this->user, $this->slowMillis );
 		$type = $log->getQueryType();
 		$stats = Util::getStatsFactory();
-		$stats->getTiming( "cirrus_search_request_time" )
-			->setLabel( "cluster", $clusterName )
-			->setLabel( "search_type", $type )
+		$stats->getTiming( "request_time_seconds" )
+			->setLabel( "search_cluster", $clusterName )
+			->setLabel( "type", $type )
 			->copyToStatsdAt( [
-				"CirrusSearch.$clusterName.requestTimeMs.$type",
-				"CirrusSearch.$clusterName.requestTime"
+				"$clusterName.requestTimeMs.$type",
+				"$clusterName.requestTime"
 			] )
 			->observe( $tookMs );
 		if ( $log->getElasticTookMs() ) {

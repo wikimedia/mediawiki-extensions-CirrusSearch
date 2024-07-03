@@ -65,7 +65,7 @@ class DataSender extends ElasticsearchIntermediary {
 	/**
 	 * @param Connection $conn
 	 * @param SearchConfig $config
-	 * @param StatsFactory|null $stats
+	 * @param StatsFactory|null $stats A StatsFactory (already prefixed with the right component)
 	 * @param DocumentSizeLimiter|null $docSizeLimiter
 	 */
 	public function __construct(
@@ -75,7 +75,7 @@ class DataSender extends ElasticsearchIntermediary {
 		DocumentSizeLimiter $docSizeLimiter = null
 	) {
 		parent::__construct( $conn, null, 0 );
-		$this->stats = $stats ?? MediaWikiServices::getInstance()->getStatsFactory();
+		$this->stats = $stats ?? Util::getStatsFactory();
 		$this->log = LoggerFactory::getInstance( 'CirrusSearch' );
 		$this->failedLog = LoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
 		$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
@@ -430,9 +430,9 @@ class DataSender extends ElasticsearchIntermediary {
 		$cluster = $this->connection->getClusterName();
 		$metricsPrefix = "CirrusSearch.$cluster.updates";
 		foreach ( $updateStats as $what => $num ) {
-			$this->stats->getCounter( "cirrus_search_update" )
-				->setLabel( "update_result", $what )
-				->setLabel( "cluster", $cluster )
+			$this->stats->getCounter( "update_total" )
+				->setLabel( "status", $what )
+				->setLabel( "search_cluster", $cluster )
 				->setLabel( "index_name", $indexSuffix )
 				->copyToStatsdAt( [
 					"$metricsPrefix.details.{$this->indexBaseName}.$indexSuffix.$what",
@@ -704,14 +704,16 @@ class DataSender extends ElasticsearchIntermediary {
 	private function reportDocSize( Document $doc ): void {
 		$cluster = $this->connection->getClusterName();
 		try {
-			// Use the same JSON output that Elastica uses, it might be the options MW uses
+			// Use the same JSON output that Elastica uses, it might not be the options MW uses
 			// to populate event-gate (esp. regarding escaping UTF-8) but hopefully it's close
 			// to what we will be using.
 			$len = strlen( JSON::stringify( $doc->getData(), \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES ) );
-			// Use a timing stat as we'd like to have some min, max and percentiles calculated
-			$this->stats->getTiming( "cirrus_search_update_doc_size" )
-				->setLabel( "cluster", $cluster )
-				->copyToStatsdAt( "CirrusSearch.$cluster.updates.all.doc_size" )
+			// Use a timing stat as we'd like to have percentiles calculated (possibly use T348796 once available)
+			// note that prior to switching to prometheus we used to have min and max, if that's proven to be still useful
+			// to track abnormally large docs we might consider another approach (log a warning?)
+			$this->stats->getTiming( "update_doc_size_kb" )
+				->setLabel( "search_cluster", $cluster )
+				->copyToStatsdAt( "$cluster.updates.all.doc_size" )
 				->observe( $len );
 
 		} catch ( \JsonException $e ) {

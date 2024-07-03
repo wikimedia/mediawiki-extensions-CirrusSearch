@@ -46,20 +46,16 @@ class ElasticaWriteTest extends CirrusIntegrationTestCase {
 
 		$stats->expects( $this->once() )
 			->method( 'getTiming' )
-			->with( "cirrus_search_update_lag" )
+			->with( "update_lag_seconds" )
 			->willReturn( $timing );
 		$timing->expects( $this->exactly( 2 ) )
 			->method( 'setLabel' )
 			->willReturnMap( [
-				[ 'cluster', 'my_cluster', $timing ],
-				[ 'update_kind', 'my_update_kind', $timing ] ] );
-		$timing->expects( $this->once() )
-			->method( 'copyToStatsdAt' )
-			->with( "CirrusSearch.my_cluster.updates.all.lag.my_update_kind" )
-			->willReturn( $timing );
+				[ 'search_cluster', 'my_cluster', $timing ],
+				[ 'type', 'my_update_kind', $timing ] ] );
 		$timing->expects( $this->once() )
 			->method( 'observe' )
-			->with( 10 );
+			->with( 10000 );
 
 		$myJob = new ElasticaWrite( [
 			CirrusTitleJob::UPDATE_KIND => "my_update_kind",

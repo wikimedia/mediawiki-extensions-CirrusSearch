@@ -13,7 +13,7 @@
 	"cirrussearch-parse-error": "Заявката не беше разбрана. Моля, опростете я. Заявката е записана в дневника с цел подобряване на системата за търсене.",
 	"cirrussearch-too-busy-error": "Търсенето е твърде натоварено в момента. Моля, опитайте по-късно.",
 	"cirrussearch-regex-syntax-error": "Грешка в регулярния израз при $2: $1",
-	"cirrussearch-now-using": "Това уики ползва нова търсачка. ([[mw:Special:MyLanguage/Help:CirrusSearch|Повече информация]])",
+	"cirrussearch-now-using": "Това уики ползва нова търсачка. ([https\n://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch Повече информация])",
 	"cirrussearch-pref-label": "Ново търсене",
 	"cirrussearch-give-feedback": "Кажете ни мнението си",
 	"prefs-completion": "Допълване при търсене",

@@ -2,10 +2,8 @@
 
 namespace CirrusSearch;
 
-use BagOStuff;
 use MediaWiki\Interwiki\InterwikiLookup;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MultiHttpClient;
 use WANObjectCache;
 
@@ -19,10 +17,10 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	private const CONFIG_CACHE_TTL = 600;
 
 	/** @var array[]|null full IW matrix (@see loadMatrix()) */
-	private $matrix;
+	private ?array $matrix = null;
 
 	/** @var SearchConfig main wiki config */
-	protected $config;
+	protected SearchConfig $config;
 
 	/** @var bool use cirrus config dump API */
 	private $useConfigDumpApi;
@@ -30,42 +28,35 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	/**
 	 * @var MultiHttpClient http client to fetch config of other wikis
 	 */
-	private $httpClient;
+	private MultiHttpClient $httpClient;
 
 	/**
 	 * @var InterwikiLookup
 	 */
-	private $interwikiLookup;
+	protected InterwikiLookup $interwikiLookup;
 
 	/**
-	 * @var BagOStuff
+	 * @var WANObjectCache
 	 */
-	private $srvCache;
+	protected WANObjectCache $wanCache;
 
 	/**
 	 * @param SearchConfig $config
-	 * @param \MultiHttpClient|null $client http client to fetch cirrus config
-	 * @param WANObjectCache|null $wanCache Cache object for caching repeated requests
-	 * @param BagOStuff|null $srvCache Local server cache object for caching repeated requests
-	 * @param InterwikiLookup|null $iwLookup
-	 * @throws \Exception
+	 * @param MultiHttpClient $client http client to fetch cirrus config
+	 * @param WANObjectCache $wanCache Cache object for caching repeated requests
+	 * @param InterwikiLookup $iwLookup
 	 */
 	public function __construct(
 		SearchConfig $config,
-		MultiHttpClient $client = null,
-		WANObjectCache $wanCache = null,
-		BagOStuff $srvCache = null,
-		InterwikiLookup $iwLookup = null
+		MultiHttpClient $client,
+		WANObjectCache $wanCache,
+		InterwikiLookup $iwLookup
 	) {
 		$this->config = $config;
 		$this->useConfigDumpApi = $this->config->get( 'CirrusSearchFetchConfigFromApi' );
-		$this->httpClient = $client ??
-			MediaWikiServices::getInstance()->getHttpRequestFactory()->createMultiClient( [
-				'connTimeout' => $this->config->get( 'CirrusSearchInterwikiHTTPConnectTimeout' ),
-				'reqTimeout' => $this->config->get( 'CirrusSearchInterwikiHTTPTimeout' )
-			] );
-		$this->interwikiLookup = $iwLookup ?? MediaWikiServices::getInstance()->getInterwikiLookup();
-		$this->srvCache = $srvCache ?? MediaWikiServices::getInstance()->getLocalServerObjectCache();
+		$this->httpClient = $client;
+		$this->interwikiLookup = $iwLookup;
+		$this->wanCache = $wanCache;
 	}
 
 	/**
@@ -181,8 +172,8 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 			$prefixes = array_keys( $endpoints );
 			asort( $prefixes );
 			$cacheKey = implode( '-', $prefixes );
-			$configs = $this->srvCache->getWithSetCallback(
-				$this->srvCache->makeKey( 'cirrussearch-load-iw-config', $cacheKey ),
+			$configs = $this->wanCache->getWithSetCallback(
+				$this->wanCache->makeKey( 'cirrussearch-load-iw-config', $cacheKey ),
 				self::CONFIG_CACHE_TTL,
 				function () use ( $endpoints ) {
 					return $this->sendConfigDumpRequest( $endpoints );

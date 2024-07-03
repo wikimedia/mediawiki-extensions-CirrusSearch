@@ -9,7 +9,6 @@ use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use EmptyBagOStuff;
 use MediaWiki\Interwiki\NullInterwikiLookup;
-use MediaWiki\Tests\Session\TestBagOStuff;
 use MediaWiki\User\Options\StaticUserOptionsLookup;
 
 /**
@@ -53,12 +52,10 @@ class SearchProfileServiceFactoryTest extends CirrusIntegrationTestCase {
 	private function getFactory() {
 		$config = new HashSearchConfig( [] );
 		$httpClient = new \NullMultiHttpClient( [] );
-		$bagOfStuff = new TestBagOStuff();
 		$interWikiLookup = new NullInterwikiLookup();
 		$registry = new \ExtensionRegistry();
-		$interwikiResolverFactory = new InterwikiResolverFactory();
-		$resolver = $interwikiResolverFactory->getResolver( $config, $httpClient, null,
-			$bagOfStuff, $interWikiLookup, $registry );
+		$resolver = InterwikiResolverFactory::build( $config, \WANObjectCache::newEmpty(),
+			$interWikiLookup, $registry, $httpClient );
 
 		return new SearchProfileServiceFactory( $resolver, $config, new EmptyBagOStuff(),
 			$this->createCirrusSearchHookRunner(), new StaticUserOptionsLookup( [] ), $registry

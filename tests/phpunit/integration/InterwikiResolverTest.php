@@ -11,8 +11,10 @@ use CirrusSearch\InterwikiResolverFactory;
 use CirrusSearch\SiteMatrixInterwikiResolver;
 use LogicException;
 use MediaWiki\Config\SiteConfiguration;
+use MediaWiki\Interwiki\InterwikiLookup;
 use MediaWiki\MediaWikiServices;
 use MockHttpTrait;
+use MultiHttpClient;
 use Wikimedia\AtEase\AtEase;
 
 /**
@@ -371,9 +373,12 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		$myGlobals['_wikiID'] = $wikiId;
 		// We need to reset this service so it can load wgInterwikiCache
 		$config = new HashSearchConfig( $myGlobals, [ HashSearchConfig::FLAG_INHERIT ] );
-		$resolver = MediaWikiServices::getInstance()
-			->getService( InterwikiResolverFactory::SERVICE )
-			->getResolver( $config );
+		$resolver = InterwikiResolverFactory::build(
+			$config, $this->createNoOpMock( \WANObjectCache::class ),
+			$this->createNoOpMock( InterwikiLookup::class ),
+			$this->createNoOpMock( \ExtensionRegistry::class ),
+			$this->createNoOpMock( \MultiHttpClient::class )
+		);
 		$this->assertEquals( CirrusConfigInterwikiResolver::class, get_class( $resolver ) );
 		return $resolver;
 	}
@@ -427,12 +432,17 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		// We need to reset this service so it can load wgInterwikiCache
 		MediaWikiServices::getInstance()
 			->resetServiceForTesting( 'InterwikiLookup' );
+		$iwLookup = MediaWikiServices::getInstance()->getInterwikiLookup();
 		$config = new HashSearchConfig( [ '_wikiID' => $wikiId ], [ HashSearchConfig::FLAG_INHERIT ] );
 		$wanCache = \WANObjectCache::newEmpty();
-		$srvCache = new \EmptyBagOStuff();
-		$resolver = MediaWikiServices::getInstance()
-			->getService( InterwikiResolverFactory::SERVICE )
-			->getResolver( $config, $client, $wanCache, $srvCache );
+
+		$resolver = InterwikiResolverFactory::build(
+			$config,
+			$wanCache,
+			$iwLookup,
+			MediaWikiServices::getInstance()->getExtensionRegistry(),
+			$client ?: $this->createNoOpMock( MultiHttpClient::class )
+		);
 		$this->assertEquals( SiteMatrixInterwikiResolver::class, get_class( $resolver ) );
 		return $resolver;
 	}
@@ -452,9 +462,13 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 
 	public function testEmptyResolver() {
 		$config = new HashSearchConfig( [ '_wikiID' => 'dummy' ] );
-		$resolver = MediaWikiServices::getInstance()
-			->getService( InterwikiResolverFactory::SERVICE )
-			->getResolver( $config );
+		$resolver = InterwikiResolverFactory::build(
+			$config,
+			\WANObjectCache::newEmpty(),
+			MediaWikiServices::getInstance()->getInterwikiLookup(),
+			MediaWikiServices::getInstance()->getExtensionRegistry(),
+			$this->createNoOpMock( MultiHttpClient::class )
+		);
 		$this->assertInstanceOf( EmptyInterwikiResolver::class, $resolver );
 	}
 

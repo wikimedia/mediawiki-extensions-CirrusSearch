@@ -33,15 +33,21 @@ return [
 		] );
 		return $client;
 	},
-	InterwikiResolverFactory::SERVICE => static function ( MediaWikiServices $services ): InterwikiResolverFactory {
-		return InterwikiResolverFactory::newFactory();
-	},
 	InterwikiResolver::SERVICE => static function ( MediaWikiServices $services ): InterwikiResolver {
 		$config = $services->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
-		return $services
-			->getService( InterwikiResolverFactory::SERVICE )
-			->getResolver( $config );
+		$client = $services->getHttpRequestFactory()->createMultiClient( [
+			'connTimeout' => $config->get( 'CirrusSearchInterwikiHTTPConnectTimeout' ),
+			'reqTimeout' => $config->get( 'CirrusSearchInterwikiHTTPTimeout' )
+		] );
+		return InterwikiResolverFactory::build(
+		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
+			$config,
+			$services->getMainWANObjectCache(),
+			$services->getInterwikiLookup(),
+			$services->getExtensionRegistry(),
+			$client
+		);
 	},
 	SearchProfileServiceFactory::SERVICE_NAME => static function ( MediaWikiServices $services ): SearchProfileServiceFactory {
 		$config = $services->getConfigFactory()

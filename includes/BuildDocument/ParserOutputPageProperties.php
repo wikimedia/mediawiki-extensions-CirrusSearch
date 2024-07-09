@@ -75,6 +75,20 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 			'v2'
 		);
 
+		// We are having problems with low hit rates, but haven't been able to
+		// track down why that is. Log a sample of keys so we can evaluate if
+		// the problem is that $page->getTouched() is changing between
+		// invocations. -- eb 2024 july 9
+		if ( $page->getId() % 1000 === 0 ) {
+			LoggerFactory::getInstance( 'CirrusSearch' )->debug(
+				'Sampling of CirrusSearchParserOutputPageProperties cache keys: {cache_key}',
+				[
+					'cache_key' => $cacheKey,
+					'revision_id' => $revision->getId(),
+					'page_id' => $page->getId(),
+				] );
+		}
+
 		$fieldContent = $wanCache->getWithSetCallback(
 			$cacheKey,
 			ExpirationAwareness::TTL_HOUR * 6,

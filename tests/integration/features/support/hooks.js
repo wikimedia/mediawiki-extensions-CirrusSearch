@@ -85,12 +85,45 @@ const runBatch = Promise.coroutine( function* ( world, wiki, batchJobs ) {
 	wiki = wiki || world.config.wikis.default;
 	const client = yield world.onWiki( wiki );
 	batchJobs = flattenJobs( batchJobs );
+	// separate redirect edits from the rest and process after, this might give better chances of having this redirect
+	// indexed.
+	const nonRedirJobs = [];
+	const redirJobs = [];
+	for ( const singleJob of batchJobs ) {
+		if ( singleJob.length >= 3 && singleJob[ 2 ].startsWith( '#REDIRECT ' ) ) {
+			redirJobs.push( singleJob );
+		} else {
+			nonRedirJobs.push( singleJob );
+		}
+	}
+
 	// TODO: If the batch operation fails the waitForBatch will never complete,
 	// it will just stick around forever ...
 	yield Promise.all( [
-		client.batch( batchJobs, 'CirrusSearch integration test edit', 2 ),
-		waitForBatch.call( world, wiki, batchJobs )
+		client.batch( nonRedirJobs, 'CirrusSearch integration test edit', 2 ),
+		waitForBatch.call( world, wiki, nonRedirJobs )
 	] );
+	// XXX: try to batch redirects only if they're targeting a different page
+	let currentBatch = [];
+	for ( const redirJob of redirJobs ) {
+		let currentTargets = [];
+		if ( currentTargets.includes( redirJob[ 2 ] ) ) {
+			yield Promise.all( [
+				client.batch( currentBatch, 'CirrusSearch integration test edit', 2 ),
+				waitForBatch.call( world, wiki, currentBatch )
+			] );
+			currentTargets = [];
+			currentBatch = [];
+		}
+		currentTargets.push( redirJob[ 2 ] );
+		currentBatch.push( redirJob );
+	}
+	if ( currentBatch.length > 0 ) {
+		yield Promise.all( [
+			client.batch( currentBatch, 'CirrusSearch integration test edit', 2 ),
+			waitForBatch.call( world, wiki, currentBatch )
+		] );
+	}
 } );
 
 const runBatchFn = ( wiki, batchJobs ) => Promise.coroutine( function* () {

@@ -72,11 +72,11 @@ class Util {
 			$type = substr( $type, $pos + 1 );
 		}
 		$postfix = $isSuccess ? 'successMs' : 'failureMs';
-		MediaWikiServices::getInstance()->getStatsFactory()
+		self::getStatsFactory()
 			->getTiming( "pool_counter_seconds" )
 			->setLabel( "type", $type )
 			->setLabel( "status", $isSuccess ? "success" : "failure" )
-			->copyToStatsdAt( "CirrusSearch.poolCounter.$type.$postfix" )
+			->copyToStatsdAt( "poolCounter.$type.$postfix" )
 			->observe( $observation );
 	}
 

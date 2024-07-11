@@ -76,7 +76,7 @@ class Util {
 			->getTiming( "pool_counter_seconds" )
 			->setLabel( "type", $type )
 			->setLabel( "status", $isSuccess ? "success" : "failure" )
-			->copyToStatsdAt( "poolCounter.$type.$postfix" )
+			->copyToStatsdAt( "CirrusSearch.poolCounter.$type.$postfix" )
 			->observe( $observation );
 	}
 

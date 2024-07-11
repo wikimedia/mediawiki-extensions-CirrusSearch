@@ -180,7 +180,7 @@ class Checker {
 		$statsFactory->getCounter( "sanitization_total" )
 			->setLabel( "search_cluster", $cluster )
 			->setLabel( "action", $action )
-			->copyToStatsdAt( "$cluster.sanitization.$action" )
+			->copyToStatsdAt( "CirrusSearch.$cluster.sanitization.$action" )
 			->incrementBy( $value );
 	}
 

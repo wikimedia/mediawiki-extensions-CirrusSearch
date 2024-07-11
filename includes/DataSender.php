@@ -713,7 +713,7 @@ class DataSender extends ElasticsearchIntermediary {
 			// to track abnormally large docs we might consider another approach (log a warning?)
 			$this->stats->getTiming( "update_doc_size_kb" )
 				->setLabel( "search_cluster", $cluster )
-				->copyToStatsdAt( "$cluster.updates.all.doc_size" )
+				->copyToStatsdAt( "CirrusSearch.$cluster.updates.all.doc_size" )
 				->observe( $len );
 
 		} catch ( \JsonException $e ) {

@@ -185,7 +185,7 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 		$timeTaken = intval( 1000 * ( microtime( true ) - $startQueryTime ) );
 		Util::getStatsFactory()
 			->getTiming( 'deepcat_sparql_query_seconds' )
-			->copyToStatsdAt( 'deepcat.sparql' )
+			->copyToStatsdAt( 'CirrusSearch.deepcat.sparql' )
 			->observe( $timeTaken );
 	}
 
@@ -224,7 +224,7 @@ SPARQL;
 			$warningCollector->addWarning( 'cirrussearch-feature-deepcat-toomany' );
 			Util::getStatsFactory()
 				->getCounter( 'deepcat_too_many_total' )
-				->copyToStatsdAt( 'deepcat.toomany' )
+				->copyToStatsdAt( 'CirrusSearch.deepcat.toomany' )
 				->increment();
 			return [];
 		}

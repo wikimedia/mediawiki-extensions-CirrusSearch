@@ -144,7 +144,7 @@ final class FullTextResultsType extends BaseResultsType {
 				if ( $source['namespace'] === NS_FILE ) {
 					if ( in_array( $source['title'], $this->fileTitles ) ) {
 						$this->stats->getCounter( "result_file_duplicates_total" )
-							->copyToStatsdAt( "results.file_duplicates" )
+							->copyToStatsdAt( "CirrusSearch.results.file_duplicates" )
 							->increment();
 						if ( $this->deduplicate ) {
 							return null;

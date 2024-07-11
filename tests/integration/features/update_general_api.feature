@@ -68,6 +68,7 @@ Feature: Search backend updates
       And I api search for Move%{epoch} From3
      Then Move%{epoch} From3 is the first api search result
      When I move Move%{epoch} From3 to User:Move%{epoch} To3 and leave a redirect via api
+      And I wait 2 seconds
       And I api search for User:Move%{epoch} To3
      Then User:Move%{epoch} To3 is the first api search result
       And I api search for Move%{epoch} From3

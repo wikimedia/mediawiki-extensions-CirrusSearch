@@ -10,6 +10,7 @@ use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Deferred\LinksUpdate\LinksUpdate;
 use MediaWiki\Extension\EventBus\EventBus;
 use MediaWiki\Extension\EventBus\EventBusFactory;
+use MediaWiki\Extension\EventBus\StreamNameMapper;
 use MediaWiki\Page\ExistingPageRecord;
 use MediaWiki\Page\PageLookup;
 use MediaWiki\Revision\RevisionRecord;
@@ -39,8 +40,9 @@ class EventBusBridgeTest extends CirrusIntegrationTestCase {
 
 		if ( class_exists( EventBusFactory::class ) ) {
 			$eventBusFactory = $this->createNoOpMock( EventBusFactory::class );
+			$streamNameMapper = new StreamNameMapper( [] );
 			$service = EventBusBridge::factory( $configFactory, new HashConfig(), $globalIdGenerator,
-				$titleFormatter, $pageLookup, $eventBusFactory );
+				$titleFormatter, $pageLookup, $eventBusFactory, $streamNameMapper );
 			if ( $enabled ) {
 				$this->assertInstanceOf( EventBusBridge::class, $service );
 			} else {

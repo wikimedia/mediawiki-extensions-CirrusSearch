@@ -5,6 +5,7 @@ namespace CirrusSearch\Event;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\EventBus\StreamNameMapper;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Page\PageRecord;
 use MediaWiki\Page\PageReference;
@@ -21,23 +22,27 @@ class PageRerenderSerializer {
 	private GlobalIdGenerator $globalIdGenerator;
 	private Config $mainConfig;
 	private Connection $cirrusConnection;
+	private StreamNameMapper $streamNameMapper;
 
 	/**
 	 * @param Config $mainConfig
 	 * @param TitleFormatter $titleFormatter
 	 * @param SearchConfig $searchConfig
 	 * @param GlobalIdGenerator $globalIdGenerator
+	 * @param StreamNameMapper $streamNameMapper
 	 */
 	public function __construct(
 		Config $mainConfig,
 		TitleFormatter $titleFormatter,
 		SearchConfig $searchConfig,
-		GlobalIdGenerator $globalIdGenerator
+		GlobalIdGenerator $globalIdGenerator,
+		StreamNameMapper $streamNameMapper
 	) {
 		$this->titleFormatter = $titleFormatter;
 		$this->searchConfig = $searchConfig;
 		$this->globalIdGenerator = $globalIdGenerator;
 		$this->mainConfig = $mainConfig;
+		$this->streamNameMapper = $streamNameMapper;
 	}
 
 	public function eventDataForPage( PageRecord $page, string $reason, string $requestId, string $dt = null ): array {
@@ -46,7 +51,7 @@ class PageRerenderSerializer {
 		$attrs = [
 			'$schema' => self::SCHEMA,
 			'meta' => [
-				'stream' => self::STREAM,
+				'stream' => $this->streamNameMapper->resolve( self::STREAM ),
 				'uid' => $this->globalIdGenerator->newUUIDv4(),
 				'request_id' => $requestId,
 				'domain' => $this->getDomain(),

@@ -4,6 +4,7 @@ namespace CirrusSearch\Event;
 
 use CirrusSearch\CirrusTestCase;
 use MediaWiki\Config\HashConfig;
+use MediaWiki\Extension\EventBus\StreamNameMapper;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Page\PageRecord;
 use MediaWiki\Title\TitleFormatter;
@@ -47,9 +48,10 @@ class PageRerenderSerializerTest extends CirrusTestCase {
 
 		$titleString = 'MyPage';
 		$titleFormatter = $this->createMock( TitleFormatter::class );
+		$streamNameMapper = new StreamNameMapper( [] );
 
 		$serializer = new PageRerenderSerializer( $mainConfig, $titleFormatter, $searchConfig,
-			$this->globalIdGenerator );
+			$this->globalIdGenerator, $streamNameMapper );
 
 		$page = $this->createMock( PageRecord::class );
 		$page->method( 'getId' )->willReturn( 123 );

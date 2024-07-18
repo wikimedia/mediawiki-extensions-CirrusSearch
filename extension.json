@@ -165,7 +165,8 @@
 				"PageStore"
 			],
 			"optional_services": [
-				"EventBus.EventBusFactory"
+				"EventBus.EventBusFactory",
+				"EventBus.StreamNameMapper"
 			]
 		},
 		"apiquerysiteinfogeneralinfo": {

@@ -7,6 +7,7 @@ use MediaWiki\Config\Config;
 use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\EventBus\EventBusFactory;
+use MediaWiki\Extension\EventBus\StreamNameMapper;
 use MediaWiki\Page\PageLookup;
 use MediaWiki\Request\WebRequest;
 use MediaWiki\Title\TitleFormatter;
@@ -52,13 +53,17 @@ class EventBusBridge extends PageChangeTracker implements EventBridge {
 		GlobalIdGenerator $globalIdGenerator,
 		TitleFormatter $titleFormatter,
 		PageLookup $pageLookup,
-		$eventBusFactory = null
+		EventBusFactory $eventBusFactory = null,
+		StreamNameMapper $streamNameMapper = null
 	): EventBridge {
 		$config = $configFactory->makeConfig( "CirrusSearch" );
 		'@phan-var \CirrusSearch\SearchConfig $config';
 		if ( $eventBusFactory !== null && $config->get( 'CirrusSearchUseEventBusBridge' ) ) {
+			if ( $streamNameMapper === null ) {
+				throw new \RuntimeException( 'EventBusFactory provided without StreamNameMapper' );
+			}
 			$pageRerenderSerializer = new PageRerenderSerializer( $mainConfig, $titleFormatter,
-				$config, $globalIdGenerator );
+				$config, $globalIdGenerator, $streamNameMapper );
 			return new self( $eventBusFactory, $pageLookup, $pageRerenderSerializer );
 		}
 		return new class() implements EventBridge {

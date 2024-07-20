@@ -188,7 +188,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 				'Mañsoner' => 100,
 			]
 		] );
-		$language = new Language();
+		$language = $this->getServiceContainer()->getContentLanguage();
 		$this->assertEquals( $expected, Util::identifyNamespace( $namespace, $method, $language ) );
 	}
 

@@ -63,7 +63,13 @@ class QueryBuildDocument extends \ApiQueryBase {
 			$revisionBased = true;
 			foreach ( $this->getRevisionIDs() as $pageId => $revId ) {
 				$rev = $revisionStore->getRevisionById( $revId );
-				if ( $rev->audienceCan( $rev::DELETED_TEXT, $rev::FOR_PUBLIC ) ) {
+				if ( $rev === null ) {
+					// We cannot trust ApiPageSet to properly identify missing revisions, RevisionStore
+					// might not agree with it likely because they could be using different db replicas (T370770)
+					$result->addValue( 'query', 'badrevids', [
+						$revId => [ 'revid' => $revId, 'missing' => true ]
+					] );
+				} elseif ( $rev->audienceCan( $rev::DELETED_TEXT, $rev::FOR_PUBLIC ) ) {
 					$pages[$pageId] = $rev;
 				} else {
 					// While the user might have permissions, we want to limit

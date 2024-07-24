@@ -1,10 +1,11 @@
 A page from MediaWiki, indexed into CirrusSearch, has a lifecycle of birth
-and death. The steps are basically:
+and death. This only covers the traditional job-queue based page updates,
+some installations use cirrus-streaming-updater to perform updates based on
+event streams rather than embedded into the job queue.
+
+The steps are basically:
 
 === New page is created ===
-* PageContentInsertComplete hook fires in the web request process. If
-  $wgCirrusSearchInstantIndexNew is enabled a minimal document is immediatly
-  indexed (primarily to populate autocomplete on Wikidata).
 * After some core handling of the page edit via the job queue the
   LinksUpdateComplete hook fires. This inserts a CirrusSearch\Job\LinksUpdate job.
 * The LinksUpdate job follows redirects from edited page to the final target,

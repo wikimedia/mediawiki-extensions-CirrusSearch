@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"BadDog",
 			"Winston Sung"
 		]
 	},
@@ -48,7 +49,7 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Klasična početačna pretraga",
 	"cirrussearch-completion-profile-classic-pref-desc": "Bez ispravljanja pogrešno unesenoga. Nalazi početke naslova.",
 	"cirrussearch-timed-out": "Pretraživanje je isteklo. Dostupan je samo djelomičan ishod.",
-	"cirrussearch-regex-timed-out": "Pretraživanje regularnih izraza je isteklo; dostupan je samo djelomičan ishod. Uprostite je da biste dobili potpun ishod.",
+	"cirrussearch-regex-timed-out": "Isteklo je vrijeme za izvršenje pretrage s regularnim izrazom. Dostupan je samo dio rezultata. Pojednostavite izraz da biste dobili sve rezultate.",
 	"cirrussearch-file-numeric-feature-not-a-number": "Pretražani tekst '$1' zahtijeva numeričku vrijednost, ali je pruženo '$2'.",
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Pretražani tekst '$1' ne dopušta višestruke argumente i znak s '$2'.",
 	"cirrussearch-feature-not-available": "Tražena ključna riječ '$1' nije omogućena na ovom wikiju.",

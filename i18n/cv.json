@@ -35,5 +35,7 @@
 	"cirrussearch-feature-not-available": "Ку викире '$1' ӗҫлемелле туман.",
 	"cirrussearch-feature-too-many-conditions": "'$1' валли ытла нумай услови хушнӑ, '$2' таран кӗскетнӗ.",
 	"cirrussearch-feature-deepcat-endpoint": "Тарӑн категоринче шырав ирттермешкӗн $wgCirrusSearchCategoryEndpoint чӑн вӗҫлекен SPARQL пӑнчӑна вырнаҫтармалла.",
-	"cirrussearch-feature-deepcat-exception": "Тарӑн категориллӗ SPARQL запроса илме май килмерӗ"
+	"cirrussearch-feature-deepcat-exception": "Тарӑн категориллӗ SPARQL запроса илме май килмерӗ",
+	"cirrussearch-offset-not-allowed-with-random-sort": "Ӑнсӑртран сортланӑ результатсене страницӑсем ҫине пайлама ыйтнине шута илмен.",
+	"cirrussearch-articletopic-invalid-topic": "<kbd>Статья теми валли</kbd> {{PLURAL:$2|палласа илеймен тема ячӗ|палласа илеймен темӑсен ячӗсем}}: ҫыхӑну сӑмахӗ: $1"
 }

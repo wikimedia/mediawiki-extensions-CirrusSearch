@@ -9,6 +9,7 @@ use JobQueueGroup;
 use ManualLogEntry;
 use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Deferred\LinksUpdate\LinksTable;
 use MediaWiki\Hook\ArticleRevisionVisibilitySetHook;
 use MediaWiki\Hook\LinksUpdateCompleteHook;
 use MediaWiki\Hook\PageMoveCompleteHook;
@@ -17,6 +18,7 @@ use MediaWiki\Hook\UploadCompleteHook;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Page\Hook\PageDeleteCompleteHook;
 use MediaWiki\Page\Hook\PageDeleteHook;
+use MediaWiki\Page\PageReference;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Permissions\Authority;
@@ -133,13 +135,18 @@ class ChangeListener extends PageChangeTracker implements
 
 			$params = [];
 			if ( $this->searchConfig->get( 'CirrusSearchEnableIncomingLinkCounting' ) ) {
-				$params['addedLinks'] = self::prepareTitlesForLinksUpdate( $linksUpdate->getAddedLinks(),
-					$linkedArticlesToUpdate );
+				$params['addedLinks'] = self::preparePageReferencesForLinksUpdate(
+					$linksUpdate->getPageReferenceArray( 'pagelinks', LinksTable::INSERTED ),
+					$linkedArticlesToUpdate
+				);
 				// We exclude links that contains invalid UTF-8 sequences, reason is that page created
 				// before T13143 was fixed might sill have bad links the pagelinks table
 				// and thus will cause LinksUpdate to believe that these links are removed.
-				$params['removedLinks'] = self::prepareTitlesForLinksUpdate( $linksUpdate->getRemovedLinks(),
-					$unLinkedArticlesToUpdate, true );
+				$params['removedLinks'] = self::preparePageReferencesForLinksUpdate(
+					$linksUpdate->getPageReferenceArray( 'pagelinks', LinksTable::DELETED ),
+					$unLinkedArticlesToUpdate,
+					true
+				);
 			}
 
 			if ( $this->isPageChange( $linksUpdate->getPageId() ) ) {
@@ -316,15 +323,16 @@ class ChangeListener extends PageChangeTracker implements
 	/**
 	 * Take a list of titles either linked or unlinked and prepare them for Job\LinksUpdate.
 	 * This includes limiting them to $max titles.
-	 * @param Title[] $titles titles to prepare
+	 * @param PageReference[] $pageReferences titles to prepare
 	 * @param int $max maximum number of titles to return
 	 * @param bool $excludeBadUTF exclude links that contains invalid UTF sequences
 	 * @return array
 	 */
-	public static function prepareTitlesForLinksUpdate( $titles, int $max, $excludeBadUTF = false ) {
-		$titles = self::pickFromArray( $titles, $max );
+	public static function preparePageReferencesForLinksUpdate( $pageReferences, int $max, $excludeBadUTF = false ) {
+		$pageReferences = self::pickFromArray( $pageReferences, $max );
 		$dBKeys = [];
-		foreach ( $titles as $title ) {
+		foreach ( $pageReferences as $pageReference ) {
+			$title = Title::newFromPageReference( $pageReference );
 			$key = $title->getPrefixedDBkey();
 			if ( $excludeBadUTF ) {
 				$fixedKey = mb_convert_encoding( $key, 'UTF-8', 'UTF-8' );

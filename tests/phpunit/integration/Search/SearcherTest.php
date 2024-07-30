@@ -10,6 +10,7 @@ use Elastica\Query;
 use Elastica\Response;
 use HtmlArmor;
 use LinkCacheTestTrait;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
@@ -74,19 +75,19 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		// Override some config for parsing purposes
 		// TODO: Load defaults from extension.json and apply those? Otherwise
 		// local config changes break the tests.
-		$this->setMwGlobals( $config + [
+		$this->overrideConfigValues( $config + [
 			// We want to override the wikiid for consistent output, but this might break everything else...
-			'wgCirrusSearchExtraIndexes' => [],
-			'wgCirrusSearchExtraIndexBoostTemplates' => [],
-			'wgCirrusSearchIndexBaseName' => 'wiki',
-			'wgCirrusSearchUseExperimentalHighlighter' => true,
-			'wgCirrusSearchWikimediaExtraPlugin' => [
+			'CirrusSearchExtraIndexes' => [],
+			'CirrusSearchExtraIndexBoostTemplates' => [],
+			'CirrusSearchIndexBaseName' => 'wiki',
+			'CirrusSearchUseExperimentalHighlighter' => true,
+			'CirrusSearchWikimediaExtraPlugin' => [
 				'regex' => [ 'build', 'use' ],
 			],
-			'wgCirrusSearchQueryStringMaxDeterminizedStates' => 500,
-			'wgCirrusSearchLanguageWeight' => [],
-			'wgCirrusSearchAllowLeadingWildcard' => true,
-			'wgContentNamespaces' => [ NS_MAIN ],
+			'CirrusSearchQueryStringMaxDeterminizedStates' => 500,
+			'CirrusSearchLanguageWeight' => [],
+			'CirrusSearchAllowLeadingWildcard' => true,
+			'ContentNamespaces' => [ NS_MAIN ],
 		] );
 
 		// Override the list of namespaces to give more deterministic results
@@ -157,7 +158,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	 */
 	private static $CONFIG_VARS_FALSE_POSITIVES = [
 		'CirrusSearchFetchConfigFromApi', // Should not be needed to build a crosswiki search
-		'DBname',
+		MainConfigNames::DBname,
 		'SiteMatrixSites',
 		'CirrusSearchInterwikiPrefixOverrides',
 		'CirrusSearchCrossClusterSearch', // We explicitly want this to fall through to local wiki conf
@@ -180,7 +181,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 					$notInApi[] = $k;
 				}
 				if ( preg_match( '/^CirrusSearch/', $k ) == 0 ) {
-					if ( !in_array( 'wg' . $k, SearchConfig::getNonCirrusConfigVarNames() ) ) {
+					if ( !in_array( $k, SearchConfig::getNonCirrusConfigVarNames() ) ) {
 						$notInSearchConfig[] = $k;
 					}
 				}
@@ -257,11 +258,11 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	 * @param array $query
 	 */
 	public function testArchiveQuery( $expectedFile, $query ) {
-		$this->setMwGlobals( [
-				'wgCirrusSearchIndexBaseName' => 'wiki',
-				'wgCirrusSearchQueryStringMaxDeterminizedStates' => 500,
-				'wgContentNamespaces' => [ NS_MAIN ],
-				'wgCirrusSearchEnableArchive' => true,
+		$this->overrideConfigValues( [
+			'CirrusSearchIndexBaseName' => 'wiki',
+			'CirrusSearchQueryStringMaxDeterminizedStates' => 500,
+			MainConfigNames::ContentNamespaces => [ NS_MAIN ],
+			'CirrusSearchEnableArchive' => true,
 		] );
 
 		$title = Title::newFromText( $query );
@@ -406,7 +407,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	 * @dataProvider providePhraseSuggestResponse
 	 */
 	public function testPhraseSuggestResponse( $query, $response, $approxScore, $suggestion, $suggestionSnippet ) {
-		$this->setMwGlobals( [ 'wgCirrusSearchLogElasticRequests' => false ] );
+		$this->overrideConfigValue( 'CirrusSearchLogElasticRequests', false );
 		$rewrittenResponse = new \Elastica\Response( json_encode(
 			[
 				'status' => 200,

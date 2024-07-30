@@ -1,8 +1,8 @@
 {
 	"query": "------------------------------------------------------",
 	"config": {
-		"wgCirrusSearchMaxPhraseTokens": 10,
-		"wgCirrusSearchWikimediaExtraPlugin": {
+		"CirrusSearchMaxPhraseTokens": 10,
+		"CirrusSearchWikimediaExtraPlugin": {
 			"regex": [ "build", "use" ],
 			"token_count_router": true
 		}

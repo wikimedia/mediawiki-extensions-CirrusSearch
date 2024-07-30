@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use Language;
 use MediaWiki\Config\Config;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\TestingAccessWrapper;
@@ -18,9 +19,9 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	 * @return \WANObjectCache
 	 */
 	private function makeLocalCache() {
-		$this->setMwGlobals( [
-			'wgMainCacheType' => 'UtilTest',
-			'wgObjectCaches' => [ 'UtilTest' => [ 'class' => \HashBagOStuff::class ] ]
+		$this->overrideConfigValues( [
+			MainConfigNames::MainCacheType => 'UtilTest',
+			MainConfigNames::ObjectCaches => [ 'UtilTest' => [ 'class' => \HashBagOStuff::class ] ],
 		] );
 		$services = MediaWikiServices::getInstance();
 		$services->resetServiceForTesting( 'MainWANObjectCache' );
@@ -175,8 +176,8 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	 * @param string $method
 	 */
 	public function testIdentifyNamespace( $namespace, $expected, $method ) {
-		$this->setMwGlobals( [
-			'wgExtraNamespaces' => [
+		$this->overrideConfigValues( [
+			MainConfigNames::ExtraNamespaces => [
 				100 => 'Maçon',
 				101 => 'Cédille',
 				102 => 'Groß',
@@ -184,9 +185,9 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 				104 => 'لَحَم', // لحم
 				105 => 'Thảo_luận',
 			],
-			'wgNamespaceAliases' => [
+			MainConfigNames::NamespaceAliases => [
 				'Mañsoner' => 100,
-			]
+			],
 		] );
 		$language = $this->getServiceContainer()->getContentLanguage();
 		$this->assertEquals( $expected, Util::identifyNamespace( $namespace, $method, $language ) );

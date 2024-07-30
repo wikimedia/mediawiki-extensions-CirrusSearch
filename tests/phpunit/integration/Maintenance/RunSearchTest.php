@@ -12,7 +12,7 @@ class RunSearchTest extends MediaWikiIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->setMwGlobals( 'wgCirrusSearchWMFExtraFeatures', [
+		$this->overrideConfigValue( 'CirrusSearchWMFExtraFeatures', [
 			'weighted_tags' => [ 'build' => false, 'use' => false ]
 		] );
 	}

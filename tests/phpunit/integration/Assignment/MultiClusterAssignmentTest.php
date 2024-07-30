@@ -191,13 +191,13 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testGenericWritableClusters() {
-		$this->setMwGlobals( [
-			'wgCirrusSearchClusters' => [
+		$this->overrideConfigValues( [
+			'CirrusSearchClusters' => [
 				'one' => [],
 				'two' => [],
 				'readonly' => [],
 			],
-			'wgCirrusSearchWriteClusters' => [ 'one', 'two', 'unknown' ]
+			'CirrusSearchWriteClusters' => [ 'one', 'two', 'unknown' ],
 		] );
 		$config = new SearchConfig();
 		// Unclear if it's right to not filter out with available cluster
@@ -210,10 +210,10 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testUseCaseWritableClusters() {
-		$this->setMwGlobals( [
-			'wgCirrusSearchClusters' => [
+		$this->overrideConfigValues( [
+			'CirrusSearchClusters' => [
 			],
-			'wgCirrusSearchWriteClusters' => [
+			'CirrusSearchWriteClusters' => [
 				'default' => [ 'one', 'two', 'unknown' ],
 				'archive' => [ 'one' ],
 			],

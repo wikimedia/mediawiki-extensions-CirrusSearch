@@ -22,23 +22,14 @@ class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
 			],
 		];
 		$hostOverrides = array_merge( $defaults, $allOverride );
-		// Host config is accessed via \GlobalVarConfig, so we need to apply these globally
-		// and they all need to be prefixed with wg.
-		$this->setMwGlobals( self::prefixArrayKeys( $hostOverrides, 'wg' ) );
+		// Host config is accessed via \GlobalVarConfig, so we need to apply these globally.
+		$this->overrideConfigValues( $hostOverrides );
 		$otherWikiConfig = new HashSearchConfig( $otherOverride + $hostOverrides );
 
 		$context = new SearchContext( $otherWikiConfig, null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		$conn = new Connection( new SearchConfig() );
 		$indexBaseName = 'trebuchet';
 		return new SearchRequestBuilder( $context, $conn, $indexBaseName );
-	}
-
-	private static function prefixArrayKeys( array $arr, $prefix ) {
-		$res = [];
-		foreach ( $arr as $k => $v ) {
-			$res[$prefix . $k] = $v;
-		}
-		return $res;
 	}
 
 	public function testCanOverridePageType() {

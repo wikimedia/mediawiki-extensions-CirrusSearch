@@ -35,142 +35,142 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 	public static function provideOverrides() {
 		return [
 			'wgCirrusSearchPhraseRescoreWindowSize normal' => [
-				'wgCirrusSearchPhraseRescoreWindowSize',
+				'CirrusSearchPhraseRescoreWindowSize',
 				1000,
 				'cirrusPhraseWindow',
 				"50",
 				50,
 			],
 			'wgCirrusSearchPhraseRescoreWindowSize too high' => [
-				'wgCirrusSearchPhraseRescoreWindowSize',
+				'CirrusSearchPhraseRescoreWindowSize',
 				1000,
 				'cirrusPhraseWindow',
 				"200000",
 				1000,
 			],
 			'wgCirrusSearchPhraseRescoreWindowSize invalid' => [
-				'wgCirrusSearchPhraseRescoreWindowSize',
+				'CirrusSearchPhraseRescoreWindowSize',
 				1000,
 				'cirrusPhraseWindow',
 				"blah",
 				1000,
 			],
 			'wgCirrusSearchFunctionRescoreWindowSize normal' => [
-				'wgCirrusSearchFunctionRescoreWindowSize',
+				'CirrusSearchFunctionRescoreWindowSize',
 				1000,
 				'cirrusFunctionWindow',
 				"50",
 				50,
 			],
 			'wgCirrusSearchFunctionRescoreWindowSize too high' => [
-				'wgCirrusSearchFunctionRescoreWindowSize',
+				'CirrusSearchFunctionRescoreWindowSize',
 				1000,
 				'cirrusFunctionWindow',
 				"20000",
 				1000,
 			],
 			'wgCirrusSearchFunctionRescoreWindowSize invalid' => [
-				'wgCirrusSearchFunctionRescoreWindowSize',
+				'CirrusSearchFunctionRescoreWindowSize',
 				1000,
 				'cirrusFunctionWindow',
 				"blah",
 				1000,
 			],
 			'wgCirrusSearchFragmentSize normal' => [
-				'wgCirrusSearchFragmentSize',
+				'CirrusSearchFragmentSize',
 				10,
 				'cirrusFragmentSize',
 				100,
 				100
 			],
 			'wgCirrusSearchFragmentSize too high' => [
-				'wgCirrusSearchFragmentSize',
+				'CirrusSearchFragmentSize',
 				10,
 				'cirrusFragmentSize',
 				100000,
 				10
 			],
 			'wgCirrusSearchFragmentSize invalid' => [
-				'wgCirrusSearchFragmentSize',
+				'CirrusSearchFragmentSize',
 				10,
 				'cirrusFragmentSize',
 				'blah',
 				10
 			],
 			'wgCirrusSearchPhraseRescoreBoost' => [
-				'wgCirrusSearchPhraseRescoreBoost',
+				'CirrusSearchPhraseRescoreBoost',
 				10,
 				'cirrusPhraseBoost',
 				'1',
 				1
 			],
 			'wgCirrusSearchPhraseRescoreBoost invalid' => [
-				'wgCirrusSearchPhraseRescoreBoost',
+				'CirrusSearchPhraseRescoreBoost',
 				10,
 				'cirrusPhraseBoost',
 				'blah',
 				10,
 			],
 			'wgCirrusSearchPhraseSlop normal' => [
-				'wgCirrusSearchPhraseSlop',
+				'CirrusSearchPhraseSlop',
 				[ 'boost' => 1 ],
 				'cirrusPhraseSlop',
 				'10',
 				[ 'boost' => 10 ],
 			],
 			'wgCirrusSearchPhraseSlop too high' => [
-				'wgCirrusSearchPhraseSlop',
+				'CirrusSearchPhraseSlop',
 				[ 'boost' => 1 ],
 				'cirrusPhraseSlop',
 				'11',
 				[ 'boost' => 1 ],
 			],
 			'wgCirrusSearchPhraseSlop invalid' => [
-				'wgCirrusSearchPhraseSlop',
+				'CirrusSearchPhraseSlop',
 				[ 'boost' => 1 ],
 				'cirrusPhraseSlop',
 				'blah',
 				[ 'boost' => 1 ]
 			],
 			'wgCirrusSearchLogElasticRequests normal' => [
-				'wgCirrusSearchLogElasticRequests',
+				'CirrusSearchLogElasticRequests',
 				true,
 				'cirrusLogElasticRequests',
 				'secret',
 				false,
-				[ 'wgCirrusSearchLogElasticRequestsSecret' => 'secret' ]
+				[ 'CirrusSearchLogElasticRequestsSecret' => 'secret' ]
 			],
 			'wgCirrusSearchLogElasticRequests bad secret' => [
-				'wgCirrusSearchLogElasticRequests',
+				'CirrusSearchLogElasticRequests',
 				true,
 				'cirrusLogElasticRequests',
 				'blah',
 				true,
-				[ 'wgCirrusSearchLogElasticRequestsSecret' => 'secret' ]
+				[ 'CirrusSearchLogElasticRequestsSecret' => 'secret' ]
 			],
 			'wgCirrusSearchEnableAltLanguage activate' => [
-				'wgCirrusSearchEnableAltLanguage',
+				'CirrusSearchEnableAltLanguage',
 				false,
 				'cirrusAltLanguage',
 				'yes',
 				true,
 			],
 			'wgCirrusSearchEnableAltLanguage disable' => [
-				'wgCirrusSearchEnableAltLanguage',
+				'CirrusSearchEnableAltLanguage',
 				true,
 				'cirrusAltLanguage',
 				'no',
 				false,
 			],
 			'wgCirrusSearchUseCompletionSuggester disable' => [
-				'wgCirrusSearchUseCompletionSuggester',
+				'CirrusSearchUseCompletionSuggester',
 				'yes',
 				'cirrusUseCompletionSuggester',
 				'no',
 				false
 			],
 			'wgCirrusSearchUseCompletionSuggester cannot be activated' => [
-				'wgCirrusSearchUseCompletionSuggester',
+				'CirrusSearchUseCompletionSuggester',
 				'no',
 				'cirrusUseCompletionSuggester',
 				'yes',
@@ -190,103 +190,103 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 	public function testOverrides( $option, $originalValue, $paramName, $paramValue, $expectedValue,
 		$additionalConfig = []
 	) {
-		$this->assertArrayHasKey( $option, $GLOBALS );
-		$this->setMwGlobals( [
-								 $option => $originalValue
-							 ] + $additionalConfig );
+		$this->assertArrayHasKey( "wg$option", $GLOBALS );
+		$this->overrideConfigValues(
+			[ $option => $originalValue ] + $additionalConfig
+		);
 
 		$request = new FauxRequest( [ $paramName . "Foo" => $paramValue ] );
 		Hooks::initializeForRequest( $request );
-		$this->assertEquals( $originalValue, $GLOBALS[$option],
+		$this->assertEquals( $originalValue, $GLOBALS["wg$option"],
 			'Unrelated param does not affect overrides' );
 
 		$request = new FauxRequest( [ $paramName => $paramValue ] );
 		Hooks::initializeForRequest( $request );
-		$this->assertEquals( $expectedValue, $GLOBALS[$option] );
+		$this->assertEquals( $expectedValue, $GLOBALS["wg$option"] );
 	}
 
 	public static function provideMltOverrides() {
 		return [
 			'wgCirrusSearchMoreLikeThisConfig min_doc_freq' => [
-				'wgCirrusSearchMoreLikeThisConfig',
+				'CirrusSearchMoreLikeThisConfig',
 				[ 'min_doc_freq' => 3 ],
 				'cirrusMltMinDocFreq',
 				5,
 				[ 'min_doc_freq' => 5 ],
 			],
 			'wgCirrusSearchMoreLikeThisConfig max_doc_freq' => [
-				'wgCirrusSearchMoreLikeThisConfig',
+				'CirrusSearchMoreLikeThisConfig',
 				[ 'max_doc_freq' => 3 ],
 				'cirrusMltMaxDocFreq',
 				5,
 				[ 'max_doc_freq' => 5 ],
 			],
 			'wgCirrusSearchMoreLikeThisConfig max_query_terms' => [
-				'wgCirrusSearchMoreLikeThisConfig',
+				'CirrusSearchMoreLikeThisConfig',
 				[ 'max_query_terms' => 3 ],
 				'cirrusMltMaxQueryTerms',
 				5,
 				[ 'max_query_terms' => 5 ],
-				[ 'wgCirrusSearchMoreLikeThisMaxQueryTermsLimit' => 6 ]
+				[ 'CirrusSearchMoreLikeThisMaxQueryTermsLimit' => 6 ]
 			],
 			'wgCirrusSearchMoreLikeThisConfig max_query_terms too high' => [
-				'wgCirrusSearchMoreLikeThisConfig',
+				'CirrusSearchMoreLikeThisConfig',
 				[ 'max_query_terms' => 3 ],
 				'cirrusMltMaxQueryTerms',
 				5,
 				[ 'max_query_terms' => 3 ],
-				[ 'wgCirrusSearchMoreLikeThisMaxQueryTermsLimit' => 4 ]
+				[ 'CirrusSearchMoreLikeThisMaxQueryTermsLimit' => 4 ]
 			],
 			'wgCirrusSearchMoreLikeThisConfig min_term_freq' => [
-				'wgCirrusSearchMoreLikeThisConfig',
+				'CirrusSearchMoreLikeThisConfig',
 				[ 'min_term_freq' => 3 ],
 				'cirrusMltMinTermFreq',
 				5,
 				[ 'min_term_freq' => 5 ],
 			],
 			'wgCirrusSearchMoreLikeThisConfig minimum_should_match' => [
-				'wgCirrusSearchMoreLikeThisConfig',
+				'CirrusSearchMoreLikeThisConfig',
 				[ 'minimum_should_match' => '30%' ],
 				'cirrusMltMinimumShouldMatch',
 				'50%',
 				[ 'minimum_should_match' => '50%' ],
 			],
 			'wgCirrusSearchMoreLikeThisConfig minimum_should_match invalid' => [
-				'wgCirrusSearchMoreLikeThisConfig',
+				'CirrusSearchMoreLikeThisConfig',
 				[ 'minimum_should_match' => '30%' ],
 				'cirrusMltMinimumShouldMatch',
 				'50A%',
 				[ 'minimum_should_match' => '30%' ],
 			],
 			'wgCirrusSearchMoreLikeThisConfig min_word_length' => [
-				'wgCirrusSearchMoreLikeThisConfig',
+				'CirrusSearchMoreLikeThisConfig',
 				[ 'min_word_length' => 3 ],
 				'cirrusMltMinWordLength',
 				5,
 				[ 'min_word_length' => 5 ],
 			],
 			'wgCirrusSearchMoreLikeThisConfig max_word_length' => [
-				'wgCirrusSearchMoreLikeThisConfig',
+				'CirrusSearchMoreLikeThisConfig',
 				[ 'max_word_length' => 3 ],
 				'cirrusMltMaxWordLength',
 				5,
 				[ 'max_word_length' => 5 ],
 			],
 			'wgCirrusSearchMoreLikeThisFields allowed' => [
-				'wgCirrusSearchMoreLikeThisFields',
+				'CirrusSearchMoreLikeThisFields',
 				[ 'title', 'text' ],
 				'cirrusMltFields',
 				'text,opening_text',
 				[ 'text', 'opening_text' ],
-				[ 'wgCirrusSearchMoreLikeThisAllowedFields' => [ 'text', 'opening_text' ] ]
+				[ 'CirrusSearchMoreLikeThisAllowedFields' => [ 'text', 'opening_text' ] ]
 			],
 			'wgCirrusSearchMoreLikeThisFields disallowed' => [
-				'wgCirrusSearchMoreLikeThisFields',
+				'CirrusSearchMoreLikeThisFields',
 				[ 'title', 'text' ],
 				'cirrusMltFields',
 				'text,opening_text,unknown',
 				[ 'text', 'opening_text' ],
-				[ 'wgCirrusSearchMoreLikeThisAllowedFields' => [ 'text', 'opening_text' ] ]
+				[ 'CirrusSearchMoreLikeThisAllowedFields' => [ 'text', 'opening_text' ] ]
 			],
 		];
 	}
@@ -305,8 +305,8 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 	public function testMltOverrides( $option, $originalValue, $paramName, $paramValue,
 		$expectedValue, $additionalConfig = []
 	) {
-		$this->assertArrayHasKey( $option, $GLOBALS );
-		$nullOptions = $option === 'wgCirrusSearchMoreLikeThisConfig' ? [
+		$this->assertArrayHasKey( "wg$option", $GLOBALS );
+		$nullOptions = $option === 'CirrusSearchMoreLikeThisConfig' ? [
 			'min_doc_freq' => null,
 			'max_doc_freq' => null,
 			'max_query_terms' => null,
@@ -317,24 +317,24 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 		] : [];
 		// Hooks use byref method on $array['value'], this creates an null entry if nothing is assigned to it.
 		$originalValue += $nullOptions;
-		$this->setMwGlobals( [
-								 $option => $originalValue
-							 ] + $additionalConfig );
+		$this->overrideConfigValues(
+			[ $option => $originalValue ] + $additionalConfig
+		);
 
 		$request = new FauxRequest( [ $paramName . "Foo" => $paramValue ] );
 		Hooks::initializeForRequest( $request );
-		$this->assertEquals( $originalValue, $GLOBALS[$option],
+		$this->assertEquals( $originalValue, $GLOBALS["wg$option"],
 			'Unrelated param does not affect overrides' );
 
 		$request = new FauxRequest( [ $paramName => $paramValue ] );
 		Hooks::initializeForRequest( $request );
-		$this->assertEquals( $expectedValue + $nullOptions, $GLOBALS[$option] );
+		$this->assertEquals( $expectedValue + $nullOptions, $GLOBALS["wg$option"] );
 	}
 
 	private function preferencesForCompletionProfiles( array $profiles ) {
 		OutputPage::setupOOUI();
-		$this->setMwGlobals( [
-			'wgCirrusSearchUseCompletionSuggester' => true,
+		$this->overrideConfigValues( [
+			'CirrusSearchUseCompletionSuggester' => true,
 		] );
 		$service = new SearchProfileService( $this->getServiceContainer()->getUserOptionsLookup() );
 		$service->registerDefaultProfile( SearchProfileService::COMPLETION,

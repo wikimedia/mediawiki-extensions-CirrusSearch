@@ -100,11 +100,11 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			[ $loggers, $config, $connection, $transport ] = $this->buildDependencies( $responses );
 		}
 
-		$this->setMwGlobals( [
+		$this->overrideConfigValues( [
 			// Default config of SiteMatrix in vagrant is broken
-			'wgSiteMatrixSites' => [],
+			'SiteMatrixSites' => [],
 			// Make sure OtherIndex is configured for use as well
-			'wgCirrusSearchExtraIndexes' => [ NS_FILE => [ 'commonswiki_file' ] ],
+			'CirrusSearchExtraIndexes' => [ NS_FILE => [ 'commonswiki_file' ] ],
 		] );
 
 		// Disable opportunistic execution of deferred updates
@@ -138,16 +138,16 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 	 * @dataProvider requestLoggingProvider
 	 */
 	public function testRequestLogging( array $query, $responses, $expectedLogs ) {
-		$globals = [
-			'wgCirrusSearchFullTextQueryBuilderProfile' => 'default',
-			'wgCirrusSearchInterwikiSources' => [],
-			'wgCirrusSearchNamespaceResolutionMethod' => 'elastic',
+		$configs = [
+			'CirrusSearchFullTextQueryBuilderProfile' => 'default',
+			'CirrusSearchInterwikiSources' => [],
+			'CirrusSearchNamespaceResolutionMethod' => 'elastic',
 		];
 		if ( isset( $query['interwiki'] ) ) {
-			$globals['wgCirrusSearchInterwikiSources'] = $query['interwiki'];
-			$globals['wgCirrusSearchEnableCrossProjectSearch'] = true;
+			$configs['CirrusSearchInterwikiSources'] = $query['interwiki'];
+			$configs['CirrusSearchEnableCrossProjectSearch'] = true;
 		}
-		$this->setMwGlobals( $globals );
+		$this->overrideConfigValues( $configs );
 		$this->setService( 'LinkBatchFactory', $this->createMock( LinkBatchFactory::class ) );
 		$titleFactory = $this->createMock( TitleFactory::class );
 		$titleFactory->method( 'makeTitle' )->willReturnCallback( static function () {
@@ -262,13 +262,13 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 				);
 		}
 
-		$this->setMwGlobals( [
-			'wgCirrusSearchClusters' => [
+		$this->overrideConfigValues( [
+			'CirrusSearchClusters' => [
 				'default' => [
 					[ 'transport' => $transport ],
 				]
 			],
-			'wgCirrusSearchNamespaceResolutionMethod' => 'utr30',
+			'CirrusSearchNamespaceResolutionMethod' => 'utr30',
 		] );
 		$connection = new Connection( $config, 'default' );
 		$this->setTemporaryHook( 'PrefixSearchExtractNamespace',

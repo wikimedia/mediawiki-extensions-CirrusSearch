@@ -9,6 +9,7 @@ use LogicException;
 use MediaWiki\Config\Config;
 use MediaWiki\Config\GlobalVarConfig;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\Assert\Assert;
@@ -29,9 +30,9 @@ class SearchConfig implements Config {
 
 	/** Non cirrus vars to load when loading external wiki config */
 	private const NON_CIRRUS_VARS = [
-		'wgLanguageCode',
-		'wgContentNamespaces',
-		'wgNamespacesToBeSearchedDefault',
+		MainConfigNames::LanguageCode,
+		MainConfigNames::ContentNamespaces,
+		MainConfigNames::NamespacesToBeSearchedDefault,
 	];
 
 	/**

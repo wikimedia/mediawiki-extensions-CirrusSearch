@@ -1,7 +1,7 @@
 {
 	"query": "main",
 	"config": {
-		"wgCirrusSearchExtraIndexBoostTemplates": {
+		"CirrusSearchExtraIndexBoostTemplates": {
 			"foowiki": {
 				"wiki": "foo",
 				"boosts": {
@@ -10,7 +10,7 @@
 				}
 			}
 		},
-		"wgCirrusSearchExtraIndexes": {
+		"CirrusSearchExtraIndexes": {
 			"0": [ "foowiki" ]
 		}
 	}

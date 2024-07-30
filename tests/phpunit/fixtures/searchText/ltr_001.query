@@ -1,7 +1,7 @@
 {
 	"query": "test some ltr",
 	"config": {
-		"wgCirrusSearchRescoreProfiles": {
+		"CirrusSearchRescoreProfiles": {
 			"ltr": {
 				"i18n_msg": "cirrussearch-qi-profile-wsum-inclinks-pv",
 				"supported_namespaces": "all",
@@ -23,6 +23,6 @@
 				]
 			}
 		},
-		"wgCirrusSearchRescoreProfile": "ltr"
+		"CirrusSearchRescoreProfile": "ltr"
 	}
 }

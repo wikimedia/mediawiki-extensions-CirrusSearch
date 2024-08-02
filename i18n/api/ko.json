@@ -18,5 +18,6 @@
 	"apihelp-query+cirrusdoc-example": "현재 검색에 색인으로 있는 단일 CirrusSearch 문서의 덤프를 가져옵니다.",
 	"apihelp-query+cirrusbuilddoc-summary": "데이터베이스 서버에서 가져온 CirrusSearch 문서 덤프",
 	"apihelp-query+cirrusbuilddoc-example": "데이터베이스에서 생성한 단일 CirrusSearch 문서 덤프를 가져옵니다.",
-	"apierror-cirrus-requesttoolong": "접두어 검색 요청이 최대 허용 길이보다 더 깁니다. ($1 &gt; $2)"
+	"apierror-cirrus-requesttoolong": "접두어 검색 요청이 최대 허용 길이보다 더 깁니다. ($1 &gt; $2)",
+	"apihelp-cirrus-check-sanity-summary": "검색 색인의 다양한 페이지 ID의 정확성에 대한 보고서입니다"
 }

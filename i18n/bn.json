@@ -7,7 +7,8 @@
 			"YahyA",
 			"Yahya",
 			"আফতাবুজ্জামান",
-			"Aishik Rehman"
+			"Aishik Rehman",
+			"Tahmid"
 		]
 	},
 	"cirrussearch-desc": "মিডিয়াউইকির জন্য নমনীয়অনুসন্ধান-চালিত অনুসন্ধান",
@@ -43,6 +44,7 @@
 	"cirrussearch-feature-not-available": "এই উইকিতে অনুসন্ধানের শব্দচাবি '$1' সক্রিয় করা হয়নি।",
 	"cirrussearch-feature-deepcat-exception": "গভীর বিষয়শ্রেণী অনুসন্ধান SPARQL ক্যোয়ারী ব্যর্থ হয়েছে",
 	"cirrussearch-feature-deepcat-toomany": "গভীর বিষয়শ্রেণীর ক্যোয়ারীটি অনেকগুলি বিষয়শ্রেণী দিয়েছে",
+	"cirrussearch-feature-deepcat-invalid-title": "প্রদত্ত বিষয়শ্রেণীটি অবৈধ।",
 	"cirrussearch-incategory-feature-no-valid-categories": "'$1'-এ কোন বৈধ বিষয়শ্রেণী প্রদান করা হয়নি।",
 	"cirrussearch-mlt-feature-no-valid-titles": "'$1'-এ কোন বৈধ শিরোনাম প্রদান করা হয়নি।",
 	"cirrussearch-explore-similar-related": "সম্পর্কিত",

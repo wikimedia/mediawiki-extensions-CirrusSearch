@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hakim1bal"
+			"Hakim1bal",
+			"Lhoussine AIT TAYFST"
 		]
 	},
-	"cirrussearch-explore-similar-languages": "ⵜⵓⵜⵍⴰⵢⵉⵏ"
+	"cirrussearch-explore-similar-languages": "ⵜⵓⵜⵍⴰⵢⵉⵏ",
+	"cirrussearch-article-words": "ⵜⵉⴳⵓⵔⵉⵡⵉⵏ ⴳ ⵜⴰⵙⵏⵉⵡⵉⵏ ⴰⴽⴽⵯ ⵏ ⵜⵓⵎⴰⵢⵜ"
 }

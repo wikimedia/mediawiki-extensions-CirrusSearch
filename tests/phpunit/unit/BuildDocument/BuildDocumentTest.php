@@ -54,8 +54,7 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 			new DocumentSizeLimiter( [] ),
 			$this->createNoOpMock( TitleFormatter::class ),
 			$this->createNoOpMock( WikiPageFactory::class )
-		) extends BuildDocument
-		{
+		) extends BuildDocument {
 			/** Override create builders to avoid testing those implementations */
 			protected function createBuilders( int $flags ): array {
 				return [ new class() implements PagePropertyBuilder {

@@ -17,7 +17,6 @@
 	"cirrussearch-regex-too-busy-error": "Terlalu banyak pencarian ungkapan nalar yang sedang dijalankan. Sila cuba lagi nanti.",
 	"cirrussearch-regex-too-complex-error": "Ungkapan nalar terlalu rumit. Ketahui lebih lanjut mengenai cara memudahkannya [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|di sini]].",
 	"cirrussearch-now-using": "Wiki ini sedang menggunakan enjin pencarian baru. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ketahui lebih lanjut]])",
-	"cirrussearch-ignored-headings": " #<!-- jangan usik baris ini --> <pre>\n# Tajuk yang akan diabaikan oleh pencarian.\n# Suntingannya diperlakukan sebaik sahaja laman yang bertajuk ini diindekskan.\n# Anda boleh memaksakan pengindeksan semula laman dengan melakukan suntingan nol (null edit).\n# Sintaks adalah seperti berikut:\n#   * Semuanya dari aksara \"#\" ke hujung baris dikira komen.\n#   * Setiap baris tak kosong ialah tajuk yang setepatnya untuk diabaikan.\nRujukan\nPautan luar\nLihat juga\n #</pre> <!-- jangan usik baris ini -->",
 	"cirrussearch-pref-label": "Carian baru",
 	"cirrussearch-pref-desc": "Cuba carian baru kami yang menyokong lebih banyak bahasa, memberikan hasil yang lebih terkini, dan bahkan dapat mencari teks di dalam templat.",
 	"cirrussearch-give-feedback": "Berikan kami maklum balas anda",

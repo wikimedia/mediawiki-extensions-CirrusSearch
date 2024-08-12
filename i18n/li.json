@@ -12,7 +12,6 @@
 	"cirrussearch-regex-too-busy-error": "Te väöl regulier expressie-zeukopdrachte loupe noe. Perbeer 't later oppernuuj.",
 	"cirrussearch-regex-too-complex-error": "Reguliere expressie is te complex. [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|Mieër infermasie euver vereinveljige]].",
 	"cirrussearch-now-using": "Deze wiki maak gebroek van e nuuj zeukmesjien. ([[mw:Special:MyLanguage/Help:CirrusSearch|Laes mieë]])",
-	"cirrussearch-ignored-headings": " #<!-- leave this line exactly as it is --> <pre>\n# Köp die waere genegeerdj tiejes 't zeuke.\n# Verangeringe waere van kraf wen 'ne kop wuuertj geïndexeerd.\n# Doe kins oppernuuj indexere aafdwinge door 't oetveure van 'n laeg bewirking.\n# De syntaxis is es volg:\n#   * Alle teks vanaaf 't teike \"#\" tot 't ènj van de regel weurt gezeen es 'n opmerking;\n#   * Edere neet-laege regel is de precieze te negere kop, inclusief hooflittergebroek en dergelike.\nReferenties\nExtern links\nBetrach ouch\n #</pre> <!-- leave this line exactly as it is -->",
 	"cirrussearch-pref-label": "Nuje zeukopdrach",
 	"cirrussearch-pref-desc": "Perbeer de nuuj zeukfunctie die e grótter aantal spraoke óngersteunt, meh recènte zeukrizzeltaote geuf en zelfs teks in sjeblone kan vinje.",
 	"cirrussearch-give-feedback": "Gaef ós dien meining",

@@ -13,7 +13,6 @@
 	"cirrussearch-regex-too-busy-error": "In sto momento ghe xé masa espresion regołari drio ndare. Reproa pì tardi.",
 	"cirrussearch-regex-too-complex-error": "Ła espresion regołare ła xé masa conplegada. Va pì infondo [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|cuà]] cofà senplifegarla.",
 	"cirrussearch-now-using": "Sto projeto wiki el dopara on novo motore de riçerca ([[mw:Special:MyLanguage/Help:CirrusSearch|piasè informasion]]).",
-	"cirrussearch-ignored-headings": " #<!-- d' łasa sto rigo propio come che el xé --> <pre>\n# Łista de łe intestasion che łe vegnarà ignorae in te ła reçerca.\n# Le modifeghe a sta pàjina łe sarà efetive soło co ła pàjina ła vegnarà indaxeçixada.\n# Te połi sforsare ła re-indaxeçixasion de na pàjina faxendo na modifega njiente.\n# Ła sintatega ła xé sta cuà che ła vien:\n#   * Tuto dal caratare \"#\" a ła fin del rigo el xé on comento\n#   * Tuti i righi che no i xé vodi łe xé łe intestasion juste da ignorare, in grando/picenin e tuto.\nNotasion\nVoxe corełade\nLinganbi foresti\n #</pre> <!-- d'łasa sto rigo propio cofà che el xé -->",
 	"cirrussearch-pref-label": "Riçerca nova",
 	"cirrussearch-give-feedback": "Dìne 'sà che te pare",
 	"cirrussearch-query-too-long": "El testo de ła riçerca el xé pì grando de cheło premeso. ($1 > $2)",

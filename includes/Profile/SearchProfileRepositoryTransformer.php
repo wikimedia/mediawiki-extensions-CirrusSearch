@@ -26,7 +26,7 @@ class SearchProfileRepositoryTransformer implements SearchProfileRepository {
 			$transformer = new ArrayPathSetter( $transformer );
 		} elseif ( !$transformer instanceof ArrayPathSetter ) {
 			throw new \InvalidArgumentException( '$transformer must be array|ArrayPathSetter, got ' .
-				( is_object( $transformer ) ? get_class( $transformer ) : gettype( $transformer ) ) );
+				get_debug_type( $transformer ) );
 		}
 		$this->repository = $repository;
 		$this->transformer = $transformer;

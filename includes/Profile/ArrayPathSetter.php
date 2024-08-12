@@ -151,7 +151,7 @@ class ArrayPathSetter {
 			$this->compiledReplacements = [];
 			foreach ( $this->replacements as $repl => $value ) {
 				if ( !is_string( $repl ) ) {
-					throw new SearchProfileException( "Replacement pattern must be string but is a " . gettype( $repl ) );
+					throw new SearchProfileException( "Replacement pattern must be string but is a " . get_debug_type( $repl ) );
 				}
 				$matches = [];
 				$ret = preg_match_all( self::PATTERN, $repl, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE );

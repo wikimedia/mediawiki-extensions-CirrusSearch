@@ -129,7 +129,7 @@ class ArrayProfileRepository implements SearchProfileRepository {
 			if ( !is_array( $profiles ) ) {
 				throw new SearchProfileException( "Loader callback for repository " .
 					$this->name . " of type " . $this->type .
-					" resolved to " . gettype( $profiles ) . " but expected an array." );
+					" resolved to " . get_debug_type( $profiles ) . " but expected an array." );
 			}
 			$this->profiles = $profiles;
 		}

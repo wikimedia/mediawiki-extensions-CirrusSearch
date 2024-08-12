@@ -72,7 +72,7 @@ class CompletionSearchProfileRepository implements SearchProfileRepository {
 			}
 			$originalProfiles = call_user_func( $arrayLoader );
 			if ( !is_array( $originalProfiles ) ) {
-				throw new SearchProfileException( "Expected an array but got a " . gettype( $originalProfiles ) );
+				throw new SearchProfileException( "Expected an array but got a " . get_debug_type( $originalProfiles ) );
 			}
 			foreach ( $originalProfiles as $name => $settings ) {
 				$allowed = true;

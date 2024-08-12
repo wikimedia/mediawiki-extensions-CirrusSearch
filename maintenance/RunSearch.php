@@ -196,7 +196,7 @@ class RunSearch extends Maintenance {
 			} else {
 				throw new \RuntimeException(
 					'Unknown result type: '
-					. ( is_object( $value ) ? get_class( $value ) : gettype( $value ) )
+					. get_debug_type( $value )
 				);
 			}
 		} else {

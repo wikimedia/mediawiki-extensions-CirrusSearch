@@ -86,8 +86,7 @@
             "filter": [
                 "lowercase",
                 "aggressive_splitting",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "asciifolding_preserve"
             ],
             "tokenizer": "whitespace",
             "type": "custom"
@@ -366,10 +365,6 @@
         "cjk_stop": {
             "type": "stop",
             "stopwords": "_english_"
-        },
-        "dedup_asciifolding": {
-            "type": "unique",
-            "only_on_same_position": true
         },
         "icutokrep_no_camel_split": {
             "type": "icu_token_repair",

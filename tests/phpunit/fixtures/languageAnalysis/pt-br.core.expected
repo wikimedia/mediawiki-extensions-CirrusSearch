@@ -84,8 +84,7 @@
             "filter": [
                 "lowercase",
                 "aggressive_splitting",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "asciifolding_preserve"
             ],
             "tokenizer": "whitespace",
             "type": "custom"
@@ -350,10 +349,6 @@
         "brazilian_stop": {
             "type": "stop",
             "stopwords": "_brazilian_"
-        },
-        "dedup_asciifolding": {
-            "type": "unique",
-            "only_on_same_position": true
         },
         "lowercase": {
             "type": "lowercase"

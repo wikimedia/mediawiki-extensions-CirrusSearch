@@ -84,8 +84,7 @@
             "filter": [
                 "icu_normalizer",
                 "aggressive_splitting",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "asciifolding_preserve"
             ],
             "tokenizer": "whitespace",
             "type": "custom"
@@ -361,10 +360,6 @@
         "cjk_stop": {
             "type": "stop",
             "stopwords": "_english_"
-        },
-        "dedup_asciifolding": {
-            "type": "unique",
-            "only_on_same_position": true
         },
         "icu_normalizer": {
             "type": "icu_normalizer",

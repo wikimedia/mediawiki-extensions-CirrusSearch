@@ -84,8 +84,7 @@
             "filter": [
                 "lowercase",
                 "aggressive_splitting",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "asciifolding_preserve"
             ],
             "tokenizer": "whitespace",
             "type": "custom"
@@ -496,10 +495,6 @@
         "asciifolding_preserve": {
             "type": "asciifolding",
             "preserve_original": true
-        },
-        "dedup_asciifolding": {
-            "type": "unique",
-            "only_on_same_position": true
         },
         "lowercase": {
             "type": "lowercase"

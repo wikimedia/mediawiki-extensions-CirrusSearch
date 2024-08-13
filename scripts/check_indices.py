@@ -12,11 +12,11 @@ exist.
 """
 from argparse import ArgumentParser
 from collections import Counter, defaultdict
+from concurrent.futures import Executor, ThreadPoolExecutor, as_completed
 from enum import Enum
 import itertools
 import json
 import logging
-import pickle
 import re
 import requests
 import subprocess
@@ -29,7 +29,9 @@ log = logging.getLogger(__name__)
 
 def arg_parser():
     parser = ArgumentParser()
-    parser.add_argument('--run-cache-path')
+    parser.add_argument(
+        '--mwscript-parallelism', dest='parallelism', type=int, default=8,
+        help='Parallelism to run mwscript with when collecting wiki configuration')
     return parser
 
 
@@ -313,34 +315,18 @@ class GlentIndexAcceptor:
         yield from found
 
 
-def make_all_wiki_state() -> Sequence[WikiState]:
-    return [make_wiki_state(dbname) for dbname in all_dbnames()]
+def make_all_wiki_state(executor: Executor) -> Sequence[WikiState]:
+    futures = [
+        executor.submit(make_wiki_state, dbname)
+        for dbname in all_dbnames()
+    ]
+    for future in as_completed(futures):
+        yield future.result()
 
 
-def compute_if_absent(fn, path):
-    try:
-        with open(path, 'rb') as f:
-            return pickle.load(f)
-    except FileNotFoundError:
-        pass
-
-    result = fn()
-    with open(path, 'wb') as f:
-        pickle.dump(result, f)
-    return result
-
-
-def build_config(run_cache_path: Optional[str] = None) -> Sequence[ClusterToCheck]:
-    if run_cache_path is None:
-        wiki_state = make_all_wiki_state()
-    else:
-        # Collecting wiki state can take a few minutes for ~900 wikis.
-        # A common use case will be to run script, change same state in
-        # elasticsearch without changing cirrus config, and then rerun. By
-        # caching we make the script a bit more interactive.
-        # It would perhaps be more elegant to cache the individual json inputs,
-        # but this is simple and works acceptably for purpose.
-        wiki_state = compute_if_absent(make_all_wiki_state, run_cache_path)
+def build_config(parallelism: int) -> Sequence[ClusterToCheck]:
+    with ThreadPoolExecutor(max_workers=parallelism) as executor:
+        wiki_state = list(make_all_wiki_state(executor))
 
     accept_all = [
         CirrusExpectedIndicesGenerator.from_wiki_states(wiki_state),
@@ -404,8 +390,8 @@ def report_problems(problems: Sequence[Problem]) -> Sequence[Mapping]:
     } for cluster, problems in grouped]
 
 
-def main(run_cache_path: Optional[str]) -> int:
-    clusters_to_check = build_config(run_cache_path)
+def main(parallelism: int) -> int:
+    clusters_to_check = build_config(parallelism)
     problems = validate_clusters(clusters_to_check)
     print(json.dumps(report_problems(problems)))
     return 0

@@ -346,6 +346,11 @@ class AnalysisConfigBuilder {
 					$config[ 'analyzer' ][ $analyzer ][ 'filter' ], true );
 		}
 
+		// if lowercase_keyword exists, add icu_folding
+		if ( isset( $config[ 'analyzer' ][ 'lowercase_keyword' ] ) ) {
+			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'icu_folding';
+		}
+
 		return $config;
 	}
 

@@ -147,6 +147,7 @@
                 "lowercase",
                 "greek_stop",
                 "greek_stemmer",
+                "asciifolding",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -164,6 +165,7 @@
                 "lowercase",
                 "greek_stop",
                 "greek_stemmer",
+                "asciifolding",
                 "remove_empty"
             ],
             "tokenizer": "standard",

@@ -879,6 +879,7 @@ class AnalysisConfigBuilder {
 			case 'latvian':    // Unpack Latvian analyzer T325089
 			case 'lithuanian': // Unpack Lithuanian analyzer T325090
 			case 'norwegian':  // Unpack Norwegian analyzer T289612
+			case 'swedish':    // Harmonize Swedish analyzer T332342
 				$config = ( new AnalyzerBuilder( $langName ) )->
 					withUnpackedAnalyzer()->
 					build( $config );
@@ -1020,11 +1021,6 @@ class AnalysisConfigBuilder {
 					withFilters( [ 'possessive_english', 'lowercase', 'stop', 'asciifolding',
 						'kstem', 'custom_stem' ] )->
 					build( $config );
-
-				// Add asciifolding_preserve to the plain analyzer as well (but not plain_search)
-				$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
-				// Add asciifolding_preserve filters
-				$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 				break;
 			case 'esperanto':
 				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
@@ -1033,17 +1029,12 @@ class AnalysisConfigBuilder {
 					build( $config );
 				break;
 			case 'french':
-				// Add asciifolding_preserve to filters
-				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142620
-				$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
-
 				$config = ( new AnalyzerBuilder( $langName ) )->
 					withUnpackedAnalyzer()->
 					withLimitedCharMap( [ '\u02BC=>\u0027' ] )->
 					withElision( [ 'l', 'm', 't', 'qu', 'n', 's', 'j', 'd', 'c',
 									'jusqu', 'quoiqu', 'lorsqu', 'puisqu' ] )->
 					withLightStemmer()->
-					withAsciifoldingPreserve()->
 					build( $config );
 				break;
 			case 'german':
@@ -1062,7 +1053,6 @@ class AnalysisConfigBuilder {
 			case 'greek':
 				$config = ( new AnalyzerBuilder( $langName ) )->
 					withUnpackedAnalyzer()->
-					omitAsciifolding()->
 					withLangLowercase()->
 					withRemoveEmpty()->
 					build( $config );
@@ -1118,11 +1108,6 @@ class AnalysisConfigBuilder {
 					withElision( $itElision )->
 					withLightStemmer()->
 					build( $config );
-
-				// Add asciifolding_preserve to the plain analyzer as well (but not plain_search)
-				$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
-				// Add asciifolding_preserve to filters
-				$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 				break;
 			case 'japanese':
 				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T166731
@@ -1286,17 +1271,6 @@ class AnalysisConfigBuilder {
 					withUnpackedAnalyzer()->
 					withDecimalDigit()->
 					insertFiltersBefore( 'lowercase', [ 'sorani_normalization' ] )->
-					build( $config );
-				break;
-			case 'swedish':
-				// Add asciifolding_preserve to lowercase_keyword
-				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
-				$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
-
-				// Unpack built-in swedish analyzer to add asciifolding_preserve
-				$config = ( new AnalyzerBuilder( $langName ) )->
-					withUnpackedAnalyzer()->
-					withAsciifoldingPreserve()->
 					build( $config );
 				break;
 			case 'thai':
@@ -1764,6 +1738,7 @@ class AnalysisConfigBuilder {
 		'hr' => true,
 		'hu' => true,
 		'hy' => true,
+		'it' => true,
 		'ja' => true,
 		'lt' => true,
 		'lv' => true,

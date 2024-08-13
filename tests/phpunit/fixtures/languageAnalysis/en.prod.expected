@@ -10,11 +10,7 @@
         "lowercase_keyword": {
             "filter": [
                 "truncate_keyword",
-                "icu_normalizer",
-                "preserve_original_recorder",
-                "icu_folding",
-                "preserve_original",
-                "remove_empty"
+                "icu_normalizer"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"

@@ -10,9 +10,7 @@
         "lowercase_keyword": {
             "filter": [
                 "truncate_keyword",
-                "icu_normalizer",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "icu_normalizer"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -34,7 +32,8 @@
             "filter": [
                 "truncate_keyword",
                 "icu_normalizer",
-                "asciifolding"
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -47,8 +46,10 @@
             "filter": [
                 "icutokrep_no_camel_split",
                 "icu_normalizer",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -81,7 +82,8 @@
             ],
             "filter": [
                 "icu_normalizer",
-                "asciifolding"
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "prefix",
             "type": "custom"
@@ -90,8 +92,10 @@
             "filter": [
                 "icu_normalizer",
                 "aggressive_splitting",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "whitespace",
             "type": "custom"
@@ -151,7 +155,6 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
                 "arabic_extended_norm"
             ],
             "filter": [
@@ -161,7 +164,8 @@
                 "icu_normalizer",
                 "italian_stop",
                 "italian_stemmer",
-                "asciifolding"
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -172,7 +176,6 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
                 "arabic_extended_norm"
             ],
             "filter": [
@@ -182,7 +185,8 @@
                 "icu_normalizer",
                 "italian_stop",
                 "italian_stemmer",
-                "asciifolding"
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -362,9 +366,12 @@
             "type": "asciifolding",
             "preserve_original": true
         },
-        "dedup_asciifolding": {
-            "type": "unique",
-            "only_on_same_position": true
+        "icu_folding": {
+            "type": "icu_folding"
+        },
+        "icu_nfkc_normalization": {
+            "type": "icu_normalizer",
+            "name": "nfkc"
         },
         "icu_normalizer": {
             "type": "icu_normalizer",

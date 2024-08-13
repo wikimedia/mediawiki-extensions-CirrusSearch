@@ -506,9 +506,7 @@
                 "icu_normalizer",
                 "french_stop",
                 "french_stemmer",
-                "preserve_original_recorder",
                 "icu_folding",
-                "preserve_original",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -528,9 +526,7 @@
                 "icu_normalizer",
                 "french_stop",
                 "french_stemmer",
-                "preserve_original_recorder",
                 "icu_folding",
-                "preserve_original",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -692,9 +688,7 @@
                 "icu_normalizer",
                 "swedish_stop",
                 "swedish_stemmer",
-                "preserve_original_recorder",
                 "sv_icu_folding",
-                "preserve_original",
                 "remove_empty"
             ],
             "tokenizer": "standard",
@@ -712,9 +706,7 @@
                 "icu_normalizer",
                 "swedish_stop",
                 "swedish_stemmer",
-                "preserve_original_recorder",
                 "sv_icu_folding",
-                "preserve_original",
                 "remove_empty"
             ],
             "tokenizer": "standard",

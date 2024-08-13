@@ -177,6 +177,8 @@
                 "icu_normalizer",
                 "greek_stop",
                 "greek_stemmer",
+                "icu_folding",
+                "remove_empty",
                 "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
@@ -197,6 +199,8 @@
                 "icu_normalizer",
                 "greek_stop",
                 "greek_stemmer",
+                "icu_folding",
+                "remove_empty",
                 "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",

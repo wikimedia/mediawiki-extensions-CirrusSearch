@@ -10,11 +10,7 @@
         "lowercase_keyword": {
             "filter": [
                 "truncate_keyword",
-                "icu_normalizer",
-                "preserve_original_recorder",
-                "icu_folding",
-                "preserve_original",
-                "remove_empty"
+                "icu_normalizer"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -167,9 +163,7 @@
                 "icu_normalizer",
                 "swedish_stop",
                 "swedish_stemmer",
-                "preserve_original_recorder",
                 "icu_folding",
-                "preserve_original",
                 "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
@@ -189,9 +183,7 @@
                 "icu_normalizer",
                 "swedish_stop",
                 "swedish_stemmer",
-                "preserve_original_recorder",
                 "icu_folding",
-                "preserve_original",
                 "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",

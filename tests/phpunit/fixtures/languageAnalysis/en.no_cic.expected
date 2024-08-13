@@ -10,9 +10,7 @@
         "lowercase_keyword": {
             "filter": [
                 "truncate_keyword",
-                "icu_normalizer",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "icu_normalizer"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -45,9 +43,7 @@
                 "word_break_helper"
             ],
             "filter": [
-                "icu_normalizer",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "icu_normalizer"
             ],
             "tokenizer": "standard",
             "type": "custom"

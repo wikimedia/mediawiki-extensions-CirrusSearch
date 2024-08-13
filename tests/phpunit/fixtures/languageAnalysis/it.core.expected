@@ -10,9 +10,7 @@
         "lowercase_keyword": {
             "filter": [
                 "truncate_keyword",
-                "lowercase",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "lowercase"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -45,9 +43,7 @@
                 "word_break_helper"
             ],
             "filter": [
-                "lowercase",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "lowercase"
             ],
             "tokenizer": "standard",
             "type": "custom"

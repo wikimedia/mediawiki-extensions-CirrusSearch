@@ -10,9 +10,7 @@
         "lowercase_keyword": {
             "filter": [
                 "truncate_keyword",
-                "lowercase",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "lowercase"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -149,8 +147,7 @@
                 "lowercase",
                 "swedish_stop",
                 "swedish_stemmer",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "asciifolding"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -167,8 +164,7 @@
                 "lowercase",
                 "swedish_stop",
                 "swedish_stemmer",
-                "asciifolding_preserve",
-                "dedup_asciifolding"
+                "asciifolding"
             ],
             "tokenizer": "standard",
             "type": "custom"

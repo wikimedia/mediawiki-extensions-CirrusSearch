@@ -146,8 +146,7 @@
                 "lowercase",
                 "apostrophe",
                 "turkish_stop",
-                "turkish_stemmer",
-                "asciifolding"
+                "turkish_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -164,8 +163,7 @@
                 "lowercase",
                 "apostrophe",
                 "turkish_stop",
-                "turkish_stemmer",
-                "asciifolding"
+                "turkish_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"

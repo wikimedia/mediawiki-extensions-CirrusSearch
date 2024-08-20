@@ -145,8 +145,7 @@
             "filter": [
                 "lowercase",
                 "lithuanian_stop",
-                "lithuanian_stemmer",
-                "asciifolding"
+                "lithuanian_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -162,8 +161,7 @@
             "filter": [
                 "lowercase",
                 "lithuanian_stop",
-                "lithuanian_stemmer",
-                "asciifolding"
+                "lithuanian_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"

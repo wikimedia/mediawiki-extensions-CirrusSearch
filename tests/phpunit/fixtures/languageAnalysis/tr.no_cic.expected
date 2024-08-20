@@ -161,8 +161,7 @@
                 "icu_normalizer",
                 "better_apostrophe",
                 "turkish_stop",
-                "turkish_stemmer",
-                "asciifolding"
+                "turkish_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -181,8 +180,7 @@
                 "icu_normalizer",
                 "better_apostrophe",
                 "turkish_stop",
-                "turkish_stemmer",
-                "asciifolding"
+                "turkish_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"

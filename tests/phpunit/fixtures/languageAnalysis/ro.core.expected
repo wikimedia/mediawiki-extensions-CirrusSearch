@@ -147,8 +147,7 @@
                 "lowercase",
                 "romanian_stop",
                 "ro_comma_stop",
-                "romanian_stemmer",
-                "asciifolding"
+                "romanian_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -166,8 +165,7 @@
                 "lowercase",
                 "romanian_stop",
                 "ro_comma_stop",
-                "romanian_stemmer",
-                "asciifolding"
+                "romanian_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"

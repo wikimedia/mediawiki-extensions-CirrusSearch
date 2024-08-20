@@ -145,8 +145,7 @@
             "filter": [
                 "lowercase",
                 "norwegian_stop",
-                "norwegian_stemmer",
-                "asciifolding"
+                "norwegian_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -162,8 +161,7 @@
             "filter": [
                 "lowercase",
                 "norwegian_stop",
-                "norwegian_stemmer",
-                "asciifolding"
+                "norwegian_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"

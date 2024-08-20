@@ -34,7 +34,10 @@ class AnalyzerBuilder {
 	private $langName;
 
 	/** @var string */
-	private $analyzerName;
+	private $analyzerName = 'text';
+
+	/** @var bool */
+	private $icuEnabled;
 
 	/** @var string[]|null list of char_filters */
 	private $charFilters;
@@ -118,8 +121,8 @@ class AnalyzerBuilder {
 	/** @var string|null */
 	private $stemmerLang;
 
-	/** @var string|null asciifolding flavor to use (null for none) */
-	private $asciifolding = 'asciifolding';
+	/** @var string|null folding flavor to use (null for none) */
+	private $folding = 'icu_folding';
 
 	/** @var string|null */
 	private $removeEmpty;
@@ -129,11 +132,20 @@ class AnalyzerBuilder {
 
 	/**
 	 * @param string $langName
-	 * @param string $analyzerName (default to 'text')
+	 * @param bool $icuEnabled
 	 */
-	public function __construct( string $langName, string $analyzerName = 'text' ) {
+	public function __construct( string $langName, bool $icuEnabled = false ) {
 		$this->langName = $langName;
-		$this->analyzerName = $analyzerName;
+		$this->icuEnabled = $icuEnabled;
+	}
+
+	/**
+	 * @param string $langName
+	 * @return self
+	 */
+	public function withLangName( string $langName ): self {
+		$this->langName = $langName;
+		return $this;
 	}
 
 	/**
@@ -346,16 +358,16 @@ class AnalyzerBuilder {
 	}
 
 	/** @return self */
-	public function withAsciifoldingPreserve(): self {
+	public function withAsciifolding(): self {
 		$this->unpackedCheck();
-		$this->asciifolding = 'asciifolding_preserve';
+		$this->folding = 'asciifolding';
 		return $this;
 	}
 
 	/** @return self */
-	public function omitAsciifolding(): self {
+	public function omitFolding(): self {
 		$this->unpackedCheck();
-		$this->asciifolding = '';
+		$this->folding = '';
 		return $this;
 	}
 
@@ -400,13 +412,20 @@ class AnalyzerBuilder {
 			// tokenizer: standard
 			// char_filter: lang_charfilter, lang_numbers
 			// filter: elision, aggressive_splitting, lowercase, stopwords, lang_norm,
-			//         stemmer_override, stemmer, asciifolding, remove_empty
+			//         stemmer_override, stemmer, folding, remove_empty
 			if ( $this->useStemmer ) {
 				$this->stemmerLang ??= $this->langName;
 			} else {
 				$langStem = '';
 			}
 			$this->withStop( $this->customStopList ?? "_{$this->langName}_" );
+
+			// remove icu_folding if icu plugin unavailable or unwanted
+			if ( $this->folding == 'icu_folding' ) {
+				if ( !$this->icuEnabled ) {
+					$this->folding = '';
+				}
+			}
 
 			// build up the char_filter list--everything is optional
 			$this->charFilters[] = $this->charMapName;
@@ -422,7 +441,7 @@ class AnalyzerBuilder {
 			$this->filters[] = $this->stopName;
 			$this->filters[] = $this->overrideName;
 			$this->filters[] = $langStem;
-			$this->filters[] = $this->asciifolding;
+			$this->filters[] = $this->folding;
 			$this->filters[] = $this->removeEmpty;
 
 			// remove 'falsey' (== not configured) values from the list
@@ -450,6 +469,14 @@ class AnalyzerBuilder {
 				}
 			}
 
+		} else {
+			// for simple filter lists, remove icu_folding if ICU not enabled
+			if ( !$this->icuEnabled ) {
+				$if_idx = array_search( 'icu_folding', $this->filters );
+				if ( $if_idx !== false ) {
+					array_splice( $this->filters, $if_idx, 1 );
+				}
+			}
 		}
 
 		$config[ 'analyzer' ][ $this->analyzerName ] = [

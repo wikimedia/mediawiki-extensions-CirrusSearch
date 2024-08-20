@@ -149,8 +149,7 @@
                 "lowercase",
                 "german_stop",
                 "german_normalization",
-                "german_stemmer",
-                "asciifolding"
+                "german_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -168,8 +167,7 @@
                 "lowercase",
                 "german_stop",
                 "german_normalization",
-                "german_stemmer",
-                "asciifolding"
+                "german_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"

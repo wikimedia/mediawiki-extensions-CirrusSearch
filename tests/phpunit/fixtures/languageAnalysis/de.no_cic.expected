@@ -151,8 +151,7 @@
                 "icu_normalizer",
                 "german_stop",
                 "german_normalization",
-                "german_stemmer",
-                "asciifolding"
+                "german_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -172,8 +171,7 @@
                 "icu_normalizer",
                 "german_stop",
                 "german_normalization",
-                "german_stemmer",
-                "asciifolding"
+                "german_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"

@@ -10,7 +10,9 @@
         "lowercase_keyword": {
             "filter": [
                 "truncate_keyword",
-                "lowercase"
+                "icu_normalizer",
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -20,7 +22,7 @@
                 "near_space_flattener"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -31,8 +33,9 @@
             ],
             "filter": [
                 "truncate_keyword",
-                "lowercase",
-                "asciifolding"
+                "icu_normalizer",
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -43,7 +46,11 @@
                 "word_break_helper"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -54,7 +61,7 @@
                 "word_break_helper"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -64,7 +71,7 @@
                 "near_space_flattener"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "prefix",
             "type": "custom"
@@ -74,24 +81,28 @@
                 "near_space_flattener"
             ],
             "filter": [
-                "lowercase",
-                "asciifolding"
+                "icu_normalizer",
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "prefix",
             "type": "custom"
         },
         "short_text": {
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "aggressive_splitting",
-                "asciifolding_preserve"
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "whitespace",
             "type": "custom"
         },
         "short_text_search": {
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "aggressive_splitting"
             ],
             "tokenizer": "whitespace",
@@ -102,7 +113,7 @@
                 "word_break_helper_source_text"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -112,14 +123,14 @@
                 "word_break_helper_source_text"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "standard",
             "type": "custom"
         },
         "suggest": {
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "suggest_shingle"
             ],
             "tokenizer": "standard",
@@ -127,7 +138,7 @@
         },
         "suggest_reverse": {
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "suggest_shingle",
                 "reverse"
             ],
@@ -143,13 +154,10 @@
                 "arabic_extended_norm"
             ],
             "filter": [
-                "lowercase",
-                "decimal_digit",
-                "arabic_extra_stop",
-                "arabic_stop",
-                "arabic_normalization",
-                "arabic_stemmer",
-                "asciifolding"
+                "icu_normalizer",
+                "icu_folding",
+                "remove_empty",
+                "serbian_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -163,13 +171,10 @@
                 "arabic_extended_norm"
             ],
             "filter": [
-                "lowercase",
-                "decimal_digit",
-                "arabic_extra_stop",
-                "arabic_stop",
-                "arabic_normalization",
-                "arabic_stemmer",
-                "asciifolding"
+                "icu_normalizer",
+                "icu_folding",
+                "remove_empty",
+                "serbian_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -183,14 +188,14 @@
         },
         "trigram": {
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "trigram",
             "type": "custom"
         },
         "word_prefix": {
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "prefix_ngram_filter"
             ],
             "tokenizer": "standard",
@@ -340,154 +345,6 @@
             "stem_english_possessive": false,
             "preserve_original": false
         },
-        "arabic_extra_stop": {
-            "type": "stop",
-            "stopwords": [
-                "\u0623\u0644\u064a",
-                "\u0625\u0650\u0644\u064e\u0649",
-                "\u0625\u0644\u0651\u0627",
-                "\u0625\u0650\u0644\u064e\u0651\u0627",
-                "\u0623\u0645\u0651\u0627",
-                "\u0625\u0645\u0651\u0627",
-                "\u0622\u0644\u0627\u0646",
-                "\u0622\u0646",
-                "\u0622\u0646\u0647",
-                "\u0623\u0646\u0651",
-                "\u0623\u064e\u0646\u064e\u0651",
-                "\u0623\u064e\u0646\u0652",
-                "\u0625\u0650\u0646\u064e\u0651",
-                "\u0625\u0650\u0646\u064e\u0651\u0647\u064f",
-                "\u0627\u0644\u0623\u0646",
-                "\u0623\u0646\u062a\u0650",
-                "\u0623\u064e\u0648\u0652",
-                "\u0622\u0649",
-                "\u0622\u064a",
-                "\u0623\u064a\u0652",
-                "\u0623\u064e\u064a\u0652",
-                "\u0625\u0649",
-                "\u0625\u064a",
-                "\u0625\u064a\u0652",
-                "\u0623\u064a\u0636\u0627\u064b",
-                "\u0623\u064a\u0636\u064b\u0627",
-                "\u0628\u0640",
-                "\u0628\u0625\u0646",
-                "\u0628\u062f\u0627\u0647",
-                "\u0628\u062f\u0627\u0647\u0627",
-                "\u0648\u0628\u062f\u0627",
-                "\u0628\u0632\u0627\u0641",
-                "\u0628\u0639\u0651\u062f",
-                "\u0628\u0650\u0647\u0627",
-                "\u0628\u0649",
-                "\u0628\u064a\u0647",
-                "\u0628\u064a\u0647\u0627",
-                "\u0628\u064a\u0646\u0645\u0651\u0627",
-                "\u062a\u0628\u0627\u0639",
-                "\u0648\u062a\u0628\u0627\u0639",
-                "\u0622\u0644\u062a\u0649",
-                "\u062b\u064f\u0645\u064e\u0651",
-                "\u062c\u0652\u0645\u064a\u0639",
-                "\u062d\u062a\u0651\u0649",
-                "\u062d\u064e\u064a\u0652\u062b\u064f",
-                "\u062f",
-                "\u0628\u0627\u0644\u062f\u0649",
-                "\u062f\u0649",
-                "\u062f\u064a",
-                "\u062f\u064a\u0647",
-                "\u062f\u064a\u0627\u0644",
-                "\u062f\u064a\u0627\u0644\u0648",
-                "\u0627\u0644\u064e\u0651\u0630\u0650\u064a",
-                "\u0634\u0646\u0648",
-                "\u0648\u0634\u0646\u0648",
-                "\u0639\u064e\u0644\u064e\u0649",
-                "\u0639\u0644\u064a",
-                "\u0639\u0644\u064a\u0629",
-                "\u0639\u064e\u0646\u0652",
-                "\u0639\u0650\u0646\u0652\u062f\u064e",
-                "\u063a\u064e\u064a\u0631",
-                "\u063a\u064e\u064a\u0652\u0631\u064e",
-                "\u0641\u0640",
-                "\u0641\u0652\u0640",
-                "\u0641\u0625\u0646",
-                "\u0641\u064e\u0627\u0646",
-                "\u0641\u0649",
-                "\u0641\u0650\u064a\u0647\u0650",
-                "\u0641\u0650\u064a\u0647\u064e\u0627",
-                "\u0641\u064a\u064a",
-                "\u0648\u0641\u064a\u0647",
-                "\u0648\u0641\u064a\u0647\u0627",
-                "\u0642\u062f\u0651",
-                "\u0643\u064e\u0627\u0646\u064e",
-                "\u0648\u064e\u0643\u064e\u0627\u0646\u064e",
-                "\u0643\u0644\u0651",
-                "\u0643\u064e\u0645\u064e\u0627",
-                "\u0644",
-                "\u0644\u0627\u064b",
-                "\u0644\u0627\u0651",
-                "\u0644\u064e\u0627",
-                "\u0644\u0651\u0627",
-                "\u0627\u0644\u0644\u0649",
-                "\u0627\u0644\u0644\u064a",
-                "\u0627\u0644\u0644\u064b\u064a",
-                "\u0627\u0644\u0644\u0651\u064a",
-                "\u0628\u0627\u0644\u0644\u0649",
-                "\u0628\u0627\u0644\u0644\u064a",
-                "\u0644\u0649",
-                "\u0644\u064a",
-                "\u0644\u0651\u064a",
-                "\u0644\u064a\u0627\u0646",
-                "\u0644\u064a\u0647",
-                "\u0644\u064a\u0647\u0627",
-                "\u0648\u0627\u0644\u0644\u0649",
-                "\u0648\u0627\u0644\u0644\u064a",
-                "\u0648\u0644\u064a\u0629",
-                "\u0645\u064e\u0627",
-                "\u0645\u064e\u0646\u0652",
-                "\u0645\u0650\u0646",
-                "\u0645\u0650\u0646\u064e",
-                "\u0645\u0650\u0646\u0652",
-                "\u0645\u0646\u0629",
-                "\u0645\u0650\u0646\u0652\u0647\u064f",
-                "\u0645\u0646\u064b\u0647\u0627",
-                "\u0645\u0646\u0651\u0647\u0627",
-                "\u0647\u0627\u062f",
-                "\u0647\u0648\u0651",
-                "\u0647\u064f\u0648\u064e",
-                "\u0647\u0648\u0651\u0627",
-                "\u0647\u064a\u0651",
-                "\u0647\u0650\u064a",
-                "\u0624",
-                "\u0648\u0641\u0649",
-                "\u0648\u064f\u0643\u0650\u0651\u0644\u064e",
-                "\u0644\u0644\u0648\u0644\u0627",
-                "\u0648\u0644\u0623\u0651",
-                "\u0648\u0644\u0651\u0623",
-                "\u0648\u0644\u0627\u064b",
-                "\u0648\u0644\u0627\u064e",
-                "\u0648\u0644\u0627\u064f",
-                "\u0648\u0644\u0627\u0651",
-                "\u0648\u0644\u0651\u0627",
-                "\u0648\u0652\u0644\u0627",
-                "\u0648\u0648\u0644\u0627",
-                "\u0648\u0648\u0644\u0627\u064b",
-                "\u0648\u0652\u0645\u0646",
-                "\u0648\u0647\u0650\u064a",
-                "\u0648\u064e\u0647\u064f\u0648\u064e",
-                "\u0641\u0649",
-                "\u0641\u06cc\u0647\u0627",
-                "\u0648\u0641\u0649",
-                "\u062d\u062a\u0649",
-                "\u0639\u0644\u0649",
-                "\u0644\u062f\u0649"
-            ]
-        },
-        "arabic_stemmer": {
-            "type": "stemmer",
-            "language": "arabic"
-        },
-        "arabic_stop": {
-            "type": "stop",
-            "stopwords": "_arabic_"
-        },
         "asciifolding": {
             "type": "asciifolding",
             "preserve_original": false
@@ -495,6 +352,18 @@
         "asciifolding_preserve": {
             "type": "asciifolding",
             "preserve_original": true
+        },
+        "icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u0110\u0111\u017d\u017e\u0106\u0107\u0160\u0161\u010c\u010d]"
+        },
+        "icu_nfkc_normalization": {
+            "type": "icu_normalizer",
+            "name": "nfkc"
+        },
+        "icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf"
         },
         "lowercase": {
             "type": "lowercase"

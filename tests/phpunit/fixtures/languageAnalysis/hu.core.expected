@@ -145,8 +145,7 @@
             "filter": [
                 "lowercase",
                 "hungarian_stop",
-                "hungarian_stemmer",
-                "asciifolding"
+                "hungarian_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -162,8 +161,7 @@
             "filter": [
                 "lowercase",
                 "hungarian_stop",
-                "hungarian_stemmer",
-                "asciifolding"
+                "hungarian_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"

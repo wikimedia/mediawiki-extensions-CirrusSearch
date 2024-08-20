@@ -12,7 +12,8 @@
                 "truncate_keyword",
                 "lowercase",
                 "icu_normalizer",
-                "icu_folding"
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -179,7 +180,6 @@
                 "greek_stop",
                 "greek_stemmer",
                 "icu_folding",
-                "remove_empty",
                 "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
@@ -201,7 +201,6 @@
                 "greek_stop",
                 "greek_stemmer",
                 "icu_folding",
-                "remove_empty",
                 "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",

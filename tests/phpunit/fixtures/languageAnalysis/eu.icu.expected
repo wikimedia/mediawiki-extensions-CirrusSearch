@@ -11,7 +11,8 @@
             "filter": [
                 "truncate_keyword",
                 "icu_normalizer",
-                "icu_folding"
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"

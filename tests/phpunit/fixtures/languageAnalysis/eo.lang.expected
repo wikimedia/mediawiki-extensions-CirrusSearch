@@ -140,16 +140,13 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "arabic_extended_norm",
-                "thai_charfilter"
+                "arabic_extended_norm"
             ],
             "filter": [
                 "lowercase",
-                "decimal_digit",
-                "thai_stop",
-                "asciifolding"
+                "esperanto_stemmer"
             ],
-            "tokenizer": "thai",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "text_search": {
@@ -158,16 +155,13 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "arabic_extended_norm",
-                "thai_charfilter"
+                "arabic_extended_norm"
             ],
             "filter": [
                 "lowercase",
-                "decimal_digit",
-                "thai_stop",
-                "asciifolding"
+                "esperanto_stemmer"
             ],
-            "tokenizer": "thai",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "token_reverse": {
@@ -305,33 +299,6 @@
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
             "replacement": "$1 $2"
         },
-        "thai_charfilter": {
-            "type": "mapping",
-            "mappings": [
-                "_=>\\u0020",
-                ";=>\\u0020",
-                ":=>\\u0020",
-                "\u00b7=>\\u0020",
-                "\u2027=>\\u0020",
-                "\u0e03=>\u0e02",
-                "\u0e05=>\u0e04",
-                "\\u0e4d\\u0e32=>\\u0e33",
-                "\\u0e4d\\u0e48\\u0e32=>\\u0e48\\u0e33",
-                "\\u0e4d\\u0e49\\u0e32=>\\u0e49\\u0e33",
-                "\\u0e33\\u0e48=>\\u0e48\\u0e33",
-                "\\u0e33\\u0e49=>\\u0e49\\u0e33",
-                "\\u0E34\\u0E4D=>\\u0E36",
-                "\\u0E4D\\u0E34=>\\u0E36",
-                "\\u200B=>",
-                "-=>\\u0020",
-                "\u2010=>\\u0020",
-                "\u2013=>\\u0020",
-                "\u2014=>\\u0020",
-                "\u2015=>\\u0020",
-                "\uff0d=>\\u0020",
-                "\"=>\\u0020"
-            ]
-        },
         "word_break_helper": {
             "type": "mapping",
             "mappings": [
@@ -387,10 +354,6 @@
             "min_shingle_size": 2,
             "max_shingle_size": 3,
             "output_unigrams": true
-        },
-        "thai_stop": {
-            "type": "stop",
-            "stopwords": "_thai_"
         },
         "truncate_keyword": {
             "type": "truncate",

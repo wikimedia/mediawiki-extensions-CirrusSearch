@@ -145,8 +145,7 @@
             "filter": [
                 "lowercase",
                 "galician_stop",
-                "galician_stemmer",
-                "asciifolding"
+                "galician_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -162,8 +161,7 @@
             "filter": [
                 "lowercase",
                 "galician_stop",
-                "galician_stemmer",
-                "asciifolding"
+                "galician_stemmer"
             ],
             "tokenizer": "standard",
             "type": "custom"

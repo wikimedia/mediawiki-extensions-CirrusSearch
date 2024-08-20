@@ -10,7 +10,7 @@
         "lowercase_keyword": {
             "filter": [
                 "truncate_keyword",
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -20,7 +20,7 @@
                 "near_space_flattener"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -31,7 +31,7 @@
             ],
             "filter": [
                 "truncate_keyword",
-                "lowercase",
+                "icu_normalizer",
                 "asciifolding"
             ],
             "tokenizer": "no_splitting",
@@ -43,7 +43,7 @@
                 "word_break_helper"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -54,7 +54,7 @@
                 "word_break_helper"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -64,7 +64,7 @@
                 "near_space_flattener"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "prefix",
             "type": "custom"
@@ -74,7 +74,7 @@
                 "near_space_flattener"
             ],
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "asciifolding"
             ],
             "tokenizer": "prefix",
@@ -82,7 +82,7 @@
         },
         "short_text": {
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "aggressive_splitting",
                 "asciifolding_preserve"
             ],
@@ -91,7 +91,7 @@
         },
         "short_text_search": {
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "aggressive_splitting"
             ],
             "tokenizer": "whitespace",
@@ -102,7 +102,7 @@
                 "word_break_helper_source_text"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -112,14 +112,14 @@
                 "word_break_helper_source_text"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "standard",
             "type": "custom"
         },
         "suggest": {
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "suggest_shingle"
             ],
             "tokenizer": "standard",
@@ -127,7 +127,7 @@
         },
         "suggest_reverse": {
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "suggest_shingle",
                 "reverse"
             ],
@@ -137,15 +137,16 @@
         "text": {
             "char_filter": [
                 "globo_norm",
-                "regex_acronym_fixer",
-                "regex_camelCase",
+                "acronym_fixer",
+                "camelCase_splitter",
                 "word_break_helper",
+                "dotted_I_fix",
                 "arabic_extended_norm"
             ],
             "filter": [
-                "lowercase",
-                "basque_stop",
-                "basque_stemmer",
+                "homoglyph_norm",
+                "icu_normalizer",
+                "slovak_stemmer",
                 "asciifolding"
             ],
             "tokenizer": "standard",
@@ -154,15 +155,16 @@
         "text_search": {
             "char_filter": [
                 "globo_norm",
-                "regex_acronym_fixer",
-                "regex_camelCase",
+                "acronym_fixer",
+                "camelCase_splitter",
                 "word_break_helper",
+                "dotted_I_fix",
                 "arabic_extended_norm"
             ],
             "filter": [
-                "lowercase",
-                "basque_stop",
-                "basque_stemmer",
+                "homoglyph_norm",
+                "icu_normalizer",
+                "slovak_stemmer",
                 "asciifolding"
             ],
             "tokenizer": "standard",
@@ -177,14 +179,14 @@
         },
         "trigram": {
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "trigram",
             "type": "custom"
         },
         "word_prefix": {
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "prefix_ngram_filter"
             ],
             "tokenizer": "standard",
@@ -193,7 +195,7 @@
     },
     "char_filter": {
         "arabic_extended_norm": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\\uFB8E=>\\u0643",
                 "\\uFB8F=>\\u0643",
@@ -233,7 +235,7 @@
             ]
         },
         "dotted_I_fix": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\u0130=>I"
             ]
@@ -278,7 +280,7 @@
             ]
         },
         "near_space_flattener": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "'=>\\u0020",
                 "\\u2019=>\\u0020",
@@ -288,7 +290,7 @@
             ]
         },
         "nnbsp_norm": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\\u202F=>\\u0020"
             ]
@@ -304,7 +306,7 @@
             "replacement": "$1 $2"
         },
         "word_break_helper": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "_=>\\u0020",
                 ":=>\\u0020",
@@ -318,7 +320,7 @@
             ]
         },
         "word_break_helper_source_text": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "_=>\\u0020",
                 ".=>\\u0020",
@@ -342,13 +344,9 @@
             "type": "asciifolding",
             "preserve_original": true
         },
-        "basque_stemmer": {
-            "type": "stemmer",
-            "language": "basque"
-        },
-        "basque_stop": {
-            "type": "stop",
-            "stopwords": "_basque_"
+        "icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf"
         },
         "lowercase": {
             "type": "lowercase"

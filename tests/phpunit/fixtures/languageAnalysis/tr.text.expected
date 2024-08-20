@@ -154,8 +154,7 @@
                 "lowercase",
                 "better_apostrophe",
                 "turkish_stop",
-                "turkish_stemmer",
-                "asciifolding"
+                "turkish_stemmer"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -174,8 +173,7 @@
                 "lowercase",
                 "better_apostrophe",
                 "turkish_stop",
-                "turkish_stemmer",
-                "asciifolding"
+                "turkish_stemmer"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"

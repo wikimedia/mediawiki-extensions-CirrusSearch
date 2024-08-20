@@ -10,9 +10,7 @@
         "lowercase_keyword": {
             "filter": [
                 "truncate_keyword",
-                "icu_normalizer",
-                "icu_folding",
-                "remove_empty"
+                "icu_normalizer"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -34,8 +32,7 @@
             "filter": [
                 "truncate_keyword",
                 "icu_normalizer",
-                "icu_folding",
-                "remove_empty"
+                "asciifolding"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -46,14 +43,9 @@
                 "word_break_helper"
             ],
             "filter": [
-                "icutokrep_no_camel_split",
-                "icu_normalizer",
-                "preserve_original_recorder",
-                "icu_folding",
-                "preserve_original",
-                "remove_empty"
+                "icu_normalizer"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "plain_search": {
@@ -62,10 +54,9 @@
                 "word_break_helper"
             ],
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "prefix": {
@@ -84,8 +75,7 @@
             ],
             "filter": [
                 "icu_normalizer",
-                "icu_folding",
-                "remove_empty"
+                "asciifolding"
             ],
             "tokenizer": "prefix",
             "type": "custom"
@@ -94,10 +84,7 @@
             "filter": [
                 "icu_normalizer",
                 "aggressive_splitting",
-                "preserve_original_recorder",
-                "icu_folding",
-                "preserve_original",
-                "remove_empty"
+                "asciifolding_preserve"
             ],
             "tokenizer": "whitespace",
             "type": "custom"
@@ -115,10 +102,9 @@
                 "word_break_helper_source_text"
             ],
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "source_text_plain_search": {
@@ -126,29 +112,26 @@
                 "word_break_helper_source_text"
             ],
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "suggest": {
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer",
                 "suggest_shingle"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "suggest_reverse": {
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer",
                 "suggest_shingle",
                 "reverse"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "text": {
@@ -157,18 +140,15 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
+                "dotted_I_fix",
                 "arabic_extended_norm"
             ],
             "filter": [
-                "icu_token_repair",
                 "homoglyph_norm",
                 "icu_normalizer",
-                "finnish_stop",
-                "finnish_stemmer",
-                "icu_folding",
-                "remove_empty"
+                "esperanto_stemmer"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "text_search": {
@@ -177,18 +157,15 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
+                "dotted_I_fix",
                 "arabic_extended_norm"
             ],
             "filter": [
-                "icu_token_repair",
                 "homoglyph_norm",
                 "icu_normalizer",
-                "finnish_stop",
-                "finnish_stemmer",
-                "icu_folding",
-                "remove_empty"
+                "esperanto_stemmer"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "token_reverse": {
@@ -207,11 +184,10 @@
         },
         "word_prefix": {
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer",
                 "prefix_ngram_filter"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         }
     },
@@ -366,29 +342,9 @@
             "type": "asciifolding",
             "preserve_original": true
         },
-        "finnish_stemmer": {
-            "type": "stemmer",
-            "language": "finnish"
-        },
-        "finnish_stop": {
-            "type": "stop",
-            "stopwords": "_finnish_"
-        },
-        "icu_folding": {
-            "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00c5\u00e5\u00c4\u00e4\u00d6\u00f6]"
-        },
-        "icu_nfkc_normalization": {
-            "type": "icu_normalizer",
-            "name": "nfkc"
-        },
         "icu_normalizer": {
             "type": "icu_normalizer",
             "name": "nfkc_cf"
-        },
-        "icutokrep_no_camel_split": {
-            "type": "icu_token_repair",
-            "keep_camel_split": false
         },
         "lowercase": {
             "type": "lowercase"

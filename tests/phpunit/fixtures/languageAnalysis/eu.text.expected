@@ -153,8 +153,7 @@
                 "homoglyph_norm",
                 "lowercase",
                 "basque_stop",
-                "basque_stemmer",
-                "asciifolding"
+                "basque_stemmer"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -172,8 +171,7 @@
                 "homoglyph_norm",
                 "lowercase",
                 "basque_stop",
-                "basque_stemmer",
-                "asciifolding"
+                "basque_stemmer"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"

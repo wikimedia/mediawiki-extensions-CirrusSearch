@@ -599,7 +599,14 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				}
 				$expectedFile = $testDir . "/$testName.$tag.expected";
 				if ( array_key_exists( 'expected.' . $tag, $extraConfig ) ) {
-					$expectedFile = $testDir . '/' . $extraConfig[ 'expected.' . $tag ] . ".$tag.expected";
+					$replacement = $extraConfig[ 'expected.' . $tag ];
+					if ( strpos( $replacement, '.' ) === false ) {
+						// replacement is just testName
+						$expectedFile = "$testDir/$replacement.$tag.expected";
+					} else {
+						// replacement is testName.tag
+						$expectedFile = "$testDir/$replacement.expected";
+					}
 				} elseif ( array_key_exists( 'expected', $extraConfig ) ) {
 					$expectedFile = $testDir . '/' . $extraConfig[ 'expected' ] . ".$tag.expected";
 				}
@@ -792,8 +799,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 
 	public static function provideUnpackedOnlyMethods() {
 		$functionsToTest = [ 'withLightStemmer', 'omitStemmer',
-							 'withAsciifoldingPreserve', 'omitAsciifolding', 'withRemoveEmpty',
-							 'withDecimalDigit' ];
+							 'withAsciifolding', 'omitFolding',
+							 'withRemoveEmpty', 'withDecimalDigit' ];
 		foreach ( $functionsToTest as $func ) {
 			yield $func => [ $func ];
 		}
@@ -831,7 +838,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		// Build up the "expected" analysis chain filters, in a slightly silly way
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
 		withUnpackedAnalyzer()->
-		omitAsciifolding()->
+		omitFolding()->
 		insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
 		insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_pre' ] )->
 		insertFiltersBefore( AnalyzerBuilder::APPEND, [ 'xx_post' ] )->
@@ -845,7 +852,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		// ... again with pre-/appendFilters()
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
 		withUnpackedAnalyzer()->
-		omitAsciifolding()->
+		omitFolding()->
 		insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
 		prependFilters( [ 'xx_pre' ] )->
 		appendFilters( [ 'xx_post' ] )->
@@ -859,7 +866,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		// Let's do it again, but in a different way (this is realistic)
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
 		withUnpackedAnalyzer()->
-		omitAsciifolding()->
+		omitFolding()->
 		insertFiltersBefore( AnalyzerBuilder::PREPEND,
 			[ 'xx_FIRST', 'xx_pre_pre', 'xx_pre' ] )->
 		insertFiltersBefore( AnalyzerBuilder::APPEND,
@@ -872,7 +879,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		// ... again with pre-/appendFilters()
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
 		withUnpackedAnalyzer()->
-		omitAsciifolding()->
+		omitFolding()->
 		prependFilters( [ 'xx_FIRST', 'xx_pre_pre', 'xx_pre' ] )->
 		appendFilters( [ 'xx_pre_post', 'xx_post' ] )->
 		insertFiltersBefore( 'xx_stemmer', [ 'xx_pre_stem' ] )->
@@ -883,7 +890,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		// One more time... all over the place
 		$config = ( new AnalyzerBuilder( 'xx' ) )->
 		withUnpackedAnalyzer()->
-		omitAsciifolding()->
+		omitFolding()->
 		insertFiltersBefore( AnalyzerBuilder::PREPEND, [ 'xx_pre' ] )->
 		insertFiltersBefore( AnalyzerBuilder::APPEND, [ 'xx_pre_post' ] )->
 		insertFiltersBefore( 'xx_pre', [ 'xx_pre_pre' ] )->

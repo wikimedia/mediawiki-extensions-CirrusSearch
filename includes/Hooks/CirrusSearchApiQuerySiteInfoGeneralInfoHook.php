@@ -7,7 +7,7 @@ use Wikimedia\Rdbms\IConnectionProvider;
 
 class CirrusSearchApiQuerySiteInfoGeneralInfoHook implements APIQuerySiteInfoGeneralInfoHook {
 
-	private $dbProvider;
+	private IConnectionProvider $dbProvider;
 
 	public function __construct( IConnectionProvider $dbProvider ) {
 		$this->dbProvider = $dbProvider;

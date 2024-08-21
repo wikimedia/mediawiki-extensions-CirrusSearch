@@ -9,7 +9,7 @@ use WikiPage;
  * Decorating Remediator that logs the prints the errors.
  */
 class PrintingRemediator implements Remediator {
-	private $next;
+	private Remediator $next;
 
 	/**
 	 * Build the remediator.

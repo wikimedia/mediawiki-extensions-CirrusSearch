@@ -19,6 +19,7 @@ use RuntimeException;
  * @covers \CirrusSearch\Elastica\SearchAfter
  */
 class SearchAfterTest extends CirrusTestCase {
+	/** @var Request */
 	public static $lastRequest;
 
 	private function makeClient( array $responses ) {

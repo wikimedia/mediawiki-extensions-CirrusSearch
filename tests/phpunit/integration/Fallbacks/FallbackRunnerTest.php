@@ -31,6 +31,7 @@ use PHPUnit\Framework\AssertionFailedError;
  * @covers \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod
  */
 class FallbackRunnerTest extends CirrusIntegrationTestCase {
+	/** @var string[] */
 	private $execOrder = [];
 
 	/**

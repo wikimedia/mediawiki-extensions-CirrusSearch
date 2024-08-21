@@ -51,16 +51,25 @@ class ForceSearchIndex extends Maintenance {
 	public $fromDate = null;
 	/** @var MWTimestamp|null */
 	public $toDate = null;
+	/** @var string|null */
 	public $toId = null;
+	/** @var bool */
 	public $indexUpdates;
+	/** @var bool */
 	public $archive;
+	/** @var string */
 	public $limit;
+	/** @var string */
 	public $queue;
+	/** @var int|null */
 	public $maxJobs;
+	/** @var int|null */
 	public $pauseForJobs;
+	/** @var int|null */
 	public $namespace;
 	/** @var string[] */
 	public $excludeContentTypes;
+	/** @var float */
 	public $lastJobQueueCheckTime = 0;
 
 	/**

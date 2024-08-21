@@ -3,12 +3,16 @@
 namespace CirrusSearch\Test;
 
 use Elastica\Request;
+use Elastica\Response;
 use Elastica\Transport\AbstractTransport;
 
 class PassThruTransport extends AbstractTransport {
 
+	/** @var array */
 	private $transportConfig;
+	/** @var AbstractTransport */
 	private $inner;
+	/** @var Response[] */
 	private $responses = [];
 
 	public function __construct( $inner ) {

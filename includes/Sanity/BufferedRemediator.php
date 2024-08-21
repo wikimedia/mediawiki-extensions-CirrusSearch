@@ -11,6 +11,7 @@ use WikiPage;
  * The actions can be reset by calling resetActions()
  */
 class BufferedRemediator implements Remediator {
+	/** @var array[] */
 	private $actions = [];
 
 	/**

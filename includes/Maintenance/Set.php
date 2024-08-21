@@ -7,6 +7,7 @@ namespace CirrusSearch\Maintenance;
  * is being used for when values are only stored as keys.
  */
 class Set implements \Countable {
+	/** @var true[] */
 	private $elements = [];
 
 	public function __construct( array $elements = [] ) {

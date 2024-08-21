@@ -17,7 +17,9 @@ use MediaWiki\User\Options\StaticUserOptionsLookup;
 use MediaWiki\User\Options\UserOptionsLookup;
 
 trait CirrusTestCaseTrait {
+	/** @var string */
 	public static $FIXTURE_DIR = __DIR__ . '/../fixtures/';
+	/** @var string */
 	public static $CIRRUS_REBUILD_FIXTURES = 'CIRRUS_REBUILD_FIXTURES';
 
 	/**

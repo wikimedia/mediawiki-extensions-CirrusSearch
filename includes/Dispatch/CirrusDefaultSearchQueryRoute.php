@@ -6,6 +6,7 @@ namespace CirrusSearch\Dispatch;
  * Cirrus default routes
  */
 class CirrusDefaultSearchQueryRoute implements SearchQueryRoute {
+	/** @var CirrusDefaultSearchQueryRoute */
 	private static $SEARCH_TEXT;
 
 	public static function searchTextDefaultRoute(): SearchQueryRoute {

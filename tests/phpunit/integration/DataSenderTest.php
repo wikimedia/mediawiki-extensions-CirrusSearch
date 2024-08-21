@@ -35,6 +35,7 @@ use Wikimedia\Rdbms\SelectQueryBuilder;
  * @covers \CirrusSearch\DataSender
  */
 class DataSenderTest extends CirrusIntegrationTestCase {
+	/** @var array[] */
 	private $actualCalls;
 
 	protected function setUp(): void {

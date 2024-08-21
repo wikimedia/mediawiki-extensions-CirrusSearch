@@ -21,7 +21,9 @@ use WikiPage;
 class BuildDocumentTest extends \MediaWikiUnitTestCase {
 	use CirrusTestCaseTrait;
 
+	/** @var RevisionStore */
 	private $revStore;
+	/** @var RevisionRecord */
 	private $revision;
 
 	protected function setUp(): void {

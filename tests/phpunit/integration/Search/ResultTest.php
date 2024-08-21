@@ -15,6 +15,7 @@ use CirrusSearch\Searcher;
  * @todo Make this a unit test when moving away from Title(Factory)
  */
 class ResultTest extends CirrusIntegrationTestCase {
+	/** @var array */
 	private static $EXAMPLE_HIT = [
 		'_index' => 'eswiki_content_123456',
 		'_source' => [

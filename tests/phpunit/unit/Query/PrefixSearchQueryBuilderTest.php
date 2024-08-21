@@ -10,6 +10,7 @@ use CirrusSearch\Search\SearchContext;
  * @covers \CirrusSearch\Query\PrefixSearchQueryBuilder
  */
 class PrefixSearchQueryBuilderTest extends CirrusTestCase {
+	/** @var array */
 	private static $WEIGHTS = [
 		'title' => 2,
 		'redirect' => 0.2,

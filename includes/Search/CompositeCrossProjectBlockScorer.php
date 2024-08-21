@@ -6,6 +6,7 @@ namespace CirrusSearch\Search;
  * Composite, weighted sum of a list of subscorers
  */
 class CompositeCrossProjectBlockScorer extends CrossProjectBlockScorer {
+	/** @var array[] */
 	private $scorers = [];
 
 	public function __construct( array $settings ) {

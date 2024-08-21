@@ -7,6 +7,7 @@ use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Search\SearchContext;
 
 class MockSimpleKeywordFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+	/** @var array[] */
 	private $calls = [];
 
 	/** @inheritDoc */

@@ -5,9 +5,11 @@ namespace CirrusSearch\Elastica;
 use Elastica\Connection;
 use Elastica\Transport\Http;
 use MediaWiki\Logger\LoggerFactory;
+use Psr\Log\LoggerInterface;
 
 class DeprecationLoggedHttp extends Http {
 
+	/** @var LoggerInterface */
 	private $logger;
 
 	public function __construct( Connection $connection = null ) {

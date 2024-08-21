@@ -31,6 +31,7 @@ use Wikimedia\ParamValidator\ParamValidator;
 class ConfigDump extends ApiBase {
 	use ApiTrait;
 
+	/** @var string[] */
 	public static $PUBLICLY_SHAREABLE_CONFIG_VARS = [
 		'CirrusSearchDisableUpdate',
 		'CirrusSearchServers',

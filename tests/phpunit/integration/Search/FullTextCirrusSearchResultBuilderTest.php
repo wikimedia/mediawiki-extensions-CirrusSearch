@@ -17,6 +17,7 @@ use MediaWiki\Title\Title;
  * @todo Make this a unit test when moving away from Title(Factory)
  */
 class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
+	/** @var array */
 	private static $MINIMAL_HIT = [
 		'_index' => 'some_index',
 		'_source' => [

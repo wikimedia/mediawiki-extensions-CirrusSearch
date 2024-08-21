@@ -30,6 +30,7 @@ use Wikimedia\Assert\Assert;
 
 class TermFreq extends AbstractQuery {
 
+	/** @var string[] */
 	private static $map = [
 		'>' => 'gt',
 		'>=' => 'gte',

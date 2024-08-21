@@ -67,6 +67,11 @@ class MappingValidator extends Validator {
 		$this->mappingConfig = $mappingConfig;
 	}
 
+	private function isNaturalSortConfigured() {
+		// awkward much?
+		return isset( $this->mappingConfig['properties']['title']['fields']['natural_sort'] );
+	}
+
 	/**
 	 * @return Status
 	 */
@@ -78,6 +83,13 @@ class MappingValidator extends Validator {
 			return Status::newFatal( new RawMessage(
 				"wgCirrusSearchOptimizeIndexForExperimentalHighlighter is set to true but the " .
 				"'experimental-highlighter' plugin is not installed on all hosts." ) );
+		}
+		if ( $this->isNaturalSortConfigured() &&
+			!in_array( 'analysis-icu', $this->availablePlugins ) ) {
+			$this->output( "impossible!\n" );
+			return Status::newFatal( new RawMessage(
+				"wgCirrusSearchNaturalTitleSort is set to build but the " .
+				"'analysis-icu' plugin is not installed on all hosts." ) );
 		}
 
 		if ( !$this->compareMappingToActual() ) {

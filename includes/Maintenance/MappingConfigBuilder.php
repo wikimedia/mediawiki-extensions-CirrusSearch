@@ -124,6 +124,19 @@ class MappingConfigBuilder {
 				'index_options' => 'docs'
 			];
 		}
+		if ( $this->config->getElement( 'CirrusSearchNaturalTitleSort', 'build' ) ) {
+			$titleExtraAnalyzers[] = [
+				'fieldName' => 'natural_sort',
+				'type' => 'icu_collation_keyword',
+				// doc values only
+				'index' => false,
+				'numeric' => true,
+				'strength' => 'tertiary',
+				// Does icu support all the language codes?
+				'language' => $this->config->getElement( 'CirrusSearchNaturalTitleSort', 'language' ),
+				'country' => $this->config->getElement( 'CirrusSearchNaturalTitleSort', 'country' ),
+			];
+		}
 
 		$suggestField = [
 			'type' => 'text',

@@ -162,9 +162,19 @@ class SearchRequestBuilder {
 						] ) ) );
 				break;
 
+			case 'title_natural_asc':
+			case 'title_natural_desc':
+				if ( $this->searchContext->getConfig()->getElement( 'CirrusSearchNaturalTitleSort', 'use' ) ) {
+					$query->setSort( [
+						'title.natural_sort' => explode( '_', $this->sort, 3 )[2],
+					] );
+					break;
+				}
+				// Intentional fall-through to default error case.
+
 			default:
 				// Same as just_match. No user warning since an invalid sort
-				// getting this far as a bug in the calling code which should
+				// getting this far is a bug in the calling code which should
 				// be validating it's input.
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Invalid sort type: {sort}",

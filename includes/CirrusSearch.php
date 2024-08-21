@@ -386,13 +386,20 @@ class CirrusSearch extends SearchEngine {
 	 * @return string[]
 	 */
 	public function getValidSorts() {
-		return [
+		$sorts = [
 			'relevance', 'just_match', 'none',
 			'incoming_links_asc', 'incoming_links_desc',
 			'last_edit_asc', 'last_edit_desc',
 			'create_timestamp_asc', 'create_timestamp_desc',
 			'random', 'user_random',
 		];
+
+		if ( $this->config->getElement( 'CirrusSearchNaturalTitleSort', 'use' ) ) {
+			$sorts[] = 'title_natural_asc';
+			$sorts[] = 'title_natural_desc';
+		}
+
+		return $sorts;
 	}
 
 	/**

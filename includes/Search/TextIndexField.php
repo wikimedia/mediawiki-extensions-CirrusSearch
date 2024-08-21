@@ -182,12 +182,14 @@ class TextIndexField extends CirrusIndexField {
 			$field[ 'fields' ][ 'plain' ] = array_merge( $field[ 'fields' ][ 'plain' ], $disableNorms );
 		}
 		foreach ( $extra as $extraField ) {
-			$extraName = $extraField[ 'analyzer' ];
+			$extraName = $extraField[ 'fieldName' ] ?? $extraField[ 'analyzer' ];
+			unset( $extraField[ 'fieldName' ] );
 
 			$field[ 'fields' ][ $extraName ] = array_merge( [
 				'similarity' => self::getSimilarity( $this->config, $this->name, $extraName ),
 				'type' => 'text',
 			], $extraField );
+
 			if ( $disableNorms ) {
 				$field[ 'fields' ][ $extraName ] = array_merge(
 					$field[ 'fields' ][ $extraName ], $disableNorms );

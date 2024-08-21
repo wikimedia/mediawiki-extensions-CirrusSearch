@@ -743,6 +743,13 @@
 		"CirrusSearchDeduplicateInMemory": {
 			"description": "Exclude duplicate results afterwards in memory",
 			"value": false
+		},
+		"CirrusSearchNaturalTitleSort": {
+			"description": "Configure the optional title_natural_{asc,desc} sort orders",
+			"value": {
+				"build": false,
+				"use": false
+			}
 		}
 	},
 	"SearchMappings": {

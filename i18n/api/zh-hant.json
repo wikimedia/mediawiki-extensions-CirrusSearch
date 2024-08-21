@@ -31,5 +31,5 @@
 	"apierror-compsuggestbuilddoc-bad-method": "未知計分方法",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "自動補齊所使用的文件匯出",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "取得由自動補齊所使用的文件匯出",
-	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "提供完成建議器使用的評分方法名稱"
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "透過完成建議器提供使用的評分方法名稱"
 }

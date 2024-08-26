@@ -6,9 +6,9 @@ use ArrayObject;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
-use CirrusSearch\Util;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
+use Wikimedia\Stats\Metrics\CounterMetric;
 use Wikimedia\Stats\StatsFactory;
 use WikiPage;
 
@@ -53,6 +53,11 @@ class Checker {
 	private $remediator;
 
 	/**
+	 * @var StatsFactory Used to record stats about the process
+	 */
+	private StatsFactory $statsFactory;
+
+	/**
 	 * @var bool Should we log id's that are found to have no problems
 	 */
 	private $logSane;
@@ -83,6 +88,7 @@ class Checker {
 	 * @param Remediator $remediator the remediator to which to send titles
 	 *   that are insane
 	 * @param Searcher $searcher searcher to use for fetches
+	 * @param StatsFactory $statsFactory to use for recording metrics
 	 * @param bool $logSane should we log sane ids
 	 * @param bool $fastRedirectCheck fast but inconsistent redirect check
 	 * @param ArrayObject|null $pageCache cache for WikiPage loaded from db
@@ -94,6 +100,7 @@ class Checker {
 		Connection $connection,
 		Remediator $remediator,
 		Searcher $searcher,
+		StatsFactory $statsFactory,
 		$logSane,
 		$fastRedirectCheck,
 		ArrayObject $pageCache = null,
@@ -101,7 +108,13 @@ class Checker {
 	) {
 		$this->searchConfig = $config;
 		$this->connection = $connection;
-		$this->remediator = $remediator;
+		$this->statsFactory = $statsFactory;
+		$this->remediator = new CountingRemediator(
+			$remediator,
+			function () {
+				return $this->getCounter( "fixed" );
+			}
+		);
 		$this->searcher = $searcher;
 		$this->logSane = $logSane;
 		$this->fastRedirectCheck = $fastRedirectCheck;
@@ -168,20 +181,21 @@ class Checker {
 				$nbPagesFixed++;
 			}
 		}
-		$clusterName = $this->connection->getClusterName();
-		$stats = Util::getStatsFactory();
-		$this->recordStats( $stats, $clusterName, "fixed", $nbPagesFixed );
-		$this->recordStats( $stats, $clusterName, "checked", count( $pageIds ) );
-		$this->recordStats( $stats, $clusterName, "old", $nbPagesOld );
+		$this->getCounter( "checked" )->incrementBy( count( $pageIds ) );
+		// This is a duplicate of the "fixed" counter with the
+		// "problem => oldDocument" label. It can be removed once
+		// dashboards have transitioned away from statsd.
+		$this->getCounter( "old" )->incrementBy( $nbPagesOld );
+
 		return $nbPagesFixed;
 	}
 
-	private function recordStats( StatsFactory $statsFactory, string $cluster, string $action, int $value ): void {
-		$statsFactory->getCounter( "sanitization_total" )
+	private function getCounter( string $action ): CounterMetric {
+		$cluster = $this->connection->getClusterName();
+		return $this->statsFactory->getCounter( "sanitization_total" )
 			->setLabel( "search_cluster", $cluster )
 			->setLabel( "action", $action )
-			->copyToStatsdAt( "CirrusSearch.$cluster.sanitization.$action" )
-			->incrementBy( $value );
+			->copyToStatsdAt( "CirrusSearch.$cluster.sanitization.$action" );
 	}
 
 	/**

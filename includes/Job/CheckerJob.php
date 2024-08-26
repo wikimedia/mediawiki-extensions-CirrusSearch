@@ -13,6 +13,7 @@ use CirrusSearch\Sanity\MultiClusterRemediatorHelper;
 use CirrusSearch\Sanity\QueueingRemediator;
 use CirrusSearch\Searcher;
 use CirrusSearch\UpdateGroup;
+use CirrusSearch\Util;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 
@@ -207,6 +208,7 @@ class CheckerJob extends CirrusGenericJob {
 				$connection,
 				$bufferedRemediator,
 				$searcher,
+				Util::getStatsFactory(),
 				false, // logSane
 				false, // fastRedirectCheck
 				$pageCache,

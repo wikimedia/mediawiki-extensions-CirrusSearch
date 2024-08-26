@@ -7,6 +7,7 @@ use CirrusSearch\Sanity\NoopRemediator;
 use CirrusSearch\Sanity\PrintingRemediator;
 use CirrusSearch\Sanity\QueueingRemediator;
 use CirrusSearch\Searcher;
+use CirrusSearch\Util;
 use MediaWiki\WikiMap\WikiMap;
 
 /**
@@ -168,6 +169,7 @@ class Saneitize extends Maintenance {
 			$this->getConnection(),
 			$remediator,
 			$searcher,
+			Util::getStatsFactory(),
 			$this->getOption( 'logSane' ),
 			$this->fastCheck
 		);

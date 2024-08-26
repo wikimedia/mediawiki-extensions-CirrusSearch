@@ -10,6 +10,7 @@ use CirrusSearch\Sanity\CheckerException;
 use CirrusSearch\Sanity\Remediator;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
+use CirrusSearch\Util;
 use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\ParamValidator\ParamValidator;
 use WikiMedia\ParamValidator\TypeDef\IntegerDef;
@@ -77,6 +78,7 @@ class CheckSanity extends ApiBase {
 			$connection,
 			$remediator,
 			$searcher,
+			Util::getStatsFactory(),
 			false, // logSane
 			false, // fastRedirectCheck
 			null, // pageCache

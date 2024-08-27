@@ -19,9 +19,9 @@ class PrintingRemediator implements Remediator {
 		$this->next = $next;
 	}
 
-	public function redirectInIndex( WikiPage $page ) {
-		$this->log( $page->getId(), $page->getTitle(), 'Redirect in index' );
-		$this->next->redirectInIndex( $page );
+	public function redirectInIndex( string $docId, WikiPage $page, string $indexSuffix ) {
+		$this->log( $page->getId(), $page->getTitle(), "Redirect in index: $indexSuffix" );
+		$this->next->redirectInIndex( $docId, $page, $indexSuffix );
 	}
 
 	public function pageNotInIndex( WikiPage $page ) {

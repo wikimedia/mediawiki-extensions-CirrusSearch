@@ -27,7 +27,7 @@ class CountingRemediatorTest extends CirrusTestCase {
 
 		$page = $this->createNoOpMock( WikiPage::class );
 		$this->assertCount( 0, $baseMetric->getSamples() );
-		$remediator->redirectInIndex( $page );
+		$remediator->redirectInIndex( '42', $page, 'content' );
 		$this->assertCount( 1, $baseMetric->getSamples() );
 	}
 }

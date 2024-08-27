@@ -22,14 +22,14 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 			->willReturn( true );
 		$allClustersRemediator->expects( $this->once() )
 			->method( 'redirectInIndex' )
-			->with( $wp );
+			->with( '42', $wp, 'content' );
 		$b1 = new BufferedRemediator();
 		$b2 = new BufferedRemediator();
 
 		$helper = new MultiClusterRemediatorHelper( [ 'c1' => $r1, 'c2' => $r2 ], [ 'c1' => $b1, 'c2' => $b2 ],
 			$allClustersRemediator );
-		$b1->redirectInIndex( $wp );
-		$b2->redirectInIndex( $wp );
+		$b1->redirectInIndex( '42', $wp, 'content' );
+		$b2->redirectInIndex( '42', $wp, 'content' );
 		$helper->sendBatch();
 	}
 
@@ -39,7 +39,7 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 		$r1 = $this->createMock( Remediator::class );
 		$r1->expects( $this->once() )
 			->method( 'redirectInIndex' )
-			->with( $wp );
+			->with( '42', $wp, 'general' );
 		$r2 = $this->createMock( Remediator::class );
 		$r2->expects( $this->once() )
 			->method( 'pageNotInIndex' )
@@ -52,7 +52,7 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 
 		$helper = new MultiClusterRemediatorHelper( [ 'c1' => $r1, 'c2' => $r2 ], [ 'c1' => $b1, 'c2' => $b2 ],
 			$allClustersRemediator );
-		$b1->redirectInIndex( $wp );
+		$b1->redirectInIndex( '42', $wp, 'general' );
 		$b2->pageNotInIndex( $wp );
 		$helper->sendBatch();
 	}
@@ -63,7 +63,7 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 		$r1 = $this->createMock( Remediator::class );
 		$r1->expects( $this->once() )
 			->method( 'redirectInIndex' )
-			->with( $wp );
+			->with( '42', $wp, 'content' );
 
 		$allClustersRemediator = $this->createNoOpMock( AllClustersQueueingRemediator::class,
 			[ 'canSendOptimizedJob' ] );
@@ -75,7 +75,7 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 		$b1 = new BufferedRemediator();
 
 		$helper = new MultiClusterRemediatorHelper( [ 'c1' => $r1 ], [ 'c1' => $b1 ], $allClustersRemediator );
-		$b1->redirectInIndex( $wp );
+		$b1->redirectInIndex( '42', $wp, 'content' );
 		$helper->sendBatch();
 	}
 

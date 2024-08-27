@@ -214,7 +214,10 @@ class Checker {
 		$inIndex = $fromIndex !== [];
 		if ( $this->checkIfRedirect( $page ) ) {
 			if ( $inIndex ) {
-				$this->remediator->redirectInIndex( $page );
+				foreach ( $fromIndex as $indexInfo ) {
+					$indexSuffix = $this->connection->extractIndexSuffix( $indexInfo->getIndex() );
+					$this->remediator->redirectInIndex( $docId, $page, $indexSuffix );
+				}
 				return true;
 			}
 			$this->sane( $pageId, 'Redirect not in index' );

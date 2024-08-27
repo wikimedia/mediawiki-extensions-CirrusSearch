@@ -11,42 +11,37 @@ use WikiPage;
 class NoopRemediator implements Remediator {
 
 	/**
-	 * @param WikiPage $page
+	 * @inheritDoc
 	 */
-	public function redirectInIndex( WikiPage $page ) {
+	public function redirectInIndex( string $docId, WikiPage $page, string $indexSuffix ) {
 	}
 
 	/**
-	 * @param WikiPage $page
+	 * @inheritDoc
 	 */
 	public function pageNotInIndex( WikiPage $page ) {
 	}
 
 	/**
-	 * @param string $docId
-	 * @param Title $title
+	 * @inheritDoc
 	 */
 	public function ghostPageInIndex( $docId, Title $title ) {
 	}
 
 	/**
-	 * @param string $docId
-	 * @param WikiPage $page
-	 * @param string $indexSuffix
+	 * @inheritDoc
 	 */
 	public function pageInWrongIndex( $docId, WikiPage $page, $indexSuffix ) {
 	}
 
 	/**
-	 * @param string $docId elasticsearch document id
-	 * @param WikiPage $page page with outdated document in index
-	 * @param string $indexSuffix index contgaining outdated document
+	 * @inheritDoc
 	 */
 	public function oldVersionInIndex( $docId, WikiPage $page, $indexSuffix ) {
 	}
 
 	/**
-	 * @param WikiPage $page Page considered too old in index
+	 * @inheritDoc
 	 */
 	public function oldDocument( WikiPage $page ) {
 	}

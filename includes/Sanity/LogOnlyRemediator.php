@@ -43,9 +43,9 @@ class LogOnlyRemediator implements Remediator {
 	/**
 	 * @inheritDoc
 	 */
-	public function redirectInIndex( WikiPage $page ) {
+	public function redirectInIndex( string $docId, WikiPage $page, string $indexSuffix ) {
 		$this->logger->log( $this->level, $this->prefix . '::' . __FUNCTION__,
-			[ 'page' => $page->getId(), 'title' => $page->getTitle()->getPrefixedText() ] );
+			[ 'page' => $page->getId(), 'indexSuffix' => $indexSuffix, 'title' => $page->getTitle()->getPrefixedText() ] );
 	}
 
 	/**

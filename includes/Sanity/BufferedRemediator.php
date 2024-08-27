@@ -17,7 +17,7 @@ class BufferedRemediator implements Remediator {
 	/**
 	 * @inheritDoc
 	 */
-	public function redirectInIndex( WikiPage $page ) {
+	public function redirectInIndex( string $docId, WikiPage $page, string $indexSuffix ) {
 		$this->actions[] = [ substr( __METHOD__, strlen( __CLASS__ ) + 2 ), func_get_args() ];
 	}
 

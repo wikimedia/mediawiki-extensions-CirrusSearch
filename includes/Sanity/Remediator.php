@@ -27,9 +27,11 @@ use WikiPage;
 interface Remediator {
 	/**
 	 * There is a redirect in the index.
+	 * @param string $docId elasticsearch document id of the redirected page
 	 * @param WikiPage $page the page in the index
+	 * @param string $indexSuffix The index suffix it was found in
 	 */
-	public function redirectInIndex( WikiPage $page );
+	public function redirectInIndex( string $docId, WikiPage $page, string $indexSuffix );
 
 	/**
 	 * A page isn't in the index.
@@ -40,7 +42,7 @@ interface Remediator {
 	/**
 	 * A non-existent page is in the index.  Odds are good it was deleted.
 	 *
-	 * @param string $docId elsaticsearch document id of the deleted page
+	 * @param string $docId elasticsearch document id of the deleted page
 	 * @param Title $title title of the page read from the ghost
 	 */
 	public function ghostPageInIndex( $docId, Title $title );

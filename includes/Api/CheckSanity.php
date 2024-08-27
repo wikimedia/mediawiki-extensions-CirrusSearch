@@ -126,9 +126,8 @@ class CheckSanity extends ApiBase {
 		foreach ( $problems as [ $problem, $args ] ) {
 			switch ( $problem ) {
 				case 'redirectInIndex':
-					[ $page ] = $args;
+					[ $docId, $page, $indexSuffix ] = $args;
 					$target = $page->getRedirectTarget();
-					$indexSuffix = $connection->getIndexSuffixForNamespace( $page->getNamespace() );
 					$targetIndexSuffix = $connection->getIndexSuffixForNamespace( $target->getNamespace() );
 					$clean[] = [
 						'indexName' => $connection->getIndexName( $indexBaseName, $indexSuffix ),

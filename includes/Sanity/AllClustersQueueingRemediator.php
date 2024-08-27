@@ -50,8 +50,8 @@ class AllClustersQueueingRemediator implements Remediator {
 	/**
 	 * @inheritDoc
 	 */
-	public function redirectInIndex( WikiPage $page ) {
-		$this->inner->redirectInIndex( $page );
+	public function redirectInIndex( string $docId, WikiPage $page, string $indexSuffix ) {
+		$this->inner->redirectInIndex( $docId, $page, $indexSuffix );
 	}
 
 	/**

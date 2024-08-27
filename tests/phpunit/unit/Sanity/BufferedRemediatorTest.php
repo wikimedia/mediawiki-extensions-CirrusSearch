@@ -24,7 +24,7 @@ class BufferedRemediatorTest extends CirrusTestCase {
 		$remediator->oldVersionInIndex( $docId, $wp, $indexSuffix );
 		$remediator->pageInWrongIndex( $docId, $wp, $indexSuffix );
 		$remediator->pageNotInIndex( $wp );
-		$remediator->redirectInIndex( $wp );
+		$remediator->redirectInIndex( '42', $wp, 'content' );
 
 		$expected = [
 			[ 'ghostPageInIndex', [ $docId, $title ] ],
@@ -32,7 +32,7 @@ class BufferedRemediatorTest extends CirrusTestCase {
 			[ 'oldVersionInIndex', [ $docId, $wp, $indexSuffix ] ],
 			[ 'pageInWrongIndex', [ $docId, $wp, $indexSuffix ] ],
 			[ 'pageNotInIndex', [ $wp ] ],
-			[ 'redirectInIndex', [ $wp ] ]
+			[ 'redirectInIndex', [ '42', $wp, 'content' ] ]
 		];
 		$this->assertEquals( $expected, $remediator->getActions() );
 	}
@@ -60,7 +60,7 @@ class BufferedRemediatorTest extends CirrusTestCase {
 		$remediator->oldVersionInIndex( $docId, $wp, $indexSuffix );
 		$remediator->pageInWrongIndex( $docId, $wp, $indexSuffix );
 		$remediator->pageNotInIndex( $wp );
-		$remediator->redirectInIndex( $wp );
+		$remediator->redirectInIndex( '42', $wp, 'content' );
 
 		$mock = $this->createMock( Remediator::class );
 		$mock->expects( $this->once() )
@@ -80,7 +80,7 @@ class BufferedRemediatorTest extends CirrusTestCase {
 			->with( $wp );
 		$mock->expects( $this->once() )
 			->method( 'redirectInIndex' )
-			->with( $wp );
+			->with( '42', $wp, 'content' );
 		$remediator->replayOn( $mock );
 	}
 

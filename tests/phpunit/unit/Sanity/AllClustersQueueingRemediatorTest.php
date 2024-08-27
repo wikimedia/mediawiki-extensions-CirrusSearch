@@ -13,7 +13,7 @@ use MediaWiki\Utils\MWTimestamp;
 /**
  * @covers \CirrusSearch\Sanity\AllClustersQueueingRemediator
  */
-class AllClustersQueuingRemediatorTest extends CirrusTestCase {
+class AllClustersQueueingRemediatorTest extends CirrusTestCase {
 
 	public function testCanSendOptimizedJob() {
 		$jobQueueGroup = $this->createNoOpMock( JobQueueGroup::class );
@@ -66,6 +66,7 @@ class AllClustersQueuingRemediatorTest extends CirrusTestCase {
 		$expectedJobs = [
 			$linksUpdateJob, // oldDocument
 			$linksUpdateJob, // pageNotIndex
+			$wrongIndexDelete, // redirectInIndex
 			$linksUpdateJob, // redirectInIndex
 			$linksUpdateJob, // oldVersionInIndex
 			$wrongIndexDelete, // pageInWrongIndex step1
@@ -81,7 +82,7 @@ class AllClustersQueuingRemediatorTest extends CirrusTestCase {
 		$allClustersRemediator = new AllClustersQueueingRemediator( $clusterAssigment, $jobQueueGroup );
 		$allClustersRemediator->oldDocument( $wp );
 		$allClustersRemediator->pageNotInIndex( $wp );
-		$allClustersRemediator->redirectInIndex( $wp );
+		$allClustersRemediator->redirectInIndex( $docId, $wp, $wrongIndex );
 		$allClustersRemediator->oldVersionInIndex( $docId, $wp, $wrongIndex );
 		$allClustersRemediator->pageInWrongIndex( $docId, $wp, $wrongIndex );
 		$allClustersRemediator->ghostPageInIndex( $docId, $title );

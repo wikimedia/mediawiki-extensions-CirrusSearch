@@ -52,7 +52,16 @@ class QueueingRemediator implements Remediator {
 	/**
 	 * @inheritDoc
 	 */
-	public function redirectInIndex( WikiPage $page ) {
+	public function redirectInIndex( string $docId, WikiPage $page, string $indexSuffix ) {
+		// Links update job will delete this if $indexSuffix is the expected one,
+		// but if it's in the wrong index we need an explicit delete.
+		$this->jobQueue->push(
+			new DeletePages( $page->getTitle(), [
+				'indexSuffix' => $indexSuffix,
+				'docId' => $docId,
+				'cluster' => $this->cluster,
+			] )
+		);
 		$this->pushLinksUpdateJob( $page );
 	}
 

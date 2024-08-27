@@ -40,13 +40,13 @@ class QueueingRemediatorTest extends CirrusTestCase {
 				'cluster' => $cluster,
 			] );
 
-			$baseCaseName = $cluster === null ? 'for all clusters' : 'for some cluster';
+			$baseCaseName = $cluster === null ? 'for all clusters ' : 'for some cluster ';
 			yield $baseCaseName . 'oldDocument' =>
 				[ 'oldDocument', [ $wp ], [ $linksUpdateJob ], $cluster ];
 			yield $baseCaseName . 'pageNotInIndex' =>
 				[ 'pageNotInIndex', [ $wp ], [ $linksUpdateJob ], $cluster ];
 			yield $baseCaseName . 'redirectInIndex' =>
-				[ 'redirectInIndex', [ $wp ], [ $linksUpdateJob ], $cluster ];
+				[ 'redirectInIndex', [ $docId, $wp, $wrongIndex ], [ $wrongIndexDelete, $linksUpdateJob ], $cluster ];
 			yield $baseCaseName . 'oldVersionInIndex' =>
 				[ 'oldVersionInIndex', [ $docId, $wp, $wrongIndex ], [ $linksUpdateJob ], $cluster ];
 			yield $baseCaseName . 'pageInWrongIndex' =>

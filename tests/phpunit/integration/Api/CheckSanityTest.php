@@ -68,11 +68,16 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 					$target->loadFromRow( (object)[
 						'page_id' => 42,
 					] );
-					$remediator->redirectInIndex( $self->mockPage( NS_MAIN, 1, $target ) );
+					$remediator->redirectInIndex(
+						'42',
+						$self->mockPage( NS_MAIN, 1, $target ),
+						'content'
+					);
 				},
 				'extra' => [
 					'pageId' => 1,
 					'namespaceId' => NS_MAIN,
+					'indexName' => "{$wikiId}_content",
 					'target' => [
 						'pageId' => 42,
 						'namespaceId' => NS_TALK,

@@ -54,9 +54,9 @@ class CountingRemediator implements Remediator {
 	/**
 	 * @inheritDoc
 	 */
-	public function redirectInIndex( WikiPage $page ) {
+	public function redirectInIndex( string $docId, WikiPage $page, string $indexSuffix ) {
 		$this->increment( __FUNCTION__ );
-		$this->delegate->redirectInIndex( $page );
+		$this->delegate->redirectInIndex( $docId, $page, $indexSuffix );
 	}
 
 	/**

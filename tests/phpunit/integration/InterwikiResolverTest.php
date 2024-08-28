@@ -15,7 +15,6 @@ use MediaWiki\Interwiki\InterwikiLookup;
 use MediaWiki\MediaWikiServices;
 use MockHttpTrait;
 use MultiHttpClient;
-use Wikimedia\AtEase\AtEase;
 
 /**
  * @group CirrusSearch
@@ -454,9 +453,8 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	}
 
 	private static function readDbListFile( $fileName ) {
-		AtEase::suppressWarnings();
-		$fileContent = file( $fileName, FILE_IGNORE_NEW_LINES );
-		AtEase::restoreWarnings();
+		// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+		$fileContent = @file( $fileName, FILE_IGNORE_NEW_LINES );
 		return $fileContent;
 	}
 

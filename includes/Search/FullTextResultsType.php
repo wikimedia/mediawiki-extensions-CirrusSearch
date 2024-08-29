@@ -3,9 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
-use CirrusSearch\Util;
 use Elastica\ResultSet as ElasticaResultSet;
-use Wikimedia\Stats\StatsFactory;
 
 /**
  * Result type for a full text search.
@@ -115,8 +113,6 @@ final class FullTextResultsType extends BaseResultsType {
 			private bool $deduplicate;
 			/** @var string[] array of titles for counting duplicates */
 			private array $fileTitles = [];
-			/** @var StatsFactory metrics facade */
-			private StatsFactory $stats;
 
 			public function __construct(
 				TitleHelper $titleHelper,
@@ -131,7 +127,6 @@ final class FullTextResultsType extends BaseResultsType {
 					$builder->getHLFieldsPerTargetAndPriority(), $extraFieldsToExtract );
 				$this->results = $results;
 				$this->searchContainedSyntax = $searchContainedSyntax;
-				$this->stats = Util::getStatsFactory();
 				$this->deduplicate = $deduplicate;
 			}
 
@@ -142,9 +137,6 @@ final class FullTextResultsType extends BaseResultsType {
 				$source = $result->getSource();
 				if ( $source['namespace'] === NS_FILE ) {
 					if ( in_array( $source['title'], $this->fileTitles ) ) {
-						$this->stats->getCounter( "result_file_duplicates_total" )
-							->copyToStatsdAt( "CirrusSearch.results.file_duplicates" )
-							->increment();
 						if ( $this->deduplicate ) {
 							return null;
 						}

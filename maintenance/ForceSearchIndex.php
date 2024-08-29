@@ -685,7 +685,7 @@ class ForceSearchIndex extends Maintenance {
 			);
 		}
 		$builder = new \CirrusSearch\Maintenance\ChunkBuilder();
-		$builder->build( $this->mSelf, $this->mOptions, $buildChunks, $fromId, $this->toId );
+		$builder->build( $this->mSelf, $this->getParameters()->getOptions(), $buildChunks, $fromId, $this->toId );
 	}
 
 	/**

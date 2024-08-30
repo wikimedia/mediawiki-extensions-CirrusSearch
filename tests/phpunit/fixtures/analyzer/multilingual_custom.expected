@@ -326,7 +326,11 @@
                 "word_break_helper"
             ],
             "filter": [
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "km_icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "icu_tokenizer",
             "type": "custom"
@@ -348,13 +352,14 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "arabic_extended_norm",
                 "khmer_syll_reorder",
                 "khmer_numbers"
             ],
             "filter": [
-                "icu_normalizer"
+                "icu_normalizer",
+                "km_icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "icu_tokenizer",
             "type": "custom"
@@ -365,13 +370,14 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "arabic_extended_norm",
                 "khmer_syll_reorder",
                 "khmer_numbers"
             ],
             "filter": [
-                "icu_normalizer"
+                "icu_normalizer",
+                "km_icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "icu_tokenizer",
             "type": "custom"
@@ -382,7 +388,11 @@
                 "word_break_helper"
             ],
             "filter": [
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -403,7 +413,6 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "dotted_I_fix",
                 "arabic_extended_norm",
                 "nori_charfilter",
                 "nori_combo_filter"
@@ -412,6 +421,7 @@
                 "nori_posfilter",
                 "nori_readingform",
                 "icu_normalizer",
+                "icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "nori_tok",
@@ -422,7 +432,6 @@
                 "globo_norm",
                 "regex_acronym_fixer",
                 "regex_camelCase",
-                "dotted_I_fix",
                 "arabic_extended_norm",
                 "nori_charfilter",
                 "nori_combo_filter"
@@ -431,6 +440,7 @@
                 "nori_posfilter",
                 "nori_readingform",
                 "icu_normalizer",
+                "icu_folding",
                 "remove_empty"
             ],
             "tokenizer": "nori_tok",
@@ -831,7 +841,11 @@
             ],
             "filter": [
                 "smartcn_stop",
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "icu_tokenizer",
             "type": "custom"
@@ -1108,6 +1122,10 @@
         "icu_normalizer": {
             "name": "nfkc_cf",
             "type": "icu_normalizer"
+        },
+        "km_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u1780-\u17dd]"
         },
         "lowercase": {
             "language": "turkish",

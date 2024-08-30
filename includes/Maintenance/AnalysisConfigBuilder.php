@@ -449,97 +449,7 @@ class AnalysisConfigBuilder {
 		if ( $this->config->get( 'CirrusSearchICUFoldingUnicodeSetFilter' ) !== null ) {
 			return $this->config->get( 'CirrusSearchICUFoldingUnicodeSetFilter' );
 		}
-		switch ( $language ) {
-			/* @todo: complete the default filters per language
-			 *
-			 * For Slovak (sk)—which has no folding configured here!—see:
-			 *   https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
-			 *
-			 * Exceptions are generally listed as Unicode characters for ease of
-			 *   inspection. However, combining characters (such as for Thai (th))
-			 *   are \u encoded to prevent problems with display or editing
-			 */
-			case 'az': // T332342
-				return '[^ÇçƏəĞğIıİiÖöŞşÜü]';
-			case 'bg': // T325090
-				return '[^Йй]';
-			case 'bs': // T192395
-			case 'hr': // T192395
-			case 'sh': // T192395
-			case 'sr': // T183015
-				return '[^ĐđŽžĆćŠšČč]';
-			case 'crh': // T332342
-				return '[^ЁёЙйÇçĞğIıİiÑñÖöŞşÜü]';
-			case 'cs': // T284578
-				return '[^ÁáČčĎďÉéĚěÍíŇňÓóŘřŠšŤťÚúŮůÝýŽž]';
-			case 'da': // T283366
-				return '[^ÆæØøÅå]';
-			case 'de': // T281379
-				return '[^ÄäÖöÜüẞß]';
-			case 'eo': // T202173
-				return '[^ĈĉĜĝĤĥĴĵŜŝŬŭ]';
-			case 'es': // T277699
-				return '[^Ññ]';
-			case 'et': // T332322
-				return '[^ŠšŽžÕõÄäÖöÜü]';
-			case 'eu': // T283366
-				return '[^Ññ]';
-			case 'fi': // T284578
-				return '[^ÅåÄäÖö]';
-			case 'gag': // T332342
-				return '[^ÄäÇçÊêIıİiÖöŞşŢţÜü]';
-			case 'gl': // T284578
-				return '[^Ññ]';
-			case 'ig': // T332342
-				return '[^ỊịṄṅỌọỤụ]';
-			case 'hu': // T325089
-				return '[^ÁáÉéÍíÓóÖöŐőÚúÜüŰű]';
-			case 'ja': // T326822
-				// This range includes characters that don't currently get ICU folded, in
-				// order to keep the overall regex a lot simpler. The specific targets are
-				// characters with dakuten and handakuten, the separate (han)dakuten
-				// characters (regular and combining) and the prolonged sound mark (chōonpu).
-				return '[^が-ヾ]';
-			case 'kk': // T332342
-				return '[^ҒғЁёЙйҚқҢңҰұÄäĞğIıİiÑñÖöŞşŪūÜü]';
-			case 'lt': // T325090
-				return '[^ĄąČčĘęĖėĮįŠšŲųŪūŽž]';
-			case 'lv': // T325089
-				return '[^ĀāČčĒēĢģĪīĶķĻļŅņŠšŪūŽž]';
-			case 'mwl': // T332342
-				return '[^Çç]';
-			case 'nb': // T289612
-			case 'nn': // T289612
-			case 'no':
-				return '[^ÆæØøÅå]';
-			case 'pl': // T332342
-				return '[^ĄąĆćĘęŁłŃńÓóŚśŹźŻż]';
-			case 'ro': // T325091
-				// including s&t with cedilla because we (have to) use it internally T330893
-				return '[^ĂăÂâÎîȘșȚțŞşŢţ]';
-			case 'ru':
-				return '[^Йй]';
-			case 'sl': // T332342
-				return '[^ČčŠšŽžĆćĐđ]';
-			case 'sq': // T332342
-				return '[^ÇçËë]';
-			case 'sv': // T160562
-				return '[^ÅåÄäÖö]';
-			case 'th': // T294147
-				return '[^\u0E47-\u0E4E]';
-			case 'tl': // T332342
-				return '[^Ññ ᜔]';
-			case 'tr': // T329762
-				// (I and i aren't strictly necessary but they keep the Turkish upper/lower
-				// pairs Iı & İi together and makes it clear both are intended.)
-				return '[^ÇçĞğIıİiÖöŞşÜü]';
-			case 'tt': // T332342
-				return '[^ЁёҖҗЙйҢңÄäÇçĞğIıİiÑñÖöŞşÜü]';
-			case 'vi': // T332342
-				return '[^ÁáÀàÃãĂăÂâĐđÉéÈèÊêÍíÌìĨĩÓóÒòÕõÔôƠơÚúÙùŨũƯưÝýẠ-ỹ]';
-			default:
-				return null;
-		}
+		return $this->icuSetFilters[ $language ] ?? null;
 	}
 
 	/**
@@ -963,6 +873,17 @@ class AnalysisConfigBuilder {
 					build( $config );
 				break;
 
+			// largely uncustomized, except for asciifolding / icu_folding
+			// i.e., these have no Latin icu_folding exceptions (or no exceptions at all)
+			case 'georgian':
+			case 'swahili':
+			case 'tamil':
+			case 'uzbek':
+				$config = $myAnalyzerBuilder->
+					withFilters( [ 'lowercase', 'asciifolding' ] )->
+					build( $config );
+				break;
+
 			// largely uncustomized, except for icu_folding only
 			// i.e., these have some Latin in their icu_folding exceptions
 			case 'albanian':
@@ -1046,8 +967,11 @@ class AnalysisConfigBuilder {
 				];
 
 				// char map: hack for STConvert errors (still present as of July 2023)
-				// see https://github.com/medcl/elasticsearch-analysis-stconvert/issues/13
+				//   see https://github.com/medcl/elasticsearch-analysis-stconvert/issues/13
 				// stop: SmartCN converts lots of punctuation to ',' but we don't want to index it
+				// (lack of) folding: smartcn_tokenizer converts non-Chinese words to single-letter
+				//   tokens so no folding here in the text field. However, the plain field pick up
+				//   icu_folding.
 				$config = $myAnalyzerBuilder->
 					withCharMap( [ '\u606d\u5f18=>\u606d \u5f18', '\u5138=>\u3469' ], 'stconvertfix' )->
 					withCharFilters( [ 'stconvertfix', 'tsconvert' ] )->
@@ -1178,7 +1102,7 @@ class AnalysisConfigBuilder {
 				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T196780
 				$config = $myAnalyzerBuilder->withLangName( 'indonesian' )->
 					withUnpackedAnalyzer()->
-					omitFolding()->
+					withAsciifolding()->
 					build( $config );
 				break;
 			case 'irish':
@@ -1241,7 +1165,7 @@ class AnalysisConfigBuilder {
 				$config = $myAnalyzerBuilder->
 					withNumberCharFilter( 0x17e0 )->
 					withCharFilters( [ 'khmer_syll_reorder', 'khmer_numbers' ] )->
-					withFilters( [ 'lowercase' ] )->
+					withFilters( [ 'lowercase', 'asciifolding' ] )->
 					build( $config );
 				break;
 			case 'korean':
@@ -1280,7 +1204,7 @@ class AnalysisConfigBuilder {
 					withCharFilters( [ 'nori_charfilter', 'nori_combo_filter' ] )->
 					withTokenizer( 'nori_tok' )->
 					withFilters( [ 'nori_posfilter', 'nori_readingform', 'lowercase',
-						'remove_empty' ] )->
+						'asciifolding', 'remove_empty' ] )->
 					build( $config );
 				break;
 			case 'mirandese':
@@ -1569,11 +1493,7 @@ class AnalysisConfigBuilder {
 	 */
 	public function getDefaultTextAnalyzerType( $language ) {
 		// If we match a language exactly, use it
-		if ( array_key_exists( $language, $this->elasticsearchLanguageAnalyzers ) ) {
-			return $this->elasticsearchLanguageAnalyzers[ $language ];
-		}
-
-		return 'default';
+		return $this->elasticsearchLanguageAnalyzers[ $language ] ?? 'default';
 	}
 
 	/**
@@ -1786,6 +1706,7 @@ class AnalysisConfigBuilder {
 		'fr' => 'french',
 		'gag' => 'gagauz',
 		'gl' => 'galician',
+		'ka' => 'georgian',
 		'de' => 'german',
 		'el' => 'greek',
 		'hi' => 'hindi',
@@ -1809,11 +1730,14 @@ class AnalysisConfigBuilder {
 		'sl' => 'slovene',
 		'ckb' => 'sorani',
 		'es' => 'spanish',
+		'sw' => 'swahili',
 		'sv' => 'swedish',
 		'tl' => 'tagalog',
+		'ta' => 'tamil',
 		'tt' => 'tatar',
 		'tr' => 'turkish',
 		'th' => 'thai',
+		'uz' => 'uzbek',
 		'vi' => 'vietnamese',
 	];
 
@@ -1855,13 +1779,18 @@ class AnalysisConfigBuilder {
 		'hr' => true,
 		'hu' => true,
 		'hy' => true,
+		'id' => true,
 		'ig' => true,
 		'it' => true,
 		'ja' => true,
+		'ka' => true,
 		'kk' => true,
+		'km' => true,
+		'ko' => true,
 		'lt' => true,
 		'lv' => true,
 		'mwl' => true,
+		'ms' => true,
 		'nb' => true,
 		'nl' => true,
 		'nn' => true,
@@ -1877,11 +1806,86 @@ class AnalysisConfigBuilder {
 		'sq' => true,
 		'sr' => true,
 		'sv' => true,
+		'sw' => true,
+		'ta' => true,
 		'th' => true,
 		'tl' => true,
 		'tr' => true,
 		'tt' => true,
+		'uz' => true,
 		'vi' => true,
+		'zh' => true,
+	];
+
+	/**
+	 * @var string[] indexed by language code, regex of exceptions to ICU folding
+	 */
+	private $icuSetFilters = [
+		/*
+		 * For Slovak (sk)—which has no folding configured here!—see:
+		 *   https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
+		 *
+		 * Exceptions are generally listed as Unicode characters for ease of inspection.
+		 *   However, combining characters (such as for Thai (th)) are \u encoded to
+		 *   prevent problems with display or editing
+		 *
+		 * Languages that have the same exceptions because * they are related (e.g., sr,
+		 *   bs, hr, sh) are listed by the primary language, with the others below and
+		 *   half indented.
+		 *
+		 * (I and i aren't strictly necessary but they keep the Turkic upper/lower pairs
+		 *   Iı & İi together and makes it clear both are intended.)
+		 */
+		'az' => '[^ÇçƏəĞğIıİiÖöŞşÜü]', // T332342
+		'bg' => '[^Йй]', // T325090
+		'crh' => '[^ЁёЙйÇçĞğIıİiÑñÖöŞşÜü]', // T332342
+		'cs' => '[^ÁáČčĎďÉéĚěÍíŇňÓóŘřŠšŤťÚúŮůÝýŽž]', // T284578
+		'da' => '[^ÆæØøÅå]', // T283366
+		'de' => '[^ÄäÖöÜüẞß]', // T281379
+		'eo' => '[^ĈĉĜĝĤĥĴĵŜŝŬŭ]', // T202173
+		'es' => '[^Ññ]', // T277699
+		'et' => '[^ŠšŽžÕõÄäÖöÜü]', // T332322
+		'eu' => '[^Ññ]', // T283366
+		'fi' => '[^ÅåÄäÖö]', // T284578
+		'gag' => '[^ÄäÇçÊêIıİiÖöŞşŢţÜü]', // T332342
+		'gl' => '[^Ññ]', // T284578
+		'ig' => '[^ỊịṄṅỌọỤụ]', // T332342
+		'hu' => '[^ÁáÉéÍíÓóÖöŐőÚúÜüŰű]', // T325089
+		'ja' => '[^が-ヾ]', // T326822
+			// This range includes characters that don't currently get ICU folded, in
+			// order to keep the overall regex a lot simpler. The specific targets are
+			// characters with dakuten and handakuten, the separate (han)dakuten
+			// characters (regular and combining) and the prolonged sound mark (chōonpu).
+		'km' => '[^ក-៝]', // T332342
+			// Including most of the Khmer range because it is an easier regex.
+			// Combining symbols of all kinds are crucial to not fold. Omiting symbols
+			// the tokenizer currently deletes. Leaving Khmer numbers out, because if
+			// khmer_numbers were ever disabled, we'd still want number normalization.
+		'kk' => '[^ҒғЁёЙйҚқҢңҰұÄäĞğIıİiÑñÖöŞşŪūÜü]', // T332342
+		'lt' => '[^ĄąČčĘęĖėĮįŠšŲųŪūŽž]', // T325090
+		'lv' => '[^ĀāČčĒēĢģĪīĶķĻļŅņŠšŪūŽž]', // T325089
+		'mwl' => '[^Çç]', // T332342
+		'no' => '[^ÆæØøÅå]',
+		  'nb' => '[^ÆæØøÅå]', // T289612
+		  'nn' => '[^ÆæØøÅå]', // T289612
+		'pl' => '[^ĄąĆćĘęŁłŃńÓóŚśŹźŻż]', // T332342
+		'ro' => '[^ĂăÂâÎîȘșȚțŞşŢţ]', // T325091
+			// including s&t with cedilla because we (have to) use it internally T330893
+		'ru' => '[^Йй]',
+		'sl' => '[^ČčŠšŽžĆćĐđ]', // T332342
+		'sq' => '[^ÇçËë]', // T332342
+		'sr' => '[^ĐđŽžĆćŠšČč]', // T183015
+		  'bs' => '[^ĐđŽžĆćŠšČč]', // T192395
+		  'hr' => '[^ĐđŽžĆćŠšČč]', // T192395
+		  'sh' => '[^ĐđŽžĆćŠšČč]', // T192395
+		'sv' => '[^ÅåÄäÖö]', // T160562
+		'ta' => '[^்]', // T332342
+		'th' => '[^\u0E47-\u0E4E]', // T294147
+		'tl' => '[^Ññ ᜔]', // T332342
+		'tr' => '[^ÇçĞğIıİiÖöŞşÜü]', // T329762
+		'tt' => '[^ЁёҖҗЙйҢңÄäÇçĞğIıİiÑñÖöŞşÜü]', // T332342
+		'uz' => '[^ЁёЙйЎўҚқҒғҲҳ]', // T332342
+		'vi' => '[^ÁáÀàÃãĂăÂâĐđÉéÈèÊêÍíÌìĨĩÓóÒòÕõÔôƠơÚúÙùŨũƯưÝýẠ-ỹ]', // T332342
 	];
 
 	/**

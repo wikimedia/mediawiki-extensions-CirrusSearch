@@ -149,6 +149,7 @@
                 "nori_posfilter",
                 "nori_readingform",
                 "icu_normalizer",
+                "asciifolding",
                 "remove_empty"
             ],
             "tokenizer": "nori_tok",
@@ -169,6 +170,7 @@
                 "nori_posfilter",
                 "nori_readingform",
                 "icu_normalizer",
+                "asciifolding",
                 "remove_empty"
             ],
             "tokenizer": "nori_tok",

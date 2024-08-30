@@ -147,6 +147,7 @@
                 "nori_posfilter",
                 "nori_readingform",
                 "lowercase",
+                "asciifolding",
                 "remove_empty"
             ],
             "tokenizer": "nori_tok",
@@ -165,6 +166,7 @@
                 "nori_posfilter",
                 "nori_readingform",
                 "lowercase",
+                "asciifolding",
                 "remove_empty"
             ],
             "tokenizer": "nori_tok",

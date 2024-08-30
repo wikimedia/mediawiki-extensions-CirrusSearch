@@ -143,7 +143,8 @@
                 "arabic_extended_norm"
             ],
             "filter": [
-                "lowercase"
+                "lowercase",
+                "asciifolding"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -157,7 +158,8 @@
                 "arabic_extended_norm"
             ],
             "filter": [
-                "lowercase"
+                "lowercase",
+                "asciifolding"
             ],
             "tokenizer": "standard",
             "type": "custom"

@@ -837,7 +837,11 @@
             ],
             "filter": [
                 "smartcn_stop",
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "icu_tokenizer",
             "type": "custom"

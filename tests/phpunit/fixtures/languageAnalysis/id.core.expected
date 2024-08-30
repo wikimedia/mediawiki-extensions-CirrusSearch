@@ -145,7 +145,8 @@
             "filter": [
                 "lowercase",
                 "indonesian_stop",
-                "indonesian_stemmer"
+                "indonesian_stemmer",
+                "asciifolding"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -161,7 +162,8 @@
             "filter": [
                 "lowercase",
                 "indonesian_stop",
-                "indonesian_stemmer"
+                "indonesian_stemmer",
+                "asciifolding"
             ],
             "tokenizer": "standard",
             "type": "custom"

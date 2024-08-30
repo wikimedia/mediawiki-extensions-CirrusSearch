@@ -140,7 +140,8 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "gagauz_charfilter"
             ],
             "filter": [
                 "lowercase"
@@ -154,7 +155,8 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "gagauz_charfilter"
             ],
             "filter": [
                 "lowercase"
@@ -230,6 +232,23 @@
             "type": "mapping",
             "mappings": [
                 "\u0130=>I"
+            ]
+        },
+        "gagauz_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\u0219=>\u015f",
+                "s\\u0326=>\u015f",
+                "s\\u0327=>\u015f",
+                "\u021b=>\u0163",
+                "t\\u0326=>\u0163",
+                "t\\u0327=>\u0163",
+                "\u0218=>\u015e",
+                "S\\u0326=>\u015e",
+                "S\\u0327=>\u015e",
+                "\u021a=>\u0162",
+                "T\\u0326=>\u0162",
+                "T\\u0327=>\u0162"
             ]
         },
         "globo_norm": {

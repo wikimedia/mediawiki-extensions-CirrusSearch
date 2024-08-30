@@ -140,7 +140,8 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "s_comma_cedilla"
             ],
             "filter": [
                 "lowercase"
@@ -154,7 +155,8 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "s_comma_cedilla"
             ],
             "filter": [
                 "lowercase"
@@ -296,6 +298,17 @@
             "type": "pattern_replace",
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
             "replacement": "$1 $2"
+        },
+        "s_comma_cedilla": {
+            "type": "mapping",
+            "mappings": [
+                "\u0219=>\u015f",
+                "s\\u0326=>\u015f",
+                "s\\u0327=>\u015f",
+                "\u0218=>\u015e",
+                "S\\u0326=>\u015e",
+                "S\\u0327=>\u015e"
+            ]
         },
         "word_break_helper": {
             "type": "mapping",

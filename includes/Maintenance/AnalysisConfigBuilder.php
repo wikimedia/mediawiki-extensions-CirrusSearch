@@ -459,6 +459,8 @@ class AnalysisConfigBuilder {
 			 *   inspection. However, combining characters (such as for Thai (th))
 			 *   are \u encoded to prevent problems with display or editing
 			 */
+			case 'az': // T332342
+				return '[^ÇçƏəĞğIıİiÖöŞşÜü]';
 			case 'bg': // T325090
 				return '[^Йй]';
 			case 'bs': // T192395
@@ -466,6 +468,8 @@ class AnalysisConfigBuilder {
 			case 'sh': // T192395
 			case 'sr': // T183015
 				return '[^ĐđŽžĆćŠšČč]';
+			case 'crh': // T332342
+				return '[^ЁёЙйÇçĞğIıİiÑñÖöŞşÜü]';
 			case 'cs': // T284578
 				return '[^ÁáČčĎďÉéĚěÍíŇňÓóŘřŠšŤťÚúŮůÝýŽž]';
 			case 'da': // T283366
@@ -482,8 +486,12 @@ class AnalysisConfigBuilder {
 				return '[^Ññ]';
 			case 'fi': // T284578
 				return '[^ÅåÄäÖö]';
+			case 'gag': // T332342
+				return '[^ÄäÇçÊêIıİiÖöŞşŢţÜü]';
 			case 'gl': // T284578
 				return '[^Ññ]';
+			case 'ig': // T332342
+				return '[^ỊịṄṅỌọỤụ]';
 			case 'hu': // T325089
 				return '[^ÁáÉéÍíÓóÖöŐőÚúÜüŰű]';
 			case 'ja': // T326822
@@ -492,27 +500,43 @@ class AnalysisConfigBuilder {
 				// characters with dakuten and handakuten, the separate (han)dakuten
 				// characters (regular and combining) and the prolonged sound mark (chōonpu).
 				return '[^が-ヾ]';
+			case 'kk': // T332342
+				return '[^ҒғЁёЙйҚқҢңҰұÄäĞğIıİiÑñÖöŞşŪūÜü]';
 			case 'lt': // T325090
 				return '[^ĄąČčĘęĖėĮįŠšŲųŪūŽž]';
 			case 'lv': // T325089
 				return '[^ĀāČčĒēĢģĪīĶķĻļŅņŠšŪūŽž]';
+			case 'mwl': // T332342
+				return '[^Çç]';
 			case 'nb': // T289612
 			case 'nn': // T289612
 			case 'no':
 				return '[^ÆæØøÅå]';
+			case 'pl': // T332342
+				return '[^ĄąĆćĘęŁłŃńÓóŚśŹźŻż]';
 			case 'ro': // T325091
 				// including s&t with cedilla because we (have to) use it internally T330893
 				return '[^ĂăÂâÎîȘșȚțŞşŢţ]';
 			case 'ru':
 				return '[^Йй]';
+			case 'sl': // T332342
+				return '[^ČčŠšŽžĆćĐđ]';
+			case 'sq': // T332342
+				return '[^ÇçËë]';
 			case 'sv': // T160562
 				return '[^ÅåÄäÖö]';
 			case 'th': // T294147
 				return '[^\u0E47-\u0E4E]';
+			case 'tl': // T332342
+				return '[^Ññ ᜔]';
 			case 'tr': // T329762
 				// (I and i aren't strictly necessary but they keep the Turkish upper/lower
 				// pairs Iı & İi together and makes it clear both are intended.)
 				return '[^ÇçĞğIıİiÖöŞşÜü]';
+			case 'tt': // T332342
+				return '[^ЁёҖҗЙйҢңÄäÇçĞğIıİiÑñÖöŞşÜü]';
+			case 'vi': // T332342
+				return '[^ÁáÀàÃãĂăÂâĐđÉéÈèÊêÍíÌìĨĩÓóÒòÕõÔôƠơÚúÙùŨũƯưÝýẠ-ỹ]';
 			default:
 				return null;
 		}
@@ -939,6 +963,17 @@ class AnalysisConfigBuilder {
 					build( $config );
 				break;
 
+			// largely uncustomized, except for icu_folding only
+			// i.e., these have some Latin in their icu_folding exceptions
+			case 'albanian':
+			case 'igbo':
+			case 'slovene':
+			case 'tagalog':
+				$config = $myAnalyzerBuilder->
+					withFilters( [ 'lowercase', 'icu_folding' ] )->
+					build( $config );
+				break;
+
 			// customized languages
 			case 'arabic':
 			case 'arabic-egyptian':
@@ -968,12 +1003,9 @@ class AnalysisConfigBuilder {
 				break;
 			case 'azerbaijani':
 			case 'crimean-tatar':
-			case 'gagauz':
-			case 'kazakh':
-			case 'tatar':
 				// Turkic languages that use I/ı & İ/i, so need Turkish lowercasing
 				$config = $myAnalyzerBuilder->
-					withFilters( [ 'lowercase' ] )->
+					withFilters( [ 'lowercase', 'icu_folding' ] )->
 					withLangLowercase( 'turkish' )->
 					build( $config );
 				break;
@@ -1089,6 +1121,20 @@ class AnalysisConfigBuilder {
 					withAsciifolding()->
 					build( $config );
 				break;
+			case 'gagauz':
+				// Turkic languages that use I/ı & İ/i, so need Turkish lowercasing
+				// Also use Şş & Ţţ (cedilla), sometimes confused with Şș & Țț (comma)
+				$cedillaMap = [
+					'ș=>ş', 's\u0326=>ş', 's\u0327=>ş', 'ț=>ţ', 't\u0326=>ţ', 't\u0327=>ţ',
+					'Ș=>Ş', 'S\u0326=>Ş', 'S\u0327=>Ş', 'Ț=>Ţ', 'T\u0326=>Ţ', 'T\u0327=>Ţ',
+				];
+				$config = $myAnalyzerBuilder->
+					withCharMap( $cedillaMap )->
+					withCharFilters( [ 'gagauz_charfilter' ] )->
+					withFilters( [ 'lowercase', 'icu_folding' ] )->
+					withLangLowercase( 'turkish' )->// uses I/ı & İ/i
+					build( $config );
+				break;
 			case 'german':
 				// Unpack German analyzer T281379
 				// char map: We have to explicitly map capital ẞ to lowercase ß
@@ -1176,6 +1222,20 @@ class AnalysisConfigBuilder {
 						'lowercase' ] )->
 					build( $config );
 				break;
+			case 'kazakh':
+			case 'tatar':
+				// Turkic languages that use I/ı & İ/i, so need Turkish lowercasing
+				// Also use Şş (cedilla), sometimes confused with Şș (comma)
+				$cedillaMap = [
+					'ș=>ş', 's\u0326=>ş', 's\u0327=>ş', 'Ș=>Ş', 'S\u0326=>Ş', 'S\u0327=>Ş',
+				];
+				$config = $myAnalyzerBuilder->
+					withCharMap( $cedillaMap, 's_comma_cedilla' )->
+					withCharFilters( [ 's_comma_cedilla' ] )->
+					withFilters( [ 'lowercase', 'icu_folding' ] )->
+					withLangLowercase( 'turkish' )->// uses I/ı & İ/i
+					build( $config );
+				break;
 			case 'khmer':
 				// See Khmer: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T185721
 				$config = $myAnalyzerBuilder->
@@ -1230,7 +1290,8 @@ class AnalysisConfigBuilder {
 				$config = $myAnalyzerBuilder->
 					withElision( [ 'l', 'd', 'qu' ] )->
 					withStop( $mwlStopwords )->
-					withFilters( [ 'lowercase', 'mirandese_elision', 'mirandese_stop' ] )->
+					withFilters( [ 'lowercase', 'mirandese_elision', 'mirandese_stop',
+						'icu_folding' ] )->
 					build( $config );
 				break;
 			case 'persian': // Unpack Persian analyzer T325090
@@ -1260,9 +1321,10 @@ class AnalysisConfigBuilder {
 					withUnpackedAnalyzer()->
 					withStop( $plStopwords )->
 					omitStemmer()->
-					omitFolding()->
-					appendFilters( [ 'polish_stem', 'stempel_pattern_filter', 'remove_empty' ] )->
+					insertFiltersBefore( 'icu_folding',
+						[ 'polish_stem', 'stempel_pattern_filter' ] )->
 					withExtraStop( $stempelStopwords, 'stempel_stop' )->
+					withRemoveEmpty()->// stempel stemming & filtering can create empty tokens
 					build( $config );
 				break;
 			case 'portuguese':  // Unpack Portuguese analyzer T281379
@@ -1447,6 +1509,15 @@ class AnalysisConfigBuilder {
 					withLimitedCharMap( $ukCharMap )->
 					withCharFilters( [ 'ukrainian_charfilter' ] )->
 					withFilters( $ukFilters )->
+					build( $config );
+				break;
+			case 'vietnamese':
+				// The ð=>đ map doesn't make sense on its own, but it is needed so that
+				// the necessary uppercase mapping doesn't break upper-/lowercase matching.
+				$config = $myAnalyzerBuilder->
+					withLimitedCharMap( [ 'Ð=>Đ', 'ð=>đ' ] )->
+					withCharFilters( [ 'vietnamese_charfilter' ] )->
+					withFilters( [ 'lowercase', 'icu_folding' ] )->
 					build( $config );
 				break;
 			default:
@@ -1689,6 +1760,7 @@ class AnalysisConfigBuilder {
 	 * @var string[]
 	 */
 	private $elasticsearchLanguageAnalyzers = [
+		'sq' => 'albanian',
 		'ar' => 'arabic',
 		'ary' => 'arabic-moroccan',
 		'arz' => 'arabic-egyptian',
@@ -1719,6 +1791,7 @@ class AnalysisConfigBuilder {
 		'hi' => 'hindi',
 		'hu' => 'hungarian',
 		'id' => 'indonesian',
+		'ig' => 'igbo',
 		'ga' => 'irish',
 		'it' => 'italian',
 		'kk' => 'kazakh',
@@ -1733,12 +1806,15 @@ class AnalysisConfigBuilder {
 		'pt' => 'portuguese',
 		'ro' => 'romanian',
 		'ru' => 'russian',
+		'sl' => 'slovene',
 		'ckb' => 'sorani',
 		'es' => 'spanish',
 		'sv' => 'swedish',
+		'tl' => 'tagalog',
 		'tt' => 'tatar',
 		'tr' => 'turkish',
 		'th' => 'thai',
+		'vi' => 'vietnamese',
 	];
 
 	/**
@@ -1749,11 +1825,13 @@ class AnalysisConfigBuilder {
 		'ar' => true,
 		'ary' => true,
 		'arz' => true,
+		'az' => true,
 		'bg' => true,
 		'bn' => true,
 		'bs' => true,
 		'ca' => true,
 		'ckb' => true,
+		'crh' => true,
 		'cs' => true,
 		'da' => true,
 		'de' => true,
@@ -1770,30 +1848,40 @@ class AnalysisConfigBuilder {
 		'fi' => true,
 		'fr' => true,
 		'ga' => true,
+		'gag' => true,
 		'gl' => true,
 		'he' => true,
 		'hi' => true,
 		'hr' => true,
 		'hu' => true,
 		'hy' => true,
+		'ig' => true,
 		'it' => true,
 		'ja' => true,
+		'kk' => true,
 		'lt' => true,
 		'lv' => true,
+		'mwl' => true,
 		'nb' => true,
 		'nl' => true,
 		'nn' => true,
 		'no' => true,
+		'pl' => true,
 		'pt' => true,
 		'pt-br' => true,
 		'ro' => true,
 		'ru' => true,
 		'sh' => true,
 		'sk' => true,
+		'sl' => true,
+		'sq' => true,
 		'sr' => true,
 		'sv' => true,
 		'th' => true,
+		'tl' => true,
 		'tr' => true,
+		'tt' => true,
+		'vi' => true,
 	];
 
 	/**

@@ -140,7 +140,8 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "vietnamese_charfilter"
             ],
             "filter": [
                 "lowercase"
@@ -154,7 +155,8 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "vietnamese_charfilter"
             ],
             "filter": [
                 "lowercase"
@@ -296,6 +298,13 @@
             "type": "pattern_replace",
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
             "replacement": "$1 $2"
+        },
+        "vietnamese_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\u00d0=>\u0110",
+                "\u00f0=>\u0111"
+            ]
         },
         "word_break_helper": {
             "type": "mapping",

@@ -10,7 +10,9 @@
         "lowercase_keyword": {
             "filter": [
                 "truncate_keyword",
-                "icu_normalizer"
+                "icu_normalizer",
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -32,7 +34,8 @@
             "filter": [
                 "truncate_keyword",
                 "icu_normalizer",
-                "asciifolding"
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -44,7 +47,11 @@
             ],
             "filter": [
                 "icutokrep_no_camel_split",
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -77,7 +84,8 @@
             ],
             "filter": [
                 "icu_normalizer",
-                "asciifolding"
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "prefix",
             "type": "custom"
@@ -86,7 +94,10 @@
             "filter": [
                 "icu_normalizer",
                 "aggressive_splitting",
-                "asciifolding_preserve"
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "whitespace",
             "type": "custom"
@@ -146,13 +157,15 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "vietnamese_charfilter"
             ],
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
-                "icu_normalizer"
+                "icu_normalizer",
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -163,13 +176,15 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "vietnamese_charfilter"
             ],
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
-                "icu_normalizer"
+                "icu_normalizer",
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -310,6 +325,13 @@
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
             "replacement": "$1 $2"
         },
+        "vietnamese_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\u00d0=>\u0110",
+                "\u00f0=>\u0111"
+            ]
+        },
         "word_break_helper": {
             "type": "limited_mapping",
             "mappings": [
@@ -348,6 +370,14 @@
         "asciifolding_preserve": {
             "type": "asciifolding",
             "preserve_original": true
+        },
+        "icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00c1\u00e1\u00c0\u00e0\u00c3\u00e3\u0102\u0103\u00c2\u00e2\u0110\u0111\u00c9\u00e9\u00c8\u00e8\u00ca\u00ea\u00cd\u00ed\u00cc\u00ec\u0128\u0129\u00d3\u00f3\u00d2\u00f2\u00d5\u00f5\u00d4\u00f4\u01a0\u01a1\u00da\u00fa\u00d9\u00f9\u0168\u0169\u01af\u01b0\u00dd\u00fd\u1ea0-\u1ef9]"
+        },
+        "icu_nfkc_normalization": {
+            "type": "icu_normalizer",
+            "name": "nfkc"
         },
         "icu_normalizer": {
             "type": "icu_normalizer",

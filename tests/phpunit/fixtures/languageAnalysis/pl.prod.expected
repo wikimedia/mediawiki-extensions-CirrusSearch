@@ -10,7 +10,9 @@
         "lowercase_keyword": {
             "filter": [
                 "truncate_keyword",
-                "icu_normalizer"
+                "icu_normalizer",
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -32,7 +34,8 @@
             "filter": [
                 "truncate_keyword",
                 "icu_normalizer",
-                "asciifolding"
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -44,7 +47,11 @@
             ],
             "filter": [
                 "icutokrep_no_camel_split",
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -77,7 +84,8 @@
             ],
             "filter": [
                 "icu_normalizer",
-                "asciifolding"
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "prefix",
             "type": "custom"
@@ -86,7 +94,10 @@
             "filter": [
                 "icu_normalizer",
                 "aggressive_splitting",
-                "asciifolding_preserve"
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "whitespace",
             "type": "custom"
@@ -146,7 +157,6 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
                 "arabic_extended_norm"
             ],
             "filter": [
@@ -156,6 +166,7 @@
                 "polish_stop",
                 "polish_stem",
                 "stempel_pattern_filter",
+                "icu_folding",
                 "remove_empty",
                 "stempel_stop"
             ],
@@ -168,7 +179,6 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "dotted_I_fix",
                 "arabic_extended_norm"
             ],
             "filter": [
@@ -178,6 +188,7 @@
                 "polish_stop",
                 "polish_stem",
                 "stempel_pattern_filter",
+                "icu_folding",
                 "remove_empty",
                 "stempel_stop"
             ],
@@ -358,6 +369,14 @@
         "asciifolding_preserve": {
             "type": "asciifolding",
             "preserve_original": true
+        },
+        "icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u0104\u0105\u0106\u0107\u0118\u0119\u0141\u0142\u0143\u0144\u00d3\u00f3\u015a\u015b\u0179\u017a\u017b\u017c]"
+        },
+        "icu_nfkc_normalization": {
+            "type": "icu_normalizer",
+            "name": "nfkc"
         },
         "icu_normalizer": {
             "type": "icu_normalizer",

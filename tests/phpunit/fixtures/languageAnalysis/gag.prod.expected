@@ -11,7 +11,9 @@
             "filter": [
                 "truncate_keyword",
                 "lowercase",
-                "icu_normalizer"
+                "icu_normalizer",
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -35,7 +37,8 @@
                 "truncate_keyword",
                 "lowercase",
                 "icu_normalizer",
-                "asciifolding"
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -48,7 +51,11 @@
             "filter": [
                 "icutokrep_no_camel_split",
                 "lowercase",
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -84,7 +91,8 @@
             "filter": [
                 "lowercase",
                 "icu_normalizer",
-                "asciifolding"
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "prefix",
             "type": "custom"
@@ -94,7 +102,10 @@
                 "lowercase",
                 "icu_normalizer",
                 "aggressive_splitting",
-                "asciifolding_preserve"
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "whitespace",
             "type": "custom"
@@ -159,13 +170,16 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "gagauz_charfilter"
             ],
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
                 "lowercase",
-                "icu_normalizer"
+                "icu_normalizer",
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -176,13 +190,16 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "gagauz_charfilter"
             ],
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
                 "lowercase",
-                "icu_normalizer"
+                "icu_normalizer",
+                "icu_folding",
+                "remove_empty"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -258,6 +275,23 @@
             "type": "limited_mapping",
             "mappings": [
                 "\u0130=>I"
+            ]
+        },
+        "gagauz_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\u0219=>\u015f",
+                "s\\u0326=>\u015f",
+                "s\\u0327=>\u015f",
+                "\u021b=>\u0163",
+                "t\\u0326=>\u0163",
+                "t\\u0327=>\u0163",
+                "\u0218=>\u015e",
+                "S\\u0326=>\u015e",
+                "S\\u0327=>\u015e",
+                "\u021a=>\u0162",
+                "T\\u0326=>\u0162",
+                "T\\u0327=>\u0162"
             ]
         },
         "globo_norm": {
@@ -363,6 +397,14 @@
         "asciifolding_preserve": {
             "type": "asciifolding",
             "preserve_original": true
+        },
+        "icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u00c4\u00e4\u00c7\u00e7\u00ca\u00eaI\u0131\u0130i\u00d6\u00f6\u015e\u015f\u0162\u0163\u00dc\u00fc]"
+        },
+        "icu_nfkc_normalization": {
+            "type": "icu_normalizer",
+            "name": "nfkc"
         },
         "icu_normalizer": {
             "type": "icu_normalizer",

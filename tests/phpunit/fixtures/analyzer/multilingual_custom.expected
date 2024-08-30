@@ -442,7 +442,11 @@
                 "word_break_helper"
             ],
             "filter": [
-                "icu_normalizer"
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "pl_icu_folding",
+                "preserve_original",
+                "remove_empty"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -464,7 +468,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "arabic_extended_norm"
             ],
             "filter": [
@@ -472,6 +475,7 @@
                 "polish_stop",
                 "polish_stem",
                 "stempel_pattern_filter",
+                "pl_icu_folding",
                 "remove_empty",
                 "stempel_stop"
             ],
@@ -484,7 +488,6 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "arabic_extended_norm"
             ],
             "filter": [
@@ -492,6 +495,7 @@
                 "polish_stop",
                 "polish_stem",
                 "stempel_pattern_filter",
+                "pl_icu_folding",
                 "remove_empty",
                 "stempel_stop"
             ],
@@ -1134,6 +1138,10 @@
                 "VX"
             ],
             "type": "nori_part_of_speech"
+        },
+        "pl_icu_folding": {
+            "type": "icu_folding",
+            "unicodeSetFilter": "[^\u0104\u0105\u0106\u0107\u0118\u0119\u0141\u0142\u0143\u0144\u00d3\u00f3\u015a\u015b\u0179\u017a\u017b\u017c]"
         },
         "polish_stop": {
             "stopwords": [

@@ -563,8 +563,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		// text-munging plugins
 		$text_plugins = [ 'extra-analysis-homoglyph', 'extra-analysis-textify' ];
 
-		$fixtureInfo = [ // 'tag' => [extraCirrusConfig, isExtendedTest?, pluginList]
-			'core' => [ [], false, [] ], // no plugins, no cirrus config
+		$fixtureInfo = [
+			'core' => [ [], false, [] ], // no plugins, no Cirrus config
 
 			// all plugins + CirrusICUConfig (this should be what's in prod)
 			'prod' => [ self::CONFIG_ENABLE_ICU_DEFAULTS, false,
@@ -576,7 +576,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			// all plugins, but no CirrusICUConfig
 			'no_cic' => [ [], true, array_merge( $lang_plugins, $icu_plugins, $text_plugins ) ],
 
-			// just language plugins
+			// language plugins + CirrusICUConfig
 			'lang' => [ self::CONFIG_ENABLE_ICU_DEFAULTS, true, $lang_plugins ],
 
 			// icu plugins + CirrusICUConfig

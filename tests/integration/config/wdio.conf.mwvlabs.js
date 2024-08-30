@@ -6,7 +6,7 @@ const merge = require( 'deepmerge' ),
 // Overwrite default settings
 exports.config = merge( wdioConf.config, {
 	reporters: [
-		'dot',
+		'spec',
 		[ 'junit',
 			{
 				outputDir: __dirname + '/../log',

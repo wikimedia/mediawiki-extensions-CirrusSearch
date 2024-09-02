@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Arystanbek",
+			"Casserium",
 			"Mirgulkali",
 			"MisterMario"
 		]
@@ -9,5 +10,6 @@
 	"cirrussearch-desc": "Барлық мақалалардағы сөздер саны",
 	"cirrussearch-now-using": "Бұл уикиде жаңа іздеу жүйесі қолданылуда. ([[mw:Special:MyLanguage/Help:CirrusSearch|Көбірек білу]])",
 	"cirrussearch-pref-label": "Жаңа іздеу",
-	"cirrussearch-completion-profile-normal-subphrases": "Кейбір пунктуация белгілері, диакритикалық белгілер және тоқтатым-сөздер алып тасталған. Сондай-ақ, қосалқы сөйлемдерде салыстырылады (ішкі Уики конфигурациясына сай қосалқы сөйлем немесе қосалқы бет болуы мүмкін)."
+	"cirrussearch-completion-profile-normal-subphrases": "Кейбір пунктуация белгілері, диакритикалық белгілер және тоқтатым-сөздер алып тасталған. Сондай-ақ, қосалқы сөйлемдерде салыстырылады (ішкі Уики конфигурациясына сай қосалқы сөйлем немесе қосалқы бет болуы мүмкін).",
+	"cirrussearch-explore-similar-related-none": "Қатысты беттер қолжетімсіз"
 }

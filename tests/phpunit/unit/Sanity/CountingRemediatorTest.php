@@ -20,7 +20,8 @@ class CountingRemediatorTest extends CirrusTestCase {
 		$buffer = new BufferedRemediator();
 		$remediator = new CountingRemediator(
 			$buffer,
-			static function () use ( $metric ) {
+			static function ( string $problem ) use ( $metric ) {
+				$metric->setLabel( "problem", $problem );
 				return $metric;
 			}
 		);
@@ -29,5 +30,7 @@ class CountingRemediatorTest extends CirrusTestCase {
 		$this->assertCount( 0, $baseMetric->getSamples() );
 		$remediator->redirectInIndex( '42', $page, 'content' );
 		$this->assertCount( 1, $baseMetric->getSamples() );
+		$this->assertArrayContains( [ "problem" ], $baseMetric->getLabelKeys() );
+		$this->assertArrayContains( [ "redirectInIndex" ], $baseMetric->getLabelValues() );
 	}
 }

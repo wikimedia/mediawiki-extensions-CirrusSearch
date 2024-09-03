@@ -111,8 +111,8 @@ class Checker {
 		$this->statsFactory = $statsFactory;
 		$this->remediator = new CountingRemediator(
 			$remediator,
-			function () {
-				return $this->getCounter( "fixed" );
+			function ( string $problem ) {
+				return $this->getCounter( "fixed", $problem );
 			}
 		);
 		$this->searcher = $searcher;
@@ -190,9 +190,10 @@ class Checker {
 		return $nbPagesFixed;
 	}
 
-	private function getCounter( string $action ): CounterMetric {
+	private function getCounter( string $action, string $problem = "n/a" ): CounterMetric {
 		$cluster = $this->connection->getClusterName();
 		return $this->statsFactory->getCounter( "sanitization_total" )
+			->setLabel( "problem", $problem )
 			->setLabel( "search_cluster", $cluster )
 			->setLabel( "action", $action )
 			->copyToStatsdAt( "CirrusSearch.$cluster.sanitization.$action" );

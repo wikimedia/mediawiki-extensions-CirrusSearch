@@ -39,7 +39,7 @@ class CountingRemediator implements Remediator {
 
 	/**
 	 * @param Remediator $delegate Instance to delgate to
-	 * @param callable $counterFactory Function with no arguments returning a
+	 * @param callable $counterFactory Function with a single string argument returning a
 	 *  CounterMetric instance.
 	 */
 	public function __construct( Remediator $delegate, callable $counterFactory ) {
@@ -48,7 +48,7 @@ class CountingRemediator implements Remediator {
 	}
 
 	private function increment( string $problem ) {
-		( $this->counterFactory )()->setLabel( "problem", $problem )->increment();
+		( $this->counterFactory )( $problem )->increment();
 	}
 
 	/**

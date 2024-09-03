@@ -132,9 +132,9 @@ LocalSettings.php like so:
 	'workers' => 50,
 	'maxqueue' => 100,
  ];
- // Configuration for regex searches.  These are slow and use lots of resources
- // so we only allow a few at a time.
- $wgPoolCounterConf[ 'CirrusSearch-Regex' ] = [
+ // Configuration for expensive full text searches such as regex and deepcat.
+ // These are slow and use lots of resources so we only allow a few at a time.
+ $wgPoolCounterConf[ 'CirrusSearch-ExpensiveFullText' ] = [
 	'class' => 'MediaWiki\PoolCounter\PoolCounterClient',
 	'timeout' => 30,
 	'workers' => 10,

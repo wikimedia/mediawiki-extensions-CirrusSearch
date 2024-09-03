@@ -778,7 +778,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		// pools with specific limits. Prefix is only high volume
 		// when completion is disabled.
 		$poolCounterTypes = [
-			'regex' => 'CirrusSearch-Regex',
+			'deepcat' => 'CirrusSearch-ExpensiveFullText',
+			'regex' => 'CirrusSearch-ExpensiveFullText',
 			'prefix' => 'CirrusSearch-Prefix',
 			'more_like' => 'CirrusSearch-MoreLike',
 		];
@@ -796,7 +797,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		// those can be very expensive and usually use a small pool. If both
 		// the automation and regex pools filled with regexes it would be
 		// significantly more load than expected.
-		if ( $pool !== 'CirrusSearch-Regex' && $this->isAutomatedRequest() ) {
+		if ( $pool !== 'CirrusSearch-ExpensiveFullText' && $this->isAutomatedRequest() ) {
 			$pool = 'CirrusSearch-Automated';
 		}
 		return $pool;

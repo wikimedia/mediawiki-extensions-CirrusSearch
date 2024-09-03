@@ -198,7 +198,6 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	 * @throws SparqlException
 	 */
 	private function fetchCategories( $rootCategory, WarningCollector $warningCollector ) {
-		/** @var SparqlClient $client */
 		$title = Title::makeTitleSafe( NS_CATEGORY, $rootCategory );
 		if ( $title === null ) {
 			$warningCollector->addWarning( 'cirrussearch-feature-deepcat-invalid-title' );

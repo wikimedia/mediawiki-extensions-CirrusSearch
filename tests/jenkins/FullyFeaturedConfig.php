@@ -72,9 +72,9 @@ $wgPoolCounterConf[ 'CirrusSearch-Prefix' ] = [
 	'workers' => 432,
 	'maxqueue' => 600,
 ];
-// Regex searches are much heavier then regular searches so we limit the
-// concurrent number.
-$wgPoolCounterConf[ 'CirrusSearch-Regex' ] = [
+// Some classes of searches, such as Regex and deepcat, can be much heavier
+// then regular searches so we limit the concurrent number.
+$wgPoolCounterConf[ 'CirrusSearch-ExpensiveFullText' ] = [
 	'class' => 'MediaWiki\PoolCounter\PoolCounterClient',
 	'timeout' => 60,
 	'workers' => 10,

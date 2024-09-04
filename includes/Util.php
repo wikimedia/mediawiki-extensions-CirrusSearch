@@ -11,7 +11,6 @@ use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
 use MediaWiki\WikiMap\WikiMap;
-use UIDGenerator;
 use Wikimedia\Assert\Assert;
 use Wikimedia\IPUtils;
 use Wikimedia\Stats\StatsFactory;
@@ -363,7 +362,8 @@ class Util {
 		if ( $token === null ) {
 			// random UID, 70B tokens have a collision probability of 4*10^-16
 			// so should work for marking unique queries.
-			$uuid = UIDGenerator::newUUIDv4();
+			$gen = MediaWikiServices::getInstance()->getGlobalIdGenerator();
+			$uuid = $gen->newUUIDv4();
 			// make it a little shorter by using straight base36
 			$hex = substr( $uuid, 0, 8 ) . substr( $uuid, 9, 4 ) .
 				substr( $uuid, 14, 4 ) . substr( $uuid, 19, 4 ) .

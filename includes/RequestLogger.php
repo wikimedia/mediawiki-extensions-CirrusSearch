@@ -6,10 +6,10 @@ use ISearchResultSet;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
 use MediaWiki\WikiMap\WikiMap;
-use UIDGenerator;
 
 /**
  * Handles logging information about requests made to various destinations,
@@ -307,13 +307,14 @@ class RequestLogger {
 			$resultHits[] = $hit;
 		}
 
+		$gen = MediaWikiServices::getInstance()->getGlobalIdGenerator();
 		$requestEvent = [
 			// This schema can be found in the mediawiki/event-schemas repository.
 			// The $schema URI here should be updated if we increment schema versions.
 			'$schema' => '/mediawiki/cirrussearch/request/0.0.1',
 			'meta' => [
 				'request_id' => $webrequest->getRequestId(),
-				'id' => UIDGenerator::newUUIDv4(),
+				'id' => $gen->newUUIDv4(),
 				'dt' => wfTimestamp( TS_ISO_8601 ),
 				'domain' => $wgServerName,
 				'stream' => 'mediawiki.cirrussearch-request',

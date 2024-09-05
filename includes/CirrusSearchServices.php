@@ -12,7 +12,7 @@ use MediaWiki\Sparql\SparqlClient;
 class CirrusSearchServices {
 
 	/** @var MediaWikiServices */
-	private $services;
+	private MediaWikiServices $services;
 
 	public static function wrap( MediaWikiServices $services ): self {
 		return new self( $services );
@@ -28,6 +28,10 @@ class CirrusSearchServices {
 
 	public function getCirrusCategoriesClient(): SparqlClient {
 		return $this->services->get( 'CirrusCategoriesClient' );
+	}
+
+	public function getWeightedTagsUpdater(): WeightedTagsUpdater {
+		return $this->services->get( WeightedTagsUpdater::SERVICE );
 	}
 
 }

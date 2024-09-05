@@ -8,6 +8,7 @@ use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\Extra\MultiList\MultiListBuilder;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusIndexField;
+use CirrusSearch\Wikimedia\WeightedTagsHooks;
 use Elastica\Bulk\Action\AbstractDocument;
 use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;
@@ -41,6 +42,7 @@ use Wikimedia\Stats\StatsFactory;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class DataSender extends ElasticsearchIntermediary {
+
 	/** @var \Psr\Log\LoggerInterface */
 	private $log;
 
@@ -86,18 +88,7 @@ class DataSender extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param string $indexSuffix
-	 * @param string[] $docIds
-	 * @param string $tagField
-	 * @param string $tagPrefix
-	 * @param string|string[]|null $tagNames A tag name or list of tag names. Each tag will be
-	 *   set for each document ID. Omit for tags which are fully defined by their prefix.
-	 * @param int[]|int[][]|null $tagWeights An optional map of docid => weight. When $tagName is
-	 *   null, the weight is an integer. When $tagName is not null, the weight is itself a
-	 *   tagname => int map. Weights are between 1-1000, and can be omitted (in which case no
-	 *   update will be sent for the corresponding docid/tag combination).
-	 * @param int $batchSize
-	 * @return Status
+	 * @deprecated use {@link sendWeightedTagsUpdate} instead.
 	 */
 	public function sendUpdateWeightedTags(
 		string $indexSuffix,
@@ -108,24 +99,56 @@ class DataSender extends ElasticsearchIntermediary {
 		array $tagWeights = null,
 		int $batchSize = 30
 	): Status {
+		return $this->sendWeightedTagsUpdate(
+			$indexSuffix,
+			$tagPrefix,
+			is_array( $tagWeights ) ? array_reduce(
+				$docIds, static function ( $docTagsWeights, $docId ) use ( $tagNames, $tagWeights ) {
+					if ( array_key_exists( $docId, $tagWeights ) ) {
+						$docTagsWeights[$docId] = MultiListBuilder::buildTagWeightsFromLegacyParameters(
+						$tagNames,
+						$tagWeights[$docId]
+						);
+					}
+
+					return $docTagsWeights;
+				}, []
+			) : array_fill_keys( $docIds, MultiListBuilder::buildTagWeightsFromLegacyParameters( $tagNames ) ),
+			$batchSize
+		);
+	}
+
+	/**
+	 * @param string $indexSuffix
+	 * @param string $tagPrefix
+	 * @param int[][]|null[][] $tagWeights a map of `[ docId: string => [ tagName: string => tagWeight: int|null ] ]`
+	 * @param int $batchSize
+	 *
+	 * @return Status
+	 */
+	public function sendWeightedTagsUpdate(
+		string $indexSuffix,
+		string $tagPrefix,
+		array $tagWeights,
+		int $batchSize = 30
+	): Status {
 		$client = $this->connection->getClient();
 		$status = Status::newGood();
 		$pageIndex = $this->connection->getIndex( $this->indexBaseName, $indexSuffix );
-		foreach ( array_chunk( $docIds, $batchSize ) as $docIdsChunk ) {
+		foreach ( array_chunk( array_keys( $tagWeights ), $batchSize ) as $docIdsChunk ) {
 			$bulk = new \Elastica\Bulk( $client );
 			$bulk->setIndex( $pageIndex );
 			foreach ( $docIdsChunk as $docId ) {
-				if ( is_array( $tagWeights ) && !array_key_exists( $docId, $tagWeights ) ) {
-					continue;
-				}
-				$docTags = MultiListBuilder::buildWeightedTagsFromLegacyParameters(
+				$docTags = MultiListBuilder::buildWeightedTags(
 					$tagPrefix,
-					$tagNames,
-					is_array( $tagWeights ) ? $tagWeights[$docId] : null
+					$tagWeights[$docId],
 				);
 				$script = new \Elastica\Script\Script( 'super_detect_noop', [
-					'source' => [ $tagField => array_map( static fn ( $docTag ) => (string)$docTag, $docTags ) ],
-					'handlers' => [ $tagField => CirrusIndexField::MULTILIST_HANDLER ],
+					'source' => [
+						WeightedTagsHooks::FIELD_NAME => array_map( static fn ( $docTag ) => (string)$docTag,
+							$docTags )
+					],
+					'handlers' => [ WeightedTagsHooks::FIELD_NAME => CirrusIndexField::MULTILIST_HANDLER ],
 				], 'super_detect_noop' );
 				$script->setId( $docId );
 				$bulk->addScript( $script, 'update' );
@@ -138,11 +161,17 @@ class DataSender extends ElasticsearchIntermediary {
 			// Execute the bulk update
 			$exception = null;
 			try {
-				$this->start( new BulkUpdateRequestLog( $this->connection->getClient(),
-					'updating {numBulk} documents',
-					'send_data_reset_weighted_tags',
-					[ 'numBulk' => count( $docIdsChunk ), 'index' => $pageIndex->getName() ]
-				) );
+				$this->start(
+					new BulkUpdateRequestLog(
+						$this->connection->getClient(),
+						'updating {numBulk} documents',
+						'send_data_reset_weighted_tags',
+						[
+							'numBulk' => count( $docIdsChunk ),
+							'index' => $pageIndex->getName()
+						]
+					)
+				);
 				$bulk->send();
 			} catch ( ResponseException $e ) {
 				if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e ) ) {
@@ -155,28 +184,29 @@ class DataSender extends ElasticsearchIntermediary {
 				$this->success();
 			} else {
 				$this->failure( $exception );
-				$this->failedLog->warning( "Update weighted tag {weightedTagFieldName} for {weightedTagPrefix} in articles: {documents}",
-					[
+				$this->failedLog->warning(
+					"Update weighted tag {weightedTagFieldName} for {weightedTagPrefix} in articles: {docIds}", [
 						'exception' => $exception,
-						'weightedTagFieldName' => $tagField,
+						'weightedTagFieldName' => WeightedTagsHooks::FIELD_NAME,
 						'weightedTagPrefix' => $tagPrefix,
-						'weightedTagNames' => implode( '|', $tagNames ),
-						'weightedTagWeight' => $tagWeights,
-						'docIds' => implode( ',', $docIds )
-					] );
-				$status->error( 'cirrussearch-failed-update-weighted-tags' );
+						'weightedTagNames' => implode(
+							'|',
+							array_reduce( $tagWeights, static function ( $tagNames, $docTagWeights ) {
+								return array_unique( array_merge( $tagNames, array_keys( $docTagWeights ) ) );
+							} )
+						),
+						'weightedTagWeight' => var_export( $tagWeights, true ),
+						'docIds' => implode( ',', array_keys( $tagWeights ) )
+					]
+				);
 			}
 		}
+
 		return $status;
 	}
 
 	/**
-	 * @param string $indexSuffix
-	 * @param string[] $docIds
-	 * @param string $tagField
-	 * @param string $tagPrefix
-	 * @param int $batchSize
-	 * @return Status
+	 * @deprecated use {@link sendWeightedTagsUpdate} instead.
 	 */
 	public function sendResetWeightedTags(
 		string $indexSuffix,
@@ -185,13 +215,10 @@ class DataSender extends ElasticsearchIntermediary {
 		string $tagPrefix,
 		int $batchSize = 30
 	): Status {
-		return $this->sendUpdateWeightedTags(
+		return $this->sendWeightedTagsUpdate(
 			$indexSuffix,
-			$docIds,
-			$tagField,
 			$tagPrefix,
-			CirrusIndexField::MULTILIST_DELETE_GROUPING,
-			null,
+			array_fill_keys( $docIds, [ CirrusIndexField::MULTILIST_DELETE_GROUPING => null ] ),
 			$batchSize
 		);
 	}
@@ -494,8 +521,8 @@ class DataSender extends ElasticsearchIntermediary {
 					$this->connection->getClient(),
 					'updating {numBulk} documents in other indexes',
 					'send_data_other_idx_write',
-						[ 'numBulk' => count( $updates ), 'index' => $indexName ]
-					) );
+					[ 'numBulk' => count( $updates ), 'index' => $indexName ]
+				) );
 				$bulk->send();
 			} catch ( ResponseException $e ) {
 				if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e ) ) {
@@ -602,9 +629,9 @@ class DataSender extends ElasticsearchIntermediary {
 
 	/**
 	 * Converts a document into a call to super_detect_noop from the wikimedia-extra plugin.
-	 * @internal made public for testing purposes
 	 * @param \Elastica\Document $doc
 	 * @return \Elastica\Script\Script
+	 * @internal made public for testing purposes
 	 */
 	public function docToSuperDetectNoopScript( \Elastica\Document $doc ) {
 		$handlers = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );

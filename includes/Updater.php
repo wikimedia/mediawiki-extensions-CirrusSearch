@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Search\CirrusIndexField;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\ProperPageIdentity;
@@ -34,7 +35,7 @@ use WikiPage;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class Updater extends ElasticsearchIntermediary {
+class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 	/**
 	 * Full title text of pages updated in this process.  Used for deduplication
 	 * of updates.
@@ -240,15 +241,13 @@ class Updater extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param ProperPageIdentity $page
-	 * @param string $tagField
-	 * @param string $tagPrefix
-	 * @param string|string[]|null $tagNames
-	 * @param int|int[]|null $tagWeights
+	 * @inheritDoc
 	 */
 	public function updateWeightedTags(
-		ProperPageIdentity $page, string $tagField, string $tagPrefix, $tagNames = null, $tagWeights = null
-	) {
+		ProperPageIdentity $page,
+		string $tagPrefix,
+		?array $tagWeights = null
+	): void {
 		Assert::precondition( $page->exists(), "page must exist" );
 		$docId = $this->connection->getConfig()->makeId( $page->getId() );
 		$indexSuffix = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
@@ -256,40 +255,32 @@ class Updater extends ElasticsearchIntermediary {
 			UpdateGroup::WEIGHTED_TAGS,
 			[ $docId ],
 			static function ( array $docIds, ClusterSettings $cluster ) use (
-				$docId, $indexSuffix, $tagField, $tagPrefix, $tagNames, $tagWeights
+				$docId,
+				$indexSuffix,
+				$tagPrefix,
+				$tagWeights
 			) {
 				$tagWeights = ( $tagWeights === null ) ? null : [ $docId => $tagWeights ];
 				return Job\ElasticaWrite::build(
 					$cluster,
 					UpdateGroup::WEIGHTED_TAGS,
-					'sendUpdateWeightedTags',
-					[ $indexSuffix, $docIds, $tagField, $tagPrefix, $tagNames, $tagWeights ],
+					'sendWeightedTagsUpdate',
+					[
+						$indexSuffix,
+						$tagPrefix,
+						$tagWeights
+					],
 				);
 			} );
 	}
 
 	/**
-	 * @param ProperPageIdentity $page
-	 * @param string $tagField
-	 * @param string $tagPrefix
+	 * @inheritDoc
 	 */
-	public function resetWeightedTags( ProperPageIdentity $page, string $tagField, string $tagPrefix ) {
-		Assert::precondition( $page->exists(), "page must exist" );
-		$docId = $this->connection->getConfig()->makeId( $page->getId() );
-		$indexSuffix = $this->connection->getIndexSuffixForNamespace( $page->getNamespace() );
-		$this->pushElasticaWriteJobs(
-			UpdateGroup::WEIGHTED_TAGS,
-			[ $docId ],
-			static function (
-				array $docIds, ClusterSettings $cluster
-			) use ( $indexSuffix, $tagField, $tagPrefix ) {
-				return Job\ElasticaWrite::build(
-					$cluster,
-					UpdateGroup::WEIGHTED_TAGS,
-					'sendResetWeightedTags',
-					[ $indexSuffix, $docIds, $tagField, $tagPrefix ],
-				);
-			} );
+	public function resetWeightedTags( ProperPageIdentity $page, array $tagPrefixes ): void {
+		foreach ( $tagPrefixes as $tagPrefix ) {
+			$this->updateWeightedTags( $page, $tagPrefix, [ CirrusIndexField::MULTILIST_DELETE_GROUPING => null ] );
+		}
 	}
 
 	/**

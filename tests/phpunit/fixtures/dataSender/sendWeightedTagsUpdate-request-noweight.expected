@@ -13,13 +13,13 @@
                     "source": "super_detect_noop",
                     "params": {
                         "source": {
-                            "my_weighted_tags": [
+                            "weighted_tags": [
                                 "my_custom_prefix\/my_tag_1",
                                 "my_custom_prefix\/my_tag_2"
                             ]
                         },
                         "handlers": {
-                            "my_weighted_tags": "multilist"
+                            "weighted_tags": "multilist"
                         },
                         "_id": "1"
                     },
@@ -36,13 +36,13 @@
                     "source": "super_detect_noop",
                     "params": {
                         "source": {
-                            "my_weighted_tags": [
+                            "weighted_tags": [
                                 "my_custom_prefix\/my_tag_1",
                                 "my_custom_prefix\/my_tag_2"
                             ]
                         },
                         "handlers": {
-                            "my_weighted_tags": "multilist"
+                            "weighted_tags": "multilist"
                         },
                         "_id": "2"
                     },
@@ -61,13 +61,13 @@
                     "source": "super_detect_noop",
                     "params": {
                         "source": {
-                            "my_weighted_tags": [
+                            "weighted_tags": [
                                 "my_custom_prefix\/my_tag_1",
                                 "my_custom_prefix\/my_tag_2"
                             ]
                         },
                         "handlers": {
-                            "my_weighted_tags": "multilist"
+                            "weighted_tags": "multilist"
                         },
                         "_id": "3"
                     },

@@ -345,7 +345,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	}
 
 	public static function provideUpdateWeightedTagsRequest() {
-		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendUpdateWeightedTags-request-*.config' ) as $testFile ) {
+		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendWeightedTagsUpdate-request-*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
@@ -354,7 +354,6 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 				$fixture['indexSuffix'],
 				$fixture['batchSize'],
 				$fixture['docIds'],
-				$fixture['tagField'],
 				$fixture['tagPrefix'],
 				$fixture['tagNames'],
 				$fixture['tagWeights'],
@@ -366,11 +365,11 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideUpdateWeightedTagsRequest
+	 *
 	 * @param array $config
 	 * @param string $indexSuffix
 	 * @param int $batchSize
 	 * @param array $docIds
-	 * @param string $tagField
 	 * @param string $tagPrefix
 	 * @param string|array|null $tagNames
 	 * @param array|null $tagWeights
@@ -382,7 +381,6 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		string $indexSuffix,
 		int $batchSize,
 		array $docIds,
-		string $tagField,
 		string $tagPrefix,
 		$tagNames,
 		?array $tagWeights,
@@ -400,18 +398,18 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockClient = $this->prepareClientMock( $expectedRequestCount ?? $count );
 
 		$sender = $this->prepareDataSender( $searchConfig, $mockClient );
-		$sender->sendUpdateWeightedTags( $indexSuffix, $docIds, $tagField, $tagPrefix,
+		$sender->sendUpdateWeightedTags( $indexSuffix, $docIds, 'ignored', $tagPrefix,
 			$tagNames, $tagWeights, $batchSize );
 
 		$this->assertFileContains(
 			CirrusIntegrationTestCase::fixturePath( $expectedFile ),
-			CirrusIntegrationTestCase::encodeFixture( $this->mergeCalls( $this->actualCalls ) ),
+			CirrusIntegrationTestCase::encodeFixture( $this->mergeCalls( $this->actualCalls ) ) . "\n",
 			self::canRebuildFixture()
 		);
 	}
 
 	public static function provideResetWeightedTagsRequest() {
-		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendResetWeightedTags-request-*.config' ) as $testFile ) {
+		foreach ( CirrusIntegrationTestCase::findFixtures( 'dataSender/sendWeightedTagsReset-request-*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -strlen( '.config' ) );
 			$fixture = CirrusIntegrationTestCase::loadFixture( $testFile );
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
@@ -420,7 +418,6 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 				$fixture['indexSuffix'],
 				$fixture['batchSize'],
 				$fixture['docIds'],
-				$fixture['tagField'],
 				$fixture['tagPrefix'],
 				$expectedFile,
 			];
@@ -429,11 +426,11 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideResetWeightedTagsRequest
+	 *
 	 * @param array $config
 	 * @param string $indexSuffix
 	 * @param int $batchSize
 	 * @param array $docIds
-	 * @param string $tagField
 	 * @param string $tagPrefix
 	 * @param string $expectedFile
 	 */
@@ -442,7 +439,6 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		string $indexSuffix,
 		int $batchSize,
 		array $docIds,
-		string $tagField,
 		string $tagPrefix,
 		string $expectedFile
 	): void {
@@ -457,11 +453,11 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$mockClient = $this->prepareClientMock( $count );
 
 		$sender = $this->prepareDataSender( $searchConfig, $mockClient );
-		$sender->sendResetWeightedTags( $indexSuffix, $docIds, $tagField, $tagPrefix, $batchSize );
+		$sender->sendResetWeightedTags( $indexSuffix, $docIds, 'ignored', $tagPrefix, $batchSize );
 
 		$this->assertFileContains(
 			CirrusIntegrationTestCase::fixturePath( $expectedFile ),
-			CirrusIntegrationTestCase::encodeFixture( $this->mergeCalls( $this->actualCalls ) ),
+			CirrusIntegrationTestCase::encodeFixture( $this->mergeCalls( $this->actualCalls ) ) . "\n",
 			self::canRebuildFixture()
 		);
 	}

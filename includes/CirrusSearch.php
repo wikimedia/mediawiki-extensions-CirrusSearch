@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Extra\MultiList\MultiListBuilder;
 use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
 use CirrusSearch\Profile\ContextualProfileOverride;
@@ -15,7 +16,6 @@ use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Search\TitleResultsType;
-use CirrusSearch\Wikimedia\WeightedTagsHooks;
 use ISearchResultSet;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
@@ -615,69 +615,31 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
-	 * Request the setting of the weighted_tags field for the given tag(s) and weight(s).
-	 * Will set a "$tagPrefix/$tagName" tag for each element of $tagNames, and will unset
-	 * all other tags with the same prefix (in other words, this will replace the existing
-	 * tag set for a given prefix). When $tagName is omitted, 'exists' will be used - this
-	 * is canonical for tag types where the tag is fully determined by the prefix.
-	 *
-	 * This is meant for testing and non-production setups. For production a more efficient batched
-	 * update process can be implemented outside MediaWiki.
-	 *
-	 * @param ProperPageIdentity $page
-	 * @param string $tagPrefix
-	 * @param string|string[]|null $tagNames
-	 * @param int|int[]|null $tagWeights Tag weights (between 1-1000). When $tagNames is omitted,
-	 *   $tagWeights should be a single number; otherwise it should be a tagname => weight map.
+	 * @deprecated update via {@link WeightedTagsUpdater} service
 	 */
 	public function updateWeightedTags( ProperPageIdentity $page, string $tagPrefix, $tagNames = null, $tagWeights = null ): void {
-		Assert::parameterType( [ 'string', 'array', 'null' ], $tagNames, '$tagNames' );
-		if ( is_array( $tagNames ) ) {
-			Assert::parameterElementType( 'string', $tagNames, '$tagNames' );
-		}
 		Assert::precondition( strpos( $tagPrefix, '/' ) === false,
 			"invalid tag prefix $tagPrefix: must not contain /" );
-		foreach ( (array)$tagNames as $tagName ) {
-			Assert::precondition( strpos( $tagName, '|' ) === false,
-				"invalid tag name $tagName: must not contain |" );
-		}
-		if ( $tagWeights !== null ) {
-			if ( $tagNames === null ) {
-				$tagWeightsToCheck = [ $tagWeights ];
-			} else {
-				$tagWeightsToCheck = $tagWeights;
-			}
-			foreach ( $tagWeightsToCheck as $tagName => $weight ) {
-				if ( $tagNames ) {
-					Assert::precondition( in_array( $tagName, (array)$tagNames, true ),
-						"tag name $tagName used in \$tagWeights but not found in \$tagNames" );
-				}
-				Assert::precondition( is_int( $weight ), "weights must be integers but $weight is "
-					. get_debug_type( $weight ) );
-				Assert::precondition( $weight >= 1 && $weight <= 1000,
-					"weights must be between 1 and 1000 (found: $weight)" );
-			}
-		}
 
-		$this->getUpdater()->updateWeightedTags( $page,
-			WeightedTagsHooks::FIELD_NAME, $tagPrefix, $tagNames, $tagWeights );
+		$this->getUpdater()->updateWeightedTags(
+			$page,
+			$tagPrefix,
+			MultiListBuilder::buildTagWeightsFromLegacyParameters( $tagNames, $tagWeights )
+		);
 	}
 
 	/**
-	 * Request the reset of the weighted_tags field for the category $tagCategory.
-	 *
-	 * @param ProperPageIdentity $page
-	 * @param string $tagPrefix
+	 * @deprecated update via {@link WeightedTagsUpdater} service
 	 */
 	public function resetWeightedTags( ProperPageIdentity $page, string $tagPrefix ): void {
-		$this->getUpdater()->resetWeightedTags( $page, WeightedTagsHooks::FIELD_NAME, $tagPrefix );
+		$this->getUpdater()->resetWeightedTags( $page, [ $tagPrefix ] );
 	}
 
 	/**
 	 * Helper method to facilitate mocking during tests.
 	 * @return Updater
 	 */
-	protected function getUpdater() {
+	protected function getUpdater(): Updater {
 		return new Updater( $this->connection );
 	}
 

@@ -13,12 +13,14 @@
                     "source": "super_detect_noop",
                     "params": {
                         "source": {
-                            "my_weighted_tags": [
-                                "my_custom_prefix\/exists"
+                            "weighted_tags": [
+                                "my_custom_prefix\/my_tag_1|750",
+                                "my_custom_prefix\/my_tag_2|800",
+                                "my_custom_prefix\/my_tag_3|900"
                             ]
                         },
                         "handlers": {
-                            "my_weighted_tags": "multilist"
+                            "weighted_tags": "multilist"
                         },
                         "_id": "1"
                     },
@@ -35,12 +37,13 @@
                     "source": "super_detect_noop",
                     "params": {
                         "source": {
-                            "my_weighted_tags": [
-                                "my_custom_prefix\/exists"
+                            "weighted_tags": [
+                                "my_custom_prefix\/my_tag_1|950",
+                                "my_custom_prefix\/my_tag_2|1000"
                             ]
                         },
                         "handlers": {
-                            "my_weighted_tags": "multilist"
+                            "weighted_tags": "multilist"
                         },
                         "_id": "2"
                     },
@@ -51,7 +54,7 @@
         [
             {
                 "update": {
-                    "_id": "3"
+                    "_id": "5"
                 }
             },
             {
@@ -59,14 +62,15 @@
                     "source": "super_detect_noop",
                     "params": {
                         "source": {
-                            "my_weighted_tags": [
-                                "my_custom_prefix\/exists"
+                            "weighted_tags": [
+                                "my_custom_prefix\/my_tag_1|500",
+                                "my_custom_prefix\/my_tag_2|600"
                             ]
                         },
                         "handlers": {
-                            "my_weighted_tags": "multilist"
+                            "weighted_tags": "multilist"
                         },
-                        "_id": "3"
+                        "_id": "5"
                     },
                     "lang": "super_detect_noop"
                 }

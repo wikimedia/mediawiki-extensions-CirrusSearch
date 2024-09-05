@@ -2,10 +2,11 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\Wikimedia\WeightedTagsHooks;
+use CirrusSearch\Extra\MultiList\MultiListBuilder;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Page\PageIdentityValue;
 use MediaWiki\Status\Status;
+use PHPUnit\Framework\Constraint\Callback;
 use Wikimedia\Assert\AssertionException;
 
 /**
@@ -35,7 +36,7 @@ class CirrusSearchTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideProfiles
-	 * @covers \CirrusSearch\CirrusSearch::getProfiles()
+	 * @covers       \CirrusSearch\CirrusSearch::getProfiles()
 	 */
 	public function testGetProfiles( $profileType, $default, array $expectedProfiles ) {
 		$profiles = $this->getSearchEngine( [ 'CirrusSearchUseCompletionSuggester' => 'yes' ] )
@@ -85,7 +86,7 @@ class CirrusSearchTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideExtractProfileFromFeatureData
-	 * @covers \CirrusSearch\CirrusSearch::extractProfileFromFeatureData
+	 * @covers       \CirrusSearch\CirrusSearch::extractProfileFromFeatureData
 	 * @throws \MediaWiki\Config\ConfigException
 	 */
 	public function testExtractProfileFromFeatureData( $type, $setValue, $expected ) {
@@ -163,7 +164,7 @@ class CirrusSearchTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers \CirrusSearch\CirrusSearch::updateWeightedTags
+	 * @covers       \CirrusSearch\CirrusSearch::updateWeightedTags
 	 * @dataProvider provideUpdateWeightedTags
 	 * @param string $tagPrefix
 	 * @param string|string[]|null $tagNames
@@ -171,17 +172,25 @@ class CirrusSearchTest extends CirrusTestCase {
 	 * @param bool $isValid
 	 */
 	public function testUpdateWeightedTags( $tagPrefix, $tagNames, $tagWeights, $isValid ) {
+		$normalizedTagWeights = [];
 		$pageIdentity = new PageIdentityValue( 1, 0, 'Test', PageIdentityValue::LOCAL );
 		$mockUpdater = $this->createPartialMock( Updater::class, [ 'updateWeightedTags' ] );
 		$mockUpdater->expects( $isValid ? $this->once() : $this->never() )
-			->method( 'updateWeightedTags' )
-			->with( $pageIdentity, WeightedTagsHooks::FIELD_NAME, $tagPrefix, $tagNames, $tagWeights );
+			->method( 'updateWeightedTags' )->with(
+				$pageIdentity,
+				$tagPrefix,
+				$this->captureArg( $normalizedTagWeights )
+			);
 		$cirrusSearch = $this->createPartialMock( CirrusSearch::class, [ 'getUpdater' ] );
 		$cirrusSearch->method( 'getUpdater' )->willReturn( $mockUpdater );
 
 		try {
 			$cirrusSearch->updateWeightedTags( $pageIdentity, $tagPrefix, $tagNames, $tagWeights );
 			$this->assertTrue( $isValid, 'Expected exception not thrown' );
+			$this->assertArrayEquals(
+				MultiListBuilder::buildTagWeightsFromLegacyParameters( $tagNames, $tagWeights ),
+				$normalizedTagWeights
+			);
 		} catch ( AssertionException $e ) {
 			$this->assertFalse( $isValid, 'Unexpected exception thrown: ' . get_class( $e )
 				. ': ' . $e->getMessage() );
@@ -208,5 +217,13 @@ class CirrusSearchTest extends CirrusTestCase {
 			'weight for non-existent tag' => [ 'foo', [ 'bar', 'baz' ],
 				[ 'bar' => 500, 'baz' => 600, 'boom' => 700 ], false ],
 		];
+	}
+
+	private function captureArg( &$captor ): Callback {
+		return $this->callback( static function ( $arg ) use ( &$captor ) {
+			$captor = $arg;
+
+			return true;
+		} );
 	}
 }

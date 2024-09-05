@@ -5,10 +5,19 @@
 
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\CirrusSearchHookRunner;
+use CirrusSearch\Connection;
+use CirrusSearch\EventBusWeightedTagSerializer;
+use CirrusSearch\EventBusWeightedTagsUpdater;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\InterwikiResolverFactory;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Query\DeepcatFeature;
+use CirrusSearch\SearchConfig;
+use CirrusSearch\Updater;
+use CirrusSearch\WeightedTagsUpdater;
+use MediaWiki\Extension\EventBus\Serializers\EventSerializer;
+use MediaWiki\Extension\EventBus\Serializers\MediaWiki\PageEntitySerializer;
+use MediaWiki\Http\Telemetry;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Sparql\SparqlClient;
 
@@ -60,6 +69,29 @@ return [
 			$services->getUserOptionsLookup(),
 			ExtensionRegistry::getInstance()
 		);
+	},
+	WeightedTagsUpdater::SERVICE => static function ( MediaWikiServices $services ): WeightedTagsUpdater {
+		/**
+		 * @var SearchConfig $searchConfig
+		 */
+		$searchConfig = $services->getConfigFactory()->makeConfig( 'CirrusSearch' );
+
+		if ( $searchConfig->get( 'CirrusSearchEnableEventBusWeightedTags' ) ) {
+			$eventBusFactory = $services->getService( 'EventBus.EventBusFactory' );
+
+			$mainConfig = $services->getMainConfig();
+			$globalIdGenerator = $services->getGlobalIdGenerator();
+
+			$eventSerializer = new EventSerializer( $mainConfig, $globalIdGenerator, Telemetry::getInstance() );
+			$pageEntitySerializer = new PageEntitySerializer( $mainConfig, $services->getTitleFormatter() );
+			$weightedTagSerializer = new EventBusWeightedTagSerializer( $eventSerializer, $pageEntitySerializer );
+			$wikiPageFactory = $services->getWikiPageFactory();
+
+			return new EventBusWeightedTagsUpdater( $eventBusFactory, $weightedTagSerializer, $wikiPageFactory );
+		}
+
+		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
+		return new Updater( new Connection( $searchConfig ) );
 	}
 ];
 

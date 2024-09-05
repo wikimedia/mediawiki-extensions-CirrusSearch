@@ -34,12 +34,6 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		);
 	}
 
-	protected function tearDown(): void {
-		MediaWikiServices::getInstance()
-			->resetServiceForTesting( 'ConfigFactory' );
-		parent::tearDown();
-	}
-
 	public static function searchTextProvider() {
 		$configs = [];
 		// globals overrides. All tests will be run for each defined configuration

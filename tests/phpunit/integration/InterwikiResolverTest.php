@@ -446,12 +446,6 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		return $resolver;
 	}
 
-	protected function tearDown(): void {
-		MediaWikiServices::getInstance()
-			->resetServiceForTesting( 'InterwikiLookup' );
-		parent::tearDown();
-	}
-
 	private static function readDbListFile( $fileName ) {
 		// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 		$fileContent = @file( $fileName, FILE_IGNORE_NEW_LINES );

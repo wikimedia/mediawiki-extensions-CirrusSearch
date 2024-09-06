@@ -38,13 +38,16 @@ interface WeightedTagsUpdater {
 	 * @param null|null[]|int[] $tagWeights Optional tag weights. A map of optional weights, keyed by tag name.
 	 * *   Omit for tags which are fully defined by their prefix.
 	 * *   A single weight ranges between 1-1000.
+	 * @param 'revision'|null $trigger Optional indicator what triggered this update,
+	 *     this hint is currently only processed by {@link EventBusWeightedTagsUpdater}
 	 *
 	 * @see MultiListBuilder for parameter details
 	 */
 	public function updateWeightedTags(
 		ProperPageIdentity $page,
 		string $tagPrefix,
-		?array $tagWeights = null
+		?array $tagWeights = null,
+		?string $trigger = null
 	): void;
 
 	/**
@@ -53,11 +56,14 @@ interface WeightedTagsUpdater {
 	 *
 	 * @param ProperPageIdentity $page
 	 * @param string[] $tagPrefixes
+	 * @param 'revision'|null $trigger optionally indicate what triggered this update,
+	 *                                 this hint is currently only processed by {@link EventBusWeightedTagsUpdater}
 	 *
 	 * @see WeightedTagsBuilder for parameter details
 	 */
 	public function resetWeightedTags(
 		ProperPageIdentity $page,
-		array $tagPrefixes
+		array $tagPrefixes,
+		?string $trigger = null
 	): void;
 }

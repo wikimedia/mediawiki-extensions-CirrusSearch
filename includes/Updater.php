@@ -246,7 +246,8 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 	public function updateWeightedTags(
 		ProperPageIdentity $page,
 		string $tagPrefix,
-		?array $tagWeights = null
+		?array $tagWeights = null,
+		?string $trigger = null
 	): void {
 		Assert::precondition( $page->exists(), "page must exist" );
 		$docId = $this->connection->getConfig()->makeId( $page->getId() );
@@ -277,9 +278,14 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 	/**
 	 * @inheritDoc
 	 */
-	public function resetWeightedTags( ProperPageIdentity $page, array $tagPrefixes ): void {
+	public function resetWeightedTags( ProperPageIdentity $page, array $tagPrefixes, ?string $trigger = null ): void {
 		foreach ( $tagPrefixes as $tagPrefix ) {
-			$this->updateWeightedTags( $page, $tagPrefix, [ CirrusIndexField::MULTILIST_DELETE_GROUPING => null ] );
+			$this->updateWeightedTags(
+				$page,
+				$tagPrefix,
+				[ CirrusIndexField::MULTILIST_DELETE_GROUPING => null ],
+				$trigger
+			);
 		}
 	}
 

@@ -33,10 +33,15 @@ class EventBusWeightedTagsUpdater implements WeightedTagsUpdater {
 	 */
 	public function resetWeightedTags(
 		ProperPageIdentity $page,
-		array $tagPrefixes
+		array $tagPrefixes,
+		?string $trigger = null
 	): void {
-		$event = $this->eventSerializer->toClearEvent( $this->wikiPageFactory->newFromTitle( $page ), $tagPrefixes );
-		$this->eventBusFactory->getInstanceForStream( $this->eventSerializer->getStream() )->send( $event );
+		$event = $this->eventSerializer->toClearEvent(
+			$this->wikiPageFactory->newFromTitle( $page ),
+			$tagPrefixes,
+			$trigger === 'revision' ? true : null
+		);
+		$this->eventBusFactory->getInstanceForStream( EventBusWeightedTagSerializer::STREAM )->send( $event );
 	}
 
 	/**
@@ -45,7 +50,8 @@ class EventBusWeightedTagsUpdater implements WeightedTagsUpdater {
 	public function updateWeightedTags(
 		ProperPageIdentity $page,
 		string $tagPrefix,
-		?array $tagWeights = null
+		?array $tagWeights = null,
+		?string $trigger = null
 	): void {
 		$weightedTags = MultiListBuilder::buildWeightedTags( $tagPrefix, $tagWeights );
 
@@ -57,8 +63,9 @@ class EventBusWeightedTagsUpdater implements WeightedTagsUpdater {
 			return $set;
 		}, [] );
 
-		$event = $this->eventSerializer->toSetEvent( $this->wikiPageFactory->newFromTitle( $page ), $set );
-		$this->eventBusFactory->getInstanceForStream( $this->eventSerializer->getStream() )->send( $event );
+		$event = $this->eventSerializer->toSetEvent(
+			$this->wikiPageFactory->newFromTitle( $page ), $set, $trigger === 'revision' ? true : null );
+		$this->eventBusFactory->getInstanceForStream( EventBusWeightedTagSerializer::STREAM )->send( $event );
 	}
 
 }

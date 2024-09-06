@@ -120,11 +120,21 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 		$this->assertEquals( $expected, $actual );
 	}
 
+	public static function getSetEventData(): array {
+		return [
+			[ [ 'weighted_tags' => [ 'set' => [ 'prefix-0' => [ 'tag-a' => 1 ] ] ] ] ],
+			[ [ 'weighted_tags' => [ 'set' => [ 'prefix-0' => [ 'tag-a' => 1 ] ] ], 'rev_based' => true ] ],
+			[ [ 'weighted_tags' => [ 'set' => [ 'prefix-0' => [ 'tag-a' => 1 ] ] ], 'rev_based' => false ] ],
+		];
+	}
+
 	/**
 	 * @covers ::toSetEvent
 	 * @covers ::toArray
+	 * @param array $eventAttrs
+	 * @dataProvider getSetEventData
 	 */
-	public function testSetEvent() {
+	public function testSetEvent( array $eventAttrs ) {
 		$wikiPage0 = $this->getExistingTestPage( Title::newFromText( 'MyPageToEdit', $this->getDefaultWikitextNS() ) );
 
 		$dt = EventSerializer::timestampToDt();
@@ -132,23 +142,34 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 		$expected = $this->createExpectedPageChangeEvent(
 			$wikiPage0,
 			$dt,
-			[ 'weighted_tags' => [ 'set' => [ 'prefix-0' => [ 'tag-a' => 1 ] ] ] ],
+			$eventAttrs,
 		);
 
 		$actual = $this->weightedTagSerializer->toSetEvent(
 			$wikiPage0,
-			[ 'prefix-0' => [ 'tag-a' => 1 ] ],
+			$eventAttrs['weighted_tags']['set'],
+			$eventAttrs['rev_based'] ?? null,
 			$dt
 		);
 
 		$this->assertEventEquals( $expected, $actual );
 	}
 
+	public static function getClearEventData(): array {
+		return [
+			[ [ 'weighted_tags' => [ 'clear' => [ 'prefix-0' ] ] ] ],
+			[ [ 'weighted_tags' => [ 'clear' => [ 'prefix-0', 'prefix-1' ] ], 'rev_based' => true ] ],
+			[ [ 'weighted_tags' => [ 'clear' => [ 'prefix-0', 'prefix-1' ] ], 'rev_based' => false ] ],
+		];
+	}
+
 	/**
 	 * @covers ::toSetEvent
 	 * @covers ::toArray
+	 * @param array $eventAttrs
+	 * @dataProvider getClearEventData
 	 */
-	public function testClearEvent() {
+	public function testClearEvent( array $eventAttrs ) {
 		$wikiPage0 = $this->getExistingTestPage( Title::newFromText( 'MyPageToEdit', $this->getDefaultWikitextNS() ) );
 
 		$dt = EventSerializer::timestampToDt();
@@ -156,12 +177,13 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 		$expected = $this->createExpectedPageChangeEvent(
 			$wikiPage0,
 			$dt,
-			[ 'weighted_tags' => [ 'clear' => [ 'prefix-0', 'prefix-1' ] ] ],
+			$eventAttrs,
 		);
 
 		$actual = $this->weightedTagSerializer->toClearEvent(
 			$wikiPage0,
-			[ 'prefix-0', 'prefix-1' ],
+			$eventAttrs['weighted_tags']['clear'],
+			$eventAttrs['rev_based'] ?? null,
 			$dt
 		);
 

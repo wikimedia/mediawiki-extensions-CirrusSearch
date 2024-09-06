@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\Searcher;
+use CirrusSearch\Util;
 use File;
 use LogicException;
 use MediaWiki\MediaWikiServices;
@@ -14,6 +16,11 @@ use SearchResultTrait;
  */
 abstract class CirrusSearchResult extends SearchResult {
 	use SearchResultTrait;
+
+	/**
+	 * @var string Counter title for identified missing revisions
+	 */
+	private const MISSING_REVISION_TOTAL = 'missing_revision_total';
 
 	/**
 	 * @var Title
@@ -71,7 +78,29 @@ abstract class CirrusSearchResult extends SearchResult {
 		if ( isset( $wgCirrusSearchDevelOptions['ignore_missing_rev'] ) ) {
 			return false;
 		}
-		return !$this->getTitle()->isKnown();
+		if ( !$this->getTitle()->isKnown() ) {
+			$this->increment( self::MISSING_REVISION_TOTAL, 'title' );
+			return true;
+		}
+		// Similarly if we matched due to a redirect
+		if ( $this->getRedirectTitle() && !$this->getRedirectTitle()->isKnown() ) {
+			// There may be other reasons this result matched, for now keep it in the results
+			// but clear the redirect.
+			$redirectIsOnlyMatch = $this->clearRedirectTitle();
+			$this->increment(
+				self::MISSING_REVISION_TOTAL,
+				$redirectIsOnlyMatch ? 'only_redirect' : 'redirect'
+			);
+		}
+
+		return false;
+	}
+
+	private function increment( string $counter, string $problem ) {
+		Util::getStatsFactory()
+			->getCounter( $counter )
+			->setLabel( 'problem', $problem )
+			->increment();
 	}
 
 	/**
@@ -104,6 +133,14 @@ abstract class CirrusSearchResult extends SearchResult {
 	}
 
 	/**
+	 * @param string $text A snippet from the search highlighter
+	 * @return bool True when the string contains highlight markers
+	 */
+	protected function containsHighlight( string $text ): bool {
+		return strpos( $text, Searcher::HIGHLIGHT_PRE ) !== false;
+	}
+
+	/**
 	 * @return string
 	 */
 	abstract public function getDocId();
@@ -117,4 +154,12 @@ abstract class CirrusSearchResult extends SearchResult {
 	 * @return array|null
 	 */
 	abstract public function getExplanation();
+
+	/**
+	 * Clear any redirect match so it won't be part of the result.
+	 *
+	 * @return bool True if the redirect was the only snippet available
+	 *  for this result.
+	 */
+	abstract protected function clearRedirectTitle(): bool;
 }

@@ -103,6 +103,20 @@ class ArrayCirrusSearchResult extends CirrusSearchResult {
 	/**
 	 * @inheritDoc
 	 */
+	protected function clearRedirectTitle(): bool {
+		unset(
+			$this->data[self::REDIRECT_SNIPPET],
+			$this->data[self::REDIRECT_SNIPPET_FIELD] );
+
+		return !$this->containsHighlight( $this->getTextSnippet() )
+			&& $this->getTitleSnippet() === ''
+			&& $this->getSectionSnippet() === ''
+			&& $this->getCategorySnippet() === '';
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public function getRedirectTitle() {
 		return $this->data[self::REDIRECT_TITLE] ?? null;
 	}

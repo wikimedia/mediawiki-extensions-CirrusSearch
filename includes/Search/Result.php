@@ -170,6 +170,16 @@ class Result extends CirrusSearchResult {
 		return $this->redirectTitle;
 	}
 
+	protected function clearRedirectTitle(): bool {
+		$this->redirectTitle = null;
+		$this->redirectSnippet = '';
+
+		return !$this->containsHighlight( $this->textSnippet )
+			&& $this->titleSnippet === ''
+			&& $this->sectionSnippet === ''
+			&& $this->categorySnippet === '';
+	}
+
 	/**
 	 * @return string
 	 */

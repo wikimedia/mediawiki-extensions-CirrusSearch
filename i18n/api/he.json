@@ -28,5 +28,5 @@
 	"apierror-compsuggestbuilddoc-bad-method": "שיטת דירוג בלתי־ידועה",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "היטל של המסמך שבשימוש מציע ההשלמות",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "קבלת היטל של המסמך שבשימוש מציע ההשלמות",
-	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "יש לספק שם של שיטת ניקוד שישמש את מציע ההשלמה"
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "יש לספק שם של שיטת דירוג שישמש את מציע ההשלמה"
 }

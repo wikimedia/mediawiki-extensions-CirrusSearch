@@ -86,13 +86,9 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		$engine->activateTest( $status );
 	}
 
-	/**
-	 * @param string $maintClass
-	 * @param string|null $classFile
-	 * @return \Maintenance
-	 */
-	public function runChild( $maintClass, $classFile = null ) {
-		$child = parent::runChild( $maintClass, $classFile );
+	/** @inheritDoc */
+	public function createChild( string $maintClass, ?string $classFile = null ): \Maintenance {
+		$child = parent::createChild( $maintClass, $classFile );
 		if ( $child instanceof self ) {
 			$child->searchConfig = $this->searchConfig;
 		}

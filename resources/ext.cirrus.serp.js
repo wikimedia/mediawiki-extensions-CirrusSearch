@@ -3,11 +3,11 @@ $( () => {
 
 	// Always clean up the address bar, even (and especially) if the feature is disabled.
 	try {
-		const uri = new mw.Uri( location.href );
-		if ( uri.query.searchToken ) {
-			delete uri.query.searchToken;
+		const url = new URL( location.href );
+		if ( url.searchParams.get( 'searchToken' ) ) {
+			url.searchParams.remove( 'searchToken' );
 			router.navigateTo( document.title, {
-				path: uri.toString(),
+				path: url.toString(),
 				useReplaceState: true
 			} );
 		}
@@ -40,10 +40,13 @@ $( () => {
 	 */
 	function handlePossiblyNavigatingClick() {
 		try {
-			const clickUri = new mw.Uri( location.href );
-			clickUri.query.searchToken = mw.config.get( 'wgCirrusSearchRequestSetToken' );
+			const clickUrl = new URL( location.href );
+			clickUrl.searchParams.set(
+				'searchToken',
+				mw.config.get( 'wgCirrusSearchRequestSetToken' )
+			);
 			router.navigateTo( document.title, {
-				path: clickUri.toString(),
+				path: clickUrl.toString(),
 				useReplaceState: true
 			} );
 		} catch ( e ) {

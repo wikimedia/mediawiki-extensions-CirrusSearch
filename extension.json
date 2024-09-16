@@ -75,7 +75,7 @@
 			"dependencies": [
 				"mediawiki.router",
 				"mediawiki.util",
-				"mediawiki.Uri"
+				"web2017-polyfills"
 			],
 			"styles": [],
 			"messages": []

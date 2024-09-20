@@ -157,7 +157,8 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "sinhala_norm"
             ],
             "filter": [
                 "icu_token_repair",
@@ -175,7 +176,8 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "sinhala_norm"
             ],
             "filter": [
                 "icu_token_repair",
@@ -323,6 +325,13 @@
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
             "replacement": "$1 $2"
         },
+        "sinhala_norm": {
+            "type": "mapping",
+            "mappings": [
+                "\u0dd8\u0dd8=>\u0df2",
+                "\u0dd9\u0dd9=>\u0ddb"
+            ]
+        },
         "word_break_helper": {
             "type": "limited_mapping",
             "mappings": [
@@ -364,7 +373,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00d1\u00f1\u1714]"
+            "unicodeSetFilter": "[^\u0dca\u0dda\u0ddd]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

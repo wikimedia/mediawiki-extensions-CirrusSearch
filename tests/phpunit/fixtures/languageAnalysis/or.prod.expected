@@ -157,7 +157,8 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "odia_norm"
             ],
             "filter": [
                 "icu_token_repair",
@@ -175,7 +176,8 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "odia_norm"
             ],
             "filter": [
                 "icu_token_repair",
@@ -313,6 +315,14 @@
                 "\\u202F=>\\u0020"
             ]
         },
+        "odia_norm": {
+            "type": "mapping",
+            "mappings": [
+                "\u0b56\u0b47=>\u0b48",
+                "\u0b3e\u0b47=>\u0b4b",
+                "\u0b57\u0b47=>\u0b4c"
+            ]
+        },
         "regex_acronym_fixer": {
             "type": "pattern_replace",
             "pattern": "(?<=(?:^|\\P{L})\\p{L})[.\uff0e](\\p{L})(?=\\P{L}|$)",
@@ -364,7 +374,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00d1\u00f1\u1714]"
+            "unicodeSetFilter": "[^\u0b4d]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

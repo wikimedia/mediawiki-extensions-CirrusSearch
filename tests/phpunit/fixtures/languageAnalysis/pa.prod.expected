@@ -363,8 +363,7 @@
             "preserve_original": true
         },
         "icu_folding": {
-            "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00d1\u00f1\u1714]"
+            "type": "icu_folding"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

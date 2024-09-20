@@ -462,10 +462,8 @@ class AnalysisConfigBuilder {
 			return $this->config->get( 'CirrusSearchICUNormalizationUnicodeSetFilter' );
 		}
 		switch ( $language ) {
-			/* For German (de), see T281379
-			 */
 			case 'de':
-				return '[^ẞß]'; // Capital ẞ is lowercased to ß by german_charfilter
+				return '[^ẞß]'; // T281379 Capital ẞ is lowercased to ß by german_charfilter
 								// lowercase ß is normalized to ss by german_normalization
 			default:
 				return null;
@@ -844,9 +842,12 @@ class AnalysisConfigBuilder {
 		$myAnalyzerBuilder = new AnalyzerBuilder( $langName, $icuEnabled );
 
 		switch ( $langName ) {
-			// Please add languages in alphabetical order.
+			//////////////////////////
+			// Groups of languages with similar builds (modulo config & variables set
+			// elsewhere--e.g., $languagesWithIcuFolding, $icuSetFilters and
+			// GlobalCustomFilter constraints)--arranged thematically.
 
-			// usual unpacked languages
+			// standard unpacked languages
 			case 'basque':     // Unpack Basque analyzer T283366
 			case 'czech':      // Unpack Czech analyzer T284578
 			case 'danish':     // Unpack Danish analyzer T283366
@@ -863,8 +864,8 @@ class AnalysisConfigBuilder {
 					build( $config );
 				break;
 
-			// usual unpacked languages, that also allow asciifolding
-			// when icu_folding is not available
+			// unpacked languages that also allow asciifolding when icu_folding is not
+			// available
 			case 'brazilian':  // Unpack Brazilian analyzer T325092
 			case 'bulgarian':  // Unpack Bulgarian analyzer T325090
 				$config = $myAnalyzerBuilder->
@@ -875,11 +876,31 @@ class AnalysisConfigBuilder {
 
 			// largely uncustomized, except for asciifolding / icu_folding
 			// i.e., these have no Latin icu_folding exceptions (or no exceptions at all)
+			case 'assamese':
+			case 'burmese':
 			case 'georgian':
+			case 'kannada':
+			case 'nepali':
+			case 'punjabi':
 			case 'swahili':
 			case 'tamil':
+			case 'telugu':
 			case 'uzbek':
 				$config = $myAnalyzerBuilder->
+					withFilters( [ 'lowercase', 'asciifolding' ] )->
+					build( $config );
+				break;
+
+			// languages with a normalization char filter (see $langNormCharMap), plus
+			// asciifolding / icu_folding
+			case 'gujarati':
+			case 'marathi':
+			case 'malayalam':
+			case 'odia':
+			case 'sinhala':
+				$config = $myAnalyzerBuilder->
+					withCharMap( $this->langNormCharMap[$language], "{$langName}_norm" )->
+					withCharFilters( [ "{$langName}_norm" ] )->
 					withFilters( [ 'lowercase', 'asciifolding' ] )->
 					build( $config );
 				break;
@@ -895,12 +916,15 @@ class AnalysisConfigBuilder {
 					build( $config );
 				break;
 
-			// customized languages
+			//////////////////////////
+			// Customized languages / language families in alphabetical order (plus a few
+			// sets of closely related languages with very similar configs)
 			case 'arabic':
 			case 'arabic-egyptian':
 			case 'arabic-moroccan':
 				// Unpack Arabic analyzer T294147
-				$arBuilder = $myAnalyzerBuilder->withLangName( 'arabic' )->
+				$arBuilder = $myAnalyzerBuilder->
+					withLangName( 'arabic' )->
 					withUnpackedAnalyzer()->
 					withDecimalDigit()->
 					withAsciifolding()->
@@ -924,6 +948,7 @@ class AnalysisConfigBuilder {
 				break;
 			case 'azerbaijani':
 			case 'crimean-tatar':
+				// Not a language family
 				// Turkic languages that use I/ı & İ/i, so need Turkish lowercasing
 				$config = $myAnalyzerBuilder->
 					withFilters( [ 'lowercase', 'icu_folding' ] )->
@@ -993,7 +1018,8 @@ class AnalysisConfigBuilder {
 				// icu_tokenizer also has a few bad side effects, so don't use it for cjk.
 				// Default cjk stop words are almost the same as _english_ (add s & t; drop
 				// an). Stop words are searchable via 'plain' anyway, so just use _english_
-				$config = $myAnalyzerBuilder->withLangName( 'cjk' )->
+				$config = $myAnalyzerBuilder->
+					withLangName( 'cjk' )->
 					withUnpackedAnalyzer()->
 					withLimitedCharMap( $dakutenMap )->
 					withTokenizer( self::STANDARD_TOKENIZER_ONLY )->
@@ -1046,7 +1072,7 @@ class AnalysisConfigBuilder {
 					build( $config );
 				break;
 			case 'gagauz':
-				// Turkic languages that use I/ı & İ/i, so need Turkish lowercasing
+				// Uses I/ı & İ/i, so needs Turkish lowercasing
 				// Also use Şş & Ţţ (cedilla), sometimes confused with Şș & Țț (comma)
 				$cedillaMap = [
 					'ș=>ş', 's\u0326=>ş', 's\u0327=>ş', 'ț=>ţ', 't\u0326=>ţ', 't\u0327=>ţ',
@@ -1100,7 +1126,8 @@ class AnalysisConfigBuilder {
 			case 'indonesian':
 			case 'malay':
 				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T196780
-				$config = $myAnalyzerBuilder->withLangName( 'indonesian' )->
+				$config = $myAnalyzerBuilder->
+					withLangName( 'indonesian' )->
 					withUnpackedAnalyzer()->
 					withAsciifolding()->
 					build( $config );
@@ -1148,6 +1175,7 @@ class AnalysisConfigBuilder {
 				break;
 			case 'kazakh':
 			case 'tatar':
+				// Not a language family
 				// Turkic languages that use I/ı & İ/i, so need Turkish lowercasing
 				// Also use Şş (cedilla), sometimes confused with Şș (comma)
 				$cedillaMap = [
@@ -1394,7 +1422,8 @@ class AnalysisConfigBuilder {
 				}
 
 				// add in the rest of the bits that are always needed, and build
-				$config = $myAnalyzerBuilder->withCharMap( $thCharMap )->
+				$config = $myAnalyzerBuilder->
+					withCharMap( $thCharMap )->
 					withDecimalDigit()->
 					omitStemmer()->
 					withAsciifolding()->
@@ -1429,7 +1458,8 @@ class AnalysisConfigBuilder {
 				// lowercase input (usually proper names)
 				$ukFilters = [ 'lowercase', 'ukrainian_stop', 'ukrainian_stemmer',
 							   'lowercase', 'remove_duplicates', 'asciifolding' ];
-				$config = $myAnalyzerBuilder->withLangName( 'ukrainian' )->
+				$config = $myAnalyzerBuilder->
+					withLangName( 'ukrainian' )->
 					withLimitedCharMap( $ukCharMap )->
 					withCharFilters( [ 'ukrainian_charfilter' ] )->
 					withFilters( $ukFilters )->
@@ -1685,11 +1715,13 @@ class AnalysisConfigBuilder {
 		'ary' => 'arabic-moroccan',
 		'arz' => 'arabic-egyptian',
 		'hy' => 'armenian',
+		'as' => 'assamese',
 		'az' => 'azerbaijani',
 		'eu' => 'basque',
 		'bn' => 'bengali',
 		'pt-br' => 'brazilian',
 		'bg' => 'bulgarian',
+		'my' => 'burmese',
 		'ca' => 'catalan',
 		'crh' => 'crimean-tatar',
 		'ja' => 'cjk',
@@ -1709,24 +1741,32 @@ class AnalysisConfigBuilder {
 		'ka' => 'georgian',
 		'de' => 'german',
 		'el' => 'greek',
+		'gu' => 'gujarati',
 		'hi' => 'hindi',
 		'hu' => 'hungarian',
 		'id' => 'indonesian',
 		'ig' => 'igbo',
 		'ga' => 'irish',
 		'it' => 'italian',
+		'kn' => 'kannada',
 		'kk' => 'kazakh',
 		'lt' => 'lithuanian',
 		'lv' => 'latvian',
 		'ms' => 'malay',
+		'ml' => 'malayalam',
+		'mr' => 'marathi',
 		'mwl' => 'mirandese',
+		'ne' => 'nepali',
 		'nb' => 'norwegian',
 		'nn' => 'norwegian',
 		'no' => 'norwegian',
+		'or' => 'odia',
 		'fa' => 'persian',
 		'pt' => 'portuguese',
+		'pa' => 'punjabi',
 		'ro' => 'romanian',
 		'ru' => 'russian',
+		'si' => 'sinhala',
 		'sl' => 'slovene',
 		'ckb' => 'sorani',
 		'es' => 'spanish',
@@ -1735,6 +1775,7 @@ class AnalysisConfigBuilder {
 		'tl' => 'tagalog',
 		'ta' => 'tamil',
 		'tt' => 'tatar',
+		'te' => 'telugu',
 		'tr' => 'turkish',
 		'th' => 'thai',
 		'uz' => 'uzbek',
@@ -1749,6 +1790,7 @@ class AnalysisConfigBuilder {
 		'ar' => true,
 		'ary' => true,
 		'arz' => true,
+		'as' => true,
 		'az' => true,
 		'bg' => true,
 		'bn' => true,
@@ -1774,6 +1816,7 @@ class AnalysisConfigBuilder {
 		'ga' => true,
 		'gag' => true,
 		'gl' => true,
+		'gu' => true,
 		'he' => true,
 		'hi' => true,
 		'hr' => true,
@@ -1786,21 +1829,29 @@ class AnalysisConfigBuilder {
 		'ka' => true,
 		'kk' => true,
 		'km' => true,
+		'kn' => true,
 		'ko' => true,
 		'lt' => true,
 		'lv' => true,
-		'mwl' => true,
+		'ml' => true,
+		'mr' => true,
 		'ms' => true,
+		'mwl' => true,
+		'my' => true,
 		'nb' => true,
+		'ne' => true,
 		'nl' => true,
 		'nn' => true,
 		'no' => true,
+		'or' => true,
+		'pa' => true,
 		'pl' => true,
 		'pt' => true,
 		'pt-br' => true,
 		'ro' => true,
 		'ru' => true,
 		'sh' => true,
+		'si' => true,
 		'sk' => true,
 		'sl' => true,
 		'sq' => true,
@@ -1808,6 +1859,7 @@ class AnalysisConfigBuilder {
 		'sv' => true,
 		'sw' => true,
 		'ta' => true,
+		'te' => true,
 		'th' => true,
 		'tl' => true,
 		'tr' => true,
@@ -1815,6 +1867,17 @@ class AnalysisConfigBuilder {
 		'uz' => true,
 		'vi' => true,
 		'zh' => true,
+	];
+
+	/**
+	 * @var array[] indexed by language code, char filter normalization mappings
+	 */
+	private $langNormCharMap = [
+		'gu' => [ 'ાૅ=>ૉ', 'ાે=>ો', 'ાૈ=>ૌ' ], // T332342
+		'mr' => [ 'र्‍=>ऱ्', 'ऱ=>ऱ' ], // T332342
+		'ml' => [ 'ൌ=>ൗ', 'ൎ=>ർ', '഻=>്', '്഼=>്', '്്=>്', '഼=>്' ], // T332342
+		'or' => [ 'ୖେ=>ୈ', 'ାେ=>ୋ', 'ୗେ=>ୌ' ], // T332342
+		'si' => [ 'ෘෘ=>ෲ', 'ෙෙ=>ෛ' ], // T332342
 	];
 
 	/**
@@ -1829,13 +1892,14 @@ class AnalysisConfigBuilder {
 		 *   However, combining characters (such as for Thai (th)) are \u encoded to
 		 *   prevent problems with display or editing
 		 *
-		 * Languages that have the same exceptions because * they are related (e.g., sr,
+		 * Languages that have the same exceptions because they are related (e.g., sr,
 		 *   bs, hr, sh) are listed by the primary language, with the others below and
 		 *   half indented.
 		 *
 		 * (I and i aren't strictly necessary but they keep the Turkic upper/lower pairs
 		 *   Iı & İi together and makes it clear both are intended.)
 		 */
+		'as' => '[^্]', // T332342
 		'az' => '[^ÇçƏəĞğIıİiÖöŞşÜü]', // T332342
 		'bg' => '[^Йй]', // T325090
 		'crh' => '[^ЁёЙйÇçĞğIıİiÑñÖöŞşÜü]', // T332342
@@ -1849,6 +1913,7 @@ class AnalysisConfigBuilder {
 		'fi' => '[^ÅåÄäÖö]', // T284578
 		'gag' => '[^ÄäÇçÊêIıİiÖöŞşŢţÜü]', // T332342
 		'gl' => '[^Ññ]', // T284578
+		'gu' => '[^્]', // T332342
 		'ig' => '[^ỊịṄṅỌọỤụ]', // T332342
 		'hu' => '[^ÁáÉéÍíÓóÖöŐőÚúÜüŰű]', // T325089
 		'ja' => '[^が-ヾ]', // T326822
@@ -1861,17 +1926,24 @@ class AnalysisConfigBuilder {
 			// Combining symbols of all kinds are crucial to not fold. Omiting symbols
 			// the tokenizer currently deletes. Leaving Khmer numbers out, because if
 			// khmer_numbers were ever disabled, we'd still want number normalization.
+		'kn' => '[^್]', // T332342
 		'kk' => '[^ҒғЁёЙйҚқҢңҰұÄäĞğIıİiÑñÖöŞşŪūÜü]', // T332342
 		'lt' => '[^ĄąČčĘęĖėĮįŠšŲųŪūŽž]', // T325090
 		'lv' => '[^ĀāČčĒēĢģĪīĶķĻļŅņŠšŪūŽž]', // T325089
+		'ml' => '[^്ിുൃൢെൊാീൂൄൣേോൈ]', // T332342
+		'mr' => '[^𑘿्ऱ]', // T332342
 		'mwl' => '[^Çç]', // T332342
+		'my' => '[^\u102b-\u1032\u1036-\u103a\u103d\u1056\u1057]', // T332342
+		'ne' => '[^्]', // T332342
 		'no' => '[^ÆæØøÅå]',
 		  'nb' => '[^ÆæØøÅå]', // T289612
 		  'nn' => '[^ÆæØøÅå]', // T289612
+		'or' => '[^୍]', // T332342
 		'pl' => '[^ĄąĆćĘęŁłŃńÓóŚśŹźŻż]', // T332342
 		'ro' => '[^ĂăÂâÎîȘșȚțŞşŢţ]', // T325091
 			// including s&t with cedilla because we (have to) use it internally T330893
 		'ru' => '[^Йй]',
+		'si' => '[^්ේෝ]', // T332342
 		'sl' => '[^ČčŠšŽžĆćĐđ]', // T332342
 		'sq' => '[^ÇçËë]', // T332342
 		'sr' => '[^ĐđŽžĆćŠšČč]', // T183015
@@ -1880,8 +1952,9 @@ class AnalysisConfigBuilder {
 		  'sh' => '[^ĐđŽžĆćŠšČč]', // T192395
 		'sv' => '[^ÅåÄäÖö]', // T160562
 		'ta' => '[^்]', // T332342
+		'te' => '[^్]', // T332342
 		'th' => '[^\u0E47-\u0E4E]', // T294147
-		'tl' => '[^Ññ ᜔]', // T332342
+		'tl' => '[^Ññ᜔]', // T332342
 		'tr' => '[^ÇçĞğIıİiÖöŞşÜü]', // T329762
 		'tt' => '[^ЁёҖҗЙйҢңÄäÇçĞğIıİiÑñÖöŞşÜü]', // T332342
 		'uz' => '[^ЁёЙйЎўҚқҒғҲҳ]', // T332342

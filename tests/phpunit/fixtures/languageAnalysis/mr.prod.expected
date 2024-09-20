@@ -157,7 +157,8 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "marathi_norm"
             ],
             "filter": [
                 "icu_token_repair",
@@ -175,7 +176,8 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "marathi_norm"
             ],
             "filter": [
                 "icu_token_repair",
@@ -297,6 +299,13 @@
                 "\\u05D9\\u05B7\\u05D9=>\\u05D9\\u05D9\\u05B7"
             ]
         },
+        "marathi_norm": {
+            "type": "mapping",
+            "mappings": [
+                "\u0930\u094d\u200d=>\u0931\u094d",
+                "\u0930\u093c=>\u0931"
+            ]
+        },
         "near_space_flattener": {
             "type": "limited_mapping",
             "mappings": [
@@ -364,7 +373,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00d1\u00f1\u1714]"
+            "unicodeSetFilter": "[^\ud805\ude3f\u094d\u0931]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

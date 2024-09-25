@@ -3,6 +3,7 @@
 		"authors": [
 			"Fitoschido",
 			"Jmarchn",
+			"Lluis Cat",
 			"QuimGil",
 			"Toniher",
 			"Vriullop"
@@ -14,8 +15,8 @@
 	"cirrussearch-too-busy-error": "El servei de cerca està actualment saturat. Intenteu-ho més tard.",
 	"cirrussearch-regex-syntax-error": "Error de sintexi d'expressió regular a $2: $1",
 	"cirrussearch-regex-too-busy-error": "Hi ha massa cerques d'expressions regulars actualment en curs. Intenteu-ho més tard.",
-	"cirrussearch-regex-too-complex-error": "L'expressió regular és massa complexa. Vegeu com simplificar-la [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|aquí]].",
-	"cirrussearch-now-using": "Aquest wiki està utilitzant un nou cercador. ([[mw:Special:MyLanguage/Help:CirrusSearch|Més informació]])",
+	"cirrussearch-regex-too-complex-error": "L'expressió regular és massa complexa. Vegeu com simplificar-la [https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch/RegexTooComplex aquí].",
+	"cirrussearch-now-using": "Aquest wiki està utilitzant un nou motor de cerca. ([https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch Més informació])",
 	"cirrussearch-boost-templates": " #<!-- deixeu aquesta línia exactament com està --> <pre>\n# Si una pàgina conté una d'aquestes plantilla llavors la seva puntuació de cerca es multiplica pel percentatge indicat.\n# Els canvis tenen efecte immediatament.\n# La sintasi és la següent:\n#   * Tot el que hi ha des d'un caràcter \"#\" fins al final és un comentari.\n#   * Cada línia no buida és el nom de la plantilla a promoure, de forma exacta i completa amb el seu espai de noms i les majúscules i minúscules, seguit d'un caràcter \"|\", més un número i un caràcter \"%\".\n# Exemples de línies correctes:\n# Plantilla:Bo|150%\n# Plantilla:Molt Molt bo|300%\n# Plantilla:Dolent|50%\n# Exemples de línies no vàlides:\n# Plantilla:Daixonses|150.234234% # no es permeten punts ni comes decimals!\n# Daixonses|150% # tècnicament funcionarà, però per les inclusions de la pàgina Daixonses de l'espai principal\n# Podeu provar els canvis de configuració fent una consulta amb el prefix boost-templates:\"XX\" on XX és el conjunt de plantilles que voleu promoure separades per espais en lloc de salts de línia.\n# Les consultes que especifiquin boost-templates:\"XX\" ignoren el contingut d'aquest camp.\n #</pre> <!-- deixeu aquesta línia exactament com està -->",
 	"cirrussearch-pref-label": "Nou cercador",
 	"cirrussearch-pref-desc": "Proveu el nostre cercador nou que suporta un nombre de llengües més gran, proporciona resultats més actualitzats i fins i tot pot trobar text dins de plantilles.",

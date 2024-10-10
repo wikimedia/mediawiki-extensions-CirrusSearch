@@ -45,7 +45,7 @@ class ConfigUtils {
 	}
 
 	public function checkElasticsearchVersion(): Status {
-		$this->outputIndented( 'Fetching Elasticsearch version...' );
+		$this->outputIndented( 'Fetching OpenSearch version...' );
 		$response = $this->client->request( '' );
 		if ( !$response->isOK() ) {
 			return Status::newFatal( "Cannot fetch elasticsearch version: "
@@ -55,11 +55,12 @@ class ConfigUtils {
 		if ( !isset( $result['version']['number'] ) ) {
 			return Status::newFatal( 'unable to determine, aborting.' );
 		}
+		$dist = $result['version']['distribution'] ?? 'elasticsearch';
 		$result = $result[ 'version' ][ 'number' ];
-		$this->output( "$result..." );
-		if ( strpos( $result, '7.10' ) !== 0 ) {
+		$this->output( "$dist $result..." );
+		if ( $dist != 'opensearch' && strpos( $result, '1.3' ) !== 0 ) {
 			$this->output( "Not supported!\n" );
-			return Status::newFatal( "Only Elasticsearch 7.10.x is supported.  Your version: $result." );
+			return Status::newFatal( "Only OpenSearch 1.3.x is supported.  Your version: $dist $result." );
 		} else {
 			$this->output( "ok\n" );
 		}

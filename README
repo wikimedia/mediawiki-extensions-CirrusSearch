@@ -3,10 +3,8 @@ MediaWiki extension: CirrusSearch
 
 Installation
 ------------
-Get Elasticsearch up and running somewhere. Only Elasticsearch v7.10 is
-supported. A compatability layer for writing to Elasticsearch v6.8 is provided
-to support zero-downtime migrations when multiple clusters are available. If you
-will be running Elasticsearch on a host separate from the mediawiki
+Get OpenSearch up and running somewhere. Only OpenSearch v1.3 is
+supported. If you will be running OpenSearch on a host separate from the mediawiki
 installation see
 https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html.
 Be careful with the network configuration, never expose an unprotected node to
@@ -19,21 +17,21 @@ Add this to LocalSettings.php:
  wfLoadExtension( 'CirrusSearch' );
  $wgDisableSearchUpdate = true;
 
-Configure your search servers in LocalSettings.php if you aren't running Elasticsearch on localhost:
- $wgCirrusSearchServers = [ 'elasticsearch0', 'elasticsearch1', 'elasticsearch2', 'elasticsearch3' ];
+Configure your search servers in LocalSettings.php if you aren't running OpenSearch on localhost:
+ $wgCirrusSearchServers = [ 'opensearch0', 'opensearch1', 'opensearch2', 'opensearch3' ];
 There are other $wgCirrusSearch variables that you might want to change from their defaults.
 
-Now run this script to generate your elasticsearch index:
+Now run this script to generate your opensearch index:
  php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php
 
-Now remove $wgDisableSearchUpdate = true from LocalSettings.php.  Updates should start heading to Elasticsearch.
+Now remove $wgDisableSearchUpdate = true from LocalSettings.php.  Updates should start heading to OpenSearch.
 
 Next bootstrap the search index by running:
  php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipLinks --indexOnSkip
  php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipParse
 Note that this can take some time.  For large wikis read "Bootstrapping large wikis" below.
 
-Once that is complete add this to LocalSettings.php to funnel queries to ElasticSearch:
+Once that is complete add this to LocalSettings.php to funnel queries to OpenSearch:
  $wgSearchType = 'CirrusSearch';
 
 Bootstrapping large wikis
@@ -81,18 +79,18 @@ In bash I do this:
  popd
 
 Step 4:
-Same as step 2 but for the new scripts.  These scripts put more load on Elasticsearch so you might want to run
-them just one at a time if you don't have a huge Elasticsearch cluster or you want to make sure not to cause load
+Same as step 2 but for the new scripts.  These scripts put more load on OpenSearch so you might want to run
+them just one at a time if you don't have a huge OpenSearch cluster or you want to make sure not to cause load
 spikes.
 
 If you don't have a good job queue you can try the above but lower the buildChunks parameter significantly and
 remove the --queue parameter.
 
-Handling elasticsearch outages
+Handling opensearch outages
 ------------------------------
-If for some reason in process updates to elasticsearch begin failing you can immediately
+If for some reason in process updates to opensearch begin failing you can immediately
 set "$wgDisableSearchUpdate = true;" in your LocalSettings.php file to
-stop trying to update elasticsearch.  Once you figure out what is wrong with elasticsearch you
+stop trying to update opensearch.  Once you figure out what is wrong with opensearch you
 should turn those updates back on and then run the following:
 php ./maintenance/ForceSearchIndex.php --from <whenever the outage started in ISO 8601 format> --deletes
 php ./maintenance/ForceSearchIndex.php --from <whenever the outage started in ISO 8601 format>
@@ -114,7 +112,7 @@ For achieving this you have two options:
 PoolCounter
 -----------
 CirrusSearch can leverage the PoolCounter extension to limit the number of concurrent searches to
-elasticsearch.  You can do this by installing the PoolCounter extension and then configuring it in
+opensearch.  You can do this by installing the PoolCounter extension and then configuring it in
 LocalSettings.php like so:
  wfLoadExtension( 'PoolCounter');
  // Configuration for standard searches.
@@ -160,7 +158,7 @@ When you upgrade there four possible cases for maintaining the index:
 
 If you must do (1) you have two options:
 A.  Blow away the search index and rebuild it from scratch.  Marginally faster and uses less disk space on
-in elasticsearch but empties the index entirely and rebuilds it so search will be down for a while:
+in opensearch but empties the index entirely and rebuilds it so search will be down for a while:
  php updateSearchIndexConfig.php --startOver
  php forceSearchIndex.php
 
@@ -191,22 +189,22 @@ The safest thing if you don't know what is required for your update is to execut
 Production suggestions
 ----------------------
 
-Elasticsearch
+OpenSearch
 
-All the general rules for making Elasticsearch production ready apply here.  So you don't have to go
+All the general rules for making OpenSearch production ready apply here.  So you don't have to go
 round them up below is a list.  Some of these steps are obvious, others will take some research.
 
 ** NOTE: this list was written for 0.90 so it may not work well for 1.0.  It'll be revised when I have
 more experience with 1.0.  --Nik
 
 1.  Have >= 3 nodes.
-2.  Configure Elasticsearch for memlock.
-3.  Change each node's elasticsearch.yml file in a few ways.
+2.  Configure OpenSearch for memlock.
+3.  Change each node's opensearch.yml file in a few ways.
 3a.  Change node name to the real host name.
 3b.  Turn off auto creation and some other scary stuff by adding this (tested with 0.90.4):
  ################################### Actions #################################
  ## Modulo some small changes to comments this section comes directly from the
- ## wonderful Elasticsearch mailing list, specifically Dan Everton.
+ ## wonderful OpenSearch mailing list, specifically Dan Everton.
  ##
  # Require explicit index creation.  ES never auto creates the indexes the way we
  # like them.
@@ -236,7 +234,7 @@ Job Queue
 Cirrus makes heavy use of the job queue.  You can run it without any job queue customization but
 if you switch the job queue to Redis with checkDelay enabled then Cirrus's results will be more
 correct.  The reason for this is that this configuration allows Cirrus to delay link counts
-until Elasticsearch has appropriately refreshed.  This is an example of configuring it:
+until OpenSearch has appropriately refreshed.  This is an example of configuring it:
  $redisPassword = '<password goes here>';
  $wgJobTypeConf['default'] = [
 	'class' => 'JobQueueRedis',
@@ -271,6 +269,6 @@ See docs/hooks.txt.
 
 Licensing information
 ---------------------
-CirrusSearch makes use of the Elastica extension containing the Elastica library to connect
-to Elasticsearch <http://elastica.io/>. It is Apache licensed and you can read the license
+CirrusSearch makes use of the Elastica extension containing the opensearch-dsl-php library to connect
+to OpenSearch <http://elastica.io/>. It is Apache licensed and you can read the license
 Elastica/LICENSE.txt.

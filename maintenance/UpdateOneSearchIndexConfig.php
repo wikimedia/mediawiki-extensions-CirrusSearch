@@ -427,7 +427,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$connection = $this->getConnection();
 
 		$fieldsToCleanup = array_filter( explode( ',', $this->getOption( 'fieldsToDelete', '' ) ) );
-		$fieldsToCleanup += $this->getSearchConfig()->get( "CirrusSearchIndexFieldsToCleanup" );
+		$fieldsToCleanup = array_merge( $fieldsToCleanup, $this->getSearchConfig()->get( "CirrusSearchIndexFieldsToCleanup" ) );
 		$reindexer = new Reindexer(
 			$this->getSearchConfig(),
 			$connection,

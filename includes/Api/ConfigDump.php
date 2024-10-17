@@ -35,7 +35,6 @@ class ConfigDump extends ApiBase {
 	/** @var string[] */
 	public static $PUBLICLY_SHAREABLE_CONFIG_VARS = [
 		'CirrusSearchDisableUpdate',
-		'CirrusSearchServers',
 		'CirrusSearchConnectionAttempts',
 		'CirrusSearchSlowSearch',
 		'CirrusSearchUseExperimentalHighlighter',
@@ -105,7 +104,6 @@ class ConfigDump extends ApiBase {
 		'CirrusSearchFiletypeAliases',
 		'CirrusSearchDefaultCluster',
 		'CirrusSearchClientSideConnectTimeout',
-		'CirrusSearchClusters',
 		'CirrusSearchReplicaGroup',
 		'CirrusSearchExtraBackendLatency',
 		'CirrusSearchAllowLeadingWildcard',

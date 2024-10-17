@@ -343,10 +343,10 @@ class Hooks implements
 	 * @param string $term
 	 */
 	public function onSpecialSearchResultsAppend( $specialSearch, $out, $term ) {
-		global $wgCirrusSearchFeedbackLink;
+		$feedbackLink = $out->getConfig()->get( 'CirrusSearchFeedbackLink' );
 
-		if ( $wgCirrusSearchFeedbackLink ) {
-			self::addSearchFeedbackLink( $wgCirrusSearchFeedbackLink, $specialSearch, $out );
+		if ( $feedbackLink ) {
+			self::addSearchFeedbackLink( $feedbackLink, $specialSearch, $out );
 		}
 
 		// Embed metrics if this was a Cirrus page
@@ -479,10 +479,8 @@ class Hooks implements
 	 * @param Config $config
 	 */
 	public function onResourceLoaderGetConfigVars( array &$vars, $skin, Config $config ): void {
-		global $wgCirrusSearchFeedbackLink;
-
 		$vars += [
-			'wgCirrusSearchFeedbackLink' => $wgCirrusSearchFeedbackLink,
+			'wgCirrusSearchFeedbackLink' => $config->get( 'CirrusSearchFeedbackLink' ),
 		];
 	}
 

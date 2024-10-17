@@ -9,6 +9,7 @@ use CirrusSearch\Searcher;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use Wikimedia\Stats\Metrics\CounterMetric;
+use Wikimedia\Stats\Metrics\NullMetric;
 use Wikimedia\Stats\StatsFactory;
 use WikiPage;
 
@@ -190,7 +191,10 @@ class Checker {
 		return $nbPagesFixed;
 	}
 
-	private function getCounter( string $action, string $problem = "n/a" ): CounterMetric {
+	/**
+	 * @return CounterMetric|NullMetric
+	 */
+	private function getCounter( string $action, string $problem = "n/a" ) {
 		$cluster = $this->connection->getClusterName();
 		return $this->statsFactory->getCounter( "sanitization_total" )
 			->setLabel( "problem", $problem )

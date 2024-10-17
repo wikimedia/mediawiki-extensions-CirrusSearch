@@ -261,7 +261,6 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 				$tagPrefix,
 				$tagWeights
 			) {
-				$tagWeights = ( $tagWeights === null ) ? null : [ $docId => $tagWeights ];
 				return Job\ElasticaWrite::build(
 					$cluster,
 					UpdateGroup::WEIGHTED_TAGS,
@@ -269,7 +268,7 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 					[
 						$indexSuffix,
 						$tagPrefix,
-						$tagWeights
+						[ $docId => $tagWeights ]
 					],
 				);
 			} );

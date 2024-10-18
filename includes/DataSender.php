@@ -189,12 +189,6 @@ class DataSender extends ElasticsearchIntermediary {
 						'exception' => $exception,
 						'weightedTagFieldName' => WeightedTagsHooks::FIELD_NAME,
 						'weightedTagPrefix' => $tagPrefix,
-						'weightedTagNames' => implode(
-							'|',
-							array_reduce( $tagWeights, static function ( $tagNames, $docTagWeights ) {
-								return array_unique( array_merge( $tagNames, array_keys( $docTagWeights ) ) );
-							} )
-						),
 						'weightedTagWeight' => var_export( $tagWeights, true ),
 						'docIds' => implode( ',', array_keys( $tagWeights ) )
 					]

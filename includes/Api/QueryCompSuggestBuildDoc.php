@@ -2,11 +2,11 @@
 
 namespace CirrusSearch\Api;
 
-use ApiQuery;
-use ApiQueryBase;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use Elastica\Document;
 use InvalidArgumentException;
+use MediaWiki\Api\ApiQuery;
+use MediaWiki\Api\ApiQueryBase;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class QueryCompSuggestBuildDoc extends ApiQueryBase {

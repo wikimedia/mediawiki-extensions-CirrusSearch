@@ -4,8 +4,9 @@ namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\HashSearchConfig;
-use ContentHandler;
 use Elastica\Document;
+use MediaWiki\Content\ContentHandler;
+use MediaWiki\Content\WikitextContent;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
@@ -155,7 +156,7 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 		$revision = $this->createMock( RevisionRecord::class );
 		$revision->method( 'getId' )
 			->willReturn( 12 );
-		$revision->method( 'getContent' )->willReturn( new \WikitextContent( 'TEST_CONTENT' ) );
+		$revision->method( 'getContent' )->willReturn( new WikitextContent( 'TEST_CONTENT' ) );
 		$page->method( 'getRevisionRecord' )
 			->willReturn( $revision );
 

@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Maintenance;
 
+use MediaWiki\Json\FormatJson;
+
 /**
  * Filter unused and duplicate entries from elasticsearch index configuration
  */
@@ -160,7 +162,7 @@ class AnalysisFilter {
 		$keysByContent = [];
 		foreach ( $input as $k => $v ) {
 			$sorted = $this->recursiveKsort( $v );
-			$content = \FormatJson::encode( $sorted );
+			$content = FormatJson::encode( $sorted );
 			$keysByContent[$content][] = $k;
 		}
 		$aliases = [];

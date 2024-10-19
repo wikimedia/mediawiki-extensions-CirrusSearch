@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Api;
 
+use MediaWiki\Api\ApiBase;
 use MediaWiki\WikiMap\WikiMap;
 
 /**
@@ -22,7 +23,7 @@ use MediaWiki\WikiMap\WikiMap;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class SuggestIndex extends \ApiBase {
+class SuggestIndex extends ApiBase {
 	use ApiTrait;
 
 	public function execute() {

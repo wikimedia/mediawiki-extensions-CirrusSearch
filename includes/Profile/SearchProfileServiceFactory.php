@@ -2,14 +2,14 @@
 
 namespace CirrusSearch\Profile;
 
-use BagOStuff;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\SearchConfig;
-use ExtensionRegistry;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Request\WebRequest;
 use MediaWiki\User\Options\UserOptionsLookup;
 use MediaWiki\User\UserIdentity;
+use Wikimedia\ObjectCache\BagOStuff;
 
 /**
  * Default factory to build and prepare search profiles.

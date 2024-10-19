@@ -12,9 +12,14 @@ use CirrusSearch\Search\TitleHelper;
 use MediaWiki\Config\Config;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Interwiki\InterwikiLookup;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\StaticUserOptionsLookup;
 use MediaWiki\User\Options\UserOptionsLookup;
+use Wikimedia\Http\MultiHttpClient;
+use Wikimedia\ObjectCache\BagOStuff;
+use Wikimedia\ObjectCache\HashBagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 trait CirrusTestCaseTrait {
 	/** @var string */
@@ -224,7 +229,7 @@ trait CirrusTestCaseTrait {
 			public function getFactory( SearchConfig $config ): SearchProfileServiceFactory {
 				return new SearchProfileServiceFactory( $this->testCase->getInterWikiResolver( $config ),
 					$config, $this->testCase->localServerCacheForProfileService(),
-					$this->cirrusHookRunner, $this->userOptionsLookup, new \ExtensionRegistry()
+					$this->cirrusHookRunner, $this->userOptionsLookup, new ExtensionRegistry()
 				);
 			}
 		};
@@ -321,12 +326,12 @@ trait CirrusTestCaseTrait {
 	}
 
 	public function newManualInterwikiResolver( SearchConfig $config ): InterwikiResolver {
-		return new CirrusConfigInterwikiResolver( $config, $this->createNoOpMock( \MultiHttpClient::class ),
-			\WANObjectCache::newEmpty(), $this->createMock( InterwikiLookup::class ) );
+		return new CirrusConfigInterwikiResolver( $config, $this->createNoOpMock( MultiHttpClient::class ),
+			WANObjectCache::newEmpty(), $this->createMock( InterwikiLookup::class ) );
 	}
 
-	public function localServerCacheForProfileService(): \BagOStuff {
-		$bagOSTuff = new \HashBagOStuff();
+	public function localServerCacheForProfileService(): BagOStuff {
+		$bagOSTuff = new HashBagOStuff();
 		$bagOSTuff->set(
 			$bagOSTuff->makeKey( PhraseSuggesterProfileRepoWrapper::CIRRUSSEARCH_DIDYOUMEAN_SETTINGS ),
 			[]

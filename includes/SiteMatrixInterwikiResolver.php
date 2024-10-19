@@ -2,12 +2,12 @@
 
 namespace CirrusSearch;
 
-use ExtensionRegistry;
 use MediaWiki\Extension\SiteMatrix\SiteMatrix;
 use MediaWiki\Interwiki\InterwikiLookup;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\WikiMap\WikiMap;
-use MultiHttpClient;
-use WANObjectCache;
+use Wikimedia\Http\MultiHttpClient;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * InterwikiResolver suited for WMF context and uses SiteMatrix.

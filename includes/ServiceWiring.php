@@ -19,6 +19,7 @@ use MediaWiki\Extension\EventBus\Serializers\EventSerializer;
 use MediaWiki\Extension\EventBus\Serializers\MediaWiki\PageEntitySerializer;
 use MediaWiki\Http\Telemetry;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Sparql\SparqlClient;
 
 // PHP unit does not understand code coverage for this file

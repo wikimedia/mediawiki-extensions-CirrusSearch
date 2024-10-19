@@ -4,8 +4,8 @@ namespace CirrusSearch;
 
 use MediaWiki\Interwiki\InterwikiLookup;
 use MediaWiki\Logger\LoggerFactory;
-use MultiHttpClient;
-use WANObjectCache;
+use Wikimedia\Http\MultiHttpClient;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * Base InterwikiResolver class.

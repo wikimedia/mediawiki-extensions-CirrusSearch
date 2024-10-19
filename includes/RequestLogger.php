@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use ISearchResultSet;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\User\User;
@@ -344,7 +345,7 @@ class RequestLogger {
 					// guarantee about always returning a string, and
 					// faithfully represents the variety of shapes request
 					// parameters can be parsed into.
-					$v = \FormatJson::encode( $v );
+					$v = FormatJson::encode( $v );
 				}
 				$k = $webrequest->normalizeUnicode( $k );
 				$requestEvent['params'][(string)$k] = (string)$v;

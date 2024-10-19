@@ -6,6 +6,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\UserTestingEngine;
+use MediaWiki\Maintenance\Maintenance as MWMaintenance;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Settings\SettingsBuilder;
 use MediaWiki\Status\Status;
@@ -32,7 +33,7 @@ require_once __DIR__ . '/Printer.php';
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-abstract class Maintenance extends \Maintenance implements Printer {
+abstract class Maintenance extends MWMaintenance implements Printer {
 	/**
 	 * @var string The string to indent output with
 	 */
@@ -87,7 +88,7 @@ abstract class Maintenance extends \Maintenance implements Printer {
 	}
 
 	/** @inheritDoc */
-	public function createChild( string $maintClass, ?string $classFile = null ): \Maintenance {
+	public function createChild( string $maintClass, ?string $classFile = null ): MWMaintenance {
 		$child = parent::createChild( $maintClass, $classFile );
 		if ( $child instanceof self ) {
 			$child->searchConfig = $this->searchConfig;

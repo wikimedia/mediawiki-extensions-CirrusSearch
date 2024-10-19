@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use Language;
+use MediaWiki\Language\Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusTestCase;
+use MediaWiki\Registration\ExtensionRegistry;
 
 /**
  * @covers \CirrusSearch\Profile\ExtensionRegistryProfileRepository
@@ -10,7 +11,7 @@ use CirrusSearch\CirrusTestCase;
 class ExtensionRegistryProfileRepositoryTest extends CirrusTestCase {
 
 	public function test() {
-		$registry = new \ExtensionRegistry();
+		$registry = new ExtensionRegistry();
 		$profiles = [
 			'prof1' => [],
 			'prof2' => [],

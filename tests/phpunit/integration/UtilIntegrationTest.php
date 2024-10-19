@@ -3,11 +3,13 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
-use Language;
 use MediaWiki\Config\Config;
+use MediaWiki\Language\Language;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\WikiMap\WikiMap;
+use Wikimedia\ObjectCache\HashBagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 use Wikimedia\TestingAccessWrapper;
 
 /**
@@ -16,17 +18,17 @@ use Wikimedia\TestingAccessWrapper;
 class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	/**
 	 * Create test local cache
-	 * @return \WANObjectCache
+	 * @return WANObjectCache
 	 */
 	private function makeLocalCache() {
 		$this->overrideConfigValues( [
 			MainConfigNames::MainCacheType => 'UtilTest',
-			MainConfigNames::ObjectCaches => [ 'UtilTest' => [ 'class' => \HashBagOStuff::class ] ],
+			MainConfigNames::ObjectCaches => [ 'UtilTest' => [ 'class' => HashBagOStuff::class ] ],
 		] );
 		$services = MediaWikiServices::getInstance();
 		$services->resetServiceForTesting( 'MainWANObjectCache' );
 		$services->redefineService( 'MainWANObjectCache', static function () {
-			return new \WANObjectCache( [ 'cache' => new \HashBagOStuff() ] );
+			return new WANObjectCache( [ 'cache' => new HashBagOStuff() ] );
 		} );
 
 		return $services->getMainWANObjectCache();
@@ -34,10 +36,10 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * Put data for a wiki into test cache.
-	 * @param \WANObjectCache $cache
+	 * @param WANObjectCache $cache
 	 * @param string $wiki
 	 */
-	private function putDataIntoCache( \WANObjectCache $cache, $wiki ) {
+	private function putDataIntoCache( WANObjectCache $cache, $wiki ) {
 		$key = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $wiki );
 		$cache->set( $key, [ "Data for $wiki" => 2 ] );
 	}

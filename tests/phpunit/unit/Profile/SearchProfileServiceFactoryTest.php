@@ -6,12 +6,14 @@ use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolverFactory;
-use EmptyBagOStuff;
 use MediaWiki\Interwiki\NullInterwikiLookup;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\User\Options\StaticUserOptionsLookup;
 use MediaWiki\User\User;
 use MediaWiki\User\UserIdentityValue;
+use Wikimedia\ObjectCache\EmptyBagOStuff;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * @group CirrusSearch
@@ -207,9 +209,9 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 		$config = new HashSearchConfig( $hostWikiConfig );
 		$httpClient = new \NullMultiHttpClient( [] );
 		$interWikiLookup = new NullInterwikiLookup();
-		$registry = new \ExtensionRegistry();
+		$registry = new ExtensionRegistry();
 
-		$resolver = InterwikiResolverFactory::build( $config, \WANObjectCache::newEmpty(),
+		$resolver = InterwikiResolverFactory::build( $config, WANObjectCache::newEmpty(),
 			$interWikiLookup, $registry, $httpClient );
 
 		return new SearchProfileServiceFactory( $resolver, $config, new EmptyBagOStuff(),

@@ -4,8 +4,9 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
-use ExtensionRegistry;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MainConfigSchema;
+use MediaWiki\Registration\ExtensionRegistry;
 
 /**
  * @covers \CirrusSearch\Maintenance\MappingConfigBuilder
@@ -55,7 +56,7 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 		$builder = new $buildClass( true, 0, $config, $this->createCirrusSearchHookRunner() );
 		$flags = 0;
 		$mapping = $builder->buildConfig( $flags );
-		$mappingJson = \FormatJson::encode( $mapping, true );
+		$mappingJson = FormatJson::encode( $mapping, true );
 
 		$this->assertFileContains(
 			CirrusIntegrationTestCase::fixturePath( $expectedFile ),

@@ -2,13 +2,13 @@
 
 namespace CirrusSearch;
 
-use ApiBase;
-use ApiMain;
-use ApiOpenSearch;
 use CirrusSearch\Search\FancyTitleResultsType;
 use HtmlArmor;
 use ISearchResultSet;
 use MediaWiki\Actions\ActionEntryPoint;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Api\ApiOpenSearch;
 use MediaWiki\Api\Hook\APIAfterExecuteHook;
 use MediaWiki\Api\Hook\APIQuerySiteInfoStatisticsInfoHook;
 use MediaWiki\Config\Config;

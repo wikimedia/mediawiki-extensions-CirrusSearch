@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Api;
 
-use ApiBase;
 use CirrusSearch\Connection;
 use CirrusSearch\Sanity\BufferedRemediator;
 use CirrusSearch\Sanity\Checker;
@@ -11,6 +10,7 @@ use CirrusSearch\Sanity\Remediator;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use CirrusSearch\Util;
+use MediaWiki\Api\ApiBase;
 use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\ParamValidator\ParamValidator;
 use WikiMedia\ParamValidator\TypeDef\IntegerDef;

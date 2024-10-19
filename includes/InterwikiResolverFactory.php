@@ -2,10 +2,10 @@
 
 namespace CirrusSearch;
 
-use ExtensionRegistry;
 use MediaWiki\Interwiki\InterwikiLookup;
-use MultiHttpClient;
-use WANObjectCache;
+use MediaWiki\Registration\ExtensionRegistry;
+use Wikimedia\Http\MultiHttpClient;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * Factory class used to create InterwikiResolver

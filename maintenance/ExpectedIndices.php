@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\WikiMap\WikiMap;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
@@ -38,7 +39,7 @@ class ExpectedIndices extends Maintenance {
 	public function execute() {
 		$clusters = $this->requestedClusters(
 			$this->getOption( 'cluster', null ) );
-		echo \FormatJson::encode( [
+		echo FormatJson::encode( [
 			'dbname' => WikiMap::getCurrentWikiId(),
 			'clusters' => $this->clusterInfo( $clusters ),
 		], !$this->getOption( 'oneline' ) ), "\n";

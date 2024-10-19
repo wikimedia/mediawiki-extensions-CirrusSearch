@@ -4,7 +4,7 @@ namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
-use ExtensionRegistry;
+use MediaWiki\Registration\ExtensionRegistry;
 
 /**
  * @group CirrusSearch

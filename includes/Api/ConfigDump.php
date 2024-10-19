@@ -2,11 +2,11 @@
 
 namespace CirrusSearch\Api;
 
-use ApiBase;
-use ApiResult;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\UserTestingEngine;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiResult;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
 

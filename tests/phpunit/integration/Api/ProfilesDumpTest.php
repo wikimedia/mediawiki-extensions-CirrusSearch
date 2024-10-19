@@ -2,6 +2,7 @@
 
 use CirrusSearch\Api\ProfilesDump;
 use CirrusSearch\Profile\StaticProfileOverride;
+use MediaWiki\Api\ApiMain;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Request\FauxRequest;
 

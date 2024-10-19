@@ -4,6 +4,7 @@ namespace CirrusSearch\Api;
 
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
+use MediaWiki\Api\ApiBase;
 
 /**
  * Dumps CirrusSearch mappings for easy viewing.
@@ -23,7 +24,7 @@ use CirrusSearch\SearchConfig;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class MappingDump extends \ApiBase {
+class MappingDump extends ApiBase {
 	use ApiTrait;
 
 	public function execute() {

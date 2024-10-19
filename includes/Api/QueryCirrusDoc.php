@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Api;
 
+use MediaWiki\Api\ApiQuery;
+use MediaWiki\Api\ApiQueryBase;
 use MediaWiki\Page\PageIdentity;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -33,10 +35,10 @@ use Wikimedia\ParamValidator\ParamValidator;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class QueryCirrusDoc extends \ApiQueryBase {
+class QueryCirrusDoc extends ApiQueryBase {
 	use ApiTrait;
 
-	public function __construct( \ApiQuery $query, $moduleName ) {
+	public function __construct( ApiQuery $query, $moduleName ) {
 		parent::__construct( $query, $moduleName, 'cd' );
 	}
 

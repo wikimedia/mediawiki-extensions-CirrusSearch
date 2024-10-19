@@ -2,9 +2,10 @@
 
 namespace CirrusSearch\Api;
 
-use ApiMain;
 use CirrusSearch\Profile\SearchProfileOverride;
 use CirrusSearch\Profile\SearchProfileService;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiMain;
 use Wikimedia\ParamValidator\ParamValidator;
 
 /**
@@ -25,7 +26,7 @@ use Wikimedia\ParamValidator\ParamValidator;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class ProfilesDump extends \ApiBase {
+class ProfilesDump extends ApiBase {
 	use ApiTrait;
 
 	/** @var SearchProfileService */

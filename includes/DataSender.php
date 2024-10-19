@@ -15,12 +15,12 @@ use Elastica\Exception\Bulk\ResponseException;
 use Elastica\Exception\RuntimeException;
 use Elastica\JSON;
 use Elastica\Response;
-use IDBAccessObject;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use Wikimedia\Assert\Assert;
+use Wikimedia\Rdbms\IDBAccessObject;
 use Wikimedia\Stats\StatsFactory;
 
 /**

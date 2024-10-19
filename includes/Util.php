@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Language\Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
@@ -416,10 +417,10 @@ class Util {
 	 * all methods will apply something similar to near space flattener.
 	 * @param string $namespace name of the namespace to identify
 	 * @param string $method either naive or utr30
-	 * @param \Language|null $language
+	 * @param Language|null $language
 	 * @return bool|int
 	 */
-	public static function identifyNamespace( $namespace, $method = 'naive', \Language $language = null ) {
+	public static function identifyNamespace( $namespace, $method = 'naive', Language $language = null ) {
 		static $naive = null;
 		static $utr30 = null;
 

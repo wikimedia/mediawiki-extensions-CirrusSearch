@@ -7,6 +7,7 @@ use Elastica\Index;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Ids;
 use Elastica\Query\MatchQuery;
+use MediaWiki\Language\Language;
 use MediaWiki\WikiMap\WikiMap;
 
 class MetaNamespaceStore implements MetaStore {
@@ -53,9 +54,9 @@ class MetaNamespaceStore implements MetaStore {
 	/**
 	 * Delete and re-index all namespaces for current wiki
 	 *
-	 * @param \Language $lang Content language of the wiki
+	 * @param Language $lang Content language of the wiki
 	 */
-	public function reindex( \Language $lang ) {
+	public function reindex( Language $lang ) {
 		$documents = $this->buildDocuments( $lang );
 		$docIds = [];
 		foreach ( $documents as $doc ) {
@@ -91,7 +92,7 @@ class MetaNamespaceStore implements MetaStore {
 			->addFilter( new MatchQuery( 'wiki', $this->wikiId ) );
 	}
 
-	private function buildDocuments( \Language $lang ) {
+	private function buildDocuments( Language $lang ) {
 		$namesByNsId = [];
 		foreach ( $lang->getNamespaceIds() as $name => $nsId ) {
 			if ( $name ) {

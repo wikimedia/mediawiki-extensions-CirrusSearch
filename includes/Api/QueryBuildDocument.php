@@ -2,13 +2,15 @@
 
 namespace CirrusSearch\Api;
 
-use ApiBase;
 use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiQuery;
+use MediaWiki\Api\ApiQueryBase;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -30,10 +32,10 @@ use Wikimedia\ParamValidator\ParamValidator;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class QueryBuildDocument extends \ApiQueryBase {
+class QueryBuildDocument extends ApiQueryBase {
 	use ApiTrait;
 
-	public function __construct( \ApiQuery $query, $moduleName ) {
+	public function __construct( ApiQuery $query, $moduleName ) {
 		parent::__construct( $query, $moduleName, 'cb' );
 	}
 

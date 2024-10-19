@@ -2,12 +2,12 @@
 
 namespace CirrusSearch\Api;
 
-use ApiMain;
-use ApiUsageException;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\CheckerException;
 use CirrusSearch\Sanity\Remediator;
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;

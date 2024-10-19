@@ -13,8 +13,10 @@ use LogicException;
 use MediaWiki\Config\SiteConfiguration;
 use MediaWiki\Interwiki\InterwikiLookup;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 use MockHttpTrait;
-use MultiHttpClient;
+use Wikimedia\Http\MultiHttpClient;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 /**
  * @group CirrusSearch
@@ -317,7 +319,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		}
 
 		$apiResponse = CirrusIntegrationTestCase::loadFixture( $fixtureFile );
-		$client = $this->createMock( \MultiHttpClient::class );
+		$client = $this->createMock( MultiHttpClient::class );
 		$client->method( 'runMulti' )
 			->willReturn( $apiResponse );
 		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [], [], $client );
@@ -373,10 +375,10 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		// We need to reset this service so it can load wgInterwikiCache
 		$config = new HashSearchConfig( $myGlobals, [ HashSearchConfig::FLAG_INHERIT ] );
 		$resolver = InterwikiResolverFactory::build(
-			$config, $this->createNoOpMock( \WANObjectCache::class ),
+			$config, $this->createNoOpMock( WANObjectCache::class ),
 			$this->createNoOpMock( InterwikiLookup::class ),
-			$this->createNoOpMock( \ExtensionRegistry::class ),
-			$this->createNoOpMock( \MultiHttpClient::class )
+			$this->createNoOpMock( ExtensionRegistry::class ),
+			$this->createNoOpMock( MultiHttpClient::class )
 		);
 		$this->assertEquals( CirrusConfigInterwikiResolver::class, get_class( $resolver ) );
 		return $resolver;
@@ -386,11 +388,11 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	 * @param string $wikiId
 	 * @param array $blockList
 	 * @param array $overrides
-	 * @param \MultiHttpClient|null $client
+	 * @param MultiHttpClient|null $client
 	 * @return InterwikiResolver
 	 */
 	private function getSiteMatrixInterwikiResolver( $wikiId, array $blockList,
-		array $overrides, \MultiHttpClient $client = null ) {
+		array $overrides, MultiHttpClient $client = null ) {
 		$conf = new SiteConfiguration;
 		$conf->settings = include __DIR__ . '/../resources/wmf/SiteMatrix_SiteConf_IS.php';
 		$conf->suffixes = include __DIR__ . '/../resources/wmf/suffixes.php';
@@ -433,7 +435,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			->resetServiceForTesting( 'InterwikiLookup' );
 		$iwLookup = MediaWikiServices::getInstance()->getInterwikiLookup();
 		$config = new HashSearchConfig( [ '_wikiID' => $wikiId ], [ HashSearchConfig::FLAG_INHERIT ] );
-		$wanCache = \WANObjectCache::newEmpty();
+		$wanCache = WANObjectCache::newEmpty();
 
 		$resolver = InterwikiResolverFactory::build(
 			$config,
@@ -456,7 +458,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		$config = new HashSearchConfig( [ '_wikiID' => 'dummy' ] );
 		$resolver = InterwikiResolverFactory::build(
 			$config,
-			\WANObjectCache::newEmpty(),
+			WANObjectCache::newEmpty(),
 			MediaWikiServices::getInstance()->getInterwikiLookup(),
 			MediaWikiServices::getInstance()->getExtensionRegistry(),
 			$this->createNoOpMock( MultiHttpClient::class )
@@ -480,7 +482,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		// use a proxy from vagrant e.g. webproxy on WMF infra by opening
 		// a ssh tunnel e.g.:
 		// ssh -L10.11.12.1:8765:webproxy.eqiad.wmnet:8080 XYZ.eqiad.wmnet
-		$client = new \MultiHttpClient( [ 'proxy' => '10.11.12.1:8765' ] );
+		$client = new MultiHttpClient( [ 'proxy' => '10.11.12.1:8765' ] );
 		return $client->runMulti( $reqs );
 	}
 
@@ -549,7 +551,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 				]
 			]
 		];
-		$client = new \MultiHttpClient( [ 'proxy' => '10.11.12.1:8765' ] );
+		$client = new MultiHttpClient( [ 'proxy' => '10.11.12.1:8765' ] );
 		return $client->runMulti( $reqs );
 	}
 

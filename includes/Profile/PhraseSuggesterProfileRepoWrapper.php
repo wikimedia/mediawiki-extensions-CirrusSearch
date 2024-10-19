@@ -2,9 +2,9 @@
 
 namespace CirrusSearch\Profile;
 
-use BagOStuff;
 use CirrusSearch\Util;
 use MediaWiki\Config\Config;
+use Wikimedia\ObjectCache\BagOStuff;
 
 /**
  * Wrapper to augment the phrase suggester profile settings

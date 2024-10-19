@@ -6,12 +6,12 @@ use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusIndexField;
+use MediaWiki\Content\TextContent;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
-use TextContent;
 use Wikimedia\Assert\Assert;
 use WikiPage;
 

@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Profile;
 
-use ExtensionRegistry;
+use MediaWiki\Registration\ExtensionRegistry;
 
 class ExtensionRegistryProfileRepository implements SearchProfileRepository {
 	private string $type;

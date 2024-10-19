@@ -8,7 +8,6 @@ use CirrusSearch\Iterator\CallbackIterator;
 use CirrusSearch\Job;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Updater;
-use IDBAccessObject;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
@@ -17,6 +16,7 @@ use MediaWiki\WikiMap\WikiMap;
 use Throwable;
 use UnexpectedValueException;
 use Wikimedia\Rdbms\IDatabase;
+use Wikimedia\Rdbms\IDBAccessObject;
 use WikiPage;
 
 /**

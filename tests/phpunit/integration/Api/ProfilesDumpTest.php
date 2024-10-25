@@ -16,7 +16,7 @@ class ProfilesDumpTest extends \CirrusSearch\CirrusIntegrationTestCase {
 		$context->setRequest( $request );
 		$main = new ApiMain( $context );
 
-		$api = new ProfilesDump( $main, 'name', '', $this->getService() );
+		$api = new ProfilesDump( $main, 'name', $this->getService() );
 		$api->execute();
 		$this->assertEquals( [ 'profile3', 'profile4' ],
 			$api->getResult()->getResultData( [ 'profiles', 'my_type1', 'repositories', 'my_repo2' ] ) );
@@ -47,7 +47,7 @@ class ProfilesDumpTest extends \CirrusSearch\CirrusIntegrationTestCase {
 		$context = new RequestContext();
 		$context->setRequest( $request );
 		$main = new ApiMain( $context );
-		$api = new ProfilesDump( $main, 'name', '', $this->getService() );
+		$api = new ProfilesDump( $main, 'name', $this->getService() );
 		$api->execute();
 		$this->assertEquals( [ 'profile1' => [ '1' => '2' ], 'profile2' => [ '2' => '3' ] ],
 		$api->getResult()->getResultData( [ 'profiles', 'my_type1', 'repositories', 'my_repo1' ] ) );

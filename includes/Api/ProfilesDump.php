@@ -29,17 +29,10 @@ use Wikimedia\ParamValidator\ParamValidator;
 class ProfilesDump extends ApiBase {
 	use ApiTrait;
 
-	/** @var SearchProfileService */
-	private $service;
+	private SearchProfileService $service;
 
-	/**
-	 * @param ApiMain $mainModule
-	 * @param string $moduleName
-	 * @param string $modulePrefix
-	 * @param SearchProfileService|null $service
-	 */
-	public function __construct( ApiMain $mainModule, $moduleName, $modulePrefix = '', SearchProfileService $service = null ) {
-		parent::__construct( $mainModule, $moduleName, $modulePrefix );
+	public function __construct( ApiMain $mainModule, string $moduleName, SearchProfileService $service = null ) {
+		parent::__construct( $mainModule, $moduleName );
 		$this->service = $service ?: $this->getSearchConfig()->getProfileService();
 	}
 

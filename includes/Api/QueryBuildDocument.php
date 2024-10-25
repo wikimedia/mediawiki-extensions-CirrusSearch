@@ -35,7 +35,7 @@ use Wikimedia\ParamValidator\ParamValidator;
 class QueryBuildDocument extends ApiQueryBase {
 	use ApiTrait;
 
-	public function __construct( ApiQuery $query, $moduleName ) {
+	public function __construct( ApiQuery $query, string $moduleName ) {
 		parent::__construct( $query, $moduleName, 'cb' );
 	}
 

@@ -412,7 +412,8 @@ class DataSender extends ElasticsearchIntermediary {
 			$this->stats->getCounter( "update_total" )
 				->setLabel( "status", $what )
 				->setLabel( "search_cluster", $cluster )
-				->setLabel( "index_name", $indexSuffix )
+				->setLabel( "index_name", $this->indexBaseName )
+				->setLabel( "index_suffix", $indexSuffix )
 				->copyToStatsdAt( [
 					"$metricsPrefix.details.{$this->indexBaseName}.$indexSuffix.$what",
 					"$metricsPrefix.all.$what"

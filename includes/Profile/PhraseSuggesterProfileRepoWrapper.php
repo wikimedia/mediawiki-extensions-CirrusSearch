@@ -179,14 +179,12 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 		}
 
 		// Apply smoothing model options, if none provided we'll use elasticsearch defaults
-		if ( isset( $settings['smoothing_model']['laplace'] ) &&
-			 isset( $laplaceAlpha ) ) {
+		if ( isset( $settings['smoothing_model']['laplace'] ) && $laplaceAlpha !== null ) {
 			$settings['smoothing_model']['laplace'] = [
 				'alpha' => $laplaceAlpha
 			];
 		}
-		if ( isset( $settings['smoothing_model']['stupid_backoff'] ) &&
-			 isset( $stupidBackoffDiscount ) ) {
+		if ( isset( $settings['smoothing_model']['stupid_backoff'] ) && $stupidBackoffDiscount !== null ) {
 			$settings['smoothing_model']['stupid_backoff'] = [
 				'discount' => $stupidBackoffDiscount
 			];

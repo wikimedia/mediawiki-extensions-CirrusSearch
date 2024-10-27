@@ -24,7 +24,7 @@ class MultiListWeightedTag extends MultiListItem {
 	}
 
 	public function __toString(): string {
-		return parent::__toString() . ( isset( $this->weight ) ? self::WEIGHT_DELIMITER . $this->weight : '' );
+		return parent::__toString() . ( $this->weight !== null ? self::WEIGHT_DELIMITER . $this->weight : '' );
 	}
 
 	public function getWeight(): ?int {

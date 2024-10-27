@@ -609,7 +609,7 @@ class AnalyzerBuilder {
 	 */
 	public static function stopFilterFromList( $stopwords, bool $ignoreCase = null ): array {
 		$retArray = [ 'type' => 'stop', 'stopwords' => $stopwords ];
-		if ( isset( $ignoreCase ) ) {
+		if ( $ignoreCase !== null ) {
 			$retArray['ignore_case'] = $ignoreCase;
 		}
 		return $retArray;

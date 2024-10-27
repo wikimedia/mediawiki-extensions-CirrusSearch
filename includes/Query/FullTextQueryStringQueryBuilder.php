@@ -340,7 +340,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( $this->getMultiTermRewriteMethod() );
 		$states = $this->config->get( 'CirrusSearchQueryStringMaxDeterminizedStates' );
-		if ( isset( $states ) ) {
+		if ( $states !== null ) {
 			$query->setParam( 'max_determinized_states', $states );
 		}
 		return $query;

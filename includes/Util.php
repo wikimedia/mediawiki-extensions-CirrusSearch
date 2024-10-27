@@ -211,7 +211,7 @@ class Util {
 	public static function overrideNumeric( &$dest, $request, $name, $limit = null, $upperLimit = true ) {
 		$val = $request->getVal( $name );
 		if ( $val !== null && is_numeric( $val ) ) {
-			if ( !isset( $limit ) ) {
+			if ( $limit === null ) {
 				$dest = $val;
 			} elseif ( $upperLimit && $val <= $limit ) {
 				$dest = $val;

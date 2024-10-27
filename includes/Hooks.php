@@ -317,7 +317,7 @@ class Hooks implements
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_word_length'],
 			$request, 'cirrusMltMaxWordLength' );
 		$fields = $request->getVal( 'cirrusMltFields' );
-		if ( isset( $fields ) ) {
+		if ( $fields !== null ) {
 			$wgCirrusSearchMoreLikeThisFields = array_intersect(
 				array_map( 'trim', explode( ',', $fields ) ),
 				$wgCirrusSearchMoreLikeThisAllowedFields );

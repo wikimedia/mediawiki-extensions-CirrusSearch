@@ -179,6 +179,9 @@ class DumpIndex extends Maintenance {
 					break;
 				}
 			}
+			if ( $limit > 0 && $docsDumped > $limit ) {
+				break;
+			}
 			$this->outputProgress( $docsDumped, $totalDocsToDump );
 		}
 		$this->output( "Dump done ($docsDumped docs).\n" );

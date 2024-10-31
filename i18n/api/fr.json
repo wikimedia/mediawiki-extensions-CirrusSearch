@@ -3,6 +3,7 @@
 		"authors": [
 			"Alien333",
 			"Gomoko",
+			"Mahabarata",
 			"Orlodrim",
 			"Urhixidur",
 			"Verdy p",
@@ -33,6 +34,9 @@
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Vidage du document utilisé par l’outil de suggestion de complétude",
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "Obtenir un vidage du document utilisé par l’outil de suggestion de complétude",
 	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Fournir un nom de méthode d’évaluation à utiliser par l’outil de suggestion de complétude",
+	"apihelp-cirrus-check-sanity-summary": "Rapporte l'exactitude d'une plage d'identifiants de page dans l'index de recherche",
+	"apihelp-cirrus-check-sanity-example": "Obtenir un rapport sur l'exactitude d'une plage d'identifiants de page dans l'index de recherche",
+	"apihelp-cirrus-check-sanity-param-cluster": "Le cluster de recherche pour vérifier les indices dans",
 	"apihelp-cirrus-check-sanity-param-from": "Id de page où commencer la vérification",
 	"apihelp-cirrus-check-sanity-param-limit": "Le nombre d'ids de page à vérifier",
 	"apihelp-cirrus-check-sanity-param-sequenceid": "Le nombre de fois que cet ensemble d'ids de pages ont étés vérifiés",

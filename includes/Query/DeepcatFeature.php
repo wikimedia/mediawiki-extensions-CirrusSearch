@@ -59,7 +59,7 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	 * @param Config $config
 	 * @param SparqlClient|null $client
 	 */
-	public function __construct( Config $config, SparqlClient $client = null ) {
+	public function __construct( Config $config, ?SparqlClient $client = null ) {
 		$this->depth = (int)$config->get( 'CirrusSearchCategoryDepth' );
 		$this->limit = (int)$config->get( 'CirrusSearchCategoryMax' );
 		$endpoint = $config->get( 'CirrusSearchCategoryEndpoint' );

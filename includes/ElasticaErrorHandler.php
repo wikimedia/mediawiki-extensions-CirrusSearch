@@ -123,7 +123,7 @@ class ElasticaErrorHandler {
 	 * @param \Elastica\Exception\ExceptionInterface|null $exception
 	 * @return string Either 'rejected', 'failed' or 'unknown'
 	 */
-	public static function classifyError( \Elastica\Exception\ExceptionInterface $exception = null ) {
+	public static function classifyError( ?\Elastica\Exception\ExceptionInterface $exception = null ) {
 		if ( $exception === null ) {
 			return 'unknown';
 		}
@@ -225,7 +225,7 @@ class ElasticaErrorHandler {
 	 * @param \Elastica\Exception\ExceptionInterface|null $exception
 	 * @return array Two elements, first is Status object, second is string.
 	 */
-	public static function extractMessageAndStatus( \Elastica\Exception\ExceptionInterface $exception = null ) {
+	public static function extractMessageAndStatus( ?\Elastica\Exception\ExceptionInterface $exception = null ) {
 		if ( !$exception ) {
 			return [ Status::newFatal( 'cirrussearch-backend-error' ), '' ];
 		}

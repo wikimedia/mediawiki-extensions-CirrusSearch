@@ -137,7 +137,7 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 	 * @param AbstractQuery|null $mainHLQuery
 	 * @return array
 	 */
-	public function buildHLConfig( AbstractQuery $mainHLQuery = null ): array {
+	public function buildHLConfig( ?AbstractQuery $mainHLQuery = null ): array {
 		$fields = [];
 		foreach ( $this->highlightedFields as $field ) {
 			$arr = $field->toArray();

@@ -51,13 +51,13 @@ class InterwikiSearcher extends Searcher {
 	public function __construct(
 		Connection $connection,
 		SearchConfig $config,
-		array $namespaces = null,
-		User $user = null,
-		CirrusDebugOptions $debugOptions = null,
-		NamespacePrefixParser $namespacePrefixParser = null,
-		InterwikiResolver $interwikiResolver = null,
-		TitleHelper $titleHelper = null,
-		CirrusSearchHookRunner $cirrusSearchHookRunner = null
+		?array $namespaces = null,
+		?User $user = null,
+		?CirrusDebugOptions $debugOptions = null,
+		?NamespacePrefixParser $namespacePrefixParser = null,
+		?InterwikiResolver $interwikiResolver = null,
+		?TitleHelper $titleHelper = null,
+		?CirrusSearchHookRunner $cirrusSearchHookRunner = null
 	) {
 		$maxResults = $config->get( 'CirrusSearchNumCrossProjectSearchResults' );
 		parent::__construct( $connection, 0, $maxResults, $config, $namespaces, $user, false,

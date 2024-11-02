@@ -104,8 +104,8 @@ class Checker {
 		StatsFactory $statsFactory,
 		$logSane,
 		$fastRedirectCheck,
-		ArrayObject $pageCache = null,
-		callable $isOldFn = null
+		?ArrayObject $pageCache = null,
+		?callable $isOldFn = null
 	) {
 		$this->searchConfig = $config;
 		$this->connection = $connection;

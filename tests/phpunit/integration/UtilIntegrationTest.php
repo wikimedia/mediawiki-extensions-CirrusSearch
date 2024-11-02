@@ -241,8 +241,8 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	public function newHashSearchConfig(
 		array $config = [],
 		$flags = [],
-		Config $inherited = null,
-		SearchProfileServiceFactoryFactory $factoryFactory = null
+		?Config $inherited = null,
+		?SearchProfileServiceFactoryFactory $factoryFactory = null
 	): SearchConfig {
 		return new HashSearchConfig(
 			$config,

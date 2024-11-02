@@ -43,7 +43,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 	protected function newResultSet(
 		array $response,
 		$containedSyntax = false,
-		TitleHelper $titleHelper = null
+		?TitleHelper $titleHelper = null
 	): CirrusSearchResultSet {
 		$titleHelper = $titleHelper ?: $this->newTitleHelper();
 		$resultSet = ( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() );
@@ -223,7 +223,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		};
 	}
 
-	public static function getFallbackMethod( $prio, callable $rewritteCallback = null, array $metrics = [] ) {
+	public static function getFallbackMethod( $prio, ?callable $rewritteCallback = null, array $metrics = [] ) {
 		// Using a mock seems to trigger a bug when using multiple interfaces and a static method:
 		// Fatal error: Cannot make static method CirrusSearch\Fallbacks\FallbackMethod::build() non-static
 		// in class Mock_SearchMetricsProvider_fb4508fb in [..]Framework/MockObject/Generator.php(290)
@@ -239,7 +239,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			 */
 			public function __construct(
 				$prio,
-				callable $rewritteCallback = null,
+				?callable $rewritteCallback = null,
 				array $metrics = []
 			) {
 				$this->prio = $prio;

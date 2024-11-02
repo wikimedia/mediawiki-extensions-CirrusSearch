@@ -81,7 +81,7 @@ class ArrayPathSetter {
 	 * @param array|null $profile
 	 * @return array|null
 	 */
-	public function transform( array $profile = null ) {
+	public function transform( ?array $profile = null ) {
 		if ( $profile === null ) {
 			return null;
 		}

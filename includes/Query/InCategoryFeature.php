@@ -45,7 +45,7 @@ class InCategoryFeature extends SimpleKeywordFeature implements FilterQueryFeatu
 	 * @param Config $config
 	 * @param PageStore|null $pageStore
 	 */
-	public function __construct( Config $config, PageStore $pageStore = null ) {
+	public function __construct( Config $config, ?PageStore $pageStore = null ) {
 		$this->maxConditions = $config->get( 'CirrusSearchMaxIncategoryOptions' );
 		$this->pageStore = $pageStore;
 	}

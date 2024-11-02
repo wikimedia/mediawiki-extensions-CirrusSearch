@@ -357,7 +357,7 @@ GROOVY;
 	 * @param array|null $parsedValue
 	 * @return bool
 	 */
-	private function isRegexQuery( array $parsedValue = null ) {
+	private function isRegexQuery( ?array $parsedValue = null ) {
 		return is_array( $parsedValue ) && isset( $parsedValue['type'] ) &&
 			   $parsedValue['type'] === 'regex';
 	}

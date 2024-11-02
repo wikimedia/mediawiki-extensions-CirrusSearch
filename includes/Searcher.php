@@ -161,14 +161,14 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		Connection $conn, $offset,
 		$limit,
 		SearchConfig $config,
-		array $namespaces = null,
-		User $user = null,
+		?array $namespaces = null,
+		?User $user = null,
 		$index = false,
-		CirrusDebugOptions $options = null,
-		NamespacePrefixParser $namespacePrefixParser = null,
-		InterwikiResolver $interwikiResolver = null,
-		TitleHelper $titleHelper = null,
-		CirrusSearchHookRunner $cirrusSearchHookRunner = null
+		?CirrusDebugOptions $options = null,
+		?NamespacePrefixParser $namespacePrefixParser = null,
+		?InterwikiResolver $interwikiResolver = null,
+		?TitleHelper $titleHelper = null,
+		?CirrusSearchHookRunner $cirrusSearchHookRunner = null
 	) {
 		parent::__construct(
 			$conn,

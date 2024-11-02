@@ -18,7 +18,7 @@ class MultiListWeightedTag extends MultiListItem {
 	 * @param string $name Name
 	 * @param int|null $weight Weight
 	 */
-	public function __construct( string $prefix, string $name, int $weight = null ) {
+	public function __construct( string $prefix, string $name, ?int $weight = null ) {
 		parent::__construct( $prefix, $name );
 		$this->weight = $weight;
 	}

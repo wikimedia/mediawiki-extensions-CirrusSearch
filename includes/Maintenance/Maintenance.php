@@ -132,7 +132,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 		return $this->searchConfig;
 	}
 
-	public function getMetaStore( Connection $conn = null ) {
+	public function getMetaStore( ?Connection $conn = null ) {
 		return new MetaStoreIndex( $conn ?? $this->getConnection(), $this, $this->getSearchConfig() );
 	}
 

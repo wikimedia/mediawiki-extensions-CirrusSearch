@@ -211,7 +211,7 @@ class ParsedQuery {
 	 * @see self::getNamespaceHeader()
 	 * @see \CirrusSearch\Query\Builder\ContextualFilter::requiredNamespaces()
 	 */
-	public function getActualNamespaces( array $namespaces = null, array $additionalRequiredNamespaces = null ) {
+	public function getActualNamespaces( ?array $namespaces = null, ?array $additionalRequiredNamespaces = null ) {
 		if ( $this->requiredNamespaces === 'all' ) {
 			// e.g. prefix:all:foo (all namespaces must be queried no matter what is requested before
 			return [];

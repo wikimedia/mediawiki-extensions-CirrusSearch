@@ -8,7 +8,7 @@ namespace CirrusSearch\BuildDocument;
  * retried at a later time.
  */
 class BuildDocumentException extends \Exception {
-	public function __construct( string $message, \Throwable $cause = null ) {
+	public function __construct( string $message, ?\Throwable $cause = null ) {
 		parent::__construct( $message, 0, $cause );
 	}
 }

@@ -53,8 +53,8 @@ class EventBusBridge extends PageChangeTracker implements EventBridge {
 		GlobalIdGenerator $globalIdGenerator,
 		TitleFormatter $titleFormatter,
 		PageLookup $pageLookup,
-		EventBusFactory $eventBusFactory = null,
-		StreamNameMapper $streamNameMapper = null
+		?EventBusFactory $eventBusFactory = null,
+		?StreamNameMapper $streamNameMapper = null
 	): EventBridge {
 		$config = $configFactory->makeConfig( "CirrusSearch" );
 		'@phan-var \CirrusSearch\SearchConfig $config';

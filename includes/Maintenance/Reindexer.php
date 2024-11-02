@@ -90,7 +90,7 @@ class Reindexer {
 		Connection $target,
 		Index $index,
 		Index $oldIndex,
-		Printer $out = null,
+		?Printer $out = null,
 		$fieldsToDelete = []
 	) {
 		// @todo: this constructor has too many arguments - refactor!

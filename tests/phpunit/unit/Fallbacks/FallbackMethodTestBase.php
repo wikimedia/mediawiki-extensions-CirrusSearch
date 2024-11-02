@@ -16,7 +16,7 @@ use MediaWiki\Status\Status;
 
 abstract class FallbackMethodTestBase extends CirrusTestCase {
 
-	public function getSearcherFactoryMock( SearchQuery $query = null, CirrusSearchResultSet $resultSet = null ) {
+	public function getSearcherFactoryMock( ?SearchQuery $query = null, ?CirrusSearchResultSet $resultSet = null ) {
 		$searcherMock = $this->createMock( Searcher::class );
 		$searcherMock->expects( $query != null ? $this->once() : $this->never() )
 			->method( 'search' )
@@ -41,7 +41,7 @@ abstract class FallbackMethodTestBase extends CirrusTestCase {
 	protected function newResultSet(
 		array $response,
 		$containedSyntax = false,
-		TitleHelper $titleHelper = null
+		?TitleHelper $titleHelper = null
 	): CirrusSearchResultSet {
 		$titleHelper = $titleHelper ?: $this->newTitleHelper();
 		$resultSet = ( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() );

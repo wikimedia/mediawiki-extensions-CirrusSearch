@@ -22,7 +22,7 @@ class ReplicaRangeValidator extends Validator {
 	 * @param string $replicaCount
 	 * @param Printer|null $out
 	 */
-	public function __construct( Index $index, $replicaCount, Printer $out = null ) {
+	public function __construct( Index $index, $replicaCount, ?Printer $out = null ) {
 		parent::__construct( $out );
 
 		$this->index = $index;

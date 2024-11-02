@@ -84,8 +84,8 @@ class EventBusWeightedTagsUpdaterTest extends MediaWikiUnitTestCase {
 	 */
 	public function testUpdateWeightedTags(
 		string $tagPrefix,
-		array $tagWeights = null,
-		string $trigger = null
+		?array $tagWeights = null,
+		?string $trigger = null
 	): void {
 		$pageRecord = $this->createMock( PageRecord::class );
 		$wikiPage = $this->createMock( WikiPage::class );
@@ -133,7 +133,7 @@ class EventBusWeightedTagsUpdaterTest extends MediaWikiUnitTestCase {
 	 *
 	 * @dataProvider getResetWeightedTagsData
 	 */
-	public function testResetWeightedTags( array $tagPrefixes, string $trigger = null ) {
+	public function testResetWeightedTags( array $tagPrefixes, ?string $trigger = null ) {
 		$pageRecord = $this->createMock( PageRecord::class );
 		$wikiPage = $this->createMock( WikiPage::class );
 		$this->mockWikiPageFactory->expects( $this->any() )->method( 'newFromTitle' )->with( $pageRecord )->willReturn(

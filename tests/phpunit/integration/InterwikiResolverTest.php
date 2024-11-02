@@ -392,7 +392,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	 * @return InterwikiResolver
 	 */
 	private function getSiteMatrixInterwikiResolver( $wikiId, array $blockList,
-		array $overrides, MultiHttpClient $client = null ) {
+		array $overrides, ?MultiHttpClient $client = null ) {
 		$conf = new SiteConfiguration;
 		$conf->settings = include __DIR__ . '/../resources/wmf/SiteMatrix_SiteConf_IS.php';
 		$conf->suffixes = include __DIR__ . '/../resources/wmf/suffixes.php';

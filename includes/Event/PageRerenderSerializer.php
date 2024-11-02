@@ -45,7 +45,7 @@ class PageRerenderSerializer {
 		$this->streamNameMapper = $streamNameMapper;
 	}
 
-	public function eventDataForPage( PageRecord $page, string $reason, string $requestId, string $dt = null ): array {
+	public function eventDataForPage( PageRecord $page, string $reason, string $requestId, ?string $dt = null ): array {
 		Assert::parameter( $page->isRedirect() === false, '$page', 'Redirects are not supported' );
 		$connection = $this->getCirrusConnection();
 		$attrs = [

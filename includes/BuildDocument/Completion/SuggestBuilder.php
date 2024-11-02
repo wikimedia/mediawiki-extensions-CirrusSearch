@@ -264,7 +264,7 @@ class SuggestBuilder {
 	 * @param array|null $scoreExplanation
 	 * @return \Elastica\Document the suggestion document
 	 */
-	private function buildTitleSuggestion( $docId, array $title, $score, array $inputDoc, array $scoreExplanation = null ) {
+	private function buildTitleSuggestion( $docId, array $title, $score, array $inputDoc, ?array $scoreExplanation = null ) {
 		$inputs = [ $title['text'] ];
 		foreach ( $title['variants'] as $variant ) {
 			$inputs[] = $variant;
@@ -293,7 +293,7 @@ class SuggestBuilder {
 	 * @param array|null $scoreExplanation
 	 * @return \Elastica\Document the suggestion document
 	 */
-	private function buildRedirectsSuggestion( $docId, array $redirects, $score, array $inputDoc, array $scoreExplanation = null ) {
+	private function buildRedirectsSuggestion( $docId, array $redirects, $score, array $inputDoc, ?array $scoreExplanation = null ) {
 		$inputs = [];
 		foreach ( $redirects as $redirect ) {
 			$inputs[] = $redirect;
@@ -315,7 +315,7 @@ class SuggestBuilder {
 	 * @param array|null $scoreExplanation
 	 * @return \Elastica\Document a doc ready to be indexed in the completion suggester
 	 */
-	private function buildSuggestion( $suggestionType, $docId, array $inputs, $score, array $inputDoc, array $scoreExplanation = null ) {
+	private function buildSuggestion( $suggestionType, $docId, array $inputs, $score, array $inputDoc, ?array $scoreExplanation = null ) {
 		$doc = [
 			'batch_id' => $this->batchId,
 			'source_doc_id' => $inputDoc['id'],

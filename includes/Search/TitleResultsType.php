@@ -14,7 +14,7 @@ class TitleResultsType extends BaseResultsType {
 	 */
 	private $titleHelper;
 
-	public function __construct( TitleHelper $titleHelper = null ) {
+	public function __construct( ?TitleHelper $titleHelper = null ) {
 		$this->titleHelper = $titleHelper ?: new TitleHelper();
 	}
 

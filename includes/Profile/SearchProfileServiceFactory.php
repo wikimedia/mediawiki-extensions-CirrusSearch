@@ -145,7 +145,7 @@ class SearchProfileServiceFactory {
 	 * @param bool $forceHook force running the hook even if using HashSearchConfig
 	 * @return SearchProfileService
 	 */
-	public function loadService( SearchConfig $config, WebRequest $request = null, UserIdentity $user = null, $forceHook = false ) {
+	public function loadService( SearchConfig $config, ?WebRequest $request = null, ?UserIdentity $user = null, $forceHook = false ) {
 		$service = new SearchProfileService( $this->userOptionsLookup, $request, $user );
 		$this->loadCrossProjectBlockScorer( $service, $config );
 		$this->loadSimilarityProfiles( $service, $config );

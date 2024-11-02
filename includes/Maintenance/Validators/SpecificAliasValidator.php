@@ -49,7 +49,7 @@ class SpecificAliasValidator extends IndexAliasValidator {
 		array $reindexParams,
 		array $reindexValidators,
 		$reindexAndRemoveOk,
-		Printer $out = null
+		?Printer $out = null
 	) {
 		// @todo: this constructor takes too many arguments - refactor!
 

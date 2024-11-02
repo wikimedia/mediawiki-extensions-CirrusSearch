@@ -14,7 +14,7 @@ class SearchProfileException extends \RuntimeException {
 	 * @param string $message
 	 * @param \Exception|null $cause
 	 */
-	public function __construct( $message, \Exception $cause = null ) {
+	public function __construct( $message, ?\Exception $cause = null ) {
 		// flip $cause and $cause because it's most of our usecases
 		// we have a cause but no particular error code.
 		parent::__construct( $message, 0, $cause );

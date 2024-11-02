@@ -385,7 +385,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		$tagNames,
 		?array $tagWeights,
 		string $expectedFile,
-		int $expectedRequestCount = null
+		?int $expectedRequestCount = null
 	): void {
 		$minimalSetup = [
 			'CirrusSearchClusters' => [

@@ -159,7 +159,7 @@ trait CirrusTestCaseTrait {
 	 * @return \PHPUnit\Framework\Constraint\Callback
 	 * @see Assert::callback()
 	 */
-	public function captureArgs( &$args, callable $callback = null ) {
+	public function captureArgs( &$args, ?callable $callback = null ) {
 		return $this->callback( static function ( ...$argToCapture ) use ( &$args, $callback ) {
 			$args = $argToCapture;
 			if ( $callback !== null ) {
@@ -190,8 +190,8 @@ trait CirrusTestCaseTrait {
 	public function newHashSearchConfig(
 		array $config = [],
 		$flags = [],
-		Config $inherited = null,
-		SearchProfileServiceFactoryFactory $factoryFactory = null
+		?Config $inherited = null,
+		?SearchProfileServiceFactoryFactory $factoryFactory = null
 	): SearchConfig {
 		return new HashSearchConfig( $config, $flags, $inherited,
 			$factoryFactory ?: $this->hostWikiSearchProfileServiceFactory() );
@@ -203,8 +203,8 @@ trait CirrusTestCaseTrait {
 	 * @return SearchProfileServiceFactoryFactory
 	 */
 	public function hostWikiSearchProfileServiceFactory(
-		CirrusSearchHookRunner $cirrusSearchHookRunner = null,
-		UserOptionsLookup $userOptionsLookup = null
+		?CirrusSearchHookRunner $cirrusSearchHookRunner = null,
+		?UserOptionsLookup $userOptionsLookup = null
 	): SearchProfileServiceFactoryFactory {
 		$cirrusSearchHookRunner = $cirrusSearchHookRunner ?: $this->createCirrusSearchHookRunner( [] );
 		$userOptionsLookup = $userOptionsLookup ?: $this->createStaticUserOptionsLookup();
@@ -283,7 +283,7 @@ trait CirrusTestCaseTrait {
 		return str_replace( ' ', '_', $id );
 	}
 
-	public function newTitleHelper( $hostWikiID = null, InterwikiResolver $iwResolver = null ): TitleHelper {
+	public function newTitleHelper( $hostWikiID = null, ?InterwikiResolver $iwResolver = null ): TitleHelper {
 		return new class(
 			$hostWikiID,
 			$iwResolver ?: new EmptyInterwikiResolver(),

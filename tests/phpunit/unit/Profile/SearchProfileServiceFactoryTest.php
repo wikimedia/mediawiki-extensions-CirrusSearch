@@ -203,7 +203,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 	}
 
 	private function getFactory( array $hostWikiConfig = [],
-								 CirrusSearchHookRunner $cirrusSearchHookRunner = null,
+								 ?CirrusSearchHookRunner $cirrusSearchHookRunner = null,
 								 $userOption = []
 	) {
 		$config = new HashSearchConfig( $hostWikiConfig );

@@ -270,7 +270,7 @@ class Connection extends ElasticaConnection {
 	 *  query the namespaces, or false if both need to be queried.
 	 * @deprecated 1.38 Use self::pickIndexSuffixForNamespaces
 	 */
-	public function pickIndexTypeForNamespaces( array $namespaces = null ) {
+	public function pickIndexTypeForNamespaces( ?array $namespaces = null ) {
 		return $this->pickIndexSuffixForNamespaces( $namespaces );
 	}
 
@@ -279,7 +279,7 @@ class Connection extends ElasticaConnection {
 	 * @return string|false The suffix to use (e.g. content or general) to
 	 *  query the namespaces, or false if all need to be queried.
 	 */
-	public function pickIndexSuffixForNamespaces( array $namespaces = null ) {
+	public function pickIndexSuffixForNamespaces( ?array $namespaces = null ) {
 		$indexSuffixes = [];
 		if ( $namespaces ) {
 			foreach ( $namespaces as $namespace ) {

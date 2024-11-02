@@ -80,7 +80,7 @@ class SearchProfileRepositoryTransformer implements SearchProfileRepository {
 	 * @param array|null $profile
 	 * @return array|null
 	 */
-	private function transform( array $profile = null ) {
+	private function transform( ?array $profile = null ) {
 		if ( $profile === null ) {
 			return null;
 		}

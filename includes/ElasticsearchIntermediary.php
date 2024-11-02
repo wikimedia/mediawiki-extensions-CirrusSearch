@@ -85,7 +85,7 @@ abstract class ElasticsearchIntermediary {
 	 *  as slow. Defaults to CirrusSearchSlowSearch config option.
 	 * @param int $extraBackendLatency artificial backend latency.
 	 */
-	protected function __construct( Connection $connection, UserIdentity $user = null, $slowSeconds = null, $extraBackendLatency = 0 ) {
+	protected function __construct( Connection $connection, ?UserIdentity $user = null, $slowSeconds = null, $extraBackendLatency = 0 ) {
 		$this->connection = $connection;
 		$this->user = $user ?? RequestContext::getMain()->getUser();
 		$this->slowMillis = (int)( 1000 * ( $slowSeconds ?? $connection->getConfig()->get( 'CirrusSearchSlowSearch' ) ) );
@@ -175,7 +175,7 @@ abstract class ElasticsearchIntermediary {
 	 *  provided.
 	 * @return Status wrapping $result
 	 */
-	public function success( $result = null, Connection $connection = null ) {
+	public function success( $result = null, ?Connection $connection = null ) {
 		$this->finishRequest( $connection ?? $this->connection );
 		return Status::newGood( $result );
 	}
@@ -203,7 +203,7 @@ abstract class ElasticsearchIntermediary {
 	 *  provided.
 	 * @return Status representing a backend failure
 	 */
-	public function failure( ExceptionInterface $exception = null, Connection $connection = null ) {
+	public function failure( ?ExceptionInterface $exception = null, ?Connection $connection = null ) {
 		$connection ??= $this->connection;
 		$log = $this->finishRequest( $connection );
 		if ( $log === null ) {
@@ -389,8 +389,8 @@ abstract class ElasticsearchIntermediary {
 	protected function runMSearch(
 		Search $search,
 		RequestLog $log,
-		Connection $connection = null,
-		callable $resultsTransformer = null
+		?Connection $connection = null,
+		?callable $resultsTransformer = null
 	): Status {
 		$connection = $connection ?: $this->connection;
 		$this->start( $log );

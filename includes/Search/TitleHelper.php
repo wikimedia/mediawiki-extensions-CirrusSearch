@@ -35,7 +35,7 @@ class TitleHelper {
 	 * @param InterwikiResolver|null $interwikiResolver
 	 * @param callable|null $linkSanitizer
 	 */
-	public function __construct( $hostWikiID = null, InterwikiResolver $interwikiResolver = null, callable $linkSanitizer = null ) {
+	public function __construct( $hostWikiID = null, ?InterwikiResolver $interwikiResolver = null, ?callable $linkSanitizer = null ) {
 		$this->hostWikiID = $hostWikiID ?: WikiMap::getCurrentWikiId();
 		$this->interwikiResolver = $interwikiResolver ?: MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
 		$this->linkSanitizer = $linkSanitizer ?: [ Sanitizer::class, 'escapeIdForLink' ];

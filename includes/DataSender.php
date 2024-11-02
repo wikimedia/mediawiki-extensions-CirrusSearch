@@ -74,8 +74,8 @@ class DataSender extends ElasticsearchIntermediary {
 	public function __construct(
 		Connection $conn,
 		SearchConfig $config,
-		StatsFactory $stats = null,
-		DocumentSizeLimiter $docSizeLimiter = null
+		?StatsFactory $stats = null,
+		?DocumentSizeLimiter $docSizeLimiter = null
 	) {
 		parent::__construct( $conn, null, 0 );
 		$this->stats = $stats ?? Util::getStatsFactory();
@@ -96,7 +96,7 @@ class DataSender extends ElasticsearchIntermediary {
 		string $tagField,
 		string $tagPrefix,
 		$tagNames = null,
-		array $tagWeights = null,
+		?array $tagWeights = null,
 		int $batchSize = 30
 	): Status {
 		return $this->sendWeightedTagsUpdate(

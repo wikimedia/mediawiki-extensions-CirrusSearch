@@ -197,7 +197,7 @@ class SearchQueryTest extends CirrusTestCase {
 	 * @param int[]|null $namespaces
 	 * @return ContextualFilter
 	 */
-	private function getContextualFilter( array $namespaces = null ) {
+	private function getContextualFilter( ?array $namespaces = null ) {
 		return new class( $namespaces ) implements ContextualFilter {
 			private $namespaces;
 
@@ -467,7 +467,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$sortOptions = 'relevance',
 		$offset = 0,
 		$limit = 10,
-		CirrusDebugOptions $options = null,
+		?CirrusDebugOptions $options = null,
 		$forcedRescoreProfile = null
 	) {
 		$this->assertEquals( $hostWikiQuery->getParsedQuery(), $crossSearchQuery->getParsedQuery() );

@@ -43,7 +43,7 @@ class KeywordFeatureAssertions {
 	 * @param FetchPhaseConfigBuilder|null $fetchPhaseConfigBuilder
 	 * @return SearchContext|MockObject
 	 */
-	private function mockContext( SearchConfig $config = null, FetchPhaseConfigBuilder $fetchPhaseConfigBuilder = null ) {
+	private function mockContext( ?SearchConfig $config = null, ?FetchPhaseConfigBuilder $fetchPhaseConfigBuilder = null ) {
 		$context = $this->testCase->getMockBuilder( SearchContext::class )
 			->disableOriginalConstructor()
 			->getMock();
@@ -112,7 +112,7 @@ class KeywordFeatureAssertions {
 	 * @param SearchConfig|null $config
 	 * @return SearchContext
 	 */
-	private function mockContextExpectingBoost( $expectedBoost = null, SearchConfig $config = null ) {
+	private function mockContextExpectingBoost( $expectedBoost = null, ?SearchConfig $config = null ) {
 		$context = $this->mockContext( $config );
 
 		if ( $expectedBoost === null ) {
@@ -194,8 +194,8 @@ class KeywordFeatureAssertions {
 		KeywordFeature $feature,
 		$term,
 		array $expected,
-		array $expectedWarnings = null,
-		SearchConfig $config = null
+		?array $expectedWarnings = null,
+		?SearchConfig $config = null
 	) {
 		$node = $this->getParsedKeyword( $term, $feature );
 		if ( $config === null ) {
@@ -243,8 +243,8 @@ class KeywordFeatureAssertions {
 		KeywordFeature $feature,
 		$term,
 		$filter = null,
-		array $warnings = null,
-		SearchConfig $config = null
+		?array $warnings = null,
+		?SearchConfig $config = null
 	) {
 		if ( $config === null ) {
 			$config = new SearchConfig();
@@ -305,7 +305,7 @@ class KeywordFeatureAssertions {
 		$term,
 		$boostAssertion,
 		$warnings = null,
-		SearchConfig $config = null
+		?SearchConfig $config = null
 	) {
 		$this->testCase->assertInstanceOf( BoostFunctionFeature::class, $feature );
 
@@ -345,7 +345,7 @@ class KeywordFeatureAssertions {
 	 * @param string $term
 	 * @param array|null $expectedWarnings
 	 */
-	public function assertNoResultsPossible( KeywordFeature $feature, $term, array $expectedWarnings = null ) {
+	public function assertNoResultsPossible( KeywordFeature $feature, $term, ?array $expectedWarnings = null ) {
 		$context = $this->mockContext();
 		$context->expects( $this->testCase->atLeastOnce() )->method( 'setResultsPossible' )->with( false );
 		$warnings = [];
@@ -380,8 +380,8 @@ class KeywordFeatureAssertions {
 		KeywordFeature $feature,
 		$term,
 		$highlightField = null,
-		array $highlightQuery = null,
-		SearchConfig $expandConfig = null
+		?array $highlightQuery = null,
+		?SearchConfig $expandConfig = null
 	) {
 		$highlightQuery = is_string( $highlightField ) ? [ $highlightQuery ] : $highlightQuery;
 		$highlightField = is_string( $highlightField ) ? [ $highlightField ] : $highlightField;
@@ -501,7 +501,7 @@ class KeywordFeatureAssertions {
 	 * @param bool $ignoreNegatedNodes returns null if the keyword is negated
 	 * @return KeywordFeatureNode|null
 	 */
-	private function getParsedKeyword( $term, KeywordFeature $feature, KeywordParser $parser = null, $ignoreNegatedNodes = false ) {
+	private function getParsedKeyword( $term, KeywordFeature $feature, ?KeywordParser $parser = null, $ignoreNegatedNodes = false ) {
 		if ( $parser === null ) {
 			$parser = new KeywordParser();
 		}
@@ -539,7 +539,7 @@ class KeywordFeatureAssertions {
 	 * @param HighlightFieldGenerator|null $fetchPhaseConfigBuilder
 	 * @return QueryBuildingContext|MockObject
 	 */
-	private function mockBuilderContext( $data, SearchConfig $config, HighlightFieldGenerator $fetchPhaseConfigBuilder = null ) {
+	private function mockBuilderContext( $data, SearchConfig $config, ?HighlightFieldGenerator $fetchPhaseConfigBuilder = null ) {
 		$mock = $this->testCase->getMockBuilder( QueryBuildingContext::class )
 			->disableOriginalConstructor()
 			->getMock();

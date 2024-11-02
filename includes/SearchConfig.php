@@ -71,7 +71,7 @@ class SearchConfig implements Config {
 	 * Create new search config for the current wiki.
 	 * @param SearchProfileServiceFactoryFactory|null $searchProfileServiceFactoryFactory
 	 */
-	public function __construct( SearchProfileServiceFactoryFactory $searchProfileServiceFactoryFactory = null ) {
+	public function __construct( ?SearchProfileServiceFactoryFactory $searchProfileServiceFactoryFactory = null ) {
 		$this->source = new GlobalVarConfig();
 		$this->wikiId = WikiMap::getCurrentWikiId();
 		// The only ability to mutate SearchConfig is via a protected method, setSource.

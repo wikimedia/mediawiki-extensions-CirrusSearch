@@ -181,7 +181,7 @@ class AnalyzerBuilder {
 	 * @param bool $limited
 	 * @return self
 	 */
-	public function withCharMap( array $mappings, string $name = null, bool $limited = false ): self {
+	public function withCharMap( array $mappings, ?string $name = null, bool $limited = false ): self {
 		$this->charMap = $mappings;
 		$this->charMapName = $name ?? "{$this->langName}_charfilter";
 		$this->charMapLimited = false;
@@ -193,7 +193,7 @@ class AnalyzerBuilder {
 	 * @param string|null $name
 	 * @return self
 	 */
-	public function withLimitedCharMap( array $mappings, string $name = null ): self {
+	public function withLimitedCharMap( array $mappings, ?string $name = null ): self {
 		return $this->withCharMap( $mappings, $name, true );
 	}
 
@@ -202,7 +202,7 @@ class AnalyzerBuilder {
 	 * @param string|null $name
 	 * @return self
 	 */
-	public function withReversedNumberCharFilter( int $langZero, string $name = null ): self {
+	public function withReversedNumberCharFilter( int $langZero, ?string $name = null ): self {
 		$this->withNumberCharFilter( $langZero, $name, true );
 		return $this;
 	}
@@ -213,7 +213,7 @@ class AnalyzerBuilder {
 	 * @param bool $reversed reverse the mapping from Arabic to non-Arabic
 	 * @return self
 	 */
-	public function withNumberCharFilter( int $langZero, string $name = null, bool $reversed = false ): self {
+	public function withNumberCharFilter( int $langZero, ?string $name = null, bool $reversed = false ): self {
 		$defName = $reversed ? "{$this->langName}_reversed_numbers" : "{$this->langName}_numbers";
 		$this->langZero = $langZero;
 		$this->numCharMapName = $name ?? $defName;
@@ -237,7 +237,7 @@ class AnalyzerBuilder {
 	 * @param string|null $name
 	 * @return self
 	 */
-	public function withLangLowercase( string $name = null ): self {
+	public function withLangLowercase( ?string $name = null ): self {
 		$this->langLowercase = $name ?: $this->langName;
 		return $this;
 	}
@@ -247,7 +247,7 @@ class AnalyzerBuilder {
 	 * @param string|null $name
 	 * @return self
 	 */
-	public function withStop( $stop, string $name = null ): self {
+	public function withStop( $stop, ?string $name = null ): self {
 		$this->customStopList = $stop;
 		$this->stopName = $name ?? "{$this->langName}_stop";
 		return $this;
@@ -261,7 +261,7 @@ class AnalyzerBuilder {
 	 * @return self
 	 */
 	public function withExtraStop( $stop, string $name, $beforeFilter = self::APPEND,
-			bool $ignoreCase = null ): self {
+			?bool $ignoreCase = null ): self {
 		$this->extraStopList = $stop;
 		$this->extraStopName = $name;
 		$this->extraStopIgnoreCase = $ignoreCase;
@@ -274,7 +274,7 @@ class AnalyzerBuilder {
 	 * @param string|null $name
 	 * @return self
 	 */
-	public function withExtraStemmer( string $lang, string $name = null ): self {
+	public function withExtraStemmer( string $lang, ?string $name = null ): self {
 		$this->extraStemmerLang = $lang;
 		$this->extraStemmerName = $name ?? $lang;
 		return $this;
@@ -287,7 +287,7 @@ class AnalyzerBuilder {
 	 * @param string|null $name
 	 * @return self
 	 */
-	public function withStemmerOverride( $rules, string $name = null ): self {
+	public function withStemmerOverride( $rules, ?string $name = null ): self {
 		$this->overrideRules = $rules;
 		$this->overrideName = $name ?? "{$this->langName}_override";
 		return $this;
@@ -607,7 +607,7 @@ class AnalyzerBuilder {
 	 * @param bool|null $ignoreCase
 	 * @return mixed[] token filter
 	 */
-	public static function stopFilterFromList( $stopwords, bool $ignoreCase = null ): array {
+	public static function stopFilterFromList( $stopwords, ?bool $ignoreCase = null ): array {
 		$retArray = [ 'type' => 'stop', 'stopwords' => $stopwords ];
 		if ( $ignoreCase !== null ) {
 			$retArray['ignore_case'] = $ignoreCase;

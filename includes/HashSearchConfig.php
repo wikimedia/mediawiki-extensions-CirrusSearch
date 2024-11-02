@@ -28,8 +28,8 @@ class HashSearchConfig extends SearchConfig {
 	public function __construct(
 		array $settings,
 		array $flags = [],
-		Config $inherited = null,
-		SearchProfileServiceFactoryFactory $searchProfileServiceFactoryFactory = null
+		?Config $inherited = null,
+		?SearchProfileServiceFactoryFactory $searchProfileServiceFactoryFactory = null
 	) {
 		parent::__construct( $searchProfileServiceFactoryFactory );
 		$config = new HashConfig( $settings );

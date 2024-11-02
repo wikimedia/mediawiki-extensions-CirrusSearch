@@ -292,7 +292,7 @@ trait CirrusTestCaseTrait {
 			}
 		) extends TitleHelper {
 			public function __construct( $hostWikiId,
-				InterwikiResolver $interwikiResolver = null, callable $linkSanitizer = null
+				?InterwikiResolver $interwikiResolver = null, ?callable $linkSanitizer = null
 			) {
 				parent::__construct( $hostWikiId, $interwikiResolver, $linkSanitizer );
 			}

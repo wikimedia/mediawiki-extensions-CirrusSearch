@@ -46,7 +46,7 @@ class EventBusWeightedTagSerializer {
 	 * @return array encoded event
 	 * @see self::SCHEMA
 	 */
-	public function toArray( WikiPage $wikiPage, array $weightedTags, ?bool $revBased = null, string $dt = null ): array {
+	public function toArray( WikiPage $wikiPage, array $weightedTags, ?bool $revBased = null, ?string $dt = null ): array {
 		$uri = $this->pageEntitySerializer->canonicalPageURL( $wikiPage );
 		$page = $this->pageEntitySerializer->toArray( $wikiPage );
 		return $this->eventSerializer->createEvent(
@@ -68,7 +68,7 @@ class EventBusWeightedTagSerializer {
 	 * @param string|null $dt event timestamp
 	 * @return array
 	 */
-	public function toSetEvent( WikiPage $wikiPage, array $set, bool $revBased = null, string $dt = null ): array {
+	public function toSetEvent( WikiPage $wikiPage, array $set, ?bool $revBased = null, ?string $dt = null ): array {
 		return $this->toArray( $wikiPage, [ 'set' => $set ], $revBased, $dt );
 	}
 
@@ -79,7 +79,7 @@ class EventBusWeightedTagSerializer {
 	 * @param string|null $dt event timestamp
 	 * @return array
 	 */
-	public function toClearEvent( WikiPage $wikiPage, array $clear, bool $revBased = null, string $dt = null ): array {
+	public function toClearEvent( WikiPage $wikiPage, array $clear, ?bool $revBased = null, ?string $dt = null ): array {
 		return $this->toArray( $wikiPage, [ 'clear' => $clear ], $revBased, $dt );
 	}
 }

@@ -226,7 +226,7 @@ class Util {
 	 * @param SearchConfig|null $config Search config requesting the templates
 	 * @return float[]
 	 */
-	public static function getDefaultBoostTemplates( SearchConfig $config = null ) {
+	public static function getDefaultBoostTemplates( ?SearchConfig $config = null ) {
 		$config ??= MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
 
 		$fromConfig = $config->get( 'CirrusSearchBoostTemplates' );
@@ -420,7 +420,7 @@ class Util {
 	 * @param Language|null $language
 	 * @return bool|int
 	 */
-	public static function identifyNamespace( $namespace, $method = 'naive', Language $language = null ) {
+	public static function identifyNamespace( $namespace, $method = 'naive', ?Language $language = null ) {
 		static $naive = null;
 		static $utr30 = null;
 

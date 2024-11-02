@@ -22,7 +22,7 @@ use MediaWiki\Status\Status;
  */
 class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 
-	public function getSearcherFactoryMock( SearchQuery $query = null, CirrusSearchResultSet $resultSet = null ) {
+	public function getSearcherFactoryMock( ?SearchQuery $query = null, ?CirrusSearchResultSet $resultSet = null ) {
 		$searcherMock = $this->createMock( Searcher::class );
 		$searcherMock->expects( $query != null ? $this->once() : $this->never() )
 			->method( 'search' )

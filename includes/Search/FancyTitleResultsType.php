@@ -21,7 +21,7 @@ class FancyTitleResultsType extends TitleResultsType {
 	 * @param string $matchedAnalyzer the analyzer used to match the title
 	 * @param TitleHelper|null $titleHelper
 	 */
-	public function __construct( $matchedAnalyzer, TitleHelper $titleHelper = null ) {
+	public function __construct( $matchedAnalyzer, ?TitleHelper $titleHelper = null ) {
 		parent::__construct( $titleHelper );
 		$this->matchedAnalyzer = $matchedAnalyzer;
 	}

@@ -44,7 +44,7 @@ class QueueingRemediator implements Remediator {
 	 *  or null to update all clusters.
 	 * @param JobQueueGroup|null $jobQueueGroup
 	 */
-	public function __construct( $cluster, JobQueueGroup $jobQueueGroup = null ) {
+	public function __construct( $cluster, ?JobQueueGroup $jobQueueGroup = null ) {
 		$this->cluster = $cluster;
 		$this->jobQueue = $jobQueueGroup ?: MediaWikiServices::getInstance()->getJobQueueGroup();
 	}

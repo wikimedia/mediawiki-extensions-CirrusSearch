@@ -23,7 +23,7 @@ class NumberOfShardsValidator extends Validator {
 	 * @param int $shardCount
 	 * @param Printer|null $out
 	 */
-	public function __construct( Index $index, $shardCount, Printer $out = null ) {
+	public function __construct( Index $index, $shardCount, ?Printer $out = null ) {
 		parent::__construct( $out );
 
 		$this->index = $index;

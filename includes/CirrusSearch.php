@@ -159,10 +159,10 @@ class CirrusSearch extends SearchEngine {
 	 * @param InterwikiResolver|null $interwikiResolver
 	 * @param TitleHelper|null $titleHelper
 	 */
-	public function __construct( SearchConfig $config = null,
-		CirrusDebugOptions $debugOptions = null,
-		NamespacePrefixParser $namespacePrefixParser = null,
-		InterwikiResolver $interwikiResolver = null, TitleHelper $titleHelper = null
+	public function __construct( ?SearchConfig $config = null,
+		?CirrusDebugOptions $debugOptions = null,
+		?NamespacePrefixParser $namespacePrefixParser = null,
+		?InterwikiResolver $interwikiResolver = null, ?TitleHelper $titleHelper = null
 	) {
 		// Initialize UserTesting before we create a Connection
 		// This is useful to do tests across multiple clusters
@@ -519,7 +519,7 @@ class CirrusSearch extends SearchEngine {
 	 * @return array|null
 	 * @see SearchEngine::getProfiles()
 	 */
-	public function getProfiles( $profileType, User $user = null ) {
+	public function getProfiles( $profileType, ?User $user = null ) {
 		$profileService = $this->config->getProfileService();
 		$serviceProfileType = null;
 		switch ( $profileType ) {
@@ -663,7 +663,7 @@ class CirrusSearch extends SearchEngine {
 	 * @param SearchConfig|null $config
 	 * @return Searcher
 	 */
-	private function makeSearcher( SearchConfig $config = null ) {
+	private function makeSearcher( ?SearchConfig $config = null ) {
 		return new Searcher( $this->connection, $this->offset, $this->limit, $config ?? $this->config, $this->namespaces,
 				null, false, $this->debugOptions, $this->namespacePrefixParser, $this->interwikiResolver, $this->titleHelper,
 				$this->getCirrusSearchHookRunner() );

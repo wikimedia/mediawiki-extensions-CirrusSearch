@@ -12,7 +12,7 @@ class DeprecationLoggedHttp extends Http {
 	/** @var LoggerInterface */
 	private $logger;
 
-	public function __construct( Connection $connection = null ) {
+	public function __construct( ?Connection $connection = null ) {
 		parent::__construct( $connection );
 		$this->logger = LoggerFactory::getInstance( 'CirrusSearchDeprecation' );
 	}

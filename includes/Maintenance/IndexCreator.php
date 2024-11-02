@@ -50,7 +50,7 @@ class IndexCreator {
 		ConfigUtils $utils,
 		array $analysisConfig,
 		array $mappings,
-		array $similarityConfig = null,
+		?array $similarityConfig = null,
 		$greenTimeout = 120
 	) {
 		$this->index = $index;

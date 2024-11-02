@@ -110,7 +110,7 @@ class RequestLogger {
 	 * @return array A map of information about the performed request, suitible
 	 *  for use as a psr-3 log context.
 	 */
-	public function addRequest( RequestLog $log, UserIdentity $user = null, $slowMillis = null ) {
+	public function addRequest( RequestLog $log, ?UserIdentity $user = null, $slowMillis = null ) {
 		global $wgCirrusSearchLogElasticRequests;
 
 		// @todo Is this necessary here? Check on what uses the response value

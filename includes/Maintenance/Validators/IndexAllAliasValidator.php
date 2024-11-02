@@ -20,7 +20,7 @@ class IndexAllAliasValidator extends IndexAliasValidator {
 	 * @param string $type
 	 * @param Printer|null $out
 	 */
-	public function __construct( Client $client, $aliasName, $specificIndexName, $startOver, $type, Printer $out = null ) {
+	public function __construct( Client $client, $aliasName, $specificIndexName, $startOver, $type, ?Printer $out = null ) {
 		parent::__construct( $client, $aliasName, $specificIndexName, $startOver, $out );
 		$this->shouldRemovePrefix = $type;
 	}

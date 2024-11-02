@@ -36,7 +36,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 	 * @param float $weight
 	 * @param NamespaceInfo|null $namespaceInfo
 	 */
-	public function __construct( SearchConfig $config, $namespaces, $weight, NamespaceInfo $namespaceInfo = null ) {
+	public function __construct( SearchConfig $config, $namespaces, $weight, ?NamespaceInfo $namespaceInfo = null ) {
 		parent::__construct( $config, $weight );
 
 		$this->namespaceInfo = $namespaceInfo ?: MediaWikiServices::getInstance()->getNamespaceInfo();

@@ -23,7 +23,7 @@ class AnalyzersValidator extends Validator {
 	 * @param array $analysisConfig
 	 * @param Printer|null $out
 	 */
-	public function __construct( Index $index, array $analysisConfig, Printer $out = null ) {
+	public function __construct( Index $index, array $analysisConfig, ?Printer $out = null ) {
 		parent::__construct( $out );
 
 		$this->index = $index;

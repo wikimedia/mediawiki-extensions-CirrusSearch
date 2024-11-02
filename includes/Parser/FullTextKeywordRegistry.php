@@ -46,9 +46,9 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 	 */
 	public function __construct(
 		SearchConfig $config,
-		CirrusSearchHookRunner $cirrusSearchHookRunner = null,
-		NamespacePrefixParser $namespacePrefixParser = null,
-		SparqlClient $client = null
+		?CirrusSearchHookRunner $cirrusSearchHookRunner = null,
+		?NamespacePrefixParser $namespacePrefixParser = null,
+		?SparqlClient $client = null
 	) {
 		$this->features = [
 			// Handle morelike keyword (greedy). Kept for BC reasons with existing clients.

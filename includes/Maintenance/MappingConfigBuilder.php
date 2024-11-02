@@ -82,8 +82,8 @@ class MappingConfigBuilder {
 	public function __construct(
 		$optimizeForExperimentalHighlighter,
 		$flags = 0,
-		SearchConfig $config = null,
-		CirrusSearchHookRunner $cirrusSearchHookRunner = null
+		?SearchConfig $config = null,
+		?CirrusSearchHookRunner $cirrusSearchHookRunner = null
 	) {
 		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;
 		if ( $this->optimizeForExperimentalHighlighter ) {

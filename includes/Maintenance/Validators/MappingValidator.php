@@ -53,7 +53,7 @@ class MappingValidator extends Validator {
 		$optimizeIndexForExperimentalHighlighter,
 		array $availablePlugins,
 		array $mappingConfig,
-		Printer $out = null
+		?Printer $out = null
 	) {
 		parent::__construct( $out );
 

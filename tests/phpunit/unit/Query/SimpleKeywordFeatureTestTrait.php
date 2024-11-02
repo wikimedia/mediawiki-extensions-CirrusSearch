@@ -59,8 +59,8 @@ trait SimpleKeywordFeatureTestTrait {
 		KeywordFeature $feature,
 		$term,
 		array $expected,
-		array $expectedWarnings = null,
-		SearchConfig $config = null
+		?array $expectedWarnings = null,
+		?SearchConfig $config = null
 	) {
 		$this->kwAssertions->assertExpandedData( $feature, $term, $expected, $expectedWarnings, $config );
 	}
@@ -89,8 +89,8 @@ trait SimpleKeywordFeatureTestTrait {
 		KeywordFeature $feature,
 		$term,
 		$filter = null,
-		array $warnings = null,
-		SearchConfig $config = null
+		?array $warnings = null,
+		?SearchConfig $config = null
 	) {
 		$this->kwAssertions->assertFilter( $feature, $term, $filter, $warnings, $config );
 	}
@@ -121,7 +121,7 @@ trait SimpleKeywordFeatureTestTrait {
 		KeywordFeature $feature,
 		$term,
 		$highlightField = null,
-		array $higlightQuery = null
+		?array $higlightQuery = null
 	) {
 		$this->kwAssertions->assertHighlighting( $feature, $term, $highlightField, $higlightQuery );
 	}
@@ -155,8 +155,8 @@ trait SimpleKeywordFeatureTestTrait {
 	protected function assertBoost(
 		KeywordFeature $feature,
 		$term, $boostAssertions = null,
-		array $warnings = null,
-		SearchConfig $config = null
+		?array $warnings = null,
+		?SearchConfig $config = null
 	) {
 		$this->kwAssertions->assertBoost( $feature, $term, $boostAssertions, $warnings, $config );
 	}

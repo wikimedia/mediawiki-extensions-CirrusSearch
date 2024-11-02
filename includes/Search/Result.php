@@ -67,7 +67,7 @@ class Result extends CirrusSearchResult {
 	 * @param \Elastica\Result $result containing the given search result
 	 * @param TitleHelper|null $titleHelper
 	 */
-	public function __construct( $results, $result, TitleHelper $titleHelper = null ) {
+	public function __construct( $results, $result, ?TitleHelper $titleHelper = null ) {
 		$this->titleHelper = $titleHelper ?: new TitleHelper();
 		parent::__construct( $this->titleHelper->makeTitle( $result ) );
 		$this->namespaceText = $result->namespace_text;

@@ -16,7 +16,7 @@ class Health extends \Elastica\Cluster\Health {
 	 * @param Client $client
 	 * @param string|null $index Index or index pattern to limit health check to.
 	 */
-	public function __construct( Client $client, string $index = null ) {
+	public function __construct( Client $client, ?string $index = null ) {
 		$this->index = $index;
 		parent::__construct( $client );
 	}

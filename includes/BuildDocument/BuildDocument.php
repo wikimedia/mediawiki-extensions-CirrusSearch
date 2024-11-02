@@ -163,7 +163,7 @@ class BuildDocument {
 	 * @return bool True when the document update can proceed
 	 * @throws BuildDocumentException
 	 */
-	public function finalize( Document $doc, bool $enforceLatest = true, RevisionRecord $revision = null ): bool {
+	public function finalize( Document $doc, bool $enforceLatest = true, ?RevisionRecord $revision = null ): bool {
 		$flags = CirrusIndexField::getHint( $doc, self::HINT_FLAGS );
 		if ( $flags !== null ) {
 			$docRevision = $doc->get( 'version' );

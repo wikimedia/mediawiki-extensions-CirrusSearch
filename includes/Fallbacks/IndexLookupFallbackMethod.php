@@ -159,7 +159,7 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	 * @param InterwikiResolver|null $interwikiResolver
 	 * @return FallbackMethod|null the method instance or null if unavailable
 	 */
-	public static function build( SearchQuery $query, array $params, InterwikiResolver $interwikiResolver = null ) {
+	public static function build( SearchQuery $query, array $params, ?InterwikiResolver $interwikiResolver = null ) {
 		if ( !$query->isWithDYMSuggestion() ) {
 			return null;
 		}

@@ -22,7 +22,7 @@ class ShardAllocationValidator extends Validator {
 	 * @param array $indexAllocation
 	 * @param Printer|null $out
 	 */
-	public function __construct( Index $index, array $indexAllocation, Printer $out = null ) {
+	public function __construct( Index $index, array $indexAllocation, ?Printer $out = null ) {
 		parent::__construct( $out );
 
 		$this->index = $index;

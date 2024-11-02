@@ -68,7 +68,7 @@ class KeywordFeatureNode extends ParsedNode {
 		$quotedValue,
 		$delimiter,
 		$suffix,
-		array $parsedValue = null
+		?array $parsedValue = null
 	) {
 		parent::__construct( $startOffset, $endOffset );
 		$this->keyword = $keyword;

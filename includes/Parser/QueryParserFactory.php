@@ -27,7 +27,7 @@ class QueryParserFactory {
 		SearchConfig $config,
 		NamespacePrefixParser $namespacePrefix,
 		CirrusSearchHookRunner $cirrusSearchHookRunner,
-		SparqlClient $client = null
+		?SparqlClient $client = null
 	) {
 		$escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 		$repository = new FTQueryClassifiersRepository( $config, $cirrusSearchHookRunner );

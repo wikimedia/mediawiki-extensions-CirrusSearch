@@ -38,7 +38,7 @@ class ProfilesDump extends ApiBase {
 	 * @param string $modulePrefix
 	 * @param SearchProfileService|null $service
 	 */
-	public function __construct( ApiMain $mainModule, $moduleName, $modulePrefix = '', SearchProfileService $service = null ) {
+	public function __construct( ApiMain $mainModule, $moduleName, $modulePrefix = '', ?SearchProfileService $service = null ) {
 		parent::__construct( $mainModule, $moduleName, $modulePrefix );
 		$this->service = $service ?: $this->getSearchConfig()->getProfileService();
 	}

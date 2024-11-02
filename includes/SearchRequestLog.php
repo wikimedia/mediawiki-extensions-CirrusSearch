@@ -49,7 +49,7 @@ class SearchRequestLog extends BaseRequestLog {
 	 * @param array $extra
 	 * @param int[]|null $namespaces list of known namespaces to query, null if unknown or inappropriate
 	 */
-	public function __construct( \Elastica\Client $client, $description, $queryType, array $extra = [], array $namespaces = null ) {
+	public function __construct( \Elastica\Client $client, $description, $queryType, array $extra = [], ?array $namespaces = null ) {
 		parent::__construct( $description, $queryType, $extra );
 		$this->client = $client;
 		$this->lastRequest = $client->getLastRequest();

@@ -96,8 +96,8 @@ class ResultSet extends BaseSearchResultSet implements CirrusSearchResultSet {
 	 */
 	public function __construct(
 		$searchContainedSyntax = false,
-		\Elastica\ResultSet $elasticResultSet = null,
-		TitleHelper $titleHelper = null
+		?\Elastica\ResultSet $elasticResultSet = null,
+		?TitleHelper $titleHelper = null
 	) {
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->result = $elasticResultSet;

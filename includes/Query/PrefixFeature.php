@@ -48,7 +48,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	 */
 	private $namespacePrefixParser;
 
-	public function __construct( NamespacePrefixParser $namespacePrefixParser = null ) {
+	public function __construct( ?NamespacePrefixParser $namespacePrefixParser = null ) {
 		$this->namespacePrefixParser = $namespacePrefixParser ?: self::defaultNSPrefixParser();
 	}
 
@@ -204,7 +204,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	 * @param string $prefix
 	 * @param NamespacePrefixParser|null $namespacePrefixParser
 	 */
-	public static function prepareSearchContext( SearchContext $context, $prefix, NamespacePrefixParser $namespacePrefixParser = null ) {
+	public static function prepareSearchContext( SearchContext $context, $prefix, ?NamespacePrefixParser $namespacePrefixParser = null ) {
 		$filter = self::asContextualFilter( $prefix, $namespacePrefixParser );
 		$filter->populate( $context );
 		$namespaces = $filter->requiredNamespaces();
@@ -239,7 +239,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	 * @param NamespacePrefixParser|null $namespacePrefixParser
 	 * @return ContextualFilter
 	 */
-	public static function asContextualFilter( $prefix, NamespacePrefixParser $namespacePrefixParser = null ) {
+	public static function asContextualFilter( $prefix, ?NamespacePrefixParser $namespacePrefixParser = null ) {
 		$feature = new self( $namespacePrefixParser );
 		$parsedValue = $feature->internalParseValue( $prefix );
 		$namespace = $parsedValue['namespace'] ?? null;

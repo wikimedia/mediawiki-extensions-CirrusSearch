@@ -184,8 +184,8 @@ class SearchProfileService {
 	 */
 	public function __construct(
 		UserOptionsLookup $userOptionsLookup,
-		WebRequest $request = null,
-		UserIdentity $user = null
+		?WebRequest $request = null,
+		?UserIdentity $user = null
 	) {
 		$this->userOptionsLookup = $userOptionsLookup;
 		$this->request = $request ?? RequestContext::getMain()->getRequest();

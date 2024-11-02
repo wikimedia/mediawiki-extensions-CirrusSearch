@@ -58,7 +58,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	 * @param InterwikiResolver|null $interwikiResolver
 	 * @return FallbackMethod|null
 	 */
-	public static function build( SearchQuery $query, array $params, InterwikiResolver $interwikiResolver = null ) {
+	public static function build( SearchQuery $query, array $params, ?InterwikiResolver $interwikiResolver = null ) {
 		if ( !$query->isWithDYMSuggestion() ) {
 			return null;
 		}

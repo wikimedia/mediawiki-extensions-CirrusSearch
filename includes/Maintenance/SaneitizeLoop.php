@@ -59,7 +59,7 @@ class SaneitizeLoop {
 	 * @param \JobQueueGroup|null $jobQueueGroup
 	 */
 	public function __construct(
-		$profileName, $pushJobFreq, $chunkSize, $minLoopDuration, $logger = null, \JobQueueGroup $jobQueueGroup = null
+		$profileName, $pushJobFreq, $chunkSize, $minLoopDuration, $logger = null, ?\JobQueueGroup $jobQueueGroup = null
 	) {
 		$this->profileName = $profileName;
 		$this->pushJobFreq = $pushJobFreq;

@@ -131,7 +131,7 @@ class CirrusSearchTest extends CirrusTestCase {
 	 * @return CirrusSearch
 	 * @throws \MediaWiki\Config\ConfigException
 	 */
-	private function getSearchEngine( array $config = null ) {
+	private function getSearchEngine( ?array $config = null ) {
 		// use cirrus base profiles
 		// only set needed config for Connection
 		$config = $this->newHashSearchConfig( ( $config ?: [] ) + $this->getMinimalConfig() );

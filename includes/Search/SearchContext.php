@@ -228,11 +228,11 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 */
 	public function __construct(
 		SearchConfig $config,
-		array $namespaces = null,
-		CirrusDebugOptions $options = null,
-		FallbackRunner $fallbackRunner = null,
-		FetchPhaseConfigBuilder $fetchPhaseConfigBuilder = null,
-		CirrusSearchHookRunner $cirrusSearchHookRunner = null
+		?array $namespaces = null,
+		?CirrusDebugOptions $options = null,
+		?FallbackRunner $fallbackRunner = null,
+		?FetchPhaseConfigBuilder $fetchPhaseConfigBuilder = null,
+		?CirrusSearchHookRunner $cirrusSearchHookRunner = null
 	) {
 		$this->config = $config;
 		$this->namespaces = $namespaces;
@@ -453,7 +453,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @param AbstractQuery|null $query Query that should be used for highlighting if different
 	 *  from the query used for selecting.
 	 */
-	public function setHighlightQuery( AbstractQuery $query = null ) {
+	public function setHighlightQuery( ?AbstractQuery $query = null ) {
 		$this->isDirty = true;
 		$this->highlightQuery = $query;
 	}
@@ -843,8 +843,8 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 */
 	public static function fromSearchQuery(
 		SearchQuery $query,
-		FallbackRunner $fallbackRunner = null,
-		CirrusSearchHookRunner $cirrusSearchHookRunner = null
+		?FallbackRunner $fallbackRunner = null,
+		?CirrusSearchHookRunner $cirrusSearchHookRunner = null
 	): SearchContext {
 		$searchContext = new SearchContext(
 			$query->getSearchConfig(),

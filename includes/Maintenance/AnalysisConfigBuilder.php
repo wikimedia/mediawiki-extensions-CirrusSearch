@@ -102,8 +102,8 @@ class AnalysisConfigBuilder {
 	public function __construct(
 		$langCode,
 		array $plugins,
-		SearchConfig $config = null,
-		CirrusSearchHookRunner $cirrusSearchHookRunner = null
+		?SearchConfig $config = null,
+		?CirrusSearchHookRunner $cirrusSearchHookRunner = null
 	) {
 		$this->globalCustomFilters = $this->buildGlobalCustomFilters();
 

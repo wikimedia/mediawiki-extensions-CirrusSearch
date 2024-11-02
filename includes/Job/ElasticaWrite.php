@@ -62,8 +62,8 @@ class ElasticaWrite extends CirrusGenericJob {
 		string $method,
 		array $arguments,
 		array $params = [],
-		string $updateKind = null,
-		int $rootEventTime = null
+		?string $updateKind = null,
+		?int $rootEventTime = null
 	) {
 		return new self( [
 			'method' => $method,
@@ -248,7 +248,7 @@ class ElasticaWrite extends CirrusGenericJob {
 	 * @param StatsFactory|null $statsFactory already prefixed with the right component
 	 * @return void
 	 */
-	public function reportUpdateLag( string $cluster, StatsFactory $statsFactory = null ): void {
+	public function reportUpdateLag( string $cluster, ?StatsFactory $statsFactory = null ): void {
 		$params = $this->getParams();
 		$updateKind = $params[CirrusTitleJob::UPDATE_KIND] ?? null;
 		$eventTime = $params[CirrusTitleJob::ROOT_EVENT_TIME] ?? null;

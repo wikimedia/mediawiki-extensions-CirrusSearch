@@ -184,7 +184,7 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 	 * @param int|null $rootEventTime the time of MW event that caused this update (used for monitoring)
 	 * @return int Number of documents updated
 	 */
-	public function updatePages( $pages, $flags, string $updateKind = null, int $rootEventTime = null ): int {
+	public function updatePages( $pages, $flags, ?string $updateKind = null, ?int $rootEventTime = null ): int {
 		// Don't update the same page twice. We shouldn't, but meh
 		$pageIds = [];
 		$pages = array_filter( $pages, static function ( WikiPage $page ) use ( &$pageIds ) {

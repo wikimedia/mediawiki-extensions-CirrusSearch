@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Afalau"
+			"Afalau",
+			"Ceirios"
 		]
 	},
 	"cirrussearch-desc": "Chwiliadau Elasticsearch ar gyfer MediaWici",

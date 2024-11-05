@@ -1717,7 +1717,7 @@ Set build to true and reindex before setting use to true.
 ; $wgCirrusSearchEnableEventBusWeightedTags
 
 Default:
-  $CirrusSearchEnableEventBusWeightedTags = false;
+  $wgCirrusSearchEnableEventBusWeightedTags = false;
 
  Enables external processing of weighted tag changes.
  Changes are offloaded via EventBus and processed by the search update pipeline.

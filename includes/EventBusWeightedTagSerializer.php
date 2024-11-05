@@ -63,7 +63,7 @@ class EventBusWeightedTagSerializer {
 
 	/**
 	 * @param WikiPage $wikiPage
-	 * @param int[][] $set prefix => [ name => weight ] map
+	 * @param array[] $set prefix => [ [ 'tag' => string ] | [ 'tag' => string, 'score' => int ] ] map
 	 * @param bool|null $revBased `rev_based` flag
 	 * @param string|null $dt event timestamp
 	 * @return array

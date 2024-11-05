@@ -750,6 +750,10 @@
 				"build": false,
 				"use": false
 			}
+		},
+		"CirrusSearchEnableEventBusWeightedTags": {
+			"description": "Enables external processing of weighted tag changes.\n Changes are offloaded via EventBus and processed by the search update pipeline.",
+			"value": false
 		}
 	},
 	"SearchMappings": {

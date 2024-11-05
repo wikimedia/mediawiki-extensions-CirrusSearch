@@ -59,7 +59,12 @@ class EventBusWeightedTagsUpdater implements WeightedTagsUpdater {
 			if ( !isset( $set[$weightedTag->getPrefix()] ) ) {
 				$set[$weightedTag->getPrefix()] = [];
 			}
-			$set[$weightedTag->getPrefix()][$weightedTag->getName()] = $weightedTag->getWeight();
+			$mappedWeightedTag = [ 'tag' => $weightedTag->getName() ];
+			$weight = $weightedTag->getWeight();
+			if ( $weight !== null ) {
+				$mappedWeightedTag['score'] = $weight / 1000;
+			}
+			$set[$weightedTag->getPrefix()][] = $mappedWeightedTag;
 			return $set;
 		}, [] );
 

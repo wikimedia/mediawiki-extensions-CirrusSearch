@@ -41,6 +41,8 @@ interface WeightedTagsUpdater {
 	 * @param 'revision'|null $trigger Optional indicator what triggered this update,
 	 *     this hint is currently only processed by {@link EventBusWeightedTagsUpdater}
 	 *
+	 * @throws WeightedTagsException if sending the event fails
+	 *
 	 * @see MultiListBuilder for parameter details
 	 */
 	public function updateWeightedTags(
@@ -58,6 +60,8 @@ interface WeightedTagsUpdater {
 	 * @param string[] $tagPrefixes
 	 * @param 'revision'|null $trigger optionally indicate what triggered this update,
 	 *                                 this hint is currently only processed by {@link EventBusWeightedTagsUpdater}
+	 *
+	 * @throws WeightedTagsException if sending the event fails
 	 *
 	 * @see WeightedTagsBuilder for parameter details
 	 */

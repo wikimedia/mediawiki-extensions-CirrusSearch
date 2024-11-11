@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use Exception;
 use JsonSchema\Validator;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\EventBus\EventBus;
@@ -157,6 +158,86 @@ class EventBusWeightedTagsUpdaterTest extends CirrusTestCase {
 		$this->assertCompliesToSchema( $event );
 	}
 
+	/**
+	 * @covers ::updateWeightedTags
+	 */
+	public function testUpdateFailsWithString(): void {
+		$pageRecord = $this->createPageRecordMock();
+
+		$this->mockEventBus->expects( $this->once() )->method( 'send' )->willReturn( 'string-response' );
+		$this->expectException( WeightedTagsException::class );
+		$this->expectExceptionMessageMatches( '/string-response/' );
+
+		$this->updater->updateWeightedTags( $pageRecord, 'any', [ 'a' => 5 ], 'revision' );
+	}
+
+	/**
+	 * @covers ::updateWeightedTags
+	 */
+	public function testUpdateFailsWithArray(): void {
+		$pageRecord = $this->createPageRecordMock();
+
+		$this->mockEventBus->expects( $this->once() )->method( 'send' )->willReturn( [ 'error-a', 'error-b' ] );
+		$this->expectException( WeightedTagsException::class );
+		$this->expectExceptionMessageMatches( '/error-a/' );
+		$this->expectExceptionMessageMatches( '/error-b/' );
+
+		$this->updater->updateWeightedTags( $pageRecord, 'any', [ 'a' => 5 ], 'revision' );
+	}
+
+	/**
+	 * @covers ::updateWeightedTags
+	 */
+	public function testUpdateFailsWithException(): void {
+		$pageRecord = $this->createPageRecordMock();
+
+		$this->mockEventBus->expects( $this->once() )->method( 'send' )->willThrowException( new Exception( 'cause' ) );
+		$this->expectException( Exception::class );
+		$this->expectExceptionMessageMatches( '/cause/' );
+
+		$this->updater->updateWeightedTags( $pageRecord, 'any', [ 'a' => 5 ], 'revision' );
+	}
+
+	/**
+	 * @covers ::resetWeightedTags
+	 */
+	public function testResetFailsWithString(): void {
+		$pageRecord = $this->createPageRecordMock();
+
+		$this->mockEventBus->expects( $this->once() )->method( 'send' )->willReturn( 'string-response' );
+		$this->expectException( WeightedTagsException::class );
+		$this->expectExceptionMessageMatches( '/string-response/' );
+
+		$this->updater->resetWeightedTags( $pageRecord, [ 'any' ] );
+	}
+
+	/**
+	 * @covers ::resetWeightedTags
+	 */
+	public function testResetFailsWithArray(): void {
+		$pageRecord = $this->createPageRecordMock();
+
+		$this->mockEventBus->expects( $this->once() )->method( 'send' )->willReturn( [ 'error-a', 'error-b' ] );
+		$this->expectException( WeightedTagsException::class );
+		$this->expectExceptionMessageMatches( '/error-a/' );
+		$this->expectExceptionMessageMatches( '/error-b/' );
+
+		$this->updater->resetWeightedTags( $pageRecord, [ 'any' ] );
+	}
+
+	/**
+	 * @covers ::resetWeightedTags
+	 */
+	public function testResetFailsWithException(): void {
+		$pageRecord = $this->createPageRecordMock();
+
+		$this->mockEventBus->expects( $this->once() )->method( 'send' )->willThrowException( new Exception( 'cause' ) );
+		$this->expectException( Exception::class );
+		$this->expectExceptionMessageMatches( '/cause/' );
+
+		$this->updater->resetWeightedTags( $pageRecord, [ 'any' ] );
+	}
+
 	public static function getResetWeightedTagsData(): array {
 		return [
 			[
@@ -233,7 +314,7 @@ class EventBusWeightedTagsUpdaterTest extends CirrusTestCase {
 
 	private function captureEvent(): callable {
 		$args = [];
-		$this->mockEventBus->expects( self::once() )->method( 'send' )->with( $this->captureArgs( $args ) );
+		$this->mockEventBus->expects( self::once() )->method( 'send' )->with( $this->captureArgs( $args ) )->willReturn( true );
 		return static function () use ( &$args ) {
 			return $args[0];
 		};

@@ -219,6 +219,13 @@ class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchRe
 	}
 
 	/**
+	 * @inheritDoc
+	 */
+	public function isApproximateTotalHits(): bool {
+		return $this->delegate->isApproximateTotalHits();
+	}
+
+	/**
 	 * @param int $limit Shrink result set to $limit and flag
 	 *  if more results are available.
 	 */

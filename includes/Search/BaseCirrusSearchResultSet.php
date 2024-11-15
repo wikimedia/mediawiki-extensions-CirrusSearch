@@ -268,6 +268,17 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	}
 
 	/**
+	 * @inheritDoc
+	 */
+	public function isApproximateTotalHits(): bool {
+		$elasticaResultSet = $this->getElasticaResultSet();
+		if ( $elasticaResultSet !== null ) {
+			return $elasticaResultSet->getTotalHitsRelation() !== 'eq';
+		}
+		return false;
+	}
+
+	/**
 	 * @return \Elastica\Response|null
 	 */
 	final public function getElasticResponse() {

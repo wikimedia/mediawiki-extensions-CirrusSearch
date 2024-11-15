@@ -58,7 +58,7 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 		$delegatedMethods = array_diff(
 			$csrsmethods,
 			[ 'getOffset', 'extractResults', 'numRows', 'count', 'setAugmentedData',
-				'augmentResult', 'getIterator', 'isApproximateTotalHits' ]
+				'augmentResult', 'getIterator' ]
 		);
 		$interleavedRsetMethods = array_filter(
 			$interleavedRsetMethods,
@@ -74,6 +74,28 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 		$allParams = [];
 		foreach ( $interleavedRsetMethods as $method ) {
 			$params = [];
+			$returnType = $method->getReturnType();
+			$returnValue = null;
+			if ( $returnType !== null ) {
+				switch ( $returnType->getName() ) {
+					case 'int':
+						$returnValue = mt_rand();
+						break;
+					case 'float':
+						$returnValue = mt_rand() / mt_rand( 1 );
+						break;
+					case 'string':
+						$returnValue = (string)( mt_rand() );
+						break;
+					case 'array':
+						$returnValue = [ mt_rand() ];
+						break;
+					case 'bool':
+						$returnValue = mt_rand( 0, 1 ) === 0;
+						break;
+				}
+			}
+
 			foreach ( $method->getParameters() as $param ) {
 				$paramId = $method->getName() . '-' . $param->getPosition();
 				if ( $param->hasType() ) {
@@ -107,8 +129,9 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 			}
 			$cscrMockTeamA->expects( $this->once() )
 				->method( $method->getName() )
-				->willReturnCallback( function () use ( $params ) {
+				->willReturnCallback( function () use ( $params, $returnValue ) {
 					$this->assertEquals( $params, func_get_args() );
+					return $returnValue;
 				} );
 			$allParams[$method->getName()] = $params;
 		}

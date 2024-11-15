@@ -7,6 +7,7 @@ use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Fallbacks\FallbackRunner;
+use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\AST\ParsedQuery;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Profile\SearchProfileService;
@@ -14,6 +15,7 @@ use CirrusSearch\Query\Builder\ContextualFilter;
 use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Query\PrefixFeature;
 use CirrusSearch\SearchConfig;
+use Generator;
 use PHPUnit\Framework\Assert;
 
 /**
@@ -547,5 +549,28 @@ class SearchQueryTest extends CirrusTestCase {
 	): SearchQueryBuilder {
 		return SearchQueryBuilder::forRewrittenQuery( $query, $term, $this->namespacePrefixParser(),
 			$this->createCirrusSearchHookRunner() );
+	}
+
+	public static function provideMustTrackTotalHits(): Generator {
+		yield 'always true' => [ 'foo', 'CirrusSearchMustTrackTotalHits' => [ 'default' => true ], true ];
+		yield 'always false' => [ 'foo', [ 'CirrusSearchMustTrackTotalHits' => [ 'default' => false ] ], false ];
+		yield 'true on simple bag of words with a bag of words' => [
+			'foo',
+			[ 'CirrusSearchMustTrackTotalHits' => [ 'default' => false, 'simple_bag_of_words' => true ] ],
+			true
+		];
+		yield 'true on simple bag of words without a bag of words' => [
+			'foo OR bar',
+			[ 'CirrusSearchMustTrackTotalHits' => [ 'default' => false, 'simple_bag_of_words' => true ] ],
+			false
+		];
+	}
+
+	/**
+	 * @dataProvider provideMustTrackTotalHits
+	 */
+	public function testMustTrackTotalHits( string $query, array $mustTrackTotalHitsConfig, $expectedMustTrackTotalHits ): void {
+		$searchQuery = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( $mustTrackTotalHitsConfig ), $query )->build();
+		$this->assertEquals( $expectedMustTrackTotalHits, $searchQuery->mustTrackTotalHits() );
 	}
 }

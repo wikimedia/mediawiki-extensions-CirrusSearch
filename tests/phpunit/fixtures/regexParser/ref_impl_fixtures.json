@@ -2043,7 +2043,8 @@
 			"query": "morelike: prefix:test intitle:test",
 			"rawQuery": "morelike: prefix:test intitle:test",
 			"queryClassCache": [
-				"complex_query"
+				"complex_query",
+				"more_like_only"
 			],
 			"featuresUsed": [
 				"more_like"
@@ -2551,7 +2552,8 @@
 			"query": "morelike:Help:Help",
 			"rawQuery": "morelike:Help:Help",
 			"queryClassCache": [
-				"complex_query"
+				"complex_query",
+				"more_like_only"
 			],
 			"featuresUsed": [
 				"more_like"

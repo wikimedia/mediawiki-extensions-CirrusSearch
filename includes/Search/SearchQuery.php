@@ -355,4 +355,17 @@ class SearchQuery {
 	public function shouldProvideAllSnippets(): bool {
 		return $this->provideAllSnippets;
 	}
+
+	public function mustTrackTotalHits(): bool {
+		$queryClasses = $this->getSearchConfig()->get( 'CirrusSearchMustTrackTotalHits' ) ?: [];
+		foreach ( $queryClasses as $queryClass => $track ) {
+			if ( $queryClass === "default" ) {
+				continue;
+			}
+			if ( $this->parsedQuery->isQueryOfClass( $queryClass ) ) {
+				return $track;
+			}
+		}
+		return $queryClasses['default'] ?? true;
+	}
 }

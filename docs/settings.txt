@@ -1721,3 +1721,22 @@ Default:
 
  Enables external processing of weighted tag changes.
  Changes are offloaded via EventBus and processed by the search update pipeline.
+
+; $wgCirrusSearchMustTrackTotalHits
+
+Default:
+  $wgCirrusSearchMustTrackTotalHits = [ 'default' => true ];
+
+Tracking total hits may prevent the search backend from performing interesting optimizations.
+
+This setting can be fine-tuned on a set of query classes:
+ - simple_bag_of_words
+ - simple_phrase_query
+ - bag_of_words_with_phrase_query
+ - complex_query
+ - bogus_query
+ - more_like_only
+
+Custom classifiers can be added by implementing the CirrusSearchRegisterFullTextQueryClassifiersHook.
+
+Order matters, if a query matches multiple classes the first to match in the entry is taken.

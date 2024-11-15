@@ -893,6 +893,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		}
 		$pQuery = $query->getParsedQuery();
 		$searchContext->originalSearchTerm = $pQuery->getRawQuery();
+		$searchContext->trackTotalHits = $query->mustTrackTotalHits();
 		return $searchContext;
 	}
 

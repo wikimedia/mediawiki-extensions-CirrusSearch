@@ -48,7 +48,7 @@ class FTQueryClassifiersRepository implements ParsedQueryClassifiersRepository {
 		}
 		foreach ( $classifier->classes() as $class ) {
 			if ( array_key_exists( $class, $this->classifiers ) ) {
-				throw new ParsedQueryClassifierException( "Classifier with $class already registered" );
+				throw new ParsedQueryClassifierException( "Classifier with {class} already registered", [ 'class' => $class ] );
 			}
 			$this->classifiers[$class] = $classifier;
 		}
@@ -117,7 +117,7 @@ class FTQueryClassifiersRepository implements ParsedQueryClassifiersRepository {
 		if ( array_key_exists( $name, $this->classifiers ) ) {
 			return $this->classifiers[$name];
 		}
-		throw new ParsedQueryClassifierException( "Classifier $name not found" );
+		throw new ParsedQueryClassifierException( "Classifier {name} not found", [ 'name' => $name ] );
 	}
 
 	/**

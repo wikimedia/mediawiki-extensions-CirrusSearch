@@ -754,6 +754,12 @@
 		"CirrusSearchEnableEventBusWeightedTags": {
 			"description": "Enables external processing of weighted tag changes.\n Changes are offloaded via EventBus and processed by the search update pipeline.",
 			"value": false
+		},
+		"CirrusSearchMustTrackTotalHits": {
+			"description": "Return the number of total hits precisely or not, based on a query class.",
+			"value": {
+				"default": true
+			}
 		}
 	},
 	"SearchMappings": {

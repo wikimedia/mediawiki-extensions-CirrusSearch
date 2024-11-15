@@ -11,32 +11,31 @@ use CirrusSearch\CirrusTestCase;
 class BasicQueryClassifierTest extends CirrusTestCase {
 
 	public static function provideQueries() {
-		return [
-			'simple' => [ 'foo', [ BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ] ],
-			'simple unquoted phrase' => [ 'foo bar', [ BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ] ],
-			'empty' => [ '', [] ],
-			'simple phrase' => [ '"hello world"', [ BasicQueryClassifier::SIMPLE_PHRASE ] ],
-			'simple unbalanced phrase' => [ 'hello "world', [ BasicQueryClassifier::BOGUS_QUERY ] ],
-			'words and simple phrase' => [ 'hello "world"', [ BasicQueryClassifier::BAG_OF_WORDS_WITH_PHRASE ] ],
-			'wildcard' => [ 'hop*d', [ BasicQueryClassifier::COMPLEX_QUERY ] ],
-			'prefix' => [ 'hop*', [ BasicQueryClassifier::COMPLEX_QUERY ] ],
-			'fuzzy' => [ 'hop~', [ BasicQueryClassifier::COMPLEX_QUERY ] ],
-			'phrase prefix' => [ '"foo bar*"', [ BasicQueryClassifier::COMPLEX_QUERY ] ],
-			'complex phrase' => [ '"foo bar"~', [ BasicQueryClassifier::COMPLEX_QUERY ] ],
-			'complex phrase bis' => [ '"foo bar"~2~', [ BasicQueryClassifier::COMPLEX_QUERY ] ],
-			'keyword' => [ 'intitle:foo', [ BasicQueryClassifier::COMPLEX_QUERY ] ],
-			'boolean' => [ 'hello AND world', [ BasicQueryClassifier::COMPLEX_QUERY ] ],
-			'negation' => [ 'hello -world', [ BasicQueryClassifier::COMPLEX_QUERY ] ],
-			'negation explicit' => [ 'hello AND NOT world', [ BasicQueryClassifier::COMPLEX_QUERY ] ],
-			'complex' => [
-				'intitle:foo AND hello AND NOT world* AND "foo bar"~3~',
-				[ BasicQueryClassifier::COMPLEX_QUERY ]
-			],
-			'complex & bogus' => [
-				'intitle:foo AND hello AND NOT -world* AND "foo bar"~3~',
-				[ BasicQueryClassifier::BOGUS_QUERY, BasicQueryClassifier::COMPLEX_QUERY ]
-			],
+		yield 'simple' => [ 'foo', [ BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ] ];
+		yield 'simple unquoted phrase' => [ 'foo bar', [ BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ] ];
+		yield 'empty' => [ '', [] ];
+		yield 'simple phrase' => [ '"hello world"', [ BasicQueryClassifier::SIMPLE_PHRASE ] ];
+		yield 'simple unbalanced phrase' => [ 'hello "world', [ BasicQueryClassifier::BOGUS_QUERY ] ];
+		yield 'words and simple phrase' => [ 'hello "world"', [ BasicQueryClassifier::BAG_OF_WORDS_WITH_PHRASE ] ];
+		yield 'wildcard' => [ 'hop*d', [ BasicQueryClassifier::COMPLEX_QUERY ] ];
+		yield 'prefix' => [ 'hop*', [ BasicQueryClassifier::COMPLEX_QUERY ] ];
+		yield 'fuzzy' => [ 'hop~', [ BasicQueryClassifier::COMPLEX_QUERY ] ];
+		yield 'phrase prefix' => [ '"foo bar*"', [ BasicQueryClassifier::COMPLEX_QUERY ] ];
+		yield 'complex phrase' => [ '"foo bar"~', [ BasicQueryClassifier::COMPLEX_QUERY ] ];
+		yield 'complex phrase bis' => [ '"foo bar"~2~', [ BasicQueryClassifier::COMPLEX_QUERY ] ];
+		yield 'keyword' => [ 'intitle:foo', [ BasicQueryClassifier::COMPLEX_QUERY ] ];
+		yield 'boolean' => [ 'hello AND world', [ BasicQueryClassifier::COMPLEX_QUERY ] ];
+		yield 'negation' => [ 'hello -world', [ BasicQueryClassifier::COMPLEX_QUERY ] ];
+		yield 'negation explicit' => [ 'hello AND NOT world', [ BasicQueryClassifier::COMPLEX_QUERY ] ];
+		yield 'complex' => [
+			'intitle:foo AND hello AND NOT world* AND "foo bar"~3~',
+			[ BasicQueryClassifier::COMPLEX_QUERY ]
 		];
+		yield 'complex & bogus' => [
+			'intitle:foo AND hello AND NOT -world* AND "foo bar"~3~',
+			[ BasicQueryClassifier::BOGUS_QUERY, BasicQueryClassifier::COMPLEX_QUERY ]
+		];
+		yield 'morelike_only' => [ 'morelike:foo', [ BasicQueryClassifier::COMPLEX_QUERY, BasicQueryClassifier::MORE_LIKE_ONLY ] ];
 	}
 
 	/**
@@ -60,6 +59,7 @@ class BasicQueryClassifierTest extends CirrusTestCase {
 				BasicQueryClassifier::BAG_OF_WORDS_WITH_PHRASE,
 				BasicQueryClassifier::COMPLEX_QUERY,
 				BasicQueryClassifier::BOGUS_QUERY,
+				BasicQueryClassifier::MORE_LIKE_ONLY,
 			], $classifier->classes() );
 	}
 }

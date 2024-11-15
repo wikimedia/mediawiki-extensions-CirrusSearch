@@ -57,29 +57,22 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 	public const BOGUS_QUERY = 'bogus_query';
 
 	/**
-	 * @var bool
+	 * Query that is only a morelike
 	 */
-	private $hasWords;
+	public const MORE_LIKE_ONLY = 'more_like_only';
 
-	/**
-	 * @var bool
-	 */
-	private $hasSimplePhrase;
+	private bool $hasWords;
 
-	/**
-	 * @var bool
-	 */
-	private $hasComplex;
+	private bool $hasSimplePhrase;
 
-	/**
-	 * @var int
-	 */
-	private $depth;
+	private bool $hasComplex;
+
+	private int $depth;
 
 	/**
 	 * @var int
 	 */
-	private $maxDepth;
+	private int $maxDepth;
 
 	/**
 	 * @param ParsedQuery $query
@@ -99,9 +92,12 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 
 		$query->getRoot()->accept( $this );
 
+		// @phan-suppress-next-line PhanSuspiciousValueComparison
+		if ( $this->maxDepth === 0 && in_array( 'more_like', $query->getFeaturesUsed() ) ) {
+			$classes[] = self::MORE_LIKE_ONLY;
+		}
 		if ( $this->hasComplex ) {
 			$classes[] = self::COMPLEX_QUERY;
-			// @phan-suppress-next-line PhanSuspiciousValueComparison
 		} elseif ( $this->maxDepth === 0 && $this->hasWords && !$this->hasSimplePhrase ) {
 			$classes[] = self::SIMPLE_BAG_OF_WORDS;
 		} elseif ( $this->maxDepth === 0 && !$this->hasWords && $this->hasSimplePhrase ) {
@@ -213,6 +209,7 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 			self::BAG_OF_WORDS_WITH_PHRASE,
 			self::COMPLEX_QUERY,
 			self::BOGUS_QUERY,
+			self::MORE_LIKE_ONLY,
 		];
 	}
 

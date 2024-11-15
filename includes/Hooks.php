@@ -115,8 +115,12 @@ class Hooks implements
 			$wgCirrusSearchLogElasticRequests,
 			$wgCirrusSearchLogElasticRequestsSecret,
 			$wgCirrusSearchEnableAltLanguage,
-			$wgCirrusSearchUseCompletionSuggester;
+			$wgCirrusSearchUseCompletionSuggester,
+			$wgCirrusSearchMustTrackTotalHits;
 
+		if ( $request->getCheck( 'cirrusApproxTotalHits' ) ) {
+			$wgCirrusSearchMustTrackTotalHits = [ 'default' => false ];
+		}
 		self::overrideMoreLikeThisOptionsFromMessage();
 
 		self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize,

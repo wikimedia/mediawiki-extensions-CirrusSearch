@@ -162,7 +162,7 @@ class DumpIndex extends Maintenance {
 
 		foreach ( $searchAfter as $results ) {
 			if ( $totalDocsInIndex === -1 ) {
-				$totalDocsInIndex = $this->getTotalHits( $results );
+				$totalDocsInIndex = $results->getTotalHits();
 				$totalDocsToDump = $limit > 0 ? $limit : $totalDocsInIndex;
 				$this->output( "Dumping $totalDocsToDump documents ($totalDocsInIndex in the index)\n" );
 			}
@@ -273,16 +273,6 @@ class DumpIndex extends Maintenance {
 	 */
 	protected function getClient() {
 		return $this->getConnection()->getClient();
-	}
-
-	/**
-	 * @param Elastica\ResultSet $results
-	 * @return mixed|string
-	 */
-	private function getTotalHits( Elastica\ResultSet $results ) {
-		// hack to support ES6, switch to getTotalHits
-		return $results->getResponse()->getData()["hits"]["total"]["value"] ??
-			   $results->getResponse()->getData()["hits"]["total"];
 	}
 
 }

@@ -113,7 +113,7 @@ class AnalysisConfigBuilder {
 			$pluginsPresent = 1;
 			$pluginList = explode( ',', $pluginSpec );
 			foreach ( $pluginList as $plugin ) {
-				if ( !in_array( $plugin, $plugins ) ) {
+				if ( !Plugins::contains( $plugin, $plugins ) ) {
 					$pluginsPresent = 0;
 					break;
 				}
@@ -123,8 +123,8 @@ class AnalysisConfigBuilder {
 					array_merge( $this->elasticsearchLanguageAnalyzers, $extra );
 			}
 		}
-		$this->icu = in_array( 'analysis-icu', $plugins );
-		$this->textify = in_array( 'extra-analysis-textify', $plugins );
+		$this->icu = Plugins::contains( 'analysis-icu', $plugins );
+		$this->textify = Plugins::contains( 'extra-analysis-textify', $plugins );
 		if ( $this->isTextifyAvailable() ) {
 			// icu_token_repair can only work with the textify icu_tokenizer clone
 			$this->icu_tokenizer = 'textify_icu_tokenizer';
@@ -150,7 +150,7 @@ class AnalysisConfigBuilder {
 	 * @return bool true if icu folding should be enabled
 	 */
 	public function shouldActivateIcuFolding( $language ) {
-		if ( !$this->isIcuAvailable() || !in_array( 'extra', $this->plugins ) ) {
+		if ( !$this->isIcuAvailable() || !Plugins::contains( 'extra', $this->plugins ) ) {
 			// ICU folding requires the icu plugin and the extra plugin
 			return false;
 		}
@@ -1431,7 +1431,7 @@ class AnalysisConfigBuilder {
 				break;
 			case 'turkish':
 				$trAposFilter = 'apostrophe';
-				if ( in_array( 'extra-analysis-turkish', $this->plugins ) ) {
+				if ( Plugins::contains( 'extra-analysis-turkish', $this->plugins ) ) {
 					$trAposFilter = 'better_apostrophe';
 				}
 				$config = $myAnalyzerBuilder->

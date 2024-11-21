@@ -6,6 +6,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Maintenance\AnalysisFilter;
 use CirrusSearch\Maintenance\ConfigUtils;
+use CirrusSearch\Maintenance\Plugins;
 use CirrusSearch\Maintenance\Printer;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Status\Status;
@@ -320,7 +321,7 @@ class MetaStoreIndex {
 		if ( !$pluginsStatus->isGood() ) {
 			throw new \RuntimeException( (string)$pluginsStatus );
 		}
-		if ( !array_search( 'reindex', $pluginsStatus->getValue() ) ) {
+		if ( !Plugins::contains( 'reindex', $pluginsStatus->getValue() ) ) {
 			throw new \RuntimeException( "The reindex module is mandatory to upgrade the metastore" );
 		}
 		$index = $this->createNewIndex( (string)time() );

@@ -3,11 +3,11 @@ MediaWiki extension: CirrusSearch
 
 Installation
 ------------
-Get Elasticsearch up and running somewhere. Only Elasticsearch v7.10 is
-supported. A compatability layer for writing to Elasticsearch v6.8 is provided
-to support zero-downtime migrations when multiple clusters are available. If you
-will be running Elasticsearch on a host separate from the mediawiki
-installation see
+Get Elasticsearch or OpenSearch up and running somewhere. Both Elasticsearch
+v7.10 and OpenSearch v1.3 are supported. Support for Elasticsearch will be
+removed in a future version of CirrusSearch, but is currently better tested
+than integration with OpenSearch. If you will be running Elasticsearch on a
+host separate from the mediawiki installation see
 https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html.
 Be careful with the network configuration, never expose an unprotected node to
 the internet.

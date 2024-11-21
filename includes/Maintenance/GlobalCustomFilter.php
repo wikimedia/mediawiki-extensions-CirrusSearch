@@ -182,7 +182,7 @@ class GlobalCustomFilter {
 	 */
 	private function pluginsAvailable( array $installedPlugins ): bool {
 		foreach ( $this->requiredPlugins as $reqPlugin ) {
-			if ( !in_array( $reqPlugin, $installedPlugins ) ) {
+			if ( !Plugins::contains( $reqPlugin, $installedPlugins ) ) {
 				return false;
 			}
 		}

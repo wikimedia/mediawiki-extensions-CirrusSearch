@@ -209,7 +209,8 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 			$services->getBacklinkCacheFactory(),
 			$docSizeLimiter,
 			$services->getTitleFormatter(),
-			$services->getWikiPageFactory()
+			$services->getWikiPageFactory(),
+			$services->getTitleFactory()
 		);
 		foreach ( $builder->initialize( $pages, $flags ) as $document ) {
 			// This isn't really a property of the connection, so it doesn't matter

@@ -11,6 +11,7 @@ use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\Title\TitleFormatter;
 use Wikimedia\Rdbms\IReadableDatabase;
 use WikiPage;
@@ -46,7 +47,10 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 		$this->revStore->method( 'getTitle' )
 			->willReturn( $title );
 		$this->revision->method( 'getPage' )
-			->willReturn( $title );
+			->willReturn( $title->toPageIdentity() );
+
+		$titleFactory = $this->createMock( TitleFactory::class );
+		$titleFactory->method( 'castFromPageIdentity' )->willReturn( $title );
 
 		return new class(
 			$connection,
@@ -55,7 +59,8 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 			$this->createNoOpMock( BacklinkCacheFactory::class ),
 			new DocumentSizeLimiter( [] ),
 			$this->createNoOpMock( TitleFormatter::class ),
-			$this->createNoOpMock( WikiPageFactory::class )
+			$this->createNoOpMock( WikiPageFactory::class ),
+			$titleFactory
 		) extends BuildDocument {
 			/** Override create builders to avoid testing those implementations */
 			protected function createBuilders( int $flags ): array {

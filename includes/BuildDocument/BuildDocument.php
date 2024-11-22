@@ -12,7 +12,7 @@ use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionAccessException;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
-use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\Title\TitleFormatter;
 use Wikimedia\Rdbms\IReadableDatabase;
 use WikiPage;
@@ -75,6 +75,8 @@ class BuildDocument {
 	private $titleFormatter;
 	/** @var WikiPageFactory */
 	private $wikiPageFactory;
+	/** @var TitleFactory */
+	private TitleFactory $titleFactory;
 
 	/**
 	 * @param Connection $connection Cirrus connection to read page properties from
@@ -92,7 +94,8 @@ class BuildDocument {
 		BacklinkCacheFactory $backlinkCacheFactory,
 		DocumentSizeLimiter $docSizeLimiter,
 		TitleFormatter $titleFormatter,
-		WikiPageFactory $wikiPageFactory
+		WikiPageFactory $wikiPageFactory,
+		TitleFactory $titleFactory
 	) {
 		$this->config = $connection->getConfig();
 		$this->connection = $connection;
@@ -102,6 +105,7 @@ class BuildDocument {
 		$this->documentSizeLimiter = $docSizeLimiter;
 		$this->titleFormatter = $titleFormatter;
 		$this->wikiPageFactory = $wikiPageFactory;
+		$this->titleFactory = $titleFactory;
 	}
 
 	/**
@@ -172,7 +176,7 @@ class BuildDocument {
 			}
 			try {
 				$revision ??= $this->revStore->getRevisionById( $docRevision );
-				$title = $revision ? Title::castFromPageIdentity( $revision->getPage() ) : null;
+				$title = $revision ? $this->titleFactory->castFromPageIdentity( $revision->getPage() ) : null;
 			} catch ( RevisionAccessException $e ) {
 				$revision = null;
 			}

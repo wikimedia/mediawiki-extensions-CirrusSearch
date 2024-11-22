@@ -100,7 +100,8 @@ class QueryBuildDocument extends ApiQueryBase {
 			new DocumentSizeLimiter( $searchConfig->getProfileService()
 				->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER, SearchProfileService::CONTEXT_DEFAULT, $profile ) ),
 			$services->getTitleFormatter(),
-			$services->getWikiPageFactory()
+			$services->getWikiPageFactory(),
+			$services->getTitleFactory()
 		);
 		$baseMetadata = [];
 		$clusterGroup = $searchConfig->getClusterAssignment()->getCrossClusterName();

@@ -94,10 +94,30 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 				[
 					[ 'out' => 'Ducks' ],
 					[ 'out' => 'Wigeons' ],
-					[ 'out' => 'More ducks' ],
+					[ 'out' => 'Paddling' ],
 					[ 'out' => 'There is no such thing as too many ducks' ],
 				],
-				null
+				[
+					'bool' => [
+						'should' => [
+							[
+								'match' => [
+									'category.lowercase_keyword' => [ 'query' => 'Ducks' ],
+								],
+							],
+							[
+								'match' => [
+									'category.lowercase_keyword' => [ 'query' => 'Wigeons' ],
+								],
+							],
+							[
+								'match' => [
+									'category.lowercase_keyword' => [ 'query' => 'Paddling' ],
+								],
+							],
+						],
+					],
+				],
 			],
 			'url encoding' => [
 				'Duck',
@@ -155,12 +175,11 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 		];
 		$query = "deepcat:$term";
 
+		$expectedData = array_column( $result, 'out' );
+		$warnings = [];
 		if ( count( $result ) > $maxRes ) {
-			$expectedData = [];
 			$warnings = [ [ 'cirrussearch-feature-deepcat-toomany' ] ];
-		} else {
-			$expectedData = array_column( $result, 'out' );
-			$warnings = [];
+			$expectedData = array_slice( $expectedData, 0, $maxRes );
 		}
 		$client = $this->getSparqlClient( $sparqlQuery, $result );
 		$feature = new DeepcatFeature( $config, $client );
@@ -172,37 +191,6 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 		$client = $this->getSparqlClient( $sparqlQuery, $result );
 		$feature = new DeepcatFeature( $config, $client );
 		$this->assertFilter( $feature, $query, $filters, $warnings );
-	}
-
-	public function testTooManyCats() {
-		$config = new HashConfig( [
-			'CirrusSearchCategoryDepth' => '3',
-			'CirrusSearchCategoryMax' => 3,
-			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'
-		] );
-
-		$sparqlQuery = [
-			'bd:serviceParam mediawiki:start <' . $this->categoryToUrl( 'Ducks' ) . '>',
-			'bd:serviceParam mediawiki:depth 3 ',
-			'LIMIT 4'
-		];
-		$result = [
-			[ 'out' => 'Ducks' ],
-			[ 'out' => 'Wigeons' ],
-			[ 'out' => 'More ducks' ],
-			[ 'out' => 'There is no such thing as too many ducks' ],
-		];
-
-		$query = "deepcat:Ducks";
-		$client = $this->getSparqlClient( $sparqlQuery, $result );
-		$feature = new DeepcatFeature( $config, $client );
-		$this->assertFilter( $feature, "deepcat:Ducks", null, [ [ 'cirrussearch-feature-deepcat-toomany' ] ] );
-		$client = $this->getSparqlClient( $sparqlQuery, $result );
-		$feature = new DeepcatFeature( $config, $client );
-		$this->assertNoResultsPossible( $feature, $query );
-		$client = $this->getSparqlClient( $sparqlQuery, $result );
-		$feature = new DeepcatFeature( $config, $client );
-		$this->assertExpandedData( $feature, "deepcat:Ducks", [], [ [ 'cirrussearch-feature-deepcat-toomany' ] ] );
 	}
 
 	/**

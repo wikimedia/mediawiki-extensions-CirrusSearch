@@ -57,7 +57,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint should be set to a valid SPARQL endpoint to use deep category search.",
 	"cirrussearch-feature-deepcat-exception": "Deep category search SPARQL query failed",
 	"cirrussearch-feature-deepcat-timeout": "Deep category search timed out. Most likely the category has too many subcategories",
-	"cirrussearch-feature-deepcat-toomany": "Deep category query returned too many categories",
+	"cirrussearch-feature-deepcat-toomany": "Deep category query returned too many categories. Only a subset of categories has been applied.",
 	"cirrussearch-feature-deepcat-invalid-title": "The provided category is invalid.",
 	"cirrussearch-feature-pageid-invalid-id": "Invalid page {{PLURAL:$2|ID|IDs}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "No valid categories provided to '$1'.",

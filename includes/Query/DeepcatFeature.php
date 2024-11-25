@@ -225,7 +225,7 @@ SPARQL;
 				->getCounter( 'deepcat_too_many_total' )
 				->copyToStatsdAt( 'CirrusSearch.deepcat.toomany' )
 				->increment();
-			return [];
+			$result = array_slice( $result, 0, $this->limit );
 		}
 
 		$prefixLen = strlen( $this->getCategoryPrefix() );

@@ -81,7 +81,8 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			'CirrusSearchQueryStringMaxDeterminizedStates' => 500,
 			'CirrusSearchLanguageWeight' => [],
 			'CirrusSearchAllowLeadingWildcard' => true,
-			'ContentNamespaces' => [ NS_MAIN ],
+			MainConfigNames::CapitalLinks => true,
+			MainConfigNames::ContentNamespaces => [ NS_MAIN ],
 		] );
 
 		// Override the list of namespaces to give more deterministic results
@@ -256,6 +257,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			'CirrusSearchIndexBaseName' => 'wiki',
 			'CirrusSearchQueryStringMaxDeterminizedStates' => 500,
 			MainConfigNames::ContentNamespaces => [ NS_MAIN ],
+			MainConfigNames::CapitalLinks => true,
 			'CirrusSearchEnableArchive' => true,
 		] );
 

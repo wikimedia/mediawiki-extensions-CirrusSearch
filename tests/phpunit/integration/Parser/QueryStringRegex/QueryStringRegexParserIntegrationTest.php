@@ -50,6 +50,7 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
 	 */
 	public function assertQuery( array $expected, $queryString, array $config = [] ) {
+		$this->overrideConfigValues( [ 'CapitalLinks' => true ] );
 		$config = new HashSearchConfig(
 			$config + [ 'CirrusSearchStripQuestionMarks' => 'all' ],
 			[ HashSearchConfig::FLAG_INHERIT ]

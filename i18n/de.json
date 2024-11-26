@@ -64,7 +64,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint sollte auf einen gültigen SPARQL-Endpunkt festgelegt werden, um die Deepcat-Suche zu verwenden.",
 	"cirrussearch-feature-deepcat-exception": "Die SPARQL-Abfrage für die Deepcat-Suche ist fehlgeschlagen",
 	"cirrussearch-feature-deepcat-timeout": "Zeitüberschreitung bei tiefer Kategoriensuche. Höchstwahrscheinlich hat die Kategorie zu viele Unterkategorien.",
-	"cirrussearch-feature-deepcat-toomany": "Die Deepcat-Abfrage hat zu viele Kategorien zurückgegeben.",
+	"cirrussearch-feature-deepcat-toomany": "Die Deepcat-Abfrage hat zu viele Kategorien zurückgegeben. Es wurde nur eine Teilmenge der Kategorien angewandt.",
 	"cirrussearch-feature-deepcat-invalid-title": "Die angegebene Kategorie ist ungültig.",
 	"cirrussearch-feature-pageid-invalid-id": "Ungültige Seiten-{{PLURAL:$2|ID|IDs}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Es wurden keine gültigen Kategorien für „$1“ angegeben.",

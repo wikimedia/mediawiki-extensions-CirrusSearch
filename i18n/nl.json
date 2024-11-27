@@ -77,7 +77,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint moet worden ingesteld op een geldig SPARQL-eindpunt om diepgaand zoeken op categorieën te gebruiken.",
 	"cirrussearch-feature-deepcat-exception": "Diepgaande categoriezoekopdracht SPARQL-query is mislukt",
 	"cirrussearch-feature-deepcat-timeout": "Er is een time-out opgetreden voor het diepgaand zoeken naar categorieën. Hoogstwaarschijnlijk heeft de categorie te veel subcategorieën",
-	"cirrussearch-feature-deepcat-toomany": "Diepgaande categoriezoekopdracht heeft te veel categorieën geretourneerd",
+	"cirrussearch-feature-deepcat-toomany": "De diepgaande categorie-zoekopdracht heeft te veel categorieën geretourneerd. Er is slechts een deel van de categorieën toegepast.",
 	"cirrussearch-feature-deepcat-invalid-title": "De opgegeven categorie is ongeldig.",
 	"cirrussearch-feature-pageid-invalid-id": "Ongelidge pagina-{{PLURAL:$2|ID|IDs}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Geen geldige categorieën opgegeven voor '$1'.",

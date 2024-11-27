@@ -58,7 +58,7 @@
 	"cirrussearch-feature-not-available": "'$1' 검색 키워드는 이 위키에서 사용하고 있지 않습니다.",
 	"cirrussearch-feature-too-many-conditions": "'$1'에 지정한 조건이 너무 많습니다. $2으(로) 줄입니다.",
 	"cirrussearch-feature-deepcat-exception": "심층 분류 검색 SPARQL 쿼리가 실패했습니다",
-	"cirrussearch-feature-deepcat-toomany": "심층 분류 질의는 너무 많은 분류를 반환했습니다",
+	"cirrussearch-feature-deepcat-toomany": "심층 분류 질의는 너무 많은 분류를 반환했습니다. 분류의 하위 집합만 적용되었습니다.",
 	"cirrussearch-feature-deepcat-invalid-title": "지정된 분류는 유효하지 않습니다.",
 	"cirrussearch-feature-pageid-invalid-id": "유효하지 않은 문서 {{PLURAL:$2|ID}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "유효한 분류가 '$1'에 추가되지 않았습니다.",

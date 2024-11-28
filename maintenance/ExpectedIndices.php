@@ -2,10 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\Connection;
-use CirrusSearch\SearchConfig;
 use MediaWiki\Json\FormatJson;
-use MediaWiki\WikiMap\WikiMap;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {
@@ -37,54 +34,14 @@ class ExpectedIndices extends Maintenance {
 	}
 
 	public function execute() {
-		$clusters = $this->requestedClusters(
-			$this->getOption( 'cluster', null ) );
-		echo FormatJson::encode( [
-			'dbname' => WikiMap::getCurrentWikiId(),
-			'clusters' => $this->clusterInfo( $clusters ),
-		], !$this->getOption( 'oneline' ) ), "\n";
+		$builder = new ExpectedIndicesBuilder( $this->getSearchConfig() );
+		$cluster = $this->getOption( 'cluster', null );
+		echo FormatJson::encode(
+			$builder->build( true, $cluster ),
+			!$this->getOption( 'oneline' )
+		), "\n";
 	}
 
-	private function clusterInfo( array $clusters ): array {
-		$config = $this->getSearchConfig();
-		$assignment = $config->getClusterAssignment();
-		$output = [];
-		foreach ( $clusters as $clusterName ) {
-			$output[$clusterName] = [
-				'aliases' => $this->allIndexNames(
-					Connection::getPool( $config, $clusterName ) ),
-				'group' => $assignment->getCrossClusterName(),
-				// Group should satisfy most automated use cases, server list
-				// is more for debugging or verifying.
-				'connection' => $assignment->getServerList( $clusterName )
-			];
-		}
-		return $output;
-	}
-
-	private function requestedClusters( ?string $requested ): array {
-		$assignment = $this->getSearchConfig()->getClusterAssignment();
-		if ( $requested !== null ) {
-			return $assignment->hasCluster( $requested )
-				? [ $requested ]
-				: [];
-		}
-		return $assignment->getAllKnownClusters();
-	}
-
-	private function allIndexNames( Connection $conn ): array {
-		$config = $this->getSearchConfig();
-		$baseName = $config->get( SearchConfig::INDEX_BASE_NAME );
-		$suffixes = $conn->getAllIndexSuffixes( null );
-		if ( $config->isCompletionSuggesterEnabled() ) {
-			$suffixes[] = Connection::TITLE_SUGGEST_INDEX_SUFFIX;
-		}
-		$output = [];
-		foreach ( $suffixes as $indexSuffix ) {
-			$output[] = $conn->getIndexName( $baseName, $indexSuffix );
-		}
-		return $output;
-	}
 }
 
 $maintClass = ExpectedIndices::class;

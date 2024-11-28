@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Api;
 
+use CirrusSearch\Maintenance\ExpectedIndicesBuilder;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\UserTestingEngine;
@@ -163,6 +164,9 @@ class ConfigDump extends ApiBase {
 		if ( isset( $props['usertesting'] ) ) {
 			$this->addUserTesting( $result );
 		}
+		if ( isset( $props['expectedindices'] ) ) {
+			$this->addExpectedIndices( $result );
+		}
 	}
 
 	/**
@@ -245,6 +249,16 @@ class ConfigDump extends ApiBase {
 			$status->isActive() ? $status->getTrigger() : '' );
 	}
 
+	/**
+	 * @param ApiResult $result
+	 * @return void
+	 */
+	protected function addExpectedIndices( ApiResult $result ): void {
+		$builder = new ExpectedIndicesBuilder( $this->getSearchConfig() );
+		$result->addValue( null, 'CirrusSearchExpectedIndices',
+			$builder->build( false, null ) );
+	}
+
 	public function getAllowedParams() {
 		return [
 			'prop' => [
@@ -255,6 +269,7 @@ class ConfigDump extends ApiBase {
 					'profiles',
 					'replicagroup',
 					'usertesting',
+					'expectedindices'
 				],
 				ParamValidator::PARAM_ISMULTI => true,
 			],

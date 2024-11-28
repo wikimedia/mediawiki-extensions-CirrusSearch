@@ -24,9 +24,10 @@ class ExpectedIndicesBuilder {
 		$assignment = $this->searchConfig->getClusterAssignment();
 		$output = [];
 		foreach ( $clusters as $clusterName ) {
+			$connection = Connection::getPool( $this->searchConfig, $clusterName );
 			$info = [
-				'aliases' => $this->allIndexNames(
-					Connection::getPool( $this->searchConfig, $clusterName ) ),
+				'aliases' => $this->allIndexNames( $connection ),
+				'shard_count' => $this->shardCounts( $connection ),
 				'group' => $assignment->getCrossClusterName(),
 			];
 			if ( $withConnectionInfo ) {
@@ -58,6 +59,21 @@ class ExpectedIndicesBuilder {
 		$output = [];
 		foreach ( $suffixes as $indexSuffix ) {
 			$output[] = $conn->getIndexName( $baseName, $indexSuffix );
+		}
+		return $output;
+	}
+
+	private function shardCounts( Connection $conn ): array {
+		$baseName = $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME );
+		$suffixes = $conn->getAllIndexSuffixes( null );
+		if ( $this->searchConfig->isCompletionSuggesterEnabled() ) {
+			$suffixes[] = Connection::TITLE_SUGGEST_INDEX_SUFFIX;
+		}
+
+		$output = [];
+		foreach ( $suffixes as $indexSuffix ) {
+			$index = $conn->getIndexName( $baseName, $indexSuffix );
+			$output[$index] = $conn->getSettings()->getShardCount( $indexSuffix );
 		}
 		return $output;
 	}

@@ -23,6 +23,20 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 			'CirrusSearchDefaultCluster' => 'one',
 			'CirrusSearchWriteClusters' => null,
 			'CirrusSearchReplicaGroup' => 'mygroup',
+			'CirrusSearchShardCount' => [
+				'two' => [
+					'content' => 2,
+					'general' => 2,
+					'extraindex' => 2,
+					'titlesuggest' => 2,
+					'archive' => 2,
+				],
+				'content' => 1,
+				'general' => 1,
+				'extraindex' => 1,
+				'titlesuggest' => 1,
+				'archive' => 1,
+			],
 			'CirrusSearchNamespaceMappings' => [
 				NS_FILE => 'extraindex'
 			],
@@ -40,6 +54,12 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 							"mywiki_id_archive",
 							"mywiki_id_extraindex",
 						],
+						"shard_count" => [
+							"mywiki_id_content" => 1,
+							"mywiki_id_general" => 1,
+							"mywiki_id_archive" => 1,
+							"mywiki_id_extraindex" => 1,
+						],
 						"group" => "mygroup",
 						"connection" => [
 							'host' => '127.0.0.1',
@@ -52,6 +72,12 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 							"mywiki_id_general",
 							"mywiki_id_archive",
 							"mywiki_id_extraindex",
+						],
+						"shard_count" => [
+							"mywiki_id_content" => 2,
+							"mywiki_id_general" => 2,
+							"mywiki_id_archive" => 2,
+							"mywiki_id_extraindex" => 2,
 						],
 						"group" => "mygroup",
 						"connection" => [
@@ -74,6 +100,12 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 							"mywiki_id_archive",
 							"mywiki_id_extraindex",
 						],
+						"shard_count" => [
+							"mywiki_id_content" => 2,
+							"mywiki_id_general" => 2,
+							"mywiki_id_archive" => 2,
+							"mywiki_id_extraindex" => 2,
+						],
 						"group" => "mygroup",
 						"connection" => [
 							'host' => '127.0.0.2',
@@ -95,6 +127,12 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 							"mywiki_id_archive",
 							"mywiki_id_extraindex",
 						],
+						"shard_count" => [
+							"mywiki_id_content" => 1,
+							"mywiki_id_general" => 1,
+							"mywiki_id_archive" => 1,
+							"mywiki_id_extraindex" => 1,
+						],
 						"group" => "mygroup"
 					],
 					"two" => [
@@ -103,6 +141,12 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 							"mywiki_id_general",
 							"mywiki_id_archive",
 							"mywiki_id_extraindex",
+						],
+						"shard_count" => [
+							"mywiki_id_content" => 2,
+							"mywiki_id_general" => 2,
+							"mywiki_id_archive" => 2,
+							"mywiki_id_extraindex" => 2,
 						],
 						"group" => "mygroup"
 					],
@@ -120,6 +164,12 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 							"mywiki_id_general",
 							"mywiki_id_archive",
 							"mywiki_id_extraindex",
+						],
+						"shard_count" => [
+							"mywiki_id_content" => 1,
+							"mywiki_id_general" => 1,
+							"mywiki_id_archive" => 1,
+							"mywiki_id_extraindex" => 1,
 						],
 						"group" => "mygroup"
 					]

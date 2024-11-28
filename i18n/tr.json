@@ -76,7 +76,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "Derin kategori aramasını kullanmak için $wgCirrusSearchCategoryEndpoint geçerli bir SPARQL bitiş noktasına ayarlanmalıdır.",
 	"cirrussearch-feature-deepcat-exception": "Derin kategori arama SPARQL sorgusu başarısız oldu",
 	"cirrussearch-feature-deepcat-timeout": "Derin kategori araması süre aşımına uğradı. Büyük olasılıkla kategorinin çok fazla alt kategorisi var.",
-	"cirrussearch-feature-deepcat-toomany": "Derin kategori sorgusu çok fazla kategori döndürdü",
+	"cirrussearch-feature-deepcat-toomany": "Derin kategori sorgusu çok fazla kategori döndürdü. Kategorilerin yalnızca bir alt kümesi uygulandı.",
 	"cirrussearch-feature-deepcat-invalid-title": "Sağlanan kategori geçersiz.",
 	"cirrussearch-feature-pageid-invalid-id": "Geçersiz sayfa {{PLURAL:$2|kimliği|kimlikleri}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "'$1' için geçerli bir kategori sağlanmadı.",

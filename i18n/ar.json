@@ -68,7 +68,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint ينبغي أن تكون مضبوطة لنقطة نهايةSPARQ صحيحة لاستخدام بحث التصنيفات العميق.",
 	"cirrussearch-feature-deepcat-exception": "استعلام بحث التصنيفات العميق لSPARQL فشل",
 	"cirrussearch-feature-deepcat-timeout": "انتهت مهلة البحث العميق عن فئة. على الأرجح أن الفئة بها عدد كبير جدًا من الفئات الفرعية",
-	"cirrussearch-feature-deepcat-toomany": "استعلام التصنيف العميق أرجع تصنيفات كثيرة جدا",
+	"cirrussearch-feature-deepcat-toomany": "أعاد استعلام التصنيف العميق عددا كبيرا جدا من التصنيفات. تم تطبيق مجموعة فرعية فقط من التصنيفات.",
 	"cirrussearch-feature-deepcat-invalid-title": "التصنيف المقدم غير صالح.",
 	"cirrussearch-feature-pageid-invalid-id": "صفحة غير صالحة {{PLURAL:$2| المعرف | المعرفات}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "لا تصنيفات صحيحة تم توفيرها ل'$1'.",

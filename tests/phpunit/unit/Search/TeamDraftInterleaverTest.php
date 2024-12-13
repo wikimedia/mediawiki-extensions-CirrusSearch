@@ -58,7 +58,7 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 		$delegatedMethods = array_diff(
 			$csrsmethods,
 			[ 'getOffset', 'extractResults', 'numRows', 'count', 'setAugmentedData',
-				'augmentResult', 'getIterator' ]
+				'augmentResult', 'getIterator', 'isApproximateTotalHits' ]
 		);
 		$interleavedRsetMethods = array_filter(
 			$interleavedRsetMethods,

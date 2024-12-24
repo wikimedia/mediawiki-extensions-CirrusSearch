@@ -28,5 +28,14 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "طريقة تسجبل النقاط لاستخدامها",
 	"apierror-compsuggestbuilddoc-bad-method": "طريقة التسجيل غير معروفة",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "تفريغ الوثيقة المستخدمة من قبل suggester الانتهاء",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "الحصول على تفريغ المستند المستخدم من قبل suggester الإكمال"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "الحصول على تفريغ المستند المستخدم من قبل suggester الإكمال",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "توفير اسم طريقة النتيجة التي سيتم استخدامها بواسطة مقترح الإكمال",
+	"apihelp-cirrus-check-sanity-summary": "تقارير عن صحة مجموعة من معرفات الصفحات في فهرس البحث",
+	"apihelp-cirrus-check-sanity-example": "احصل على تقرير عن صحة مجموعة من معرفات الصفحات في فهرس البحث",
+	"apihelp-cirrus-check-sanity-param-cluster": "مجموعة البحث للتحقق من المؤشرات في",
+	"apihelp-cirrus-check-sanity-param-from": "معرف الصفحة لبدء التحقق منها",
+	"apihelp-cirrus-check-sanity-param-limit": "عدد معرفات الصفحات المراد التحقق منها",
+	"apihelp-cirrus-check-sanity-param-sequenceid": "عدد المرات التي تم فيها التحقق من مجموعة معرفات الصفحة هذه",
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "عدد عمليات الفحص التي يجب إعادة عرض الصفحة بعدها. استنادًا إلى معرف التسلسل المقدم.",
+	"apiwarn-cirrus-ignore-revisions": "تم توفير أكثر من مراجعة لصفحة واحدة. سيتم إرجاع المراجعة الأحدث فقط."
 }

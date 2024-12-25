@@ -28,5 +28,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "طريقة تسجبل النقاط لاستخدامها",
 	"apierror-compsuggestbuilddoc-bad-method": "طريقة التسجيل غير معروفة",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "تفريغ الوثيقة المستخدمة من قبل suggester الانتهاء",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "الحصول على تفريغ المستند المستخدم من قبل suggester الإكمال"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "الحصول على تفريغ المستند المستخدم من قبل suggester الإكمال",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "توفير اسم طريقة النتيجة التي سيتم استخدامها بواسطة مقترح الإكمال"
 }

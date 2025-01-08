@@ -33,7 +33,7 @@ describe( 'Smoke test for search', () => {
 	 * Then I am on a page titled Search results
 	 */
 	it( 'Fill in search term and click search', async () => {
-		RandomPage.open();
+		await RandomPage.open();
 		await ArticlePage.search_query_top_right( 'ma' );
 		await ArticlePage.submit_search_top_right();
 		const expectedPage = 'Search results';
@@ -47,7 +47,7 @@ describe( 'Smoke test for search', () => {
 	 * Then I am on a page titled África
 	 */
 	it( 'Search with accent yields result page with accent', async () => {
-		RandomPage.open();
+		await RandomPage.open();
 		await ArticlePage.set_search_query_top_right( 'África' );
 		await ArticlePage.submit_search_top_right();
 		const expectedPage = 'África';

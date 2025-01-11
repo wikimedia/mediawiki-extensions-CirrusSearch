@@ -30,7 +30,7 @@
 		"request-promise-native": "1.0.5",
 		"restify": "8.5.1",
 		"semlog": "0.6.10",
-		"stylelint-config-wikimedia": "0.17.2",
+		"stylelint-config-wikimedia": "0.18.0",
 		"wdio-mediawiki": "2.3.0"
 	}
 }

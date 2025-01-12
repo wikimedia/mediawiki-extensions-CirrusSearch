@@ -11,3 +11,4 @@ composer.lock
 log
 .idea
 .DS_Store
+/.stylelintcache

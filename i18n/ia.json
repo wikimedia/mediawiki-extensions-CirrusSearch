@@ -37,7 +37,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Classamento basate primarimente sur le numero de ligamines entrante",
 	"prefs-completion": "Completion del recerca",
 	"cirrussearch-pref-completion-section-desc": "Suggestor de completiones",
-	"cirrussearch-pref-completion-profile-help": "Definir le comportamento pro suggestiones de autocompletion (recerca durante que tu scribe).\n\nLe [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester suggestor de completiones] es un algorithmo pro suggestiones de recerca con melior correction de errores orthographic e relevantia de resultatos. Le recerca de prefixos es le algorithmo de suggestion ancian pro le recerca durante que tu scribe.",
+	"cirrussearch-pref-completion-profile-help": "Definir le comportamento pro suggestiones de autocompletamento (recerca durante que tu scribe).\n\nLe [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester suggestor de completamentos] es un algorithmo pro suggestiones de recerca con melior correction de errores orthographic e relevantia de resultatos. Le recerca de prefixos es le algorithmo de suggestion ancian pro le recerca durante que tu scribe.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predefinite (recommendate)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige usque a duo errores orthographic. Remove le redirectiones que es multo similar al titulo principal.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Trovar subphrases (recommendate pro titulos de pagina plus longe)",

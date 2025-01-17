@@ -199,8 +199,7 @@ class Checker {
 		return $this->statsFactory->getCounter( "sanitization_total" )
 			->setLabel( "problem", $problem )
 			->setLabel( "search_cluster", $cluster )
-			->setLabel( "action", $action )
-			->copyToStatsdAt( "CirrusSearch.$cluster.sanitization.$action" );
+			->setLabel( "action", $action );
 	}
 
 	/**

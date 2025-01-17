@@ -6,9 +6,6 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\ClusterSettings;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\UpdateGroup;
-use MediaWiki\Utils\MWTimestamp;
-use Wikimedia\Stats\Metrics\TimingMetric;
-use Wikimedia\Stats\StatsFactory;
 
 /**
  * @covers \CirrusSearch\Job\ElasticaWrite
@@ -38,38 +35,4 @@ class ElasticaWriteTest extends CirrusIntegrationTestCase {
 			'Saw expected set of partitioning keys'
 		);
 	}
-
-	public function testReportUpdateLog() {
-		$stats = $this->createMock( StatsFactory::class );
-
-		$timing = $this->createMock( TimingMetric::class );
-
-		$stats->expects( $this->once() )
-			->method( 'getTiming' )
-			->with( "update_lag_seconds" )
-			->willReturn( $timing );
-		$timing->expects( $this->exactly( 2 ) )
-			->method( 'setLabel' )
-			->willReturnMap( [
-				[ 'search_cluster', 'my_cluster', $timing ],
-				[ 'type', 'my_update_kind', $timing ] ] );
-		$timing->expects( $this->once() )
-			->method( 'observe' )
-			->with( 10000 );
-
-		$myJob = new ElasticaWrite( [
-			CirrusTitleJob::UPDATE_KIND => "my_update_kind",
-			CirrusTitleJob::ROOT_EVENT_TIME => 0
-		] );
-		MWTimestamp::setFakeTime( 10 );
-		$myJob->reportUpdateLag( "my_cluster", $stats );
-	}
-
-	public function testNoLagReportedWithoutEventTime() {
-		$stats = $this->createMock( StatsFactory::class );
-		$stats->expects( $this->never() )->method( 'getTiming' );
-		$myJob = new ElasticaWrite( [] );
-		$myJob->reportUpdateLag( "my_cluster", $stats );
-	}
-
 }

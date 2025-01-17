@@ -415,10 +415,6 @@ class DataSender extends ElasticsearchIntermediary {
 				->setLabel( "search_cluster", $cluster )
 				->setLabel( "index_name", $this->indexBaseName )
 				->setLabel( "index_suffix", $indexSuffix )
-				->copyToStatsdAt( [
-					"$metricsPrefix.details.{$this->indexBaseName}.$indexSuffix.$what",
-					"$metricsPrefix.all.$what"
-				] )
 				->incrementBy( $num );
 		}
 	}
@@ -698,7 +694,6 @@ class DataSender extends ElasticsearchIntermediary {
 			// to track abnormally large docs we might consider another approach (log a warning?)
 			$this->stats->getTiming( "update_doc_size_kb" )
 				->setLabel( "search_cluster", $cluster )
-				->copyToStatsdAt( "CirrusSearch.$cluster.updates.all.doc_size" )
 				->observe( $len );
 
 		} catch ( \JsonException $e ) {

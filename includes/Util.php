@@ -71,12 +71,10 @@ class Util {
 		if ( $pos !== false ) {
 			$type = substr( $type, $pos + 1 );
 		}
-		$postfix = $isSuccess ? 'successMs' : 'failureMs';
 		self::getStatsFactory()
 			->getTiming( "pool_counter_seconds" )
 			->setLabel( "type", $type )
 			->setLabel( "status", $isSuccess ? "success" : "failure" )
-			->copyToStatsdAt( "CirrusSearch.poolCounter.$type.$postfix" )
 			->observe( $observation );
 	}
 

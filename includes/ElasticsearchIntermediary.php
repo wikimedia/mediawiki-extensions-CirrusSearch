@@ -232,7 +232,6 @@ abstract class ElasticsearchIntermediary {
 		$stats->getCounter( "backend_failures_total" )
 			->setLabel( "search_cluster", $clusterName )
 			->setLabel( "type", $type )
-			->copyToStatsdAt( "CirrusSearch.$clusterName.backend_failure.$type" )
 			->increment();
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->warning(
@@ -277,10 +276,6 @@ abstract class ElasticsearchIntermediary {
 		$stats->getTiming( "request_time_seconds" )
 			->setLabel( "search_cluster", $clusterName )
 			->setLabel( "type", $type )
-			->copyToStatsdAt( [
-				"CirrusSearch.$clusterName.requestTimeMs.$type",
-				"CirrusSearch.$clusterName.requestTime"
-			] )
 			->observe( $tookMs );
 		if ( $log->getElasticTookMs() ) {
 			$this->searchMetrics['wgCirrusElasticTime'] = $log->getElasticTookMs();

@@ -210,9 +210,6 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 		// Don't skew the dashboards by logging these requests to
 		// the global request log.
 		$wgCirrusSearchLogElasticRequests = false;
-		// Disable statsd data collection.
-		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
-		$stats->setEnabled( false );
 	}
 
 	/**

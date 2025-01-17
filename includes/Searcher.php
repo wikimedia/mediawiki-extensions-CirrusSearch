@@ -844,7 +844,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$requestStats->getCounter( "query_cache_total" )
 			->setLabel( "type", $type )
 			->setLabel( "status", $cacheStatus )
-			->copyToStatsdAt( "CirrusSearch.query_cache.$type.$cacheStatus" )
 			->increment();
 	}
 

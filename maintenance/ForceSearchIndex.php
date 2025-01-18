@@ -304,7 +304,7 @@ class ForceSearchIndex extends Maintenance {
 		return $updateFlags;
 	}
 
-	private function waitForQueueToShrink( $wiki ) {
+	private function waitForQueueToShrink( string $wiki ) {
 		$now = microtime( true );
 		if ( $now - $this->lastJobQueueCheckTime <=
 			self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS
@@ -327,7 +327,7 @@ class ForceSearchIndex extends Maintenance {
 		} while ( $this->pauseForJobs < $queueSize );
 	}
 
-	private function waitForQueueToDrain( $wiki ) {
+	private function waitForQueueToDrain( string $wiki ) {
 		if ( !$this->queue ) {
 			return;
 		}
@@ -520,7 +520,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	private function attachTimestampConditions(
-		IDatabase $dbr, BatchRowIterator $it, $columnPrefix
+		IDatabase $dbr, BatchRowIterator $it, string $columnPrefix
 	) {
 		// When initializing we guarantee that if either fromDate or toDate are provided
 		// the other has a sane default value.
@@ -532,7 +532,7 @@ class ForceSearchIndex extends Maintenance {
 		}
 	}
 
-	private function attachPageConditions( IDatabase $dbr, BatchRowIterator $it, $columnPrefix ) {
+	private function attachPageConditions( IDatabase $dbr, BatchRowIterator $it, string $columnPrefix ) {
 		if ( $this->namespace !== null ) {
 			$it->addConditions( [
 				"{$columnPrefix}_namespace" => $this->namespace,

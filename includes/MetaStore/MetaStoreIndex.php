@@ -421,7 +421,7 @@ class MetaStoreIndex {
 		return (int)$doc->get( 'metastore_major_version' );
 	}
 
-	private function getMasterTimeout() {
+	private function getMasterTimeout(): string {
 		return $this->config->get( 'CirrusSearchMasterTimeout' );
 	}
 }

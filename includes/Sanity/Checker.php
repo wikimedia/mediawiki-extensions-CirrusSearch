@@ -425,7 +425,7 @@ class Checker {
 		return $indexedPages;
 	}
 
-	private function sane( $pageId, $reason ) {
+	private function sane( int $pageId, string $reason ) {
 		if ( $this->logSane ) {
 			printf( "%30s %10d\n", $reason, $pageId );
 		}

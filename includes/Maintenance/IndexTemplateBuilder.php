@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
+use CirrusSearch\SearchConfig;
 use Elastica\IndexTemplate;
 use Wikimedia\Assert\Assert;
 
@@ -102,7 +103,7 @@ class IndexTemplateBuilder {
 		return $this->templateName;
 	}
 
-	private function getSearchConfig() {
+	private function getSearchConfig(): SearchConfig {
 		return $this->connection->getConfig();
 	}
 

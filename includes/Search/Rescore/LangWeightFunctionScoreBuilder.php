@@ -62,7 +62,7 @@ class LangWeightFunctionScoreBuilder extends FunctionScoreBuilder {
 		}
 	}
 
-	private function getUserLang() {
+	private function getUserLang(): string {
 		if ( $this->userLang === null ) {
 			$this->userLang = RequestContext::getMain()->getLanguage()->getCode();
 		}

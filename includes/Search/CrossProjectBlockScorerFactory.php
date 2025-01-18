@@ -19,7 +19,7 @@ class CrossProjectBlockScorerFactory {
 		return static::loadScorer( $profile['type'], $profile['settings'] ?? [] );
 	}
 
-	public static function loadScorer( $type, array $config ) {
+	public static function loadScorer( string $type, array $config ): CrossProjectBlockScorer {
 		switch ( $type ) {
 			case 'composite':
 				return new CompositeCrossProjectBlockScorer( $config );

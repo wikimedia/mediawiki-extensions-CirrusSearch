@@ -126,7 +126,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		return $this->findSuggestion( $resultSet ) !== null;
 	}
 
-	private function fixDYMSuggestion( CirrusSearchResultSet $fromResultSet ) {
+	private function fixDYMSuggestion( CirrusSearchResultSet $fromResultSet ): array {
 		$suggestion = $this->findSuggestion( $fromResultSet );
 		Assert::precondition( $suggestion !== null, "fixDYMSuggestion called with no suggestions available" );
 		return [

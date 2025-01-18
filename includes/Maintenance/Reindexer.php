@@ -468,7 +468,7 @@ class Reindexer {
 		return $task->getResponse();
 	}
 
-	private static function monitorSleepSeconds( $base, $ratio, $max ) {
+	private static function monitorSleepSeconds( int $base, int $ratio, int $max ): \Generator {
 		$val = $base;
 		// @phan-suppress-next-line PhanInfiniteLoop https://github.com/phan/phan/issues/3545
 		while ( true ) {

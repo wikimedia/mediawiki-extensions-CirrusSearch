@@ -619,7 +619,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->similarityConfig = $analysisConfigBuilder->buildSimilarityConfig();
 	}
 
-	private function cleanupCreatedIndex( $msg ) {
+	private function cleanupCreatedIndex( string $msg ) {
 		if ( $this->canCleanupCreatedIndex && $this->getIndex()->exists() ) {
 			$utils = new ConfigUtils( $this->getConnection()->getClient(), $this );
 			$indexName = $this->getSpecificIndexName();

@@ -20,7 +20,7 @@ class MetaNamespaceStore implements MetaStore {
 	/** @var string */
 	private $wikiId;
 
-	public function __construct( Index $index, $wikiId = null ) {
+	public function __construct( Index $index, ?string $wikiId = null ) {
 		$this->index = $index;
 		$this->wikiId = $wikiId ?? WikiMap::getCurrentWikiId();
 	}
@@ -92,7 +92,7 @@ class MetaNamespaceStore implements MetaStore {
 			->addFilter( new MatchQuery( 'wiki', $this->wikiId ) );
 	}
 
-	private function buildDocuments( Language $lang ) {
+	private function buildDocuments( Language $lang ): array {
 		$namesByNsId = [];
 		foreach ( $lang->getNamespaceIds() as $name => $nsId ) {
 			if ( $name ) {

@@ -91,7 +91,7 @@ class FunctionScoreChain {
 		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner;
 	}
 
-	private function applyOverrides( array $chain, array $overrides ) {
+	private function applyOverrides( array $chain, array $overrides ): array {
 		$transformer = new ArrayPathSetter( $overrides );
 		return $transformer->transform( $chain );
 	}

@@ -117,7 +117,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 		return $connection;
 	}
 
-	public function getSearchConfig() {
+	public function getSearchConfig(): SearchConfig {
 		if ( $this->searchConfig == null ) {
 			$this->searchConfig = MediaWikiServices::getInstance()
 				->getConfigFactory()
@@ -132,7 +132,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 		return $this->searchConfig;
 	}
 
-	public function getMetaStore( ?Connection $conn = null ) {
+	public function getMetaStore( ?Connection $conn = null ): MetaStoreIndex {
 		return new MetaStoreIndex( $conn ?? $this->getConnection(), $this, $this->getSearchConfig() );
 	}
 

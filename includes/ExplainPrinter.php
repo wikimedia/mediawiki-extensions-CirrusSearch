@@ -73,7 +73,7 @@ class ExplainPrinter {
 		return "<div>" . implode( '', $result ) . "</div>";
 	}
 
-	private function formatText( array $explanation, $indent = "" ) {
+	private function formatText( array $explanation, string $indent = "" ): string {
 		$line = $indent . $explanation['value'] . ' | ' . $explanation['description'] . "\n";
 		if ( isset( $explanation['details'] ) ) {
 			foreach ( $explanation['details'] as $subExplanation ) {

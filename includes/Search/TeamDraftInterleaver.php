@@ -46,7 +46,7 @@ class TeamDraftInterleaver {
 		return new InterleavedResultSet( $a, $interleaved, $teamA, $teamB, $aOffset );
 	}
 
-	private function extractResults( CirrusSearchResultSet $resultSet ) {
+	private function extractResults( CirrusSearchResultSet $resultSet ): array {
 		$extracted = [];
 		/** @var $result CirrusSearchResult */
 		foreach ( $resultSet as $result ) {

@@ -68,7 +68,7 @@ class MappingValidator extends Validator {
 		$this->mappingConfig = $mappingConfig;
 	}
 
-	private function isNaturalSortConfigured() {
+	private function isNaturalSortConfigured(): bool {
 		// awkward much?
 		return isset( $this->mappingConfig['properties']['title']['fields']['natural_sort'] );
 	}

@@ -131,15 +131,15 @@ trait CirrusTestCaseTrait {
 		return $randomizedCases;
 	}
 
-	public static function hasFixture( $testFile ) {
+	public static function hasFixture( string $testFile ): bool {
 		return is_file( self::$FIXTURE_DIR . $testFile );
 	}
 
-	public static function loadTextFixture( $testFile, $errorMessage = "fixture config" ) {
+	public static function loadTextFixture( string $testFile, string $errorMessage = "fixture config" ): string {
 		return file_get_contents( self::$FIXTURE_DIR . $testFile );
 	}
 
-	public static function loadFixture( $testFile, $errorMessage = "fixture config" ) {
+	public static function loadFixture( string $testFile, string $errorMessage = "fixture config" ): array {
 		$decoded = json_decode( self::loadTextFixture( $testFile ), true );
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			throw new \RuntimeException( "Failed decoding {$errorMessage}: $testFile" );
@@ -147,7 +147,7 @@ trait CirrusTestCaseTrait {
 		return $decoded;
 	}
 
-	public static function fixturePath( $testFile ) {
+	public static function fixturePath( string $testFile ): string {
 		return self::$FIXTURE_DIR . $testFile;
 	}
 
@@ -358,11 +358,11 @@ trait CirrusTestCaseTrait {
 			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() );
 	}
 
-	public function createCirrusSearchHookRunner( $hooks = [] ): CirrusSearchHookRunner {
+	public function createCirrusSearchHookRunner( array $hooks = [] ): CirrusSearchHookRunner {
 		return new CirrusSearchHookRunner( $this->createHookContainer( $hooks ) );
 	}
 
-	public function createStaticUserOptionsLookup( array $userMap = [], array $defaults = [] ) {
+	public function createStaticUserOptionsLookup( array $userMap = [], array $defaults = [] ): StaticUserOptionsLookup {
 		return new StaticUserOptionsLookup( $userMap, $defaults );
 	}
 

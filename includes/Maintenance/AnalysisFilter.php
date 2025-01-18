@@ -104,7 +104,7 @@ class AnalysisFilter {
 		return $mappings;
 	}
 
-	private function filter( $data, Set $keysToKeep ) {
+	private function filter( array $data, Set $keysToKeep ): array {
 		foreach ( $data as $k => $v ) {
 			if ( !$keysToKeep->contains( $k ) ) {
 				unset( $data[$k] );
@@ -148,7 +148,7 @@ class AnalysisFilter {
 		return $analysis;
 	}
 
-	private function recursiveKsort( array $array ) {
+	private function recursiveKsort( array $array ): array {
 		foreach ( $array as $k => $v ) {
 			if ( is_array( $v ) ) {
 				$array[$k] = $this->recursiveKsort( $v );
@@ -158,7 +158,7 @@ class AnalysisFilter {
 		return $array;
 	}
 
-	private function calcDeduplicationAliases( array $input ) {
+	private function calcDeduplicationAliases( array $input ): array {
 		$keysByContent = [];
 		foreach ( $input as $k => $v ) {
 			$sorted = $this->recursiveKsort( $v );

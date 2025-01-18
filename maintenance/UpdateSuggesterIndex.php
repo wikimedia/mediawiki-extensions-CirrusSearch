@@ -727,7 +727,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->waitForGreen( $this->getOption( 'replicationTimeout', 3600 ) );
 	}
 
-	private function waitForGreen( $timeout = 600 ) {
+	private function waitForGreen( int $timeout = 600 ) {
 		$this->log( "Waiting for the index to go green...\n" );
 		// Wait for the index to go green ( default 10 min)
 		if ( !$this->utils->waitForGreen( $this->getIndex()->getName(), $timeout ) ) {

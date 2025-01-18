@@ -321,7 +321,7 @@ class QueryStringRegexParser implements QueryParser {
 			$this->namespaceHeader, $additionalNamespaces, $this->warnings, $this->classifierRepository );
 	}
 
-	private function createClause( ParsedNode $node, $explicit = false, $occur = null ) {
+	private function createClause( ParsedNode $node, bool $explicit = false, ?string $occur = null ): BooleanClause {
 		if ( $node instanceof NegatedNode ) {
 			// OR NOT is simply MUST_NOT, there's no SHOULD_NOT in lucene
 			// so simply do what lucene QueryString does: force MUST_NOT whenever
@@ -486,7 +486,7 @@ class QueryStringRegexParser implements QueryParser {
 		return $word;
 	}
 
-	private function mergeWords( WordsQueryNode $left, WordsQueryNode $right ) {
+	private function mergeWords( WordsQueryNode $left, WordsQueryNode $right ): WordsQueryNode {
 		$start = $left->getStartOffset();
 		$end = $right->getEndOffset();
 		return new WordsQueryNode( $start, $end,

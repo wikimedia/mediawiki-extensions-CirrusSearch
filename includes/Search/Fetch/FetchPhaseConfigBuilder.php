@@ -212,7 +212,7 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 		$this->addHLField( $field->skipIfLastMatched() );
 	}
 
-	private function clearSkipIfLastMatched( array $arr ) {
+	private function clearSkipIfLastMatched( array $arr ): array {
 		unset( $arr['options']['skip_if_last_matched'] );
 		if ( empty( $arr['options'] ) ) {
 			unset( $arr['options'] );

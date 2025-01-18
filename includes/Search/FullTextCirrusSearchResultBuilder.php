@@ -125,7 +125,7 @@ class FullTextCirrusSearchResultBuilder {
 		}
 	}
 
-	private function doMainSnippet( $highlights ) {
+	private function doMainSnippet( array $highlights ) {
 		$hasTextSnippet = false;
 		foreach ( $this->highligtedFields[ArrayCirrusSearchResult::TEXT_SNIPPET] as $hlField ) {
 			if ( isset( $highlights[$hlField->getFieldName()][0] ) ) {
@@ -150,7 +150,7 @@ class FullTextCirrusSearchResultBuilder {
 		}
 	}
 
-	private function doHeadings( Title $title, $highlights ) {
+	private function doHeadings( Title $title, array $highlights ) {
 		if ( !isset( $this->highligtedFields[ArrayCirrusSearchResult::SECTION_SNIPPET] ) ) {
 			return;
 		}
@@ -165,7 +165,7 @@ class FullTextCirrusSearchResultBuilder {
 		}
 	}
 
-	private function doCategory( $highlights ) {
+	private function doCategory( array $highlights ) {
 		if ( !isset( $this->highligtedFields[ArrayCirrusSearchResult::CATEGORY_SNIPPET] ) ) {
 			return;
 		}

@@ -20,7 +20,7 @@ class SearchConfigUsageDecorator extends SearchConfig {
 		return $val;
 	}
 
-	public static function getUsedConfigKeys() {
+	public static function getUsedConfigKeys(): array {
 		return static::$usedConfigKeys;
 	}
 

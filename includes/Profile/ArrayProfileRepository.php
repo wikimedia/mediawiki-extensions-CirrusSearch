@@ -123,7 +123,7 @@ class ArrayProfileRepository implements SearchProfileRepository {
 		return $this->getProfiles();
 	}
 
-	private function getProfiles() {
+	private function getProfiles(): array {
 		if ( $this->profiles === null ) {
 			$profiles = call_user_func( $this->callback );
 			if ( !is_array( $profiles ) ) {

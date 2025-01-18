@@ -97,7 +97,7 @@ class ElasticaWrite extends CirrusGenericJob {
 		return "{$settings->getName()}-{$partition}";
 	}
 
-	private static function serde( $method, array $arguments, $serialize = true ) {
+	private static function serde( string $method, array $arguments, bool $serialize = true ): array {
 		if ( isset( self::$SERDE[$method] ) ) {
 			foreach ( self::$SERDE[$method] as $i => $serde ) {
 				if ( $serde !== null && array_key_exists( $i, $arguments ) ) {

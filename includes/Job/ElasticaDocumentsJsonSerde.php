@@ -25,7 +25,7 @@ class ElasticaDocumentsJsonSerde {
 		return $res;
 	}
 
-	public function serializeOne( Document $doc ) {
+	public function serializeOne( Document $doc ): array {
 		return [
 			'data' => $doc->getData(),
 			'params' => $doc->getParams(),

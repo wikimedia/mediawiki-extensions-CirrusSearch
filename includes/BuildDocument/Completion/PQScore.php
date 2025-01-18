@@ -44,7 +44,7 @@ class PQScore extends QualityScore {
 		return intval( $score * self::SCORE_RANGE );
 	}
 
-	public function explain( array $doc ) {
+	public function explain( array $doc ): array {
 		$qualityExplain = $this->intermediateExplain( $doc );
 		$pop = $doc['popularity_score'] ?? 0;
 		if ( $pop > self::POPULARITY_MAX ) {

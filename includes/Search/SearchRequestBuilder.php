@@ -38,6 +38,11 @@ class SearchRequestBuilder {
 	/** @var string set the sort option, controls the use of rescore functions or elastic sort */
 	private $sort = 'relevance';
 
+	/**
+	 * @param SearchContext $searchContext
+	 * @param Connection $connection
+	 * @param string $indexBaseName
+	 */
 	public function __construct( SearchContext $searchContext, Connection $connection, $indexBaseName ) {
 		$this->searchContext = $searchContext;
 		$this->connection = $connection;

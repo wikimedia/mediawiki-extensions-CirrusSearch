@@ -18,6 +18,11 @@ trait SimpleKeywordFeatureTestTrait {
 	 */
 	private $kwAssertions;
 
+	/**
+	 * @param string|null $name
+	 * @param array $data
+	 * @param string $dataName
+	 */
 	public function __construct( $name = null, array $data = [], $dataName = '' ) {
 		parent::__construct( $name, $data, $dataName );
 		$this->kwAssertions = new KeywordFeatureAssertions( $this );

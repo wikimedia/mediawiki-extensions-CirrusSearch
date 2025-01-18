@@ -114,6 +114,14 @@ final class FullTextResultsType extends BaseResultsType {
 			/** @var string[] array of titles for counting duplicates */
 			private array $fileTitles = [];
 
+			/**
+			 * @param TitleHelper $titleHelper
+			 * @param FetchPhaseConfigBuilder $builder
+			 * @param ElasticaResultSet $results
+			 * @param bool $searchContainedSyntax
+			 * @param string[] $extraFieldsToExtract
+			 * @param bool $deduplicate
+			 */
 			public function __construct(
 				TitleHelper $titleHelper,
 				FetchPhaseConfigBuilder $builder,

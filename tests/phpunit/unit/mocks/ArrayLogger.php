@@ -8,6 +8,11 @@ class ArrayLogger extends AbstractLogger {
 	/** @var array[] */
 	private $logs = [];
 
+	/**
+	 * @param int $level
+	 * @param string $message
+	 * @param array $context
+	 */
 	public function log( $level, $message, array $context = [] ) {
 		$this->logs[] = [
 			'level' => $level,
@@ -16,6 +21,9 @@ class ArrayLogger extends AbstractLogger {
 		];
 	}
 
+	/**
+	 * @return array[]
+	 */
 	public function getLogs() {
 		return $this->logs;
 	}

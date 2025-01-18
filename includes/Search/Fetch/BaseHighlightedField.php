@@ -361,6 +361,9 @@ class BaseHighlightedField extends HighlightedField {
 		return $this;
 	}
 
+	/**
+	 * @return array
+	 */
 	public static function getFactories() {
 		return [
 			SearchQuery::SEARCH_TEXT => [

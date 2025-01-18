@@ -72,6 +72,10 @@ trait CirrusTestCaseTrait {
 		return self::$MAX_TESTED_FIXTURES_PER_TEST;
 	}
 
+	/**
+	 * @param string $path
+	 * @return string[]
+	 */
 	public static function findFixtures( $path ) {
 		$prefixLen = strlen( self::$FIXTURE_DIR );
 		$results = [];
@@ -81,6 +85,10 @@ trait CirrusTestCaseTrait {
 		return $results;
 	}
 
+	/**
+	 * @param string $testFile
+	 * @param mixed $fixture
+	 */
 	public static function saveFixture( $testFile, $fixture ) {
 		file_put_contents(
 			self::$FIXTURE_DIR . $testFile,
@@ -88,6 +96,10 @@ trait CirrusTestCaseTrait {
 		);
 	}
 
+	/**
+	 * @param string $testFile
+	 * @param mixed $fixture
+	 */
 	public static function saveAnalysisFixture( $testFile, $fixture ) {
 		// sort top level and second level of analysis fixtures
 		// and third level for "analyzer"
@@ -107,6 +119,10 @@ trait CirrusTestCaseTrait {
 		self::saveFixture( $testFile, $fixture );
 	}
 
+	/**
+	 * @param mixed $fixture
+	 * @return string
+	 */
 	public static function encodeFixture( $fixture ) {
 		$old = ini_set( 'serialize_precision', 14 );
 		try {
@@ -220,6 +236,11 @@ trait CirrusTestCaseTrait {
 			/** @var UserOptionsLookup */
 			private $userOptionsLookup;
 
+			/**
+			 * @param CirrusTestCaseTrait $testCase
+			 * @param CirrusSearchHookRunner $cirrusHookRunner
+			 * @param UserOptionsLookup $userOptionsLookup
+			 */
 			public function __construct( $testCase, $cirrusHookRunner, $userOptionsLookup ) {
 				$this->testCase = $testCase;
 				$this->cirrusHookRunner = $cirrusHookRunner;
@@ -283,6 +304,11 @@ trait CirrusTestCaseTrait {
 		return str_replace( ' ', '_', $id );
 	}
 
+	/**
+	 * @param string|null $hostWikiID
+	 * @param InterwikiResolver|null $iwResolver
+	 * @return TitleHelper
+	 */
 	public function newTitleHelper( $hostWikiID = null, ?InterwikiResolver $iwResolver = null ): TitleHelper {
 		return new class(
 			$hostWikiID,

@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchContext;
+use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MatchQuery;
 use Elastica\Query\MultiMatch;
@@ -37,6 +38,11 @@ class PrefixSearchQueryBuilder {
 		}
 	}
 
+	/**
+	 * @param string $term
+	 * @param string[] $variants
+	 * @return AbstractQuery
+	 */
 	private function wordPrefixQuery( $term, $variants ) {
 		$buildMatch = static function ( $searchTerm ) {
 			$match = new MatchQuery();
@@ -59,6 +65,12 @@ class PrefixSearchQueryBuilder {
 		return $query;
 	}
 
+	/**
+	 * @param string $term
+	 * @param string[] $variants
+	 * @param int[] $weights
+	 * @return AbstractQuery
+	 */
 	private function keywordPrefixQuery( $term, $variants, $weights ) {
 		// Elasticsearch seems to have trouble extracting the proper terms to highlight
 		// from the default query we make so we feed it exactly the right query to highlight.

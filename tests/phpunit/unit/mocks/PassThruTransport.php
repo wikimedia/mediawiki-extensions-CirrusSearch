@@ -15,6 +15,9 @@ class PassThruTransport extends AbstractTransport {
 	/** @var Response[] */
 	private $responses = [];
 
+	/**
+	 * @param AbstractTransport $inner
+	 */
 	public function __construct( $inner ) {
 		if ( $inner instanceof AbstractTransport ) {
 			$this->inner = $inner;
@@ -23,6 +26,9 @@ class PassThruTransport extends AbstractTransport {
 		}
 	}
 
+	/**
+	 * @return Response[]
+	 */
 	public function getResponses() {
 		return $this->responses;
 	}

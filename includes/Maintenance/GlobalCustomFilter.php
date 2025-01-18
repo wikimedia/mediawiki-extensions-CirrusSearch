@@ -82,6 +82,9 @@ class GlobalCustomFilter {
 		return $this;
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function getApplyToAnalyzers() {
 		return $this->applyToAnalyzers;
 	}

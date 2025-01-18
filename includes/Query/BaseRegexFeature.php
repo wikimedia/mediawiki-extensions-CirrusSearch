@@ -351,6 +351,11 @@ GROOVY;
 		return Filters::booleanOr( $filters );
 	}
 
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return HighlightedField[]
+	 */
 	abstract public function buildNonRegexHLFields( KeywordFeatureNode $node, QueryBuildingContext $context );
 
 	/**

@@ -41,6 +41,12 @@ class CompletionRequestLog extends BaseRequestLog {
 	 */
 	private $namespaces;
 
+	/**
+	 * @param string $description
+	 * @param string $queryType
+	 * @param array $extra
+	 * @param int[]|null $namespaces
+	 */
 	public function __construct( $description, $queryType, $extra = [], $namespaces = null ) {
 		parent::__construct( $description, $queryType, $extra );
 		$this->namespaces = $namespaces;

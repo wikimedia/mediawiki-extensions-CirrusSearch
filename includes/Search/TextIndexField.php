@@ -60,6 +60,12 @@ class TextIndexField extends CirrusIndexField {
 	 */
 	protected $allowTrigrams = false;
 
+	/**
+	 * @param string $name
+	 * @param string $type
+	 * @param SearchConfig $config
+	 * @param array $extra
+	 */
 	public function __construct( $name, $type, SearchConfig $config, $extra = [] ) {
 		parent::__construct( $name, $type, $config );
 

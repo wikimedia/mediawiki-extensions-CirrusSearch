@@ -20,6 +20,9 @@ class MockSimpleKeywordFeature extends SimpleKeywordFeature implements LegacyKey
 		$this->calls[] = [ $key, $value, $quotedValue, $negated ];
 	}
 
+	/**
+	 * @return array[]
+	 */
 	public function getApplyCallArguments() {
 		return $this->calls;
 	}

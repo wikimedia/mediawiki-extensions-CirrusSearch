@@ -3,6 +3,8 @@
 namespace CirrusSearch\Parser\QueryStringRegex;
 
 use MediaWiki\Status\Status;
+use Wikimedia\Message\MessageParam;
+use Wikimedia\Message\MessageSpecifier;
 
 class SearchQueryParseException extends \Exception {
 	/**
@@ -15,6 +17,10 @@ class SearchQueryParseException extends \Exception {
 	 */
 	private $params;
 
+	/**
+	 * @param string $messageId
+	 * @param MessageParam|MessageSpecifier|string|int|float|list<MessageParam|MessageSpecifier|string|int|float> ...$params
+	 */
 	public function __construct( string $messageId, ...$params ) {
 		parent::__construct( $messageId );
 		$this->messageId = $messageId;

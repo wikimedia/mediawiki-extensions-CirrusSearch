@@ -22,6 +22,12 @@ class KeywordIndexField extends CirrusIndexField {
 	 */
 	private $caseSensitiveSubfield;
 
+	/**
+	 * @param string $name
+	 * @param string $type
+	 * @param SearchConfig $config
+	 * @param bool $caseSensitiveSubfield
+	 */
 	public function __construct( $name, $type, SearchConfig $config, bool $caseSensitiveSubfield = false ) {
 		parent::__construct( $name, $type, $config );
 		if ( $caseSensitiveSubfield ) {

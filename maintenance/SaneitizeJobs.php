@@ -393,6 +393,10 @@ EOD
 		return $queue->getSize() + $queue->getDelayedCount();
 	}
 
+	/**
+	 * @param string $msg
+	 * @param mixed|null $channel
+	 */
 	private function log( $msg, $channel = null ) {
 		$date = new \DateTime();
 		$this->output( $date->format( 'Y-m-d H:i:s' ) . " " . $msg, $channel );

@@ -670,6 +670,10 @@ class DataSender extends ElasticsearchIntermediary {
 			'CirrusSearchUpdateConflictRetryCount' );
 	}
 
+	/**
+	 * @param string|string[] $d
+	 * @return string|string[]
+	 */
 	private function convertEncoding( $d ) {
 		if ( is_string( $d ) ) {
 			return mb_convert_encoding( $d, 'UTF-8', 'UTF-8' );

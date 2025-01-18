@@ -110,11 +110,13 @@ class IndexTemplateBuilder {
 	private function createIndexTemplate(): IndexTemplate {
 		// Can go back to plain IndexTemplate when upgrading to Elastica 7
 		return new class( $this->connection->getClient(), $this->templateName ) extends IndexTemplate {
+			/** @inheritDoc */
 			public function request( $method, $data = [], array $query = [] ) {
 				$path = '_template/' . $this->getName();
 				return $this->getClient()->request( $path, $method, $data, $query );
 			}
 
+			/** @inheritDoc */
 			public function create( array $args = [] ) {
 				return $this->request( \Elastica\Request::PUT, $args );
 			}

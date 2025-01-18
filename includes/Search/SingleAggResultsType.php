@@ -23,10 +23,12 @@ class SingleAggResultsType implements ResultsType {
 		return false;
 	}
 
+	/** @inheritDoc */
 	public function getFields() {
 		return [];
 	}
 
+	/** @inheritDoc */
 	public function getHighlightingConfiguration( array $extraHighlightFields ) {
 		return null;
 	}

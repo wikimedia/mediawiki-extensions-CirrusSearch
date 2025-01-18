@@ -12,10 +12,12 @@ class DummyConnection extends \CirrusSearch\Connection {
 			->makeConfig( 'CirrusSearch' );
 	}
 
+	/** @inheritDoc */
 	public function getServerList() {
 		return [ 'localhost' ];
 	}
 
+	/** @inheritDoc */
 	public function getClusterName() {
 		return 'default';
 	}

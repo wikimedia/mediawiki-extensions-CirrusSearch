@@ -196,6 +196,7 @@ class CheckSanity extends ApiBase {
 		return $clean;
 	}
 
+	/** @inheritDoc */
 	public function getAllowedParams() {
 		$assignment = $this->getSearchConfig()->getClusterAssignment();
 		return [

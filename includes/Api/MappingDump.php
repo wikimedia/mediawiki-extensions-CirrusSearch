@@ -43,6 +43,7 @@ class MappingDump extends ApiBase {
 		}
 	}
 
+	/** @inheritDoc */
 	public function getAllowedParams() {
 		return [];
 	}

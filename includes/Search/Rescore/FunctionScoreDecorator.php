@@ -17,6 +17,7 @@ class FunctionScoreDecorator extends FunctionScore {
 	/** @var int */
 	private $size = 0;
 
+	/** @inheritDoc */
 	public function addFunction(
 		string $functionType,
 		$functionParams,

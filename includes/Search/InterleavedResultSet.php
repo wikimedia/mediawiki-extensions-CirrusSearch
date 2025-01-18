@@ -44,6 +44,7 @@ class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchRe
 		$this->delegate = $nested;
 	}
 
+	/** @inheritDoc */
 	public function getMetrics() {
 		return [
 			'wgCirrusSearchTeamDraft' => [

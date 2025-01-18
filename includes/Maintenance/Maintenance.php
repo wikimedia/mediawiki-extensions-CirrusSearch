@@ -180,6 +180,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 		parent::output( $message );
 	}
 
+	/** @inheritDoc */
 	public function outputIndented( $message ) {
 		$this->output( self::$indent . $message );
 	}

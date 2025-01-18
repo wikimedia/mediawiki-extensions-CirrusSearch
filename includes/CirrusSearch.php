@@ -175,6 +175,7 @@ class CirrusSearch extends SearchEngine {
 		$this->request = $this->requestContext->getRequest();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
 		$this->namespacePrefixParser = $namespacePrefixParser ?: new class() implements NamespacePrefixParser {
+			/** @inheritDoc */
 			public function parse( $query ) {
 				return CirrusSearch::parseNamespacePrefixes( $query, true, true );
 			}

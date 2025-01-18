@@ -257,6 +257,7 @@ class ConfigDump extends ApiBase {
 			$builder->build( false, null ) );
 	}
 
+	/** @inheritDoc */
 	public function getAllowedParams() {
 		return [
 			'prop' => [

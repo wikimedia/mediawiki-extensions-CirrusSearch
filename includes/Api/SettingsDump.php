@@ -50,6 +50,7 @@ class SettingsDump extends ApiBase {
 		}
 	}
 
+	/** @inheritDoc */
 	public function getAllowedParams() {
 		return [];
 	}

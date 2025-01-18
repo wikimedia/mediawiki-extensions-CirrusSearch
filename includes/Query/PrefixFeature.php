@@ -54,6 +54,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 
 	private static function defaultNSPrefixParser(): NamespacePrefixParser {
 		return new class() implements NamespacePrefixParser {
+			/** @inheritDoc */
 			public function parse( $query ) {
 				return \SearchEngine::parseNamespacePrefixes( $query, true, false );
 			}
@@ -256,6 +257,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 			 */
 			private $namespaces;
 
+			/** @inheritDoc */
 			public function __construct( $query, array $namespaces ) {
 				$this->query = $query;
 				$this->namespaces = $namespaces;

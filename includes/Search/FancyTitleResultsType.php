@@ -26,6 +26,7 @@ class FancyTitleResultsType extends TitleResultsType {
 		$this->matchedAnalyzer = $matchedAnalyzer;
 	}
 
+	/** @inheritDoc */
 	public function getSourceFiltering() {
 		return [ 'namespace', 'title', 'namespace_text', 'wiki', 'redirect' ];
 	}

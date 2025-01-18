@@ -418,6 +418,7 @@ class Hooks implements
 		return false;
 	}
 
+	/** @inheritDoc */
 	public function onSearchGetNearMatch( $term, &$titleResult ) {
 		return self::handleSearchGetNearMatch( $term, $titleResult );
 	}
@@ -643,10 +644,12 @@ class Hooks implements
 			$this->configFactory->makeConfig( 'CirrusSearch' )->get( 'CirrusSearchCompletionSettings' );
 	}
 
+	/** @inheritDoc */
 	public function onSpecialStatsAddExtra( &$extraStats, $context ) {
 		self::addWordCount( $extraStats );
 	}
 
+	/** @inheritDoc */
 	public function onAPIQuerySiteInfoStatisticsInfo( &$extraStats ) {
 		self::addWordCount( $extraStats );
 	}

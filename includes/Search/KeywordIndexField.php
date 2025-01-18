@@ -41,6 +41,7 @@ class KeywordIndexField extends CirrusIndexField {
 	 */
 	private const KEYWORD_IGNORE_ABOVE = 5000;
 
+	/** @inheritDoc */
 	public function getMapping( \SearchEngine $engine ) {
 		$config = parent::getMapping( $engine );
 		$config['analyzer'] =

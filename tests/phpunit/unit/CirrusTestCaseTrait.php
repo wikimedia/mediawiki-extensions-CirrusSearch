@@ -262,6 +262,7 @@ trait CirrusTestCaseTrait {
 
 	public function namespacePrefixParser(): NamespacePrefixParser {
 		return new class() implements NamespacePrefixParser {
+			/** @inheritDoc */
 			public function parse( $query ) {
 				$pieces = explode( ':', $query, 2 );
 				if ( count( $pieces ) === 2 ) {
@@ -317,12 +318,14 @@ trait CirrusTestCaseTrait {
 				return self::sanitizeLinkFragment( $v );
 			}
 		) extends TitleHelper {
+			/** @inheritDoc */
 			public function __construct( $hostWikiId,
 				?InterwikiResolver $interwikiResolver = null, ?callable $linkSanitizer = null
 			) {
 				parent::__construct( $hostWikiId, $interwikiResolver, $linkSanitizer );
 			}
 
+			/** @inheritDoc */
 			public function getNamespaceText( Title $title ) {
 				// We only use common namespaces in tests, if this fails or you need
 				// more please adjust.

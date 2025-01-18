@@ -71,6 +71,7 @@ class ProfilesDump extends ApiBase {
 		}
 	}
 
+	/** @inheritDoc */
 	public function getAllowedParams() {
 		return [
 			'verbose' => [

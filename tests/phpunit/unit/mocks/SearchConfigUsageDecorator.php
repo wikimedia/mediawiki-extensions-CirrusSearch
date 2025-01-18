@@ -11,6 +11,7 @@ class SearchConfigUsageDecorator extends SearchConfig {
 	/** @var true[] */
 	private static $usedConfigKeys = [];
 
+	/** @inheritDoc */
 	public function get( $name ) {
 		$val = parent::get( $name );
 		// Some config vars are objects

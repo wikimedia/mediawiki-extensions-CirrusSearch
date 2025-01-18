@@ -156,6 +156,7 @@ class QueryBuildDocument extends ApiQueryBase {
 		return $result;
 	}
 
+	/** @inheritDoc */
 	public function getAllowedParams() {
 		return [
 			'builders' => [

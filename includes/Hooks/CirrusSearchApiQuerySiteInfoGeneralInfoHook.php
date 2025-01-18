@@ -13,6 +13,7 @@ class CirrusSearchApiQuerySiteInfoGeneralInfoHook implements APIQuerySiteInfoGen
 		$this->dbProvider = $dbProvider;
 	}
 
+	/** @inheritDoc */
 	public function onAPIQuerySiteInfoGeneralInfo( $module, &$result ) {
 		$dbr = $this->dbProvider->getReplicaDatabase( false, 'api' );
 		$result['max-page-id'] = (int)$dbr->newSelectQueryBuilder()

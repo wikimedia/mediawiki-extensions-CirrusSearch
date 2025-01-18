@@ -11,6 +11,7 @@ class ShortTextIndexField extends CirrusIndexField {
 	/** @inheritDoc */
 	protected $typeName = 'text';
 
+	/** @inheritDoc */
 	public function getMapping( \SearchEngine $engine ) {
 		$config = parent::getMapping( $engine );
 		$config['analyzer'] = 'short_text';

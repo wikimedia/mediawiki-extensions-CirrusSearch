@@ -23,14 +23,17 @@ class ExtensionRegistryProfileRepository implements SearchProfileRepository {
 		$this->extensionRegistry = $extensionRegistry;
 	}
 
+	/** @inheritDoc */
 	public function repositoryType() {
 		return $this->type;
 	}
 
+	/** @inheritDoc */
 	public function repositoryName() {
 		return $this->name;
 	}
 
+	/** @inheritDoc */
 	public function getProfile( $name ) {
 		$profiles = $this->extractAttribute();
 		return $profiles[$name] ?? null;

@@ -168,6 +168,7 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 		return FallbackStatus::noSuggestion();
 	}
 
+	/** @inheritDoc */
 	public function getMetrics() {
 		return $this->searchMetrics;
 	}

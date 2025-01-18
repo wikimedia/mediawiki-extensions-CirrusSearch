@@ -82,6 +82,7 @@ class InTitleFeature extends BaseRegexFeature {
 		return Filters::intitle( $this->escaper, $node->getQuotedValue(), $node->getValue() !== $node->getQuotedValue() );
 	}
 
+	/** @inheritDoc */
 	public function buildNonRegexHLFields( KeywordFeatureNode $node, QueryBuildingContext $context ) {
 		// we highlight this field a bit differently as it's part of the main query
 		return [];

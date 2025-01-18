@@ -85,6 +85,7 @@ class QueryCirrusDoc extends ApiQueryBase {
 		}
 	}
 
+	/** @inheritDoc */
 	public function getAllowedParams() {
 		return [
 			'includes' => [

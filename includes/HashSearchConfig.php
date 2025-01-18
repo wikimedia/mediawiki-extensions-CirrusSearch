@@ -63,6 +63,7 @@ class HashSearchConfig extends SearchConfig {
 		return parent::getHostWikiConfig();
 	}
 
+	/** @inheritDoc */
 	public function isLocalWiki() {
 		return $this->localWiki;
 	}

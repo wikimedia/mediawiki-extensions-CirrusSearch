@@ -87,45 +87,6 @@ class DataSender extends ElasticsearchIntermediary {
 			$config->getProfileService()->loadProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER ) );
 	}
 
-	/**
-	 * @deprecated use {@link sendWeightedTagsUpdate} instead.
-	 */
-	public function sendUpdateWeightedTags(
-		string $indexSuffix,
-		array $docIds,
-		string $tagField,
-		string $tagPrefix,
-		$tagNames = null,
-		?array $tagWeights = null,
-		int $batchSize = 30
-	): Status {
-		return $this->sendWeightedTagsUpdate(
-			$indexSuffix,
-			$tagPrefix,
-			is_array( $tagWeights ) ? array_reduce(
-				$docIds, static function ( $docTagsWeights, $docId ) use ( $tagNames, $tagWeights ) {
-					if ( array_key_exists( $docId, $tagWeights ) ) {
-						$docTagsWeights[$docId] = MultiListBuilder::buildTagWeightsFromLegacyParameters(
-						$tagNames,
-						$tagWeights[$docId]
-						);
-					}
-
-					return $docTagsWeights;
-				}, []
-			) : array_fill_keys( $docIds, MultiListBuilder::buildTagWeightsFromLegacyParameters( $tagNames ) ),
-			$batchSize
-		);
-	}
-
-	/**
-	 * @param string $indexSuffix
-	 * @param string $tagPrefix
-	 * @param int[][]|null[][] $tagWeights a map of `[ docId: string => [ tagName: string => tagWeight: int|null ] ]`
-	 * @param int $batchSize
-	 *
-	 * @return Status
-	 */
 	public function sendWeightedTagsUpdate(
 		string $indexSuffix,
 		string $tagPrefix,
@@ -197,24 +158,6 @@ class DataSender extends ElasticsearchIntermediary {
 		}
 
 		return $status;
-	}
-
-	/**
-	 * @deprecated use {@link sendWeightedTagsUpdate} instead.
-	 */
-	public function sendResetWeightedTags(
-		string $indexSuffix,
-		array $docIds,
-		string $tagField,
-		string $tagPrefix,
-		int $batchSize = 30
-	): Status {
-		return $this->sendWeightedTagsUpdate(
-			$indexSuffix,
-			$tagPrefix,
-			array_fill_keys( $docIds, [ CirrusIndexField::MULTILIST_DELETE_GROUPING => null ] ),
-			$batchSize
-		);
 	}
 
 	/**

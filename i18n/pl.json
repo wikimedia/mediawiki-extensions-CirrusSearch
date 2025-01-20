@@ -70,7 +70,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "Aby używać głębokiego przeszukiwania kategorii, zmienna $wgCirrusSearchCategoryEndpoint powinna wskazywać na poprawny punkt końcowy SPARQL.",
 	"cirrussearch-feature-deepcat-exception": "Głębokie przeszukiwanie kategorii z użyciem SPARQL nie powiodło się",
 	"cirrussearch-feature-deepcat-timeout": "Głębokie wyszukiwanie kategorii trwało za długo. Najprawdopodobniej próbowano przeszukać zbyt wiele podkategorii.",
-	"cirrussearch-feature-deepcat-toomany": "Głębokie przeszukiwanie kategorii zwróciło zbyt wiele kategorii.",
+	"cirrussearch-feature-deepcat-toomany": "Głębokie przeszukiwanie kategorii zwróciło zbyt wiele kategorii. Jedynie podzbiór kategorii został zastosowany.",
 	"cirrussearch-feature-deepcat-invalid-title": "Podana kategoria jest nieprawidłowa.",
 	"cirrussearch-feature-pageid-invalid-id": "Nieprawidłowe ID {{PLURAL:$2|strony|stron}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nie określono poprawnych kategorii do „$1”.",

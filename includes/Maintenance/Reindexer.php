@@ -517,7 +517,7 @@ class Reindexer {
 	 * @param Index $index The index the estimate a slice count for
 	 * @return int The number of slices to reindex with
 	 */
-	private function estimateSlices( Index $index ) {
+	private function estimateSlices( Index $index ): int {
 		return min(
 			$this->getNumberOfNodes( $index->getClient() ),
 			$this->getNumberOfShards( $index ),
@@ -525,13 +525,13 @@ class Reindexer {
 		);
 	}
 
-	private function getNumberOfNodes( Client $client ) {
+	private function getNumberOfNodes( Client $client ): int {
 		$endpoint = ( new \Elasticsearch\Endpoints\Cat\Nodes() )
 			->setParams( [ 'format' => 'json' ] );
 		return count( $client->requestEndpoint( $endpoint )->getData() );
 	}
 
-	private function getNumberOfShards( Index $index ) {
+	private function getNumberOfShards( Index $index ): int {
 		$response = $index->request( '_settings/index.number_of_shards', Request::GET );
 		$data = $response->getData();
 		// Can't use $index->getName() because that is probably an alias
@@ -543,6 +543,6 @@ class Reindexer {
 				"Couldn't detect number of shards in {$index->getName()}"
 			);
 		}
-		return $data[$realIndexName]['settings']['index']['number_of_shards'];
+		return (int)$data[$realIndexName]['settings']['index']['number_of_shards'];
 	}
 }

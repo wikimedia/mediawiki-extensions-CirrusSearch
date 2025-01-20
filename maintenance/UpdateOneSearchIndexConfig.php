@@ -584,7 +584,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	/**
 	 * @return int Number of shards this index should have
 	 */
-	private function getShardCount() {
+	private function getShardCount(): int {
 		return $this->getConnection()->getSettings()->getShardCount( $this->indexSuffix );
 	}
 

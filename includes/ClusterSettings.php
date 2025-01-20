@@ -49,7 +49,7 @@ class ClusterSettings {
 	 * @param string $indexSuffix
 	 * @return int Number of shards the index should have
 	 */
-	public function getShardCount( $indexSuffix ) {
+	public function getShardCount( $indexSuffix ): int {
 		$settings = $this->config->get( 'CirrusSearchShardCount' );
 		if ( isset( $settings[$this->cluster][$indexSuffix] ) ) {
 			return $settings[$this->cluster][$indexSuffix];

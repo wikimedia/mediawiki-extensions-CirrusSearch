@@ -42,7 +42,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 			->willReturn( $shardCounts );
 
 		$settings = new ClusterSettings( $config, $cluster );
-		$this->assertEquals( $expect, $settings->getShardCount( $indexSuffix ) );
+		$this->assertSame( $expect, $settings->getShardCount( $indexSuffix ) );
 	}
 
 	public static function provideReplicaCounts() {

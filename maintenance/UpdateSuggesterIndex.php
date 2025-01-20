@@ -743,7 +743,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		return $this->getConnection()->getSettings()->getReplicaCount( $this->indexSuffix );
 	}
 
-	private function getShardCount() {
+	private function getShardCount(): int {
 		return $this->getConnection()->getSettings()->getShardCount( $this->indexSuffix );
 	}
 

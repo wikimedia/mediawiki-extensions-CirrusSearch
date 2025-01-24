@@ -72,6 +72,6 @@ class QueueingRemediatorTest extends CirrusTestCase {
 				$this->assertEquals( array_shift( $jobs ), $j );
 			} );
 		$remediator = new QueueingRemediator( $cluster, $jobQueueGroup );
-		call_user_func_array( [ $remediator, $methodCall ], $methodParams );
+		$remediator->$methodCall( ...$methodParams );
 	}
 }

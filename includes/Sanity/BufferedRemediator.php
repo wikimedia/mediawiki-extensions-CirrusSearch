@@ -79,7 +79,7 @@ class BufferedRemediator implements Remediator {
 	 */
 	public function replayOn( Remediator $remediator ) {
 		foreach ( $this->actions as [ $method, $args ] ) {
-			call_user_func_array( [ $remediator, $method ], $args );
+			$remediator->$method( ...$args );
 		}
 	}
 

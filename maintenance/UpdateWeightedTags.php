@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\CirrusSearch;
+use CirrusSearch\WeightedTagsUpdater;
 use Generator;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\ProperPageIdentity;
@@ -56,17 +56,20 @@ class UpdateWeightedTags extends Maintenance {
 		$this->validateParams();
 		foreach ( $this->getPageIdentities() as $pageIdentity ) {
 			$tagPrefix = $this->getOption( 'tagType' );
-			$cirrusSearch = new CirrusSearch();
+			/** @var WeightedTagsUpdater $updater */
+			$updater = $this->getServiceContainer()->getService( WeightedTagsUpdater::SERVICE );
 			if ( $this->hasOption( 'reset' ) ) {
-				$cirrusSearch->resetWeightedTags( $pageIdentity, $tagPrefix );
+				$updater->resetWeightedTags( $pageIdentity, $tagPrefix );
 			} else {
 				$tagNames = $this->getOption( 'tagName' );
 				$tagWeights = $this->getOption( 'weight' );
 				if ( $tagWeights !== null ) {
-					$tagWeights = array_map( 'intval', $tagWeights );
+					$tagWeights = array_map( static fn ( string $w ) => intval( $w ) / 1000, $tagWeights );
 					$tagWeights = array_combine( $tagNames, $tagWeights );
+				} else {
+					$tagWeights = array_fill_keys( array_flip( $tagNames ), null );
 				}
-				$cirrusSearch->updateWeightedTags( $pageIdentity, $tagPrefix, $tagNames, $tagWeights );
+				$updater->updateWeightedTags( $pageIdentity, $tagPrefix, $tagWeights );
 			}
 		}
 	}

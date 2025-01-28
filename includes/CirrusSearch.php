@@ -2,7 +2,6 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\Extra\MultiList\MultiListBuilder;
 use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
 use CirrusSearch\Profile\ContextualProfileOverride;
@@ -19,7 +18,6 @@ use CirrusSearch\Search\TitleResultsType;
 use ISearchResultSet;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Request\WebRequest;
 use MediaWiki\Status\Status;
@@ -29,7 +27,6 @@ use MediaWiki\WikiMap\WikiMap;
 use SearchEngine;
 use SearchIndexField;
 use SearchSuggestionSet;
-use Wikimedia\Assert\Assert;
 
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
@@ -613,27 +610,6 @@ class CirrusSearch extends SearchEngine {
 				$searcher->processRawReturn( $status->getValue(), $this->request ) );
 		}
 		return $status;
-	}
-
-	/**
-	 * @deprecated update via {@link WeightedTagsUpdater} service
-	 */
-	public function updateWeightedTags( ProperPageIdentity $page, string $tagPrefix, $tagNames = null, $tagWeights = null ): void {
-		Assert::precondition( strpos( $tagPrefix, '/' ) === false,
-			"invalid tag prefix $tagPrefix: must not contain /" );
-
-		$this->getUpdater()->updateWeightedTags(
-			$page,
-			$tagPrefix,
-			MultiListBuilder::buildTagWeightsFromLegacyParameters( $tagNames, $tagWeights )
-		);
-	}
-
-	/**
-	 * @deprecated update via {@link WeightedTagsUpdater} service
-	 */
-	public function resetWeightedTags( ProperPageIdentity $page, string $tagPrefix ): void {
-		$this->getUpdater()->resetWeightedTags( $page, [ $tagPrefix ] );
 	}
 
 	/**

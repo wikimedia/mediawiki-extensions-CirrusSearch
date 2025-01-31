@@ -334,7 +334,7 @@ class KeywordFeatureAssertions {
 		if ( $boostAssertion == null ) {
 			$this->testCase->assertNull( $func );
 		} elseif ( is_callable( $boostAssertion ) ) {
-			call_user_func( $boostAssertion, $func );
+			$boostAssertion( $func );
 		} else {
 			$this->testCase->assertEquals( $boostAssertion, $func );
 		}

@@ -81,7 +81,7 @@ class UserTestingEngine {
 		if ( $this->activeTest === null || !isset( $this->tests[$this->activeTest] ) ) {
 			return UserTestingStatus::inactive();
 		}
-		$bucketProbability = call_user_func( $this->callback, $this->activeTest );
+		$bucketProbability = ( $this->callback )( $this->activeTest );
 		$bucket = self::chooseBucket( $bucketProbability, array_keys(
 			$this->tests[$this->activeTest]['buckets'] ) );
 		return UserTestingStatus::active( $this->activeTest, $bucket );

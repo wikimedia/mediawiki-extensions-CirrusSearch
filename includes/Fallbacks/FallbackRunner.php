@@ -94,7 +94,7 @@ class FallbackRunner implements SearchMetricsProvider {
 			if ( !is_subclass_of( $clazz, FallbackMethod::class ) ) {
 				throw new SearchProfileException( "Invalid FallbackMethod: $clazz must implement " . FallbackMethod::class );
 			}
-			$method = call_user_func( [ $clazz, 'build' ], $query, $params, $interwikiResolver );
+			$method = $clazz::build( $query, $params, $interwikiResolver );
 			if ( $method !== null ) {
 				$fallbackMethods[$name] = $method;
 			}

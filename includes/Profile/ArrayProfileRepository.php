@@ -125,7 +125,7 @@ class ArrayProfileRepository implements SearchProfileRepository {
 
 	private function getProfiles(): array {
 		if ( $this->profiles === null ) {
-			$profiles = call_user_func( $this->callback );
+			$profiles = ( $this->callback )();
 			if ( !is_array( $profiles ) ) {
 				throw new SearchProfileException( "Loader callback for repository " .
 					$this->name . " of type " . $this->type .

@@ -495,7 +495,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				];
 			}
 
-			$callableResult = call_user_func( $callable, $matches );
+			$callableResult = $callable( $matches );
 			if ( $callableResult ) {
 				$destination[] = $callableResult;
 			}

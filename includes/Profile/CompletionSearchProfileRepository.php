@@ -70,7 +70,7 @@ class CompletionSearchProfileRepository implements SearchProfileRepository {
 			if ( $config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'use' ) ) {
 				$allowedFields['suggest-subphrases'] = true;
 			}
-			$originalProfiles = call_user_func( $arrayLoader );
+			$originalProfiles = $arrayLoader();
 			if ( !is_array( $originalProfiles ) ) {
 				throw new SearchProfileException( "Expected an array but got a " . get_debug_type( $originalProfiles ) );
 			}

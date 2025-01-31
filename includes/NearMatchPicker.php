@@ -84,7 +84,7 @@ class NearMatchPicker {
 		];
 
 		foreach ( $transformers as $transformer ) {
-			$transformedTerm = call_user_func( $transformer, $this->term );
+			$transformedTerm = $transformer( $this->term );
 			$found = null;
 			foreach ( $this->titles as $title ) {
 				$match = $this->checkAllMatches( $transformer, $transformedTerm, $title );
@@ -139,7 +139,7 @@ class NearMatchPicker {
 	 * @return bool
 	 */
 	private function checkOneMatch( $transformer, $transformedTerm, $matchedTitle ) {
-		$transformedTitle = call_user_func( $transformer, $matchedTitle->getText() );
+		$transformedTitle = $transformer( $matchedTitle->getText() );
 		return $transformedTerm === $transformedTitle;
 	}
 }

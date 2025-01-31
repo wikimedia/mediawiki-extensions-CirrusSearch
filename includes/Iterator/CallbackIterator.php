@@ -21,6 +21,6 @@ class CallbackIterator extends IteratorDecorator {
 	}
 
 	public function current() {
-		return call_user_func( $this->callable, $this->iterator->current() );
+		return ( $this->callable )( $this->iterator->current() );
 	}
 }

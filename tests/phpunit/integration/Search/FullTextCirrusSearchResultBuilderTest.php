@@ -414,7 +414,8 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 
 	private function getter( $field, $type ): callable {
 		return static function ( CirrusSearchResult $result ) use ( $field, $type ) {
-			return call_user_func( [ $result, ( $type === 'boolean' ? 'is' : 'get' ) . ucfirst( $field ) ] );
+			$method = ( $type === 'boolean' ? 'is' : 'get' ) . ucfirst( $field );
+			return $result->$method();
 		};
 	}
 }

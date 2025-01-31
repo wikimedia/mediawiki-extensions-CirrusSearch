@@ -541,7 +541,7 @@ class DataSender extends ElasticsearchIntermediary {
 				if ( $action instanceof \Elastica\Bulk\Action\AbstractDocument ) {
 					$docId = $action->getData()->getId();
 				}
-				call_user_func( $logCallback, $docId );
+				$logCallback( $docId );
 			}
 		}
 		return $justDocumentMissing;

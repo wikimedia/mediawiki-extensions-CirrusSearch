@@ -77,13 +77,14 @@ class CirrusSearchResultBuilderTest extends CirrusTestCase {
 
 	public function setter( $field ) {
 		return function ( $v ) use ( $field ) {
-			return call_user_func( [ $this->builder, $field ], $v );
+			return $this->builder->$field( $v );
 		};
 	}
 
 	private function getter( $field, $type ) {
 		return static function ( CirrusSearchResult $result ) use ( $field, $type ) {
-			return call_user_func( [ $result, ( $type === 'boolean' ? 'is' : 'get' ) . ucfirst( $field ) ] );
+			$method = ( $type === 'boolean' ? 'is' : 'get' ) . ucfirst( $field );
+			return $result->$method();
 		};
 	}
 }

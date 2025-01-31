@@ -163,6 +163,6 @@ class SaneitizeLoop {
 	 * @param string|null $channel
 	 */
 	private function log( $msg, $channel = null ) {
-		call_user_func( $this->logger, $msg, $channel );
+		( $this->logger )( $msg, $channel );
 	}
 }

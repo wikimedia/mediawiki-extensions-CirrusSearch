@@ -57,7 +57,9 @@ class SearchRequestBuilder {
 		$resultsType = $this->searchContext->getResultsType();
 
 		$query = new Query();
-		$query->setTrackTotalHits( $this->searchContext->getTrackTotalHits() );
+		// Track at least offset + limit + 1 hits if precise total_hits is not requested
+		// This useful to know if more results are available on the next page
+		$query->setTrackTotalHits( $this->searchContext->getTrackTotalHits() ? true : $this->offset + $this->limit + 1 );
 		$query->setSource( $resultsType->getSourceFiltering() );
 		$query->setParam( "fields", $resultsType->getFields() );
 

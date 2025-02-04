@@ -150,8 +150,8 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		$this->overrideConfigValues( $configs );
 		$this->setService( 'LinkBatchFactory', $this->createMock( LinkBatchFactory::class ) );
 		$titleFactory = $this->createMock( TitleFactory::class );
-		$titleFactory->method( 'makeTitle' )->willReturnCallback( static function () {
-			$ret = Title::makeTitle( ...func_get_args() );
+		$titleFactory->method( 'makeTitle' )->willReturnCallback( static function ( $ns, $title, $fragment = '', $interwiki = '' ) {
+			$ret = Title::makeTitle( $ns, $title, $fragment, $interwiki );
 			$ret->resetArticleID( 0 );
 			return $ret;
 		} );

@@ -24,8 +24,8 @@ class SuggestBuilderIntegrationTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testCrossNSRedirects() {
 		$titleFactory = $this->createMock( TitleFactory::class );
-		$titleFactory->method( 'makeTitle' )->willReturnCallback( static function () {
-			$ret = Title::makeTitle( ...func_get_args() );
+		$titleFactory->method( 'makeTitle' )->willReturnCallback( static function ( $ns, $title, $fragment = '', $interwiki = '' ) {
+			$ret = Title::makeTitle( $ns, $title, $fragment, $interwiki );
 			$ret->resetArticleID( 0 );
 			return $ret;
 		} );
@@ -83,8 +83,8 @@ class SuggestBuilderIntegrationTest extends \MediaWikiIntegrationTestCase {
 
 	public function testDefaultSortAndCrossNS() {
 		$titleFactory = $this->createMock( TitleFactory::class );
-		$titleFactory->method( 'makeTitle' )->willReturnCallback( static function () {
-			$ret = Title::makeTitle( ...func_get_args() );
+		$titleFactory->method( 'makeTitle' )->willReturnCallback( static function ( $ns, $title, $fragment = '', $interwiki = '' ) {
+			$ret = Title::makeTitle( $ns, $title, $fragment, $interwiki );
 			$ret->resetArticleID( 0 );
 			return $ret;
 		} );

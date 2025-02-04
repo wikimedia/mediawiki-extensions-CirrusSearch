@@ -129,8 +129,8 @@ class TeamDraftInterleaverTest extends CirrusTestCase {
 			}
 			$cscrMockTeamA->expects( $this->once() )
 				->method( $method->getName() )
-				->willReturnCallback( function () use ( $params, $returnValue ) {
-					$this->assertEquals( $params, func_get_args() );
+				->willReturnCallback( function ( ...$args ) use ( $params, $returnValue ) {
+					$this->assertEquals( $params, $args );
 					return $returnValue;
 				} );
 			$allParams[$method->getName()] = $params;

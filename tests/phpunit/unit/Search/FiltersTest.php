@@ -126,9 +126,9 @@ class FiltersTest extends CirrusTestCase {
 		return $bool;
 	}
 
-	private static function newAnd( /* args */ ) {
+	private static function newAnd( ...$args ) {
 		$and = new BoolQuery();
-		foreach ( func_get_args() as $query ) {
+		foreach ( $args as $query ) {
 			$and->addFilter( $query );
 		}
 		return $and;

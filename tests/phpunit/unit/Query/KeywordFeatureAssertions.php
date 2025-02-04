@@ -95,8 +95,8 @@ class KeywordFeatureAssertions {
 		}
 		$warnings = [];
 		$context->method( 'addWarning' )
-			->will( $this->testCase->returnCallback( static function () use ( &$warnings ) {
-				$warnings[] = array_filter( func_get_args() );
+			->will( $this->testCase->returnCallback( static function ( ...$args ) use ( &$warnings ) {
+				$warnings[] = array_filter( $args );
 			} ) );
 
 		$context->method( 'getWarnings' )
@@ -135,8 +135,8 @@ class KeywordFeatureAssertions {
 		$warnings = [];
 
 		$context->method( 'addWarning' )
-			->will( $this->testCase->returnCallback( static function () use ( &$warnings ) {
-				$warnings[] = array_filter( func_get_args() );
+			->will( $this->testCase->returnCallback( static function ( ...$args ) use ( &$warnings ) {
+				$warnings[] = array_filter( $args );
 			} ) );
 
 		$context->method( 'getWarnings' )
@@ -154,8 +154,8 @@ class KeywordFeatureAssertions {
 		$warnings = [];
 		$context = $this->mockContext();
 		$context->method( 'addWarning' )
-			->will( $this->testCase->returnCallback( static function () use ( &$warnings ) {
-				$warnings[] = array_filter( func_get_args() );
+			->will( $this->testCase->returnCallback( static function ( ...$args ) use ( &$warnings ) {
+				$warnings[] = array_filter( $args );
 			} ) );
 		$feature->apply( $context, $term );
 		$this->testCase->assertEquals( $expected, $warnings );

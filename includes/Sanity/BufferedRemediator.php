@@ -18,42 +18,42 @@ class BufferedRemediator implements Remediator {
 	 * @inheritDoc
 	 */
 	public function redirectInIndex( string $docId, WikiPage $page, string $indexSuffix ) {
-		$this->actions[] = [ substr( __METHOD__, strlen( __CLASS__ ) + 2 ), func_get_args() ];
+		$this->actions[] = [ __FUNCTION__, func_get_args() ];
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function pageNotInIndex( WikiPage $page ) {
-		$this->actions[] = [ substr( __METHOD__, strlen( __CLASS__ ) + 2 ), func_get_args() ];
+		$this->actions[] = [ __FUNCTION__, func_get_args() ];
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function ghostPageInIndex( $docId, Title $title ) {
-		$this->actions[] = [ substr( __METHOD__, strlen( __CLASS__ ) + 2 ), func_get_args() ];
+		$this->actions[] = [ __FUNCTION__, func_get_args() ];
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function pageInWrongIndex( $docId, WikiPage $page, $indexSuffix ) {
-		$this->actions[] = [ substr( __METHOD__, strlen( __CLASS__ ) + 2 ), func_get_args() ];
+		$this->actions[] = [ __FUNCTION__, func_get_args() ];
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function oldVersionInIndex( $docId, WikiPage $page, $indexSuffix ) {
-		$this->actions[] = [ substr( __METHOD__, strlen( __CLASS__ ) + 2 ), func_get_args() ];
+		$this->actions[] = [ __FUNCTION__, func_get_args() ];
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function oldDocument( WikiPage $page ) {
-		$this->actions[] = [ substr( __METHOD__, strlen( __CLASS__ ) + 2 ), func_get_args() ];
+		$this->actions[] = [ __FUNCTION__, func_get_args() ];
 	}
 
 	/**

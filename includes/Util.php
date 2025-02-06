@@ -90,13 +90,13 @@ class Util {
 		$isSuccess,
 		callable $callback
 	) {
-		return function () use ( $type, $isSuccess, $callback, $startPoolWork ) {
+		return function ( ...$args ) use ( $type, $isSuccess, $callback, $startPoolWork ) {
 			self::recordPoolStats(
 				$type,
 				$isSuccess,
 				1000 * ( microtime( true ) - $startPoolWork ) );
 
-			return $callback( ...func_get_args() );
+			return $callback( ...$args );
 		};
 	}
 

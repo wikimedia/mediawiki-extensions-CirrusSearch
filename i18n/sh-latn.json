@@ -6,7 +6,7 @@
 		]
 	},
 	"cirrussearch-desc": "Pretraga za MediaWiki pomoću Elasticsearcha",
-	"cirrussearch-backend-error": "Nismo mogli završiti pretragu zbog privremenog problema. Pokušajte ponovo kasnije.",
+	"cirrussearch-backend-error": "Nije moguće izvršiti pretragu zbog privremenog problema. Pokušajte ponovo kasnije.",
 	"cirrussearch-parse-error": "Nisam razumjela upit. Pojednostavite ga. Uspavam ovo poboljšati sistem za pretragu.",
 	"cirrussearch-too-busy-error": "Pretraga je trenutno prezauzeta. Pokušajte ponovo kasnije.",
 	"cirrussearch-regex-syntax-error": "Sintaksna greška regularnoga izraza u $2: $1",

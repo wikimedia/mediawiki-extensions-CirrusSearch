@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Xuacu"
+			"Xuacu",
+			"YoaR"
 		]
 	},
 	"cirrussearch-desc": "Gueta col motor Elasticsearch pa MediaWiki",

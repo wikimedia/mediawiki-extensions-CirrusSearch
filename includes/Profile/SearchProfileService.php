@@ -261,9 +261,7 @@ class SearchProfileService {
 		if ( $name === null && $context === null ) {
 			throw new SearchProfileException( '$name and $context cannot be both null' );
 		}
-		if ( $name === null ) {
-			$name = $this->getProfileName( $type, $context, $contextParams );
-		}
+		$name ??= $this->getProfileName( $type, $context, $contextParams );
 		return $this->loadProfileByName( $type, $name );
 	}
 

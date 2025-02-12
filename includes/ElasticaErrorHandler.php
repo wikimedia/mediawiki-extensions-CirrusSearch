@@ -70,9 +70,7 @@ class ElasticaErrorHandler {
 			$type = null;
 			foreach ( $shardStats[ 'failures' ] as $failure ) {
 				$message[] = $failure['reason']['reason'];
-				if ( $type === null ) {
-					$type = $failure['reason']['type'];
-				}
+				$type ??= $failure['reason']['type'];
 			}
 
 			return [

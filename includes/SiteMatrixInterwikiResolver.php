@@ -35,7 +35,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 	 * @return bool true if this resolver can run with the specified config
 	 */
 	public static function accepts( SearchConfig $config, ?ExtensionRegistry $extensionRegistry = null ) {
-		$extensionRegistry = $extensionRegistry ?: ExtensionRegistry::getInstance();
+		$extensionRegistry ??= ExtensionRegistry::getInstance();
 		return $config->getWikiId() === WikiMap::getCurrentWikiId()
 			&& $extensionRegistry->isLoaded( 'SiteMatrix' )
 			&& $config->has( 'SiteMatrixSites' );

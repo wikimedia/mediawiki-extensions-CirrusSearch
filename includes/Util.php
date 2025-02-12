@@ -424,17 +424,12 @@ class Util {
 
 		$normalizer = null;
 		if ( $method === 'naive' ) {
-			if ( $naive === null ) {
-				$naive = \Transliterator::createFromRules(
-					'::NFD;::Upper;::Lower;::[:Nonspacing Mark:] Remove;::NFC;[\_\-\'\u2019\u02BC]>\u0020;'
-				);
-			}
+			$naive ??= \Transliterator::createFromRules(
+				'::NFD;::Upper;::Lower;::[:Nonspacing Mark:] Remove;::NFC;[\_\-\'\u2019\u02BC]>\u0020;'
+			);
 			$normalizer = $naive;
 		} elseif ( $method === 'utr30' ) {
-			if ( $utr30 === null ) {
-				$utr30 =
-				$normalizer = \Transliterator::createFromRules( file_get_contents( __DIR__ . '/../data/utr30.txt' ) );
-			}
+			$utr30 ??= \Transliterator::createFromRules( file_get_contents( __DIR__ . '/../data/utr30.txt' ) );
 			$normalizer = $utr30;
 		}
 

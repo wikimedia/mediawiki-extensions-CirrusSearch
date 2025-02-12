@@ -198,9 +198,7 @@ class KeywordFeatureAssertions {
 		?SearchConfig $config = null
 	) {
 		$node = $this->getParsedKeyword( $term, $feature );
-		if ( $config === null ) {
-			$config = new HashSearchConfig( [] );
-		}
+		$config ??= new HashSearchConfig( [] );
 
 		$parser = new KeywordParser();
 		$this->testCase->assertEquals( $expected, $feature->expand( $node, $config, $parser ) );
@@ -246,9 +244,7 @@ class KeywordFeatureAssertions {
 		?array $warnings = null,
 		?SearchConfig $config = null
 	) {
-		if ( $config === null ) {
-			$config = new SearchConfig();
-		}
+		$config ??= new SearchConfig();
 		$context =
 			$this->mockContextExpectingAddFilter( $filter,
 				$this->isNegated( $feature, $term ), $config );
@@ -309,9 +305,7 @@ class KeywordFeatureAssertions {
 	) {
 		$this->testCase->assertInstanceOf( BoostFunctionFeature::class, $feature );
 
-		if ( $config === null ) {
-			$config = new SearchConfig();
-		}
+		$config ??= new SearchConfig();
 
 		$context = $this->mockContextExpectingBoost( $boostAssertion, $config );
 		$feature->apply( $context, $term );
@@ -502,9 +496,7 @@ class KeywordFeatureAssertions {
 	 * @return KeywordFeatureNode|null
 	 */
 	private function getParsedKeyword( $term, KeywordFeature $feature, ?KeywordParser $parser = null, $ignoreNegatedNodes = false ) {
-		if ( $parser === null ) {
-			$parser = new KeywordParser();
-		}
+		$parser ??= new KeywordParser();
 		$nodes = $parser->parse( $term, $feature, new OffsetTracker() );
 		$this->testCase->assertCount( 1, $nodes,
 			"A single keyword expression must be provided for this test" );

@@ -175,10 +175,6 @@ final class FullTextResultsType extends BaseResultsType {
 		};
 	}
 
-	/**
-	 * @param FetchPhaseConfigBuilder $builder
-	 * @return FullTextResultsType
-	 */
 	public function withFetchPhaseBuilder( FetchPhaseConfigBuilder $builder ): FullTextResultsType {
 		return new self( $builder, $this->searchContainedSyntax, $this->titleHelper, $this->extraFieldsToExtract, $this->deduplicate );
 	}

@@ -139,10 +139,6 @@ class AnalyzerBuilder {
 		$this->icuEnabled = $icuEnabled;
 	}
 
-	/**
-	 * @param string $langName
-	 * @return self
-	 */
 	public function withLangName( string $langName ): self {
 		$this->langName = $langName;
 		return $this;
@@ -157,10 +153,6 @@ class AnalyzerBuilder {
 		return $this;
 	}
 
-	/**
-	 * @param string $tokenizer
-	 * @return self
-	 */
 	public function withTokenizer( string $tokenizer ): self {
 		$this->tokenizer = $tokenizer;
 		return $this;
@@ -293,11 +285,6 @@ class AnalyzerBuilder {
 		return $this;
 	}
 
-	/**********
-	 * The with.., omit.., and insert.. methods below are only used by unpacked analyzers
-	 */
-
-	/** @return self */
 	public function withUnpackedAnalyzer(): self {
 		$this->unpacked = true;
 		return $this;
@@ -343,42 +330,36 @@ class AnalyzerBuilder {
 		return $this;
 	}
 
-	/** @return self */
 	public function withLightStemmer(): self {
 		$this->unpackedCheck();
 		$this->stemmerLang = "light_{$this->langName}";
 		return $this;
 	}
 
-	/** @return self */
 	public function omitStemmer(): self {
 		$this->unpackedCheck();
 		$this->useStemmer = false;
 		return $this;
 	}
 
-	/** @return self */
 	public function withAsciifolding(): self {
 		$this->unpackedCheck();
 		$this->folding = 'asciifolding';
 		return $this;
 	}
 
-	/** @return self */
 	public function omitFolding(): self {
 		$this->unpackedCheck();
 		$this->folding = '';
 		return $this;
 	}
 
-	/** @return self */
 	public function withRemoveEmpty(): self {
 		$this->unpackedCheck();
 		$this->removeEmpty = 'remove_empty';
 		return $this;
 	}
 
-	/** @return self */
 	public function withDecimalDigit(): self {
 		$this->unpackedCheck();
 		$this->decimalDigit = 'decimal_digit';

@@ -30,14 +30,8 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	 */
 	private MultiHttpClient $httpClient;
 
-	/**
-	 * @var InterwikiLookup
-	 */
 	protected InterwikiLookup $interwikiLookup;
 
-	/**
-	 * @var WANObjectCache
-	 */
 	protected WANObjectCache $wanCache;
 
 	/**

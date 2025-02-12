@@ -143,8 +143,6 @@ class Token {
 
 	/**
 	 * Initialize the token from a parsed node
-	 *
-	 * @param ParsedNode $node
 	 */
 	public function node( ParsedNode $node ) {
 		$this->setType( self::PARSED_NODE, $node->getStartOffset(), $node->getEndOffset() );
@@ -184,7 +182,6 @@ class Token {
 	/**
 	 * Copy state from this token to the token
 	 * argument
-	 * @param Token $lookBehind
 	 */
 	public function copyTo( Token $lookBehind ) {
 		$lookBehind->query = $this->query;

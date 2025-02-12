@@ -83,8 +83,6 @@ class SearchConfig implements Config {
 	/**
 	 * This must be delayed until after construction is complete. Before then
 	 * subclasses could change out the configuration we see.
-	 *
-	 * @return Assignment\ClusterAssignment
 	 */
 	private function createClusterAssignment(): Assignment\ClusterAssignment {
 		// Configuring CirrusSearchServers enables "easy mode" which assumes

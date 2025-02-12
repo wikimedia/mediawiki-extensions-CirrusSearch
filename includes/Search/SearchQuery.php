@@ -172,16 +172,10 @@ class SearchQuery {
 		$this->provideAllSnippets = $provideAllSnippets;
 	}
 
-	/**
-	 * @return CirrusDebugOptions
-	 */
 	public function getDebugOptions(): CirrusDebugOptions {
 		return $this->debugOptions;
 	}
 
-	/**
-	 * @return ParsedQuery
-	 */
 	public function getParsedQuery(): ParsedQuery {
 		return $this->parsedQuery;
 	}
@@ -193,16 +187,10 @@ class SearchQuery {
 		return $this->initialNamespaces;
 	}
 
-	/**
-	 * @return CrossSearchStrategy
-	 */
 	public function getInitialCrossSearchStrategy(): CrossSearchStrategy {
 		return $this->initialCrossSearchStrategy;
 	}
 
-	/**
-	 * @return CrossSearchStrategy
-	 */
 	public function getCrossSearchStrategy(): CrossSearchStrategy {
 		if ( $this->crossSearchStrategy === null ) {
 			if ( $this->contextualFilters !== [] ) {
@@ -238,9 +226,6 @@ class SearchQuery {
 		return $this->sort;
 	}
 
-	/**
-	 * @return int|null
-	 */
 	public function getRandomSeed(): ?int {
 		return $this->randomSeed;
 	}
@@ -297,9 +282,6 @@ class SearchQuery {
 		return $this->parsedQuery->getActualNamespaces( $this->initialNamespaces, $additionalRequired );
 	}
 
-	/**
-	 * @return SearchConfig
-	 */
 	public function getSearchConfig(): SearchConfig {
 		return $this->searchConfig;
 	}
@@ -350,9 +332,6 @@ class SearchQuery {
 		return $this->extraFieldsToExtract;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function shouldProvideAllSnippets(): bool {
 		return $this->provideAllSnippets;
 	}

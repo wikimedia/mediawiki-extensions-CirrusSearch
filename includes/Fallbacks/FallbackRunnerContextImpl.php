@@ -76,7 +76,6 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 	/**
 	 * Initialize the previous resultset
 	 * (only visible by FallbackRunner)
-	 * @param CirrusSearchResultSet $previousResultSet
 	 */
 	public function setPreviousResultSet( CirrusSearchResultSet $previousResultSet ) {
 		$this->previousResultSet = $previousResultSet;
@@ -86,9 +85,6 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 		$this->suggestResponse = null;
 	}
 
-	/**
-	 * @param ElasticaResultSet $suggestResponse
-	 */
 	public function setSuggestResponse( ElasticaResultSet $suggestResponse ) {
 		$this->suggestResponse = $suggestResponse;
 	}
@@ -100,23 +96,14 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 		return $this->suggestResponse !== null;
 	}
 
-	/**
-	 * @return CirrusSearchResultSet
-	 */
 	public function getInitialResultSet(): CirrusSearchResultSet {
 		return $this->initialResultSet;
 	}
 
-	/**
-	 * @return CirrusSearchResultSet
-	 */
 	public function getPreviousResultSet(): CirrusSearchResultSet {
 		return $this->previousResultSet;
 	}
 
-	/**
-	 * @return ElasticaResultSet
-	 */
 	public function getMethodResponse(): ElasticaResultSet {
 		Assert::precondition( $this->suggestResponse !== null, 'Must have a resultset set' );
 		return $this->suggestResponse;
@@ -142,16 +129,10 @@ class FallbackRunnerContextImpl implements FallbackRunnerContext {
 		return $this->searcherFactory->makeSearcher( $rewrittenQuery );
 	}
 
-	/**
-	 * @return NamespacePrefixParser
-	 */
 	public function getNamespacePrefixParser(): NamespacePrefixParser {
 		return $this->namespacePrefixParser;
 	}
 
-	/**
-	 * @return CirrusSearchHookRunner
-	 */
 	public function getCirrusSearchHookRunner(): CirrusSearchHookRunner {
 		return $this->cirrusSearchHookRunner;
 	}

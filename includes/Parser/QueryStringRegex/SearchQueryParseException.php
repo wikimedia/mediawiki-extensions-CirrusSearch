@@ -29,7 +29,6 @@ class SearchQueryParseException extends \Exception {
 
 	/**
 	 * Transform this exception as a Status object containing the message to display to the user
-	 * @return Status
 	 */
 	public function asStatus(): Status {
 		return Status::newFatal( $this->messageId, ...$this->params );

@@ -161,9 +161,6 @@ class FallbackRunner implements SearchMetricsProvider {
 		return $context->getPreviousResultSet();
 	}
 
-	/**
-	 * @return array
-	 */
 	public function getElasticSuggesters(): array {
 		$suggesters = [];
 		foreach ( $this->fallbackMethods as $method ) {

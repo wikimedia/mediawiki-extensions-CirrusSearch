@@ -23,9 +23,6 @@ class MoreLikeFeature extends SimpleKeywordFeature implements LegacyKeywordFeatu
 	 */
 	private $config;
 
-	/**
-	 * @param SearchConfig $config
-	 */
 	public function __construct( SearchConfig $config ) {
 		$this->config = $config;
 	}
@@ -106,9 +103,6 @@ class MoreLikeFeature extends SimpleKeywordFeature implements LegacyKeywordFeatu
 		return $this->doExpand( $node->getKey(), $node->getValue(), $warningCollector );
 	}
 
-	/**
-	 * @return SearchConfig
-	 */
 	public function getConfig(): SearchConfig {
 		return $this->config;
 	}

@@ -167,10 +167,6 @@ class ConfigDump extends ApiBase {
 		}
 	}
 
-	/**
-	 * @param ApiResult $result
-	 * @return void
-	 */
 	protected function addGlobals( ApiResult $result ): void {
 		$config = $this->getConfig();
 		foreach ( self::$PUBLICLY_SHAREABLE_CONFIG_VARS as $key ) {
@@ -220,7 +216,6 @@ class ConfigDump extends ApiBase {
 
 	/**
 	 * Add data from profiles
-	 * @param ApiResult $result
 	 */
 	private function addProfiles( ApiResult $result ) {
 		$config = new SearchConfig();

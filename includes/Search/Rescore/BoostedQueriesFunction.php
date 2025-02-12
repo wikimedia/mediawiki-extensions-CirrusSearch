@@ -37,8 +37,6 @@ class BoostedQueriesFunction implements BoostFunctionBuilder {
 
 	/**
 	 * Append functions to the function score $container
-	 *
-	 * @param FunctionScore $container
 	 */
 	public function append( FunctionScore $container ) {
 		$mi = new \MultipleIterator( \MultipleIterator::MIT_NEED_ALL | \MultipleIterator::MIT_KEYS_NUMERIC );

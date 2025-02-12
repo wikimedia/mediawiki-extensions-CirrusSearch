@@ -2169,8 +2169,6 @@ class AnalysisConfigBuilder {
 
 	/**
 	 * Set up global custom filters
-	 *
-	 * @return array
 	 */
 	private static function buildGlobalCustomFilters(): array {
 		$gcf = [

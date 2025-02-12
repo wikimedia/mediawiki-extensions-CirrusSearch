@@ -345,9 +345,6 @@ EOD
 		return $latest;
 	}
 
-	/**
-	 * @param \Elastica\Document $jobInfo
-	 */
 	private function updateJob( \Elastica\Document $jobInfo ) {
 		foreach ( $this->metaStores as $store ) {
 			$store->update( $jobInfo );

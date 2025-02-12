@@ -56,10 +56,6 @@ class PrefixSearchQueryBuilderTest extends CirrusTestCase {
 		$this->assertFalse( $context->areResultsPossible() );
 	}
 
-	/**
-	 * @param \CirrusSearch\SearchConfig $config
-	 * @return SearchContext
-	 */
 	private function getSearchContext( \CirrusSearch\SearchConfig $config ): SearchContext {
 		return new SearchContext( $config, null, null, null, null,
 			$this->createCirrusSearchHookRunner() );

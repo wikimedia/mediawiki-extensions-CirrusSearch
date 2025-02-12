@@ -36,7 +36,6 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 */
 	private $useTokenCountRouter;
 
-	/** @var NearMatchFieldQueryBuilder */
 	private NearMatchFieldQueryBuilder $nearMatchFieldQueryBuilder;
 
 	/**

@@ -52,9 +52,6 @@ class TitleResultsType extends BaseResultsType {
 		return [];
 	}
 
-	/**
-	 * @return TitleHelper
-	 */
 	public function getTitleHelper(): TitleHelper {
 		if ( $this->titleHelper === null ) {
 			$this->titleHelper = new TitleHelper();

@@ -75,9 +75,6 @@ abstract class CirrusTitleJob extends Job {
 		$this->removeDuplicates = true;
 	}
 
-	/**
-	 * @return SearchConfig
-	 */
 	public function getSearchConfig(): SearchConfig {
 		if ( $this->searchConfig === null ) {
 			$this->searchConfig = MediaWikiServices::getInstance()

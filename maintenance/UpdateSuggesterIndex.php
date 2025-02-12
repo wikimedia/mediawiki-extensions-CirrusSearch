@@ -488,7 +488,6 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	/**
 	 * Delete an index
-	 * @param \Elastica\Index $index
 	 */
 	private function deleteIndex( \Elastica\Index $index ) {
 		// @todo Utilize $this->oldIndex->delete(...) once Elastica library is updated

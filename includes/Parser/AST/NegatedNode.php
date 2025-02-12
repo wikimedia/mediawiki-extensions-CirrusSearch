@@ -69,9 +69,6 @@ class NegatedNode extends ParsedNode {
 		return $this->negationType;
 	}
 
-	/**
-	 * @param Visitor $visitor
-	 */
 	public function accept( Visitor $visitor ) {
 		$visitor->visitNegatedNode( $this );
 	}

@@ -23,9 +23,7 @@ use MediaWiki\Status\Status;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Version extends ElasticsearchIntermediary {
-	/**
-	 * @param Connection $conn
-	 */
+
 	public function __construct( Connection $conn ) {
 		parent::__construct( $conn, null, 0 );
 	}

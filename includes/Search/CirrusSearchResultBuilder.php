@@ -56,10 +56,6 @@ class CirrusSearchResultBuilder {
 		return $this->setValue( ArrayCirrusSearchResult::SCORE, $score );
 	}
 
-	/**
-	 * @param array $explanation
-	 * @return self
-	 */
 	public function explanation( array $explanation ): self {
 		return $this->setValue( ArrayCirrusSearchResult::EXPLANATION, $explanation );
 	}
@@ -156,10 +152,6 @@ class CirrusSearchResultBuilder {
 		return $this->setValue( ArrayCirrusSearchResult::CATEGORY_SNIPPET_FIELD, $categorySnippetField );
 	}
 
-	/**
-	 * @param MWTimestamp $timestamp
-	 * @return self
-	 */
 	public function timestamp( MWTimestamp $timestamp ): self {
 		return $this->setValue( ArrayCirrusSearchResult::TIMESTAMP, $timestamp );
 	}

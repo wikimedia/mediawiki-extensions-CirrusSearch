@@ -68,9 +68,6 @@ class CheckerJob extends CirrusGenericJob {
 		return $job;
 	}
 
-	/**
-	 * @param array $params
-	 */
 	public function __construct( array $params ) {
 		// BC for jobs created before id fields were clarified to be explicitly page id's
 		if ( isset( $params['fromId'] ) ) {

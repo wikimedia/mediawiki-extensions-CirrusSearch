@@ -102,9 +102,6 @@ class MSearchResponses {
 		return $this->failure !== null;
 	}
 
-	/**
-	 * @return Status
-	 */
 	public function getFailure(): Status {
 		Assert::precondition( $this->failure !== null, 'must have failed' );
 		return $this->failure;

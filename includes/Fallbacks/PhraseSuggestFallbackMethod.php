@@ -96,10 +96,6 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		return 0.5;
 	}
 
-	/**
-	 * @param FallbackRunnerContext $context
-	 * @return FallbackStatus
-	 */
 	public function rewrite( FallbackRunnerContext $context ): FallbackStatus {
 		$firstPassResults = $context->getInitialResultSet();
 		$previousSet = $context->getPreviousResultSet();

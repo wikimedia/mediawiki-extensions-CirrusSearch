@@ -288,7 +288,6 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 
 	/**
 	 * Useful to inject your own TitleHelper during tests
-	 * @return TitleHelper
 	 */
 	protected function getTitleHelper(): TitleHelper {
 		if ( $this->titleHelper === null ) {

@@ -14,8 +14,6 @@ use CirrusSearch\Profile\SearchProfileService;
 interface CirrusSearchProfileServiceHook {
 	/**
 	 * This hook is called to register search profiles
-	 *
-	 * @param SearchProfileService $service
 	 */
 	public function onCirrusSearchProfileService( SearchProfileService $service ): void;
 }

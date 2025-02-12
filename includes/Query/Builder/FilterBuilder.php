@@ -13,11 +13,13 @@ interface FilterBuilder {
 
 	/**
 	 * @param AbstractQuery $query
+	 * @return void
 	 */
 	public function must( AbstractQuery $query );
 
 	/**
 	 * @param AbstractQuery $query
+	 * @return void
 	 */
 	public function mustNot( AbstractQuery $query );
 }

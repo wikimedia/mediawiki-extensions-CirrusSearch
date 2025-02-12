@@ -287,9 +287,6 @@ final class SearchQueryBuilder {
 		return $builder;
 	}
 
-	/**
-	 * @return SearchQuery
-	 */
 	public function build(): SearchQuery {
 		return new SearchQuery(
 			$this->parsedQuery,
@@ -408,10 +405,6 @@ final class SearchQueryBuilder {
 		return $this;
 	}
 
-	/**
-	 * @param CirrusDebugOptions $debugOptions
-	 * @return SearchQueryBuilder
-	 */
 	public function setDebugOptions( CirrusDebugOptions $debugOptions ): SearchQueryBuilder {
 		$this->debugOptions = $debugOptions;
 

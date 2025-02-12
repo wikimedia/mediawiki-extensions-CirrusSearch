@@ -102,9 +102,6 @@ class PhraseQueryNode extends ParsedNode {
 		return $this->unbalanced;
 	}
 
-	/**
-	 * @param Visitor $visitor
-	 */
 	public function accept( Visitor $visitor ) {
 		$visitor->visitPhraseQueryNode( $this );
 	}

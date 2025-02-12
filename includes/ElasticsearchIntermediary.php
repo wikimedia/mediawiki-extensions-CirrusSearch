@@ -153,8 +153,6 @@ abstract class ElasticsearchIntermediary {
 	/**
 	 * Mark the start of a request to Elasticsearch.  Public so it can be
 	 * called from pool counter methods.
-	 *
-	 * @param RequestLog $log
 	 */
 	public function start( RequestLog $log ) {
 		$this->currentRequestLog = $log;
@@ -184,8 +182,6 @@ abstract class ElasticsearchIntermediary {
 	/**
 	 * Log a successful request when the response comes from a cache outside
 	 * elasticsearch. This is a combination of self::start() and self::success().
-	 *
-	 * @param RequestLog $log
 	 */
 	public function successViaCache( RequestLog $log ) {
 		if ( $this->extraBackendLatency ) {
@@ -355,9 +351,6 @@ abstract class ElasticsearchIntermediary {
 		throw new ConfigException( "wgCirrusSearchClientSideSearchTimeout should have at least a 'default' entry configured" );
 	}
 
-	/**
-	 * @param SearchMetricsProvider $provider
-	 */
 	protected function appendMetrics( SearchMetricsProvider $provider ) {
 		$this->searchMetrics += $provider->getMetrics();
 	}

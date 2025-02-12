@@ -43,9 +43,6 @@ class WildcardNode extends ParsedNode {
 		return $this->wildcardQuery;
 	}
 
-	/**
-	 * @param Visitor $visitor
-	 */
 	public function accept( Visitor $visitor ) {
 		$visitor->visitWildcardNode( $this );
 	}

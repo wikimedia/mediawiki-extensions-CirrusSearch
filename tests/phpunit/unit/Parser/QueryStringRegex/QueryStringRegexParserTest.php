@@ -50,7 +50,6 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 		$config = new HashSearchConfig( [ 'CirrusSearchMaxFullTextQueryLength' => QueryStringRegexParser::QUERY_LEN_HARD_LIMIT * 2 ] );
 
 		$parser = $this->buildParser( $config );
-		/** @var ParsedBooleanNode $parsedNode */
 		try {
 			$parser->parse( str_repeat( "a", QueryStringRegexParser::QUERY_LEN_HARD_LIMIT + 1 ) );
 			$this->fail( "Expected exception" );

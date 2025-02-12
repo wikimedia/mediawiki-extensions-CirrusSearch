@@ -280,9 +280,6 @@ class Result extends CirrusSearchResult {
 		return $this->explanation;
 	}
 
-	/**
-	 * @return TitleHelper
-	 */
 	protected function getTitleHelper(): TitleHelper {
 		return $this->titleHelper;
 	}

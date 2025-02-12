@@ -750,9 +750,6 @@ class QueryStringRegexParser implements QueryParser {
 			/** @var string|int[] */
 			public $total = [];
 
-			/**
-			 * @param KeywordFeatureNode $node
-			 */
 			public function doVisitKeyword( KeywordFeatureNode $node ) {
 				if ( $this->total === 'all' ) {
 					return;

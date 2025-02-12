@@ -33,34 +33,22 @@ abstract class LeafVisitor implements Visitor {
 		$this->excludeOccurs = $excludeOccurs;
 	}
 
-	/**
-	 * @param ParsedBooleanNode $node
-	 */
 	final public function visitParsedBooleanNode( ParsedBooleanNode $node ) {
 		foreach ( $node->getClauses() as $clause ) {
 			$clause->accept( $this );
 		}
 	}
 
-	/**
-	 * @param NegatedNode $node
-	 */
 	final public function visitNegatedNode( NegatedNode $node ) {
 		/** @phan-suppress-next-line PhanImpossibleCondition I agree, this is impossible. */
 		Assert::invariant( false, 'NegatedNode should be optimized at parse time' );
 	}
 
-	/**
-	 * @param NamespaceHeaderNode $node
-	 */
 	final public function visitNamespaceHeader( NamespaceHeaderNode $node ) {
 		/** @phan-suppress-next-line PhanImpossibleCondition I agree, this is impossible. */
 		Assert::invariant( false, 'Not yet part of the AST, should not be visited.' );
 	}
 
-	/**
-	 * @param BooleanClause $node
-	 */
 	final public function visitBooleanClause( BooleanClause $node ) {
 		if ( in_array( $node->getOccur(), $this->excludeOccurs ) ) {
 			return;

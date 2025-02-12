@@ -9,9 +9,6 @@ class ByKeywordTemplateBoostFunction implements BoostFunctionBuilder {
 	 */
 	private $queries;
 
-	/**
-	 * @param array $boostTemplates
-	 */
 	public function __construct( array $boostTemplates ) {
 		$queries = [];
 		$weights = [];
@@ -27,8 +24,6 @@ class ByKeywordTemplateBoostFunction implements BoostFunctionBuilder {
 
 	/**
 	 * Append functions to the function score $container
-	 *
-	 * @param \Elastica\Query\FunctionScore $container
 	 */
 	public function append( \Elastica\Query\FunctionScore $container ) {
 		$this->queries->append( $container );

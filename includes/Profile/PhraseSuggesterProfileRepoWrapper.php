@@ -32,10 +32,6 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 	 */
 	private $bagOStuff;
 
-	/**
-	 * @param SearchProfileRepository $wrapped
-	 * @param BagOStuff $bagOStuff
-	 */
 	public function __construct( SearchProfileRepository $wrapped, BagOStuff $bagOStuff ) {
 		$this->wrapped = $wrapped;
 		$this->bagOStuff = $bagOStuff;

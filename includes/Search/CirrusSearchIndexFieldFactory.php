@@ -31,9 +31,6 @@ class CirrusSearchIndexFieldFactory {
 	 */
 	private $searchConfig;
 
-	/**
-	 * @param SearchConfig $searchConfig
-	 */
 	public function __construct( SearchConfig $searchConfig ) {
 		$this->searchConfig = $searchConfig;
 	}

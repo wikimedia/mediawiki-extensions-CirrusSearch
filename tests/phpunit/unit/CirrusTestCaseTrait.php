@@ -132,10 +132,6 @@ trait CirrusTestCaseTrait {
 		}
 	}
 
-	/**
-	 * @param array $cases
-	 * @return array
-	 */
 	public static function randomizeFixtures( array $cases ): array {
 		if ( self::canRebuildFixture() ) {
 			return $cases;
@@ -293,9 +289,6 @@ trait CirrusTestCaseTrait {
 		};
 	}
 
-	/**
-	 * @return CirrusSearch
-	 */
 	public function newEngine(): CirrusSearch {
 		return new CirrusSearch( $this->newHashSearchConfig( [ 'CirrusSearchServers' => [] ] ),
 			CirrusDebugOptions::defaultOptions(), $this->namespacePrefixParser(), new EmptyInterwikiResolver() );

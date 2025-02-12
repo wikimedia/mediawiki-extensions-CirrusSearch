@@ -73,9 +73,6 @@ class Hooks implements
 	/** @var ConfigFactory */
 	private $configFactory;
 
-	/**
-	 * @param ConfigFactory $configFactory
-	 */
 	public function __construct( ConfigFactory $configFactory ) {
 		$this->configFactory = $configFactory;
 	}
@@ -120,8 +117,6 @@ class Hooks implements
 
 	/**
 	 * Initializes the portions of Cirrus that require the $request to be fully initialized
-	 *
-	 * @param WebRequest $request
 	 */
 	public static function initializeForRequest( WebRequest $request ) {
 		global $wgCirrusSearchPhraseRescoreWindowSize,
@@ -313,8 +308,6 @@ class Hooks implements
 
 	/**
 	 * Override more like this settings from request URI parameters
-	 *
-	 * @param WebRequest $request
 	 */
 	private static function overrideMoreLikeThisOptions( WebRequest $request ) {
 		global $wgCirrusSearchMoreLikeThisConfig,
@@ -606,10 +599,6 @@ class Hooks implements
 		] );
 	}
 
-	/**
-	 * @param array &$extraStats
-	 * @return void
-	 */
 	private static function addWordCount( array &$extraStats ): void {
 		$search = new CirrusSearch();
 

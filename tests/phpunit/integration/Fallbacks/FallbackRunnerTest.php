@@ -266,10 +266,6 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 				return $this->prio;
 			}
 
-			/**
-			 * @param FallbackRunnerContext $context
-			 * @return FallbackStatus
-			 */
 			public function rewrite( FallbackRunnerContext $context ): FallbackStatus {
 				Assert::assertNotNull( $this->rewritteCallback );
 				return ( $this->rewritteCallback )( $context );

@@ -12,8 +12,6 @@ namespace CirrusSearch\Hooks;
 interface CirrusSearchSimilarityConfigHook {
 	/**
 	 * This hook is called register new similarity configurations
-	 *
-	 * @param array &$similarityConfig
 	 */
 	public function onCirrusSearchSimilarityConfig( array &$similarityConfig ): void;
 }

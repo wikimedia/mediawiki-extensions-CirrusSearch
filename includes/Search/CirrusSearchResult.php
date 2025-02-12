@@ -37,9 +37,6 @@ abstract class CirrusSearchResult extends SearchResult {
 	 */
 	private $checkedForFile = false;
 
-	/**
-	 * @param Title $title
-	 */
 	public function __construct( Title $title ) {
 		$this->title = $title;
 	}

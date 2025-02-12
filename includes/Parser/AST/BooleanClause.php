@@ -80,17 +80,10 @@ class BooleanClause implements Visitable {
 		return $this->explicit;
 	}
 
-	/**
-	 * @param Visitor $visitor
-	 */
 	public function accept( Visitor $visitor ) {
 		$visitor->visitBooleanClause( $this );
 	}
 
-	/**
-	 *
-	 * @return NegatedNode|null
-	 */
 	public function getNegatedNode(): ?NegatedNode {
 		return $this->negatedNode;
 	}

@@ -36,9 +36,6 @@ class PreferRecentFeature extends SimpleKeywordFeature implements BoostFunctionF
 	 */
 	private $unspecifiedDecay;
 
-	/**
-	 * @param Config $config
-	 */
 	public function __construct( Config $config ) {
 		$this->halfLife = $config->get( 'CirrusSearchPreferRecentDefaultHalfLife' );
 		$this->unspecifiedDecay = $config->get( 'CirrusSearchPreferRecentUnspecifiedDecayPortion' );

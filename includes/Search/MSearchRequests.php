@@ -65,10 +65,6 @@ class MSearchRequests {
 		return new MSearchResponses( $resultSetsWithKeys, $this->requests );
 	}
 
-	/**
-	 * @param Status $status
-	 * @return MSearchResponses
-	 */
 	public function failure( Status $status ): MSearchResponses {
 		return new MSearchResponses( [], [], $status );
 	}

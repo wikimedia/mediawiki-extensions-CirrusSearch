@@ -23,9 +23,6 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 	/** @var SearchConfig */
 	private $config;
 
-	/**
-	 * @param SearchConfig $config
-	 */
 	public function __construct( SearchConfig $config ) {
 		$this->config = $config;
 	}
@@ -235,10 +232,6 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 		return $fieldContent;
 	}
 
-	/**
-	 * @param array $fieldContent
-	 * @return array
-	 */
 	private function truncateFileContent( array $fieldContent ): array {
 		return self::truncateFileTextContent( $this->config->get( 'CirrusSearchMaxFileTextLength' ) ?: -1, $fieldContent );
 	}

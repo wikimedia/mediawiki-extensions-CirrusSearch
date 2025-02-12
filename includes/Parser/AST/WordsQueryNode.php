@@ -42,9 +42,6 @@ class WordsQueryNode extends ParsedNode {
 		return $this->words;
 	}
 
-	/**
-	 * @param Visitor $visitor
-	 */
 	public function accept( Visitor $visitor ) {
 		$visitor->visitWordsQueryNode( $this );
 	}

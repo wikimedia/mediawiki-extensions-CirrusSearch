@@ -155,8 +155,6 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 	/**
 	 * Injects a PageStore that knows about a fake page with id of 2
 	 * for use in test cases.
-	 *
-	 * @return PageStore
 	 */
 	private function mockPageStore(): PageStore {
 		$pageStore = $this->createPartialMock( PageStore::class, [ 'newSelectQueryBuilder' ] );

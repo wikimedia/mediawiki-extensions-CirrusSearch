@@ -55,9 +55,6 @@ class FuzzyNode extends ParsedNode {
 		return $this->fuzziness;
 	}
 
-	/**
-	 * @param Visitor $visitor
-	 */
 	public function accept( Visitor $visitor ) {
 		$visitor->visitFuzzyNode( $this );
 	}

@@ -90,8 +90,6 @@ class ElasticaWrite extends CirrusGenericJob {
 	/**
 	 * Entry point for jobs received from the job queue. Creating new
 	 * jobs should be done via self::build.
-	 *
-	 * @param array $params
 	 */
 	public function __construct( array $params ) {
 		parent::__construct( $params + [

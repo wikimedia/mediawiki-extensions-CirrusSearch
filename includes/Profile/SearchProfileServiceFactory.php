@@ -120,9 +120,6 @@ class SearchProfileServiceFactory {
 	 */
 	private $userOptionsLookup;
 
-	/**
-	 * @var ExtensionRegistry
-	 */
 	private ExtensionRegistry $extensionRegistry;
 
 	public function __construct(
@@ -172,10 +169,6 @@ class SearchProfileServiceFactory {
 		return $service;
 	}
 
-	/**
-	 * @param SearchProfileService $service
-	 * @param SearchConfig $config
-	 */
 	private function loadCrossProjectBlockScorer( SearchProfileService $service, SearchConfig $config ) {
 		$service->registerFileRepository( SearchProfileService::CROSS_PROJECT_BLOCK_SCORER,
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/CrossProjectBlockScorerProfiles.config.php' );
@@ -189,10 +182,6 @@ class SearchProfileServiceFactory {
 			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchCrossProjectOrder' );
 	}
 
-	/**
-	 * @param SearchProfileService $service
-	 * @param SearchConfig $config
-	 */
 	private function loadSimilarityProfiles( SearchProfileService $service, SearchConfig $config ) {
 		$service->registerFileRepository( SearchProfileService::SIMILARITY, self::CIRRUS_BASE,
 			__DIR__ . '/../../profiles/SimilarityProfiles.config.php' );
@@ -207,10 +196,6 @@ class SearchProfileServiceFactory {
 			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchSimilarityProfile' );
 	}
 
-	/**
-	 * @param SearchProfileService $service
-	 * @param SearchConfig $config
-	 */
 	private function loadRescoreProfiles( SearchProfileService $service, SearchConfig $config ) {
 		$service->registerFileRepository( SearchProfileService::RESCORE,
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/RescoreProfiles.config.php' );
@@ -242,10 +227,6 @@ class SearchProfileServiceFactory {
 		// No default profiles for function chains, these profiles are always accessed explicitly
 	}
 
-	/**
-	 * @param SearchProfileService $service
-	 * @param SearchConfig $config
-	 */
 	private function loadCompletionProfiles( SearchProfileService $service, SearchConfig $config ) {
 		$service->registerRepository( CompletionSearchProfileRepository::fromFile( SearchProfileService::COMPLETION,
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/SuggestProfiles.config.php', $config ) );
@@ -266,10 +247,6 @@ class SearchProfileServiceFactory {
 			SearchProfileService::CONTEXT_DEFAULT, 'cirrussearch-pref-completion-profile' );
 	}
 
-	/**
-	 * @param SearchProfileService $service
-	 * @param SearchConfig $config
-	 */
 	private function loadPhraseSuggesterProfiles( SearchProfileService $service, SearchConfig $config ) {
 		$service->registerRepository( PhraseSuggesterProfileRepoWrapper::fromFile( SearchProfileService::PHRASE_SUGGESTER,
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/PhraseSuggesterProfiles.config.php', $this->localServerCache ) );
@@ -293,19 +270,12 @@ class SearchProfileServiceFactory {
 			self::EXTENSION_REGISTRY, 'CirrusSearchIndexLookupFallbackProfiles', $this->extensionRegistry ) );
 	}
 
-	/**
-	 * @param SearchProfileService $service
-	 */
 	private function loadSaneitizerProfiles( SearchProfileService $service ) {
 		$service->registerFileRepository( SearchProfileService::SANEITIZER, self::CIRRUS_BASE,
 			__DIR__ . '/../../profiles/SaneitizeProfiles.config.php' );
 		// no name resolver, profile is automatically chosen based on wiki
 	}
 
-	/**
-	 * @param SearchProfileService $service
-	 * @param SearchConfig $config
-	 */
 	private function loadDocumentSizeLimiterProfiles( SearchProfileService $service, SearchConfig $config ) {
 		$service->registerFileRepository( SearchProfileService::DOCUMENT_SIZE_LIMITER, self::CIRRUS_BASE,
 			__DIR__ . '/../../profiles/DocumentSizeLimiterProfiles.config.php' );
@@ -319,10 +289,6 @@ class SearchProfileServiceFactory {
 			SearchProfileService::CONTEXT_DEFAULT, $config, "CirrusSearchDocumentSizeLimiterProfile" );
 	}
 
-	/**
-	 * @param SearchProfileService $service
-	 * @param SearchConfig $config
-	 */
 	private function loadFullTextQueryProfiles( SearchProfileService $service, SearchConfig $config ) {
 		$service->registerFileRepository( SearchProfileService::FT_QUERY_BUILDER, self::CIRRUS_BASE,
 			__DIR__ . '/../../profiles/FullTextQueryBuilderProfiles.config.php' );

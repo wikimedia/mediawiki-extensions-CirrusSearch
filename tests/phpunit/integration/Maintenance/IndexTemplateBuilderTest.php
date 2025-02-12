@@ -67,7 +67,6 @@ class IndexTemplateBuilderTest extends CirrusIntegrationTestCase {
 		$profile = ( $config )->getProfileService()
 			->loadProfileByName( SearchProfileService::INDEX_LOOKUP_FALLBACK, $testProfile );
 		$this->assertArrayHasKey( 'index_template', $profile );
-		/** @var Connection $connection */
 		$tmplBuilder = IndexTemplateBuilder::build(
 			$connection,
 			$profile['index_template'],

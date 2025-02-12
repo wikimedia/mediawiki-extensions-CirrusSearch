@@ -74,9 +74,6 @@ class BufferedRemediator implements Remediator {
 		return $this->actions === $remediator->actions;
 	}
 
-	/**
-	 * @param Remediator $remediator
-	 */
 	public function replayOn( Remediator $remediator ) {
 		foreach ( $this->actions as [ $method, $args ] ) {
 			$remediator->$method( ...$args );

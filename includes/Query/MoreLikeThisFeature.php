@@ -54,9 +54,6 @@ class MoreLikeThisFeature extends SimpleKeywordFeature {
 		}
 	}
 
-	/**
-	 * @return SearchConfig
-	 */
 	public function getConfig(): SearchConfig {
 		return $this->config;
 	}

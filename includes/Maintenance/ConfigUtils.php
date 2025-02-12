@@ -35,10 +35,6 @@ class ConfigUtils {
 	 */
 	private $out;
 
-	/**
-	 * @param Client $client
-	 * @param Printer $out
-	 */
 	public function __construct( Client $client, Printer $out ) {
 		$this->client = $client;
 		$this->out = $out;

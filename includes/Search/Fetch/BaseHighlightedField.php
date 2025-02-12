@@ -22,7 +22,7 @@ class BaseHighlightedField extends HighlightedField {
 	/** @var string|null */
 	private $fragmenter;
 
-	/** @var int|null fragmentSize */
+	/** @var int|null */
 	private $fragmentSize;
 
 	/** @var int|null */
@@ -120,10 +120,6 @@ class BaseHighlightedField extends HighlightedField {
 		return $this;
 	}
 
-	/**
-	 * @param AbstractQuery $highlightQuery
-	 * @return self
-	 */
 	public function setHighlightQuery( AbstractQuery $highlightQuery ): self {
 		$this->highlightQuery = $highlightQuery;
 
@@ -201,9 +197,6 @@ class BaseHighlightedField extends HighlightedField {
 		$this->options = $options;
 	}
 
-	/**
-	 * @return array
-	 */
 	public function getOptions(): array {
 		return $this->options;
 	}
@@ -299,9 +292,6 @@ class BaseHighlightedField extends HighlightedField {
 		return $output;
 	}
 
-	/**
-	 * @return callable
-	 */
 	protected static function entireValue(): callable {
 		return static function ( SearchConfig $config, $fieldName, $target, $priority = self::DEFAULT_TARGET_PRIORITY ) {
 			$self = new self( $fieldName, self::FVH_HL_TYPE, $target, $priority );
@@ -312,9 +302,6 @@ class BaseHighlightedField extends HighlightedField {
 		};
 	}
 
-	/**
-	 * @return callable
-	 */
 	protected static function redirectAndHeadings(): callable {
 		return static function ( SearchConfig $config, $fieldName, $target, $priority = self::DEFAULT_TARGET_PRIORITY ) {
 			$self = new self( $fieldName, self::FVH_HL_TYPE, $target, $priority );
@@ -326,9 +313,6 @@ class BaseHighlightedField extends HighlightedField {
 		};
 	}
 
-	/**
-	 * @return callable
-	 */
 	protected static function text(): callable {
 		return static function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = new self( $fieldName, self::FVH_HL_TYPE, $target, $priority );
@@ -340,9 +324,6 @@ class BaseHighlightedField extends HighlightedField {
 		};
 	}
 
-	/**
-	 * @return callable
-	 */
 	protected static function mainText(): callable {
 		return function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = ( self::text() )( $config, $fieldName, $target, $priority );
@@ -355,7 +336,6 @@ class BaseHighlightedField extends HighlightedField {
 	/**
 	 * Skip this field if the previous matched
 	 * Optimization available only on the experimental highlighter.
-	 * @return self
 	 */
 	public function skipIfLastMatched(): self {
 		return $this;

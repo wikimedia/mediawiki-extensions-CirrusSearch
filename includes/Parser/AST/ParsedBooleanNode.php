@@ -73,9 +73,6 @@ class ParsedBooleanNode extends ParsedNode {
 		return $this->clauses;
 	}
 
-	/**
-	 * @param Visitor $visitor
-	 */
 	public function accept( Visitor $visitor ) {
 		$visitor->visitParsedBooleanNode( $this );
 	}

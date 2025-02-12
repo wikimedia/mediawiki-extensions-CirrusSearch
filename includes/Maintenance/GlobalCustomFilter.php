@@ -67,10 +67,6 @@ class GlobalCustomFilter {
 		return $this;
 	}
 
-	/**
-	 * @param string $fallbackFilter
-	 * @return self
-	 */
 	public function setFallbackFilter( string $fallbackFilter ): self {
 		$this->fallbackFilter = $fallbackFilter;
 		return $this;
@@ -92,10 +88,6 @@ class GlobalCustomFilter {
 		return $this->applyToAnalyzers;
 	}
 
-	/**
-	 * @param string $requiredTokenizer
-	 * @return self
-	 */
 	public function setRequiredTokenizer( string $requiredTokenizer ): self {
 		$this->requiredTokenizer = $requiredTokenizer;
 		return $this;

@@ -35,9 +35,6 @@ abstract class CirrusGenericJob extends Job implements GenericParameterJob {
 			->makeConfig( 'CirrusSearch' );
 	}
 
-	/**
-	 * @return SearchConfig
-	 */
 	public function getSearchConfig(): SearchConfig {
 		return $this->searchConfig;
 	}

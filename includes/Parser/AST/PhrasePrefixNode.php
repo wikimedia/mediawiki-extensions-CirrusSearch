@@ -42,9 +42,6 @@ class PhrasePrefixNode extends ParsedNode {
 		return $this->phrase;
 	}
 
-	/**
-	 * @param Visitor $visitor
-	 */
 	public function accept( Visitor $visitor ) {
 		$visitor->visitPhrasePrefixNode( $this );
 	}

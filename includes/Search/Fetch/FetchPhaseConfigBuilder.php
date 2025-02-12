@@ -113,9 +113,6 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 			$this->config, $name, $target, $pattern, $caseInsensitive, $priority );
 	}
 
-	/**
-	 * @param HighlightedField $field
-	 */
 	public function addHLField( HighlightedField $field ) {
 		$prev = $this->highlightedFields[$field->getFieldName()] ?? null;
 		if ( $prev === null ) {
@@ -159,10 +156,6 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 		return $config;
 	}
 
-	/**
-	 * @param SearchConfig $config
-	 * @return FetchPhaseConfigBuilder
-	 */
 	public function withConfig( SearchConfig $config ): self {
 		return new self( $config, $this->factoryGroup );
 	}

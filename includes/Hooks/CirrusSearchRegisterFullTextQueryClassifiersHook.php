@@ -14,8 +14,6 @@ use CirrusSearch\Parser\ParsedQueryClassifiersRepository;
 interface CirrusSearchRegisterFullTextQueryClassifiersHook {
 	/**
 	 * This hook is called to register FullText query classifiers
-	 *
-	 * @param ParsedQueryClassifiersRepository $repository
 	 */
 	public function onCirrusSearchRegisterFullTextQueryClassifiers( ParsedQueryClassifiersRepository $repository ): void;
 }

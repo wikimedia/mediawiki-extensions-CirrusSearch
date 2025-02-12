@@ -20,10 +20,6 @@ class DefaultSearchQueryDispatchService implements SearchQueryDispatchService {
 		$this->routes = $routes;
 	}
 
-	/**
-	 * @param SearchQuery $query
-	 * @return SearchQueryRoute
-	 */
 	public function bestRoute( SearchQuery $query ): SearchQueryRoute {
 		Assert::parameter( isset( $this->routes[$query->getSearchEngineEntryPoint()] ), 'query',
 			"Unsupported search engine entry point {$query->getSearchEngineEntryPoint()}" );

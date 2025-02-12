@@ -162,9 +162,6 @@ class KeywordFeatureNode extends ParsedNode {
 		];
 	}
 
-	/**
-	 * @param Visitor $visitor
-	 */
 	public function accept( Visitor $visitor ) {
 		$visitor->visitKeywordFeatureNode( $this );
 	}

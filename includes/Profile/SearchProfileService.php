@@ -300,7 +300,6 @@ class SearchProfileService {
 
 	/**
 	 * Register a new profile repository
-	 * @param SearchProfileRepository $repository
 	 */
 	public function registerRepository( SearchProfileRepository $repository ) {
 		$this->checkFrozen();
@@ -481,8 +480,6 @@ class SearchProfileService {
 	/**
 	 * Return the service responsible for dispatching a SearchQuery
 	 * to its preferred profile context.
-	 *
-	 * @return SearchQueryDispatchService
 	 */
 	public function getDispatchService(): SearchQueryDispatchService {
 		if ( $this->dispatchService === null ) {

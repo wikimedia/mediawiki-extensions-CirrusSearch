@@ -47,10 +47,6 @@ class FullTextCirrusSearchResultBuilder {
 		return $this->builder;
 	}
 
-	/**
-	 * @param \Elastica\Result $result
-	 * @return CirrusSearchResult
-	 */
 	public function build( \Elastica\Result $result ): CirrusSearchResult {
 		$title = $this->getTitleHelper()->makeTitle( $result );
 		$fields = $result->getFields();
@@ -81,9 +77,6 @@ class FullTextCirrusSearchResultBuilder {
 		return $builder->build();
 	}
 
-	/**
-	 * @return TitleHelper
-	 */
 	protected function getTitleHelper(): TitleHelper {
 		return $this->titleHelper;
 	}

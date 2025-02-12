@@ -74,8 +74,6 @@ class MetaSaneitizeJobStore implements MetaStore {
 	 * TODO: Might be more comfortable with something that
 	 * wraps the document and guarantees something sane
 	 * is provided here.
-	 *
-	 * @param \Elastica\Document $jobInfo
 	 */
 	public function update( \Elastica\Document $jobInfo ) {
 		if ( $jobInfo->get( 'type' ) != self::METASTORE_TYPE ) {

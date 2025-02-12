@@ -8,6 +8,7 @@ namespace CirrusSearch\Query\Builder;
 interface ContextualFilter {
 	/**
 	 * @param FilterBuilder $builder
+	 * @return void
 	 */
 	public function populate( FilterBuilder $builder );
 

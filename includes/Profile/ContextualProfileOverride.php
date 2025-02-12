@@ -65,9 +65,6 @@ class ContextualProfileOverride implements SearchProfileOverride {
 		return strtr( $this->template, $replacePairs );
 	}
 
-	/**
-	 * @return array
-	 */
 	public function explain(): array {
 		return [
 			'type' => 'contextual',

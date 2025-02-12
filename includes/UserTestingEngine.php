@@ -99,8 +99,6 @@ class UserTestingEngine {
 
 	/**
 	 * If provided status is in an active state enable the related configuration.
-	 *
-	 * @param UserTestingStatus $status
 	 */
 	public function activateTest( UserTestingStatus $status ) {
 		if ( !$status->isActive() ) {

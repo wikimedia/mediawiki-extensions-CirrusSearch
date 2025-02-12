@@ -30,51 +30,27 @@ abstract class KeywordNodeVisitor extends LeafVisitor {
 		$this->keywordClasses = $keywordClasses;
 	}
 
-	/**
-	 * @param WordsQueryNode $node
-	 */
 	final public function visitWordsQueryNode( WordsQueryNode $node ) {
 	}
 
-	/**
-	 * @param PhraseQueryNode $node
-	 */
 	final public function visitPhraseQueryNode( PhraseQueryNode $node ) {
 	}
 
-	/**
-	 * @param PhrasePrefixNode $node
-	 */
 	final public function visitPhrasePrefixNode( PhrasePrefixNode $node ) {
 	}
 
-	/**
-	 * @param FuzzyNode $node
-	 */
 	final public function visitFuzzyNode( FuzzyNode $node ) {
 	}
 
-	/**
-	 * @param PrefixNode $node
-	 */
 	final public function visitPrefixNode( PrefixNode $node ) {
 	}
 
-	/**
-	 * @param WildcardNode $node
-	 */
 	final public function visitWildcardNode( WildcardNode $node ) {
 	}
 
-	/**
-	 * @param EmptyQueryNode $node
-	 */
 	final public function visitEmptyQueryNode( EmptyQueryNode $node ) {
 	}
 
-	/**
-	 * @param KeywordFeatureNode $node
-	 */
 	final public function visitKeywordFeatureNode( KeywordFeatureNode $node ) {
 		if ( $this->filterKeyword( $node ) ) {
 			$this->doVisitKeyword( $node );
@@ -99,6 +75,7 @@ abstract class KeywordNodeVisitor extends LeafVisitor {
 
 	/**
 	 * @param KeywordFeatureNode $node
+	 * @return void
 	 */
 	abstract public function doVisitKeyword( KeywordFeatureNode $node );
 }

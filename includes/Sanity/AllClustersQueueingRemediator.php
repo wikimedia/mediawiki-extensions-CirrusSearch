@@ -25,10 +25,6 @@ class AllClustersQueueingRemediator implements Remediator {
 	 */
 	private $clusters;
 
-	/**
-	 * @param ClusterAssignment $clusterAssignment
-	 * @param JobQueueGroup $jobQueueGroup
-	 */
 	public function __construct( ClusterAssignment $clusterAssignment, JobQueueGroup $jobQueueGroup ) {
 		$this->clusters = $clusterAssignment->getWritableClusters( UpdateGroup::SANEITIZER );
 		$this->inner = new QueueingRemediator( null, $jobQueueGroup );

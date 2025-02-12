@@ -468,9 +468,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		$this->nonTextHighlightQueries[] = $query;
 	}
 
-	/**
-	 * @return FetchPhaseConfigBuilder
-	 */
 	public function getFetchPhaseBuilder(): FetchPhaseConfigBuilder {
 		return $this->fetchPhaseBuilder;
 	}
@@ -681,7 +678,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	/**
 	 * Add custom scoring function to the context.
 	 * The rescore builder will pick it up.
-	 * @param BoostFunctionBuilder $rescore
 	 */
 	public function addCustomRescoreComponent( BoostFunctionBuilder $rescore ) {
 		$this->isDirty = true;
@@ -778,7 +774,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 
 	/**
 	 * Add aggregation to perform on search.
-	 * @param AbstractAggregation $agg
 	 */
 	public function addAggregation( AbstractAggregation $agg ) {
 		$this->aggs[] = $agg;
@@ -808,16 +803,10 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		return $this->filters;
 	}
 
-	/**
-	 * @param AbstractQuery $query
-	 */
 	public function must( AbstractQuery $query ) {
 		$this->addFilter( $query );
 	}
 
-	/**
-	 * @param AbstractQuery $query
-	 */
 	public function mustNot( AbstractQuery $query ) {
 		$this->addNotFilter( $query );
 	}
@@ -897,9 +886,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		return $searchContext;
 	}
 
-	/**
-	 * @return FallbackRunner
-	 */
 	public function getFallbackRunner(): FallbackRunner {
 		return $this->fallbackRunner;
 	}

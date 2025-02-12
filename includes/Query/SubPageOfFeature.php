@@ -71,10 +71,6 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 		return $this->doGetFilterQuery( $node->getParsedValue() );
 	}
 
-	/**
-	 * @param array $parsedValue
-	 * @return AbstractQuery
-	 */
 	private function doGetFilterQuery( array $parsedValue ): AbstractQuery {
 		$query = new MultiMatch();
 		$query->setFields( [ 'title.prefix', 'redirect.title.prefix' ] );

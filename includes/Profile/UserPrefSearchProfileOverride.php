@@ -69,9 +69,6 @@ class UserPrefSearchProfileOverride implements SearchProfileOverride {
 		return $this->priority;
 	}
 
-	/**
-	 * @return array
-	 */
 	public function explain(): array {
 		return [
 			'type' => 'userPreference',

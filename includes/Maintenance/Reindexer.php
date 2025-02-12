@@ -197,9 +197,6 @@ class Reindexer {
 		$settings->set( $newSettings );
 	}
 
-	/**
-	 * @param float $acceptableCountDeviation
-	 */
 	private function waitForCounts( float $acceptableCountDeviation ) {
 		$oldCount = (float)$this->oldIndex->count();
 		$this->index->refresh();

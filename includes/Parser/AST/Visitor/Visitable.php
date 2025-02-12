@@ -8,6 +8,7 @@ namespace CirrusSearch\Parser\AST\Visitor;
 interface Visitable {
 	/**
 	 * @param Visitor $visitor
+	 * @return void
 	 */
 	public function accept( Visitor $visitor );
 }

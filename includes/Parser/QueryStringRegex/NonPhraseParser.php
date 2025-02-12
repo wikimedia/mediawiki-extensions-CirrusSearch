@@ -73,9 +73,6 @@ class NonPhraseParser {
 	 */
 	private $wildcardRegex;
 
-	/**
-	 * @param Escaper $escaper
-	 */
 	public function __construct( Escaper $escaper ) {
 		$this->escaper = $escaper;
 		if ( $this->escaper->getAllowLeadingWildcard() ) {

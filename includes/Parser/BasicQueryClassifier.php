@@ -109,16 +109,10 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 		return $classes;
 	}
 
-	/**
-	 * @param WordsQueryNode $node
-	 */
 	public function visitWordsQueryNode( WordsQueryNode $node ) {
 		$this->hasWords = true;
 	}
 
-	/**
-	 * @param PhraseQueryNode $node
-	 */
 	public function visitPhraseQueryNode( PhraseQueryNode $node ) {
 		if ( $node->isStem() || $node->getSlop() !== -1 ) {
 			$this->hasComplex = true;
@@ -127,50 +121,29 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 		}
 	}
 
-	/**
-	 * @param PhrasePrefixNode $node
-	 */
 	public function visitPhrasePrefixNode( PhrasePrefixNode $node ) {
 		$this->hasComplex = true;
 	}
 
-	/**
-	 * @param FuzzyNode $node
-	 */
 	public function visitFuzzyNode( FuzzyNode $node ) {
 		$this->hasComplex = true;
 	}
 
-	/**
-	 * @param PrefixNode $node
-	 */
 	public function visitPrefixNode( PrefixNode $node ) {
 		$this->hasComplex = true;
 	}
 
-	/**
-	 * @param WildcardNode $node
-	 */
 	public function visitWildcardNode( WildcardNode $node ) {
 		$this->hasComplex = true;
 	}
 
-	/**
-	 * @param EmptyQueryNode $node
-	 */
 	public function visitEmptyQueryNode( EmptyQueryNode $node ) {
 	}
 
-	/**
-	 * @param KeywordFeatureNode $node
-	 */
 	public function visitKeywordFeatureNode( KeywordFeatureNode $node ) {
 		$this->hasComplex = true;
 	}
 
-	/**
-	 * @param ParsedBooleanNode $node
-	 */
 	public function visitParsedBooleanNode( ParsedBooleanNode $node ) {
 		if ( $this->hasComplex ) {
 			// we can quickly skip, this query cannot belong to this class
@@ -181,9 +154,6 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 		}
 	}
 
-	/**
-	 * @param BooleanClause $clause
-	 */
 	public function visitBooleanClause( BooleanClause $clause ) {
 		$this->depth++;
 		$this->maxDepth = max( $this->depth, $this->maxDepth );
@@ -192,9 +162,6 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 		$this->depth--;
 	}
 
-	/**
-	 * @param NegatedNode $node
-	 */
 	public function visitNegatedNode( NegatedNode $node ) {
 		$this->hasComplex = true;
 	}
@@ -213,9 +180,6 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 		];
 	}
 
-	/**
-	 * @param NamespaceHeaderNode $node
-	 */
 	public function visitNamespaceHeader( NamespaceHeaderNode $node ) {
 	}
 }

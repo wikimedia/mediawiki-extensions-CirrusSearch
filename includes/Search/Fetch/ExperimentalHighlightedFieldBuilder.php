@@ -17,9 +17,6 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 		parent::__construct( $fieldName, self::EXPERIMENTAL_HL_TYPE, $target, $priority );
 	}
 
-	/**
-	 * @return callable
-	 */
 	public static function entireValue(): callable {
 		return static function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = new self( $fieldName, $target, $priority );
@@ -30,9 +27,6 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 		};
 	}
 
-	/**
-	 * @return callable
-	 */
 	public static function redirectAndHeadings(): callable {
 		return static function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = new self( $fieldName, $target, $priority );
@@ -45,9 +39,6 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 		};
 	}
 
-	/**
-	 * @return callable
-	 */
 	public static function text(): callable {
 		return static function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = new self( $fieldName, $target, $priority );
@@ -76,9 +67,6 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 		};
 	}
 
-	/**
-	 * @return callable
-	 */
 	protected static function mainText(): callable {
 		return function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = ( self::text() )( $config, $fieldName, $target, $priority );

@@ -16,9 +16,6 @@ class EmptyQueryNode extends ParsedNode {
 		return [ 'empty' => parent::baseParams() ];
 	}
 
-	/**
-	 * @param Visitor $visitor
-	 */
 	public function accept( Visitor $visitor ) {
 		$visitor->visitEmptyQueryNode( $this );
 	}

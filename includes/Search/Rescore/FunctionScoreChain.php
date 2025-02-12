@@ -187,9 +187,6 @@ class FunctionScoreChain {
 					throw new InvalidRescoreProfileException( "Invalid function score type {$func['type']}: expected " .
 						BoostFunctionBuilder::class . " but was " . get_class( $builder ) );
 				}
-				/**
-				 * @var $builder BoostFunctionBuilder
-				 */
 				return $builder;
 		}
 	}

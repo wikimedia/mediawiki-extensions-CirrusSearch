@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use MediaWiki\Json\FormatJson;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MainConfigSchema;
 use MediaWiki\Registration\ExtensionRegistry;
 
@@ -33,7 +34,7 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 		// which provide extra fields, but we only want the default values
 		// from core.
 		$this->overrideConfigValue(
-			'ContentHandlers',
+			MainConfigNames::ContentHandlers,
 			MainConfigSchema::ContentHandlers['default']
 		);
 		$this->clearHooks( [

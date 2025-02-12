@@ -380,7 +380,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			$this->createNoOpMock( ExtensionRegistry::class ),
 			$this->createNoOpMock( MultiHttpClient::class )
 		);
-		$this->assertEquals( CirrusConfigInterwikiResolver::class, get_class( $resolver ) );
+		$this->assertInstanceOf( CirrusConfigInterwikiResolver::class, $resolver );
 		return $resolver;
 	}
 
@@ -444,7 +444,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			MediaWikiServices::getInstance()->getExtensionRegistry(),
 			$client ?: $this->createNoOpMock( MultiHttpClient::class )
 		);
-		$this->assertEquals( SiteMatrixInterwikiResolver::class, get_class( $resolver ) );
+		$this->assertInstanceOf( SiteMatrixInterwikiResolver::class, $resolver );
 		return $resolver;
 	}
 

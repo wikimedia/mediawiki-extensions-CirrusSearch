@@ -108,10 +108,10 @@ class SuggestBuilder {
 	 * @param Connection $connection
 	 * @param string|null $scoreMethodName
 	 * @param string|null $indexBaseName
-	 * @return SuggestBuilder
+	 * @return self
 	 * @throws \Exception
 	 */
-	public static function create( Connection $connection, $scoreMethodName = null, $indexBaseName = null ): SuggestBuilder {
+	public static function create( Connection $connection, $scoreMethodName = null, $indexBaseName = null ): self {
 		$config  = $connection->getConfig();
 		$scoreMethodName = $scoreMethodName ?: $config->get( 'CirrusSearchCompletionDefaultScore' );
 		$scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName );
@@ -125,7 +125,7 @@ class SuggestBuilder {
 			$extraBuilders[] = NaiveSubphrasesSuggestionsBuilder::create( $subPhrasesConfig );
 		}
 		$scoreMethod->setMaxDocs( self::fetchMaxDoc( $connection, $indexBaseName ) );
-		return new SuggestBuilder( $scoreMethod, $extraBuilders );
+		return new self( $scoreMethod, $extraBuilders );
 	}
 
 	/**

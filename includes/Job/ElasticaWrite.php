@@ -51,7 +51,7 @@ class ElasticaWrite extends CirrusGenericJob {
 	 * @param array $params
 	 * @param string|null $updateKind the kind of update to perform (used for monitoring)
 	 * @param int|null $rootEventTime the time of MW event that caused this update (used for monitoring)
-	 * @return ElasticaWrite
+	 * @return self
 	 */
 	public static function build(
 		ClusterSettings $cluster,
@@ -61,7 +61,7 @@ class ElasticaWrite extends CirrusGenericJob {
 		array $params = [],
 		?string $updateKind = null,
 		?int $rootEventTime = null
-	) {
+	): self {
 		return new self( [
 			'method' => $method,
 			'arguments' => self::serde( $method, $arguments ),

@@ -1010,11 +1010,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		return $this->searchContext->getDebugOptions()->applyDebugOptions( $query );
 	}
 
-	/**
-	 * @param SearchQuery $query
-	 * @return Searcher
-	 */
-	public function makeSearcher( SearchQuery $query ) {
+	public function makeSearcher( SearchQuery $query ): self {
 		return new self( $this->connection, $query->getOffset(), $query->getLimit(),
 			$query->getSearchConfig(), $query->getNamespaces(), $this->user,
 			false, $query->getDebugOptions(), $this->namespacePrefixParser, $this->interwikiResolver,

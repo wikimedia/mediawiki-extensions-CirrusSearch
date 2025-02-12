@@ -225,7 +225,7 @@ class SearchRequestBuilder {
 
 	/**
 	 * @param int $offset
-	 * @return SearchRequestBuilder
+	 * @return self
 	 */
 	public function setOffset( $offset ) {
 		$this->offset = $offset;
@@ -242,7 +242,7 @@ class SearchRequestBuilder {
 
 	/**
 	 * @param int $limit
-	 * @return SearchRequestBuilder
+	 * @return self
 	 */
 	public function setLimit( $limit ) {
 		$this->limit = $limit;
@@ -259,7 +259,7 @@ class SearchRequestBuilder {
 
 	/**
 	 * @param string $timeout
-	 * @return SearchRequestBuilder
+	 * @return self
 	 */
 	public function setTimeout( $timeout ) {
 		$this->timeout = $timeout;
@@ -309,7 +309,7 @@ class SearchRequestBuilder {
 
 	/**
 	 * @param string $sort
-	 * @return SearchRequestBuilder
+	 * @return self
 	 */
 	public function setSort( $sort ) {
 		$this->sort = $sort;

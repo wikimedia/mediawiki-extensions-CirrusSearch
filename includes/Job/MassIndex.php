@@ -32,7 +32,7 @@ class MassIndex extends CirrusGenericJob {
 	 * @param WikiPage[] $pages
 	 * @param int $updateFlags
 	 * @param string|null $cluster
-	 * @return MassIndex
+	 * @return self
 	 */
 	public static function build( array $pages, $updateFlags, $cluster = null ) {
 		// Strip $pages down to PrefixedDBKeys so we don't put a ton of stuff in the job queue.

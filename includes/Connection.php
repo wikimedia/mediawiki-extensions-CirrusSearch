@@ -93,16 +93,16 @@ class Connection extends ElasticaConnection {
 	private $clusterSettings;
 
 	/**
-	 * @var Connection[][]
+	 * @var self[][]
 	 */
 	private static $pool = [];
 
 	/**
 	 * @param SearchConfig $config
 	 * @param string|null $cluster
-	 * @return Connection
+	 * @return self
 	 */
-	public static function getPool( SearchConfig $config, $cluster = null ) {
+	public static function getPool( SearchConfig $config, $cluster = null ): self {
 		$assignment = $config->getClusterAssignment();
 		$cluster ??= $assignment->getSearchCluster();
 		$wiki = $config->getWikiId();
@@ -320,7 +320,7 @@ class Connection extends ElasticaConnection {
 	/**
 	 * @param string[] $clusters array of cluster names
 	 * @param SearchConfig $config the search config
-	 * @return Connection[] array of connection indexed by cluster name
+	 * @return self[] array of connection indexed by cluster name
 	 */
 	public static function getClusterConnections( array $clusters, SearchConfig $config ) {
 		$connections = [];

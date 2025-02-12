@@ -43,9 +43,9 @@ class OtherIndexesUpdater extends Updater {
 	 * @param SearchConfig $config
 	 * @param string|null $cluster
 	 * @param string $localSite
-	 * @return OtherIndexesUpdater
+	 * @return self
 	 */
-	public static function buildOtherIndexesUpdater( SearchConfig $config, $cluster, $localSite ): OtherIndexesUpdater {
+	public static function buildOtherIndexesUpdater( SearchConfig $config, $cluster, $localSite ): self {
 		$connection = Connection::getPool( $config, $cluster );
 		return new self( $connection, $cluster, $localSite );
 	}

@@ -36,7 +36,7 @@ class SearchConfig implements Config {
 	];
 
 	/**
-	 * @var SearchConfig Configuration of host wiki.
+	 * @var self Configuration of host wiki.
 	 */
 	private $hostConfig;
 
@@ -76,7 +76,7 @@ class SearchConfig implements Config {
 		$this->wikiId = WikiMap::getCurrentWikiId();
 		// The only ability to mutate SearchConfig is via a protected method, setSource.
 		// As long as we have an instance of SearchConfig it must then be the hostConfig.
-		$this->hostConfig = static::class === self::class ? $this : new SearchConfig();
+		$this->hostConfig = static::class === self::class ? $this : new self();
 		$this->searchProfileServiceFactoryFactory = $searchProfileServiceFactoryFactory;
 	}
 
@@ -124,9 +124,9 @@ class SearchConfig implements Config {
 	}
 
 	/**
-	 * @return SearchConfig Configuration of the host wiki.
+	 * @return self Configuration of the host wiki.
 	 */
-	public function getHostWikiConfig(): SearchConfig {
+	public function getHostWikiConfig(): self {
 		return $this->hostConfig;
 	}
 
@@ -155,9 +155,8 @@ class SearchConfig implements Config {
 
 	/**
 	 * Produce new configuration from globals
-	 * @return SearchConfig
 	 */
-	public static function newFromGlobals() {
+	public static function newFromGlobals(): self {
 		return new self();
 	}
 

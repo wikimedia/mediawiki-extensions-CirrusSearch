@@ -52,9 +52,9 @@ class CheckerJob extends CirrusGenericJob {
 	 * @param int $loopId The number of times the checker jobs have looped
 	 *  over the pages to be checked.
 	 * @param \JobQueueGroup $jobQueueGroup
-	 * @return CheckerJob
+	 * @return self
 	 */
-	public static function build( $fromPageId, $toPageId, $delay, $profile, $cluster, $loopId, \JobQueueGroup $jobQueueGroup ) {
+	public static function build( $fromPageId, $toPageId, $delay, $profile, $cluster, $loopId, \JobQueueGroup $jobQueueGroup ): self {
 		$job = new self( [
 			'fromPageId' => $fromPageId,
 			'toPageId' => $toPageId,

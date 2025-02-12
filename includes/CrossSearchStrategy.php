@@ -31,12 +31,12 @@ class CrossSearchStrategy {
 	private $extraIndicesSearchSupported;
 
 	/**
-	 * @var CrossSearchStrategy
+	 * @var self
 	 */
 	private static $hostWikiOnly;
 
 	/**
-	 * @var CrossSearchStrategy
+	 * @var self
 	 */
 	private static $allWikisStrategy;
 
@@ -44,24 +44,17 @@ class CrossSearchStrategy {
 	 * Only host wiki is supported
 	 * Applies to features that are probably not available on any
 	 * other target wiki cirrus may access.
-	 * @return CrossSearchStrategy
 	 */
-	public static function hostWikiOnlyStrategy() {
-		if ( self::$hostWikiOnly === null ) {
-			self::$hostWikiOnly = new CrossSearchStrategy( false, false, false );
-		}
+	public static function hostWikiOnlyStrategy(): self {
+		self::$hostWikiOnly ??= new self( false, false, false );
 		return self::$hostWikiOnly;
 	}
 
 	/**
 	 * Applies to features that must be available on any target wiki.
-	 *
-	 * @return CrossSearchStrategy
 	 */
-	public static function allWikisStrategy() {
-		if ( self::$allWikisStrategy === null ) {
-			self::$allWikisStrategy = new CrossSearchStrategy( true, true, true );
-		}
+	public static function allWikisStrategy(): self {
+		self::$allWikisStrategy ??= new self( true, true, true );
 		return self::$allWikisStrategy;
 	}
 
@@ -105,10 +98,8 @@ class CrossSearchStrategy {
 
 	/**
 	 * Intersect this strategy with other.
-	 * @param CrossSearchStrategy $other
-	 * @return CrossSearchStrategy
 	 */
-	public function intersect( CrossSearchStrategy $other ) {
+	public function intersect( self $other ): self {
 		if ( $other === self::hostWikiOnlyStrategy() || $this === self::hostWikiOnlyStrategy() ) {
 			return self::hostWikiOnlyStrategy();
 		}
@@ -122,6 +113,6 @@ class CrossSearchStrategy {
 				return self::hostWikiOnlyStrategy();
 			}
 		}
-		return new CrossSearchStrategy( $crossP, $crossL, $otherI );
+		return new self( $crossP, $crossL, $otherI );
 	}
 }

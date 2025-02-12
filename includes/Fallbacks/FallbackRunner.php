@@ -16,7 +16,7 @@ use Elastica\Client;
 use Wikimedia\Assert\Assert;
 
 class FallbackRunner implements SearchMetricsProvider {
-	/** @var FallbackRunner */
+	/** @var self */
 	private static $NOOP_RUNNER = null;
 
 	/**
@@ -40,9 +40,9 @@ class FallbackRunner implements SearchMetricsProvider {
 
 	/**
 	 * Noop fallback runner
-	 * @return FallbackRunner
+	 * @return self
 	 */
-	public static function noopRunner(): FallbackRunner {
+	public static function noopRunner(): self {
 		self::$NOOP_RUNNER ??= new self( [] );
 		return self::$NOOP_RUNNER;
 	}
@@ -52,14 +52,14 @@ class FallbackRunner implements SearchMetricsProvider {
 	 * @param InterwikiResolver $interwikiResolver
 	 * @param string $profileContext
 	 * @param array $profileContextParam
-	 * @return FallbackRunner
+	 * @return self
 	 */
 	public static function create(
 		SearchQuery $query,
 		InterwikiResolver $interwikiResolver,
 		$profileContext = SearchProfileService::CONTEXT_DEFAULT,
 		$profileContextParam = []
-	): FallbackRunner {
+	): self {
 		$profileService = $query->getSearchConfig()->getProfileService();
 		if ( !$profileService->supportsContext( SearchProfileService::FALLBACKS, $profileContext ) ) {
 			// This component is optional and we simply avoid building it if the $profileContext does
@@ -77,9 +77,9 @@ class FallbackRunner implements SearchMetricsProvider {
 	 * @param SearchQuery $query
 	 * @param array $profile
 	 * @param InterwikiResolver $interwikiResolver
-	 * @return FallbackRunner
+	 * @return self
 	 */
-	private static function createFromProfile( SearchQuery $query, array $profile, InterwikiResolver $interwikiResolver ): FallbackRunner {
+	private static function createFromProfile( SearchQuery $query, array $profile, InterwikiResolver $interwikiResolver ): self {
 		$fallbackMethods = [];
 		$methodDefs = $profile['methods'] ?? [];
 		foreach ( $methodDefs as $name => $methodDef ) {

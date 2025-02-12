@@ -39,9 +39,9 @@ class DummySearchResultSet extends BaseCirrusSearchResultSet {
 	 * @param TitleHelper $titleHelper
 	 * @param int $totalHits
 	 * @param int[] $interwikiTotals total hits for secondary results interwiki results.
-	 * @return DummySearchResultSet
+	 * @return self
 	 */
-	public static function fakeTotalHits( TitleHelper $titleHelper, $totalHits, array $interwikiTotals = [] ) {
+	public static function fakeTotalHits( TitleHelper $titleHelper, $totalHits, array $interwikiTotals = [] ): self {
 		$results = new self( $titleHelper, $totalHits );
 		foreach ( $interwikiTotals as $pref => $iwTotal ) {
 			$results->addInterwikiResults( self::fakeTotalHits( $titleHelper, $iwTotal ), self::SECONDARY_RESULTS, (string)$pref );

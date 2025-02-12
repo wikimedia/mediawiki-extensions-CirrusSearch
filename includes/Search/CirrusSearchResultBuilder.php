@@ -136,17 +136,13 @@ class CirrusSearchResultBuilder {
 		return $this->setValue( ArrayCirrusSearchResult::SECTION_SNIPPET_FIELD, $sectionSnippetField );
 	}
 
-	/**
-	 * @param Title $sectionTitle
-	 * @return self
-	 */
 	public function sectionTitle( Title $sectionTitle ): self {
 		return $this->setValue( ArrayCirrusSearchResult::SECTION_TITLE, $sectionTitle );
 	}
 
 	/**
 	 * @param string $categorySnippet
-	 * @return CirrusSearchResultBuilder
+	 * @return self
 	 */
 	public function categorySnippet( $categorySnippet ): self {
 		return $this->setValue( ArrayCirrusSearchResult::CATEGORY_SNIPPET, $categorySnippet );
@@ -154,7 +150,7 @@ class CirrusSearchResultBuilder {
 
 	/**
 	 * @param string $categorySnippetField
-	 * @return CirrusSearchResultBuilder
+	 * @return self
 	 */
 	public function categorySnippetField( $categorySnippetField ): self {
 		return $this->setValue( ArrayCirrusSearchResult::CATEGORY_SNIPPET_FIELD, $categorySnippetField );

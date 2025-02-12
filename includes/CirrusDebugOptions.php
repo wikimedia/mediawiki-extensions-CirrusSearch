@@ -50,9 +50,9 @@ class CirrusDebugOptions {
 
 	/**
 	 * @param WebRequest $request
-	 * @return CirrusDebugOptions
+	 * @return self
 	 */
-	public static function fromRequest( WebRequest $request ) {
+	public static function fromRequest( WebRequest $request ): self {
 		$options = new self();
 		$options->cirrusCompletionVariant = $request->getArray( 'cirrusCompletionVariant' );
 		$options->cirrusDumpQuery = $request->getCheck( 'cirrusDumpQuery' );
@@ -66,18 +66,16 @@ class CirrusDebugOptions {
 
 	/**
 	 * Default options (no debug options set)
-	 * @return CirrusDebugOptions
 	 */
-	public static function defaultOptions() {
+	public static function defaultOptions(): self {
 		return new self();
 	}
 
 	/**
 	 * Dump the query but not die.
 	 * Only useful in Unit tests.
-	 * @return CirrusDebugOptions
 	 */
-	public static function forDumpingQueriesInUnitTests() {
+	public static function forDumpingQueriesInUnitTests(): self {
 		$options = new self();
 		$options->cirrusDumpQuery = true;
 		$options->dumpAndDie = false;
@@ -86,9 +84,9 @@ class CirrusDebugOptions {
 
 	/**
 	 * @param string|null $withExplain
-	 * @return CirrusDebugOptions
+	 * @return self
 	 */
-	public static function forRelevanceTesting( $withExplain = null ) {
+	public static function forRelevanceTesting( $withExplain = null ): self {
 		$options = new self();
 		$options->cirrusExplain = $withExplain;
 		return $options;

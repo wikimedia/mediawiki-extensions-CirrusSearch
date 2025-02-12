@@ -60,14 +60,14 @@ class IndexTemplateBuilder {
 	 * @param Connection $connection
 	 * @param array $templateDefinition
 	 * @param string[] $availablePlugins
-	 * @return IndexTemplateBuilder
+	 * @return self
 	 * @throws \InvalidArgumentException
 	 */
 	public static function build(
 		Connection $connection,
 		array $templateDefinition,
 		array $availablePlugins
-	): IndexTemplateBuilder {
+	): self {
 		$templateName = $templateDefinition['template_name'] ?? null;
 		$langCode = $templateDefinition['language_code'] ?? 'int';
 		if ( $templateName === null ) {

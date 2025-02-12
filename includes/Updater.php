@@ -61,9 +61,9 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 	 * @param SearchConfig $config
 	 * @param string|null $cluster cluster to read from and write to,
 	 * null to read from the default cluster and write to all
-	 * @return Updater
+	 * @return self
 	 */
-	public static function build( SearchConfig $config, $cluster ): Updater {
+	public static function build( SearchConfig $config, $cluster ): self {
 		Assert::invariant( self::class === static::class, 'Must be invoked as Updater::build( ... )' );
 		$connection = Connection::getPool( $config, $cluster );
 		return new self( $connection, $cluster );

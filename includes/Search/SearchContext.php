@@ -248,7 +248,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * Return a copy of this context with a new configuration.
 	 *
 	 * @param SearchConfig $config The new configuration
-	 * @return SearchContext
+	 * @return self
 	 */
 	public function withConfig( SearchConfig $config ) {
 		$other = clone $this;
@@ -838,15 +838,15 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @param SearchQuery $query
 	 * @param FallbackRunner|null $fallbackRunner
 	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
-	 * @return SearchContext
+	 * @return self
 	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
 	 */
 	public static function fromSearchQuery(
 		SearchQuery $query,
 		?FallbackRunner $fallbackRunner = null,
 		?CirrusSearchHookRunner $cirrusSearchHookRunner = null
-	): SearchContext {
-		$searchContext = new SearchContext(
+	): self {
+		$searchContext = new self(
 			$query->getSearchConfig(),
 			$query->getNamespaces(),
 			$query->getDebugOptions(),

@@ -126,7 +126,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 	 */
 	public function merge( HighlightedField $other ): HighlightedField {
 		if ( isset( $this->options['regex'] ) &&
-			 $other instanceof ExperimentalHighlightedFieldBuilder &&
+			 $other instanceof self &&
 			 isset( $other->options['regex'] ) &&
 			 $this->getFieldName() === $other->getFieldName()
 		) {
@@ -140,7 +140,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 	}
 
 	/**
-	 * @return ExperimentalHighlightedFieldBuilder
+	 * @return $this
 	 */
 	public function skipIfLastMatched(): BaseHighlightedField {
 		$this->addOption( 'skip_if_last_matched', true );

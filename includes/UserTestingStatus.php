@@ -27,8 +27,8 @@ use Wikimedia\Assert\Assert;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class UserTestingStatus {
-	/** @var ?UserTestingStatus Bucketing decision for the main request context */
-	private static $instance;
+	/** Bucketing decision for the main request context */
+	private static ?self $instance;
 
 	/** @var ?string The name of the active test, or null if none */
 	private $testName;
@@ -51,11 +51,9 @@ class UserTestingStatus {
 	 * to make a bucketing decision and activate that decision. This must be
 	 * called as early in the request as is sensible to ensure the test configuration
 	 * is applied.
-	 *
-	 * @return UserTestingStatus
 	 */
-	public static function getInstance(): UserTestingStatus {
-		if ( self::$instance === null ) {
+	public static function getInstance(): self {
+		if ( !isset( self::$instance ) ) {
 			$context = RequestContext::getMain();
 			$trigger = $context->getRequest()->getVal( 'cirrusUserTesting' );
 			// The current method of ensuring user testing is always initialized is
@@ -82,16 +80,16 @@ class UserTestingStatus {
 	/**
 	 * @param string $testName
 	 * @param string $bucket
-	 * @return UserTestingStatus status representing a test bucket active for this request
+	 * @return self status representing a test bucket active for this request
 	 */
-	public static function active( string $testName, string $bucket ): UserTestingStatus {
+	public static function active( string $testName, string $bucket ): self {
 		return new self( $testName, $bucket );
 	}
 
 	/**
-	 * @return UserTestingStatus status representing user testing as inactive
+	 * @return self status representing user testing as inactive
 	 */
-	public static function inactive(): UserTestingStatus {
+	public static function inactive(): self {
 		return new self( null, null );
 	}
 

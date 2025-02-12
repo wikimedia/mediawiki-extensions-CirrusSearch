@@ -58,9 +58,9 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 	 * @param string $configEntry
 	 * @param Config $config
 	 * @param BagOStuff $cache
-	 * @return PhraseSuggesterProfileRepoWrapper
+	 * @return self
 	 */
-	public static function fromConfig( $type, $name, $configEntry, Config $config, BagOStuff $cache ) {
+	public static function fromConfig( $type, $name, $configEntry, Config $config, BagOStuff $cache ): self {
 		return new self( new ConfigProfileRepository( $type, $name, $configEntry, $config ), $cache );
 	}
 

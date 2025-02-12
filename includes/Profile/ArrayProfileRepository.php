@@ -31,9 +31,9 @@ class ArrayProfileRepository implements SearchProfileRepository {
 	 * @param string $repoType
 	 * @param string $repoName
 	 * @param array $profiles
-	 * @return ArrayProfileRepository
+	 * @return self
 	 */
-	public static function fromArray( $repoType, $repoName, array $profiles ) {
+	public static function fromArray( $repoType, $repoName, array $profiles ): self {
 		return new self( $repoType, $repoName, $profiles );
 	}
 
@@ -42,9 +42,9 @@ class ArrayProfileRepository implements SearchProfileRepository {
 	 * @param string $repoType
 	 * @param string $repoName
 	 * @param callable $loader
-	 * @return ArrayProfileRepository
+	 * @return self
 	 */
-	public static function lazyLoaded( $repoType, $repoName, callable $loader ) {
+	public static function lazyLoaded( $repoType, $repoName, callable $loader ): self {
 		return new self( $repoType, $repoName, $loader );
 	}
 
@@ -56,9 +56,9 @@ class ArrayProfileRepository implements SearchProfileRepository {
 	 * @param string $repoType
 	 * @param string $repoName
 	 * @param string $phpFile
-	 * @return ArrayProfileRepository
+	 * @return self
 	 */
-	public static function fromFile( $repoType, $repoName, $phpFile ) {
+	public static function fromFile( $repoType, $repoName, $phpFile ): self {
 		return self::lazyLoaded( $repoType, $repoName, static function () use ( $phpFile ) {
 			return require $phpFile;
 		} );

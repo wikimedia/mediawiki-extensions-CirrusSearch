@@ -383,11 +383,7 @@ class SuggestScoringTest extends CirrusTestCase {
 	 */
 	private function randomArray( $max ) {
 		if ( mt_rand( 0, 1 ) ) {
-			$size = mt_rand( 0, $max );
-			if ( $size === 0 ) {
-				return [];
-			}
-			return array_fill( 0, $size, null );
+			return array_fill( 0, mt_rand( 0, $max ), null );
 		}
 		return null;
 	}

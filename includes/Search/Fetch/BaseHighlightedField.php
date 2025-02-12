@@ -385,7 +385,7 @@ class BaseHighlightedField extends HighlightedField {
 	 * and is not already a plain field.
 	 */
 	protected function matchPlainFields() {
-		if ( substr_compare( $this->getFieldName(), '.plain', -strlen( '.plain' ) ) !== 0 ) {
+		if ( !str_ends_with( $this->getFieldName(), '.plain' ) ) {
 			$this->matchedFields = [ $this->getFieldName(), $this->getFieldName() . '.plain' ];
 		}
 	}

@@ -136,11 +136,9 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 	 * @param string $language
 	 * @return string[]
 	 */
-	public function splitTranslatedPage( $title, $language ) {
+	public function splitTranslatedPage( string $title, string $language ): array {
 		$langSubPage = '/' . $language;
-		if ( strlen( $langSubPage ) < strlen( $title ) &&
-			substr_compare( $title, $langSubPage, -strlen( $langSubPage ) ) == 0
-		) {
+		if ( str_ends_with( $title, $langSubPage ) ) {
 			return [ substr( $title, 0, -strlen( $langSubPage ) ), $langSubPage ];
 		} else {
 			return [ $title, "" ];

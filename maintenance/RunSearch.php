@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Search\CirrusSearchResult;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Maintenance\OrderedStreamingForkController;
@@ -215,7 +216,7 @@ class RunSearch extends Maintenance {
 		// these are prefix or full text results
 		$rows = [];
 		foreach ( $value as $result ) {
-			/** @var CirrusSearch\Search\CirrusSearchResult $result */
+			/** @var CirrusSearchResult $result */
 			$row = [
 				// use getDocId() rather than asking the title to allow this script
 				// to work when a production index has been imported to a test es instance

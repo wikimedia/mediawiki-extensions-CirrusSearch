@@ -652,9 +652,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 					$this->successViaCache( $log );
 
 					if ( $multiResultSet->isOK() ) {
-						/**
-						 * @var $cachedMResultSet \Elastica\Multi\ResultSet
-						 */
+						/** @var \Elastica\Multi\ResultSet $cachedMResultSet */
 						$cachedMResultSet = $multiResultSet->getValue();
 						if ( count( $cachedMResultSet->getResultSets() ) !== count( $searches ) ) {
 							LoggerFactory::getInstance( 'CirrusSearch' )
@@ -708,10 +706,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			return $msearches->failure( $status );
 		}
 
+		/** @var \Elastica\Multi\ResultSet $response */
 		$response = $status->getValue();
-		/**
-		 * @var $response \Elastica\Multi\ResultSet
-		 */
 		if ( count( $response->getResultSets() ) !== count( $msearches->getRequests() ) ) {
 			// Temp hack to investigate T231023 (use php serialize just in case it has some invalid
 			// UTF8 sequences that would prevent this message from being sent to logstash

@@ -36,7 +36,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	private $suggestionSnippet;
 
 	/**
-	 * @var array
+	 * @var array<int,array<string,CirrusSearchResultSet>>
 	 */
 	private $interwikiResults = [];
 
@@ -158,7 +158,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 
 	/**
 	 * @param CirrusSearchResultSet $res
-	 * @param int $type one of searchresultset::* constants
+	 * @param int $type One of the ISearchResultSet::…_RESULTS constants
 	 * @param string $interwiki
 	 */
 	final public function addInterwikiResults( CirrusSearchResultSet $res, $type, $interwiki ) {
@@ -166,7 +166,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	}
 
 	/**
-	 * @param int $type
+	 * @param int $type One of the ISearchResultSet::…_RESULTS constants
 	 * @return \ISearchResultSet[]
 	 */
 	final public function getInterwikiResults( $type = self::SECONDARY_RESULTS ) {
@@ -174,11 +174,11 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 	}
 
 	/**
-	 * @param int $type
+	 * @param int $type One of the ISearchResultSet::…_RESULTS constants
 	 * @return bool
 	 */
-	final public function hasInterwikiResults( $type = self::SECONDARY_RESULTS ) {
-		return isset( $this->interwikiResults[$type] );
+	final public function hasInterwikiResults( $type = self::SECONDARY_RESULTS ): bool {
+		return (bool)( $this->interwikiResults[$type] ?? [] );
 	}
 
 	/**

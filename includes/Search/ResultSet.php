@@ -50,7 +50,7 @@ class ResultSet extends BaseSearchResultSet implements CirrusSearchResultSet {
 	private $suggestionSnippet;
 
 	/**
-	 * @var array
+	 * @var array<int,array<string,CirrusSearchResultSet>>
 	 */
 	private $interwikiResults = [];
 
@@ -211,7 +211,7 @@ class ResultSet extends BaseSearchResultSet implements CirrusSearchResultSet {
 	}
 
 	/**
-	 * @param int $type
+	 * @param int $type One of the ISearchResultSet::…_RESULTS constants
 	 * @return ISearchResultSet[]
 	 */
 	public function getInterwikiResults( $type = self::SECONDARY_RESULTS ) {
@@ -219,11 +219,11 @@ class ResultSet extends BaseSearchResultSet implements CirrusSearchResultSet {
 	}
 
 	/**
-	 * @param int $type
+	 * @param int $type One of the ISearchResultSet::…_RESULTS constants
 	 * @return bool
 	 */
-	public function hasInterwikiResults( $type = self::SECONDARY_RESULTS ) {
-		return isset( $this->interwikiResults[$type] );
+	public function hasInterwikiResults( $type = self::SECONDARY_RESULTS ): bool {
+		return (bool)( $this->interwikiResults[$type] ?? [] );
 	}
 
 	/**

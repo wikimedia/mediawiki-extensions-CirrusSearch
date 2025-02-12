@@ -17,7 +17,7 @@ interface CirrusSearchResultSet extends \ISearchResultSet {
 
 	/**
 	 * @param CirrusSearchResultSet $res
-	 * @param int $type one of searchresultset::* constants
+	 * @param int $type One of the ISearchResultSet::…_RESULTS constants
 	 * @param string $interwiki
 	 */
 	public function addInterwikiResults( CirrusSearchResultSet $res, $type, $interwiki );

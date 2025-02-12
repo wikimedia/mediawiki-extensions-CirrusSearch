@@ -184,7 +184,7 @@ class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchRe
 	/**
 	 * Return a result set of hits on other (multiple) wikis associated with this one
 	 *
-	 * @param int $type
+	 * @param int $type One of the ISearchResultSet::…_RESULTS constants
 	 * @return ISearchResultSet[]
 	 */
 	public function getInterwikiResults( $type = self::SECONDARY_RESULTS ) {
@@ -194,7 +194,7 @@ class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchRe
 	/**
 	 * Check if there are results on other wikis
 	 *
-	 * @param int $type
+	 * @param int $type One of the ISearchResultSet::…_RESULTS constants
 	 * @return bool
 	 */
 	public function hasInterwikiResults( $type = self::SECONDARY_RESULTS ) {

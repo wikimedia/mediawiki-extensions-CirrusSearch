@@ -7,7 +7,7 @@ use StatusValue;
 interface Printer {
 	/**
 	 * @param string $message
-	 * @param mixed|null $channel
+	 * @param string|null $channel
 	 */
 	public function output( $message, $channel = null );
 

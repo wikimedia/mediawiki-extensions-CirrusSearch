@@ -395,7 +395,7 @@ EOD
 
 	/**
 	 * @param string $msg
-	 * @param mixed|null $channel
+	 * @param string|null $channel
 	 */
 	private function log( $msg, $channel = null ) {
 		$date = new \DateTime();

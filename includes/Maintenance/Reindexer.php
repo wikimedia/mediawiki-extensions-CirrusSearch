@@ -293,7 +293,7 @@ class Reindexer {
 
 	/**
 	 * @param string $message
-	 * @param mixed|null $channel
+	 * @param string|null $channel
 	 */
 	protected function output( $message, $channel = null ) {
 		if ( $this->out ) {

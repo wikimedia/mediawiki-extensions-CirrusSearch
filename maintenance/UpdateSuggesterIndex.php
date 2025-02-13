@@ -634,7 +634,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	/**
 	 * @param string $message
-	 * @param mixed|null $channel
+	 * @param string|null $channel
 	 */
 	public function log( $message, $channel = null ) {
 		$date = new \DateTime();

@@ -102,6 +102,6 @@ $wgCirrusSearchElasticQuirks['retry_on_conflict'] = true;
 $wgCirrusSearchWMFExtraFeatures = [
 	'weighted_tags' => [
 		'build' => true,
-		'run' => true,
+		'use' => true,
 	]
 ];

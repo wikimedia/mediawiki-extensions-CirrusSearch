@@ -64,7 +64,7 @@ class UpdateWeightedTags extends Maintenance {
 				$tagNames = $this->getOption( 'tagName' );
 				$tagWeights = $this->getOption( 'weight' );
 				if ( $tagWeights !== null ) {
-					$tagWeights = array_map( static fn ( string $w ) => intval( $w ) / 1000, $tagWeights );
+					$tagWeights = array_map( static fn ( string $w ) => intval( $w ), $tagWeights );
 					$tagWeights = array_combine( $tagNames, $tagWeights );
 				} else {
 					$tagWeights = array_fill_keys( array_flip( $tagNames ), null );

@@ -11,7 +11,7 @@ a little documentation seemed to be in order.
 * **prod:** all plugins + CirrusICUConfig (this should be what's in production).
 
 **Extended Tests:** these tests are only run if specified
-* **no\_cic:** all plugins, but no extra CirrusSearch config.
+* **no\_cic:** all plugins, but no extra CirrusICUConfig config.
 * **lang:** all language plugins, + CirrusICUConfig.
 * **icu:** ICU plugins (`extra`, `analysis-icu`) + CirrusICUConfig; should enable
   `icu_folding` and `icu_tokenization`.

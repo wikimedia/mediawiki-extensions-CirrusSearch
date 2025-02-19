@@ -564,18 +564,18 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "arabic_extended_norm",
-                "fullwidthnumfix"
+                "cjk_charfilter"
             ],
             "filter": [
-                "kuromoji_baseform",
                 "cjk_width",
-                "ja_stop",
-                "kuromoji_stemmer",
-                "icu_normalizer"
+                "icu_normalizer",
+                "cjk_bigram",
+                "cjk_stop",
+                "ja_icu_folding",
+                "remove_empty"
             ],
-            "tokenizer": "kuromoji_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "ja_text_search": {
@@ -584,18 +584,18 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "dotted_I_fix",
                 "arabic_extended_norm",
-                "fullwidthnumfix"
+                "cjk_charfilter"
             ],
             "filter": [
-                "kuromoji_baseform",
                 "cjk_width",
-                "ja_stop",
-                "kuromoji_stemmer",
-                "icu_normalizer"
+                "icu_normalizer",
+                "cjk_bigram",
+                "cjk_stop",
+                "ja_icu_folding",
+                "remove_empty"
             ],
-            "tokenizer": "kuromoji_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "jv_plain": {
@@ -934,6 +934,13 @@
             ],
             "type": "mapping"
         },
+        "cjk_charfilter": {
+            "mappings": [
+                "\u309b=>\\u3099",
+                "\u309c=>\\u309a"
+            ],
+            "type": "mapping"
+        },
         "dotted_I_fix": {
             "mappings": [
                 "\u0130=>I"
@@ -943,21 +950,6 @@
         "french_charfilter": {
             "mappings": [
                 "\\u02BC=>\\u0027"
-            ],
-            "type": "mapping"
-        },
-        "fullwidthnumfix": {
-            "mappings": [
-                "\\uff10=>0",
-                "\\uff11=>1",
-                "\\uff12=>2",
-                "\\uff13=>3",
-                "\\uff14=>4",
-                "\\uff15=>5",
-                "\\uff16=>6",
-                "\\uff17=>7",
-                "\\uff18=>8",
-                "\\uff19=>9"
             ],
             "type": "mapping"
         },
@@ -1085,6 +1077,10 @@
         },
         "bulgarian_stop": {
             "stopwords": "_bulgarian_",
+            "type": "stop"
+        },
+        "cjk_stop": {
+            "stopwords": "_english_",
             "type": "stop"
         },
         "cs_icu_folding": {

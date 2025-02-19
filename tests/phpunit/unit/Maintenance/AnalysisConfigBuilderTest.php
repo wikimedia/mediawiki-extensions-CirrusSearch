@@ -711,7 +711,6 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			'extra',
 			'analysis-icu',
 			'analysis-stempel',
-			'analysis-kuromoji',
 			'analysis-smartcn',
 			'analysis-hebrew',
 			'analysis-ukrainian',

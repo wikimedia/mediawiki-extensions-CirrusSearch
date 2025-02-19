@@ -6,6 +6,9 @@ class GlobalCustomFilter {
 	/** @var string filter type, probably 'filter' or 'char_filter'; 'filter' by default */
 	private $type;
 
+	/** @var string[] which analyzers to apply to; 'text' and 'text_search' by default */
+	private $applyToAnalyzers = [ 'text', 'text_search' ];
+
 	/** @var string[] languages where this filter should not be used, by language codes */
 	private $languageDenyList = [];
 
@@ -18,11 +21,11 @@ class GlobalCustomFilter {
 	/** @var string local filter to use instead if requiredPlugins are not available */
 	private $fallbackFilter = '';
 
-	/** @var string[] which analyzers to apply to; 'text' and 'text_search' by default */
-	private $applyToAnalyzers = [ 'text', 'text_search' ];
-
 	/** @var string tokenizer that must be present to use the filter */
 	private $requiredTokenizer = '';
+
+	/** @var string[] tokenizers with which the filter is not allowed/needed */
+	private $disallowedTokenizers = [];
 
 	/** @var string[] token filters with which the filter is not allowed/needed */
 	private $disallowedTokenFilters = [];
@@ -95,6 +98,15 @@ class GlobalCustomFilter {
 	 */
 	public function setRequiredTokenizer( string $requiredTokenizer ): self {
 		$this->requiredTokenizer = $requiredTokenizer;
+		return $this;
+	}
+
+	/**
+	 * @param string[] $disallowedTokenizers
+	 * @return self
+	 */
+	public function setDisallowedTokenizers( array $disallowedTokenizers ): self {
+		$this->disallowedTokenizers = $disallowedTokenizers;
 		return $this;
 	}
 
@@ -209,34 +221,32 @@ class GlobalCustomFilter {
 	}
 
 	/**
-	 * check if any disqualifying token filters are already present
+	 * check if any disqualifying analysis components are already presentin the config
 	 *
 	 * @param mixed[] $config
 	 * @param string $analyzer
 	 * @return bool
 	 */
-	private function disallowedTokenFiltersPresent( array $config, string $analyzer ): bool {
-		$filters = $config['analyzer'][$analyzer]['filter'] ?? [];
-		foreach ( $this->disallowedTokenFilters as $df ) {
-			if ( in_array( $df, $filters ) ) {
-				return true;
-			}
-		}
-		return false;
+	private function disallowedComponentsPresent( array $config, string $analyzer ): bool {
+		return $this->disallowedComponentCheck( $config, $analyzer, 'filter', $this->disallowedTokenFilters )
+			|| $this->disallowedComponentCheck( $config, $analyzer, 'char_filter', $this->disallowedCharFilters )
+			|| $this->disallowedComponentCheck( $config, $analyzer, 'tokenizer', $this->disallowedTokenizers );
 	}
 
 	/**
-	 * check if any disqualifying character filters are already present
+	 * check for specific disqualifying analysis components
 	 *
 	 * @param mixed[] $config
 	 * @param string $analyzer
+	 * @param string $component
+	 * @param string[] $disallowed
 	 * @return bool
 	 */
-	private function disallowedCharFiltersPresent( array $config, string $analyzer ): bool {
-		$filters = $config['analyzer'][$analyzer]['char_filter'] ?? [];
-
-		foreach ( $this->disallowedCharFilters as $df ) {
-			if ( in_array( $df, $filters ) ) {
+	private function disallowedComponentCheck( array $config, string $analyzer,
+			string $component, array $disallowed ): bool {
+		$component_arr = (array)( $config['analyzer'][$analyzer][$component] ?? [] );
+		foreach ( $disallowed as $diss ) {
+			if ( in_array( $diss, $component_arr ) ) {
 				return true;
 			}
 		}
@@ -258,8 +268,7 @@ class GlobalCustomFilter {
 		if ( !array_key_exists( $analyzer, $config['analyzer'] ) // array exists
 			|| $config['analyzer'][$analyzer]['type'] != 'custom' // array is custom
 			|| !$this->requiredTokenizerUsed( $config['analyzer'][$analyzer] )
-			|| $this->disallowedTokenFiltersPresent( $config, $analyzer )
-			|| $this->disallowedCharFiltersPresent( $config, $analyzer )
+			|| $this->disallowedComponentsPresent( $config, $analyzer )
 			|| in_array( $filterName, $filters ) // not a duplicate
 			) {
 			return false;

@@ -1162,16 +1162,141 @@ class AnalysisConfigBuilder {
 					withAsciifolding()->
 					build( $config );
 				break;
-			case 'japanese':
-				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T166731
-				// pre-convert fullwidth numbers because Kuromoji tokenizer treats them weirdly
+			case 'japanese-kuromoji':
+				// Wiki-optimized config for Kuromoji, if available. See T318269.
+				$config[ 'filter' ][ 'kuromoji_posfilter' ] = [
+					'type' => 'kuromoji_part_of_speech',
+					// This is the default list of filtered POS tags from stoptags.txt from
+					// Kuromoji, with the tags we've don't want commented out (so they can be
+					// restored if necessary).
+					'stoptags' => [
+						'接続詞', // conjunction
+						'助詞', // particle
+						'助詞-格助詞', // particle-case
+						'助詞-格助詞-一般', // particle-case-misc
+						'助詞-格助詞-引用', // particle-case-quote
+						'助詞-格助詞-連語', // particle-case-compound
+						'助詞-接続助詞', // particle-conjunctive
+						'助詞-係助詞', // particle-dependency
+						'助詞-副助詞', // particle-adverbial
+						'助詞-間投助詞', // particle-interjective
+						'助詞-並立助詞', // particle-coordinate
+						'助詞-終助詞', // particle-final
+						'助詞-副助詞／並立助詞／終助詞', // particle-adverbial/conjunctive/final
+						'助詞-連体化', // particle-adnominalizer ("no")
+						'助詞-副詞化', // particle-adnominalizer ("ni"/"to")
+						'助詞-特殊', // particle-special
+						'助動詞', // auxiliary-verb
+						'記号', // symbol
+					// 	'記号-一般', // symbol-misc
+						'記号-読点', // symbol-comma
+						'記号-句点', // symbol-period
+						'記号-空白', // symbol-space
+						'記号-括弧開', // symbol-open_bracket
+						'記号-括弧閉', // symbol-close_bracket
+					// 	'その他-間投', // other-interjection
+					// 	'フィラー', // filler
+						'非言語音', // non-verbal
+						],
+				];
+
+				$config[ 'char_filter' ][ 'kuromoji_combo_filter' ] =
+					AnalyzerBuilder::patternFilter( '[\\u0300-\\u0362]' );
+				$kuroCharFilters = [ 'kuromoji_combo_filter' ];
+				$kuroTokFilters = [ 'kuromoji_baseform', 'kuromoji_posfilter', 'ja_stop',
+					'kuromoji_stemmer', 'lowercase', 'asciifolding' ];
+
+				if ( $this->isIcuAvailable() ) {
+					// If ICU is available add the icu_normalizer char filter to fix issues
+					// with fullwidth characters and do basic folding. ICU will also upgrade
+					// asciifolding to icu_folding with ja/Japanese exceptions. We can remove
+					// the lowercase token filter (upgraded to icu_normalizer), if we have
+					// the icu_normalizer char filter.
+					array_unshift( $kuroCharFilters, 'icu_normalizer' );
+					array_splice( $kuroTokFilters, array_search( 'lowercase', $kuroTokFilters ), 1 );
+				} else {
+					// If ICU is not available, add a char filter fix just for fullwidth
+					// numbers, which are the worst offenders in the Kuromoji tokenizer;
+					// add cjk_width to clean up the rest of the fullwidth chars after
+					// tokenization.
+					$myAnalyzerBuilder->
+						withNumberCharFilter( 0xff10, 'fullwidthnumfix' );
+
+					array_unshift( $kuroCharFilters, 'fullwidthnumfix' );
+					array_splice( $kuroTokFilters, array_search( 'ja_stop', $kuroTokFilters ), 0,
+						'cjk_width' );
+				}
+
 				$config = $myAnalyzerBuilder->
-					withNumberCharFilter( 0xff10, 'fullwidthnumfix' )->
-					withCharFilters( [ 'fullwidthnumfix' ] )->
+					withCharFilters( $kuroCharFilters )->
 					withTokenizer( 'kuromoji_tokenizer' )->
-					withFilters( [ 'kuromoji_baseform', 'cjk_width', 'ja_stop', 'kuromoji_stemmer',
-						'lowercase' ] )->
+					withFilters( $kuroTokFilters )->
 					build( $config );
+				break;
+			case 'japanese-sudachi':
+				// Wiki-optimized config for Sudachi, if available. See T318269.
+				$config[ 'tokenizer' ][ 'sudachi_tok' ] = [
+					'type' => 'sudachi_tokenizer',
+					'split_mode' => 'B',
+					];
+
+				$config[ 'filter' ][ 'sudachi_posfilter' ] = [
+					'type' => 'sudachi_part_of_speech',
+					// This is the default list of filtered POS tags for Sudachi, with the
+					// tags we've don't want commented out (so they can be restored if
+					// necessary).
+					'stoptags' => [
+						'接続詞', // conjunction
+					//	'感動詞,フィラー', // interjection-filler
+						'助動詞', // auxiliary-verb
+						'助詞', // particle: unclassified particles
+						'助詞,格助詞', // particle-case
+						'助詞,副助詞', // particle-adverbial
+						'助詞,係助詞', // particle-dependency
+						'助詞,接続助詞', // particle-conjunctive
+						'助詞,終助詞', // particle-final
+						'助詞,準体助詞', // particle-adnominalizer
+					//	'記号', // symbol: unclassified Symbols without punctuation marks
+					//	'記号,一般', // symbol-misc
+					//	'記号,文字', // symbol-letters
+					//	'補助記号', // punctuation
+					//	'補助記号,一般', // punctuation-misc
+						'補助記号,句点', // punctuation-full-stop
+						'補助記号,読点', // punctuation-comma
+						'補助記号,括弧開', // punctuation-left-parenthesis
+						'補助記号,括弧閉', // punctuation-right-parenthesis
+						'補助記号,ＡＡ', // punctuation-AA: unclassifed ASCII arts.
+						'補助記号,ＡＡ,一般', // punctuation-AA-common: ASCII arts without emoticons.
+						'補助記号,ＡＡ,顔文字', // punctuation-AA-emoticons: ASCII arts emoticons.
+						'空白', // space: Whitespace.
+						],
+					];
+
+				$config[ 'char_filter' ][ 'sudachi_combo_filter' ] =
+					AnalyzerBuilder::patternFilter( '[\\u0300-\\u0362]' );
+
+				$sudachiMap = [
+					"（=>\u0020", "）=>\u0020", // fullwidth parens
+					"〜=>～", // wave dash
+				];
+
+				// Break up or trim multi-word tokens with spaces, hyphens, ampersands, middle
+				// dots, pound signs, at signs, slashes, script-specific punctuation, etc.
+				// Also, strip English possessive 's when it shows up
+				$config[ 'filter' ][ 'sudachi_word_delim' ] = [
+					'type' => 'word_delimiter_graph',
+					'split_on_case_change' => false,
+					'stem_english_possessive' => true,
+					];
+
+				$config = $myAnalyzerBuilder->
+					withLimitedCharMap( $sudachiMap, 'sudachi_char_map' )->
+					withCharFilters( [ 'sudachi_combo_filter', 'sudachi_char_map' ] )->
+					withTokenizer( 'sudachi_tok' )->
+					withFilters( [ 'sudachi_split', 'sudachi_baseform', 'sudachi_posfilter',
+						'sudachi_ja_stop', 'lowercase', 'asciifolding', 'sudachi_word_delim' ] )->
+					build( $config );
+
 				break;
 			case 'kazakh':
 			case 'tatar':
@@ -2004,7 +2129,7 @@ class AnalysisConfigBuilder {
 	 */
 	private $elasticsearchLanguageAnalyzersFromPlugins = [
 		/**
-		 * multiple plugin requirement can be comma separated
+		 * multiple plugin requirements can be comma separated
 		 *
 		 * Polish: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T154517
 		 * Ukrainian: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160106
@@ -2017,13 +2142,17 @@ class AnalysisConfigBuilder {
 		 * Esperanto: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
 		 * Korean: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T206874
 		 * Khmer: https://www.mediawiki.org/wiki/User:TJones_(WMF)/T185721
+		 * Japanese (Kuromoji & Sudachi): See T318269
 		 *
-		 * extra-analysis-ukrainian should follow analysis-ukrainian, so that
-		 * ukrainian-unpacked can overwrite value for uk if both are present.
+		 * Options with same key are ordered so that later ones can override earlier ones
+		 * if all the relevant plugins are present.
+		 *  - extra-analysis-ukrainian can override analysis-ukrainian.
+		 *  - analysis-sudachi can override analysis-kuromoji
 		 */
 
 		'analysis-stempel' => [ 'pl' => 'polish' ],
-		'analysis-kuromoji' => [ 'ja' => 'japanese' ],
+		'analysis-kuromoji' => [ 'ja' => 'japanese-kuromoji' ],
+		'analysis-sudachi' => [ 'ja' => 'japanese-sudachi' ],
 		'analysis-stconvert,analysis-smartcn' => [ 'zh' => 'chinese' ],
 		'analysis-hebrew' => [ 'he' => 'hebrew' ],
 		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],
@@ -2102,8 +2231,13 @@ class AnalysisConfigBuilder {
 			'homoglyph_norm' => ( new GlobalCustomFilter( 'filter' ) )->
 				// aggressive_splitting has weird graph problems and creating
 				// multiple tokens makes it blow up
+				// the tokenizers below split on changes in script, so mixed-script tokens
+				// (with or without homoglyphs) cannot occur. sudachi_tokenizer is the
+				// default Sudachi tokenizer. sudachi_tok is our custom version.
 				setRequiredPlugins( [ 'extra-analysis-homoglyph' ] )->
-				setMustFollowFilters( [ 'aggressive_splitting' ] ),
+				setMustFollowFilters( [ 'aggressive_splitting' ] )->
+				setDisallowedTokenizers( [ 'icu_tokenizer', 'kuromoji_tokenizer',
+					'sudachi_tokenizer', 'sudachi_tok' ] ),
 		];
 		// reverse the array so that items are ordered (approximately, modulo incompatible
 		// filters) in the order specified here

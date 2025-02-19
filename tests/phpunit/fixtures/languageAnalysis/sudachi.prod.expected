@@ -334,7 +334,7 @@
             "replacement": "$1 $2"
         },
         "sudachi_char_map": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\uff08=>\\u0020",
                 "\uff09=>\\u0020",

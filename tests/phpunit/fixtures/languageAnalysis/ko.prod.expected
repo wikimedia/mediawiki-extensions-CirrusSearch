@@ -318,7 +318,7 @@
             ]
         },
         "nori_charfilter": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\\u00B7=>\\u0020",
                 "\\u318D=>\\u0020",

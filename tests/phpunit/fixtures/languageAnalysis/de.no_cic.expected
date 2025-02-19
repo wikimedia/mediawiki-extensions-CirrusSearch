@@ -247,7 +247,7 @@
             ]
         },
         "german_charfilter": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\u1e9e=>\u00df"
             ]

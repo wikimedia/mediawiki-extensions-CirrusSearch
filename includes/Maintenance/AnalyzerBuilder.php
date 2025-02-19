@@ -184,7 +184,7 @@ class AnalyzerBuilder {
 	public function withCharMap( array $mappings, ?string $name = null, bool $limited = false ): self {
 		$this->charMap = $mappings;
 		$this->charMapName = $name ?? "{$this->langName}_charfilter";
-		$this->charMapLimited = false;
+		$this->charMapLimited = $limited;
 		return $this;
 	}
 

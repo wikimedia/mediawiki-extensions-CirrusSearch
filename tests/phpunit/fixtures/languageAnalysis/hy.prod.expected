@@ -261,7 +261,7 @@
             ]
         },
         "armenian_charfilter": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\u2024=>."
             ]

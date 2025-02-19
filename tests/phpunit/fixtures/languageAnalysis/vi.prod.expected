@@ -326,7 +326,7 @@
             "replacement": "$1 $2"
         },
         "vietnamese_charfilter": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\u00d0=>\u0110",
                 "\u00f0=>\u0111"

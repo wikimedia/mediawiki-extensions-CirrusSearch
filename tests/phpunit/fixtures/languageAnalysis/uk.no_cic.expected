@@ -314,7 +314,7 @@
             "replacement": "$1 $2"
         },
         "ukrainian_charfilter": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\u2018=>'",
                 "\u2019=>'",

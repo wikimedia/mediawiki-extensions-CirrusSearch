@@ -267,7 +267,7 @@
             ]
         },
         "french_charfilter": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\\u02BC=>\\u0027"
             ]

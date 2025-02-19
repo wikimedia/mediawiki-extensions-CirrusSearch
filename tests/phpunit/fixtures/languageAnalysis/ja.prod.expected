@@ -259,7 +259,7 @@
             ]
         },
         "cjk_charfilter": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\u309b=>\\u3099",
                 "\u309c=>\\u309a"

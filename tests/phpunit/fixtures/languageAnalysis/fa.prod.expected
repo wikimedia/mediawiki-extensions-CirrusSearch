@@ -358,7 +358,7 @@
             ]
         },
         "zero_width_spaces": {
-            "type": "mapping",
+            "type": "limited_mapping",
             "mappings": [
                 "\\u200C=>\\u0020"
             ]

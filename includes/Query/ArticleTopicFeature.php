@@ -2,29 +2,22 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\Search\SearchContext;
-use CirrusSearch\WarningCollector;
-use CirrusSearch\Wikimedia\WeightedTagsHooks;
-use Elastica\Query\DisMax;
-use Elastica\Query\Term;
-use MediaWiki\Message\Message;
-
 /**
- * Finds pages based on how well they match a given topic, based on scores provided by the
- * (Wikimedia-specific) articletopic ORES model.
- * @package CirrusSearch\Wikimedia
- * @see WeightedTagsHooks
- * @see https://www.mediawiki.org/wiki/Help:CirrusSearch#Articletopic
+ * This class has been refactored into ArticleTopicKeyword.
+ *
+ * We preserve it only to avoid breaking extensions that required direct access
+ * to ArticleTopicFeature::TERMS_TO_LABELS.
  */
-class ArticleTopicFeature extends SimpleKeywordFeature {
-	public const ARTICLE_TOPIC_TAG_PREFIX = 'classification.ores.articletopic';
-	public const DRAFT_TOPIC_TAG_PREFIX = 'classification.ores.drafttopic';
-
-	private const PREFIX_PER_KEYWORD = [
-		'articletopic' => self::ARTICLE_TOPIC_TAG_PREFIX,
-		'drafttopic' => self::DRAFT_TOPIC_TAG_PREFIX
-	];
-
+class ArticleTopicFeature {
+	/**
+	 * Maps search terms to tags.
+	 *
+	 * Structure:
+	 * - Keys: search terms
+	 * - Values: tags
+	 *
+	 * @var array<string, string>
+	 */
 	public const TERMS_TO_LABELS = [
 		'biography' => 'Culture.Biography.Biography*',
 		'women' => 'Culture.Biography.Women',
@@ -91,55 +84,4 @@ class ArticleTopicFeature extends SimpleKeywordFeature {
 		'space' => 'STEM.Space',
 		'technology' => 'STEM.Technology',
 	];
-
-	/**
-	 * @inheritDoc
-	 * @phan-return array{topics:string[],tag_prefix:string}
-	 */
-	public function parseValue(
-		$key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector
-	) {
-		$topics = explode( '|', $value );
-		$invalidTopics = array_diff( $topics, array_keys( self::TERMS_TO_LABELS ) );
-		$validTopics = array_filter( array_map( static function ( $topic ) {
-			return self::TERMS_TO_LABELS[$topic];
-		}, array_diff( $topics, $invalidTopics ) ) );
-
-		if ( $invalidTopics ) {
-			$warningCollector->addWarning( 'cirrussearch-articletopic-invalid-topic',
-				Message::listParam( $invalidTopics, 'comma' ), count( $invalidTopics ) );
-		}
-		return [ 'topics' => $validTopics, 'tag_prefix' => self::PREFIX_PER_KEYWORD[$key] ];
-	}
-
-	/** @inheritDoc */
-	protected function getKeywords() {
-		return array_keys( self::PREFIX_PER_KEYWORD );
-	}
-
-	/** @inheritDoc */
-	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$parsed = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
-		$topics = $parsed['topics'];
-		$tagPrefix = $parsed['tag_prefix'];
-		if ( $topics === [] ) {
-			$context->setResultsPossible( false );
-			return [ null, true ];
-		}
-
-		$query = new DisMax();
-		foreach ( $topics as $topic ) {
-			$topicQuery = new Term();
-			$topicQuery->setTerm( WeightedTagsHooks::FIELD_NAME, $tagPrefix . '/' . $topic );
-			$query->addQuery( $topicQuery );
-		}
-
-		if ( !$negated ) {
-			$context->addNonTextQuery( $query );
-			return [ null, false ];
-		} else {
-			return [ $query, false ];
-		}
-	}
-
 }

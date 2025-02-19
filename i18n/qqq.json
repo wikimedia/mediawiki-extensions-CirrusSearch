@@ -81,6 +81,6 @@
 	"cirrussearch-autoselect-profile": "Special profile used as a default in search APIs that lets CirrusSearch decide on the best set of profiles to use.",
 	"cirrussearch-offset-too-large": "Warning shown when search results are requested beyond the supported limit.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Warning shown when user attempts to paginate when also requesting randomly sorted results.",
-	"cirrussearch-articletopic-invalid-topic": "Warning shown when the <kbd>articletopic:</kbd> search keyword is used with an unrecognized topic name.\n\nParameters:\n* $1 - comma-separated list of topic names.\n* $2 - number of unrecognized topic names.",
+	"cirrussearch-articleprediction-invalid-keyword": "Warning shown when the <kbd>articlprediction:</kbd> search keywords are used with an unrecognized term.\n\nParameters:\n* $1 - comma-separated list of terms.\n* $2 - number of unrecognized terms $3 - search keyword.",
 	"cirrussearch-inlanguage-deprecate-comma": "Warning shown when the <kbd>inlanguage:</kbd> search keyword is used with a comma instead of a pipe as the separator between multiple provided languages."
 }

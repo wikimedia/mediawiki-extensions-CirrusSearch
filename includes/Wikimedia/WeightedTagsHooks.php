@@ -4,7 +4,7 @@ namespace CirrusSearch\Wikimedia;
 
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
-use CirrusSearch\Query\ArticleTopicFeature;
+use CirrusSearch\Query\ArticlePredictionKeyword;
 use CirrusSearch\Query\HasRecommendationFeature;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Config\Config;
@@ -15,7 +15,7 @@ use SearchEngine;
 /**
  * Functionality related to the (Wikimedia-specific) weighted_tags search feature.
  * @package CirrusSearch\Wikimedia
- * @see ArticleTopicFeature
+ * @see ArticlePredictionKeyword
  */
 class WeightedTagsHooks implements SearchIndexFieldsHook {
 	public const FIELD_NAME = 'weighted_tags';
@@ -116,8 +116,8 @@ class WeightedTagsHooks implements SearchIndexFieldsHook {
 	 */
 	public static function onCirrusSearchAddQueryFeatures( SearchConfig $config, array &$extraFeatures ) {
 		if ( self::canUse( $config ) ) {
-			// articletopic keyword, matches by ORES topic scores
-			$extraFeatures[] = new ArticleTopicFeature();
+			// articletopic keyword, matches by ORES  scores
+			$extraFeatures[] = new ArticlePredictionKeyword();
 			// article recommendations filter
 			$extraFeatures[] = new HasRecommendationFeature();
 		}

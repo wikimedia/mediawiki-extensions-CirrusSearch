@@ -3,7 +3,7 @@
 namespace CirrusSearch\Wikimedia;
 
 use CirrusSearch\HashSearchConfig;
-use CirrusSearch\Query\ArticleTopicFeature;
+use CirrusSearch\Query\ArticlePredictionKeyword;
 use MediaWiki\Config\HashConfig;
 
 /**
@@ -132,6 +132,6 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 		] );
 		WeightedTagsHooks::onCirrusSearchAddQueryFeatures( $config, $extraFeatures );
 		$this->assertNotEmpty( $extraFeatures );
-		$this->assertInstanceOf( ArticleTopicFeature::class, $extraFeatures[0] );
+		$this->assertInstanceOf( ArticlePredictionKeyword::class, $extraFeatures[0] );
 	}
 }

@@ -10,10 +10,10 @@ use MediaWiki\Message\Message;
 use Wikimedia\Message\ListType;
 
 /**
- * @covers \CirrusSearch\Query\ArticleTopicFeature
+ * @covers \CirrusSearch\Query\ArticlePredictionKeyword
  * @group CirrusSearch
  */
-class ArticleTopicFeatureTest extends CirrusTestCase {
+class ArticlePredictionKeywordTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
 	/**
@@ -66,7 +66,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 			'basic search' => [
 				'articletopic:stem',
 				[
-					'topics' => [ 'STEM.STEM*' ],
+					'keywords' => [ 'STEM.STEM*' ],
 					'tag_prefix' => 'classification.ores.articletopic',
 				],
 				$match( [
@@ -78,7 +78,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 			'basic search with drafttopic' => [
 				'drafttopic:stem',
 				[
-					'topics' => [ 'STEM.STEM*' ],
+					'keywords' => [ 'STEM.STEM*' ],
 					'tag_prefix' => 'classification.ores.drafttopic',
 				],
 				$match( [
@@ -90,7 +90,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 			'negated' => [
 				'-articletopic:stem',
 				[
-					'topics' => [ 'STEM.STEM*' ],
+					'keywords' => [ 'STEM.STEM*' ],
 					'tag_prefix' => 'classification.ores.articletopic',
 				],
 				$filter( [
@@ -102,7 +102,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 			'multiple topics' => [
 				'articletopic:media|music',
 				[
-					'topics' => [ 'Culture.Media.Media*', 'Culture.Media.Music' ],
+					'keywords' => [ 'Culture.Media.Media*', 'Culture.Media.Music' ],
 					'tag_prefix' => 'classification.ores.articletopic',
 				],
 				$match( [
@@ -126,7 +126,7 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 			$config, null, null, null, null,
 			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
-		$feature = new ArticleTopicFeature();
+		$feature = new ArticlePredictionKeyword();
 
 		$this->assertParsedValue( $feature, $term, $expectedParsedValue );
 		$this->assertRemaining( $feature, $term, '' );
@@ -143,8 +143,8 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 
 	public static function provide_testParse_invalid() {
 		return [
-			'With articletopic' => [ 'articletopic' ],
-			'With drafttopic' => [ 'drafttopic' ]
+			'With articletopic' => [ 'articletopic', 'foo' ],
+			'With drafttopic' => [ 'drafttopic', 'foo' ]
 		];
 	}
 
@@ -152,9 +152,11 @@ class ArticleTopicFeatureTest extends CirrusTestCase {
 	 * @dataProvider provide_testParse_invalid
 	 */
 	public function testParse_invalid( string $keyword ) {
-		$feature = new ArticleTopicFeature();
-		$this->assertWarnings( $feature, [ [ 'cirrussearch-articletopic-invalid-topic',
-											 Message::listParam( [ 'foo' ], ListType::COMMA ), 1 ] ], "$keyword:foo" );
+		$feature = new ArticlePredictionKeyword();
+		$this->assertWarnings( $feature, [ [ 'cirrussearch-articleprediction-invalid-keyword',
+											 Message::listParam( [ 'foo' ],
+		ListType::COMMA, ), 1, $keyword
+		] ], "$keyword:foo" );
 		$this->assertNoResultsPossible( $feature, "$keyword:foo" );
 	}
 

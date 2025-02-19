@@ -16,9 +16,26 @@ use Wikimedia\Message\ListType;
 class ArticleTopicFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
+	/**
+	 * Helper method for turning raw ORES score data (as stored in the Cirrus document) into
+	 * search terms, for analytics/debugging.
+	 * @param array $rawTopicData The unprefixed content of the document's weighted_tags field
+	 * @return array corresponding search term => ORES score (rounded to three decimals)
+	 */
+	private static function getTopicScores( array $rawTopicData ): array {
+		$labelsToTerms = array_flip( ArticleTopicFeature::TERMS_TO_LABELS );
+		$topicScores = [];
+		foreach ( $rawTopicData as $rawTopic ) {
+			[ $oresLabel, $scaledScore ] = explode( '|', $rawTopic );
+			$topicId = $labelsToTerms[$oresLabel];
+			$topicScores[$topicId] = (int)$scaledScore / 1000;
+		}
+		return $topicScores;
+	}
+
 	public function testGetTopicScores() {
 		$rawTopicData = [ 'Culture.Visual arts.Visual arts*|123', 'History and Society.History|456' ];
-		$topics = ArticleTopicFeature::getTopicScores( $rawTopicData );
+		$topics = self::getTopicScores( $rawTopicData );
 		$this->assertSame( [ 'visual-arts' => 0.123, 'history' => 0.456 ], $topics );
 	}
 

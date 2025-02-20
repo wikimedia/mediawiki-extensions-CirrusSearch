@@ -6,7 +6,7 @@ class Plugins {
 	// map from elasticsearch plugin name to opensearch
 	// plugin name.
 	private const ALIASES = [
-		'analysis-stconvert' => 'opensearch-analisys-stconvert',
+		'analysis-stconvert' => 'opensearch-analysis-stconvert',
 		'experimental-highlighter' => 'cirrus-highlighter',
 		'extra' => 'opensearch-extra',
 		'extra-analysis-esperanto' => 'opensearch-extra-analysis-esperanto',

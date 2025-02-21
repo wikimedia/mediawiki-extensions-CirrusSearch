@@ -1740,3 +1740,14 @@ This setting can be fine-tuned on a set of query classes:
 Custom classifiers can be added by implementing the CirrusSearchRegisterFullTextQueryClassifiersHook.
 
 Order matters, if a query matches multiple classes the first to match in the entry is taken.
+
+; $wgCirrusSearchLanguageKeywordExtraFields
+
+Default:
+  $wgCirrusSearchLanguageKeywordExtraFields = [];
+
+Set the list of extra fields to query when using the inlanguage keyword. Useful to use alongside
+extensions that might populate language information in different fields.  WikibaseLexemeCirrusSearch
+is one of them where using:
+  $wgCirrusSearchLanguageKeywordExtraFields = [ 'lexeme_language.code', 'lexeme_language.entity' ];
+might allow searching for lexemes based on their language code or language entity ID.

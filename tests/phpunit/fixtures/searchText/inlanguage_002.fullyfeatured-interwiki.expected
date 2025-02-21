@@ -158,17 +158,19 @@
                                             "minimum_should_match": 1,
                                             "should": [
                                                 {
-                                                    "match": {
-                                                        "language": {
-                                                            "query": "es"
-                                                        }
+                                                    "multi_match": {
+                                                        "fields": [
+                                                            "language"
+                                                        ],
+                                                        "query": "es"
                                                     }
                                                 },
                                                 {
-                                                    "match": {
-                                                        "language": {
-                                                            "query": "fr"
-                                                        }
+                                                    "multi_match": {
+                                                        "fields": [
+                                                            "language"
+                                                        ],
+                                                        "query": "fr"
                                                     }
                                                 }
                                             ]
@@ -417,17 +419,19 @@
                                             "minimum_should_match": 1,
                                             "should": [
                                                 {
-                                                    "match": {
-                                                        "language": {
-                                                            "query": "es"
-                                                        }
+                                                    "multi_match": {
+                                                        "fields": [
+                                                            "language"
+                                                        ],
+                                                        "query": "es"
                                                     }
                                                 },
                                                 {
-                                                    "match": {
-                                                        "language": {
-                                                            "query": "fr"
-                                                        }
+                                                    "multi_match": {
+                                                        "fields": [
+                                                            "language"
+                                                        ],
+                                                        "query": "fr"
                                                     }
                                                 }
                                             ]
@@ -676,17 +680,19 @@
                                             "minimum_should_match": 1,
                                             "should": [
                                                 {
-                                                    "match": {
-                                                        "language": {
-                                                            "query": "es"
-                                                        }
+                                                    "multi_match": {
+                                                        "fields": [
+                                                            "language"
+                                                        ],
+                                                        "query": "es"
                                                     }
                                                 },
                                                 {
-                                                    "match": {
-                                                        "language": {
-                                                            "query": "fr"
-                                                        }
+                                                    "multi_match": {
+                                                        "fields": [
+                                                            "language"
+                                                        ],
+                                                        "query": "fr"
                                                     }
                                                 }
                                             ]
@@ -935,17 +941,19 @@
                                             "minimum_should_match": 1,
                                             "should": [
                                                 {
-                                                    "match": {
-                                                        "language": {
-                                                            "query": "es"
-                                                        }
+                                                    "multi_match": {
+                                                        "fields": [
+                                                            "language"
+                                                        ],
+                                                        "query": "es"
                                                     }
                                                 },
                                                 {
-                                                    "match": {
-                                                        "language": {
-                                                            "query": "fr"
-                                                        }
+                                                    "multi_match": {
+                                                        "fields": [
+                                                            "language"
+                                                        ],
+                                                        "query": "fr"
                                                     }
                                                 }
                                             ]

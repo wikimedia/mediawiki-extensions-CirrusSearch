@@ -760,6 +760,10 @@
 			"value": {
 				"default": true
 			}
+		},
+		"CirrusLanguageLanguageKeywordExtraFields": {
+			"description": "List of fields to query when search using the inlanguage keyword",
+			"value": []
 		}
 	},
 	"SearchMappings": {

@@ -74,7 +74,7 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			// Handle intitle keyword
 			new InTitleFeature( $config ),
 			// inlanguage keyword
-			new LanguageFeature(),
+			new LanguageFeature( $config ),
 			// File types
 			new FileTypeFeature( $config ),
 			// File mime types

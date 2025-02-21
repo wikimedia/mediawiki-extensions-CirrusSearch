@@ -182,17 +182,19 @@
                                             "minimum_should_match": 1,
                                             "should": [
                                                 {
-                                                    "match": {
-                                                        "language": {
-                                                            "query": "ru"
-                                                        }
+                                                    "multi_match": {
+                                                        "fields": [
+                                                            "language"
+                                                        ],
+                                                        "query": "ru"
                                                     }
                                                 },
                                                 {
-                                                    "match": {
-                                                        "language": {
-                                                            "query": "uk"
-                                                        }
+                                                    "multi_match": {
+                                                        "fields": [
+                                                            "language"
+                                                        ],
+                                                        "query": "uk"
                                                     }
                                                 }
                                             ]

@@ -178,10 +178,11 @@
                             "bool": {
                                 "must": [
                                     {
-                                        "match": {
-                                            "language": {
-                                                "query": "ko"
-                                            }
+                                        "multi_match": {
+                                            "fields": [
+                                                "language"
+                                            ],
+                                            "query": "ko"
                                         }
                                     },
                                     {

@@ -7,6 +7,7 @@ use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
 
@@ -25,6 +26,18 @@ class LanguageFeature extends SimpleKeywordFeature implements FilterQueryFeature
 	 * than enough and some sort of limit has to be enforced.
 	 */
 	public const QUERY_LIMIT = 20;
+
+	/**
+	 * @var string[] list of fields to query
+	 */
+	private $fields = [ "language" ];
+
+	public function __construct( SearchConfig $config ) {
+		$extraFields = $config->get( "CirrusSearchLanguageKeywordExtraFields" );
+		if ( is_array( $extraFields ) && $extraFields !== [] ) {
+			$this->fields = array_merge( $this->fields, $extraFields );
+		}
+	}
 
 	/**
 	 * @return string[]
@@ -92,8 +105,9 @@ class LanguageFeature extends SimpleKeywordFeature implements FilterQueryFeature
 		$queries = [];
 		foreach ( $parsedValue['langs'] as $lang ) {
 			if ( strlen( trim( $lang ) ) > 0 ) {
-				$query = new \Elastica\Query\MatchQuery();
-				$query->setFieldQuery( 'language', $lang );
+				$query = new \Elastica\Query\MultiMatch();
+				$query->setFields( $this->fields );
+				$query->setQuery( $lang );
 				$queries[] = $query;
 			}
 		}

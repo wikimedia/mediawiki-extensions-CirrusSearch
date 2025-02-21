@@ -24,7 +24,7 @@ class LanguageFeatureTest extends CirrusTestCase {
 			'simple' => [
 				'inlanguage:fr',
 				[ 'langs' => [ 'fr' ] ],
-				[ 'match' => [ 'language' => [ 'query' => 'fr' ] ] ],
+				[ 'multi_match' => [ 'fields' => [ 'language' ], 'query' => 'fr' ] ],
 				[]
 			],
 			'multiple' => [
@@ -33,8 +33,8 @@ class LanguageFeatureTest extends CirrusTestCase {
 				[ 'bool' => [
 					'minimum_should_match' => 1,
 					'should' => [
-						[ 'match' => [ 'language' => [ 'query' => 'fr' ] ] ],
-						[ 'match' => [ 'language' => [ 'query' => 'en' ] ] ],
+						[ 'multi_match' => [ 'fields' => [ 'language' ], 'query' => 'fr' ] ],
+						[ 'multi_match' => [ 'fields' => [ 'language' ], 'query' => 'en' ] ],
 					] ] ],
 				[]
 			],
@@ -44,8 +44,8 @@ class LanguageFeatureTest extends CirrusTestCase {
 				[ 'bool' => [
 					'minimum_should_match' => 1,
 					'should' => [
-						[ 'match' => [ 'language' => [ 'query' => 'fr' ] ] ],
-						[ 'match' => [ 'language' => [ 'query' => 'en' ] ] ],
+						[ 'multi_match' => [ 'fields' => [ 'language' ], 'query' => 'fr' ] ],
+						[ 'multi_match' => [ 'fields' => [ 'language' ], 'query' => 'en' ] ],
 					] ] ],
 				[ [ 'cirrussearch-inlanguage-deprecate-comma' ] ]
 			],
@@ -56,7 +56,7 @@ class LanguageFeatureTest extends CirrusTestCase {
 					'minimum_should_match' => 1,
 					'should' => array_map(
 						static function ( $l ) {
-							return [ 'match' => [ 'language' => [ 'query' => (string)$l ] ] ];
+							return [ 'multi_match' => [ 'fields' => [ 'language' ], 'query' => (string)$l ] ];
 						},
 						range( 1, LanguageFeature::QUERY_LIMIT )
 					) ] ],
@@ -69,11 +69,19 @@ class LanguageFeatureTest extends CirrusTestCase {
 	 * @dataProvider provideQueries()
 	 */
 	public function testTooManyLanguagesWarning( $term, $expected, array $filter, $warnings ) {
-		$feature = new LanguageFeature();
+		$feature = new LanguageFeature( $this->newHashSearchConfig() );
 		$this->assertParsedValue( $feature, $term, $expected, $warnings );
 		$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
 		$this->assertExpandedData( $feature, $term, [], [] );
 		$this->assertWarnings( $feature, $warnings, $term );
 		$this->assertFilter( $feature, $term, $filter, $warnings );
+	}
+
+	public function testExtraFields() {
+		$feature = new LanguageFeature( $this->newHashSearchConfig( [
+			"CirrusSearchLanguageKeywordExtraFields" => [ "lang.field.1", "lang.field.2" ]
+		] ) );
+		$expectedFilter = [ 'multi_match' => [ 'fields' => [ 'language', "lang.field.1", "lang.field.2" ], 'query' => "somelang" ] ];
+		$this->assertFilter( $feature, 'inlanguage:somelang', $expectedFilter, [] );
 	}
 }

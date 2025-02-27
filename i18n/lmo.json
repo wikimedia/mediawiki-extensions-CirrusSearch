@@ -70,6 +70,5 @@
 	"cirrussearch-autoselect-profile": "Lassa decid el motor de ricerca el profil miglior de drovà.",
 	"cirrussearch-offset-too-large": "Impossibil recuperà i risultad. A inn suportad fina a $1 risultad de ricerca, ma a inn stad domandad di risultad a partì de $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorà la richiesta de impaginà i risultad miss in ordinad a cas.",
-	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Nom}} de l'argoment conossud de nissun pee la parola-ciaf <kbd>articletopic:</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "A l'è minga permetuda l'utilizazzion de la virgola come separador de la parol ciav \"inlanguage\". Per piesè dopera | (sbara vertical) de separà i lengov"
 }

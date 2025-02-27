@@ -71,6 +71,5 @@
 	"cirrussearch-autoselect-profile": "Bagènin tu mesin penyarin nentuin mana propil nyang paling bagus bakal dipaké.",
 	"cirrussearch-offset-too-large": "Kaga' gableg mungut hasil. Cuman ampé $1 hasil penyarian doang nyang didukung, tapi hasil nyang mulain di $2 nyang diminta'.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Nyuèkin rekès bakal nomerin halaman hasil nyang disortir acak.",
-	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Nama}} topik kaga' dikenalin bakal kata konci <kbd>articletopic:</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Maké koma jadi pembisah bakal jadi pemisah bakal kata konci \"inlanguage\" udah angus. Tulung paké tenger | (keleng) bakal misahin basa."
 }

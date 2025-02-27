@@ -71,6 +71,5 @@
 	"cirrussearch-autoselect-profile": "Tuguti ang search engine nga magdesisyon sa pinakamaayo nga profile nga gamiton.",
 	"cirrussearch-offset-too-large": "Indi makuha ang mga resulta. Ang mga resulta sang pagpangita tubtob sa $1 ginasuportahan, apang ang mga resulta nga nagasugod sa $2 ginpangabay.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ginabalewala ang pangabay nga i-paginate ang mga resulta nga gin-sort sing random.",
-	"cirrussearch-articletopic-invalid-topic": "Wala makilala nga topiko {{PLURAL:$2| ngalan|mga ngalan}} para sa <kbd>topiko sang artikulo:</kbd> keyword: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Ang paggamit sang koma bilang separator para sa inlanguage keyword wala na ginagamit. Palihog gamit sang | (pipe) sa pagbulag sa mga pinulongan."
 }

@@ -31,6 +31,5 @@
 	"cirrussearch-feature-pageid-invalid-id": "Pɛgese'ere n dagi ma'a {{PLURAL:$2|ID|IDs}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Buuri buuri la dagi ma'a bɔ'ɔra '$1'.",
 	"cirrussearch-explore-similar-related-none": "Pɛgera n ŋwɔni bala ka boi",
-	"cirrussearch-article-words": "Yelebɛa n boi pɛgera la za'a puan",
-	"cirrussearch-articletopic-invalid-topic": "Ba ka baŋɛ zuo{{PLURAL:$2|name|names}} for the <kbd>articletopic:</kbd> keyword: $1"
+	"cirrussearch-article-words": "Yelebɛa n boi pɛgera la za'a puan"
 }

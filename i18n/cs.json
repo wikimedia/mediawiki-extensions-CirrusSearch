@@ -67,6 +67,5 @@
 	"cirrussearch-article-words": "Slova ve všech obsahových stránkách",
 	"cirrussearch-keyword-prefix-ns-mismatch": "Jmenný prostor nalezený u klíčového slova <code>prefix:</code> nesouhlasí s požadovanými jmennými prostory. Můžete to opravit přidáním <code>all:</code> na začátek dotazu.",
 	"cirrussearch-offset-too-large": "Nepodařilo se načíst výsledky. Je podporováno nejvýše $1 výsledků hledání, ale byly vyžádány výsledky počínaje $2.",
-	"cirrussearch-offset-not-allowed-with-random-sort": "Ignoruje se požadavek na stránkování náhodně řazených výsledků.",
-	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Neznámý název tématu|Neznámé názvy témat}} pro klíčové slovo <kbd>articletopic:</kbd> $1"
+	"cirrussearch-offset-not-allowed-with-random-sort": "Ignoruje se požadavek na stránkování náhodně řazených výsledků."
 }

@@ -55,6 +55,5 @@
 	"cirrussearch-keyword-prefix-ns-mismatch": "Hakutermistä <code>prefix:</code> löytyvä nimiavaruus ei ole yhteensopiva pyydetyn nimiavaruuden kanssa. Voit korjata tämän lisäämällä kyselyn eteen <code>all:</code>.",
 	"cirrussearch-autoselect-profile": "Anna hakukoneen päättää paras tila käytettäväksi.",
 	"cirrussearch-offset-too-large": "Tuloksia ei voitu hakea. Enintään $1 hakutulosta tuetaan, mutta tuloksia pyydettiin $2.",
-	"cirrussearch-articletopic-invalid-topic": "<kbd>articletopic:</kbd>-hakutermissä on {{PLURAL:$2|tuntematon aihenimi|tuntemattomia aihenimiä}}: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Pilkku erottimena inlanguage-avainsanassa on poistumassa käytöstä. Käytä |-merkkiä kielten erottamiseen."
 }

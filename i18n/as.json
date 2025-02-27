@@ -66,6 +66,5 @@
 	"cirrussearch-autoselect-profile": "সন্ধান ইঞ্জিনটোৱে ব্যৱহাৰ কৰিবলৈ শ্ৰেষ্ঠ প্ৰ'ফাইলৰ সিদ্ধান্ত নিজাববীয়াকৈ ল'বলৈ দিয়ক।",
 	"cirrussearch-offset-too-large": "ফলাফল উদ্ধাৰ কৰিব পৰা নগ'ল। $1-লৈকে সন্ধান ফলাফল সমৰ্থিত, কিন্তু $2-ৰ পৰা আৰম্ভ হোৱা ফলাফলৰ বাবে অনুৰোধ কৰা হৈছিল।",
 	"cirrussearch-offset-not-allowed-with-random-sort": "যাদৃচ্ছিকভাৱে সজোৱা ফলাফলবোৰৰ পৃষ্ঠাকৰণ অনুৰোধ উপেক্ষা কৰা হৈছে।",
-	"cirrussearch-articletopic-invalid-topic": "<kbd>articletopic:</kbd> কীৱৰ্ডৰ বাবে অচিনাক্ত বিষয়বস্তুৰ {{PLURAL:$2|নাম}}: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "inlanguage কীৱৰ্ডৰ বাবে পৃথককাৰক হিচাপে কমা (,) ব্যৱহাৰ কৰাটো অৱনমিত কৰা হৈছে। অনুগ্ৰহ কৰি ভাষা পৃথক কৰিবলৈ | (পাইপ) ব্যৱহাৰ কৰক।"
 }

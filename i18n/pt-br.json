@@ -80,6 +80,5 @@
 	"cirrussearch-autoselect-profile": "Deixe o mecanismo de pesquisa decidir o melhor perfil a ser usado.",
 	"cirrussearch-offset-too-large": "Não foi possível obter os resultados. São suportados até $1 resultados de pesquisa, mas foram pedidos os resultados que começam em $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorando solicitação para paginar resultados classificados aleatoriamente.",
-	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Nome de tópico não reconhecido|Nomes de tópicos não reconhecidos}} para a palavra-chave <kbd>articletopic:</kbd> $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Usar uma vírgula como separador para a palavra-chave inlanguage está obsoleto. Use | (pipe) para separar idiomas."
 }

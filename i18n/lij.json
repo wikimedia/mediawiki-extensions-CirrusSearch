@@ -66,6 +66,5 @@
 	"cirrussearch-keyword-prefix-ns-mismatch": "O namespace trovou into terme de serchia <code>prefix:</code> o no l'è compatibbile co-o namespace recesto. Ti poeu remediâ mettendo <code>all:</code> comme prefisso da recesta.",
 	"cirrussearch-autoselect-profile": "Lascia che segge o motô de serchia a decidde o megio profî da doeuviâ.",
 	"cirrussearch-offset-too-large": "Imposcibbile ricuperâ di rizultæ. L'è suportou scin a $1 rizultæ de serchia, ma l'è stæto recesto di rizultæ a partî de $2.",
-	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorâ a recesta pe 'npaginâ di rizultæ amersæ a brettio.",
-	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Nomme|Nommi}} de argomento {{PLURAL:$2|sconosciuo|sconosciui}} pe a poula ciave <kbd>articletopic:</kbd>: $1"
+	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorâ a recesta pe 'npaginâ di rizultæ amersæ a brettio."
 }

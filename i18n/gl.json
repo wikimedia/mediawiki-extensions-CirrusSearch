@@ -77,6 +77,5 @@
 	"cirrussearch-autoselect-profile": "Deixar que o motor de procura decida o mellor perfil a usar.",
 	"cirrussearch-offset-too-large": "Non se puideron recuperar os resultados. Pódense obter ata $1 resultados, pero solicitáronse os resultados desde a posición $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignórase a pescuda para paxinar os resultados ordenados aleatoriamente.",
-	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Nome|Nomes}} de tema non {{PLURAL:$2|recoñecido|recoñecidos}} para a palabra clave <kbd>articletopic:</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "O uso dunha coma como separador para a palabra clave \"inlanguage\" está obsoleto. Utiliza unha barra vertical (\"|\") para separar as linguas."
 }

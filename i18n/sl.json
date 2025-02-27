@@ -73,6 +73,5 @@
 	"cirrussearch-autoselect-profile": "Pustite iskalniku, da se odloči za najboljši profil za uporabo.",
 	"cirrussearch-offset-too-large": "Zadetkov ni bilo mogoče pridobiti. Podprti so zadetki iskanja do $1, vendar so bili zahtevani zadetki, ki se začnejo pri $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Prezrtje zahtevka za paginiranje naključno razvrščenih zadetkov.",
-	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Neprepoznano ime|Neprepoznani imeni|Neprepoznana imena}} teme za ključno besedo <kbd>articletopic:</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Uporaba vejice kot ločila za ključno besedo »interlanguage« je zastarela. Prosimo, ločite jezike z znakom »|« (navpičnico)."
 }

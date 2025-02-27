@@ -70,6 +70,5 @@
 	"cirrussearch-autoselect-profile": "Лехаман системо къастадо уггаре а дика профиль лело.",
 	"cirrussearch-offset-too-large": "ЖамӀаш дан аьтто ца баьлла. Лехамо ловш ду {{PLURAL:$1|$1 жамӀ}} кхаччалц, ткъа лехаман жамӀаша дерзийна $2 сов.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Лаамаза дӀасакъаьстина жамӀаш агӀонаш тӀе дӀайаздаран дехар тидаме ца оьцу.",
-	"cirrussearch-articletopic-invalid-topic": "{{PLURAL:$2|Йовзаза теманан цӀе|Йовзаза теманийн цӀераш}} <kbd>йаззаман теманна:</kbd> коьрта дош: $1.",
 	"cirrussearch-inlanguage-deprecate-comma": "\"inlanguage\" коьртачу дашна дӀакъастош санна цӀоьмалг лелор ширделла ду. Дехар до, \"|\" леладе. (вертикалан сиз/пайп) меттанаш къасто."
 }

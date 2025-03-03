@@ -76,6 +76,6 @@
 	"cirrussearch-autoselect-profile": "Lass die Suchmaschine über das beste zu verwendende Profil entscheiden.",
 	"cirrussearch-offset-too-large": "Die Ergebnisse konnten nicht abgerufen werden. Es werden bis zu $1 Ergebnisse unterstützt, es wurden jedoch Ergebnisse beginnend ab $2 angefordert.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Die Anfrage nach Folgeseiten wird bei zufallsgesteuerter Ergebnisausgabe ignoriert.",
-	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Unbekannter Schlüsselwortwert|Unbekannte Schlüsselwortwerte}} für das <kbd>$3:</kbd> Schlüsselwort: $1",
+	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Unbekannter Wert|Unbekannte Werte}} für das <kbd>$3:</kbd> Schlüsselwort: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Die Verwendung eines Kommas als Trennzeichen für das Schlüsselwort inlanguage ist veraltet. Bitte verwende | (Pipe), um Sprachen zu trennen."
 }

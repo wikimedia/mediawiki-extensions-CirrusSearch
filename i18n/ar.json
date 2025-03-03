@@ -80,5 +80,6 @@
 	"cirrussearch-autoselect-profile": "دع محرك البحث يقرر أفضل ملف شخصي لاستخدامه.",
 	"cirrussearch-offset-too-large": "لا يمكن استرجاع النتائج، يتم دعم ما يصل إلى $1 نتائج بحث، ولكن تم طلب النتائج بدءا من $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "تجاهل طلب نتائج ترقيم الصفحات بالفرز العشوائي.",
+	"cirrussearch-articleprediction-invalid-keyword": "قيمة الكلمة الرئيسية غير المعترف بها {{PLURAL:$2| قيم الكلمات الرئيسية}} للكلمة الرئيسية <kbd>$3 :</kbd> $1",
 	"cirrussearch-inlanguage-deprecate-comma": "تم إهمال استخدام الفاصلة كفاصل للكلمة الأساسية باللغة. الرجاء استخدام | (أنبوب) لفصل اللغات."
 }

@@ -89,5 +89,6 @@
 	"cirrussearch-autoselect-profile": "Laat de zoekmachine beslissen over het beste te gebruiken profiel.",
 	"cirrussearch-offset-too-large": "Kan resultaten niet ophalen. Er worden tot $1 zoekresultaten ondersteund, maar er werd gevraagd om resultaten vanaf $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Verzoek om willekeurig gesorteerde resultaten te pagineren genegeerd.",
+	"cirrussearch-articleprediction-invalid-keyword": "Onbekende waarde{{PLURAL:$2||n}} voor het sleutelwoord <kbd>$3</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Het gebruik van een komma als scheidingsteken voor het sleutelwoord inlanguage is verouderd. Gebruik een | (sluisteken) om talen te scheiden."
 }

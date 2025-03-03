@@ -88,5 +88,6 @@
 	"cirrussearch-autoselect-profile": "Kullanılacak en iyi profile arama motorunun karar vermesine izin verin.",
 	"cirrussearch-offset-too-large": "Sonuçlar alınamadı. $1 arama sonucu desteklenir, ancak $2 başlayan sonuçlar istenir.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Rastgele sıralanan sonuçları sayfalandırma isteği yoksayılıyor.",
+	"cirrussearch-articleprediction-invalid-keyword": "<kbd>$3:</kbd> anahtar sözcüğü için tanınmayan {{PLURAL:$2|değer}}: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "inlanguage anahtar sözcüğü için ayırıcı olarak virgül kullanılması artık kaldırılmıştır. Lütfen dilleri ayırmak için | (boru) kullanın."
 }

@@ -73,5 +73,6 @@
 	"cirrussearch-autoselect-profile": "לתת למנוע החיפוש לבחור את הפרופיל הטוב ביותר לשימוש.",
 	"cirrussearch-offset-too-large": "לא היה אפשר לאחזר את התוצאות. נתמכות עד $1 תוצאות חיפוש, אבל התבקשו תוצאות שמתחילות ב־$2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "אין התייחסות לבקשה לחלק לדפים תוצאות ממוינות אקראית.",
+	"cirrussearch-articleprediction-invalid-keyword": "למילת המפתח <kbd>$3:</kbd> נכתבו {{PLURAL:$2|ערך לא מזוהה|ערכים לא מזוהים}}: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "שימוש בפסיק בתור מפריד למילת המפתח inlanguage הוכרז בתור מיושן. נא להשתמש בתו | (קו ניצב) להפרדת שפות."
 }

@@ -68,7 +68,7 @@ class MaxQueryLengthExceptionsTest extends CirrusIntegrationTestCase {
 		yield [ 10, str_repeat( 'a', 10 ), true ];
 		yield [ 10, str_repeat( 'a', 11 ), false ];
 
-		$keywordTests = [ 'incategory', 'articletopic', 'pageid',
+		$keywordTests = [ 'incategory', 'articletopic', 'articlecountry', 'pageid',
 						  'hastemplate', 'hasrecommendation', 'insource' ];
 
 		foreach ( $keywordTests as $exemptedKeyword ) {

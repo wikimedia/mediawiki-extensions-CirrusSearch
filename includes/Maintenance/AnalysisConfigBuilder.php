@@ -820,6 +820,7 @@ class AnalysisConfigBuilder {
 			if ( $unicodeSetFilter !== null ) {
 				$defaults[ 'filter' ][ 'icu_normalizer' ][ 'unicodeSetFilter' ] = $unicodeSetFilter;
 			}
+			$defaults[ 'char_filter' ][ 'icu_normalizer' ] = $defaults[ 'filter' ][ 'icu_normalizer' ];
 		}
 
 		return $defaults;

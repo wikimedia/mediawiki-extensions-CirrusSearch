@@ -313,6 +313,10 @@
                 "\\u05D9\\u05B7\\u05D9=>\\u05D9\\u05D9\\u05B7"
             ]
         },
+        "icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf"
+        },
         "irish_charfilter": {
             "type": "mapping",
             "mappings": [

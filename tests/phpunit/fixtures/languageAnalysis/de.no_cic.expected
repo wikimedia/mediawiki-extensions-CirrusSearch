@@ -291,6 +291,11 @@
                 "\\u05D9\\u05B7\\u05D9=>\\u05D9\\u05D9\\u05B7"
             ]
         },
+        "icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf",
+            "unicodeSetFilter": "[^\u1e9e\u00df]"
+        },
         "near_space_flattener": {
             "type": "limited_mapping",
             "mappings": [

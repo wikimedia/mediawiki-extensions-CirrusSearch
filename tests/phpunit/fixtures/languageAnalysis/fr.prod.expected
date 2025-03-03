@@ -311,6 +311,10 @@
                 "\\u05D9\\u05B7\\u05D9=>\\u05D9\\u05D9\\u05B7"
             ]
         },
+        "icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf"
+        },
         "near_space_flattener": {
             "type": "limited_mapping",
             "mappings": [

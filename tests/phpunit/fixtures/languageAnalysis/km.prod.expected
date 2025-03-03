@@ -301,6 +301,10 @@
                 "\\u05D9\\u05B7\\u05D9=>\\u05D9\\u05D9\\u05B7"
             ]
         },
+        "icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf"
+        },
         "khmer_numbers": {
             "type": "limited_mapping",
             "mappings": [

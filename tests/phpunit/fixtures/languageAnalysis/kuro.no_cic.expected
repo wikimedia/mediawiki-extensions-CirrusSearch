@@ -285,6 +285,10 @@
                 "\\u05D9\\u05B7\\u05D9=>\\u05D9\\u05D9\\u05B7"
             ]
         },
+        "icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf"
+        },
         "kuromoji_combo_filter": {
             "type": "pattern_replace",
             "pattern": "[\\u0300-\\u0362]",

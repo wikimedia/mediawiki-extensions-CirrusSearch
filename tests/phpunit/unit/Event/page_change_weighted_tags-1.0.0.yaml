@@ -1,8 +1,8 @@
-title: development/cirrussearch/page_weighted_tags_change
+title: mediawiki/cirrussearch/page_weighted_tags_change
 description: >
   Changes (setting and/or clearing) of weighted (scored) tags of a page, see
   https://wikitech.wikimedia.org/wiki/Search/WeightedTags
-$id: /development/cirrussearch/page_weighted_tags_change/1.0.0
+$id: /mediawiki/cirrussearch/page_weighted_tags_change/1.0.0
 $schema: "https://json-schema.org/draft-07/schema#"
 type: object
 additionalProperties: false
@@ -143,7 +143,7 @@ properties:
     type: string
     minLength: 1
 examples:
-  - $schema: /development/cirrussearch/page_weighted_tags_change/1.0.0
+  - $schema: /mediawiki/cirrussearch/page_weighted_tags_change/1.0.0
     dt: "2024-07-22T00:00:00.0Z"
     meta:
       domain: examplewiki
@@ -162,7 +162,7 @@ examples:
         tag.group.B:
           - tag: B.1
     wiki_id: example
-  - $schema: /development/cirrussearch/page_weighted_tags_change/1.0.0
+  - $schema: /mediawiki/cirrussearch/page_weighted_tags_change/1.0.0
     dt: "2024-07-22T00:00:00.0Z"
     meta:
       domain: examplewiki
@@ -176,7 +176,7 @@ examples:
       clear:
         - tag.group.B
     wiki_id: example
-  - $schema: /development/cirrussearch/page_weighted_tags_change/1.0.0
+  - $schema: /mediawiki/cirrussearch/page_weighted_tags_change/1.0.0
     dt: "2024-07-22T00:00:00.0Z"
     meta:
       domain: examplewiki

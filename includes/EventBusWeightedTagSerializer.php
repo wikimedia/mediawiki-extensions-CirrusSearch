@@ -8,8 +8,8 @@ use MediaWiki\WikiMap\WikiMap;
 use WikiPage;
 
 class EventBusWeightedTagSerializer {
-	public const SCHEMA = '/development/cirrussearch/page_weighted_tags_change/1.0.0';
-	public const STREAM = 'mediawiki.cirrussearch.page_weighted_tags_change.rc0';
+	public const SCHEMA = '/mediawiki/cirrussearch/page_weighted_tags_change/1.0.0';
+	public const STREAM = 'mediawiki.cirrussearch.page_weighted_tags_change.v1';
 
 	private EventSerializer $eventSerializer;
 	private PageEntitySerializer $pageEntitySerializer;

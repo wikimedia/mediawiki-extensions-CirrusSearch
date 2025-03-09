@@ -10,7 +10,7 @@ with no downtime:
 
 If you prefer not to reindex your data make sure to always upgrade the cirrus
 metastore by running:
- php metastore.php --upgrade
+ php Metastore.php --upgrade
 
 See the Upgrading section in the README file for more information.
 

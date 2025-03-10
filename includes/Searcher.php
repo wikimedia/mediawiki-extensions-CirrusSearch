@@ -26,7 +26,6 @@ use CirrusSearch\Search\SearchRequestBuilder;
 use CirrusSearch\Search\TeamDraftInterleaver;
 use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Search\TitleResultsType;
-use Elastica\Exception\ResponseException;
 use Elastica\Exception\RuntimeException;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query;
@@ -466,16 +465,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				$query->setFrom( 0 );
 				$query->setSize( $size );
 				$resultSet = $index->search( $query, [ 'search_type' => 'query_then_fetch' ] );
-				if ( !$resultSet->getResponse()->isOK() ) {
-					$request = $connection->getClient()->getLastRequest();
-					if ( $request == null ) {
-						// I can't imagine how this would happen, but the type signature allows
-						// for a null last request so we provide a minimal workaround.
-						throw new \Elastica\Exception\RuntimeException(
-							"Response reports failure, but no last request available" );
-					}
-					throw new ResponseException( $request, $resultSet->getResponse() );
-				}
+				self::throwIfNotOk( $connection, $resultSet->getResponse() );
 				return $this->success( $resultSet->getResults(), $connection );
 			} catch ( \Elastica\Exception\NotFoundException $e ) {
 				// NotFoundException just means the field didn't exist.

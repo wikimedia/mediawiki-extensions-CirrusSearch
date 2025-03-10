@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use Elastica\Response;
+
 /**
  * @covers \CirrusSearch\Version
  */
@@ -22,10 +24,17 @@ class VersionTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testFailure() {
-		$response = $this->throwException(
+		$this->expectResponseFailure( $this->throwException(
 			new \Elastica\Exception\Connection\HttpException( CURLE_COULDNT_CONNECT )
-		);
-		$conn = $this->mockConnection( $response );
+		) );
+	}
+
+	public function testHttpFailure() {
+		$this->expectResponseFailure( $this->returnValue( new Response( '', 500 ) ) );
+	}
+
+	private function expectResponseFailure( $responseAction ) {
+		$conn = $this->mockConnection( $responseAction );
 		$version = new Version( $conn );
 		$status = $version->get();
 		$this->assertFalse( $status->isOK() );

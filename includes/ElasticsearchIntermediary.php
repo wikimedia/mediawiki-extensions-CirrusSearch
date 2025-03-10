@@ -8,6 +8,7 @@ use Elastica\Exception\ResponseException;
 use Elastica\Exception\RuntimeException;
 use Elastica\Multi\ResultSet as MultiResultSet;
 use Elastica\Multi\Search;
+use Elastica\Response;
 use ISearchResultSet;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\Context\RequestContext;
@@ -415,4 +416,19 @@ abstract class ElasticsearchIntermediary {
 			return $this->failure( $e, $connection );
 		}
 	}
+
+	protected static function throwIfNotOk( Connection $connection, Response $response ) {
+		if ( $response->isOK() ) {
+			return;
+		}
+		$request = $connection->getClient()->getLastRequest();
+		if ( $request == null ) {
+			// I can't imagine how this would happen, but the type signature allows
+			// for a null last request so we provide a minimal workaround.
+			throw new \Elastica\Exception\RuntimeException(
+				"Response reports failure, but no last request available" );
+		}
+		throw new ResponseException( $request, $response );
+	}
+
 }

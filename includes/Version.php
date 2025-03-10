@@ -41,13 +41,14 @@ class Version extends ElasticsearchIntermediary {
 			// If this times out the cluster is in really bad shape but we should still
 			// check it.
 			$this->connection->setTimeout( $this->getClientTimeout( 'version' ) );
-			$result = $this->connection->getClient()->request( '' );
+			$response = $this->connection->getClient()->request( '' );
+			self::throwIfNotOk( $this->connection, $response );
 			$this->success();
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			return $this->failure( $e );
 		}
 		return Status::newGood(
-			$result->getData()['version']['number']
+			$response->getData()['version']['number']
 		);
 	}
 

@@ -1,9 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ajiniyaz Nurniyazov"
+			"Ajiniyaz Nurniyazov",
+			"Janabaevazizbek"
 		]
 	},
+	"cirrussearch-pref-label": "Jańadan izlew",
 	"cirrussearch-query-too-long": "Izlew sorawınıń teksti ruqsat etilgennen uzınıraq. (fakt: $1; ruqsat etilgen: $2)",
-	"prefs-completion": "Izlewdi tolıqtırıw"
+	"prefs-completion": "Izlewdi tolıqtırıw",
+	"cirrussearch-feature-pageid-invalid-id": "Qáte bet {{PLURAL:$2|ID|IDs}}: $1",
+	"cirrussearch-article-words": "Barlıq betlerdegi sózler"
 }

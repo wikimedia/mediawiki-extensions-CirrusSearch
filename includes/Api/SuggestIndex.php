@@ -39,4 +39,12 @@ class SuggestIndex extends ApiBase {
 			wfShellExecWithStderr( "unset REQUEST_METHOD; $php $updaterScript --wiki " . WikiMap::getCurrentWikiId() )
 		);
 	}
+
+	/**
+	 * Mark as internal. This isn't meant to be used by normal api users
+	 * @return bool
+	 */
+	public function isInternal() {
+		return true;
+	}
 }

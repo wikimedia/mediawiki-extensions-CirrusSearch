@@ -276,6 +276,14 @@ class ConfigDump extends ApiBase {
 	}
 
 	/**
+	 * Mark as internal. This isn't meant to be used by normal api users
+	 * @return bool
+	 */
+	public function isInternal() {
+		return true;
+	}
+
+	/**
 	 * @see ApiBase::getExamplesMessages
 	 * @return array
 	 */

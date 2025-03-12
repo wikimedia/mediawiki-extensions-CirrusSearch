@@ -44,6 +44,14 @@ class QueryCompSuggestBuildDoc extends ApiQueryBase {
 		];
 	}
 
+	/**
+	 * Mark as internal. This isn't meant to be used by normal api users
+	 * @return bool
+	 */
+	public function isInternal() {
+		return true;
+	}
+
 	private function addExplanation( SuggestBuilder $builder, int $pageId, array $docs ) {
 		$docs = array_map(
 			static function ( Document $d ) {

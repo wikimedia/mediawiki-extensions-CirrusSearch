@@ -128,18 +128,23 @@ class CheckSanity extends ApiBase {
 				case 'redirectInIndex':
 					[ $docId, $page, $indexSuffix ] = $args;
 					$target = $page->getRedirectTarget();
-					$targetIndexSuffix = $connection->getIndexSuffixForNamespace( $target->getNamespace() );
-					$clean[] = [
+					$problem = [
 						'indexName' => $connection->getIndexName( $indexBaseName, $indexSuffix ),
 						'errorType' => $problem,
 						'pageId' => $page->getId(),
 						'namespaceId' => $page->getNamespace(),
-						'target' => [
+					];
+					// Page could redirect to a Special page or even another wiki,
+					// target information is only useful on pages that exist locally.
+					if ( $target->canExist() ) {
+						$targetIndexSuffix = $connection->getIndexSuffixForNamespace( $target->getNamespace() );
+						$problem['target'] = [
 							'pageId' => $target->getId(),
 							'namespaceId' => $target->getNamespace(),
 							'indexName' => $connection->getIndexName( $indexBaseName, $targetIndexSuffix ),
-						],
-					];
+						];
+					}
+					$clean[] = $problem;
 					break;
 
 				case 'pageNotInIndex':

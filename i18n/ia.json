@@ -71,5 +71,6 @@
 	"cirrussearch-autoselect-profile": "Lassar le motor de recerca decider qual es le melior profilo a usar.",
 	"cirrussearch-offset-too-large": "Impossibile recuperar le resultatos. Es supportate un maximo de $1 resultatos de recerca, ma esseva requestate resultatos a partir de $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorante le requesta de paginar resultatos aleatorimente ordinate.",
+	"cirrussearch-articleprediction-invalid-keyword": "Valor{{PLURAL:$2||es}} non recognoscite pro le parola-clave <kbd>$3</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Le uso de un comma como separator pro le parola clave <kbd>inlanguage</kbd> es obsolete. Per favor usa le barra vertical <kbd>|</kbd> pro separar linguas."
 }

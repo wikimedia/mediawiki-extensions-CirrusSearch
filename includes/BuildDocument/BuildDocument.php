@@ -12,6 +12,7 @@ use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionAccessException;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
+use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\TitleFactory;
 use MediaWiki\Title\TitleFormatter;
 use Wikimedia\Rdbms\IReadableDatabase;
@@ -122,9 +123,11 @@ class BuildDocument {
 			if ( $pageOrRev instanceof RevisionRecord ) {
 				$revision = $pageOrRev;
 				$page = $this->wikiPageFactory->newFromTitle( $revision->getPage() );
+				$isRedirect = $revision->getContent( SlotRecord::MAIN )->isRedirect();
 			} else {
 				$revision = $pageOrRev->getRevisionRecord();
 				$page = $pageOrRev;
+				$isRedirect = $page->isRedirect();
 			}
 			if ( !$page->exists() ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
@@ -132,6 +135,18 @@ class BuildDocument {
 					"earlier but wasn't.  Page: {title}",
 					[ 'title' => (string)$page->getTitle() ]
 				);
+				continue;
+			}
+
+			if ( $isRedirect ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+					'Attempted to build a document for a redirect.  This should be caught ' .
+					"earlier but wasn't.  Page: {title}",
+					[ 'title' => (string)$page->getTitle() ]
+				);
+				// We could return the document for the redirect target, but
+				// that seems a bit too magical.  The document representation
+				// of a redirect is nothing at all, simply skip this page.
 				continue;
 			}
 

@@ -73,7 +73,9 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 					}
 
 					public function finishInitializeBatch(): void {
-						$this->doc->set( 'phpunit_finish_batch', true );
+						if ( $this->doc !== null ) {
+							$this->doc->set( 'phpunit_finish_batch', true );
+						}
 					}
 
 					public function finalize( Document $doc, Title $title, ?RevisionRecord $revision ): void {
@@ -82,6 +84,27 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 				} ];
 			}
 		};
+	}
+
+	public function testIgnoresRedirectPages() {
+		$title = $this->createMock( Title::class );
+		$title->method( 'getLatestRevID' )->willReturn( 42 );
+
+		$page = $this->createMock( WikiPage::class );
+		$page->method( 'getId' )->willReturn( 1 );
+		$page->method( 'getTitle' )->willReturn( $title );
+		$page->method( 'getLatest' )->willReturn( 42 );
+		$page->method( 'getRevisionRecord' )->willReturn( $this->revStore->getRevisionById( 42 ) );
+		$page->method( 'exists' )->willReturn( true );
+		$page->method( 'isRedirect' )->willReturn( true );
+		$pages[] = $page;
+
+		$builder = $this->mockBuilder( $title );
+		$docs = $builder->initialize(
+			$pages, BuildDocument::INDEX_EVERYTHING
+		);
+
+		$this->assertCount( 0, $docs );
 	}
 
 	public function testHappyPath() {

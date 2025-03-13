@@ -171,7 +171,7 @@ class Checker {
 			if ( isset( $pagesFromDb[$pageId] ) ) {
 				$page = $pagesFromDb[$pageId];
 				$updated = $this->checkExisitingPage( $docId, $pageId, $page, $fromIndex );
-				if ( !$updated && ( $this->isOldFn )( $page ) ) {
+				if ( !$updated && ( $this->isOldFn )( $page ) && !$page->isRedirect() ) {
 					$this->remediator->oldDocument( $page );
 					$nbPagesOld++;
 				}

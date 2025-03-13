@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Api;
 
+use ApiResult;
 use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\CirrusSearch;
@@ -12,6 +13,7 @@ use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiQuery;
 use MediaWiki\Api\ApiQueryBase;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\SlotRecord;
 use Wikimedia\ParamValidator\ParamValidator;
 
 /**
@@ -72,7 +74,13 @@ class QueryBuildDocument extends ApiQueryBase {
 						$revId => [ 'revid' => $revId, 'missing' => true ]
 					] );
 				} elseif ( $rev->audienceCan( $rev::DELETED_TEXT, $rev::FOR_PUBLIC ) ) {
-					$pages[$pageId] = $rev;
+					// Redirects are not directly represented as searchable documents.
+					// They are unrenderable.
+					if ( $rev->getContent( SlotRecord::MAIN )->isRedirect() ) {
+						$this->markUnrenderable( $result, $pageId );
+					} else {
+						$pages[$pageId] = $rev;
+					}
 				} else {
 					// While the user might have permissions, we want to limit
 					// what could possibly be indexed to that which is public.
@@ -87,7 +95,12 @@ class QueryBuildDocument extends ApiQueryBase {
 			}
 		} else {
 			foreach ( $this->getPageSet()->getGoodPages() as $pageId => $title ) {
-				$pages[$pageId] = $wikiPageFactory->newFromTitle( $title );
+				$page = $wikiPageFactory->newFromTitle( $title );
+				if ( $page->isRedirect() ) {
+					$this->markUnrenderable( $result, $pageId );
+				} else {
+					$pages[$pageId] = $page;
+				}
 			}
 		}
 
@@ -192,6 +205,17 @@ class QueryBuildDocument extends ApiQueryBase {
 			'action=query&prop=cirrusbuilddoc&titles=Main_Page' =>
 				'apihelp-query+cirrusbuilddoc-example'
 		];
+	}
+
+	/**
+	 * @param ApiResult $result Result obect to write to
+	 * @param int $pageId The page to mark unrenderable
+	 */
+	private function markUnrenderable( ApiResult $result, int $pageId ) {
+		$result->addValue(
+			[ 'query', 'pages', $pageId ],
+			'unrenderable', true
+		);
 	}
 
 }

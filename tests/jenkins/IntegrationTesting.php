@@ -33,7 +33,6 @@ require_once __DIR__ . '/FullyFeaturedConfig.php';
 
 // Extra Cirrus stuff for Jenkins
 $wgAutoloadClasses['CirrusSearch\Jenkins\CleanSetup'] = __DIR__ . '/cleanSetup.php';
-$wgAutoloadClasses['CirrusSearch\Jenkins\NukeAllIndexes'] = __DIR__ . '/nukeAllIndexes.php';
 $wgHooks['LoadExtensionSchemaUpdates'][] = 'CirrusSearch\Jenkins\IntegrationTesting::installDatabaseUpdatePostActions';
 $wgHooks['PageContentLanguage'][] = 'CirrusSearch\Jenkins\IntegrationTesting::setLanguage';
 
@@ -76,9 +75,6 @@ class IntegrationTesting {
 	 * @return bool true so we let other extensions install more maintenance actions
 	 */
 	public static function installDatabaseUpdatePostActions( $updater ) {
-		// NukeAllIndexes nukes indices unrelated to this wiki, meaning we can't run update.php
-		// for each wiki.
-		// $updater->addPostDatabaseUpdateMaintenance( NukeAllIndexes::class );
 		$updater->addPostDatabaseUpdateMaintenance( CleanSetup::class );
 		return true;
 	}

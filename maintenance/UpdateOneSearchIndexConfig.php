@@ -192,6 +192,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			'changes at an inopportune time.' );
 		$maintenance->addOption( 'fieldsToDelete', 'List of of comma separated field names to delete ' .
 			'while reindexing documents (defaults to empty)', false, true );
+		$maintenance->addOption( 'weightedTagsPrefixMap', 'List of comma separated pairs. ' .
+			'Each pair consists of an existing prefix and its replacement, separated by a colon.', false, true );
 		$maintenance->addOption( 'justMapping', 'Just try to update the mapping.' );
 		$maintenance->addOption( 'ignoreIndexChanged', 'Skip checking if the new index is different ' .
 			'from the old index.', false, false );
@@ -428,6 +430,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$fieldsToCleanup = array_filter( explode( ',', $this->getOption( 'fieldsToDelete', '' ) ) );
 		$fieldsToCleanup = array_merge( $fieldsToCleanup, $this->getSearchConfig()->get( "CirrusSearchIndexFieldsToCleanup" ) );
+		$weightedTagsPrefixMap = $this->parsePrefixMap( $this->getOption( 'weightedTagsPrefixMap', '' ) );
+		$weightedTagsPrefixMap = array_merge(
+			$weightedTagsPrefixMap,
+			$this->getSearchConfig()->get( "CirrusSearchIndexWeightedTagsPrefixMap" )
+		);
 		$reindexer = new Reindexer(
 			$this->getSearchConfig(),
 			$connection,
@@ -435,7 +442,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getIndex(),
 			$this->getOldIndex(),
 			$this,
-			$fieldsToCleanup
+			$fieldsToCleanup,
+			$weightedTagsPrefixMap
 		);
 
 		$validator = new \CirrusSearch\Maintenance\Validators\SpecificAliasValidator(
@@ -648,6 +656,23 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		} finally {
 			parent::fatalError( $msg, $exitCode );
 		}
+	}
+
+	private function parsePrefixMap( string $prefixMapString ): array {
+		$prefixMap = [];
+		$encodedMappings = explode( ',', $prefixMapString );
+		foreach ( $encodedMappings as $encodedMapping ) {
+			if ( $encodedMapping === '' ) {
+				continue;
+			}
+			/* @phan-suppress-next-line PhanSuspiciousBinaryAddLists */
+			[ $oldPrefix, $newPrefix ] = explode( ':', $encodedMapping ) + [ '', '' ];
+			if ( $oldPrefix === '' || $newPrefix === '' ) {
+				$this->fatalError( "Invalid weighted tag prefix map pair: '$encodedMapping'" );
+			}
+			$prefixMap[trim( $oldPrefix )] = trim( $newPrefix );
+		}
+		return $prefixMap;
 	}
 }
 

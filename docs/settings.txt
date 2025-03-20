@@ -587,6 +587,16 @@ Default:
 
 List of strings identifying the fields to remove from the index when the next in-place re-index is run.
 
+; $wgCirrusSearchIndexWeightedTagsPrefixMap
+
+Default:
+	$wgCirrusSearchIndexWeightedTagsPrefixMap = [];
+
+Map of weighted tag prefix replacements, mapping old (key) to new (value) prefixes.
+
+Example:
+	$wgCirrusSearchIndexWeightedTagsPrefixMap = [ "old.prefix" => "new.prefix" ];
+
 ; $wgCirrusSearchLinkedArticlesToUpdate
 
 Default:

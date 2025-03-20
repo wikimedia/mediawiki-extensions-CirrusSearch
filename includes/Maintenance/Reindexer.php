@@ -76,6 +76,11 @@ class Reindexer {
 	private $fieldsToDelete;
 
 	/**
+	 * @var string[] list of weighted tag prefixes to rename (old prefix => new prefix)
+	 */
+	private $weightedTagsPrefixMap;
+
+	/**
 	 * @param SearchConfig $searchConfig
 	 * @param Connection $source
 	 * @param Connection $target
@@ -83,6 +88,7 @@ class Reindexer {
 	 * @param Index $oldIndex
 	 * @param Printer|null $out
 	 * @param string[] $fieldsToDelete
+	 * @param string[] $weightedTagsPrefixMap
 	 */
 	public function __construct(
 		SearchConfig $searchConfig,
@@ -91,7 +97,8 @@ class Reindexer {
 		Index $index,
 		Index $oldIndex,
 		?Printer $out = null,
-		$fieldsToDelete = []
+		array $fieldsToDelete = [],
+		array $weightedTagsPrefixMap = []
 	) {
 		// @todo: this constructor has too many arguments - refactor!
 		$this->searchConfig = $searchConfig;
@@ -101,6 +108,7 @@ class Reindexer {
 		$this->index = $index;
 		$this->out = $out;
 		$this->fieldsToDelete = $fieldsToDelete;
+		$this->weightedTagsPrefixMap = $weightedTagsPrefixMap;
 	}
 
 	/**
@@ -347,6 +355,7 @@ class Reindexer {
 				$script['source'] .= "ctx._source.remove('$field');";
 			}
 		}
+		$script['source'] .= $this->makeWeightedTagsPrefixReplaceScript();
 		// Populate the page_id if it's the first time we add the page_id field to the mapping
 		if ( !isset( $this->oldIndex->getMapping()['properties']['page_id'] )
 				 && isset( $this->index->getMapping()['properties']['page_id'] ) ) {
@@ -359,6 +368,23 @@ class Reindexer {
 		}
 
 		return $script;
+	}
+
+	private function makeWeightedTagsPrefixReplaceScript(): string {
+		if ( count( $this->weightedTagsPrefixMap ) === 0 ) {
+			return '';
+		}
+		$scriptSource = "if (ctx._source.containsKey('weighted_tags')) {";
+		foreach ( $this->weightedTagsPrefixMap as $oldPrefix => $newPrefix ) {
+			$scriptSource .= "
+            for (int i = 0; i < ctx._source.weighted_tags.length; i++) {
+                if (ctx._source.weighted_tags[i].startsWith('$oldPrefix/')) {
+                    ctx._source.weighted_tags[i] = ctx._source.weighted_tags[i].replace('$oldPrefix/', '$newPrefix/');
+                }
+            }";
+		}
+		$scriptSource .= "}";
+		return $scriptSource;
 	}
 
 	/**

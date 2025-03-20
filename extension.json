@@ -337,6 +337,9 @@
 		"CirrusSearchIndexFieldsToCleanup": {
 			"value": []
 		},
+		"CirrusSearchIndexWeightedTagsPrefixMap": {
+			"value": []
+		},
 		"CirrusSearchIndexedRedirects": {
 			"value": 1024
 		},

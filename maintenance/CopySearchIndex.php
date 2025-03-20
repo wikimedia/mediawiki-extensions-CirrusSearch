@@ -93,8 +93,7 @@ class CopySearchIndex extends Maintenance {
 			// Target Index
 			$targetConnection->getIndex( $this->indexBaseName, $this->indexSuffix, $indexIdentifier ),
 			// Source Index
-			$this->getConnection()->getIndex( $this->indexBaseName, $this->indexSuffix ),
-			$this
+			$this->getConnection()->getIndex( $this->indexBaseName, $this->indexSuffix ), $this, [], []
 		);
 		$reindexer->reindex( $slices, 1, $reindexChunkSize );
 		$reindexer->waitForGreen();

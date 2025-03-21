@@ -1,0 +1,1 @@
+Moved to https://gitlab.wikimedia.org/repos/search-platform/cirrus-toolbox.

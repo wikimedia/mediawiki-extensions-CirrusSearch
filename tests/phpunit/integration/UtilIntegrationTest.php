@@ -8,7 +8,6 @@ use MediaWiki\Language\Language;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\WikiMap\WikiMap;
-use Wikimedia\ObjectCache\HashBagOStuff;
 use Wikimedia\ObjectCache\WANObjectCache;
 use Wikimedia\TestingAccessWrapper;
 
@@ -16,22 +15,8 @@ use Wikimedia\TestingAccessWrapper;
  * @covers \CirrusSearch\Util
  */
 class UtilIntegrationTest extends CirrusIntegrationTestCase {
-	/**
-	 * Create test local cache
-	 * @return WANObjectCache
-	 */
-	private function makeLocalCache() {
-		$this->overrideConfigValues( [
-			MainConfigNames::MainCacheType => 'UtilTest',
-			MainConfigNames::ObjectCaches => [ 'UtilTest' => [ 'class' => HashBagOStuff::class ] ],
-		] );
-		$services = MediaWikiServices::getInstance();
-		$services->resetServiceForTesting( 'MainWANObjectCache' );
-		$services->redefineService( 'MainWANObjectCache', static function () {
-			return new WANObjectCache( [ 'cache' => new HashBagOStuff() ] );
-		} );
-
-		return $services->getMainWANObjectCache();
+	private function getWanCache(): WANObjectCache {
+		return $this->getServiceContainer()->getMainWANObjectCache();
 	}
 
 	/**
@@ -48,7 +33,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	 * @covers \CirrusSearch\Util::getDefaultBoostTemplates
 	 */
 	public function testgetDefaultBoostTemplates() {
-		$cache = $this->makeLocalCache();
+		$cache = $this->getWanCache();
 		$this->putDataIntoCache( $cache, 'ruwiki' );
 		$this->putDataIntoCache( $cache, 'cywiki' );
 
@@ -74,7 +59,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		$config = $this->getHashConfig( 'ruwiki', $configValues );
 
 		// On wiki config should override config templates
-		$cache = $this->makeLocalCache();
+		$cache = $this->getWanCache();
 		$this->putDataIntoCache( $cache, 'ruwiki' );
 		$ru = Util::getDefaultBoostTemplates( $config );
 		$this->assertNotEquals( $configValues['CirrusSearchBoostTemplates'], $ru );
@@ -92,7 +77,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		$config = $this->getHashConfig( WikiMap::getCurrentWikiId(), $configValues );
 
 		// On wiki config should override config templates
-		$cache = $this->makeLocalCache();
+		$cache = $this->getWanCache();
 		$this->putDataIntoCache( $cache, WikiMap::getCurrentWikiId() );
 
 		$ru = Util::getDefaultBoostTemplates( $config );
@@ -112,7 +97,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		];
 		$config = $this->getHashConfig( 'ruwiki', $configValues );
 
-		$cache = $this->makeLocalCache();
+		$cache = $this->getWanCache();
 		$this->putDataIntoCache( $cache, 'ruwiki' );
 
 		$ru = Util::getDefaultBoostTemplates( $config );
@@ -130,7 +115,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		);
 		TestingAccessWrapper::newFromClass( Util::class )->defaultBoostTemplates = null;
 
-		$cache = $this->makeLocalCache();
+		$cache = $this->getWanCache();
 		$config = $this->getHashConfig( WikiMap::getCurrentWikiId() );
 		$key = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $config->getWikiId() );
 

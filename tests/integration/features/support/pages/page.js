@@ -78,7 +78,7 @@ class Page {
 		const config = wiki ?
 			world.config.wikis[ wiki ] :
 			world.config.wikis[ world.config.wikis.default ];
-		world.visit( 'Special:UserLogin' );
+		await world.visit( 'Special:UserLogin' );
 		await browser.$( '#wpName1' ).setValue( config.username );
 		await browser.$( '#wpPassword1' ).setValue( config.password );
 		await browser.$( '#wpLoginAttempt' ).click();

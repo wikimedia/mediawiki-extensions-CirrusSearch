@@ -72,7 +72,7 @@ class SearchResultsPage extends Page {
 			return null;
 		}
 		const imageTag = await resElem.$( '.searchResultImage-thumbnail img' );
-		if ( imageTag.isExisting() ) {
+		if ( await imageTag.isExisting() ) {
 			return imageTag.getAttribute( 'src' );
 		}
 		return null;

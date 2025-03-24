@@ -2,7 +2,7 @@
 	"@metadata": {
 		"authors": []
 	},
-	"cirrussearch-desc": "Elasticsearch-powered search for MediaWiki",
+	"cirrussearch-desc": "OpenSearch-powered search for MediaWiki",
 	"cirrussearch-backend-error": "We could not complete your search due to a temporary problem. Please try again later.",
 	"cirrussearch-parse-error": "Query was not understood. Please make it simpler. The query was logged to improve the search system.",
 	"cirrussearch-too-busy-error": "Search is currently too busy. Please try again later.",

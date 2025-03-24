@@ -21,6 +21,7 @@ use MediaWiki\Hook\SpecialSearchResultsAppendHook;
 use MediaWiki\Hook\SpecialSearchResultsHook;
 use MediaWiki\Hook\SpecialStatsAddExtraHook;
 use MediaWiki\Html\Html;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Preferences\Hook\GetPreferencesHook;
@@ -335,9 +336,22 @@ class Hooks implements
 	public function onSoftwareInfo( &$software ) {
 		$version = new Version( self::getConnection() );
 		$status = $version->get();
+		// We've already logged if this isn't ok and there is no need to warn the user on this page.
 		if ( $status->isOK() ) {
-			// We've already logged if this isn't ok and there is no need to warn the user on this page.
-			$software[ '[https://www.elastic.co/elasticsearch Elasticsearch]' ] = $status->getValue();
+			$distributions = [
+				'elasticsearch' => '[https://www.elastic.co/elasticsearch Elasticsearch]',
+				'opensearch' => '[https://opensearch.org OpenSearch]',
+			];
+			$value = $status->getValue();
+			$desc = $distributions[$value['distribution']] ?? null;
+			if ( $desc === null ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+					'Unexpected software distribution [{name}] returned by Version check',
+					[ 'name' => $value['distribution'] ]
+				);
+			} else {
+				$software[$desc] = $value['version'];
+			}
 		}
 	}
 

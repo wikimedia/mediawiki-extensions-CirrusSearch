@@ -47,9 +47,11 @@ class Version extends ElasticsearchIntermediary {
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			return $this->failure( $e );
 		}
-		return Status::newGood(
-			$response->getData()['version']['number']
-		);
+		$version = $response->getData()['version'];
+		return Status::newGood( [
+			'distribution' => $version['distribution'] ?? 'elasticsearch',
+			'version' => $version['number'],
+		] );
 	}
 
 	/**

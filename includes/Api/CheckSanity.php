@@ -136,7 +136,7 @@ class CheckSanity extends ApiBase {
 					];
 					// Page could redirect to a Special page or even another wiki,
 					// target information is only useful on pages that exist locally.
-					if ( $target->canExist() ) {
+					if ( $target != null && $target->canExist() ) {
 						$targetIndexSuffix = $connection->getIndexSuffixForNamespace( $target->getNamespace() );
 						$problem['target'] = [
 							'pageId' => $target->getId(),

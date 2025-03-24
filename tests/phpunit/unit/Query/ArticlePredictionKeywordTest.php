@@ -42,14 +42,18 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 	public static function parseProvider() {
 		$term = static function ( string $topic, string $prefix ) {
 			return [
-				[
-					'term' => [
-						'weighted_tags' => [
-							'value' => "classification.ores.$prefix/$topic",
-							'boost' => 1.0,
-						],
+				'term' => [
+					'weighted_tags' => [
+						'value' => "$prefix/$topic",
+						'boost' => 1.0,
 					],
 				],
+			];
+		};
+		$terms = static function ( string $topic, string $prefix ) use ( $term ) {
+			return [
+				$term( $topic, "classification.prediction.$prefix" ),
+				$term( $topic, "classification.ores.$prefix" )
 			];
 		};
 		$match = static function ( array $query ) {
@@ -67,11 +71,11 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 				'articletopic:stem',
 				[
 					'keywords' => [ 'STEM.STEM*' ],
-					'tag_prefix' => 'classification.ores.articletopic',
+					'tag_prefix' => [ 'classification.prediction.articletopic', 'classification.ores.articletopic' ],
 				],
 				$match( [
 					'dis_max' => [
-						'queries' => $term( 'STEM.STEM*', 'articletopic' ),
+						'queries' => $terms( 'STEM.STEM*', 'articletopic' ),
 					],
 				] ),
 			],
@@ -79,11 +83,11 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 				'drafttopic:stem',
 				[
 					'keywords' => [ 'STEM.STEM*' ],
-					'tag_prefix' => 'classification.ores.drafttopic',
+					'tag_prefix' => [ 'classification.prediction.drafttopic', 'classification.ores.drafttopic' ],
 				],
 				$match( [
 					'dis_max' => [
-						'queries' => $term( 'STEM.STEM*', 'drafttopic' ),
+						'queries' => $terms( 'STEM.STEM*', 'drafttopic' ),
 					],
 				] ),
 			],
@@ -91,11 +95,11 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 				'-articletopic:stem',
 				[
 					'keywords' => [ 'STEM.STEM*' ],
-					'tag_prefix' => 'classification.ores.articletopic',
+					'tag_prefix' => [ 'classification.prediction.articletopic', 'classification.ores.articletopic' ],
 				],
 				$filter( [
 					'dis_max' => [
-						'queries' => $term( 'STEM.STEM*', 'articletopic' ),
+						'queries' => $terms( 'STEM.STEM*', 'articletopic' ),
 					],
 				] ),
 			],
@@ -103,13 +107,13 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 				'articletopic:media|music',
 				[
 					'keywords' => [ 'Culture.Media.Media*', 'Culture.Media.Music' ],
-					'tag_prefix' => 'classification.ores.articletopic',
+					'tag_prefix' => [ 'classification.prediction.articletopic', 'classification.ores.articletopic' ],
 				],
 				$match( [
 					'dis_max' => [
 						'queries' => array_merge(
-							$term( 'Culture.Media.Media*', 'articletopic' ),
-							$term( 'Culture.Media.Music', 'articletopic' )
+							$terms( 'Culture.Media.Media*', 'articletopic' ),
+							$terms( 'Culture.Media.Music', 'articletopic' )
 						),
 					],
 				] ),

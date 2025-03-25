@@ -165,7 +165,7 @@ class OtherIndexesUpdater extends Updater {
 			$this->pushElasticaWriteJobs(
 				UpdateGroup::PAGE,
 				$actions,
-				function ( array $chunk, ClusterSettings $cluster ) use ( $otherIndex ) {
+				function ( array $chunk, string $cluster ) use ( $otherIndex ) {
 					// Name of the index to write to on whatever cluster is connected to
 					$indexName = $otherIndex->getIndexName();
 					// Index name and, potentially, a replica group identifier. Needed to

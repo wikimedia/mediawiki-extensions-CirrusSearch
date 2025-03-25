@@ -29,10 +29,6 @@ class ClusterSettings {
 		$this->cluster = $cluster;
 	}
 
-	public function getName(): string {
-		return $this->cluster;
-	}
-
 	/**
 	 * @return bool True when the cluster is allowed to contain private indices
 	 */
@@ -90,22 +86,6 @@ class ClusterSettings {
 		$max = $settings[$this->cluster][$indexSuffix] ?? $settings[$indexSuffix] ?? -1;
 		// Allow convenience setting of 'unlimited' which translates to elasticsearch -1 (unbounded).
 		return $max === 'unlimited' ? -1 : $max;
-	}
-
-	/**
-	 * @return bool True when write isolation is configured for this cluster.
-	 */
-	public function isIsolated(): bool {
-		$isolate = $this->config->get( 'CirrusSearchWriteIsolateClusters' );
-		return $isolate === null || in_array( $this->cluster, $isolate );
-	}
-
-	/**
-	 * @return int Number of partitions the ElasticaWrite job can be split into
-	 */
-	public function getElasticaWritePartitionCount(): int {
-		$settings = $this->config->get( 'CirrusSearchElasticaWritePartitionCounts' );
-		return $settings[$this->cluster] ?? 1;
 	}
 
 	/**

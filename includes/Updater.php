@@ -224,7 +224,7 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 			$this->pushElasticaWriteJobs(
 				UpdateGroup::PAGE,
 				$documents,
-				static function ( array $chunk, ClusterSettings $cluster ) use ( $indexSuffix, $updateKind, $rootEventTime ) {
+				static function ( array $chunk, string $cluster ) use ( $indexSuffix, $updateKind, $rootEventTime ) {
 					return Job\ElasticaWrite::build(
 						$cluster,
 						UpdateGroup::PAGE,
@@ -256,7 +256,7 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 		$this->pushElasticaWriteJobs(
 			UpdateGroup::WEIGHTED_TAGS,
 			[ $docId ],
-			static function ( array $docIds, ClusterSettings $cluster ) use (
+			static function ( array $docIds, string $cluster ) use (
 				$docId,
 				$indexSuffix,
 				$tagPrefix,
@@ -308,7 +308,7 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 		$this->pushElasticaWriteJobs(
 			UpdateGroup::PAGE,
 			$docIds,
-			static function ( array $chunk, ClusterSettings $cluster ) use ( $indexSuffix, $writeJobParams ) {
+			static function ( array $chunk, string $cluster ) use ( $indexSuffix, $writeJobParams ) {
 				return Job\ElasticaWrite::build(
 					$cluster,
 					UpdateGroup::PAGE,
@@ -335,7 +335,7 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 		$this->pushElasticaWriteJobs(
 			UpdateGroup::ARCHIVE,
 			$docs,
-			static function ( array $chunk, ClusterSettings $cluster ) {
+			static function ( array $chunk, string $cluster ) {
 				return Job\ElasticaWrite::build(
 					$cluster,
 					UpdateGroup::ARCHIVE,
@@ -447,30 +447,15 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 	protected function pushElasticaWriteJobs( string $updateGroup, array $items, $factory, int $batchSize = 10 ): void {
 		// Elasticsearch has a queue capacity of 50 so if $documents contains 50 pages it could bump up
 		// against the max.  So we chunk it and do them sequentially.
-		$jobs = [];
 		$config = $this->connection->getConfig();
 		$clusters = $this->elasticaWriteClusters( $updateGroup );
 
 		foreach ( array_chunk( $items, $batchSize ) as $chunked ) {
-			// Queueing one job per cluster ensures isolation. If one clusters falls
-			// behind on writes the others shouldn't notice.
-			// Unfortunately queueing a job per cluster results in quite a few
-			// jobs to run. If the job queue can't keep up some clusters can
-			// be run in-process. Any failures will queue themselves for later
-			// execution.
 			foreach ( $clusters as $cluster ) {
-				$clusterSettings = new ClusterSettings( $config, $cluster );
-				$job = $factory( $chunked, $clusterSettings );
-				if ( $clusterSettings->isIsolated() ) {
-					$jobs[] = $job;
-				} else {
-					$job->run();
-				}
+				$job = $factory( $chunked, $cluster );
+				// If the job fails for any reason it will enqueue itself to retry later.
+				$job->run();
 			}
-		}
-
-		if ( $jobs ) {
-			MediaWikiServices::getInstance()->getJobQueueGroup()->push( $jobs );
 		}
 	}
 

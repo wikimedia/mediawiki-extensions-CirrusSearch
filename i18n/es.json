@@ -45,7 +45,7 @@
 	"cirrussearch-qi-profile-popular-pv": "Ranking basado principalmente en vistas de página",
 	"prefs-completion": "Compleción de búsquedas",
 	"cirrussearch-pref-completion-section-desc": "Herramienta de sugerencia de completado",
-	"cirrussearch-pref-completion-profile-help": "Define el comportamiento para las sugerencias de autocompletado (búsqueda a medida que escribes).\n\nEl [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester asistente de compleción] es un algoritmo que mejora tanto la detección de los errores tipográficos como la relevancia de las búsquedas. La búsqueda por prefijo es el método de búsqueda a medida que escribes antiguo.",
+	"cirrussearch-pref-completion-profile-help": "Define el comportamiento para las sugerencias de autocompletado (búsqueda a medida que escribes).\n\nEl [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester asistente de compleción] es un algoritmo que mejora tanto la detección de los errores tipográficos como la relevancia de las búsquedas. La búsqueda por prefijo es el método antiguo de búsqueda a medida que escribes.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predeterminado (recomendado)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige hasta dos errores tipográficos. Elimina redirecciones que son muy similares al título principal.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Coincidencia de subfrases (recomendado para títulos de página más largos)",

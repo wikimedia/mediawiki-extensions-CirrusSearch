@@ -22,7 +22,7 @@
 			"Woodcutterty"
 		]
 	},
-	"cirrussearch-desc": "Elasticsearch gebaseerde zoekfunctie voor MediaWiki",
+	"cirrussearch-desc": "Een op OpenSearch gebaseerde zoekfunctie voor MediaWiki",
 	"cirrussearch-backend-error": "Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooid. Probeer het later opnieuw.",
 	"cirrussearch-parse-error": "De zoekopdracht is niet begrepen. Maak het eenvoudiger. De zoekopdracht is bewaard om het zoeksysteem te verbeteren.",
 	"cirrussearch-too-busy-error": "De zoekfunctie heeft het op dit moment heel druk. Probeer het later opnieuw.",

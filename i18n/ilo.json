@@ -4,7 +4,7 @@
 			"Lam-ang"
 		]
 	},
-	"cirrussearch-desc": "Pinaandar ti Elasticsearch a panagbiruk para iti MediaWiki",
+	"cirrussearch-desc": "Pinaandar ti OpenSearch a panagbiruk para iti MediaWiki",
 	"cirrussearch-backend-error": "Saanmi a makompleto ti panagbirukmo gapu ti temporario a problema. Pangngaasi a padasem manen intono madamdama.",
 	"cirrussearch-parse-error": "Saan a naawatan ti panagusisa. Pangngaasi a palakaem. Ti usisa ket nailista tapno mapasayaat ti sistema ti panagbiruk.",
 	"cirrussearch-too-busy-error": "Agdama a makumikom ti panagbiruk. Pangngaasi a padasem manen intono madamdama.",

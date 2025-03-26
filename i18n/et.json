@@ -5,7 +5,7 @@
 			"Pikne"
 		]
 	},
-	"cirrussearch-desc": "Elasticsearchi kasutav otsing",
+	"cirrussearch-desc": "OpenSearchi kasutav otsing",
 	"cirrussearch-backend-error": "Sinu otsingut ei õnnestunud ajutise probleemi tõttu lõpule viia. Palun proovi hiljem uuesti.",
 	"cirrussearch-parse-error": "Sinu päring pole arusaadav. Palun tee see lihtsamaks. Päring kanti logisse, et otsisüsteemi täiustada.",
 	"cirrussearch-too-busy-error": "Otsimootor on praegu liiga hõivatud. Palun proovi hiljem uuesti.",

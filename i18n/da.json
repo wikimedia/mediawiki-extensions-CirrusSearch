@@ -6,7 +6,7 @@
 			"Weblars"
 		]
 	},
-	"cirrussearch-desc": "Søgning for MediaWiki drevet af Elasticsearch",
+	"cirrussearch-desc": "Søgning for MediaWiki drevet af OpenSearch",
 	"cirrussearch-backend-error": "Vi kunne ikke fuldføre søgningen på grund af et midlertidigt problem.  Prøv igen senere.",
 	"cirrussearch-now-using": "Denne wiki bruger en ny søgemaskine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Læs mere]])",
 	"cirrussearch-pref-label": "Ny søgning",

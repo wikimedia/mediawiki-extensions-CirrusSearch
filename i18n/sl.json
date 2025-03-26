@@ -6,7 +6,7 @@
 			"Janezdrilc"
 		]
 	},
-	"cirrussearch-desc": "Iskanje za MediaWiki, ki ga poganja Elasticsearch",
+	"cirrussearch-desc": "Iskanje za MediaWiki, ki ga poganja OpenSearch",
 	"cirrussearch-backend-error": "Zaradi začasne težave nam ni uspelo izvesti vašega iskanja. Prosimo, poskusite pozneje.",
 	"cirrussearch-parse-error": "Poizvedba ni bila razumljiva. Prosimo, poenostavite jo. Poizvedba je bila zabeležena za izboljšanje iskalnega sistema.",
 	"cirrussearch-too-busy-error": "Iskanje je trenutno preobremenjeno. Prosimo, poskusi znova pozneje.",

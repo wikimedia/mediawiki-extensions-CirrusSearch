@@ -4,7 +4,7 @@
 			"McDutchie"
 		]
 	},
-	"cirrussearch-desc": "Recerca pro MediaWiki actionate per Elasticsearch",
+	"cirrussearch-desc": "Recerca pro MediaWiki actionate per OpenSearch",
 	"cirrussearch-backend-error": "Un problema temporari ha impedite le completion del recerca. Per favor reproba plus tarde.",
 	"cirrussearch-parse-error": "Le consulta non ha essite comprendite. Simplifica lo, per favor. Le consulta ha essite registrate pro meliorar le systema de recerca.",
 	"cirrussearch-too-busy-error": "Le recerca es troppo occupate pro le momento. Reproba plus tarde.",

@@ -14,7 +14,7 @@
 			"Rosh"
 		]
 	},
-	"cirrussearch-desc": "Ricerca realizzata con Elasticsearch per MediaWiki",
+	"cirrussearch-desc": "Ricerca realizzata con OpenSearch per MediaWiki",
 	"cirrussearch-backend-error": "Non è stato possibile completare la tua ricerca a causa di un problema temporaneo. Riprova più tardi.",
 	"cirrussearch-parse-error": "Non è possibile interpretare la query. Si prega di renderla più semplice. La query è stata registrata per migliorare il sistema di ricerca.",
 	"cirrussearch-too-busy-error": "Attualmente il motore di ricerca è sovraccarico. Riprova più tardi.",

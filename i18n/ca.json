@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Amire80",
 			"Fitoschido",
 			"Jmarchn",
 			"Lluis Cat",
@@ -9,7 +10,7 @@
 			"Vriullop"
 		]
 	},
-	"cirrussearch-desc": "Cerca realitzada amb Elasticsearch per a MediaWiki",
+	"cirrussearch-desc": "Cerca realitzada amb OpenSearch per a MediaWiki",
 	"cirrussearch-backend-error": "No s'ha pogut completar la cerca per un problema temporal. Proveu-ho més endavant.",
 	"cirrussearch-parse-error": "La consulta no s'ha pogut interpretar. Feu-la més simple. La consulta ha quedat registrada per millorar el sistema de cerca.",
 	"cirrussearch-too-busy-error": "El servei de cerca està actualment saturat. Intenteu-ho més tard.",

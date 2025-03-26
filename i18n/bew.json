@@ -4,7 +4,7 @@
 			"Bangrapip"
 		]
 	},
-	"cirrussearch-desc": "Penyarian dorongan Elasticsearch bakal MediaWiki",
+	"cirrussearch-desc": "Penyarian dorongan OpenSearch bakal MediaWiki",
 	"cirrussearch-backend-error": "Kita kaga' bisa ngrampungin lu punya penyarian lantaran atu mas'alah sementara. Padol dah, jal lagi entaran.",
 	"cirrussearch-parse-error": "Pepintaan kaga' dingertiin. Tulung bikin ringkes dah. Pepintaan direkem bakal nyempurnain sistim penyarian.",
 	"cirrussearch-too-busy-error": "Penyarian wayah gini lagi èpot. Padol dah, jal lagi entaran.",

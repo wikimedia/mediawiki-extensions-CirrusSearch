@@ -5,7 +5,7 @@
 			"YoaR"
 		]
 	},
-	"cirrussearch-desc": "Gueta col motor Elasticsearch pa MediaWiki",
+	"cirrussearch-desc": "Gueta col motor OpenSearch pa MediaWiki",
 	"cirrussearch-backend-error": "Nun pudimos completar la gueta por un problema temporal. Por favor, vuelva a intentalo más sero.",
 	"cirrussearch-parse-error": "Nun s'entendió la consulta. Por favor, fáigala más cenciella. La consulta quedó rexistrada p'ameyorar el sistema de gueta.",
 	"cirrussearch-too-busy-error": "La gueta ta sobrecargada nesti momentu. Vuelvi a intentalo más sero.",

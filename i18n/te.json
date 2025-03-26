@@ -6,7 +6,7 @@
 			"Ravichandra"
 		]
 	},
-	"cirrussearch-desc": "MediaWiki కోసం Elasticsearch చోదిత వెతుకులాట",
+	"cirrussearch-desc": "MediaWiki కోసం OpenSearch చోదిత వెతుకులాట",
 	"cirrussearch-backend-error": "ఏదో తాత్కాలిక సమస్య కారణంగా మీ వెతుకులాటను పూర్తి చెయ్యలేకపోయాం. తరువాత మళ్ళీ ప్రయత్నించండి.",
 	"cirrussearch-parse-error": "ప్రశ్న అర్థం కాలేదు. దాన్ని కొంత సరళంగా చేయండి. వెతుకులాటను మెరుగుపరచడం కోసం ఈ ప్రశ్నను భద్రపరచాం.",
 	"cirrussearch-too-busy-error": "వెతుకులాట ప్రస్తుతం బాగా బిజీగా ఉంది. తరువాత మళ్ళీ ప్రయత్నించండి.",

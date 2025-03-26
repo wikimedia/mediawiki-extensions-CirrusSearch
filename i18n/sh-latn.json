@@ -5,7 +5,7 @@
 			"Winston Sung"
 		]
 	},
-	"cirrussearch-desc": "Pretraga za MediaWiki pomoću Elasticsearcha",
+	"cirrussearch-desc": "Pretraga za MediaWiki pomoću OpenSearcha",
 	"cirrussearch-backend-error": "Nije moguće izvršiti pretragu zbog privremenog problema. Pokušajte ponovo kasnije.",
 	"cirrussearch-parse-error": "Nisam razumjela upit. Pojednostavite ga. Uspavam ovo poboljšati sistem za pretragu.",
 	"cirrussearch-too-busy-error": "Pretraga je trenutno prezauzeta. Pokušajte ponovo kasnije.",

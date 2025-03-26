@@ -6,7 +6,7 @@
 			"פעמי-עליון"
 		]
 	},
-	"cirrussearch-desc": "חיפוש במדיה־ויקי באמצעות Elasticsearch",
+	"cirrussearch-desc": "חיפוש במדיה־ויקי באמצעות OpenSearch",
 	"cirrussearch-backend-error": "לא הצלחנו להשלים את החיפוש שלך בשל בעיה זמנית. נא לנסות שוב מאוחר יותר.",
 	"cirrussearch-parse-error": "השאילתה לא הובנה. נא לפשט אותה. השאילתה נרשמה ביומן כדי לשפר את מערכת החיפוש.",
 	"cirrussearch-too-busy-error": "החיפוש עמוס מדי כרגע. נא לנסות שוב מאוחר יותר.",

@@ -4,7 +4,7 @@
 			"Salvemm el lombard"
 		]
 	},
-	"cirrussearch-desc": "Ricerca realizzada con Elasticsearch per MediaWiki",
+	"cirrussearch-desc": "Ricerca realizzada con OpenSearch per MediaWiki",
 	"cirrussearch-backend-error": "Sem stad minga boni de completà la toa ricerca per via d'on problema temporani. Prova an'mò pussee tard.",
 	"cirrussearch-parse-error": "A l'è stad no possibil interpretà la domanda. Fala pusse sempliz. La domanda l'è stada registrada per migliorà el sistema de ricerca.",
 	"cirrussearch-too-busy-error": "A gh'è una granda missolta in sul motor de ricerca. Prova anmò pussee tard.",

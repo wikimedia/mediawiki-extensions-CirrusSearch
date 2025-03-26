@@ -10,7 +10,7 @@
 			"Vivaelcelta"
 		]
 	},
-	"cirrussearch-desc": "Procura baseada en Elasticsearch para MediaWiki",
+	"cirrussearch-desc": "Procura baseada en OpenSearch para MediaWiki",
 	"cirrussearch-backend-error": "Non puidemos completar a súa procura debido a un problema temporal. Inténteo de novo máis tarde.",
 	"cirrussearch-parse-error": "Non se entendeu a pescuda. Fágaa máis sinxela. Rexistrouse a pescuda para mellorar o sistema de procuras.",
 	"cirrussearch-too-busy-error": "O motor de procura está moi ocupado nestes intres. Inténteo de novo máis tarde.",

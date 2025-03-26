@@ -6,7 +6,7 @@
 			"Ruthven"
 		]
 	},
-	"cirrussearch-desc": "Ricerca fatta ch' Elasticsearch pe' MediaWiki",
+	"cirrussearch-desc": "Ricerca fatta ch' OpenSearch pe' MediaWiki",
 	"cirrussearch-backend-error": "Nun putimmo cumpretà 'a ricerca d' 'a vuosta pe' nu probblema temporaneo. Pe' piacere pruvate n'ata vota cchiù tarde.",
 	"cirrussearch-parse-error": "Nun ce putimmo fà capace d' 'a query. Pe' piacere, facite sta query cchiù semprice. 'A query s'è riggistrata pe' migliurà 'o sistema 'e ricerca.",
 	"cirrussearch-too-busy-error": "'A funzione 'e truvà sta tropp'ammuinata. Pe piacere pruvate aroppo.",

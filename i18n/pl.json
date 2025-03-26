@@ -15,7 +15,7 @@
 			"Woytecr"
 		]
 	},
-	"cirrussearch-desc": "Wyszukiwanie dla MediaWiki za pomocą Elasticsearch",
+	"cirrussearch-desc": "Wyszukiwanie dla MediaWiki za pomocą OpenSearch",
 	"cirrussearch-backend-error": "Nie udało nam się zakończyć wyszukiwania z powodu przejściowego problemu. Proszę spróbować później.",
 	"cirrussearch-parse-error": "Pytanie nie zostało zrozumiane. Prosimy o jego uproszczenie. Pytanie zostało zapisane w rejestrze w celu ulepszenia systemu wyszukiwania.",
 	"cirrussearch-too-busy-error": "Wyszukiwanie w tej chwili jest przeciążone. Proszę spróbować później.",

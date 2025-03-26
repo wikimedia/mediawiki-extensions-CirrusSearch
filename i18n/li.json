@@ -4,7 +4,7 @@
 			"Ooswesthoesbes"
 		]
 	},
-	"cirrussearch-desc": "Elasticsearch-gebaseerde zeukfunctie veur MediaWiki",
+	"cirrussearch-desc": "OpenSearch-gebaseerde zeukfunctie veur MediaWiki",
 	"cirrussearch-backend-error": "Es gevolg van e tiejelik perbleem kós dien zeukopdrach neet waere aafgemaak. Perbeer 't later oppernuuj.",
 	"cirrussearch-parse-error": "De zeukopdrach is neet begrepe. Maak 't einveljiger. De opdrach woort vasgelag veur 't verbaetere van de zeukrizzeltaote.",
 	"cirrussearch-too-busy-error": "De zeukfunctie is noe hieël drök. Perbeer 't later oppernuuj.",

@@ -12,7 +12,7 @@
 			"WikiPhoenix"
 		]
 	},
-	"cirrussearch-desc": "Elasticsearch-driven sökning för MediaWiki",
+	"cirrussearch-desc": "OpenSearch-driven sökning för MediaWiki",
 	"cirrussearch-backend-error": "Vi kunde inte slutföra din sökning på grund av ett tillfälligt problem. Försök igen senare.",
 	"cirrussearch-parse-error": "Frågan kunde inte tolkas. Vänligen gör det enklare. Frågan har loggats för att förbättra söksystemet.",
 	"cirrussearch-too-busy-error": "Söktjänsten är för närvarande för upptagen. Försök igen senare.",

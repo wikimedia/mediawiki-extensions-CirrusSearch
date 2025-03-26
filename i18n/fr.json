@@ -22,7 +22,7 @@
 			"Wladek92"
 		]
 	},
-	"cirrussearch-desc": "Moteur de recherche Elasticsearch pour MediaWiki",
+	"cirrussearch-desc": "Moteur de recherche OpenSearch pour MediaWiki",
 	"cirrussearch-backend-error": "Nous n’avons pas pu mener à bien votre recherche à cause d’un problème temporaire. Veuillez réessayer ultérieurement.",
 	"cirrussearch-parse-error": "La demande n’a pas été comprise. Veuillez la simplifier. La requête a été tracée pour améliorer le système de recherche.",
 	"cirrussearch-too-busy-error": "Le service de recherche est actuellement saturé. Veuillez réessayer ultérieurement.",

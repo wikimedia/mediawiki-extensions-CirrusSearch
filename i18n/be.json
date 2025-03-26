@@ -9,7 +9,7 @@
 			"Tīgelika"
 		]
 	},
-	"cirrussearch-desc": "Пошук у MediaWiki з дапамогай ElasticSearch",
+	"cirrussearch-desc": "Пошук у MediaWiki з дапамогай OpenSearch",
 	"cirrussearch-backend-error": "Мы не змаглі выканаць пошукавы запыт з-за часовых праблемаў. Калі ласка, паспрабуйце пазней.",
 	"cirrussearch-parse-error": "Запыт не быў зразуметы. Калі ласка, спрасціце яго. Запыт быў запісаны ў журнал дзеля ўдасканалення пошукавай сістэмы.",
 	"cirrussearch-too-busy-error": "Пошук зараз занадта заняты. Калі ласка, паспрабуйце пазней.",

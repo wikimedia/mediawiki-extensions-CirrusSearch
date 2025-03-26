@@ -4,7 +4,7 @@
 			"ऐक्टिवेटेड्"
 		]
 	},
-	"cirrussearch-desc": "मीडियाविकि लागि Elasticsearch सञ्चालित खोज",
+	"cirrussearch-desc": "मीडियाविकि लागि OpenSearch सञ्चालित खोज",
 	"cirrussearch-pref-label": "नया खोज",
 	"cirrussearch-give-feedback": "हमनीके अपन प्रतिक्रिया दी",
 	"prefs-completion": "खोज पूर्णकरण",

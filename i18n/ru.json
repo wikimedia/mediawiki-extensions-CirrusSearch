@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Alex Great",
+			"Amire80",
 			"Deltaspace",
 			"Facenapalm",
 			"Gamliel Fishkin",
@@ -22,7 +23,7 @@
 			"Туллук"
 		]
 	},
-	"cirrussearch-desc": "Поиск для MediaWiki на базе Elasticsearch",
+	"cirrussearch-desc": "Поиск для MediaWiki на базе OpenSearch",
 	"cirrussearch-backend-error": "Нам не удалось завершить поиск из-за временной проблемы. Пожалуйста, повторите попытку позже.",
 	"cirrussearch-parse-error": "Запрос не был понят. Пожалуйста, сделайте его проще. Запрос был записан для улучшения поисковой системы.",
 	"cirrussearch-too-busy-error": "Поиск в настоящий момент слишком перегружен.  Пожалуйста, повторите попытку позже.",

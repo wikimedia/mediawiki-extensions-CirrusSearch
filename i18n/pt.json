@@ -12,7 +12,7 @@
 			"Vitorvicentevalente"
 		]
 	},
-	"cirrussearch-desc": "Mecanismo de pesquisa \"Elasticsearch\" para o MediaWiki",
+	"cirrussearch-desc": "Mecanismo de pesquisa \"OpenSearch\" para o MediaWiki",
 	"cirrussearch-backend-error": "Não foi possível concluir a pesquisa devido a um problema temporário. Tente novamente mais tarde, por favor.",
 	"cirrussearch-parse-error": "O pedido de pesquisa não foi compreendido. Simplifique-o, por favor. O pedido foi registado para melhorar o sistema de pesquisa.",
 	"cirrussearch-too-busy-error": "De momento, a pesquisa está muito ocupada. Por favor, tente novamente mais tarde.",

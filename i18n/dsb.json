@@ -4,7 +4,7 @@
 			"Michawiki"
 		]
 	},
-	"cirrussearch-desc": "Pytanje na zakłaźe \"elasticsearch\" za MediaWiki",
+	"cirrussearch-desc": "Pytanje na zakłaźe \"OpenSearch\" za MediaWiki",
 	"cirrussearch-backend-error": "Twójo pytanje njedajo se nachylnego problema dla skóńcyś. Pšosym wopytaj pózdźej hyšći raz.",
 	"cirrussearch-parse-error": "Napšašowanje njejo se zrozměło. Pšosym cyń jo jadnorješe. Napšašowanje se protokolěrujo, aby se pytański system pólěpšył.",
 	"cirrussearch-now-using": "Toś ten wiki wužywa nowu pytnicu ([[mw:Special:MyLanguage/Help:CirrusSearch|Dalšne informacije]])",

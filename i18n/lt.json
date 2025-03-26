@@ -11,7 +11,7 @@
 			"Tomasdd"
 		]
 	},
-	"cirrussearch-desc": "Elasticsearch-įgalinta MediaWiki paieška",
+	"cirrussearch-desc": "OpenSearch-įgalinta MediaWiki paieška",
 	"cirrussearch-backend-error": "Nepavyko atlikti jūsų paieškos dėl laikino sutrikimo. Prašome vėliau pabandyti dar kartą.",
 	"cirrussearch-parse-error": "Užklausa nebuvo suprasta. Prašome ją supaprastinti. Ši užklausa buvo išsaugota, kad būtų galima patobulinti paieškos sistemą.",
 	"cirrussearch-too-busy-error": "Paieška dabar yra per daug apkrauta. Prašome vėliau pabandyti dar kartą.",

@@ -21,7 +21,7 @@
 			"Violetanka"
 		]
 	},
-	"cirrussearch-desc": "MediaWiki için Elasticsearch destekli arama",
+	"cirrussearch-desc": "MediaWiki için OpenSearch destekli arama",
 	"cirrussearch-backend-error": "Biz geçici bir sorun nedeniyle aramanızı tamamlayamadık. Lütfen daha sonra tekrar deneyin.",
 	"cirrussearch-parse-error": "Sorgu anlaşılamadı. Lütfen daha basit olun. Sorgu arama sistemini iyileştirmek için oturum açmış olmalısınız.",
 	"cirrussearch-too-busy-error": "Arama şu anda çok meşgul. Lütfen daha sonra tekrar deneyiniz.",

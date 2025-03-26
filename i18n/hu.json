@@ -9,7 +9,7 @@
 			"Tgr"
 		]
 	},
-	"cirrussearch-desc": "Elasticsearch alapú MediaWiki kereső",
+	"cirrussearch-desc": "OpenSearch alapú MediaWiki kereső",
 	"cirrussearch-backend-error": "Egy átmeneti hiba miatt nem tudtuk végrehajtani a keresést. Kérlek, próbálkozz később.",
 	"cirrussearch-parse-error": "Nem értem a keresőkifejezést, kérlek írd át egyszerűbbre. (A kifejezést eltároltuk és felhasználjuk a keresőrendszer fejlesztésére.)",
 	"cirrussearch-too-busy-error": "A kereső jelenleg túl elfoglalt. Próbálkozz újra később.",

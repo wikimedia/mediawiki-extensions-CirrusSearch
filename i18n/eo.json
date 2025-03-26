@@ -8,7 +8,7 @@
 			"NMaia"
 		]
 	},
-	"cirrussearch-desc": "Serĉo por MediaWiki bazita sur Elasticsearch",
+	"cirrussearch-desc": "Serĉo por MediaWiki bazita sur OpenSearch",
 	"cirrussearch-backend-error": "Pro dumtempa problemo ne eblis fini vian serĉo. Bonvolu reprovi postnelonge.",
 	"cirrussearch-too-busy-error": "Serĉado estas nuntempe tro okupita. Bonvolu reprovi postnelonge.",
 	"cirrussearch-regex-syntax-error": "Eraro pri sintakso de regula esprimo ĉe $2: $1",

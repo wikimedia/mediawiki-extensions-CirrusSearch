@@ -7,7 +7,7 @@
 			"Pmt"
 		]
 	},
-	"cirrussearch-desc": "Elasticsearch-basert søkemotor for MediaWiki",
+	"cirrussearch-desc": "OpenSearch-basert søkemotor for MediaWiki",
 	"cirrussearch-backend-error": "Søket ditt kunne ikke utføres på grunn av et midlertidig problem. Vennligst prøv igjen senere.",
 	"cirrussearch-parse-error": "Spørringen ble ikke forstått. Vennligst forenkle den. Spørringen ble logget for å kunne forbedre søkesystemet.",
 	"cirrussearch-too-busy-error": "Søketjenesten er overbelastet. Prøv igjen senere.",

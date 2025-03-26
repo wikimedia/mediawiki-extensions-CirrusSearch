@@ -5,7 +5,7 @@
 			"Srđan"
 		]
 	},
-	"cirrussearch-desc": "Pretraga za MediaWiki pomoću Elasticsearcha",
+	"cirrussearch-desc": "Pretraga za MediaWiki pomoću OpenSearch",
 	"cirrussearch-backend-error": "Ne mogu izvršiti Vašu pretragu zbog privremenog problema. Pokušajte ponovo.",
 	"cirrussearch-too-busy-error": "Pretraga je trenutno prezauzeta. Pokušajte ponovo kasnije.",
 	"cirrussearch-pref-label": "Nova pretraga",

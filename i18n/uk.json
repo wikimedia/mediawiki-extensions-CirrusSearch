@@ -15,7 +15,7 @@
 			"Ата"
 		]
 	},
-	"cirrussearch-desc": "Пошук для MediaWiki на базі Elasticsearch",
+	"cirrussearch-desc": "Пошук для MediaWiki на базі OpenSearch",
 	"cirrussearch-backend-error": "Нам не вдалося завершити ваш пошук через тимчасову проблему. Спробуйте ще раз пізніше.",
 	"cirrussearch-parse-error": "Запит не зрозуміли. Будь ласка, зробіть його простішим. Запит був записаний для поліпшення пошукової системи.",
 	"cirrussearch-too-busy-error": "Пошукова система перевантажена запитами. Спробуйте пізніше.",

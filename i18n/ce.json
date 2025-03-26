@@ -4,7 +4,7 @@
 			"Умар"
 		]
 	},
-	"cirrussearch-desc": "MediaWiki-на лахар Elasticsearch базанца",
+	"cirrussearch-desc": "MediaWiki-на лахар OpenSearch базанца",
 	"cirrussearch-backend-error": "Хана долу гӀалат бахьнехь лахар чекхдакха цаделира. Дехар до гӀорта тӀехьо.",
 	"cirrussearch-parse-error": "Дехарах цакхийтира. Дехар до, и атта дар. Дехар дӀайаздина лахаран система дика йан.",
 	"cirrussearch-too-busy-error": "ХӀинца лахаран халонаш йу. Дехар до, лаха тӀаьхьо.",

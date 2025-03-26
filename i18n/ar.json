@@ -13,7 +13,7 @@
 			"محمد أحمد عبد الفتاح"
 		]
 	},
-	"cirrussearch-desc": "عملية البحث مدعومة من قبل Elasticsearch لميدياويكي",
+	"cirrussearch-desc": "البحث المدعوم بـ OpenSearch لـ MediaWiki",
 	"cirrussearch-backend-error": "لم نستطع إكمال بحثك بسبب مشكلة مؤقتة. الرجاء المحاولة لاحقاً.",
 	"cirrussearch-parse-error": "الاستعلام غير مفهوم، رجاء بسِّطْه. تم تسجيل الاستعلام لتحسين نظام البحث.",
 	"cirrussearch-too-busy-error": "البحث مشغول للغاية حالياً. من فضلك حاول في وقت لاحق.",

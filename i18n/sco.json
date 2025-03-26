@@ -5,7 +5,7 @@
 			"John Reid"
 		]
 	},
-	"cirrussearch-desc": "Elasticrake-pwred rake fer MediaWiki",
+	"cirrussearch-desc": "OpenSearch-pwred rake fer MediaWiki",
 	"cirrussearch-backend-error": "We coudna compleate yer rake cause o ae temperie problem. Please try again later.",
 	"cirrussearch-parse-error": "Speirin wisna unnerstood. Please mak it simpler. The speirin wis loggit fer tae improve the rake system.",
 	"cirrussearch-regex-syntax-error": "Raigulair expression syntax mistak at $2: $1",

@@ -5,7 +5,7 @@
 			"Kunokuno"
 		]
 	},
-	"cirrussearch-desc": "Elastikongpaghanap-makusugon na panhanap para sa MediaWiki",
+	"cirrussearch-desc": "OpenSearch-makusugon na panhanap para sa MediaWiki",
 	"cirrussearch-backend-error": "Dae nyamo makukumpleto an saimong paghahanap nin huli sa sarong temporaryong problema.\nTabi man paki-otroha giraray oro-atyan.",
 	"cirrussearch-parse-error": "Dai naintindihan an query. Gibuhon ining mas simple pa. Piglog an query tangani na pakarayon pa an sistema kan paghanap.",
 	"cirrussearch-too-busy-error": "Sa presente, sibot an paghanap. Pulbaran utro sa atyan.",

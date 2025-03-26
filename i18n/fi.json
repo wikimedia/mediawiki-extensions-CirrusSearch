@@ -14,7 +14,7 @@
 			"Veikk0.ma"
 		]
 	},
-	"cirrussearch-desc": "Elasticsearch-käyttöinen haku MediaWikille",
+	"cirrussearch-desc": "OpenSearch-pohjainen haku MediaWikille",
 	"cirrussearch-backend-error": "Emme voineet suorittaa hakuasi väliaikaisen ongelman vuoksi. Yritä myöhemmin uudelleen.",
 	"cirrussearch-parse-error": "Kysely ei ollut ymmärrettävä. Tee siitä yksinkertaisempi. Kysely oli merkitty lokikirjaan hakujärjestelmän parantamiseksi.",
 	"cirrussearch-too-busy-error": "Hakutoiminnossa on nyt ruuhkaa. Yritä myöhemmin uudelleen.",

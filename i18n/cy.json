@@ -5,7 +5,7 @@
 			"Ceirios"
 		]
 	},
-	"cirrussearch-desc": "Chwiliadau Elasticsearch ar gyfer MediaWici",
+	"cirrussearch-desc": "Chwiliadau OpenSearch ar gyfer MediaWici",
 	"cirrussearch-regex-too-complex-error": "Mae'ch regex yn rhy gymhleth. Dysgwch fwy am symleiddio regex [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|yma]].",
 	"cirrussearch-now-using": "Mae'r wici hwn yn defnyddio peiriant chwilio newydd. ([[mw:Special:MyLanguage/Help:CirrusSearch|Dysgu mwy]])",
 	"cirrussearch-pref-label": "Chwiliad newydd",

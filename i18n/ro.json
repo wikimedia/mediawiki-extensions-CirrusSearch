@@ -7,7 +7,7 @@
 			"Strainu"
 		]
 	},
-	"cirrussearch-desc": "Funcție de căutare pentru MediaWiki motorizată de elasticsearch",
+	"cirrussearch-desc": "Funcție de căutare pentru MediaWiki motorizată de OpenSearch",
 	"cirrussearch-backend-error": "Nu v-am putut finaliza căutarea din cauza unei probleme temporare. Încercați din nou mai târziu.",
 	"cirrussearch-parse-error": "Interogarea nu a fot înțeleasă. Simplificați-o. Interogarea a fost înregistrată pentru a îmbunătăți motorul de căutare.",
 	"cirrussearch-too-busy-error": "Motorul de căutare este suprasolicitat. Vă rugăm să încercați mai târziu.",

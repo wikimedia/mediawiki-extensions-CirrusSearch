@@ -4,7 +4,7 @@
 			"Exec8"
 		]
 	},
-	"cirrussearch-desc": "Elasticsearch-powered search para sa MediaWiki",
+	"cirrussearch-desc": "OpenSearch-powered search para sa MediaWiki",
 	"cirrussearch-backend-error": "Indi namon matapos ang imo pagpangita bangod sang temporaryo nga problema. Palihog tilawi liwat sa ulihi.",
 	"cirrussearch-parse-error": "Ang pamangkot wala mahangpi. Palihog himua ini nga mas simple. Ang pamangkot gin-log agud mapauswag ang sistema sa pagpangita.",
 	"cirrussearch-too-busy-error": "Ang pagpangita masako gid subong. Palihog tilawi liwat sa ulihi.",

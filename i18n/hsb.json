@@ -5,7 +5,7 @@
 			"Michawiki"
 		]
 	},
-	"cirrussearch-desc": "Pytanje na zakładźe \"elasticsearch\" za MediaWiki",
+	"cirrussearch-desc": "Pytanje na zakładźe \"OpenSearch\" za MediaWiki",
 	"cirrussearch-backend-error": "Twoje pytanje njeda so nachwilneho problema dla skónčić. Prošu spytaj pozdźišo hišće raz.",
 	"cirrussearch-parse-error": "Naprašowanje njeje so zrozumiło. Prošu čiń jo jednoriše. Naprašowanje so protokoluje, zo by so pytanski system polěpšił.",
 	"cirrussearch-now-using": "Tutón wiki wužiwa nowu pytawu. ([[mw:Special:MyLanguage/Help:CirrusSearch|Dalše informacije]])",

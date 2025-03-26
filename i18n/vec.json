@@ -5,7 +5,7 @@
 			"Fierodelveneto"
 		]
 	},
-	"cirrussearch-desc": "Riçerca faxesta co Elasticsearch par MediaWiki",
+	"cirrussearch-desc": "Riçerca faxesta co OpenSearch par MediaWiki",
 	"cirrussearch-backend-error": "No te si sta bon a finir ła to riçerca par colpa de on problema tenporałe. Reproa pì tardi",
 	"cirrussearch-parse-error": "No ghemo capio ła domanda. Te se prega de farla pì sénplega. Ła domanda ła xé stada rejistrada par mejorare el sistema de riçerca",
 	"cirrussearch-too-busy-error": "Deso el motore de riçerca el xé in soracargo. Reproa pì tardi",

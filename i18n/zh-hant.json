@@ -16,7 +16,7 @@
 			"捍粵者"
 		]
 	},
-	"cirrussearch-desc": "以 Elasticsearch 為基礎的 MediaWiki 搜尋工具",
+	"cirrussearch-desc": "以 OpenSearch 為基礎的 MediaWiki 搜尋工具",
 	"cirrussearch-backend-error": "因發生暫時性的問題，我們無法完成您的搜尋。請稍後再試。",
 	"cirrussearch-parse-error": "無法理解查詢條件，請簡化查詢條件。該查詢會被記錄以改進搜尋系統。",
 	"cirrussearch-too-busy-error": "搜尋引擎目前過於忙碌，請稍候再試。",

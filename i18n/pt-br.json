@@ -13,7 +13,7 @@
 			"Jefersonmoraes"
 		]
 	},
-	"cirrussearch-desc": "Mecanismo de busca ''Elasticsearch'' para MediaWiki",
+	"cirrussearch-desc": "Mecanismo de busca ''OpenSearch'' para MediaWiki",
 	"cirrussearch-backend-error": "Não foi possível completar a busca devido a um problema temporário. Por favor, tente novamente mais tarde.",
 	"cirrussearch-parse-error": "A consulta não foi compreendida. Por favor, simplifique-a. A consulta foi registrada para melhorar o sistema de busca.",
 	"cirrussearch-too-busy-error": "A pesquisa atualmente está muito ocupada. Por favor, tente novamente mais tarde.",

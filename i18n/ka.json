@@ -9,7 +9,7 @@
 			"Tokoko"
 		]
 	},
-	"cirrussearch-desc": "MediaWiki-ს საძიებელი Elasticsearch-ის ბაზაზე",
+	"cirrussearch-desc": "MediaWiki-ს საძიებელი OpenSearch-ის ბაზაზე",
 	"cirrussearch-backend-error": "ძებნა ვერ დასრულდა დროებითი პრობლემის გამო. გთხოვთ სცადეთ მოგვიანებით.",
 	"cirrussearch-parse-error": "მოთხოვნა გაუგებარი იყო. გთხოვთ გაამარტივოთ. მოთხოვნა ჩაიწერა ძებნის სისტემის გასაუმჯობესებლად.",
 	"cirrussearch-too-busy-error": "ძებნის სისტემა დაკავებულია. გთხოვთ სცადეთ მოგვიანებით.",

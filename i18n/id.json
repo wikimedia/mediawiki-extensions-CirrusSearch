@@ -15,7 +15,7 @@
 			"Veracious"
 		]
 	},
-	"cirrussearch-desc": "Mesin pencarian yang didorong oleh Elasticsearch untuk MediaWiki",
+	"cirrussearch-desc": "Mesin pencarian yang didorong oleh OpenSearch untuk MediaWiki",
 	"cirrussearch-backend-error": "Kami tidak dapat menyelesaikan pencarian Anda karena suatu kendala sementara. Silakan coba lagi nanti.",
 	"cirrussearch-parse-error": "Kueri tidak dipahami. Tolong sederhanakan. Kueri itu telah dicatat untuk memperbaiki sistem pencarian.",
 	"cirrussearch-too-busy-error": "Pencarian sedang terlalu sibuk. Mohon coba lagi nanti.",

@@ -9,7 +9,7 @@
 			"Tofeiku"
 		]
 	},
-	"cirrussearch-desc": "Enjin pencarian yang dikuasakan oleh Elasticsearch untuk MediaWiki",
+	"cirrussearch-desc": "Enjin pencarian yang dikuasakan oleh OpenSearch untuk MediaWiki",
 	"cirrussearch-backend-error": "Kami tidak dapat melengkapkan pencarian anda disebabkan masalah yang sementara. Sila cuba lagi nanti.",
 	"cirrussearch-parse-error": "Pertanyaan tidak difahami. Sila permudahnya. Pertanyaan itu telah dilogkan untuk menambah baik sistem pencarian.",
 	"cirrussearch-too-busy-error": "Enjin carian sekarang terlalu sibuk. Sila cuba lagi nanti.",

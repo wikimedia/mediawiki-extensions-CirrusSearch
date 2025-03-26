@@ -11,7 +11,7 @@
 			"Vinhtantran"
 		]
 	},
-	"cirrussearch-desc": "Công cụ tìm kiếm Elasticsearch dành cho MediaWiki",
+	"cirrussearch-desc": "Công cụ tìm kiếm OpenSearch dành cho MediaWiki",
 	"cirrussearch-backend-error": "Không thể hoàn tất truy vấn của bạn vì một vấn đề tạm thời. Xin vui lòng thử lại sau.",
 	"cirrussearch-parse-error": "Không hiểu truy vấn. Xin hãy làm nó đơn giản hơn. Truy vấn này được ghi vào nhật trình để giúp cải thiện công cụ tìm kiếm.",
 	"cirrussearch-too-busy-error": "Công cụ tìm kiếm đang quá bận rộn. Xin vui lòng thử lại sau.",

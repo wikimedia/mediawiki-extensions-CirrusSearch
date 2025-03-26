@@ -6,7 +6,7 @@
 			"Sveinn í Felli"
 		]
 	},
-	"cirrussearch-desc": "Leit fyrir MediaWiki, knúin af Elasticsearch",
+	"cirrussearch-desc": "Leit fyrir MediaWiki, knúin af OpenSearch",
 	"cirrussearch-backend-error": "Við gátum ekki lokið leitinni þinni vegna tímabundinnar villu. Vinsamlegast reyndu aftur síðar.",
 	"cirrussearch-parse-error": "Fyrirspurnin skildist ekki. Vinsamlegast gerðu hana einfaldari. Fyrirspurnin hefur verið skráð til að bæta leitarkerfið.",
 	"cirrussearch-too-busy-error": "Of mikið álag er á leitina. Vinsamlegast reyndu aftur síðar.",

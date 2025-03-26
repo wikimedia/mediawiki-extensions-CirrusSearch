@@ -6,7 +6,7 @@
 			"Toghrul Rahimli"
 		]
 	},
-	"cirrussearch-desc": "MediaWiki üçün Elasticsearch ilə dəstəklənən axtarış",
+	"cirrussearch-desc": "MediaWiki üçün OpenSearch ilə dəstəklənən axtarış",
 	"cirrussearch-backend-error": "Müvəqqəti problemə görə axtarışınızı tamamlaya bilmədik. Zəhmət olmasa, bir az sonra yenə cəhd edin.",
 	"cirrussearch-parse-error": "Sorğu başa düşülmədi. Zəhmət olmasa, bunu sadələşdirin. Sorğu axtarış sistemini təkmilləşdirmək üçün daxil edilmişdir.",
 	"cirrussearch-too-busy-error": "Axtarış hazırda çox məşğuldur. Zəhmət olmasa, bir az sonra yenə cəhd edin.",

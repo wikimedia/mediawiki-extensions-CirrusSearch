@@ -14,7 +14,7 @@
 			"Umherirrender"
 		]
 	},
-	"cirrussearch-desc": "{{desc|name=Cirrus Search|url=https://www.mediawiki.org/wiki/Extension:CirrusSearch}}\n\"Elasticsearch\" is a full-text search engine. See http://www.elasticsearch.org/",
+	"cirrussearch-desc": "{{desc|name=Cirrus Search|url=https://www.mediawiki.org/wiki/Extension:CirrusSearch}}\n\"OpenSearch\" is a Free Software full-text search engine. https://opensearch.org/ . '''\"OpenSearch\" is a name, and it shouldn't be translated.'''",
 	"cirrussearch-backend-error": "Error message shown to the users when we have an issue communicating with our search backend",
 	"cirrussearch-parse-error": "Error message shown to the users when we couldn't understand the query.  For the most part we don't expect users to see this because we retry retry queries that we don't unserstand using a (hopefully) fail safe method.",
 	"cirrussearch-too-busy-error": "Error message shown to the users when there are too many concurrent searches currently running and we can't allow any more to start.",

@@ -4,7 +4,7 @@
 			"Purodha"
 		]
 	},
-	"cirrussearch-desc": "Söhke em MedijaWikki met <i lang=\"en\" xml:lang=\"en\">Elasticsearch</i> dohenger.",
+	"cirrussearch-desc": "Söhke em MedijaWikki met <i lang=\"en\" xml:lang=\"en\">OpenSearch</i> dohenger.",
 	"cirrussearch-backend-error": "Mer hatte e problem, wat ävver flök verbei sin sullt. Bes esu jood u versöhg et schpääder norr_ens.",
 	"cirrussearch-parse-error": "Di Frohch ham_mer nit verschtande.\nBes esu jood un maache se jäd eijnfacher.\nSe wood ävver och faßjehallde, öm domet dat Süßtem för et Söhke ze verbäßere.",
 	"cirrussearch-too-busy-error": "Em Momang weed zoh vill jesöhk.\nKumm schpääder widder.",

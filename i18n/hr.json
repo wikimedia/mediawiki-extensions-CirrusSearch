@@ -7,7 +7,7 @@
 			"Ponor"
 		]
 	},
-	"cirrussearch-desc": "Pretraga za MediaWiki pomoću Elasticsearcha",
+	"cirrussearch-desc": "Pretraga za MediaWiki pomoću OpenSearcha",
 	"cirrussearch-backend-error": "Sustav nije mogao dovršiti Vašu pretragu zbog privremenoga problema.\nMolimo Vas, poslije pokušajte ponovo.",
 	"cirrussearch-parse-error": "Upit nije bio razumljiv. Molimo Vas da ga pojednostavite. Upit je bio evidentiran radi unapređenja sustava za pretragu.",
 	"cirrussearch-too-busy-error": "Pretraga je trenutačno prezauzeta. Molimo Vas, pokušajte ponovo kasnije.",

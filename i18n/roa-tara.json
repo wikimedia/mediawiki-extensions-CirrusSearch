@@ -4,7 +4,7 @@
 			"Joetaras"
 		]
 	},
-	"cirrussearch-desc": "Ricerche Elasticsearch-powered pe MediaUicchi",
+	"cirrussearch-desc": "Ricerche OpenSearch-powered pe MediaUicchi",
 	"cirrussearch-backend-error": "Non ge putime combletà 'a ricerca toje pe 'nu probbleme tembonarèe. Pe piacere pruève cchiù tarde.",
 	"cirrussearch-parse-error": "Non g'è possibbele 'nderpretà 'a 'nderrogazione. Se prege de scriverle arrete cchiù facile. 'A 'nderrogazione ha state reggistrate pe migliorà 'u sisteme de recerche.",
 	"cirrussearch-too-busy-error": "'A ricerche ste 'ngasenate. Pe piacere pruéve arrete.",

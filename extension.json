@@ -85,6 +85,7 @@
 		"localBasePath": "",
 		"remoteExtPath": "CirrusSearch"
 	},
+	"callback": "CirrusSearch\\Hooks::onRegistration",
 	"Hooks": {
 		"APIAfterExecute": "default",
 		"ApiBeforeMain": "default",

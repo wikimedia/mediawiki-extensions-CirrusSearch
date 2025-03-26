@@ -81,6 +81,21 @@ class Hooks implements
 	}
 
 	/**
+	 * Extension registration callback (https://www.mediawiki.org/wiki/Manual:Extension.json/Schema#callback), called
+	 * early on in the MW setup.
+	 */
+	public static function onRegistration(): void {
+		global $wgCirrusSearchClusters, $wgCirrusSearchWriteClusters;
+		if ( defined( 'MW_QUIBBLE_CI' ) ) {
+			// If running in quibble, disable writes: they will fail anyway and potentially lead to timeouts (T389895).
+			$wgCirrusSearchClusters = [
+				'default' => [ 'localhost' ],
+			];
+			$wgCirrusSearchWriteClusters = [];
+		}
+	}
+
+	/**
 	 * Hooked to call initialize after the user is set up.
 	 *
 	 * @param Title $title

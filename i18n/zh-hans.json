@@ -28,7 +28,7 @@
 			"沈澄心"
 		]
 	},
-	"cirrussearch-desc": "以OpenSearch为基础的MediaWiki搜索工具",
+	"cirrussearch-desc": "由OpenSearch提供支持的MediaWiki搜索工具",
 	"cirrussearch-backend-error": "由于出现暂时性的问题，我们未能完成您的搜索。请稍后再试。",
 	"cirrussearch-parse-error": "此查询无法理解。请将其简化。查询已被记录以改进搜索系统。",
 	"cirrussearch-too-busy-error": "搜索目前过于忙碌。请稍后重试。",

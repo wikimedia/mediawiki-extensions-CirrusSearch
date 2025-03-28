@@ -147,6 +147,12 @@ class QueryBuildDocument extends ApiQueryBase {
 
 				$result->addValue( [ 'query', 'pages', $pageId ],
 					'cirrusbuilddoc_metadata', $metadata );
+				$result->addValue(
+					[ 'query', 'pages', $pageId ],
+					'cirrusbuilddoc_comment',
+					'The CirrusDoc format is meant for internal use by CirrusSearch for debugging or queries, '
+					. 'it might change at any time without notice'
+				);
 			}
 		}
 	}

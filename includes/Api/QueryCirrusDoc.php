@@ -68,6 +68,12 @@ class QueryCirrusDoc extends ApiQueryBase {
 			[ 'query', 'pages', $resultPageId ],
 			'cirrusdoc', $this->loadDocuments( $title, $sourceFiltering )
 		);
+		$this->getResult()->addValue(
+			[ 'query', 'pages', $resultPageId ],
+			'cirrusdoc_comment',
+			'The CirrusDoc format is meant for internal use by CirrusSearch for debugging or queries, '
+			. 'it might change at any time without notice'
+		);
 	}
 
 	/**

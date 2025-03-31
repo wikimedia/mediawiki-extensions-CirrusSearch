@@ -28,7 +28,7 @@ use Wikimedia\Assert\Assert;
  */
 class UserTestingStatus {
 	/** Bucketing decision for the main request context */
-	private static ?self $instance;
+	private static ?self $instance = null;
 
 	/** @var ?string The name of the active test, or null if none */
 	private $testName;
@@ -53,7 +53,7 @@ class UserTestingStatus {
 	 * is applied.
 	 */
 	public static function getInstance(): self {
-		if ( !isset( self::$instance ) ) {
+		if ( self::$instance === null ) {
 			$context = RequestContext::getMain();
 			$trigger = $context->getRequest()->getVal( 'cirrusUserTesting' );
 			// The current method of ensuring user testing is always initialized is

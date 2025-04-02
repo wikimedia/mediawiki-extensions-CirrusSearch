@@ -15,11 +15,13 @@ abstract class IteratorDecorator implements Iterator {
 		$this->iterator = $iterator;
 	}
 
+	/** @return mixed */
 	#[\ReturnTypeWillChange]
 	public function current() {
 		return $this->iterator->current();
 	}
 
+	/** @return mixed */
 	#[\ReturnTypeWillChange]
 	public function key() {
 		return $this->iterator->key();

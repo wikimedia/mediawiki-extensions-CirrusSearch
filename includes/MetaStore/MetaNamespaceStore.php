@@ -86,7 +86,7 @@ class MetaNamespaceStore implements MetaStore {
 		return $this->index->search( $query, $queryOptions );
 	}
 
-	private function queryFilter() {
+	private function queryFilter(): BoolQuery {
 		return ( new BoolQuery() )
 			->addFilter( new MatchQuery( 'type', self::METASTORE_TYPE ) )
 			->addFilter( new MatchQuery( 'wiki', $this->wikiId ) );

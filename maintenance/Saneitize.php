@@ -74,6 +74,7 @@ class Saneitize extends Maintenance {
 			'then that many chunks will be spat out sized to cover the entire wiki.', false, true );
 	}
 
+	/** @inheritDoc */
 	public function execute() {
 		$this->disablePoolCountersAndLogging();
 

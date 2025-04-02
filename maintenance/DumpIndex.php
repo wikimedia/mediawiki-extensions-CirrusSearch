@@ -105,6 +105,7 @@ class DumpIndex extends Maintenance {
 		$this->addOption( 'sourceFields', 'List of comma separated source fields to extract.', false, true );
 	}
 
+	/** @inheritDoc */
 	public function execute() {
 		$this->disablePoolCountersAndLogging();
 

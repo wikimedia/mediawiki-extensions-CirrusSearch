@@ -32,6 +32,7 @@ require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class IndexNamespaces extends Maintenance {
 
+	/** @inheritDoc */
 	public function execute() {
 		// We allow automatic creation, rather than requiring pre-existance like
 		// other scripts, to make initial setup simple and straight forward. In

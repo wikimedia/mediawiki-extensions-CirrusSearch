@@ -72,6 +72,7 @@ class RunSearch extends Maintenance {
 		$this->applyGlobals();
 	}
 
+	/** @inheritDoc */
 	public function execute() {
 		$this->disablePoolCountersAndLogging();
 		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );

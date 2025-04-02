@@ -58,6 +58,7 @@ class CheckIndexes extends Maintenance {
 		$this->addOption( 'nagios', 'Output in nagios format' );
 	}
 
+	/** @inheritDoc */
 	public function execute() {
 		if ( $this->hasOption( 'nagios' ) ) {
 			// Force silent running mode so we can match Nagios expected output.

@@ -78,7 +78,7 @@ class IndexHasChangedValidator extends Validator {
 		return Status::newGood( !$equivalent );
 	}
 
-	private function compareSettings() {
+	private function compareSettings(): bool {
 		$old = $this->oldIndex->getSettings()->get();
 		unset( $old['provided_name'], $old['creation_date'], $old['uuid'] );
 		$new = $this->newIndex->getSettings()->get();
@@ -86,7 +86,7 @@ class IndexHasChangedValidator extends Validator {
 		return $old == $new;
 	}
 
-	private function compareMapping() {
+	private function compareMapping(): bool {
 		$old = $this->oldIndex->getMapping();
 		$new = $this->newIndex->getMapping();
 		return $old == $new;

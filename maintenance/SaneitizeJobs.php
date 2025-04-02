@@ -82,6 +82,7 @@ class SaneitizeJobs extends Maintenance {
 			'Defaults to "default".', false, true );
 	}
 
+	/** @inheritDoc */
 	public function execute() {
 		$this->init();
 		if ( $this->hasOption( 'show' ) ) {

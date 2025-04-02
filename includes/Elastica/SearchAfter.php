@@ -77,7 +77,7 @@ class SearchAfter implements \Iterator {
 		$this->initialSearchAfter = $searchAfter;
 	}
 
-	private function runSearch() {
+	private function runSearch(): ResultSet {
 		foreach ( $this->backoff as $backoffSec ) {
 			try {
 				return $this->search->search();

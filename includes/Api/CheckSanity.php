@@ -86,7 +86,7 @@ class CheckSanity extends ApiBase {
 		);
 	}
 
-	private function makeIsOldClosure() {
+	private function makeIsOldClosure(): ?\Closure {
 		$sequenceId = $this->getParameter( 'sequenceid' );
 		if ( $sequenceId === null ) {
 			return null;

@@ -41,6 +41,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 			&& $config->has( 'SiteMatrixSites' );
 	}
 
+	/** @inheritDoc */
 	protected function loadMatrix() {
 		$cacheKey = $this->wanCache->makeKey( 'cirrussearch-interwiki-matrix', 'v1' );
 		$matrix = $this->wanCache->getWithSetCallback(

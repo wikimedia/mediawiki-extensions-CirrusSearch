@@ -25,6 +25,7 @@ use MediaWiki\MediaWikiServices;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Dump extends FormlessAction {
+	/** @inheritDoc */
 	public function onView() {
 		// Disable regular results
 		$this->getOutput()->disable();

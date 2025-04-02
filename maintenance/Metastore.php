@@ -55,6 +55,7 @@ class Metastore extends Maintenance {
 		$this->addOption( 'dump', 'Dump the metastore index to stdout (elasticsearch bulk index format).' );
 	}
 
+	/** @inheritDoc */
 	public function execute() {
 		$this->metaStore = $this->getMetaStore();
 

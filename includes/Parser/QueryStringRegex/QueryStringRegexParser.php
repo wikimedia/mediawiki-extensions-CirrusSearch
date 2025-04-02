@@ -525,7 +525,7 @@ class QueryStringRegexParser implements QueryParser {
 			$this->lookBehind->getImage() );
 	}
 
-	private function negatedLeaf() {
+	private function negatedLeaf(): ?ParsedNode {
 		if ( $this->token->getType() === Token::NOT ) {
 			$this->advance();
 			if ( !$this->nextToken() ) {
@@ -536,7 +536,7 @@ class QueryStringRegexParser implements QueryParser {
 		return $this->leaf();
 	}
 
-	private function leaf() {
+	private function leaf(): ?ParsedNode {
 		$node = $this->token->getNode();
 		$this->advance();
 		return $node;

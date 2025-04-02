@@ -24,6 +24,7 @@ class CirrusConfigInterwikiResolver extends BaseInterwikiResolver {
 		return false;
 	}
 
+	/** @inheritDoc */
 	protected function loadMatrix() {
 		$sisterProjects = $this->config->get( 'CirrusSearchInterwikiSources' ) ?? [];
 		$languageMap = $this->config->get( 'CirrusSearchLanguageToWikiMap' ) ?? [];

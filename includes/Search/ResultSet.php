@@ -175,7 +175,7 @@ class ResultSet extends BaseSearchResultSet implements CirrusSearchResultSet {
 		return $this->suggestionSnippet;
 	}
 
-	public function extractResults() {
+	public function extractResults(): array {
 		if ( $this->results === null ) {
 			$this->results = [];
 			if ( $this->result !== null ) {

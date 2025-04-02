@@ -160,6 +160,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->addOption( 'recreate', "Force the creation of a new index." );
 	}
 
+	/** @inheritDoc */
 	public function execute() {
 		global $wgLanguageCode,
 			$wgCirrusSearchBannedPlugins,
@@ -301,7 +302,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->log( "Done.\n" );
 	}
 
-	private function canRecycle() {
+	private function canRecycle(): bool {
 		global $wgCirrusSearchRecycleCompletionSuggesterIndex;
 		if ( !$wgCirrusSearchRecycleCompletionSuggesterIndex ) {
 			return false;

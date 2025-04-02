@@ -199,6 +199,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			'from the old index.', false, false );
 	}
 
+	/** @inheritDoc */
 	public function execute() {
 		$this->disablePoolCountersAndLogging();
 

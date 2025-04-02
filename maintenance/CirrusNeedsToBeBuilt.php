@@ -37,6 +37,7 @@ class CirrusNeedsToBeBuilt extends Maintenance {
 		$this->addDescription( "Update the configuration or contents of all search indices. Always operates on a single cluster." );
 	}
 
+	/** @inheritDoc */
 	public function execute() {
 		$indexPattern = $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) . '_*';
 		$end = microtime( true ) + 60;

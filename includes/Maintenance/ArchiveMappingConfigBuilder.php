@@ -7,6 +7,7 @@ use CirrusSearch\Search\TextIndexField;
 class ArchiveMappingConfigBuilder extends MappingConfigBuilder {
 	public const VERSION = '1.0';
 
+	/** @inheritDoc */
 	public function buildConfig() {
 		return [
 			'dynamic' => false,

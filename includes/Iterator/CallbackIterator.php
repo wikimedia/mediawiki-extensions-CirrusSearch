@@ -20,6 +20,7 @@ class CallbackIterator extends IteratorDecorator {
 		$this->callable = $callable;
 	}
 
+	/** @return mixed */
 	public function current() {
 		return ( $this->callable )( $this->iterator->current() );
 	}

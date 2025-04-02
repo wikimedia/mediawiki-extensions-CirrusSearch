@@ -163,7 +163,7 @@ class MetaStoreIndex {
 		return Status::newGood();
 	}
 
-	private function buildIndexConfiguration() {
+	private function buildIndexConfiguration(): array {
 		$pluginsStatus = $this->configUtils->scanAvailablePlugins(
 			$this->config->get( 'CirrusSearchBannedPlugins' ) );
 		if ( !$pluginsStatus->isGood() ) {

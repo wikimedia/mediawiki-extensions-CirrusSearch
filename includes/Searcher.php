@@ -949,7 +949,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		return $aArray === $bArray;
 	}
 
-	private function buildInterleaveSearcher() {
+	private function buildInterleaveSearcher(): ?self {
 		// If we aren't on the first page, or the user has specified
 		// some custom magic query options (override rescore profile,
 		// etc) then don't interleave.

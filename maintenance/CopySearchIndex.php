@@ -63,6 +63,7 @@ class CopySearchIndex extends Maintenance {
 			'equivilent to concurrency. Defaults to the number of shards', false, true );
 	}
 
+	/** @inheritDoc */
 	public function execute() {
 		$this->indexSuffix = $this->getOption( 'indexSuffix' );
 		$this->indexBaseName = $this->getOption( 'baseName',

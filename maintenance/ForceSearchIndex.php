@@ -145,6 +145,7 @@ class ForceSearchIndex extends Maintenance {
 			'Use specific index when fetching IDs from the database.', false, true, false );
 	}
 
+	/** @inheritDoc */
 	public function execute() {
 		$this->disablePoolCountersAndLogging();
 		$wiki = sprintf( "[%20s]", WikiMap::getCurrentWikiId() );
@@ -262,7 +263,7 @@ class ForceSearchIndex extends Maintenance {
 		return true;
 	}
 
-	private function buildPageIdBatches() {
+	private function buildPageIdBatches(): array {
 		if ( !$this->indexUpdates || $this->hasOption( 'limit' )
 			|| $this->hasOption( 'from' ) || $this->hasOption( 'to' )
 			|| $this->hasOption( 'fromId' ) || $this->hasOption( 'toId' )
@@ -286,7 +287,7 @@ class ForceSearchIndex extends Maintenance {
 		return array_unique( $pageIds, SORT_REGULAR );
 	}
 
-	private function buildUpdateFlags() {
+	private function buildUpdateFlags(): int {
 		$updateFlags = 0;
 		if ( $this->getOption( 'indexOnSkip' ) ) {
 			$updateFlags |= BuildDocument::INDEX_ON_SKIP;

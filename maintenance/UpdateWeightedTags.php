@@ -98,9 +98,7 @@ class UpdateWeightedTags extends Maintenance {
 			$tagWeights = $this->getOption( 'weight' );
 
 			if ( $tagNames === null ) {
-				if ( $tagWeights !== null ) {
-					$this->fatalError( '--weight should be used together with --tagName' );
-				}
+				$this->fatalError( '--tagName is mandatory when setting tags' );
 			} else {
 				if ( $tagWeights && count( $tagNames ) !== count( $tagWeights ) ) {
 					$this->fatalError( 'When --weight is used, it must occur the same number of times as --tagName' );

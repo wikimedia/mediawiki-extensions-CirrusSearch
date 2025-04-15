@@ -10,6 +10,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Revision\BadRevisionException;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
 use Wikimedia\LightweightObjectStore\ExpirationAwareness;
@@ -97,7 +98,13 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 				// TODO: Should see if we can change content handler api to avoid
 				// the WikiPage god object, but currently parser cache is still
 				// tied to WikiPage as well.
-				$output = $contentHandler->getParserOutputForIndexing( $page, null, $revision );
+				try {
+					$output = $contentHandler->getParserOutputForIndexing( $page, null, $revision );
+				} catch ( BadRevisionException $e ) {
+					// The revision is corrupted in the db and has been marked as permanently missing,
+					//we can't do much about it so flag that page as broken in CirrusSearch.
+					return self::flagProblem( [], 'CirrusSearchBadRevision' );
+				}
 
 				if ( !$output ) {
 					throw new BuildDocumentException( "ParserOutput cannot be obtained." );
@@ -108,6 +115,7 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 				return self::fixAndFlagInvalidUTF8InSource( $fieldContent, $page->getId() );
 			}
 		);
+
 		$fieldContent = $this->truncateFileContent( $fieldContent );
 		$fieldDefinitions = $engine->getSearchIndexFields();
 		foreach ( $fieldContent as $field => $fieldData ) {
@@ -190,22 +198,27 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 	 * Temporary solution to help investigate/fix T225200
 	 *
 	 * Visible for testing only
-	 * @param array $fieldDefinitions
+	 * @param array $fields
 	 * @param int $pageId
 	 * @return array
 	 */
-	public static function fixAndFlagInvalidUTF8InSource( array $fieldDefinitions, int $pageId ): array {
-		if ( isset( $fieldDefinitions['source_text'] ) ) {
-			$fixedVersion = mb_convert_encoding( $fieldDefinitions['source_text'], 'UTF-8', 'UTF-8' );
-			if ( $fixedVersion !== $fieldDefinitions['source_text'] ) {
+	public static function fixAndFlagInvalidUTF8InSource( array $fields, int $pageId ): array {
+		if ( isset( $fields['source_text'] ) ) {
+			$fixedVersion = mb_convert_encoding( $fields['source_text'], 'UTF-8', 'UTF-8' );
+			if ( $fixedVersion !== $fields['source_text'] ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )
 					->warning( 'Fixing invalid UTF-8 sequences in source text for page id {page_id}',
 						[ 'page_id' => $pageId ] );
-				$fieldDefinitions['source_text'] = $fixedVersion;
-				$fieldDefinitions['template'][] = Title::makeTitle( NS_TEMPLATE, 'CirrusSearchInvalidUTF8' )->getPrefixedText();
+				$fields['source_text'] = $fixedVersion;
+				$fields = self::flagProblem( $fields, 'CirrusSearchInvalidUTF8' );
 			}
 		}
-		return $fieldDefinitions;
+		return $fields;
+	}
+
+	private static function flagProblem( array $fields, string $template ): array {
+		$fields['template'][] = Title::makeTitle( NS_TEMPLATE, $template )->getPrefixedText();
+		return $fields;
 	}
 
 	/**

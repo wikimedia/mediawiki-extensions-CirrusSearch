@@ -26,30 +26,51 @@ class CirrusSearchHookRunner implements
 	}
 
 	public function onCirrusSearchRegisterFullTextQueryClassifiers( Parser\ParsedQueryClassifiersRepository $repository ): void {
-		$this->hookContainer->run( 'CirrusSearchRegisterFullTextQueryClassifiers', [ $repository ] );
+		$this->hookContainer->run( 'CirrusSearchRegisterFullTextQueryClassifiers',
+			[ $repository ],
+			[ 'abortable' => false ]
+		);
 	}
 
 	public function onCirrusSearchAddQueryFeatures( SearchConfig $config, array &$extraFeatures ): void {
-		$this->hookContainer->run( 'CirrusSearchAddQueryFeatures', [ $config, &$extraFeatures ] );
+		$this->hookContainer->run( 'CirrusSearchAddQueryFeatures',
+			[ $config, &$extraFeatures ],
+			[ 'abortable' => false ]
+		);
 	}
 
 	public function onCirrusSearchSimilarityConfig( array &$similarityConfig ): void {
-		$this->hookContainer->run( 'CirrusSearchSimilarityConfig', [ &$similarityConfig ] );
+		$this->hookContainer->run( 'CirrusSearchSimilarityConfig',
+			[ &$similarityConfig ],
+			[ 'abortable' => false ]
+		);
 	}
 
 	public function onCirrusSearchAnalysisConfig( array &$config, AnalysisConfigBuilder $analyisConfigBuilder ): void {
-		$this->hookContainer->run( 'CirrusSearchAnalysisConfig', [ &$config, $analyisConfigBuilder ] );
+		$this->hookContainer->run( 'CirrusSearchAnalysisConfig',
+			[ &$config, $analyisConfigBuilder ],
+			[ 'abortable' => false ]
+		);
 	}
 
 	public function onCirrusSearchMappingConfig( array &$mappingConfig, MappingConfigBuilder $mappingConfigBuilder ): void {
-		$this->hookContainer->run( 'CirrusSearchMappingConfig', [ &$mappingConfig, $mappingConfigBuilder ] );
+		$this->hookContainer->run( 'CirrusSearchMappingConfig',
+			[ &$mappingConfig, $mappingConfigBuilder ],
+			[ 'abortable' => false ]
+		);
 	}
 
 	public function onCirrusSearchProfileService( Profile\SearchProfileService $service ): void {
-		$this->hookContainer->run( 'CirrusSearchProfileService', [ $service ] );
+		$this->hookContainer->run( 'CirrusSearchProfileService',
+			[ $service ],
+			[ 'abortable' => false ]
+		);
 	}
 
 	public function onCirrusSearchScoreBuilder( array $definition, Search\SearchContext $context, ?BoostFunctionBuilder &$builder ): void {
-		$this->hookContainer->run( 'CirrusSearchScoreBuilder', [ $definition, $context, &$builder ] );
+		$this->hookContainer->run( 'CirrusSearchScoreBuilder',
+			[ $definition, $context, &$builder ],
+			[ 'abortable' => false ]
+		 );
 	}
 }

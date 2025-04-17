@@ -13,4 +13,15 @@ class HookRunnerTest extends HookRunnerTestBase {
 	public static function provideHookRunners() {
 		yield CirrusSearchHookRunner::class => [ CirrusSearchHookRunner::class ];
 	}
+
+	protected static array $voidMethodsNotUnabortableHooks = [
+		'onCirrusSearchRegisterFullTextQueryClassifiers',
+		'onCirrusSearchAddQueryFeatures',
+		'onCirrusSearchSimilarityConfig',
+		'onCirrusSearchAnalysisConfig',
+		'onCirrusSearchMappingConfig',
+		'onCirrusSearchProfileService',
+		'onCirrusSearchScoreBuilder',
+	];
+
 }

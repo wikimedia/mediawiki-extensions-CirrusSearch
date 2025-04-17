@@ -46,14 +46,13 @@
                 "word_break_helper"
             ],
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer",
                 "preserve_original_recorder",
                 "icu_folding",
                 "preserve_original",
                 "remove_empty"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "plain_search": {
@@ -62,10 +61,9 @@
                 "word_break_helper"
             ],
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "prefix": {
@@ -115,10 +113,9 @@
                 "word_break_helper_source_text"
             ],
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "source_text_plain_search": {
@@ -126,69 +123,62 @@
                 "word_break_helper_source_text"
             ],
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "suggest": {
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer",
                 "suggest_shingle"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "suggest_reverse": {
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer",
                 "suggest_shingle",
                 "reverse"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "text": {
             "char_filter": [
                 "globo_norm",
-                "acronym_fixer",
-                "camelCase_splitter",
+                "regex_acronym_fixer",
+                "regex_camelCase",
                 "word_break_helper",
                 "arabic_extended_norm"
             ],
             "filter": [
-                "icu_token_repair",
-                "homoglyph_norm",
                 "icu_normalizer",
                 "czech_stop",
                 "czech_stemmer",
                 "icu_folding",
                 "remove_empty"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "text_search": {
             "char_filter": [
                 "globo_norm",
-                "acronym_fixer",
-                "camelCase_splitter",
+                "regex_acronym_fixer",
+                "regex_camelCase",
                 "word_break_helper",
                 "arabic_extended_norm"
             ],
             "filter": [
-                "icu_token_repair",
-                "homoglyph_norm",
                 "icu_normalizer",
                 "czech_stop",
                 "czech_stemmer",
                 "icu_folding",
                 "remove_empty"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "token_reverse": {
@@ -207,17 +197,16 @@
         },
         "word_prefix": {
             "filter": [
-                "icutokrep_no_camel_split",
                 "icu_normalizer",
                 "prefix_ngram_filter"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         }
     },
     "char_filter": {
         "arabic_extended_norm": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "\\uFB8E=>\\u0643",
                 "\\uFB8F=>\\u0643",
@@ -257,7 +246,7 @@
             ]
         },
         "dotted_I_fix": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "\u0130=>I"
             ]
@@ -306,7 +295,7 @@
             "name": "nfkc_cf"
         },
         "near_space_flattener": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "'=>\\u0020",
                 "\\u2019=>\\u0020",
@@ -316,7 +305,7 @@
             ]
         },
         "nnbsp_norm": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "\\u202F=>\\u0020"
             ]
@@ -332,7 +321,7 @@
             "replacement": "$1 $2"
         },
         "word_break_helper": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "_=>\\u0020",
                 ":=>\\u0020",
@@ -346,7 +335,7 @@
             ]
         },
         "word_break_helper_source_text": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "_=>\\u0020",
                 ".=>\\u0020",
@@ -388,10 +377,6 @@
         "icu_normalizer": {
             "type": "icu_normalizer",
             "name": "nfkc_cf"
-        },
-        "icutokrep_no_camel_split": {
-            "type": "icu_token_repair",
-            "keep_camel_split": false
         },
         "lowercase": {
             "type": "lowercase"

@@ -850,7 +850,6 @@ class AnalysisConfigBuilder {
 
 			// standard unpacked languages
 			case 'basque':     // Unpack Basque analyzer T283366
-			case 'czech':      // Unpack Czech analyzer T284578
 			case 'danish':     // Unpack Danish analyzer T283366
 			case 'estonian':   // Unpack Estonian analyzer T332322
 			case 'finnish':    // Unpack Finnish analyzer T284578
@@ -869,6 +868,7 @@ class AnalysisConfigBuilder {
 			// available
 			case 'brazilian':  // Unpack Brazilian analyzer T325092
 			case 'bulgarian':  // Unpack Bulgarian analyzer T325090
+			case 'czech':      // Unpack Czech analyzer T284578 / asciifolding T293398
 				$config = $myAnalyzerBuilder->
 					withUnpackedAnalyzer()->
 					withAsciifolding()->
@@ -2014,6 +2014,8 @@ class AnalysisConfigBuilder {
 		 * For Slovak (sk)—which has no folding configured here!—see:
 		 *   https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
 		 *
+		 * For Czech (cs), there is no folding due to T293398.
+		 *
 		 * Exceptions are generally listed as Unicode characters for ease of inspection.
 		 *   However, combining characters (such as for Thai (th)) are \u encoded to
 		 *   prevent problems with display or editing
@@ -2029,7 +2031,6 @@ class AnalysisConfigBuilder {
 		'az' => '[^ÇçƏəĞğIıİiÖöŞşÜü]', // T332342
 		'bg' => '[^Йй]', // T325090
 		'crh' => '[^ЁёЙйÇçĞğIıİiÑñÖöŞşÜü]', // T332342
-		'cs' => '[^ÁáČčĎďÉéĚěÍíŇňÓóŘřŠšŤťÚúŮůÝýŽž]', // T284578
 		'da' => '[^ÆæØøÅå]', // T283366
 		'de' => '[^ÄäÖöÜüẞß]', // T281379
 		'eo' => '[^ĈĉĜĝĤĥĴĵŜŝŬŭ]', // T202173

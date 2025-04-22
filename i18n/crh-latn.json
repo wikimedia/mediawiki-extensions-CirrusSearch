@@ -5,10 +5,11 @@
 		]
 	},
 	"cirrussearch-pref-label": "Yañı qıdıruv",
+	"prefs-completion": "Qıdıruv tamamlanuvı",
 	"cirrussearch-pref-completion-section-desc": "Tamamlav teklifçisi",
 	"cirrussearch-pref-completion-profile-help": "Qıdırğanda avtomatik tamamlav teklifleri parametrlerini tayin etiñiz.\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Tamamlav teklifçisi] yazı hatası daa yahşı tüzetilmesi ve uyğun qıdıruv teklifleri içün algoritmdir. Prefikske köre qıdıruv yazğanda qıdıruvnıñ eski algoritmidir.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standart (tevsiye etilgen)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Eñ çoq eki yazı hatasını tüzetip ola. Maqale serlevasına çoq oşağan yollamalarnı silir.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Eñ çoq eki yazı hatasını tüzetip ola. Maqale serlevasına çoq oşağan yollamalarnı köstermey.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Astsözge köre qıdıruv (uzun saife serlevaları içün tevsiye etile)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Eñ çoq eki yazı hatasını tüzete. Yaqın yollamalarnı çeze. Serlevalarda astsözlerni tapa.",
 	"cirrussearch-completion-profile-strict-pref-name": "Qattı rejim (ileri seviye)",

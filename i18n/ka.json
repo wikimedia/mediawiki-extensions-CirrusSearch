@@ -6,7 +6,8 @@
 			"Dawid Deutschland",
 			"OpusDEI",
 			"Otogi",
-			"Tokoko"
+			"Tokoko",
+			"Გიო ოქრო"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki-ს საძიებელი Elasticsearch-ის ბაზაზე",
@@ -14,7 +15,7 @@
 	"cirrussearch-parse-error": "მოთხოვნა გაუგებარი იყო. გთხოვთ გაამარტივოთ. მოთხოვნა ჩაიწერა ძებნის სისტემის გასაუმჯობესებლად.",
 	"cirrussearch-too-busy-error": "ძებნის სისტემა დაკავებულია. გთხოვთ სცადეთ მოგვიანებით.",
 	"cirrussearch-regex-syntax-error": "რეგულარული გამოსახულების სინტაქსური შეცდომა აქ: $2: $1",
-	"cirrussearch-regex-too-busy-error": "ძალიან ბევრი რეგულარული გამოსახულება მუშავედება. გთხოვთ სცადეთ მოგვიანებით.",
+	"cirrussearch-regex-too-busy-error": "ძალიან ბევრი რეგულარული გამოსახულება მუშავდება. გთხოვთ სცადეთ მოგვიანებით.",
 	"cirrussearch-regex-too-complex-error": "რეგულარული გამოსახულება ზედმეტად რთულია. გაიგეთ მეტი მის გამარტივებაზე [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|აქ]].",
 	"cirrussearch-now-using": "ეს ვიკი იყენებს ახალ საძიებო ძრავს. ([[mw:Special:MyLanguage/Help:CirrusSearch|დაწვრილებით]])",
 	"cirrussearch-pref-label": "ახალი ძიება",

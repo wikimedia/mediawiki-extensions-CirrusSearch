@@ -27,14 +27,14 @@ class FunctionScoreChainTest extends CirrusIntegrationTestCase {
 		$chain = $this->createChain( $func, [] );
 		$query = $chain->buildRescoreQuery()->toArray();
 		$this->assertEquals( 5, $query['function_score']['functions'][0]['weight'] );
-		$this->removeTemporaryHook( 'CirrusSearchProfileService' );
+		$this->clearHook( 'CirrusSearchProfileService' );
 
 		$chain = $this->createChain( $func, [
 			'functions.0.weight' => 2,
 		] );
 		$query = $chain->buildRescoreQuery()->toArray();
 		$this->assertEquals( 2, $query['function_score']['functions'][0]['weight'] );
-		$this->removeTemporaryHook( 'CirrusSearchProfileService' );
+		$this->clearHook( 'CirrusSearchProfileService' );
 	}
 
 	public static function implProvider() {

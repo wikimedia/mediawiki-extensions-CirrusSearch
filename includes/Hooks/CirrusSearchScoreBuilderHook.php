@@ -17,6 +17,7 @@ interface CirrusSearchScoreBuilderHook {
 	 * @param array $definition
 	 * @param SearchContext $context
 	 * @param BoostFunctionBuilder|null &$builder
+	 * @return bool|void
 	 */
-	public function onCirrusSearchScoreBuilder( array $definition, SearchContext $context, ?BoostFunctionBuilder &$builder ): void;
+	public function onCirrusSearchScoreBuilder( array $definition, SearchContext $context, ?BoostFunctionBuilder &$builder );
 }

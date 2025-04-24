@@ -67,12 +67,12 @@ class CirrusSearchHookRunner implements
 		);
 	}
 
-	public function onCirrusSearchScoreBuilder( array $definition, Search\SearchContext $context, ?BoostFunctionBuilder &$builder ): void {
-		$this->hookContainer->run( 'CirrusSearchScoreBuilder',
-			[ $definition, $context, &$builder ],
-			// abortable because the type of function we need is in the $definition array and the
-			// first extension that's able to build it and assign the builder var should win.
-			[ 'abortable' => true ]
+	/** @inheritDoc */
+	public function onCirrusSearchScoreBuilder( array $definition, Search\SearchContext $context, ?BoostFunctionBuilder &$builder ) {
+		// this hook is abortable because the type of function we need is in the $definition array and the
+		// first extension that's able to build it and assign the builder var should win.
+		return $this->hookContainer->run( 'CirrusSearchScoreBuilder',
+			[ $definition, $context, &$builder ]
 		 );
 	}
 }

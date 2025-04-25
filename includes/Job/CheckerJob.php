@@ -14,6 +14,7 @@ use CirrusSearch\Sanity\QueueingRemediator;
 use CirrusSearch\Searcher;
 use CirrusSearch\UpdateGroup;
 use CirrusSearch\Util;
+use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 
@@ -51,10 +52,10 @@ class CheckerJob extends CirrusGenericJob {
 	 * @param string|null $cluster
 	 * @param int $loopId The number of times the checker jobs have looped
 	 *  over the pages to be checked.
-	 * @param \JobQueueGroup $jobQueueGroup
+	 * @param JobQueueGroup $jobQueueGroup
 	 * @return self
 	 */
-	public static function build( $fromPageId, $toPageId, $delay, $profile, $cluster, $loopId, \JobQueueGroup $jobQueueGroup ): self {
+	public static function build( $fromPageId, $toPageId, $delay, $profile, $cluster, $loopId, JobQueueGroup $jobQueueGroup ): self {
 		$job = new self( [
 			'fromPageId' => $fromPageId,
 			'toPageId' => $toPageId,

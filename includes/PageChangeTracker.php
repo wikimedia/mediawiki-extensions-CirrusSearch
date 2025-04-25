@@ -2,12 +2,13 @@
 
 namespace CirrusSearch;
 
-use ManualLogEntry;
 use MediaWiki\Hook\PageMoveCompleteHook;
 use MediaWiki\Linker\LinkTarget;
+use MediaWiki\Logging\ManualLogEntry;
 use MediaWiki\Page\Hook\PageDeleteCompleteHook;
 use MediaWiki\Page\Hook\PageDeleteHook;
 use MediaWiki\Page\ProperPageIdentity;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
@@ -101,7 +102,7 @@ class PageChangeTracker implements
 	}
 
 	/**
-	 * @param \WikiPage $wikiPage WikiPage modified
+	 * @param WikiPage $wikiPage WikiPage modified
 	 * @param UserIdentity $user User performing the modification
 	 * @param string $summary Edit summary/comment
 	 * @param int $flags Flags passed to WikiPage::doUserEditContent()

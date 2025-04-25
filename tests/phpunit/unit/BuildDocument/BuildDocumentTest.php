@@ -7,6 +7,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
 use MediaWiki\Cache\BacklinkCacheFactory;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
@@ -14,7 +15,6 @@ use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
 use MediaWiki\Title\TitleFormatter;
 use Wikimedia\Rdbms\IReadableDatabase;
-use WikiPage;
 
 /**
  * @covers \CirrusSearch\BuildDocument\BuildDocument

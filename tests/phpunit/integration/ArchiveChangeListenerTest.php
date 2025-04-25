@@ -3,7 +3,10 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Job\IndexArchive;
+use MediaWiki\JobQueue\JobQueueGroup;
+use MediaWiki\Logging\ManualLogEntry;
 use MediaWiki\Page\PageIdentityValue;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
@@ -76,12 +79,12 @@ class ArchiveChangeListenerTest extends CirrusIntegrationTestCase {
 	public function testOnPageDeleteComplete( bool $withDeletesEnabled, array $config, bool $expectedJob ) {
 		$now = 321;
 		$pageId = 123;
-		$page = $this->createMock( \WikiPage::class );
+		$page = $this->createMock( WikiPage::class );
 		$title = $this->createMock( Title::class );
 		$page->method( 'getTitle' )->willReturn( $title );
-		$logEntry = $this->createMock( \ManualLogEntry::class );
+		$logEntry = $this->createMock( ManualLogEntry::class );
 		$logEntry->method( 'getTimestamp' )->willReturn( MWTimestamp::convert( TS_MW, $now ) );
-		$jobqueue = $this->createMock( \JobQueueGroup::class );
+		$jobqueue = $this->createMock( JobQueueGroup::class );
 
 		$expectedJobParam = [
 			"docId" => (string)$pageId,
@@ -105,7 +108,7 @@ class ArchiveChangeListenerTest extends CirrusIntegrationTestCase {
 	 * @dataProvider provideCases
 	 */
 	public function testOnPageUndeleteComplete( bool $withDeletesEnabled, $config, bool $expectedJob ) {
-		$jobqueue = $this->createMock( \JobQueueGroup::class );
+		$jobqueue = $this->createMock( JobQueueGroup::class );
 		$page = new PageIdentityValue( 124, 0, 'A_Restored_Page', false );
 		$title = Title::castFromPageIdentity( $page );
 		$restoredPageIds = [ 123, 124 ];
@@ -118,6 +121,6 @@ class ArchiveChangeListenerTest extends CirrusIntegrationTestCase {
 			$this->createNoOpMock( Authority::class ),
 			'a reason',
 			$this->createNoOpMock( RevisionRecord::class ),
-			$this->createNoOpMock( \ManualLogEntry::class ), 2, true, $restoredPageIds );
+			$this->createNoOpMock( ManualLogEntry::class ), 2, true, $restoredPageIds );
 	}
 }

@@ -3,9 +3,9 @@
 namespace CirrusSearch\BuildDocument;
 
 use Elastica\Document;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
-use WikiPage;
 
 /**
  * Interface for building subsets of the document stored in elasticsearch

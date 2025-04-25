@@ -3,8 +3,8 @@
 namespace CirrusSearch\Sanity;
 
 use CirrusSearch\CirrusTestCase;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
-use WikiPage;
 
 /**
  * @covers \CirrusSearch\Sanity\BufferedRemediator

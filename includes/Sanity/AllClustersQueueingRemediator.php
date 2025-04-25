@@ -4,9 +4,9 @@ namespace CirrusSearch\Sanity;
 
 use CirrusSearch\Assignment\ClusterAssignment;
 use CirrusSearch\UpdateGroup;
-use JobQueueGroup;
+use MediaWiki\JobQueue\JobQueueGroup;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
-use WikiPage;
 
 /**
  * Remediator that forwards all actions to all writable clusters

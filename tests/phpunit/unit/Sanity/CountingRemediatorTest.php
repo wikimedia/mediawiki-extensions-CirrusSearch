@@ -3,10 +3,10 @@
 namespace CirrusSearch\Sanity;
 
 use CirrusSearch\CirrusTestCase;
+use MediaWiki\Page\WikiPage;
 use Psr\Log\NullLogger;
 use Wikimedia\Stats\Metrics\BaseMetric;
 use Wikimedia\Stats\Metrics\CounterMetric;
-use WikiPage;
 
 /**
  * @covers \CirrusSearch\Sanity\CountingRemediator

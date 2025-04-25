@@ -3,11 +3,11 @@
 namespace CirrusSearch\BuildDocument;
 
 use Elastica\Document;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\IReadableDatabase;
 use Wikimedia\Rdbms\SelectQueryBuilder;
-use WikiPage;
 
 /**
  * @covers \CirrusSearch\BuildDocument\DefaultPageProperties

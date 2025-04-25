@@ -4,8 +4,8 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\Searcher;
 use CirrusSearch\Util;
-use File;
 use LogicException;
+use MediaWiki\FileRepo\File\File;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use SearchResult;

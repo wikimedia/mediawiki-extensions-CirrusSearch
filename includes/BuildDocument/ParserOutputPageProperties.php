@@ -8,13 +8,13 @@ use CirrusSearch\SearchConfig;
 use Elastica\Document;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Revision\BadRevisionException;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
 use Wikimedia\LightweightObjectStore\ExpirationAwareness;
-use WikiPage;
 
 /**
  * Extract searchable properties from the MediaWiki ParserOutput

@@ -2,8 +2,10 @@
 
 namespace CirrusSearch;
 
+use MediaWiki\Logging\ManualLogEntry;
 use MediaWiki\Page\PageIdentityValue;
 use MediaWiki\Page\ProperPageIdentity;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
@@ -41,13 +43,13 @@ class PageChangeTrackerTest extends CirrusTestCase {
 			$this->createNoOpMock( Authority::class ),
 			'', 1,
 			$this->createNoOpMock( RevisionRecord::class ),
-			$this->createNoOpMock( \ManualLogEntry::class ), 1 );
+			$this->createNoOpMock( ManualLogEntry::class ), 1 );
 		$this->assertPageIsTracked( $tracker, 1 );
 	}
 
 	public function testOnPageSaveComplete() {
 		$tracker = new PageChangeTracker();
-		$page = $this->createMock( \WikiPage::class );
+		$page = $this->createMock( WikiPage::class );
 		$page->expects( $this->once() )
 			->method( 'getId' )
 			->willReturn( 1 );

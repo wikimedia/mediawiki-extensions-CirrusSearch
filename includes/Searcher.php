@@ -33,6 +33,7 @@ use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;
 use Elastica\Search;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Exception\MWException;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\WebRequest;
@@ -793,7 +794,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$req = RequestContext::getMain()->getRequest();
 		try {
 			$ip = $req->getIP();
-		} catch ( \MWException $e ) {
+		} catch ( MWException $e ) {
 			// No IP, typically this means a CLI invocation. We are attempting
 			// to segregate external automation, internal automation has its
 			// own ability to control configuration and shouldn't be flagged

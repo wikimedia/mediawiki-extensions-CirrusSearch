@@ -6,7 +6,8 @@ use CirrusSearch\Assignment\ClusterAssignment;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
-use JobQueueGroup;
+use MediaWiki\JobQueue\JobQueueGroup;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
 use MediaWiki\Utils\MWTimestamp;
 
@@ -35,7 +36,7 @@ class AllClustersQueueingRemediatorTest extends CirrusTestCase {
 		$now = 123;
 		MWTimestamp::setFakeTime( $now );
 		$title = Title::makeTitle( NS_MAIN, 'Test' );
-		$wp = $this->createMock( \WikiPage::class );
+		$wp = $this->createMock( WikiPage::class );
 		$wp->method( 'getTitle' )->willReturn( $title );
 		$wrongIndex = 'wrongType';
 		$docId = '123';

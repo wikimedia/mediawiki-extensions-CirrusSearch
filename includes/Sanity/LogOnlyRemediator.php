@@ -2,10 +2,10 @@
 
 namespace CirrusSearch\Sanity;
 
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use WikiPage;
 
 /**
  * {@link Remediator} that only logs events.

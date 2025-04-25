@@ -4,12 +4,12 @@ namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\Util;
 use Elastica\Document;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
 use MediaWiki\Utils\MWTimestamp;
 use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\Rdbms\IReadableDatabase;
-use WikiPage;
 
 /**
  * Default properties attached to all page documents.

@@ -10,6 +10,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Updater;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
 use MediaWiki\Utils\MWTimestamp;
 use MediaWiki\WikiMap\WikiMap;
@@ -17,7 +18,6 @@ use Throwable;
 use UnexpectedValueException;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\IDBAccessObject;
-use WikiPage;
 
 /**
  * Force reindexing change to the wiki.

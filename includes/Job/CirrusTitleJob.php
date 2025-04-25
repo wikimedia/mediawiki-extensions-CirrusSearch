@@ -3,7 +3,7 @@
 namespace CirrusSearch\Job;
 
 use CirrusSearch\SearchConfig;
-use Job;
+use MediaWiki\JobQueue\Job;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 

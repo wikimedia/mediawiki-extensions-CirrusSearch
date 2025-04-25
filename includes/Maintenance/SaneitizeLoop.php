@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Job\CheckerJob;
 use Elastica\Document;
+use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Utils\MWTimestamp;
 
@@ -45,7 +46,7 @@ class SaneitizeLoop {
 	/** @var callable */
 	private $logger;
 	/**
-	 * @var \JobQueueGroup
+	 * @var JobQueueGroup
 	 */
 	private $jobQueueGroup;
 
@@ -56,10 +57,10 @@ class SaneitizeLoop {
 	 * @param int $minLoopDuration Minimum number of seconds between loop restarts
 	 * @param callable|null $logger Callable accepting 2 arguments, first a log
 	 *  message and second either a channel name or null.
-	 * @param \JobQueueGroup|null $jobQueueGroup
+	 * @param JobQueueGroup|null $jobQueueGroup
 	 */
 	public function __construct(
-		$profileName, $pushJobFreq, $chunkSize, $minLoopDuration, $logger = null, ?\JobQueueGroup $jobQueueGroup = null
+		$profileName, $pushJobFreq, $chunkSize, $minLoopDuration, $logger = null, ?JobQueueGroup $jobQueueGroup = null
 	) {
 		$this->profileName = $profileName;
 		$this->pushJobFreq = $pushJobFreq;

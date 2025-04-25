@@ -4,6 +4,7 @@ namespace CirrusSearch\Sanity;
 
 use CirrusSearch\CirrusTestCase;
 use InvalidArgumentException;
+use MediaWiki\Page\WikiPage;
 
 /**
  * @covers \CirrusSearch\Sanity\MultiClusterRemediatorHelper
@@ -11,7 +12,7 @@ use InvalidArgumentException;
 class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 
 	public function testSendOptimized() {
-		$wp = $this->createNoOpMock( \WikiPage::class );
+		$wp = $this->createNoOpMock( WikiPage::class );
 
 		$r1 = $this->createNoOpMock( Remediator::class );
 		$r2 = $this->createNoOpMock( Remediator::class );
@@ -34,7 +35,7 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 	}
 
 	public function testSendUnoptimized() {
-		$wp = $this->createNoOpMock( \WikiPage::class );
+		$wp = $this->createNoOpMock( WikiPage::class );
 
 		$r1 = $this->createMock( Remediator::class );
 		$r1->expects( $this->once() )
@@ -58,7 +59,7 @@ class MultiClusterRemediatorHelperTest extends CirrusTestCase {
 	}
 
 	public function testNotSimilarClusters() {
-		$wp = $this->createNoOpMock( \WikiPage::class );
+		$wp = $this->createNoOpMock( WikiPage::class );
 
 		$r1 = $this->createMock( Remediator::class );
 		$r1->expects( $this->once() )

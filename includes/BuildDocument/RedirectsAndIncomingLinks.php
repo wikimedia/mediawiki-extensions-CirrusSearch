@@ -18,10 +18,10 @@ use Elastica\Search;
 use MediaWiki\Cache\BacklinkCacheFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Page\PageIdentity;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFormatter;
-use WikiPage;
 
 /**
  * Adds redirects and incoming links to the documents.  These are done together

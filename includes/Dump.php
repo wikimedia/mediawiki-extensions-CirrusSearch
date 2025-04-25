@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use FormlessAction;
+use MediaWiki\Actions\FormlessAction;
 use MediaWiki\MediaWikiServices;
 
 /**

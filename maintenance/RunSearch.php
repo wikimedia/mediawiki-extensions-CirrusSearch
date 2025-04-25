@@ -10,9 +10,9 @@ use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Maintenance\OrderedStreamingForkController;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\PageArchive;
 use MediaWiki\Settings\SettingsBuilder;
 use MediaWiki\Status\Status;
-use PageArchive;
 use SearchSuggestionSet;
 use Wikimedia\Rdbms\IResultWrapper;
 

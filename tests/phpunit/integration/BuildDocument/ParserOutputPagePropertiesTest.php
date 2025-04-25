@@ -7,11 +7,11 @@ use CirrusSearch\HashSearchConfig;
 use Elastica\Document;
 use MediaWiki\Content\ContentHandler;
 use MediaWiki\Content\WikitextContent;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\BadRevisionException;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
-use WikiPage;
 
 /**
  * @group Database

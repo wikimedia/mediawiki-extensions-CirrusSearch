@@ -10,10 +10,10 @@ use MediaWiki\Content\TextContent;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\ProperPageIdentity;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\Assert\Assert;
-use WikiPage;
 
 /**
  * Performs updates and deletes on the Elasticsearch index.  Called by

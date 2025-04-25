@@ -9,10 +9,10 @@ use CirrusSearch\Sanity\Remediator;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
-use WikiPage;
 
 /**
  * @covers \CirrusSearch\Api\CheckSanity

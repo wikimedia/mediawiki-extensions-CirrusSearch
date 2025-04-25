@@ -4,8 +4,8 @@ namespace CirrusSearch;
 
 use MediaWiki\Extension\EventBus\Serializers\EventSerializer;
 use MediaWiki\Extension\EventBus\Serializers\MediaWiki\PageEntitySerializer;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\WikiMap\WikiMap;
-use WikiPage;
 
 class EventBusWeightedTagSerializer {
 	public const SCHEMA = '/mediawiki/cirrussearch/page_weighted_tags_change/1.0.0';

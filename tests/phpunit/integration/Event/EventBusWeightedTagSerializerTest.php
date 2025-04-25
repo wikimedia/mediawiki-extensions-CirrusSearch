@@ -7,11 +7,11 @@ use MediaWiki\Config\HashConfig;
 use MediaWiki\Extension\EventBus\Serializers\EventSerializer;
 use MediaWiki\Extension\EventBus\Serializers\MediaWiki\PageEntitySerializer;
 use MediaWiki\Http\Telemetry;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
 use MediaWikiIntegrationTestCase;
 use Wikimedia\UUID\GlobalIdGenerator;
-use WikiPage;
 
 /**
  * @coversDefaultClass \CirrusSearch\EventBusWeightedTagSerializer

@@ -4,10 +4,10 @@ namespace CirrusSearch\Sanity;
 
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
-use JobQueueGroup;
+use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
-use WikiPage;
 
 /**
  * Remediator implementation that queues jobs to fix the index.

@@ -3,12 +3,14 @@
 namespace CirrusSearch\Job;
 
 use CirrusSearch\SearchConfig;
+use MediaWiki\JobQueue\GenericParameterJob;
+use MediaWiki\JobQueue\Job;
 use MediaWiki\MediaWikiServices;
 
 /**
  * CirrusSearch Job that is not bound to a Title
  */
-abstract class CirrusGenericJob extends \Job implements \GenericParameterJob {
+abstract class CirrusGenericJob extends Job implements GenericParameterJob {
 	use JobTraits;
 
 	/**

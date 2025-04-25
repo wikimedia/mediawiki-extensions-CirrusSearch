@@ -7,6 +7,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\ExternalIndex;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\SearchConfig;
+use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MainConfigNames;
 
@@ -150,10 +151,10 @@ trait JobTraits {
 	 *
 	 * @param string $jobClass name of the job class
 	 * @param int $delay seconds to delay this job if possible
-	 * @param \JobQueueGroup $jobQueueGroup
+	 * @param JobQueueGroup $jobQueueGroup
 	 * @return array options to set to add to the job param
 	 */
-	public static function buildJobDelayOptions( $jobClass, $delay, \JobQueueGroup $jobQueueGroup ): array {
+	public static function buildJobDelayOptions( $jobClass, $delay, JobQueueGroup $jobQueueGroup ): array {
 		$jobQueue = $jobQueueGroup->get( $jobClass );
 		if ( !$delay || !$jobQueue->delayedJobsEnabled() ) {
 			return [];

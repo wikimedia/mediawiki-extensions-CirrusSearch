@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Sanity;
 
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
-use WikiPage;
 
 /**
  * Decorating Remediator that logs the prints the errors.

@@ -5,7 +5,8 @@ namespace CirrusSearch\Sanity;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
-use JobQueueGroup;
+use MediaWiki\JobQueue\JobQueueGroup;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
 use MediaWiki\Utils\MWTimestamp;
 
@@ -17,7 +18,7 @@ class QueueingRemediatorTest extends CirrusTestCase {
 
 	public function provideTestJobIsSent() {
 		$title = Title::makeTitle( NS_MAIN, 'Test' );
-		$wp = $this->createMock( \WikiPage::class );
+		$wp = $this->createMock( WikiPage::class );
 		$wp->method( 'getTitle' )->willReturn( $title );
 		$wrongIndex = 'wrongType';
 		$docId = '123';

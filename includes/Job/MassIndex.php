@@ -5,8 +5,8 @@ namespace CirrusSearch\Job;
 use CirrusSearch\Updater;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
-use WikiPage;
 
 /**
  * Job wrapper around Updater::updatePages.  Used by forceSearchIndex.php

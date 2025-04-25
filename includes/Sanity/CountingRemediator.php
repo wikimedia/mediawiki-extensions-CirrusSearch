@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Sanity;
 
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
-use WikiPage;
 
 /**
  * Counts problems seen and delegates remediation to another instance.

@@ -3,10 +3,10 @@
 namespace CirrusSearch\BuildDocument;
 
 use Elastica\Document;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
 use MediaWiki\Utils\MWTimestamp;
-use WikiPage;
 
 /**
  * @group Database

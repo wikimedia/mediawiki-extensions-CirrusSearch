@@ -8,6 +8,7 @@ use CirrusSearch\SearchConfig;
 use Elastica\Document;
 use MediaWiki\Cache\BacklinkCacheFactory;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionAccessException;
 use MediaWiki\Revision\RevisionRecord;
@@ -16,7 +17,6 @@ use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\TitleFactory;
 use MediaWiki\Title\TitleFormatter;
 use Wikimedia\Rdbms\IReadableDatabase;
-use WikiPage;
 
 /**
  * Orchestrate the process of building an elasticsearch document out of a
@@ -110,7 +110,7 @@ class BuildDocument {
 	}
 
 	/**
-	 * @param \WikiPage[]|RevisionRecord[] $pagesOrRevs List of pages to build documents for. These
+	 * @param WikiPage[]|RevisionRecord[] $pagesOrRevs List of pages to build documents for. These
 	 *  pages must represent concrete pages with content. It is expected that
 	 *  redirects and non-existent pages have been resolved.
 	 * @param int $flags Bitfield of class constants

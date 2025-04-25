@@ -12,13 +12,13 @@ use MediaWiki\Extension\EventBus\Serializers\MediaWiki\PageEntitySerializer;
 use MediaWiki\Http\Telemetry;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Page\PageRecord;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Settings\Source\Format\YamlFormat;
 use MediaWiki\Title\TitleFormatter;
 use PHPUnit\Framework\Constraint\TraversableContainsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
 use Wikimedia\UUID\GlobalIdGenerator;
-use WikiPage;
 
 /**
  * @coversDefaultClass \CirrusSearch\EventBusWeightedTagsUpdater

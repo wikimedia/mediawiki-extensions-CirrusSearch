@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Sanity;
 
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
-use WikiPage;
 
 /**
  * Remediation actions for insanity in the search index.

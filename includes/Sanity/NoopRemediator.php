@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Sanity;
 
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
-use WikiPage;
 
 /**
  * Remediator that takes no actions.

@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use MediaWiki\Context\RequestContext;
+use MediaWiki\Exception\MWException;
 use MediaWiki\Language\Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -380,7 +381,7 @@ class Util {
 		$request = RequestContext::getMain()->getRequest();
 		try {
 			$ip = $request->getIP();
-		} catch ( \MWException $e ) {
+		} catch ( MWException $e ) {
 			// No ip, probably running cli?
 			$ip = 'unknown';
 		}

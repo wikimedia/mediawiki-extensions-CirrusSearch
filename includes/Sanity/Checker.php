@@ -7,11 +7,11 @@ use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
 use Wikimedia\Stats\Metrics\CounterMetric;
 use Wikimedia\Stats\Metrics\NullMetric;
 use Wikimedia\Stats\StatsFactory;
-use WikiPage;
 
 /**
  * Checks if a WikiPage's representation in search index is sane.
@@ -142,7 +142,7 @@ class Checker {
 	 */
 	public static function makeIsOldClosure( $loopId, $numCycles ) {
 		$loopMod = $loopId % $numCycles;
-		return static function ( \WikiPage $page ) use ( $numCycles, $loopMod ) {
+		return static function ( WikiPage $page ) use ( $numCycles, $loopMod ) {
 			$pageIdMod = $page->getId() % $numCycles;
 			return $pageIdMod == $loopMod;
 		};

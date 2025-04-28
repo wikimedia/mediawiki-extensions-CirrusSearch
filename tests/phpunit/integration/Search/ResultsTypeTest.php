@@ -5,7 +5,6 @@ namespace CirrusSearch\Search;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
-use CirrusSearch\Searcher;
 use Elastica\Query;
 use Elastica\Response;
 use MediaWiki\Title\Title;
@@ -56,7 +55,7 @@ class ResultsTypeTest extends CirrusIntegrationTestCase {
 				[
 					'highlight' => [
 						'title.prefix' => [
-							Searcher::HIGHLIGHT_PRE . 'Trebu' . Searcher::HIGHLIGHT_POST . 'chet',
+							'Trebuchet',
 						],
 					],
 					'_source' => [
@@ -72,7 +71,7 @@ class ResultsTypeTest extends CirrusIntegrationTestCase {
 				[
 					'highlight' => [
 						'redirect.title.prefix' => [
-							Searcher::HIGHLIGHT_PRE . 'Pierriere' . Searcher::HIGHLIGHT_POST,
+							'Pierriere',
 						],
 					],
 					'_source' => [
@@ -91,7 +90,7 @@ class ResultsTypeTest extends CirrusIntegrationTestCase {
 				[
 					'highlight' => [
 						'redirect.title.prefix' => [
-							Searcher::HIGHLIGHT_PRE . 'Pierriere' . Searcher::HIGHLIGHT_POST,
+							'Pierriere',
 						],
 					],
 					'_source' => [
@@ -110,7 +109,7 @@ class ResultsTypeTest extends CirrusIntegrationTestCase {
 				[
 					'highlight' => [
 						'redirect.title.prefix' => [
-							Searcher::HIGHLIGHT_PRE . 'Pi' . Searcher::HIGHLIGHT_POST . 'erriere',
+							'Pierriere',
 						],
 					],
 					'_source' => [
@@ -129,7 +128,7 @@ class ResultsTypeTest extends CirrusIntegrationTestCase {
 				[
 					'highlight' => [
 						'redirect.title.prefix' => [
-							Searcher::HIGHLIGHT_PRE . 'Pierriere' . Searcher::HIGHLIGHT_POST,
+							'Pierriere',
 						],
 					],
 					'_source' => [

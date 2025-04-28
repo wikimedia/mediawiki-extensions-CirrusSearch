@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use MediaWiki\Extension\EventBus\Serializers\EventSerializer;
 use MediaWiki\Extension\EventBus\Serializers\MediaWiki\PageEntitySerializer;
+use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\WikiMap\WikiMap;
 
@@ -55,10 +56,12 @@ class EventBusWeightedTagSerializer {
 			$uri,
 			array_merge( $revBased === null ? [] : [ 'rev_based' => $revBased ], [
 				'dt' => EventSerializer::timestampToDt( $dt ),
-				'wiki_id' => WikiMap::getCurrentWikiId(),
+				'wiki_id' => self::getWikiId( $wikiPage ),
 				'page' => $page,
 				'weighted_tags' => $weightedTags
-			] ) );
+			] ),
+			self::getWikiId( $wikiPage )
+		);
 	}
 
 	/**
@@ -82,4 +85,18 @@ class EventBusWeightedTagSerializer {
 	public function toClearEvent( WikiPage $wikiPage, array $clear, ?bool $revBased = null, ?string $dt = null ): array {
 		return $this->toArray( $wikiPage, [ 'clear' => $clear ], $revBased, $dt );
 	}
+
+	/**
+	 * Return the page's wikiId, or if that returns false,
+	 * return WikiMap::getCurrentWikiId.
+	 *
+	 * @param ProperPageIdentity $page
+	 * @return string
+	 */
+	private static function getWikiId( ProperPageIdentity $page ): string {
+		// Get the wikiId.  page's getWikiId can return false.
+		// Fallback to global WikiMap.
+		return $page->getWikiId() ?: WikiMap::getCurrentWikiId();
+	}
+
 }

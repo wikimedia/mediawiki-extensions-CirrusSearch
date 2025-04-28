@@ -1,7 +1,11 @@
 <?php
 
-namespace CirrusSearch;
+namespace extensions\CirrusSearch\tests\phpunit\integration\Event;
 
+use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\EventBusWeightedTagSerializer;
+use CirrusSearch\EventBusWeightedTagsUpdater;
+use CirrusSearch\WeightedTagsException;
 use Exception;
 use JsonSchema\Validator;
 use MediaWiki\Config\Config;
@@ -15,6 +19,7 @@ use MediaWiki\Page\PageRecord;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Settings\Source\Format\YamlFormat;
+use MediaWiki\Tests\MockWikiMapTrait;
 use MediaWiki\Title\TitleFormatter;
 use PHPUnit\Framework\Constraint\TraversableContainsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -23,7 +28,8 @@ use Wikimedia\UUID\GlobalIdGenerator;
 /**
  * @coversDefaultClass \CirrusSearch\EventBusWeightedTagsUpdater
  */
-class EventBusWeightedTagsUpdaterTest extends CirrusTestCase {
+class EventBusWeightedTagsUpdaterTest extends CirrusIntegrationTestCase {
+	use MockWikiMapTrait;
 
 	private EventBusWeightedTagsUpdater $updater;
 	/**
@@ -55,12 +61,8 @@ class EventBusWeightedTagsUpdaterTest extends CirrusTestCase {
 	private array $validatorSchema;
 
 	protected function setUp(): void {
-		// MediaWiki\WikiMap is expecting these vars to be set in the global state
-		global $wgDBname, $wgDBmwschema, $wgDBprefix;
-		$wgDBname = 'main';
-		$wgDBmwschema = 'mysql';
-		$wgDBprefix = '';
-
+		parent::setUp();
+		$this->mockWikiMap();
 		$this->mockEventBusFactory = $this->createMock( EventBusFactory::class );
 		$this->mockWikiPageFactory = $this->createMock( WikiPageFactory::class );
 

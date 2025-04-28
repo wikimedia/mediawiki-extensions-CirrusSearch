@@ -87,6 +87,7 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 		?array $eventAttrs = null
 	): array {
 		$eventTimestamp = $eventTimestamp ?? $wikiPage->getRevisionRecord()->getTimestamp();
+		$wikiId = $wikiPage->getWikiId() ?: WikiMap::getCurrentWikiId();
 
 		return array_merge_recursive(
 			$this->eventSerializer->createEvent(
@@ -94,10 +95,11 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 				self::MOCK_STREAM_NAME,
 				$this->pageEntitySerializer->canonicalPageURL( $wikiPage ),
 				[
-					'wiki_id' => WikiMap::getCurrentWikiId(),
+					'wiki_id' => $wikiId,
 					'dt' => EventSerializer::timestampToDt( $eventTimestamp ),
 					'page' => $this->pageEntitySerializer->toArray( $wikiPage ),
-				]
+				],
+				$wikiId
 			),
 			$eventAttrs
 		);

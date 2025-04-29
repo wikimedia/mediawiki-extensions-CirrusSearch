@@ -170,7 +170,7 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 	}
 
 	/**
-	 * @dataProvider provideTestNotRunWhenRewriteDisabled()
+	 * @dataProvider provideTestNotRunWhenRewriteDisabled
 	 */
 	public function testNotRunWhenRewriteDisabled( $allowRewrite, $expectedScore ) {
 		$config = new HashSearchConfig( [

@@ -362,7 +362,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	}
 
 	/**
-	 * @dataProvider provideTestSuggestQueries()
+	 * @dataProvider provideTestSuggestQueries
 	 */
 	public function testPhraseSuggest( $expectedFile, $query, $namespaces, $offset, $withDym, $config ) {
 		$engine = new CirrusSearch( new HashSearchConfig( $config + [

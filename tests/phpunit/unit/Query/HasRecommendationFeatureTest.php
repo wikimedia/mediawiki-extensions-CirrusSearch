@@ -58,7 +58,7 @@ class HasRecommendationFeatureTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider provideQueries()
+	 * @dataProvider provideQueries
 	 * @param string $term
 	 * @param array $expected
 	 * @param array $filter

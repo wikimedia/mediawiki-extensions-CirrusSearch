@@ -285,7 +285,7 @@ class PrefixFeatureTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider provideBadPrefixQueries()
+	 * @dataProvider provideBadPrefixQueries
 	 * @covers \CirrusSearch\Parser\AST\KeywordFeatureNode
 	 * @covers \CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser
 	 */

@@ -46,7 +46,7 @@ class SubPageOfFeatureTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider provideQueries()
+	 * @dataProvider provideQueries
 	 */
 	public function test( $query, $filterValue, $expectHighlighting = true ) {
 		$feature = new SubPageOfFeature();

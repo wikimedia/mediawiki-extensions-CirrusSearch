@@ -34,7 +34,7 @@ class ContentModelFeatureTest extends CirrusIntegrationTestCase {
 	}
 
 	/**
-	 * @dataProvider provideQueries()
+	 * @dataProvider provideQueries
 	 * @param string $query
 	 * @param array $expectedFilter
 	 */

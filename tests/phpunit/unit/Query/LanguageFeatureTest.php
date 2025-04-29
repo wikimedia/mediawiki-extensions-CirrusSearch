@@ -66,7 +66,7 @@ class LanguageFeatureTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider provideQueries()
+	 * @dataProvider provideQueries
 	 */
 	public function testTooManyLanguagesWarning( $term, $expected, array $filter, $warnings ) {
 		$feature = new LanguageFeature( $this->newHashSearchConfig() );

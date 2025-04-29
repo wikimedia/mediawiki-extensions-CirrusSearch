@@ -58,7 +58,7 @@ class QueueingRemediatorTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider provideTestJobIsSent()
+	 * @dataProvider provideTestJobIsSent
 	 * @param string $methodCall
 	 * @param array $methodParams
 	 * @param array $jobs

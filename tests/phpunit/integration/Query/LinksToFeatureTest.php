@@ -30,7 +30,7 @@ class LinksToFeatureTest extends CirrusIntegrationTestCase {
 	}
 
 	/**
-	 * @dataProvider provideQueries()
+	 * @dataProvider provideQueries
 	 */
 	public function test( $query, $filterValue ) {
 		$feature = new LinksToFeature();

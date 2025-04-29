@@ -65,7 +65,7 @@
 	"cirrussearch-incategory-feature-no-valid-categories": "Nulle categorias valide fornite pro '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nulle titulos valide fornite pro '$1'.",
 	"cirrussearch-mlt-not-configured": "Le function '$1' es mal configurate. Demanda a un administrator de corriger $wgCirrusSearchMoreLikeThisFields",
-	"cirrussearch-explore-similar-related-none": "Il non ha paginas connexe disponibile",
+	"cirrussearch-explore-similar-related-none": "Il non ha paginas associate disponibile",
 	"cirrussearch-article-words": "Parolas in tote le paginas de contento",
 	"cirrussearch-keyword-prefix-ns-mismatch": "Le spatio de nomines trovate in le termino de recerca <code>prefix:</code> non es compatibile con le spatio de nomines requestate. Tu pote corriger isto prefixante <code>all:</code> a tu consulta.",
 	"cirrussearch-autoselect-profile": "Lassar le motor de recerca decider qual es le melior profilo a usar.",

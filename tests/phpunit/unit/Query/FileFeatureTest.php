@@ -13,7 +13,7 @@ use MediaWiki\Config\HashConfig;
 class FileFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function parseProviderType() {
+	public function provideParseType() {
 		return [
 			'basic match' => [
 				[
@@ -121,7 +121,7 @@ class FileFeatureTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider parseProviderType
+	 * @dataProvider provideParseType
 	 */
 	public function testParseType( $expectedParsed, $expectedQuery, $term ) {
 		$config = new HashConfig( [ 'CirrusSearchFiletypeAliases' => [

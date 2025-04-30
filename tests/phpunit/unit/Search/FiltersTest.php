@@ -31,7 +31,7 @@ use Elastica\Query\Term;
  */
 class FiltersTest extends CirrusTestCase {
 	/**
-	 * @dataProvider unifyTestCases
+	 * @dataProvider provideUnifyTestCases
 	 */
 	public function testUnify( $expected, $mustFilters, $mustNotFilters ) {
 		if ( !is_array( $mustFilters ) ) {
@@ -43,7 +43,7 @@ class FiltersTest extends CirrusTestCase {
 		$this->assertEquals( $expected, Filters::unify( $mustFilters, $mustNotFilters ) );
 	}
 
-	public static function unifyTestCases() {
+	public static function provideUnifyTestCases() {
 		$scriptOne = new Script( 'dummy1' );
 		$scriptTwo = new Script( 'dummy2' );
 		$scriptThree = new Script( 'dummy3' );

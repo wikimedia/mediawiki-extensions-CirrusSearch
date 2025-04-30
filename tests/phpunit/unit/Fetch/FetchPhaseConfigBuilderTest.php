@@ -140,7 +140,7 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider fullTextHighlightingConfigurationTestCases
+	 * @dataProvider provideFullTextHighlightingConfigurationTestCases
 	 */
 	public function testFullTextHighlightingConfiguration(
 		array $options,
@@ -173,7 +173,7 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $type->getHighlightingConfiguration( [] ) );
 	}
 
-	public static function fullTextHighlightingConfigurationTestCases() {
+	public static function provideFullTextHighlightingConfigurationTestCases() {
 		$boostBefore = [
 			20 => 2,
 			50 => 1.8,

@@ -11,7 +11,7 @@ use SearchIndexField;
  */
 class SearchFieldsTest extends CirrusTestCase {
 
-	public function getFields() {
+	public function provideFields() {
 		return [
 			[ SearchIndexField::INDEX_TYPE_TEXT, 'text' ],
 			[ SearchIndexField::INDEX_TYPE_KEYWORD, 'text' ],
@@ -24,7 +24,7 @@ class SearchFieldsTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider getFields
+	 * @dataProvider provideFields
 	 * @param int $type Generic type
 	 * @param string $elasticType Elasticsearch type
 	 */

@@ -18,7 +18,7 @@ class TextFieldFilterFeatureTest extends CirrusTestCase {
 		$this->assertNotConsumed( $feature, 'unrelated:' );
 	}
 
-	public function parseProviderMime() {
+	public function provideParseMime() {
 		return [
 			'mime match phrase' => [
 				[
@@ -43,7 +43,7 @@ class TextFieldFilterFeatureTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider parseProviderMime
+	 * @dataProvider provideParseMime
 	 */
 	public function testParseMime( $expected, $term ) {
 		$feature = new TextFieldFilterFeature( 'filemime', 'file_mime' );

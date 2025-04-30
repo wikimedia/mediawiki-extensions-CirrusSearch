@@ -6,7 +6,7 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Maintenance\ExpectedIndicesBuilder;
 
 class ExpectedIndicesBuilderTest extends CirrusTestCase {
-	public static function provdeTestBuild(): \Generator {
+	public static function provideTestBuild(): \Generator {
 		$config = [
 			'_wikiID' => 'mywiki_id',
 			'CirrusSearchIndexBaseName' => '__wikiid__',
@@ -179,7 +179,7 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider provdeTestBuild
+	 * @dataProvider provideTestBuild
 	 * @covers \CirrusSearch\Maintenance\ExpectedIndices
 	 */
 	public function testBuild( array $config, bool $withCon, ?string $cluster, array $expectedIndices ) {

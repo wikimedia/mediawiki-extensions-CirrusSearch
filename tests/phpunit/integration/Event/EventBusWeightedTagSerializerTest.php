@@ -122,7 +122,7 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 		$this->assertEquals( $expected, $actual );
 	}
 
-	public static function getSetEventData(): array {
+	public static function provideSetEventData(): array {
 		return [
 			[ [ 'weighted_tags' => [ 'set' => [ 'prefix-0' => [ 'tag-a' => 1 ] ] ] ] ],
 			[ [ 'weighted_tags' => [ 'set' => [ 'prefix-0' => [ 'tag-a' => 1 ] ] ], 'rev_based' => true ] ],
@@ -134,7 +134,7 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 	 * @covers ::toSetEvent
 	 * @covers ::toArray
 	 * @param array $eventAttrs
-	 * @dataProvider getSetEventData
+	 * @dataProvider provideSetEventData
 	 */
 	public function testSetEvent( array $eventAttrs ) {
 		$wikiPage0 = $this->getExistingTestPage( Title::newFromText( 'MyPageToEdit', $this->getDefaultWikitextNS() ) );
@@ -157,7 +157,7 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 		$this->assertEventEquals( $expected, $actual );
 	}
 
-	public static function getClearEventData(): array {
+	public static function provideClearEventData(): array {
 		return [
 			[ [ 'weighted_tags' => [ 'clear' => [ 'prefix-0' ] ] ] ],
 			[ [ 'weighted_tags' => [ 'clear' => [ 'prefix-0', 'prefix-1' ] ], 'rev_based' => true ] ],
@@ -169,7 +169,7 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 	 * @covers ::toSetEvent
 	 * @covers ::toArray
 	 * @param array $eventAttrs
-	 * @dataProvider getClearEventData
+	 * @dataProvider provideClearEventData
 	 */
 	public function testClearEvent( array $eventAttrs ) {
 		$wikiPage0 = $this->getExistingTestPage( Title::newFromText( 'MyPageToEdit', $this->getDefaultWikitextNS() ) );

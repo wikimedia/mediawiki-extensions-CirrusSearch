@@ -27,7 +27,7 @@ use CirrusSearch\CirrusIntegrationTestCase;
  */
 class MassIndexTest extends CirrusIntegrationTestCase {
 	/**
-	 * @dataProvider workItemCountTestCases
+	 * @dataProvider provideWorkItemCountTestCases
 	 */
 	public function testWorkItemCount( $pageDBKeys, $expected ) {
 		$job = new MassIndex( [
@@ -36,7 +36,7 @@ class MassIndexTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( $expected, $job->workItemCount() );
 	}
 
-	public static function workItemCountTestCases() {
+	public static function provideWorkItemCountTestCases() {
 		return [
 			[ [], 0 ],
 			[ [ 'Foo' ], 1 ],

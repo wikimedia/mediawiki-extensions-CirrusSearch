@@ -103,7 +103,7 @@ class LanguageDetectTest extends CirrusTestCase {
 	 *		see notes inline
 	 * @return array
 	 */
-	public function getLanguageTexts() {
+	public function provideLanguageTexts() {
 		return [
 			// simple cases
 			[ "Welcome to Wikipedia, the free encyclopedia that anyone can edit", "en", "en" ],
@@ -136,7 +136,7 @@ class LanguageDetectTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider getLanguageTexts
+	 * @dataProvider provideLanguageTexts
 	 * @param string $text
 	 * @param string $language
 	 * @param string $ignore
@@ -156,7 +156,7 @@ class LanguageDetectTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider getLanguageTexts
+	 * @dataProvider provideLanguageTexts
 	 * @param string $text
 	 * @param string $ignore
 	 * @param string $language

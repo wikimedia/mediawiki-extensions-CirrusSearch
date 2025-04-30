@@ -12,7 +12,7 @@ use SearchIndexField;
  */
 class IndexFieldsTest extends CirrusIntegrationTestCase {
 
-	public function getTypes() {
+	public function provideTypes() {
 		return [
 			[ SearchIndexField::INDEX_TYPE_TEXT, 'text', 'CirrusSearch\\Search\\TextIndexField' ],
 			[ SearchIndexField::INDEX_TYPE_KEYWORD, 'text', 'CirrusSearch\\Search\\KeywordIndexField' ],
@@ -25,7 +25,7 @@ class IndexFieldsTest extends CirrusIntegrationTestCase {
 	}
 
 	/**
-	 * @dataProvider getTypes
+	 * @dataProvider provideTypes
 	 * @param int $type Field type
 	 * @param string $typeName Internal type name
 	 * @param string $klass Class name
@@ -45,7 +45,7 @@ class IndexFieldsTest extends CirrusIntegrationTestCase {
 	}
 
 	/**
-	 * @dataProvider getTypes
+	 * @dataProvider provideTypes
 	 * @param int $type Field type
 	 * @param string $typeName Internal type name
 	 * @param string $klass Class name

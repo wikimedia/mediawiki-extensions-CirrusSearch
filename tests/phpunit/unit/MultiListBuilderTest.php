@@ -33,7 +33,7 @@ class MultiListBuilderTest extends TestCase {
 	 * A single weight has ranges between 1-1000.
 	 * @param string|null $exception expected exception
 	 * @param string|null $exceptionMessage expected exception message
-	 * @dataProvider badArguments
+	 * @dataProvider provideBadArguments
 	 */
 	public function testBuildWeightedTagsArgumentValidation(
 		string $tagPrefix,
@@ -53,7 +53,7 @@ class MultiListBuilderTest extends TestCase {
 	/**
 	 * @return array
 	 */
-	public function badArguments(): array {
+	public function provideBadArguments(): array {
 		return [
 			[ "", [ 1 ], PreconditionException::class ],
 			[ "/bad/prefix", [], PreconditionException::class,

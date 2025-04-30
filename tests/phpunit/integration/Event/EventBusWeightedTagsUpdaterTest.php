@@ -100,7 +100,7 @@ class EventBusWeightedTagsUpdaterTest extends CirrusIntegrationTestCase {
 		);
 	}
 
-	public static function getUpdateWeightedTagsData(): array {
+	public static function provideUpdateWeightedTagsData(): array {
 		return [
 			[
 				'prefix-0',
@@ -125,7 +125,7 @@ class EventBusWeightedTagsUpdaterTest extends CirrusIntegrationTestCase {
 	 * @param array|null $tagWeights
 	 * @param string|null $trigger
 	 *
-	 * @dataProvider getUpdateWeightedTagsData
+	 * @dataProvider provideUpdateWeightedTagsData
 	 */
 	public function testUpdateWeightedTags(
 		string $tagPrefix,
@@ -240,7 +240,7 @@ class EventBusWeightedTagsUpdaterTest extends CirrusIntegrationTestCase {
 		$this->updater->resetWeightedTags( $pageRecord, [ 'any' ] );
 	}
 
-	public static function getResetWeightedTagsData(): array {
+	public static function provideResetWeightedTagsData(): array {
 		return [
 			[
 				[ 'prefix-0' ],
@@ -260,7 +260,7 @@ class EventBusWeightedTagsUpdaterTest extends CirrusIntegrationTestCase {
 	 * @param string[] $tagPrefixes
 	 * @param string|null $trigger
 	 *
-	 * @dataProvider getResetWeightedTagsData
+	 * @dataProvider provideResetWeightedTagsData
 	 */
 	public function testResetWeightedTags( array $tagPrefixes, ?string $trigger = null ) {
 		$pageRecord = $this->createPageRecordMock();

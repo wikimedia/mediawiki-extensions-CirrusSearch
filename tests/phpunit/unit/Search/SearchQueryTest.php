@@ -26,7 +26,7 @@ use PHPUnit\Framework\Assert;
  */
 class SearchQueryTest extends CirrusTestCase {
 
-	public function provildeGetNamespaces() {
+	public function provideGetNamespaces() {
 		return [
 			'all' => [
 				[],
@@ -73,7 +73,7 @@ class SearchQueryTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @dataProvider provildeGetNamespaces
+	 * @dataProvider provideGetNamespaces
 	 * @param int[] $initialNs
 	 * @param int[] $namespacesInContextualFilters
 	 * @param int[] $expected

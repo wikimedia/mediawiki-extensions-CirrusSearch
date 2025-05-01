@@ -12,7 +12,7 @@ use SearchIndexField;
  */
 class IndexFieldsTest extends CirrusIntegrationTestCase {
 
-	public function provideTypes() {
+	public static function provideTypes() {
 		return [
 			[ SearchIndexField::INDEX_TYPE_TEXT, 'text', 'CirrusSearch\\Search\\TextIndexField' ],
 			[ SearchIndexField::INDEX_TYPE_KEYWORD, 'text', 'CirrusSearch\\Search\\KeywordIndexField' ],

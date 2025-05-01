@@ -88,7 +88,7 @@ class EscaperTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $actual );
 	}
 
-	public function provideQuoteEscapeTestCases() {
+	public static function provideQuoteEscapeTestCases() {
 		return [
 			[ 'en', 'foo', 'foo' ],
 			[ 'en', 'fo"o', 'fo"o' ],
@@ -118,7 +118,7 @@ class EscaperTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $actual );
 	}
 
-	public function provideBalanceQuotesTestCases() {
+	public static function provideBalanceQuotesTestCases() {
 		return [
 			[ 'foo', 'foo' ],
 			[ '"foo', '"foo"' ],

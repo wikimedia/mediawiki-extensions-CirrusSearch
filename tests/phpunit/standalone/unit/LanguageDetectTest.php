@@ -103,7 +103,7 @@ class LanguageDetectTest extends CirrusTestCase {
 	 *		see notes inline
 	 * @return array
 	 */
-	public function provideLanguageTexts() {
+	public static function provideLanguageTexts() {
 		return [
 			// simple cases
 			[ "Welcome to Wikipedia, the free encyclopedia that anyone can edit", "en", "en" ],

@@ -9,7 +9,7 @@ use Elastica\Response;
  */
 class VersionTest extends CirrusIntegrationTestCase {
 
-	public function happyPathProvider() {
+	public static function happyPathProvider() {
 		return [
 			'elasticsearch' => [
 				// 'version' portion of banner response

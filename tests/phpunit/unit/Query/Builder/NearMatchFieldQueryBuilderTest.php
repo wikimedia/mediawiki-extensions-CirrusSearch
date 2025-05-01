@@ -7,7 +7,7 @@ use CirrusSearch\HashSearchConfig;
 use Elastica\Query\MatchNone;
 
 class NearMatchFieldQueryBuilderTest extends CirrusTestCase {
-	public function provideTestExtraction(): array {
+	public static function provideTestExtraction(): array {
 		$profile = [ "fields" => [ [ "name" => "a_field", "weight" => 0.5 ] ] ];
 		$toMultiMatch = static function ( string $str ): array {
 			return [ 'multi_match' => [ 'query' => $str, 'fields' => [ 'a_field^0.5' ] ] ];

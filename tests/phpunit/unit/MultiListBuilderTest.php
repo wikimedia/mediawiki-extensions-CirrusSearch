@@ -53,7 +53,7 @@ class MultiListBuilderTest extends TestCase {
 	/**
 	 * @return array
 	 */
-	public function provideBadArguments(): array {
+	public static function provideBadArguments(): array {
 		return [
 			[ "", [ 1 ], PreconditionException::class ],
 			[ "/bad/prefix", [], PreconditionException::class,

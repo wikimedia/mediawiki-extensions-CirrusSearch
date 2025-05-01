@@ -26,7 +26,7 @@ use PHPUnit\Framework\Assert;
  */
 class SearchQueryTest extends CirrusTestCase {
 
-	public function provideGetNamespaces() {
+	public static function provideGetNamespaces() {
 		return [
 			'all' => [
 				[],

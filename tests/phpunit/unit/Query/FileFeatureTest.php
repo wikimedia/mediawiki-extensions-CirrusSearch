@@ -13,7 +13,7 @@ use MediaWiki\Config\HashConfig;
 class FileFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function provideParseType() {
+	public static function provideParseType() {
 		return [
 			'basic match' => [
 				[

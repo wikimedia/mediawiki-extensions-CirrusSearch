@@ -11,7 +11,7 @@ use SearchIndexField;
  */
 class SearchFieldsTest extends CirrusTestCase {
 
-	public function provideFields() {
+	public static function provideFields() {
 		return [
 			[ SearchIndexField::INDEX_TYPE_TEXT, 'text' ],
 			[ SearchIndexField::INDEX_TYPE_KEYWORD, 'text' ],

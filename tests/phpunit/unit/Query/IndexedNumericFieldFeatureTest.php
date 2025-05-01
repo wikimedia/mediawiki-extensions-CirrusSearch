@@ -12,7 +12,7 @@ use CirrusSearch\CrossSearchStrategy;
 class IndexedNumericFieldFeatureTest extends CirrusTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
-	public function provideParseNumeric() {
+	public static function provideParseNumeric() {
 		$fixtures = [
 			'numeric with no sign - same as >' => [
 				[ 'range' => [

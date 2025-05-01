@@ -18,7 +18,7 @@ class TextFieldFilterFeatureTest extends CirrusTestCase {
 		$this->assertNotConsumed( $feature, 'unrelated:' );
 	}
 
-	public function provideParseMime() {
+	public static function provideParseMime() {
 		return [
 			'mime match phrase' => [
 				[

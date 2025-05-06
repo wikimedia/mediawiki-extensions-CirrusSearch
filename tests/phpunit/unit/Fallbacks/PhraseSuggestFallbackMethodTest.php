@@ -72,8 +72,7 @@ class PhraseSuggestFallbackMethodTest extends FallbackMethodTestBase {
 				$this->assertEquals( new HtmlArmor( $suggestionSnippet ),
 					$actualNewResults->getSuggestionSnippet() );
 			} else {
-				$this->assertSame( FallbackStatus::ACTION_REPLACE_LOCAL_RESULTS, $status->getAction
-				() );
+				$this->assertSame( FallbackStatus::ACTION_REPLACE_LOCAL_RESULTS, $status->getAction() );
 				$this->assertSame( $suggestion, $rewrittenResults->getQueryAfterRewrite() );
 				$this->assertEquals( new HtmlArmor( $suggestionSnippet ),
 					$rewrittenResults->getQueryAfterRewriteSnippet() );

@@ -196,6 +196,16 @@
             "tokenizer": "trigram",
             "type": "custom"
         },
+        "trigram_anchored": {
+            "char_filter": [
+                "add_regex_start_end_anchors"
+            ],
+            "filter": [
+                "lowercase"
+            ],
+            "tokenizer": "trigram",
+            "type": "custom"
+        },
         "word_prefix": {
             "filter": [
                 "lowercase",

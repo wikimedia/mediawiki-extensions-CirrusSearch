@@ -106,11 +106,12 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 		$target,
 		$pattern,
 		$caseInsensitive,
-		$priority = HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY
+		$priority = HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY,
+		$regexFlavor = 'lucene'
 	): BaseHighlightedField {
 		Assert::precondition( $this->supportsRegexFields(), 'Regex fields not supported' );
 		return ExperimentalHighlightedFieldBuilder::newRegexField(
-			$this->config, $name, $target, $pattern, $caseInsensitive, $priority );
+			$this->config, $name, $target, $pattern, $caseInsensitive, $priority, $regexFlavor );
 	}
 
 	public function addHLField( HighlightedField $field ) {

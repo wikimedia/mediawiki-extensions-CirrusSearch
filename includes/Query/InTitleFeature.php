@@ -56,6 +56,10 @@ class InTitleFeature extends BaseRegexFeature {
 		return [ 'intitle' ];
 	}
 
+	protected function getRegexHLFlavor(): string {
+		return "lucene_anchored";
+	}
+
 	/**
 	 * @param SearchContext $context
 	 * @param string $key The keyword

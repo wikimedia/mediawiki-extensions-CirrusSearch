@@ -125,7 +125,7 @@
                                 "a(b|c)d"
                             ],
                             "regex_case_insensitive": true,
-                            "regex_flavor": "lucene",
+                            "regex_flavor": "lucene_extended",
                             "skip_query": true,
                             "top_scoring": true
                         },

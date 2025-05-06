@@ -409,7 +409,7 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 							'options' => [
 								'regex' => [ '(some|thing)' ],
 								'locale' => 'testlocale',
-								'regex_flavor' => 'lucene',
+								'regex_flavor' => 'lucene_extended',
 								'skip_query' => true,
 								'regex_case_insensitive' => false,
 								'max_determinized_states' => 20000,

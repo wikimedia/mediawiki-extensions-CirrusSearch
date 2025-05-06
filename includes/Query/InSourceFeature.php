@@ -58,6 +58,10 @@ class InSourceFeature extends BaseRegexFeature {
 		return [ 'insource' ];
 	}
 
+	protected function getRegexHLFlavor(): string {
+		return "lucene_extended";
+	}
+
 	/**
 	 * @param SearchContext $context
 	 * @param string $key

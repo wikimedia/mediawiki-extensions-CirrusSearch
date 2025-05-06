@@ -86,8 +86,9 @@ class Hooks implements
 	 */
 	public static function onRegistration(): void {
 		global $wgCirrusSearchClusters, $wgCirrusSearchWriteClusters;
-		if ( defined( 'MW_QUIBBLE_CI' ) ) {
-			// If running in quibble, disable writes: they will fail anyway and potentially lead to timeouts (T389895).
+		if ( defined( 'MW_QUIBBLE_CI' ) && getenv( 'QUIBBLE_OPENSEARCH' ) !== 'true' ) {
+			// If running in quibble, disable writes unless OpenSearch is enabled.
+			// They will fail otherwise and potentially lead to timeouts (T389895).
 			$wgCirrusSearchClusters = [
 				'default' => [ 'localhost' ],
 			];

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\Connection;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use Elastica\Index;
 use Elastica\Query;
@@ -278,17 +279,65 @@ class SearchRequestBuilder {
 			$indexBaseName = $this->indexBaseName;
 			$config = $this->searchContext->getConfig();
 			$hostConfig = $config->getHostWikiConfig();
-			$indexSuffix = $this->connection->pickIndexSuffixForNamespaces(
-				$this->searchContext->getNamespaces() );
+
+			$indexName = $this->inferIndexFromConcreteNamespaceMap( $config );
+			if ( $indexName === null ) {
+				$indexSuffix = $this->connection->pickIndexSuffixForNamespaces(
+					$this->searchContext->getNamespaces() );
+				$indexName = $this->connection->getIndexName( $indexBaseName, $indexSuffix );
+			}
+
 			if ( $hostConfig->get( 'CirrusSearchCrossClusterSearch' ) ) {
 				$local = $hostConfig->getClusterAssignment()->getCrossClusterName();
 				$current = $config->getClusterAssignment()->getCrossClusterName();
 				if ( $local !== $current ) {
-					$indexBaseName = $current . ':' . $indexBaseName;
+					$indexName = $current . ':' . $indexName;
 				}
 			}
-			return $this->connection->getIndex( $indexBaseName, $indexSuffix );
+			return $this->connection->getIndex( $indexName );
 		}
+	}
+
+	/**
+	 * Attempt to infer the index from the concrete namespace map.
+	 * This is used mainly during crossproject searches where the concrete namespace map
+	 * is provided by the config dump API.
+	 * Since we might want to query namespaces that are unknown to the host wiki, we
+	 * can't use the connection to pick the index suffix.
+	 * Instead, we use the concrete namespace map to infer the index suffix.
+	 * Returns null if the concrete namespace map is not available or if multiple index types
+	 * might be required, in which case we rely on the host wiki connection to pick up the
+	 * right index.
+	 *
+	 * @param SearchConfig $config
+	 * @return string|null
+	 */
+	private function inferIndexFromConcreteNamespaceMap( SearchConfig $config ): ?string {
+		if ( $this->searchContext->getNamespaces() && $config->has( 'CirrusSearchConcreteNamespaceMap' ) ) {
+			// Attempt to skip Connection::pickIndexSuffixForNamespaces() and use the
+			// concrete namespace map.
+			// Reason is that the connection is built against the host wiki config but
+			// the concrete namespace map is likely obtained for the target wiki.
+			$concreteNamespaceMap = $config->get( 'CirrusSearchConcreteNamespaceMap' );
+			$indices = [];
+			$inconsistentNamespaces = false;
+			foreach ( $this->searchContext->getNamespaces() as $ns ) {
+				if ( !isset( $concreteNamespaceMap[$ns] ) ) {
+					// Something's odd here we can trust the target wiki config
+					$inconsistentNamespaces = true;
+					continue;
+				}
+				$indices[$concreteNamespaceMap[$ns]] = $concreteNamespaceMap[$ns];
+			}
+			// the concrete namespace map contains the full index name $basename_$suffix
+			// if there's only one index requested we target this one
+			// otherwise we target the main alias.
+			if ( !$inconsistentNamespaces && count( $indices ) === 1 ) {
+				$indexBaseName = reset( $indices );
+				return $this->connection->getIndexName( $indexBaseName );
+			}
+		}
+		return null;
 	}
 
 	/**

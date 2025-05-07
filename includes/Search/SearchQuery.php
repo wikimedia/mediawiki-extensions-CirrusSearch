@@ -6,6 +6,7 @@ use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\ParsedQuery;
 use CirrusSearch\SearchConfig;
+use MediaWiki\MainConfigNames;
 
 /**
  * A search query, it contains all the necessary information to build and send a query to the backend.
@@ -367,5 +368,18 @@ class SearchQuery {
 			}
 		}
 		return $queryClasses['default'] ?? true;
+	}
+
+	/**
+	 * Identify if this query initially targets the default set of namespaces
+	 * @return bool true if the initial namespaces are equals to the default searched namespaces
+	 */
+	public function isUsingDefaultSearchedNamespaces(): bool {
+		$defaultSearchedNamespaces = $this->getSearchConfig()->get( MainConfigNames::NamespacesToBeSearchedDefault );
+		if ( is_array( $defaultSearchedNamespaces ) ) {
+			$defaultSearchedNamespaces = array_map( static fn ( $n ) => intval( $n ), array_keys( $defaultSearchedNamespaces, true ) );
+			return $this->initialNamespaces == $defaultSearchedNamespaces;
+		}
+		return false;
 	}
 }

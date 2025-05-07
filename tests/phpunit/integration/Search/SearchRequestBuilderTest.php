@@ -12,7 +12,12 @@ use CirrusSearch\SearchConfig;
  * @covers \CirrusSearch\Search\SearchRequestBuilder
  */
 class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
-	private function searchRequestBuilder( array $allOverride = [], array $otherOverride = [] ): SearchRequestBuilder {
+	private function searchRequestBuilder(
+		array $allOverride = [],
+		array $otherOverride = [],
+		?array $namespaces = null,
+		$indexBaseName = 'trebuchet'
+	): SearchRequestBuilder {
 		$defaults = [
 			'CirrusSearchDefaultCluster' => 'dc1',
 			'CirrusSearchReplicaGroup' => 'a',
@@ -26,9 +31,8 @@ class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
 		$this->overrideConfigValues( $hostOverrides );
 		$otherWikiConfig = new HashSearchConfig( $otherOverride + $hostOverrides );
 
-		$context = new SearchContext( $otherWikiConfig, null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$context = new SearchContext( $otherWikiConfig, $namespaces, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		$conn = new Connection( new SearchConfig() );
-		$indexBaseName = 'trebuchet';
 		return new SearchRequestBuilder( $context, $conn, $indexBaseName );
 	}
 
@@ -59,5 +63,50 @@ class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
 			'CirrusSearchReplicaGroup' => 'b',
 		] );
 		$this->assertEquals( 'b:trebuchet', $builder->getIndex()->getName() );
+	}
+
+	public static function provideNamespaceMapProvider(): \Generator {
+		yield "search content" => [
+			[ '0' => 'index_content', '100' => 'index_content' ], [ 0, 100 ], 'a', 'index', 'index_content'
+		];
+		yield "search all" => [
+			[ '0' => 'index_content', '100' => 'index_general' ], [ 0, 100 ], 'a', 'index', 'index'
+		];
+
+		yield "mismatch" => [
+			[ '1' => 'index_content', '101' => 'index_general' ], [ 0, 1, 2 ], 'a', 'index', 'index'
+		];
+		yield "search content cross-cluster" => [
+			[ '0' => 'index_content', '100' => 'index_content' ], [ 0, 100 ], 'b', 'index', 'b:index_content'
+		];
+		yield "search all cross-cluster" => [
+			[ '0' => 'index_content', '100' => 'index_general' ], [ 0, 100 ], 'b', 'index', 'b:index'
+		];
+
+		yield "mismatch cross-cluster" => [
+			[ '1' => 'index_content', '101' => 'index_general' ], [ 0, 1, 2 ], 'b', 'index', 'b:index'
+		];
+	}
+
+	/**
+	 * @dataProvider provideNamespaceMapProvider
+	 */
+	public function testUsingConcreteNamespaceMap(
+		$concreteNamespaceMap,
+		$searchNamespace,
+		$targetGroup,
+		$indexBaseName,
+		$expectedIndexName
+	) {
+		$builder = $this->searchRequestBuilder(
+			[ 'CirrusSearchCrossClusterSearch' => true ],
+			[
+				'CirrusSearchReplicaGroup' => $targetGroup,
+				'CirrusSearchConcreteNamespaceMap' => $concreteNamespaceMap,
+			],
+			$searchNamespace,
+			$indexBaseName
+		);
+		$this->assertEquals( $expectedIndexName, $builder->getIndex()->getName() );
 	}
 }

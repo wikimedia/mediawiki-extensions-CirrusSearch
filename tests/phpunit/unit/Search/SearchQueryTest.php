@@ -414,6 +414,55 @@ class SearchQueryTest extends CirrusTestCase {
 			CirrusDebugOptions::forDumpingQueriesInUnitTests(), 'common' );
 	}
 
+	public function testForCrossProjectSearchWithDefaultNsToBeSearched() {
+		$hostWikiConfig = $this->newHashSearchConfig( [
+			'CirrusSearchNumCrossProjectSearchResults' => 1,
+			'CirrusSearchEnableCrossProjectSearch' => true,
+			'NamespacesToBeSearchedDefault' => [ NS_MAIN => 1, "1" /* NS_TALK */ => 0, "14" /* NS_CATEGORY */ => 1 ],
+			'CirrusSearchRescoreProfiles' => [
+				'foo' => [],
+				'common' => []
+			]
+		] );
+		$targetWikiConfig = $this->newHashSearchConfig( [
+			'_wikiID' => 'target',
+			'NamespacesToBeSearchedDefault' => [ "12" /* NS_HELP */ => 1, NS_MAIN => 1, NS_FILE_TALK => 0 ],
+			'CirrusSearchRescoreProfiles' => [
+				'common' => []
+			]
+		] );
+
+		$hostWikiQuery = $this->getNewFTSearchQueryBuilder( $hostWikiConfig, 'myquery' )
+			->setInitialNamespaces( [ NS_MAIN, NS_CATEGORY ] )
+			->build();
+
+		$crossSearchQuery = SearchQueryBuilder::forCrossProjectSearch( $targetWikiConfig, $hostWikiQuery )->build();
+		$this->assertArrayEquals( [ NS_MAIN, NS_HELP ], $crossSearchQuery->getNamespaces() );
+
+		$hostWikiQuery = $this->getNewFTSearchQueryBuilder( $hostWikiConfig, 'all:myquery' )
+			->setInitialNamespaces( [ NS_MAIN, NS_CATEGORY ] )
+			->build();
+
+		$crossSearchQuery = SearchQueryBuilder::forCrossProjectSearch( $targetWikiConfig, $hostWikiQuery )->build();
+
+		$this->assertArrayEquals( [], $crossSearchQuery->getNamespaces() );
+
+		$targetWikiConfig = $this->newHashSearchConfig( [
+			'_wikiID' => 'target',
+			'NamespacesToBeSearchedDefault' => [ 1 ], // cryptic version of NS_MAIN => 1 as returned by the cirrus config dump API
+			'CirrusSearchRescoreProfiles' => [
+				'common' => []
+			]
+		] );
+
+		$hostWikiQuery = $this->getNewFTSearchQueryBuilder( $hostWikiConfig, 'myquery' )
+			->setInitialNamespaces( [ NS_MAIN, NS_CATEGORY ] )
+			->build();
+
+		$crossSearchQuery = SearchQueryBuilder::forCrossProjectSearch( $targetWikiConfig, $hostWikiQuery )->build();
+		$this->assertArrayEquals( [ NS_MAIN ], $crossSearchQuery->getNamespaces() );
+	}
+
 	public function testForCrossLanguageSearch() {
 		$hostWikiConfig = $this->newHashSearchConfig( [
 			'CirrusSearchEnableAltLanguage' => true,

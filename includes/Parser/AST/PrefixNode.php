@@ -24,6 +24,10 @@ class PrefixNode extends ParsedNode {
 		$this->prefix = $prefix;
 	}
 
+	public function getPrefix(): string {
+		return $this->prefix;
+	}
+
 	/**
 	 * @return array
 	 */

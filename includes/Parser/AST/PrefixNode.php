@@ -32,7 +32,7 @@ class PrefixNode extends ParsedNode {
 	 * @return array
 	 */
 	public function toArray() {
-		return [ 'prefix' => [ array_merge( parent::baseParams(), [ 'prefix' => $this->prefix ] ) ] ];
+		return [ 'prefix' => array_merge( parent::baseParams(), [ 'prefix' => $this->prefix ] ) ];
 	}
 
 	/**

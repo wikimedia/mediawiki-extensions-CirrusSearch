@@ -1712,25 +1712,21 @@
 					"clauses": [
 						{
 							"MUST": {
-								"prefix": [
-									{
-										"startOffset": 0,
-										"endOffset": 2,
-										"prefix": "1"
-									}
-								]
+								"prefix": {
+									"startOffset": 0,
+									"endOffset": 2,
+									"prefix": "1"
+								}
 							},
 							"explicit": false
 						},
 						{
 							"MUST": {
-								"prefix": [
-									{
-										"startOffset": 3,
-										"endOffset": 7,
-										"prefix": "1w"
-									}
-								]
+								"prefix": {
+									"startOffset": 3,
+									"endOffset": 7,
+									"prefix": "1w"
+								}
 							},
 							"explicit": false
 						},

@@ -1,9 +1,11 @@
 <?php
 
-namespace CirrusSearch\Wikimedia;
+namespace CirrusSearch;
+
+use CirrusSearch\Search\WeightedTags;
 
 /**
- * @covers \CirrusSearch\Wikimedia\WeightedTags
+ * @covers \CirrusSearch\Search\WeightedTags
  */
 class WeightedTagsFieldTest extends \MediaWikiUnitTestCase {
 	public function testField() {

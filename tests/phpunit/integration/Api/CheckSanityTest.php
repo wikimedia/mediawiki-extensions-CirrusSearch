@@ -57,7 +57,6 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 	}
 
 	public static function provideProblems() {
-		$wikiId = WikiMap::getCurrentWikiId();
 		return [
 			[
 				'errorType' => 'redirectInIndex',
@@ -74,14 +73,14 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 						'content'
 					);
 				},
-				'extra' => [
+				'extraCallback' => static fn () => [
 					'pageId' => 1,
 					'namespaceId' => NS_MAIN,
-					'indexName' => "{$wikiId}_content",
+					'indexName' => WikiMap::getCurrentWikiId() . '_content',
 					'target' => [
 						'pageId' => 42,
 						'namespaceId' => NS_TALK,
-						'indexName' => "{$wikiId}_general",
+						'indexName' => WikiMap::getCurrentWikiId() . '_general',
 					],
 				],
 			],
@@ -108,9 +107,9 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 				'fn' => static function ( $self, Remediator $remediator ) {
 					$remediator->pageInWrongIndex( '1', $self->mockPage( NS_MAIN, 1 ), 'general' );
 				},
-				'extra' => [
-					'wrongIndexName' => "{$wikiId}_general",
-					'indexName' => "{$wikiId}_content",
+				'extraCallback' => static fn () => [
+					'wrongIndexName' => WikiMap::getCurrentWikiId() . '_general',
+					'indexName' => WikiMap::getCurrentWikiId() . '_content',
 				],
 			],
 			[
@@ -125,7 +124,7 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider provideProblems
 	 */
-	public function testProblems( $errorType, $fn, array $extra = [] ) {
+	public function testProblems( $errorType, $fn, $extraCallback = null ) {
 		$output = $this->doApiRequest(
 			[ 'from' => 0, 'limit' => 10 ],
 			[
@@ -140,9 +139,12 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 		$this->assertCount( 1, $output['problems'] );
 		$problem = $output['problems'][0];
 		$this->assertProblem( $problem, $errorType );
-		foreach ( $extra as $key => $value ) {
-			$this->assertArrayHasKey( $key, $problem );
-			$this->assertEquals( $value, $problem[$key] );
+		if ( $extraCallback !== null ) {
+			$extra = $extraCallback();
+			foreach ( $extra as $key => $value ) {
+				$this->assertArrayHasKey( $key, $problem );
+				$this->assertEquals( $value, $problem[$key] );
+			}
 		}
 	}
 

@@ -64,7 +64,7 @@ class IndexLookupFallbackMethodTest extends FallbackMethodTestBase {
 		/**
 		 * @var IndexLookupFallbackMethod $fallback
 		 */
-		$fallback = new IndexLookupFallbackMethod( $query, 'lookup_index', [],
+		$fallback = new IndexLookupFallbackMethod( 'enabled', $query, 'lookup_index', [],
 			'lookup_suggestion_field', [], [], [] );
 		$this->assertNotNull( $fallback->getSearchRequest(
 			$this->createMock( Client::class ) ) );
@@ -243,7 +243,7 @@ class IndexLookupFallbackMethodTest extends FallbackMethodTestBase {
 			)
 			->setWithDYMSuggestion( true )
 			->build();
-		$lookup = new IndexLookupFallbackMethod( $query, 'index', [ 'query' => 'test' ],
+		$lookup = new IndexLookupFallbackMethod( 'enabled', $query, 'index', [ 'query' => 'test' ],
 			'field', $queryParams, [], [] );
 		try {
 			$lookup->getSearchRequest( $this->createMock( Client::class ) );

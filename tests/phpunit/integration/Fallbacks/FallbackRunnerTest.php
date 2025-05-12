@@ -135,6 +135,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			'no fallbacks applied' => [
 				'expectedMainResults' => [ 'name' => '__main__', 'action' => null ],
 				'expectedQuerySuggestion' => null,
+				'expectedResponseMetrics' => [],
 				'methods' => [],
 			],
 			'typical query suggestion' => [
@@ -143,6 +144,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 					'name' => 'profile-name',
 					'action' => FallbackStatus::ACTION_SUGGEST_QUERY
 				],
+				'expectedResponseMetrics' => [],
 				'methods' => [
 					'profile-name' => self::getFallbackMethod( 1,
 						self::fallbackStatusCb( FallbackStatus::suggestQuery( 'phpunit' ) ) ),
@@ -157,6 +159,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 					'name' => 'fallback',
 					'action' => FallbackStatus::ACTION_REPLACE_LOCAL_RESULTS
 				],
+				'expectedResponseMetrics' => [],
 				'methods' => function ( $test ) {
 					$results = DummySearchResultSet::fakeTotalHits( $test->newTitleHelper(), 0 );
 					return [
@@ -173,20 +176,21 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 					'name' => 'profile-name',
 					'action' => FallbackStatus::ACTION_SUGGEST_QUERY
 				],
+				'expectedResponseMetrics' => [],
 				'methods' => [
 					'override' => self::getFallbackMethod( 0.8,
 						self::fallbackStatusCb( FallbackStatus::suggestQuery( 'phpunit' ) ) ),
 					'profile-name' => self::getFallbackMethod( 0.5,
 						self::fallbackStatusCb( FallbackStatus::suggestQuery( 'phpunit' ) ) ),
 				],
-			]
+			],
 		];
 	}
 
 	/**
 	 * @dataProvider metricsProvider
 	 */
-	public function testMetrics( array $expectedMainResults, ?array $expectedQuerySuggestion, $methods ) {
+	public function testMetrics( array $expectedMainResults, ?array $expectedQuerySuggestion, array $expectedResponseMetrics, $methods ) {
 		$results = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
 		if ( $methods instanceof \Closure ) {
 			// The dummy result set requires $this to initialize. Support
@@ -204,7 +208,8 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$expected = [
 			'wgCirrusSearchFallback' => [
 				'mainResults' => $expectedMainResults,
-				'querySuggestion' => $expectedQuerySuggestion
+				'querySuggestion' => $expectedQuerySuggestion,
+				'responseMetrics' => $expectedResponseMetrics,
 			]
 		];
 		$this->assertEquals( $expected, $runner->getMetrics() );
@@ -393,35 +398,64 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 
 		$inital = $this->newResultSet( [] );
 		$query = new Query( new Query\MatchQuery( 'foo', 'bar' ) );
-		$resp = new \Elastica\ResultSet( new Response( [] ), $query, [] );
+		$hitResp = new \Elastica\ResultSet( new Response( [] ), $query, [ new \Elastica\Result( [] ) ] );
+		$noHitResp = new \Elastica\ResultSet( new Response( [] ), $query, [] );
 		$rewritten = $this->newResultSet( [] );
-		$runner = new FallbackRunner( [ $this->mockElasticSearchRequestFallbackMethod( $query, 0.5, $resp, $rewritten ) ] );
+		$runner = new FallbackRunner( [ 'a' => $this->mockElasticSearchRequestFallbackMethod( $query, 0.5, $noHitResp, $rewritten ) ] );
 		$requests = new MSearchRequests();
 		$runner->attachSearchRequests( $requests, $client );
 		$this->assertNotEmpty( $requests->getRequests() );
-		$mresponses = $requests->toMSearchResponses( [ $resp ] );
+		$mresponses = $requests->toMSearchResponses( [ $noHitResp ] );
 		$this->assertSame( $rewritten, $runner->run( $this->createMock( SearcherFactory::class ), $inital, $mresponses,
 			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() ) );
+		$this->assertEquals(
+			[ 'a' => 0 ],
+			$runner->getMetrics()['wgCirrusSearchFallback']['responseMetrics']
+		);
 
-		$runner = new FallbackRunner( [ $this->mockElasticSearchRequestFallbackMethod( $query, 0.0, $resp, null ) ] );
+		$runner = new FallbackRunner( [ 'a' => $this->mockElasticSearchRequestFallbackMethod( $query, 0.0, $noHitResp, null ) ] );
 		$requests = new MSearchRequests();
 		$runner->attachSearchRequests( $requests, $client );
 		$this->assertSame( [], $requests->getRequests() );
 		$mresponses = $requests->failure( Status::newFatal( 'error' ) );
 		$this->assertSame( $inital, $runner->run( $this->createMock( SearcherFactory::class ), $inital, $mresponses,
 			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() ) );
+		// failed request doesn't respond with 0, it's unknown
+		$this->assertEquals( [], $runner->getMetrics()['wgCirrusSearchFallback']['responseMetrics'] );
 
 		$runner = new FallbackRunner( [
-			$this->mockElasticSearchRequestFallbackMethod( $query, 0.0, $resp, null ),
-			$this->mockElasticSearchRequestFallbackMethod( $query, 0.5, $resp, $rewritten ),
+			'a' => $this->mockElasticSearchRequestFallbackMethod( $query, 0.0, $noHitResp, null ),
+			'b' => $this->mockElasticSearchRequestFallbackMethod( $query, 0.5, $hitResp, $rewritten ),
 		] );
 		$requests = new MSearchRequests();
 		$runner->attachSearchRequests( $requests, $client );
-		$mresponses = $requests->toMSearchResponses( [ $resp ] );
+		$mresponses = $requests->toMSearchResponses( [ $hitResp ] );
 		$this->assertFalse( $mresponses->hasResultsFor( 'fallback-1' ) );
 		$this->assertTrue( $mresponses->hasResultsFor( 'fallback-2' ) );
 		$this->assertSame( $rewritten, $runner->run( $this->createMock( SearcherFactory::class ), $inital, $mresponses,
 			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() ) );
+		// 'a' has a zero % success probability, doesn't get queried.
+		$this->assertEquals(
+			[ 'b' => 1 ],
+			$runner->getMetrics()['wgCirrusSearchFallback']['responseMetrics']
+		);
+
+		$runner = new FallbackRunner( [
+			'a' => $this->mockElasticSearchRequestFallbackMethod( $query, 0.5, $hitResp, $rewritten ),
+			'b' => $this->mockElasticSearchRequestFallbackMethod( $query, 0.5, $hitResp, $rewritten ),
+		] );
+		$requests = new MSearchRequests();
+		$runner->attachSearchRequests( $requests, $client );
+		$mresponses = $requests->toMSearchResponses( [ $hitResp, $hitResp ] );
+		$this->assertTrue( $mresponses->hasResultsFor( 'fallback-1' ) );
+		$this->assertTrue( $mresponses->hasResultsFor( 'fallback-2' ) );
+		$this->assertSame( $rewritten, $runner->run( $this->createMock( SearcherFactory::class ), $inital, $mresponses,
+			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() ) );
+		// Both run, both reported
+		$this->assertEquals(
+			[ 'a' => 1, 'b' => 1 ],
+			$runner->getMetrics()['wgCirrusSearchFallback']['responseMetrics']
+		);
 	}
 
 	public function mockElasticSearchRequestFallbackMethod( $query, $approx, $expectedResponse, $rewritten ) {

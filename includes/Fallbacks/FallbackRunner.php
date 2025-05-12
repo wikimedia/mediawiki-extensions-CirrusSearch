@@ -31,6 +31,11 @@ class FallbackRunner implements SearchMetricsProvider {
 	private $searchMetrics = [];
 
 	/**
+	 * @var int[] Map from fallback name to number of hits returned
+	 */
+	private $responseMetrics = [];
+
+	/**
 	 * @param FallbackMethod[] $fallbackMethods List of fallbacks to apply in order,
 	 *  keyed by name of the fallback configuration.
 	 */
@@ -117,6 +122,7 @@ class FallbackRunner implements SearchMetricsProvider {
 		NamespacePrefixParser $namespacePrefixParser,
 		CirrusSearchHookRunner $cirrusSearchHookRunner
 	) {
+		$this->recordResponseMetrics( $responses );
 		$methods = [];
 		$position = 0;
 		$context = new FallbackRunnerContextImpl( $initialResult, $factory, $namespacePrefixParser, $cirrusSearchHookRunner );
@@ -223,6 +229,23 @@ class FallbackRunner implements SearchMetricsProvider {
 		return $status;
 	}
 
+	private function recordResponseMetrics( MSearchResponses $responses ) {
+		// Report on which fallback methods returned results, even if they didn't get used.
+		$position = 0;
+		foreach ( $this->fallbackMethods as $name => $fallback ) {
+			$position++;
+			if ( !( $fallback instanceof ElasticSearchRequestFallbackMethod ) ) {
+				continue;
+			}
+			$k = $this->msearchKey( $position );
+			if ( !$responses->hasResultsFor( $k ) ) {
+				continue;
+			}
+			$resultSet = $responses->getResultSet( $k );
+			$this->responseMetrics[$name] = count( $resultSet );
+		}
+	}
+
 	/**
 	 * @return array
 	 */
@@ -248,6 +271,8 @@ class FallbackRunner implements SearchMetricsProvider {
 				'mainResults' => $mainResults,
 				// action that made final query suggestion
 				'querySuggestion' => $querySuggestion,
+				// metrics about requests that were made
+				'responseMetrics' => $this->responseMetrics,
 			],
 		];
 	}

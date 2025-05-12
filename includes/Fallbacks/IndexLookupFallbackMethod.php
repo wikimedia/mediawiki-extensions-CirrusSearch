@@ -17,6 +17,13 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	use FallbackMethodTrait;
 
 	/**
+	 * @var string One of 'enabled' or 'metrics' indicating how
+	 * the fallback operates. 'metrics' is for collecting data without
+	 * using the result.
+	 */
+	private string $mode;
+
+	/**
 	 * @var SearchQuery
 	 */
 	private $query;
@@ -124,6 +131,7 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	}
 
 	/**
+	 * @param string $mode Either 'enabled' or 'metrics'.
 	 * @param SearchQuery $query
 	 * @param string $index
 	 * @param array $queryTemplate
@@ -134,6 +142,7 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	 * @param array $profileParams
 	 */
 	public function __construct(
+		string $mode,
 		SearchQuery $query,
 		$index,
 		$queryTemplate,
@@ -142,6 +151,7 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 		array $metricFields,
 		array $profileParams
 	) {
+		$this->mode = $mode;
 		$this->query = $query;
 		$this->index = $index;
 		$this->queryTemplate = $queryTemplate;
@@ -178,6 +188,7 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 		'@phan-var array $profile';
 
 		return new self(
+			$params['mode'] ?? 'enabled',
 			$query,
 			$profile['index'],
 			$profile['query'],
@@ -193,6 +204,9 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	 * @return float
 	 */
 	public function successApproximation( FallbackRunnerContext $context ) {
+		if ( $this->mode !== 'enabled' ) {
+			return 0.0;
+		}
 		$rset = $this->extractMethodResponse( $context );
 		if ( $rset === null || $rset->getResults() === [] ) {
 			return 0.0;
@@ -231,6 +245,10 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 	 * @return FallbackStatus
 	 */
 	public function rewrite( FallbackRunnerContext $context ): FallbackStatus {
+		if ( $this->mode !== 'enabled' ) {
+			// we are only collecting metrics
+			return FallbackStatus::noSuggestion();
+		}
 		$previousSet = $context->getPreviousResultSet();
 		if ( !$context->costlyCallAllowed() ) {
 			// a method rewrote the query before us.

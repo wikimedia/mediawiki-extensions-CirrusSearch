@@ -12,8 +12,9 @@ class RunSearchTest extends MediaWikiIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->overrideConfigValue( 'CirrusSearchWMFExtraFeatures', [
-			'weighted_tags' => [ 'build' => false, 'use' => false ]
+		$this->overrideConfigValue( 'CirrusSearchWeightedTags', [
+			'build' => false,
+			'use' => false
 		] );
 	}
 
@@ -21,17 +22,17 @@ class RunSearchTest extends MediaWikiIntegrationTestCase {
 	 * @covers \CirrusSearch\Maintenance\RunSearch::changeGlobalKeyPath
 	 */
 	public function testChangeGlobalKeyPath() {
-		global $wgCirrusSearchWMFExtraFeatures;
-		$this->assertFalse( $wgCirrusSearchWMFExtraFeatures['weighted_tags']['build'] );
+		global $wgCirrusSearchWeightedTags;
+		$this->assertFalse( $wgCirrusSearchWeightedTags['build'] );
 
 		/** @var RunSearch $runner */
 		$runner = TestingAccessWrapper::newFromObject( new RunSearch() );
 		$runner->changeGlobalKeyPath(
-			'wgCirrusSearchWMFExtraFeatures.weighted_tags.build', true,
-			[ 'wgCirrusSearchWMFExtraFeatures' => true ]
+			'wgCirrusSearchWeightedTags.build', true,
+			[ 'wgCirrusSearchWeightedTags' => true ]
 		);
 
-		$this->assertTrue( $wgCirrusSearchWMFExtraFeatures['weighted_tags']['build'] );
+		$this->assertTrue( $wgCirrusSearchWeightedTags['build'] );
 	}
 
 }

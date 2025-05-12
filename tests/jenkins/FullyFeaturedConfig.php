@@ -99,9 +99,8 @@ $wgPoolCounterConf[ 'CirrusSearch-MoreLike' ] = [
 $wgCirrusSearchIndexDeletes = true;
 $wgCirrusSearchEnableArchive = true;
 $wgCirrusSearchElasticQuirks['retry_on_conflict'] = true;
-$wgCirrusSearchWMFExtraFeatures = [
-	'weighted_tags' => [
-		'build' => true,
-		'use' => true,
-	]
+$wgCirrusSearchWeightedTags = [
+	'build' => true,
+	'use' => true,
+	'max_score' => 1000
 ];

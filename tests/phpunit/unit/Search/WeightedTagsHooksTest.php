@@ -126,41 +126,6 @@ class WeightedTagsHooksTest extends CirrusTestCase {
 		$this->assertKeywordsRegistered( $extraFeatures );
 	}
 
-	public function testBCOptions() {
-		$maxScore = 123;
-		$config = $this->newHashSearchConfig( [
-			'CirrusSearchWMFExtraFeatures' => [
-				'weighted_tags' => [
-					'build' => true,
-					'use' => true,
-					'max_score' => $maxScore,
-				],
-			],
-			"CirrusSearchWeightedTags" => [
-				'build' => false,
-				'use' => false,
-			],
-		] );
-		$handler = new WeightedTagsHooks( $config );
-		$keywords = [];
-		$handler->onCirrusSearchAddQueryFeatures( $config, $keywords );
-		$this->assertKeywordsRegistered( $keywords );
-
-		$fields = [];
-		$searchEngine = $this->createNoOpMock( CirrusSearch::class );
-		$handler->onSearchIndexFields( $fields, $searchEngine );
-		$this->assertSearchIndexFieldsRegistered( $fields, $searchEngine );
-
-		$sim = [];
-		$handler->onCirrusSearchSimilarityConfig( $sim );
-		$this->assertSimilarityRegistered( $sim, $maxScore );
-
-		$configBuilder = $this->createNoOpMock( AnalysisConfigBuilder::class );
-		$analysisConfig = [];
-		$handler->onCirrusSearchAnalysisConfig( $analysisConfig, $configBuilder );
-		$this->assertAnalysisConfigRegistered( $analysisConfig, $maxScore );
-	}
-
 	/**
 	 * @param array $extraFeatures
 	 * @return void

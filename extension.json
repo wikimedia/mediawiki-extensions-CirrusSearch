@@ -699,10 +699,6 @@
 		"CirrusSearchNamespaceResolutionMethod": {
 			"value": "elastic"
 		},
-		"CirrusSearchWMFExtraFeatures": {
-			"description": "Deprecated in favour of CirrusSearchWeightedTags. Configuration for Wikimedia-specific extra features.\n\n* weighted_tags: multi purpose tag search.\n** build: include in the index definition",
-			"value": null
-		},
 		"CirrusSearchWeightedTags": {
 			"description": "Configuration for features using weighted tags.",
 			"value": {

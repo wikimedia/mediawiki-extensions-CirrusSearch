@@ -123,25 +123,12 @@ class WeightedTagsHooks implements
 		}
 	}
 
-	private function getWeightedTagConfig(): array {
-		// BC support for CirrusSearchWMFExtraFeatures in setup where CirrusSearchWMFExtraFeatures
-		// was previously set. If it, is it should take precedence over the new CirrusSearchWeightedTags
-		// config option.
-		$bcOption = $this->config->get( 'CirrusSearchWMFExtraFeatures' );
-		if ( isset( $bcOption['weighted_tags'] ) ) {
-			$weightedTagsOptions = $bcOption['weighted_tags'];
-		} else {
-			$weightedTagsOptions = $this->config->get( 'CirrusSearchWeightedTags' );
-		}
-		return $weightedTagsOptions;
-	}
-
 	/**
 	 * Check whether weighted_tags data should be processed.
 	 * @return bool
 	 */
 	private function canBuild(): bool {
-		return (bool)( $this->getWeightedTagConfig()['build'] ?? false );
+		return (bool)( $this->config->get( 'CirrusSearchWeightedTags' )['build'] ?? false );
 	}
 
 	/**
@@ -149,10 +136,10 @@ class WeightedTagsHooks implements
 	 * @return bool
 	 */
 	private function canUse(): bool {
-		return (bool)( $this->getWeightedTagConfig()['use'] ?? false );
+		return (bool)( $this->config->get( 'CirrusSearchWeightedTags' )['use'] ?? false );
 	}
 
 	private function maxScore(): int {
-		return (int)( $this->getWeightedTagConfig()['max_score'] ?? 1000 );
+		return (int)( $this->config->get( 'CirrusSearchWeightedTags' )['max_score'] ?? 1000 );
 	}
 }

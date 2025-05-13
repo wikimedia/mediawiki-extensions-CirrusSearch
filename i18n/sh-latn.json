@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"BadDog",
-			"Winston Sung"
+			"Winston Sung",
+			"Aca"
 		]
 	},
 	"cirrussearch-desc": "Pretraga za MediaWiki pomoću Elasticsearcha",

@@ -13,6 +13,7 @@ trait CirrusIntegrationTestCaseTrait {
 		$services->resetServiceForTesting( InterwikiResolver::SERVICE );
 		$config = $services->getConfigFactory()->makeConfig( 'CirrusSearch' );
 		$config->clearCachesForTesting();
+		$config->resetWikiIdForTesting();
 		if ( $config->has( 'CirrusSearchServers' ) ) {
 			// Various tests expect to be able to set $wgCirrusSearchClusters and have it
 			// work, but setting wgCirrusSearchServers short-circuits the entire cluster

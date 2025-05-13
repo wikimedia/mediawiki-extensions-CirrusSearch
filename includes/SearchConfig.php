@@ -112,6 +112,19 @@ class SearchConfig implements Config {
 	}
 
 	/**
+	 * Resets the internal wiki ID for the SearchConfig to be the current value returned
+	 * by {@link WikiMap::getCurrentWikiId}. This exists to allow PHPUnit tests to
+	 * properly reset the value which may have been cached as a different
+	 * fake value (T393901).
+	 *
+	 * @internal Only for use in tests
+	 * @return void
+	 */
+	public function resetWikiIdForTesting(): void {
+		$this->wikiId = WikiMap::getCurrentWikiId();
+	}
+
+	/**
 	 * @return bool true if this config was built for this wiki.
 	 */
 	public function isLocalWiki() {

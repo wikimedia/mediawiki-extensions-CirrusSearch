@@ -8,7 +8,7 @@ use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\Extra\MultiList\MultiListBuilder;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusIndexField;
-use CirrusSearch\Search\WeightedTagsHooks;
+use CirrusSearch\Wikimedia\WeightedTagsHooks;
 use Elastica\Bulk\Action\AbstractDocument;
 use Elastica\Document;
 use Elastica\Exception\Bulk\ResponseException;

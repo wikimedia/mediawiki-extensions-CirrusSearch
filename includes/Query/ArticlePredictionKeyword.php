@@ -3,8 +3,8 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
-use CirrusSearch\Search\WeightedTagsHooks;
 use CirrusSearch\WarningCollector;
+use CirrusSearch\Wikimedia\WeightedTagsHooks;
 use Elastica\Query\DisMax;
 use Elastica\Query\Term;
 use MediaWiki\Message\Message;
@@ -13,6 +13,7 @@ use MediaWiki\Message\Message;
  * Finds pages based on how well they match a given keyword
  * (e.g.articletopic:term, articlecountry:term), based on scores provided by
  * (Wikimedia-specific) ML models.
+ * @package CirrusSearch\Wikimedia
  * @see WeightedTagsHooks
  * @see https://www.mediawiki.org/wiki/Help:CirrusSearch#Articletopic
  */

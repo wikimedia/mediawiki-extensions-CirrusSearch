@@ -693,15 +693,12 @@
 			"value": "elastic"
 		},
 		"CirrusSearchWMFExtraFeatures": {
-			"description": "Deprecated in favour of CirrusSearchWeightedTags. Configuration for Wikimedia-specific extra features.\n\n* weighted_tags: multi purpose tag search.\n** build: include in the index definition",
-			"value": {}
-		},
-		"CirrusSearchWeightedTags": {
-			"description": "Configuration for features using weighted tags.",
+			"description": "Configuration for Wikimedia-spexific extra features.\n\n* weighted_tags: multi purpose tag search.\n** build: include in the index definition",
 			"value": {
-				"build": false,
-				"use": false,
-				"max_score": 1000
+				"weighted_tags": {
+					"build": false,
+					"use": false
+				}
 			}
 		},
 		"CirrusSearchCompletionBannedPageIds": {

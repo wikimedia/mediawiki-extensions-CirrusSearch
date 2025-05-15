@@ -1,6 +1,6 @@
 <?php
 
-namespace CirrusSearch\Wikimedia;
+namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\Hooks\CirrusSearchAddQueryFeaturesHook;
@@ -14,8 +14,8 @@ use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Search\Hook\SearchIndexFieldsHook;
 
 /**
- * Functionality related to the (Wikimedia-specific) weighted_tags search feature.
- * @package CirrusSearch\Wikimedia
+ * Functionality related to the weighted_tags search feature.
+ * @package CirrusSearch\Search
  * @see ArticlePredictionKeyword
  */
 class WeightedTagsHooks implements
@@ -28,12 +28,6 @@ class WeightedTagsHooks implements
 	public const FIELD_SIMILARITY = 'weighted_tags_similarity';
 	public const FIELD_INDEX_ANALYZER = 'weighted_tags';
 	public const FIELD_SEARCH_ANALYZER = 'keyword';
-	public const WMF_EXTRA_FEATURES = 'CirrusSearchWMFExtraFeatures';
-	public const CONFIG_OPTIONS = 'weighted_tags';
-	public const BUILD_OPTION = 'build';
-	public const USE_OPTION = 'use';
-	public const MAX_SCORE_OPTION = 'max_score';
-
 	private SearchConfig $config;
 
 	public static function create( ConfigFactory $configFactory ): WeightedTagsHooks {
@@ -129,14 +123,25 @@ class WeightedTagsHooks implements
 		}
 	}
 
+	private function getWeightedTagConfig(): array {
+		// BC support for CirrusSearchWMFExtraFeatures in setup where CirrusSearchWMFExtraFeatures
+		// was previously set. If it, is it should take precedence over the new CirrusSearchWeightedTags
+		// config option.
+		$bcOption = $this->config->get( 'CirrusSearchWMFExtraFeatures' );
+		if ( isset( $bcOption['weighted_tags'] ) ) {
+			$weightedTagsOptions = $bcOption['weighted_tags'];
+		} else {
+			$weightedTagsOptions = $this->config->get( 'CirrusSearchWeightedTags' );
+		}
+		return $weightedTagsOptions;
+	}
+
 	/**
 	 * Check whether weighted_tags data should be processed.
 	 * @return bool
 	 */
 	private function canBuild(): bool {
-		$extraFeatures = $this->config->get( self::WMF_EXTRA_FEATURES );
-		$weightedTagsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
-		return (bool)( $weightedTagsOptions[self::BUILD_OPTION] ?? false );
+		return (bool)( $this->getWeightedTagConfig()['build'] ?? false );
 	}
 
 	/**
@@ -144,14 +149,15 @@ class WeightedTagsHooks implements
 	 * @return bool
 	 */
 	private function canUse(): bool {
-		$extraFeatures = $this->config->get( self::WMF_EXTRA_FEATURES );
-		$weightedTagsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
-		return (bool)( $weightedTagsOptions[self::USE_OPTION] ?? false );
+		return (bool)( $this->getWeightedTagConfig()['use'] ?? false );
 	}
 
 	private function maxScore(): int {
-		$extraFeatures = $this->config->get( self::WMF_EXTRA_FEATURES );
-		$weightedTagsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
-		return (int)( $weightedTagsOptions[self::MAX_SCORE_OPTION] ?? 1000 );
+		return (int)( $this->getWeightedTagConfig()['max_score'] ?? 1000 );
 	}
 }
+
+/**
+ * @deprecated moved to \CirrusSearch\Search
+ */
+class_alias( WeightedTagsHooks::class, 'CirrusSearch\\Wikimedia\\WeightedTagsHooks' );

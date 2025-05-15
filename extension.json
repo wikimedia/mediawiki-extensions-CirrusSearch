@@ -99,9 +99,9 @@
 		"ArticleRevisionVisibilitySet": "changelistener",
 		"PageUndeleteComplete": "archivechangelistener",
 		"BeforeInitialize": "default",
-		"CirrusSearchAddQueryFeatures": "wikimediatags",
-		"CirrusSearchAnalysisConfig": "wikimediatags",
-		"CirrusSearchSimilarityConfig": "wikimediatags",
+		"CirrusSearchAddQueryFeatures": "weightedtags",
+		"CirrusSearchAnalysisConfig": "weightedtags",
+		"CirrusSearchSimilarityConfig": "weightedtags",
 		"GetPreferences": "default",
 		"LinksUpdateComplete": [
 			"changelistener",
@@ -110,7 +110,7 @@
 		"PrefixSearchExtractNamespace": "default",
 		"ResourceLoaderGetConfigVars": "default",
 		"SearchIndexFields": [
-			"wikimediatags",
+			"weightedtags",
 			"custompagefields"
 		],
 		"SearchGetNearMatch": "default",
@@ -131,9 +131,9 @@
 				"ConfigFactory"
 			]
 		},
-		"wikimediatags": {
-			"class": "CirrusSearch\\Wikimedia\\WeightedTagsHooks",
-			"factory": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::create",
+		"weightedtags": {
+			"class": "CirrusSearch\\Search\\WeightedTagsHooks",
+			"factory": "CirrusSearch\\Search\\WeightedTagsHooks::create",
 			"services": [
 				"ConfigFactory"
 			]
@@ -697,12 +697,15 @@
 			"value": "elastic"
 		},
 		"CirrusSearchWMFExtraFeatures": {
-			"description": "Configuration for Wikimedia-spexific extra features.\n\n* weighted_tags: multi purpose tag search.\n** build: include in the index definition",
+			"description": "Deprecated in favour of CirrusSearchWeightedTags. Configuration for Wikimedia-specific extra features.\n\n* weighted_tags: multi purpose tag search.\n** build: include in the index definition",
+			"value": null
+		},
+		"CirrusSearchWeightedTags": {
+			"description": "Configuration for features using weighted tags.",
 			"value": {
-				"weighted_tags": {
-					"build": false,
-					"use": false
-				}
+				"build": false,
+				"use": false,
+				"max_score": 1000
 			}
 		},
 		"CirrusSearchCompletionBannedPageIds": {

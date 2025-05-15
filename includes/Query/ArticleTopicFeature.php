@@ -3,7 +3,7 @@
 namespace CirrusSearch\Query;
 
 /**
- * This class has been refactored into ArticlePredictionKeyword.
+ * This class has been refactored into ArticleTopicKeyword.
  *
  * We preserve it only to avoid breaking extensions that required direct access
  * to ArticleTopicFeature::TERMS_TO_LABELS.

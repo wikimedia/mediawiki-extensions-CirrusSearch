@@ -161,24 +161,24 @@ When you upgrade there four possible cases for maintaining the index:
 If you must do (1) you have two options:
 A.  Blow away the search index and rebuild it from scratch.  Marginally faster and uses less disk space on
 in elasticsearch but empties the index entirely and rebuilds it so search will be down for a while:
- php updateSearchIndexConfig.php --startOver
- php forceSearchIndex.php
+ php maintenance/run.php CirrusSearch:UpdateSearchIndexConfig --startOver
+ php maintenance/run.php CirrusSearch:ForceSearchIndex
 
 B.  Build a copy of the index, reindex to it, and then force a full reindex from source documents.  Uses
 more disk space but search should be up the entire time:
- php updateSearchIndexConfig.php --reindexAndRemoveOk --indexIdentifier now
- php forceSearchIndex.php
+ php maintenance/run.php CirrusSearch:UpdateSearchIndexConfig --reindexAndRemoveOk --indexIdentifier now
+ php maintenance/run.php CirrusSearch:ForceSearchIndex
 
 If you must do (2) really have only one option:
 A.  Build of a copy of the index and reindex to it:
- php updateSearchIndexConfig.php --reindexAndRemoveOk --indexIdentifier now
- php forceSearchIndex.php --from <time when you started updateSearchIndexConfig.php in YYYY-mm-ddTHH:mm:ssZ> --deletes
- php forceSearchIndex.php --from <time when you started updateSearchIndexConfig.php in YYYY-mm-ddTHH:mm:ssZ>
+ php maintenance/run.php CirrusSearch:UpdateSearchIndexConfig --reindexAndRemoveOk --indexIdentifier now
+ php maintenance/run.php CirrusSearch:ForceSearchIndex --from <time when you started updateSearchIndexConfig.php in YYYY-mm-ddTHH:mm:ssZ> --deletes
+ php maintenance/run.php CirrusSearch:ForceSearchIndex --from <time when you started updateSearchIndexConfig.php in YYYY-mm-ddTHH:mm:ssZ>
 or for the Bash inclined:
  TZ=UTC export REINDEX_START=$(date +%Y-%m-%dT%H:%m:%SZ)
- php updateSearchIndexConfig.php --reindexAndRemoveOk --indexIdentifier now
- php forceSearchIndex.php --from $REINDEX_START --deletes
- php forceSearchIndex.php --from $REINDEX_START
+ php maintenance/run.php CirrusSearch:UpdateSearchIndexConfig --reindexAndRemoveOk --indexIdentifier now
+ php maintenance/run.php CirrusSearch:ForceSearchIndex --from $REINDEX_START --deletes
+ php maintenance/run.php CirrusSearch:ForceSearchIndex --from $REINDEX_START
 
 If you must do (3) you again only have one option:
 A.  Same as (2.A)

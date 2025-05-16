@@ -2,18 +2,34 @@
 
 namespace CirrusSearch\Wikimedia;
 
+use CirrusSearch\CirrusSearch;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Query\ArticlePredictionKeyword;
-use MediaWiki\Config\HashConfig;
+use MediaWiki\Config\ConfigFactory;
 
 /**
  * @covers \CirrusSearch\Wikimedia\WeightedTagsHooks
  */
-class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
+class WeightedTagsHooksTest extends CirrusTestCase {
+
+	private function newHookHandler( array $config ): WeightedTagsHooks {
+		return new WeightedTagsHooks( $this->newHashSearchConfig( $config ) );
+	}
+
+	public function testFactory() {
+		$configFactory = new ConfigFactory();
+		$config = $this->newHashSearchConfig();
+		$configFactory->register( 'CirrusSearch', $config );
+		$handler = WeightedTagsHooks::create( $configFactory );
+		$this->assertSame( $config, $handler->getConfig() );
+	}
+
 	public function testConfigureWeightedTagsSimilarity() {
 		$sim = [];
 		$maxScore = 17389;
-		$config = new HashConfig( [
+		$handler = $this->newHookHandler( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [
 				WeightedTagsHooks::CONFIG_OPTIONS => [
 					WeightedTagsHooks::BUILD_OPTION => true,
@@ -21,14 +37,14 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 					]
 				]
 		] );
-		WeightedTagsHooks::configureWeightedTagsSimilarity( $sim, $config );
+		$handler->onCirrusSearchSimilarityConfig( $sim );
 		$this->assertArrayHasKey( WeightedTagsHooks::FIELD_SIMILARITY, $sim );
 		$this->assertStringContainsString( $maxScore,
 			$sim[WeightedTagsHooks::FIELD_SIMILARITY]['script']['source'] );
 	}
 
 	public function testConfigureWeightedTagsSimilarityDisabled() {
-		$config = new HashConfig( [
+		$handler = $this->newHookHandler( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [
 				WeightedTagsHooks::CONFIG_OPTIONS => [
 					WeightedTagsHooks::BUILD_OPTION => false,
@@ -36,24 +52,24 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 			]
 		] );
 		$sim = [];
-		WeightedTagsHooks::configureWeightedTagsSimilarity( $sim, $config );
+		$handler->onCirrusSearchSimilarityConfig( $sim );
 		$this->assertSame( [], $sim );
 	}
 
 	public function testConfigureWeightedTagsFieldMapping() {
-		$config = new HashConfig( [
+		$handler = $this->newHookHandler( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [
 				WeightedTagsHooks::CONFIG_OPTIONS => [
 					WeightedTagsHooks::BUILD_OPTION => true,
 				]
 			]
 		] );
-		$searchEngine = $this->createNoOpMock( \SearchEngine::class );
+		$searchEngine = $this->createNoOpMock( CirrusSearch::class );
 		/**
 		 * @var \SearchIndexField $fields
 		 */
 		$fields = [];
-		WeightedTagsHooks::configureWeightedTagsFieldMapping( $fields, $config );
+		$handler->onSearchIndexFields( $fields, $searchEngine );
 		$this->assertArrayHasKey( WeightedTagsHooks::FIELD_NAME, $fields );
 		$field = $fields[WeightedTagsHooks::FIELD_NAME];
 		$this->assertInstanceOf( WeightedTags::class, $field );
@@ -65,21 +81,22 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 	}
 
 	public function testConfigureWeightedTagsFieldMappingDisabled() {
-		$config = new HashConfig( [
+		$handler = $this->newHookHandler( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [
 				WeightedTagsHooks::CONFIG_OPTIONS => [
 					WeightedTagsHooks::BUILD_OPTION => false,
 				]
 			]
 		] );
+		$searchEngine = $this->createNoOpMock( CirrusSearch::class );
 		$fields = [];
-		WeightedTagsHooks::configureWeightedTagsFieldMapping( $fields, $config );
+		$handler->onSearchIndexFields( $fields, $searchEngine );
 		$this->assertSame( [], $fields );
 	}
 
 	public function testConfigureWeightedTagsFieldAnalysis() {
 		$maxScore = 41755;
-		$config = new HashConfig( [
+		$handler = $this->newHookHandler( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [
 				WeightedTagsHooks::CONFIG_OPTIONS => [
 					WeightedTagsHooks::BUILD_OPTION => true,
@@ -87,8 +104,10 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 				]
 			]
 		] );
+
+		$configBuilder = $this->createNoOpMock( AnalysisConfigBuilder::class );
 		$analysisConfig = [];
-		WeightedTagsHooks::configureWeightedTagsFieldAnalysis( $analysisConfig, $config );
+		$handler->onCirrusSearchAnalysisConfig( $analysisConfig, $configBuilder );
 		$this->assertArrayHasKey( 'analyzer', $analysisConfig );
 		$this->assertArrayHasKey( 'filter', $analysisConfig );
 		$analyzers = $analysisConfig['analyzer'];
@@ -99,15 +118,16 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 	}
 
 	public function testConfigureWeightedTagsFieldAnalysisDisabled() {
-		$config = new HashConfig( [
+		$handler = $this->newHookHandler( [
 			WeightedTagsHooks::WMF_EXTRA_FEATURES => [
 				WeightedTagsHooks::CONFIG_OPTIONS => [
 					WeightedTagsHooks::BUILD_OPTION => false,
 				]
 			]
 		] );
+		$configBuilder = $this->createNoOpMock( AnalysisConfigBuilder::class );
 		$analysisConfig = [];
-		WeightedTagsHooks::configureWeightedTagsFieldAnalysis( $analysisConfig, $config );
+		$handler->onCirrusSearchAnalysisConfig( $analysisConfig, $configBuilder );
 		$this->assertSame( [], $analysisConfig );
 	}
 
@@ -119,8 +139,9 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 				],
 			],
 		] );
+		$handler = new WeightedTagsHooks( $config );
 		$extraFeatures = [];
-		WeightedTagsHooks::onCirrusSearchAddQueryFeatures( $config, $extraFeatures );
+		$handler->onCirrusSearchAddQueryFeatures( $config, $extraFeatures );
 		$this->assertSame( [], $extraFeatures );
 
 		$config = new HashSearchConfig( [
@@ -130,7 +151,8 @@ class WeightedTagsHooksTest extends \MediaWikiUnitTestCase {
 				],
 			],
 		] );
-		WeightedTagsHooks::onCirrusSearchAddQueryFeatures( $config, $extraFeatures );
+		$handler = new WeightedTagsHooks( $config );
+		$handler->onCirrusSearchAddQueryFeatures( $config, $extraFeatures );
 		$this->assertNotEmpty( $extraFeatures );
 		$this->assertInstanceOf( ArticlePredictionKeyword::class, $extraFeatures[0] );
 	}

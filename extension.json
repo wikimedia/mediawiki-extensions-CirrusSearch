@@ -99,9 +99,9 @@
 		"ArticleRevisionVisibilitySet": "changelistener",
 		"PageUndeleteComplete": "archivechangelistener",
 		"BeforeInitialize": "default",
-		"CirrusSearchAddQueryFeatures": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAddQueryFeatures",
-		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAnalysisConfig",
-		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchSimilarityConfig",
+		"CirrusSearchAddQueryFeatures": "wikimediatags",
+		"CirrusSearchAnalysisConfig": "wikimediatags",
+		"CirrusSearchSimilarityConfig": "wikimediatags",
 		"GetPreferences": "default",
 		"LinksUpdateComplete": [
 			"changelistener",
@@ -132,7 +132,11 @@
 			]
 		},
 		"wikimediatags": {
-			"class": "CirrusSearch\\Wikimedia\\WeightedTagsHooks"
+			"class": "CirrusSearch\\Wikimedia\\WeightedTagsHooks",
+			"factory": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::create",
+			"services": [
+				"ConfigFactory"
+			]
 		},
 		"custompagefields": {
 			"class": "CirrusSearch\\Hooks\\CustomPageFields"

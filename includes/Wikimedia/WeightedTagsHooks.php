@@ -3,21 +3,27 @@
 namespace CirrusSearch\Wikimedia;
 
 use CirrusSearch\CirrusSearch;
+use CirrusSearch\Hooks\CirrusSearchAddQueryFeaturesHook;
+use CirrusSearch\Hooks\CirrusSearchAnalysisConfigHook;
+use CirrusSearch\Hooks\CirrusSearchSimilarityConfigHook;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Query\ArticlePredictionKeyword;
 use CirrusSearch\Query\HasRecommendationFeature;
 use CirrusSearch\SearchConfig;
-use MediaWiki\Config\Config;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Search\Hook\SearchIndexFieldsHook;
-use SearchEngine;
 
 /**
  * Functionality related to the (Wikimedia-specific) weighted_tags search feature.
  * @package CirrusSearch\Wikimedia
  * @see ArticlePredictionKeyword
  */
-class WeightedTagsHooks implements SearchIndexFieldsHook {
+class WeightedTagsHooks implements
+	SearchIndexFieldsHook,
+	CirrusSearchAddQueryFeaturesHook,
+	CirrusSearchAnalysisConfigHook,
+	CirrusSearchSimilarityConfigHook
+{
 	public const FIELD_NAME = 'weighted_tags';
 	public const FIELD_SIMILARITY = 'weighted_tags_similarity';
 	public const FIELD_INDEX_ANALYZER = 'weighted_tags';
@@ -28,63 +34,53 @@ class WeightedTagsHooks implements SearchIndexFieldsHook {
 	public const USE_OPTION = 'use';
 	public const MAX_SCORE_OPTION = 'max_score';
 
-	/**
-	 * Configure the similarity needed for the article topics field
-	 * @param array &$similarity similarity settings to update
-	 * @see https://www.mediawiki.org/wiki/Extension:CirrusSearch/Hooks/CirrusSearchSimilarityConfig
-	 */
-	public static function onCirrusSearchSimilarityConfig( array &$similarity ) {
-		self::configureWeightedTagsSimilarity( $similarity,
-			MediaWikiServices::getInstance()->getMainConfig() );
+	private SearchConfig $config;
+
+	public static function create( ConfigFactory $configFactory ): WeightedTagsHooks {
+		/** @var SearchConfig $searchConfig */
+		$searchConfig = $configFactory->makeConfig( 'CirrusSearch' );
+		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $searchConfig is actually a SearchConfig */
+		return new self( $searchConfig );
+	}
+
+	public function __construct( SearchConfig $config ) {
+		$this->config = $config;
 	}
 
 	/**
-	 * Visible for testing.
-	 * @param array &$similarity similarity settings to update
-	 * @param Config $config current configuration
+	 * Visible for testing
+	 * @return SearchConfig
 	 */
-	public static function configureWeightedTagsSimilarity(
-		array &$similarity,
-		Config $config
-	) {
-		if ( !self::canBuild( $config ) ) {
+	public function getConfig(): SearchConfig {
+		return $this->config;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function onCirrusSearchSimilarityConfig( array &$similarity ): void {
+		if ( !$this->canBuild() ) {
 			return;
 		}
-		$maxScore = self::maxScore( $config );
+		$maxScore = $this->maxScore();
 		$similarity[self::FIELD_SIMILARITY] = [
 			'type' => 'scripted',
 			// no weight=>' script we do not want doc independent weighing
 			'script' => [
 				// apply boost close to docFreq to force int->float conversion
-				'source' => "return (doc.freq*query.boost)/$maxScore;"
-			]
+				'source' => "return (doc.freq*query.boost)/$maxScore;",
+			],
 		];
 	}
 
 	/**
-	 * Define mapping for the weighted_tags field.
-	 * @param array &$fields array of field definitions to update
-	 * @param SearchEngine $engine the search engine requesting field definitions
-	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/SearchIndexFields
+	 * @inheritDoc
 	 */
 	public function onSearchIndexFields( &$fields, $engine ) {
 		if ( !( $engine instanceof CirrusSearch ) ) {
 			return;
 		}
-		self::configureWeightedTagsFieldMapping( $fields,
-			MediaWikiServices::getInstance()->getMainConfig() );
-	}
-
-	/**
-	 * Visible for testing
-	 * @param \SearchIndexField[] &$fields array of field definitions to update
-	 * @param Config $config the wiki configuration
-	 */
-	public static function configureWeightedTagsFieldMapping(
-		array &$fields,
-		Config $config
-	) {
-		if ( !self::canBuild( $config ) ) {
+		if ( !$this->canBuild() ) {
 			return;
 		}
 
@@ -98,51 +94,19 @@ class WeightedTagsHooks implements SearchIndexFieldsHook {
 	}
 
 	/**
-	 * Configure default analyzer for the weighted_tags field.
-	 * @param array &$config analysis settings to update
-	 * @param AnalysisConfigBuilder $analysisConfigBuilder unneeded
-	 * @see https://www.mediawiki.org/wiki/Extension:CirrusSearch/Hooks/CirrusSearchAnalysisConfig
+	 * @inheritDoc
 	 */
-	public static function onCirrusSearchAnalysisConfig( array &$config, AnalysisConfigBuilder $analysisConfigBuilder ) {
-		self::configureWeightedTagsFieldAnalysis( $config,
-			MediaWikiServices::getInstance()->getMainConfig() );
-	}
-
-	/**
-	 * Make weighted_tags search features available
-	 * @param SearchConfig $config
-	 * @param array &$extraFeatures Array holding KeywordFeature objects
-	 * @see ArticleTopicFeature
-	 */
-	public static function onCirrusSearchAddQueryFeatures( SearchConfig $config, array &$extraFeatures ) {
-		if ( self::canUse( $config ) ) {
-			// articletopic keyword, matches by ORES  scores
-			$extraFeatures[] = new ArticlePredictionKeyword();
-			// article recommendations filter
-			$extraFeatures[] = new HasRecommendationFeature();
-		}
-	}
-
-	/**
-	 * Visible only for testing
-	 * @param array &$analysisConfig panalysis settings to update
-	 * @param Config $config the wiki configuration
-	 * @internal
-	 */
-	public static function configureWeightedTagsFieldAnalysis(
-		array &$analysisConfig,
-		Config $config
-	) {
-		if ( !self::canBuild( $config ) ) {
+	public function onCirrusSearchAnalysisConfig( array &$analysisConfig, AnalysisConfigBuilder $analysisConfigBuilder ): void {
+		if ( !$this->canBuild() ) {
 			return;
 		}
-		$maxScore = self::maxScore( $config );
+		$maxScore = $this->maxScore();
 		$analysisConfig['analyzer'][self::FIELD_INDEX_ANALYZER] = [
 			'type' => 'custom',
 			'tokenizer' => 'keyword',
 			'filter' => [
 				'weighted_tags_term_freq',
-			]
+			],
 		];
 		$analysisConfig['filter']['weighted_tags_term_freq'] = [
 			'type' => 'term_freq',
@@ -154,29 +118,39 @@ class WeightedTagsHooks implements SearchIndexFieldsHook {
 	}
 
 	/**
+	 * @inheritDoc
+	 */
+	public function onCirrusSearchAddQueryFeatures( SearchConfig $config, array &$extraFeatures ): void {
+		if ( $this->canUse() ) {
+			// articletopic keyword, matches by ORES  scores
+			$extraFeatures[] = new ArticlePredictionKeyword();
+			// article recommendations filter
+			$extraFeatures[] = new HasRecommendationFeature();
+		}
+	}
+
+	/**
 	 * Check whether weighted_tags data should be processed.
-	 * @param Config $config
 	 * @return bool
 	 */
-	private static function canBuild( Config $config ): bool {
-		$extraFeatures = $config->get( self::WMF_EXTRA_FEATURES );
+	private function canBuild(): bool {
+		$extraFeatures = $this->config->get( self::WMF_EXTRA_FEATURES );
 		$weightedTagsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
 		return (bool)( $weightedTagsOptions[self::BUILD_OPTION] ?? false );
 	}
 
 	/**
 	 * Check whether weighted_tags data is available for searching.
-	 * @param Config $config
 	 * @return bool
 	 */
-	private static function canUse( Config $config ): bool {
-		$extraFeatures = $config->get( self::WMF_EXTRA_FEATURES );
+	private function canUse(): bool {
+		$extraFeatures = $this->config->get( self::WMF_EXTRA_FEATURES );
 		$weightedTagsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
 		return (bool)( $weightedTagsOptions[self::USE_OPTION] ?? false );
 	}
 
-	private static function maxScore( Config $config ): int {
-		$extraFeatures = $config->get( self::WMF_EXTRA_FEATURES );
+	private function maxScore(): int {
+		$extraFeatures = $this->config->get( self::WMF_EXTRA_FEATURES );
 		$weightedTagsOptions = $extraFeatures[self::CONFIG_OPTIONS] ?? [];
 		return (int)( $weightedTagsOptions[self::MAX_SCORE_OPTION] ?? 1000 );
 	}

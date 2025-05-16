@@ -6,8 +6,8 @@ use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Search\WeightedTagsHooks;
 use CirrusSearch\WarningCollector;
-use CirrusSearch\Wikimedia\WeightedTagsHooks;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\MatchQuery;
 

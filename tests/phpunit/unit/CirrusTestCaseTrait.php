@@ -132,15 +132,31 @@ trait CirrusTestCaseTrait {
 		}
 	}
 
-	public static function randomizeFixtures( array $cases ): array {
+	public static function randomizeFixtures( array $cases, string $prefix ): array {
 		if ( self::canRebuildFixture() ) {
 			return $cases;
 		}
-		ksort( $cases );
+
+		$casesToRandomize = [];
+		$mandatoryCases = [];
+		foreach ( $cases as $c => $d ) {
+			if ( str_starts_with( $c, $prefix ) ) {
+				$casesToRandomize[$c] = $d;
+			} else {
+				$mandatoryCases[$c] = $d;
+			}
+		}
+
+		ksort( $casesToRandomize );
 		srand( self::getSeed() );
-		$randomizedKeys = array_rand( $cases, min( count( $cases ), self::getMaxTestedFixturesPerTest() ) );
-		$randomizedCases = array_intersect_key( $cases, array_flip( $randomizedKeys ) );
-		return $randomizedCases;
+		$maxRandomizedCases = self::getMaxTestedFixturesPerTest() - count( $mandatoryCases );
+		if ( $maxRandomizedCases <= 0 ) {
+			throw new \AssertionError( 'Too many mandatory cases to keep random ones, ' .
+									   'consider increasing \CirrusSearch\CirrusTestCaseTrait::$MAX_TESTED_FIXTURES_PER_TEST' );
+		}
+		$randomizedKeys = array_rand( $casesToRandomize, min( count( $casesToRandomize ), $maxRandomizedCases ) );
+		$randomizedCases = array_intersect_key( $casesToRandomize, array_flip( $randomizedKeys ) );
+		return $mandatoryCases + $randomizedCases;
 	}
 
 	public static function hasFixture( string $testFile ): bool {

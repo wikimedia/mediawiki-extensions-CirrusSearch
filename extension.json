@@ -99,9 +99,9 @@
 		"ArticleRevisionVisibilitySet": "changelistener",
 		"PageUndeleteComplete": "archivechangelistener",
 		"BeforeInitialize": "default",
-		"CirrusSearchAddQueryFeatures": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAddQueryFeatures",
-		"CirrusSearchAnalysisConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchAnalysisConfig",
-		"CirrusSearchSimilarityConfig": "CirrusSearch\\Wikimedia\\WeightedTagsHooks::onCirrusSearchSimilarityConfig",
+		"CirrusSearchAddQueryFeatures": "weightedtags",
+		"CirrusSearchAnalysisConfig": "weightedtags",
+		"CirrusSearchSimilarityConfig": "weightedtags",
 		"GetPreferences": "default",
 		"LinksUpdateComplete": [
 			"changelistener",
@@ -110,7 +110,7 @@
 		"PrefixSearchExtractNamespace": "default",
 		"ResourceLoaderGetConfigVars": "default",
 		"SearchIndexFields": [
-			"wikimediatags",
+			"weightedtags",
 			"custompagefields"
 		],
 		"SearchGetNearMatch": "default",
@@ -131,8 +131,12 @@
 				"ConfigFactory"
 			]
 		},
-		"wikimediatags": {
-			"class": "CirrusSearch\\Wikimedia\\WeightedTagsHooks"
+		"weightedtags": {
+			"class": "CirrusSearch\\Search\\WeightedTagsHooks",
+			"factory": "CirrusSearch\\Search\\WeightedTagsHooks::create",
+			"services": [
+				"ConfigFactory"
+			]
 		},
 		"custompagefields": {
 			"class": "CirrusSearch\\Hooks\\CustomPageFields"
@@ -693,12 +697,15 @@
 			"value": "elastic"
 		},
 		"CirrusSearchWMFExtraFeatures": {
-			"description": "Configuration for Wikimedia-spexific extra features.\n\n* weighted_tags: multi purpose tag search.\n** build: include in the index definition",
+			"description": "Deprecated in favour of CirrusSearchWeightedTags. Configuration for Wikimedia-specific extra features.\n\n* weighted_tags: multi purpose tag search.\n** build: include in the index definition",
+			"value": null
+		},
+		"CirrusSearchWeightedTags": {
+			"description": "Configuration for features using weighted tags.",
 			"value": {
-				"weighted_tags": {
-					"build": false,
-					"use": false
-				}
+				"build": false,
+				"use": false,
+				"max_score": 1000
 			}
 		},
 		"CirrusSearchCompletionBannedPageIds": {

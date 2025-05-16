@@ -1,14 +1,12 @@
 <?php
 
-namespace CirrusSearch\Wikimedia;
+namespace CirrusSearch\Search;
 
-use CirrusSearch\Search\CirrusIndexField;
 use SearchEngine;
 use SearchIndexFieldDefinition;
 
 /**
- * Field definitions for the (Wikimedia-specific) weighted_tags search feature.
- * @package CirrusSearch\Wikimedia
+ * Field definitions for the weighted_tags search feature.
  * @see WeightedTagsHooks
  */
 class WeightedTags extends SearchIndexFieldDefinition {

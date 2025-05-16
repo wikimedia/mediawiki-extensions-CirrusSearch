@@ -59,7 +59,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			}
 		}
 
-		return self::randomizeFixtures( $tests );
+		return self::randomizeFixtures( $tests, "browsertest_" );
 	}
 
 	/**

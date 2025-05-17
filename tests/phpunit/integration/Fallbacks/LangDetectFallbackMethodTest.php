@@ -123,7 +123,7 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 			->setAllowRewrite( true )
 			->build();
 		$expectedRewrittenResults = $secondTryNumResults >= 0 ?
-			DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), $secondTryNumResults ) : null;
+			DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), $secondTryNumResults ) : null;
 		$searcherFactory = null;
 		if ( $expectedScoreApprox > 0 ) {
 			$searcherFactory = $this->getSearcherFactoryMock(
@@ -141,7 +141,7 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 			],
 			$this->getInterwikiMock( $targetWikiConfig, $returnedLang !== 'en' ? $returnedLang : null ) );
 
-		$initialResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), $initialNumResults );
+		$initialResults = DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), $initialNumResults );
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory,
 			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() );
 		$this->assertEquals( $expectedScoreApprox, $fallback->successApproximation( $context ) );
@@ -192,7 +192,7 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 			[ 'tested_detector' => $this->getLanguageDetector( 'fr' ) ],
 			$this->getInterwikiMock( $targetWikiConfig, $allowRewrite ? 'fr' : null ) );
 
-		$initialResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
+		$initialResults = DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), 0 );
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory,
 			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() );
 		$this->assertEquals( $expectedScore, $fallback->successApproximation( $context ) );

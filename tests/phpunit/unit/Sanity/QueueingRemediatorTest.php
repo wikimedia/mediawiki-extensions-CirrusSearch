@@ -16,10 +16,8 @@ use MediaWiki\Utils\MWTimestamp;
 class QueueingRemediatorTest extends CirrusTestCase {
 	private const NOW = 123;
 
-	public function provideTestJobIsSent() {
+	public static function provideTestJobIsSent() {
 		$title = Title::makeTitle( NS_MAIN, 'Test' );
-		$wp = $this->createMock( WikiPage::class );
-		$wp->method( 'getTitle' )->willReturn( $title );
 		$wrongIndex = 'wrongType';
 		$docId = '123';
 		foreach ( [ null, 'c1' ] as $cluster ) {
@@ -43,15 +41,15 @@ class QueueingRemediatorTest extends CirrusTestCase {
 
 			$baseCaseName = $cluster === null ? 'for all clusters ' : 'for some cluster ';
 			yield $baseCaseName . 'oldDocument' =>
-				[ 'oldDocument', [ $wp ], [ $linksUpdateJob ], $cluster ];
+				[ 'oldDocument', [ 'wikiPage' ], [ $linksUpdateJob ], $cluster ];
 			yield $baseCaseName . 'pageNotInIndex' =>
-				[ 'pageNotInIndex', [ $wp ], [ $linksUpdateJob ], $cluster ];
+				[ 'pageNotInIndex', [ 'wikiPage' ], [ $linksUpdateJob ], $cluster ];
 			yield $baseCaseName . 'redirectInIndex' =>
-				[ 'redirectInIndex', [ $docId, $wp, $wrongIndex ], [ $wrongIndexDelete, $linksUpdateJob ], $cluster ];
+				[ 'redirectInIndex', [ $docId, 'wikiPage', $wrongIndex ], [ $wrongIndexDelete, $linksUpdateJob ], $cluster ];
 			yield $baseCaseName . 'oldVersionInIndex' =>
-				[ 'oldVersionInIndex', [ $docId, $wp, $wrongIndex ], [ $linksUpdateJob ], $cluster ];
+				[ 'oldVersionInIndex', [ $docId, 'wikiPage', $wrongIndex ], [ $linksUpdateJob ], $cluster ];
 			yield $baseCaseName . 'pageInWrongIndex' =>
-				[ 'pageInWrongIndex', [ $docId, $wp, $wrongIndex ], [ $wrongIndexDelete, $linksUpdateJob ], $cluster ];
+				[ 'pageInWrongIndex', [ $docId, 'wikiPage', $wrongIndex ], [ $wrongIndexDelete, $linksUpdateJob ], $cluster ];
 			yield $baseCaseName . 'ghostPageInIndex' =>
 				[ 'ghostPageInIndex', [ $docId, $title, $wrongIndex ], [ $deletePageJob ], $cluster ];
 		}
@@ -65,6 +63,14 @@ class QueueingRemediatorTest extends CirrusTestCase {
 	 * @param string|null $cluster
 	 */
 	public function testJobIsSent( $methodCall, array $methodParams, array $jobs, $cluster ) {
+		foreach ( $methodParams as &$param ) {
+			if ( $param === 'wikiPage' ) {
+				$wp = $this->createMock( WikiPage::class );
+				$wp->method( 'getTitle' )->willReturn( Title::makeTitle( NS_MAIN, 'Test' ) );
+				$param = $wp;
+			}
+		}
+
 		MWTimestamp::setFakeTime( self::NOW );
 		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
 		$jobQueueGroup->expects( $this->exactly( count( $jobs ) ) )

@@ -132,7 +132,7 @@ class CirrusSearchTest extends CirrusTestCase {
 		// only set needed config for Connection
 		$config = $this->newHashSearchConfig( ( $config ?: [] ) + $this->getMinimalConfig() );
 		return new CirrusSearch( $config, CirrusDebugOptions::defaultOptions(),
-			$this->namespacePrefixParser(), $this->getInterWikiResolver( $config ), $this->newTitleHelper() );
+			$this->namespacePrefixParser(), $this->getInterWikiResolver( $config ), self::newTitleHelper() );
 	}
 
 	/**

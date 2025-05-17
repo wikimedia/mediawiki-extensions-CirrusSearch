@@ -6,6 +6,7 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CirrusTestCaseTrait;
+use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\FullTextKeywordRegistry;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\SearchContext;
@@ -32,12 +33,12 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		}
 	}
 
-	public function provideNewHighlightFieldWithFactory() {
-		$configBase = $this->newHashSearchConfig( [
+	public static function provideNewHighlightFieldWithFactory() {
+		$configBase = new HashSearchConfig( [
 			'CirrusSearchFragmentSize' => 350,
 			'CirrusSearchUseExperimentalHighlighter' => false
 		] );
-		$configExp = $this->newHashSearchConfig( [
+		$configExp = new HashSearchConfig( [
 			'CirrusSearchFragmentSize' => 350,
 			'CirrusSearchUseExperimentalHighlighter' => true
 		] );
@@ -157,7 +158,7 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		] );
 		$fetchPhaseBuilder = new FetchPhaseConfigBuilder(
 			$config, SearchQuery::SEARCH_TEXT, in_array( 'provide-all-snippets', $options ) );
-		$type = new FullTextResultsType( $fetchPhaseBuilder, $query !== null, $this->newTitleHelper() );
+		$type = new FullTextResultsType( $fetchPhaseBuilder, $query !== null, self::newTitleHelper() );
 		if ( $query ) {
 			// TODO: switch to new parser.
 			$context = new SearchContext(

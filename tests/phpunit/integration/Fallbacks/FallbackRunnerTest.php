@@ -45,7 +45,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$containedSyntax = false,
 		?TitleHelper $titleHelper = null
 	): CirrusSearchResultSet {
-		$titleHelper = $titleHelper ?: $this->newTitleHelper();
+		$titleHelper = $titleHelper ?: self::newTitleHelper();
 		$resultSet = ( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() );
 		return new class( $resultSet, $titleHelper, $containedSyntax ) extends BaseCirrusSearchResultSet {
 			/** @var ResultSet */
@@ -89,7 +89,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testOrdering() {
-		$results = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
+		$results = DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), 0 );
 		$methods = [];
 
 		$methods['E'] = $this->getFallbackMethod( 0.1, $this->trackingCb( 'E' ), [ 'E' => 'E' ] );
@@ -110,7 +110,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testEarlyStop() {
-		$results = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
+		$results = DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), 0 );
 		$methods = [];
 
 		$methods['q'] = self::getFallbackMethod( 0.1 );
@@ -191,7 +191,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 	 * @dataProvider metricsProvider
 	 */
 	public function testMetrics( array $expectedMainResults, ?array $expectedQuerySuggestion, array $expectedResponseMetrics, $methods ) {
-		$results = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 0 );
+		$results = DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), 0 );
 		if ( $methods instanceof \Closure ) {
 			// The dummy result set requires $this to initialize. Support
 			// defining methods as a closure that returns the methods.
@@ -311,8 +311,8 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		$searcherFactory->expects( $this->exactly( 2 ) )
 			->method( 'makeSearcher' )
 			->willReturnOnConsecutiveCalls(
-				$this->mockSearcher( DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 2 ) ),
-				$this->mockSearcher( DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 3 ) )
+				$this->mockSearcher( DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), 2 ) ),
+				$this->mockSearcher( DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), 3 ) )
 			);
 		$runner = FallbackRunner::create( $query, $this->newManualInterwikiResolver( $config ) );
 		// Phrase suggester wins and runs its fallback query

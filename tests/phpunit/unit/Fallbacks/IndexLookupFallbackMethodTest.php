@@ -53,7 +53,7 @@ class IndexLookupFallbackMethodTest extends FallbackMethodTestBase {
 			->setAllowRewrite( true )
 			->build();
 
-		$rewrittenResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 1 );
+		$rewrittenResults = DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), 1 );
 		$rewrittenQuery = null;
 		if ( $suggestion != null && $rewritten ) {
 			$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $query, $suggestion,
@@ -68,7 +68,7 @@ class IndexLookupFallbackMethodTest extends FallbackMethodTestBase {
 			'lookup_suggestion_field', [], [], [] );
 		$this->assertNotNull( $fallback->getSearchRequest(
 			$this->createMock( Client::class ) ) );
-		$initialResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), $rewritten ? 0 : 1 );
+		$initialResults = DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), $rewritten ? 0 : 1 );
 		$context = new FallbackRunnerContextImpl( $initialResults, $searcherFactory, $this->namespacePrefixParser(),
 			$this->createCirrusSearchHookRunner() );
 		$this->assertSame( 0.0, $fallback->successApproximation( $context ), "No success without a response" );

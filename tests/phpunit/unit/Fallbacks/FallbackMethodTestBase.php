@@ -38,12 +38,12 @@ abstract class FallbackMethodTestBase extends CirrusTestCase {
 	 * @param TitleHelper|null $titleHelper
 	 * @return CirrusSearchResultSet
 	 */
-	protected function newResultSet(
+	protected static function newResultSet(
 		array $response,
 		$containedSyntax = false,
 		?TitleHelper $titleHelper = null
 	): CirrusSearchResultSet {
-		$titleHelper = $titleHelper ?: $this->newTitleHelper();
+		$titleHelper = $titleHelper ?: self::newTitleHelper();
 		$resultSet = ( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() );
 		return new class( $resultSet, $titleHelper, $containedSyntax ) extends BaseCirrusSearchResultSet {
 			/** @var ResultSet */

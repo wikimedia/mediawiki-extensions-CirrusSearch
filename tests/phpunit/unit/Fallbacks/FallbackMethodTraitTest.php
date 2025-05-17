@@ -80,7 +80,7 @@ class FallbackMethodTraitTest extends FallbackMethodTestBase {
 	 * @covers \CirrusSearch\Fallbacks\FallbackMethodTrait::resultsThreshold()
 	 */
 	public function testResultThreshold( $threshold, $mainTotal, array $interwikiTotals, $met ) {
-		$resultSet = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), $mainTotal, $interwikiTotals );
+		$resultSet = DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), $mainTotal, $interwikiTotals );
 		$mock = $this->getMockForTrait( FallbackMethodTrait::class );
 		$this->assertEquals( $met, $mock->resultsThreshold( $resultSet, $threshold ) );
 		if ( $threshold === 1 ) {
@@ -163,9 +163,9 @@ class FallbackMethodTraitTest extends FallbackMethodTestBase {
 		 * @var FallbackMethodTrait $mock
 		 */
 		$mock = $this->getMockForTrait( FallbackMethodTrait::class );
-		$initialResult = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 1 );
+		$initialResult = DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), 1 );
 
-		$rewrittenResults = DummySearchResultSet::fakeTotalHits( $this->newTitleHelper(), 2 );
+		$rewrittenResults = DummySearchResultSet::fakeTotalHits( self::newTitleHelper(), 2 );
 
 		$searchConfig = $this->newHashSearchConfig( $config );
 		$query = $this->getNewFTSearchQueryBuilder( $searchConfig, $initialQueryString )

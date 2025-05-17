@@ -151,7 +151,7 @@ class ResultsTypeTest extends CirrusIntegrationTestCase {
 	 * @dataProvider fancyRedirectHandlingProvider
 	 */
 	public function testFancyRedirectHandling( $expectedNs, $expected, $hit, array $namespaces = [] ) {
-		$type = new FancyTitleResultsType( 'prefix', $this->newTitleHelper() );
+		$type = new FancyTitleResultsType( 'prefix', self::newTitleHelper() );
 		$result = new \Elastica\Result( $hit );
 		$matches = $type->transformOneElasticResult( $result, $namespaces );
 		$title = FancyTitleResultsType::chooseBestTitleOrRedirect( $matches );
@@ -163,12 +163,12 @@ class ResultsTypeTest extends CirrusIntegrationTestCase {
 	 */
 	public function testFullTextSyntax() {
 		$res = new \Elastica\ResultSet( new Response( [] ), new Query( [] ), [] );
-		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ), true, $this->newTitleHelper() );
+		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ), true, self::newTitleHelper() );
 		$this->assertTrue( $fullTextRes->transformElasticsearchResult( $res )->searchContainedSyntax() );
 
-		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ), false, $this->newTitleHelper() );
+		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ), false, self::newTitleHelper() );
 		$this->assertFalse( $fullTextRes->transformElasticsearchResult( $res )->searchContainedSyntax() );
-		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ), false, $this->newTitleHelper() );
+		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ), false, self::newTitleHelper() );
 		$this->assertFalse( $fullTextRes->transformElasticsearchResult( $res )->searchContainedSyntax() );
 	}
 
@@ -177,13 +177,13 @@ class ResultsTypeTest extends CirrusIntegrationTestCase {
 	 */
 	public function testExtraFields() {
 		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ),
-			true, $this->newTitleHelper(), [ 'extra_field1', 'extra_field2' ] );
+			true, self::newTitleHelper(), [ 'extra_field1', 'extra_field2' ] );
 		$this->assertContains( 'extra_field1', $fullTextRes->getSourceFiltering() );
 		$this->assertContains( 'extra_field2', $fullTextRes->getSourceFiltering() );
 	}
 
 	public function testEmptyResultSet() {
-		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ), true, $this->newTitleHelper() );
+		$fullTextRes = new FullTextResultsType( new FetchPhaseConfigBuilder( new HashSearchConfig( [] ) ), true, self::newTitleHelper() );
 		$results = $fullTextRes->createEmptyResult();
 		$this->assertSame( 0, $results->numRows() );
 		$this->assertFalse( $results->hasMoreResults() );

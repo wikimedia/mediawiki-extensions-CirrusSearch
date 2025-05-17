@@ -303,7 +303,7 @@ trait CirrusTestCaseTrait {
 	 * @param InterwikiResolver|null $iwResolver
 	 * @return TitleHelper
 	 */
-	public function newTitleHelper( $hostWikiID = null, ?InterwikiResolver $iwResolver = null ): TitleHelper {
+	public static function newTitleHelper( $hostWikiID = null, ?InterwikiResolver $iwResolver = null ): TitleHelper {
 		return new class(
 			$hostWikiID,
 			$iwResolver ?: new EmptyInterwikiResolver(),

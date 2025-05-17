@@ -67,18 +67,18 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 		return getenv( 'REGEN_PARSER_TESTS' ) === $filename || getenv( 'REGEN_PARSER_TESTS' ) === 'all';
 	}
 
-	public function provideRefImplQueries() {
-		return $this->provideQueries( self::FIXTURE_FILE );
+	public static function provideRefImplQueries() {
+		return self::provideQueries( self::FIXTURE_FILE );
 	}
 
-	public function provideQueries( $filename ) {
+	public static function provideQueries( $filename ) {
 		if ( self::mustRegenParserTests( $filename ) ) {
 			return [];
 		}
 		$tests = CirrusIntegrationTestCase::loadFixture( $filename );
 		foreach ( $tests as $test => $data ) {
 			if ( !isset( $data['expected'] ) ) {
-				$this->fail( "Expected data not found for test $test, please regenerate this fixture " .
+				self::fail( "Expected data not found for test $test, please regenerate this fixture " .
 					"file by setting REGEN_PARSER_TESTS=$filename" );
 			}
 			yield $test => [

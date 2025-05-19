@@ -35,6 +35,8 @@ use CirrusSearch\SearchConfig;
  */
 class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 
+	private const FIXTURE_FILE = 'regexParser/ref_impl_fixtures.json';
+
 	/**
 	 * @dataProvider provideRefImplQueries
 	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
@@ -61,14 +63,42 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( $expected, $actual, true );
 	}
 
+	private static function mustRegenParserTests( string $filename ): bool {
+		return getenv( 'REGEN_PARSER_TESTS' ) === $filename || getenv( 'REGEN_PARSER_TESTS' ) === 'all';
+	}
+
 	public function provideRefImplQueries() {
-		return $this->provideQueries( 'ref_impl_fixtures.json' );
+		return $this->provideQueries( self::FIXTURE_FILE );
 	}
 
 	public function provideQueries( $filename ) {
-		$file = 'regexParser/' . $filename;
-		$tests = CirrusIntegrationTestCase::loadFixture( $file );
-		if ( getenv( 'REGEN_PARSER_TESTS' ) === $filename || getenv( 'REGEN_PARSER_TESTS' ) === 'all' ) {
+		if ( self::mustRegenParserTests( $filename ) ) {
+			return [];
+		}
+		$tests = CirrusIntegrationTestCase::loadFixture( $filename );
+		foreach ( $tests as $test => $data ) {
+			if ( !isset( $data['expected'] ) ) {
+				$this->fail( "Expected data not found for test $test, please regenerate this fixture " .
+					"file by setting REGEN_PARSER_TESTS=$filename" );
+			}
+			yield $test => [
+				$data['expected'],
+				$data['query'],
+				$data['config'] ?? []
+			];
+		}
+	}
+
+	public static function provideRegenParserTests() {
+		yield "Regen " . self::FIXTURE_FILE => [ self::FIXTURE_FILE ];
+	}
+
+	/**
+	 * @dataProvider provideRegenParserTests
+	 */
+	public function testRegenParserTests( string $filename ): void {
+		if ( self::mustRegenParserTests( $filename ) ) {
+			$tests = CirrusIntegrationTestCase::loadFixture( $filename );
 			$ntests = [];
 			foreach ( $tests as $name => $data ) {
 				$ntest = [];
@@ -82,20 +112,9 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 				$ntest['expected'] = $query->toArray();
 				$ntests[$name] = $ntest;
 			}
-			CirrusIntegrationTestCase::saveFixture( $file, $ntests );
-			return [];
+			CirrusIntegrationTestCase::saveFixture( $filename, $ntests );
 		}
-		foreach ( $tests as $test => $data ) {
-			if ( !isset( $data['expected'] ) ) {
-				$this->fail( "Expected data not found for test $test, please regenerate this fixture " .
-					"file by setting REGEN_PARSER_TESTS=$filename" );
-			}
-			yield $test => [
-				$data['expected'],
-				$data['query'],
-				$data['config'] ?? []
-			];
-		}
+		$this->assertTrue( $this->hasFixture( $filename ) );
 	}
 
 	private function parse( $query, $config ) {
@@ -116,4 +135,5 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 		$this->assertInstanceOf( QueryStringRegexParser::class, $parser );
 		return $parser;
 	}
+
 }

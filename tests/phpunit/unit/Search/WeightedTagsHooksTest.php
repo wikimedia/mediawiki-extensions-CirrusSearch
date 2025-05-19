@@ -161,10 +161,6 @@ class WeightedTagsHooksTest extends CirrusTestCase {
 		$this->assertAnalysisConfigRegistered( $analysisConfig, $maxScore );
 	}
 
-	public function testBCConstants() {
-		$this->assertSame( WeightedTagsHooks::FIELD_NAME, \CirrusSearch\Wikimedia\WeightedTagsHooks::FIELD_NAME );
-	}
-
 	/**
 	 * @param array $extraFeatures
 	 * @return void

@@ -156,8 +156,3 @@ class WeightedTagsHooks implements
 		return (int)( $this->getWeightedTagConfig()['max_score'] ?? 1000 );
 	}
 }
-
-/**
- * @deprecated moved to \CirrusSearch\Search
- */
-class_alias( WeightedTagsHooks::class, 'CirrusSearch\\Wikimedia\\WeightedTagsHooks' );

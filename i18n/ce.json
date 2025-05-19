@@ -58,7 +58,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "Нийса SPARQL чаккхенга $wgCirrusSearchCategoryEndpoint хӀотто йеза, кӀорггера категори лехар лелорхьама.",
 	"cirrussearch-feature-deepcat-exception": "КӀорггера категорица SPARQL дехар схьаэца аьтто ца баьлла",
 	"cirrussearch-feature-deepcat-timeout": "КӀорггера категори леха хан чекхйаьлла. Хила мега, категорехь тӀех дукха бухара категореш йу",
-	"cirrussearch-feature-deepcat-toomany": "КӀорггера категори лехамо тӀех дукха бухара категореш йухайерзийна",
+	"cirrussearch-feature-deepcat-toomany": "КӀорггера категори лехамо тӀех дукха категореш йухаерзийра. Категорешна йукъара цхьа бухара тоба бен ца лелийна.",
 	"cirrussearch-feature-deepcat-invalid-title": "Билгалйина категори нийса йац.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Нийса доцу агӀонан ID}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Нийса категореш схьайелла йац '$1' чохь.",
@@ -70,5 +70,6 @@
 	"cirrussearch-autoselect-profile": "Лехаман системо къастадо уггаре а дика профиль лело.",
 	"cirrussearch-offset-too-large": "ЖамӀаш дан аьтто ца баьлла. Лехамо ловш ду {{PLURAL:$1|$1 жамӀ}} кхаччалц, ткъа лехаман жамӀаша дерзийна $2 сов.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Лаамаза дӀасакъаьстина жамӀаш агӀонаш тӀе дӀайаздаран дехар тидаме ца оьцу.",
+	"cirrussearch-articleprediction-invalid-keyword": "Ца довза {{PLURAL:$2|маьӀна}} коьртачу дешан <kbd>$3:</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "\"inlanguage\" коьртачу дашна дӀакъастош санна цӀоьмалг лелор ширделла ду. Дехар до, \"|\" леладе. (вертикалан сиз/пайп) меттанаш къасто."
 }

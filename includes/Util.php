@@ -301,7 +301,7 @@ class Util {
 	 * punctuation or use insource. Don't remove escaped \?s, but unescape them.
 	 *
 	 * @param string $term
-	 * @param string $strippingLevel Either "all", "break", or "final"
+	 * @param string $strippingLevel Either "all", "break", "final", or "none"
 	 * @return string modified term, based on strippingLevel
 	 */
 	public static function stripQuestionMarks( $term, $strippingLevel ) {

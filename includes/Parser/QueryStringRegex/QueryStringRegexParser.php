@@ -93,7 +93,7 @@ class QueryStringRegexParser implements QueryParser {
 	private $query;
 
 	/**
-	 * @var string Either "all", "break", or "final"
+	 * @var string Either "all", "break", "final", or "none"
 	 */
 	private $questionMarkStripLevel;
 
@@ -179,7 +179,7 @@ class QueryStringRegexParser implements QueryParser {
 	 * @param \CirrusSearch\Parser\KeywordRegistry $keywordRegistry
 	 * @param Escaper $escaper
 	 * @param string $qmarkStripLevel Level of question mark stripping to apply, either "all",
-	 *  "break", or "final"
+	 *  "break", "final", or "none"
 	 * @param ParsedQueryClassifiersRepository $classifierRepository
 	 * @param NamespacePrefixParser $namespacePrefixParser
 	 * @param int|null $maxQueryLen maximum length of the query in chars

@@ -1,4 +1,4 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace CirrusSearch\Parser\AST\Visitor;
 
@@ -13,55 +13,53 @@ use Wikimedia\Assert\Assert;
  */
 abstract class LeafVisitor implements Visitor {
 	/**
-	 * @var int[]
+	 * @var string[]
 	 */
-	private $excludeOccurs;
+	private array $excludeOccurs;
 
 	/**
 	 * @var bool true when this branch is "negated".
 	 */
-	private $inNegation;
+	private bool $inNegation = false;
 	private ?BooleanClause $currentClause = null;
 
 	/**
-	 * @param int[] $excludeOccurs
+	 * @param string[] $excludeOccurs
 	 */
-	public function __construct( $excludeOccurs = [] ) {
-		array_walk( $excludeOccurs, static function ( $x ) {
-			BooleanClause::validateOccur( $x );
-		} );
+	public function __construct( array $excludeOccurs = [] ) {
+		array_walk( $excludeOccurs, static fn ( $x ) => BooleanClause::validateOccur( $x ) );
 		$this->excludeOccurs = $excludeOccurs;
 	}
 
-	final public function visitParsedBooleanNode( ParsedBooleanNode $node ) {
+	final public function visitParsedBooleanNode( ParsedBooleanNode $node ): void {
 		foreach ( $node->getClauses() as $clause ) {
 			$clause->accept( $this );
 		}
 	}
 
-	final public function visitNegatedNode( NegatedNode $node ) {
+	final public function visitNegatedNode( NegatedNode $node ): void {
 		/** @phan-suppress-next-line PhanImpossibleCondition I agree, this is impossible. */
 		Assert::invariant( false, 'NegatedNode should be optimized at parse time' );
 	}
 
-	final public function visitNamespaceHeader( NamespaceHeaderNode $node ) {
+	final public function visitNamespaceHeader( NamespaceHeaderNode $node ): void {
 		/** @phan-suppress-next-line PhanImpossibleCondition I agree, this is impossible. */
 		Assert::invariant( false, 'Not yet part of the AST, should not be visited.' );
 	}
 
-	final public function visitBooleanClause( BooleanClause $node ) {
-		if ( in_array( $node->getOccur(), $this->excludeOccurs ) ) {
+	final public function visitBooleanClause( BooleanClause $clause ): void {
+		if ( in_array( $clause->getOccur(), $this->excludeOccurs ) ) {
 			return;
 		}
 
 		$oldNegated = $this->inNegation;
 		$oldClause = $this->currentClause;
-		if ( $node->getOccur() === BooleanClause::MUST_NOT ) {
+		if ( $clause->getOccur() === BooleanClause::MUST_NOT ) {
 			$this->inNegation = !$this->inNegation;
 		}
-		$this->currentClause = $node;
+		$this->currentClause = $clause;
 
-		$node->getNode()->accept( $this );
+		$clause->getNode()->accept( $this );
 		$this->inNegation = $oldNegated;
 		$this->currentClause = $oldClause;
 	}
@@ -69,7 +67,7 @@ abstract class LeafVisitor implements Visitor {
 	/**
 	 * @return bool true if this node is in a negation
 	 */
-	final public function negated() {
+	final public function negated(): bool {
 		return $this->inNegation;
 	}
 

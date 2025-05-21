@@ -97,9 +97,9 @@ class KeywordNodeVisitorTest extends CirrusIntegrationTestCase {
 	 * @covers \CirrusSearch\Parser\AST\BooleanClause::accept()
 	 * @dataProvider provideQueries
 	 */
-	public function test( $term, array $states, $classFilter, $exlusionFilter ) {
-		$parser = $this->createNewFullTextQueryParser( $this->newHashSearchConfig( [] ) );
-		$visitor = new class( $exlusionFilter, $classFilter, $states ) extends KeywordNodeVisitor {
+	public function test( $term, array $states, $classFilter, $exclusionFilter ) {
+		$parser = $this->createNewFullTextQueryParser( $this->newHashSearchConfig() );
+		$visitor = new class( $exclusionFilter, $classFilter, $states ) extends KeywordNodeVisitor {
 			/**
 			 * @var int
 			 */

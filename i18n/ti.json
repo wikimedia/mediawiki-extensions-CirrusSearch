@@ -4,5 +4,9 @@
 			"Joanmp17"
 		]
 	},
+	"cirrussearch-completion-profile-fuzzy-pref-name": "ንቡር (ዝምከር)",
+	"cirrussearch-completion-profile-strict-pref-name": "ጽኑዕ ኣገባብ (ምዕቡል)",
+	"cirrussearch-completion-profile-normal-pref-name": "ዳግመ-ኣንፈት ኣገባብ (ምዕቡል)",
+	"cirrussearch-completion-profile-classic-pref-name": "ልምዳዊ ቅድመ-ጥብቆ ምድላይ",
 	"cirrussearch-article-words": "ኣብ ኩሉ ትሕዝቶ ገጻት ዝርከቡ ቃላት"
 }

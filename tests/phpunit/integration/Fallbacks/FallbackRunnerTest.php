@@ -21,9 +21,9 @@ use Elastica\Response;
 use Elastica\ResultSet;
 use Elastica\ResultSet\DefaultBuilder;
 use Elastica\Search;
+use LogicException;
 use MediaWiki\Status\Status;
 use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\AssertionFailedError;
 
 /**
  * @covers \CirrusSearch\Fallbacks\FallbackRunner
@@ -260,7 +260,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 				array $params,
 				InterwikiResolver $resolver
 			) {
-				throw new AssertionFailedError();
+				throw new LogicException( __METHOD__ . ' not expected to call' );
 			}
 
 			/**

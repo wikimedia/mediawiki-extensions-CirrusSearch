@@ -3,10 +3,10 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Test\DummyConnection;
+use LogicException;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\User\UserIdentityValue;
 use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\AssertionFailedError;
 
 /**
  * @covers \CirrusSearch\ElasticsearchIntermediary
@@ -43,7 +43,7 @@ class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 			}
 
 			protected function newLog( $description, $queryType, array $extra = [] ) {
-				throw new AssertionFailedError( "Not supposed to be called" );
+				throw new LogicException( "Not supposed to be called" );
 			}
 
 			public function assertions( $searchType, $expectedClientTimeout, $expectedShardTimeout ) {
@@ -67,7 +67,7 @@ class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 			}
 
 			protected function newLog( $description, $queryType, array $extra = [] ) {
-				throw new AssertionFailedError( "Not supposed to be called" );
+				throw new LogicException( "Not supposed to be called" );
 			}
 		};
 

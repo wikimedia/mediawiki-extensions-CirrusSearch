@@ -331,18 +331,6 @@ class ConfigUtils {
 			// Any index with aliases is likely to be live
 			return Status::newGood( true );
 		}
-		// On a newly created and promoted index this would only trigger on
-		// indices with volume, some low volume indices might be promoted but
-		// not recieve a query between promotion and this check.
-		$searchStats = $stats->get( '_all', 'total', 'search' );
-		if ( $searchStats['query_total'] !== 0 || $searchStats['suggest_total'] !== 0 ) {
-			// Something has run through here, it might not be live now (no aliases) but
-			// it was used at some point. Call it live-enough to not delete automatically.
-			$status = Status::newGood( true );
-			$status->warning( "Broken index {$indexName} appears to be in use, " .
-				"please check and delete." );
-			return $status;
-		}
 		return Status::newGood( false );
 	}
 }

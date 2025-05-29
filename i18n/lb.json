@@ -24,7 +24,7 @@
 	"cirrussearch-qi-profile-popular-pv": "Klassement baséiert primär dorop wéi dacks d'Säit opgeruff gouf",
 	"cirrussearch-qi-profile-popular-inclinks": "Klassement baséiert primär op d'Zuel vun de Linken déi erakomme",
 	"prefs-completion": "Siche komplettéieren",
-	"cirrussearch-pref-completion-profile-help": "Definéiert d'Verhale vun de Virschléi fir dat automatescht Ausfëllen (siche-wann-Dir-tippt).\n\nD'[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Virschléi fir d'Ausfëllen] ass en Algorithmus fir Virschléi fir ze sichen mat enger verbesserter Korrektur vun Tippfeeler an enger verbesserter Relevanz beim Sichen. Siche mat Prefix ass den alen Algorithmus fir Virschloe vum Siche-wann-Dir-tippt.",
+	"cirrussearch-pref-completion-profile-help": "Definéiert d'Verhale vun de Virschléi fir dat automatescht Ausfëllen (siche-wärend-Dir-tippt).\n\nD'[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Virschléi fir d'Ausfëllen] ass en Algorithmus fir Virschléi fir ze sichen mat enger verbesserter Korrektur vun Tippfeeler an enger verbesserter Relevanz beim Sichen. Siche mat Prefix ass den alen Algorithmus fir Virschloe vum Siche-wann-Dir-tippt.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standard (recommandéiert)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Verbessert bis zu zwéin Tippfeeler. Hëlt Viruleedungen ewech déi ganz änlech wéi den Haapttitel sinn.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Verbessert bis zu zwéin Tippfeeler. Léist änlech Viruleedungen op. Fënnt Deeler vu Sätz an den Titelen.",

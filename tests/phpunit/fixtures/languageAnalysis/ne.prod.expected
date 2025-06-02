@@ -163,6 +163,7 @@
                 "icu_token_repair",
                 "homoglyph_norm",
                 "icu_normalizer",
+                "indic_normalization",
                 "icu_folding",
                 "remove_empty"
             ],
@@ -181,6 +182,7 @@
                 "icu_token_repair",
                 "homoglyph_norm",
                 "icu_normalizer",
+                "indic_normalization",
                 "icu_folding",
                 "remove_empty"
             ],

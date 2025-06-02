@@ -145,6 +145,7 @@
             ],
             "filter": [
                 "lowercase",
+                "indic_normalization",
                 "asciifolding"
             ],
             "tokenizer": "standard",
@@ -161,6 +162,7 @@
             ],
             "filter": [
                 "lowercase",
+                "indic_normalization",
                 "asciifolding"
             ],
             "tokenizer": "standard",

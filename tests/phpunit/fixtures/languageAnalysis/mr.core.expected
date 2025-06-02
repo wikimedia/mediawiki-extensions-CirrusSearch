@@ -278,8 +278,7 @@
         "marathi_norm": {
             "type": "mapping",
             "mappings": [
-                "\u0930\u094d\u200d=>\u0931\u094d",
-                "\u0930\u093c=>\u0931"
+                "\u0930\u094d\u200d=>\u0931\u094d"
             ]
         },
         "near_space_flattener": {

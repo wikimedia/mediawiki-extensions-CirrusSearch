@@ -157,7 +157,8 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "telugu_norm"
             ],
             "filter": [
                 "icu_token_repair",
@@ -175,7 +176,8 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "arabic_extended_norm"
+                "arabic_extended_norm",
+                "telugu_norm"
             ],
             "filter": [
                 "icu_token_repair",
@@ -326,6 +328,16 @@
             "type": "pattern_replace",
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
             "replacement": "$1 $2"
+        },
+        "telugu_norm": {
+            "type": "mapping",
+            "mappings": [
+                "\u0c12\u0c4c=>\u0c14",
+                "\u0c12\u0c55=>\u0c13",
+                "\u0c2c\u0c41\u0c41=>\u0c0b",
+                "\u0c46\u0c55=>\u0c47",
+                "\u0c46\u0c56=>\u0c48"
+            ]
         },
         "word_break_helper": {
             "type": "limited_mapping",

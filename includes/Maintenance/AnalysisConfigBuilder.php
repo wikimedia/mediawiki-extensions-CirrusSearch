@@ -875,34 +875,36 @@ class AnalysisConfigBuilder {
 					build( $config );
 				break;
 
-			// largely uncustomized, except for asciifolding / icu_folding
-			// i.e., these have no Latin icu_folding exceptions (or no exceptions at all)
+			// languages with the default analyzer, plus asciifolding / icu_folding (i.e.,
+			// these have no Latin icu_folding exceptions, or no exceptions at all), plus
+			// possible language-specific normalization char filter
 			case 'assamese':
 			case 'burmese':
 			case 'georgian':
 			case 'kannada':
-			case 'nepali':
-			case 'punjabi':
+			case 'marathi':
+			case 'sinhala':
 			case 'swahili':
 			case 'tamil':
 			case 'telugu':
 			case 'uzbek':
+				$this->enableLangNormCharMap( $language, $langName, $myAnalyzerBuilder );
 				$config = $myAnalyzerBuilder->
 					withFilters( [ 'lowercase', 'asciifolding' ] )->
 					build( $config );
 				break;
 
-			// languages with a normalization char filter (see $langNormCharMap), plus
-			// asciifolding / icu_folding
+			// Default analyzer, plus asciifolding / icu_folding (i.e., these have no Latin
+			// icu_folding exceptions, or no exceptions at all), indic_normalization, and
+			// possible language-specific normalization char filter
 			case 'gujarati':
-			case 'marathi':
 			case 'malayalam':
+			case 'nepali':
 			case 'odia':
-			case 'sinhala':
+			case 'punjabi':
+				$this->enableLangNormCharMap( $language, $langName, $myAnalyzerBuilder );
 				$config = $myAnalyzerBuilder->
-					withCharMap( $this->langNormCharMap[$language], "{$langName}_norm" )->
-					withCharFilters( [ "{$langName}_norm" ] )->
-					withFilters( [ 'lowercase', 'asciifolding' ] )->
+					withFilters( [ 'lowercase', 'indic_normalization', 'asciifolding' ] )->
 					build( $config );
 				break;
 
@@ -914,6 +916,18 @@ class AnalysisConfigBuilder {
 			case 'tagalog':
 				$config = $myAnalyzerBuilder->
 					withFilters( [ 'lowercase', 'icu_folding' ] )->
+					build( $config );
+				break;
+
+			// largely uncustomized, except for indic_normalization
+			case 'angika':
+			case 'awadhi':
+			case 'bhojpuri':
+			case 'goan_konkani':
+			case 'maithili':
+			case 'sanskrit':
+				$config = $myAnalyzerBuilder->
+					withFilters( [ 'lowercase', 'indic_normalization' ] )->
 					build( $config );
 				break;
 
@@ -1640,6 +1654,22 @@ class AnalysisConfigBuilder {
 	}
 
 	/**
+	 * If langNormCharMap is defined for the given language, build the char map and name it
+	 * after the language. (Note this will replace any existing CharMap and CharFilters.)
+	 *
+	 * @param string $language Config language (short code)
+	 * @param string $langName Config language (full name)
+	 * @param AnalyzerBuilder $analyzerBuilder
+	 */
+	private function enableLangNormCharMap( $language, $langName, $analyzerBuilder ) {
+		if ( isset( $this->langNormCharMap[$language] ) ) {
+			$analyzerBuilder->
+				withCharMap( $this->langNormCharMap[$language], "{$langName}_norm" )->
+				withCharFilters( [ "{$langName}_norm" ] );
+		}
+	}
+
+	/**
 	 * Pick the appropriate default analyzer based on the language.  Rather than think of
 	 * this as per language customization you should think of this as an effort to pick a
 	 * reasonably default in case CirrusSearch isn't customized for the language.
@@ -1837,14 +1867,17 @@ class AnalysisConfigBuilder {
 	 */
 	private $elasticsearchLanguageAnalyzers = [
 		'sq' => 'albanian',
+		'anp' => 'angika',
 		'ar' => 'arabic',
 		'ary' => 'arabic-moroccan',
 		'arz' => 'arabic-egyptian',
 		'hy' => 'armenian',
 		'as' => 'assamese',
+		'awa' => 'awadhi',
 		'az' => 'azerbaijani',
 		'eu' => 'basque',
 		'bn' => 'bengali',
+		'bh' => 'bhojpuri',
 		'pt-br' => 'brazilian',
 		'bg' => 'bulgarian',
 		'my' => 'burmese',
@@ -1866,6 +1899,7 @@ class AnalysisConfigBuilder {
 		'gl' => 'galician',
 		'ka' => 'georgian',
 		'de' => 'german',
+		'gom' => 'goan_konkani',
 		'el' => 'greek',
 		'gu' => 'gujarati',
 		'hi' => 'hindi',
@@ -1878,6 +1912,7 @@ class AnalysisConfigBuilder {
 		'kk' => 'kazakh',
 		'lt' => 'lithuanian',
 		'lv' => 'latvian',
+		'mai' => 'maithili',
 		'ms' => 'malay',
 		'ml' => 'malayalam',
 		'mr' => 'marathi',
@@ -1892,6 +1927,7 @@ class AnalysisConfigBuilder {
 		'pa' => 'punjabi',
 		'ro' => 'romanian',
 		'ru' => 'russian',
+		'sa' => 'sanskrit',
 		'si' => 'sinhala',
 		'sl' => 'slovene',
 		'ckb' => 'sorani',
@@ -1999,11 +2035,11 @@ class AnalysisConfigBuilder {
 	 * @var array[] indexed by language code, char filter normalization mappings
 	 */
 	private $langNormCharMap = [
-		'gu' => [ 'ાૅ=>ૉ', 'ાે=>ો', 'ાૈ=>ૌ' ], // T332342
-		'mr' => [ 'र्‍=>ऱ्', 'ऱ=>ऱ' ], // T332342
+		'mr' => [ 'र्‍=>ऱ्' ], // T332342 + T375567
 		'ml' => [ 'ൌ=>ൗ', 'ൎ=>ർ', '഻=>്', '്഼=>്', '്്=>്', '഼=>്' ], // T332342
 		'or' => [ 'ୖେ=>ୈ', 'ାେ=>ୋ', 'ୗେ=>ୌ' ], // T332342
 		'si' => [ 'ෘෘ=>ෲ', 'ෙෙ=>ෛ' ], // T332342
+		'te' => [ 'ఒౌ=>ఔ', 'ఒౕ=>ఓ', 'బుు=>ఋ', 'ెౕ=>ే', 'ై=>ై' ], // T375567
 	];
 
 	/**

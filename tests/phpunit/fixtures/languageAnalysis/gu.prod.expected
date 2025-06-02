@@ -157,13 +157,13 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "arabic_extended_norm",
-                "gujarati_norm"
+                "arabic_extended_norm"
             ],
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
                 "icu_normalizer",
+                "indic_normalization",
                 "icu_folding",
                 "remove_empty"
             ],
@@ -176,13 +176,13 @@
                 "acronym_fixer",
                 "camelCase_splitter",
                 "word_break_helper",
-                "arabic_extended_norm",
-                "gujarati_norm"
+                "arabic_extended_norm"
             ],
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
                 "icu_normalizer",
+                "indic_normalization",
                 "icu_folding",
                 "remove_empty"
             ],
@@ -297,14 +297,6 @@
                 "\\u05F2=>\\u05D9\\u05D9",
                 "\\uFB1F=>\\u05D9\\u05D9\\u05B7",
                 "\\u05D9\\u05B7\\u05D9=>\\u05D9\\u05D9\\u05B7"
-            ]
-        },
-        "gujarati_norm": {
-            "type": "mapping",
-            "mappings": [
-                "\u0abe\u0ac5=>\u0ac9",
-                "\u0abe\u0ac7=>\u0acb",
-                "\u0abe\u0ac8=>\u0acc"
             ]
         },
         "icu_normalizer": {

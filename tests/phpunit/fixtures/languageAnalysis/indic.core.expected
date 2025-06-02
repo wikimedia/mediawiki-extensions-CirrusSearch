@@ -140,13 +140,11 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "arabic_extended_norm",
-                "malayalam_norm"
+                "arabic_extended_norm"
             ],
             "filter": [
                 "lowercase",
-                "indic_normalization",
-                "asciifolding"
+                "indic_normalization"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -157,13 +155,11 @@
                 "regex_acronym_fixer",
                 "regex_camelCase",
                 "word_break_helper",
-                "arabic_extended_norm",
-                "malayalam_norm"
+                "arabic_extended_norm"
             ],
             "filter": [
                 "lowercase",
-                "indic_normalization",
-                "asciifolding"
+                "indic_normalization"
             ],
             "tokenizer": "standard",
             "type": "custom"
@@ -275,17 +271,6 @@
                 "\\u05F2=>\\u05D9\\u05D9",
                 "\\uFB1F=>\\u05D9\\u05D9\\u05B7",
                 "\\u05D9\\u05B7\\u05D9=>\\u05D9\\u05D9\\u05B7"
-            ]
-        },
-        "malayalam_norm": {
-            "type": "mapping",
-            "mappings": [
-                "\u0d4c=>\u0d57",
-                "\u0d4e=>\u0d7c",
-                "\u0d3b=>\u0d4d",
-                "\u0d4d\u0d3c=>\u0d4d",
-                "\u0d4d\u0d4d=>\u0d4d",
-                "\u0d3c=>\u0d4d"
             ]
         },
         "near_space_flattener": {

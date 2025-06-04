@@ -4,9 +4,7 @@ namespace CirrusSearch\Sanity;
 
 use CirrusSearch\CirrusTestCase;
 use MediaWiki\Page\WikiPage;
-use Psr\Log\NullLogger;
-use Wikimedia\Stats\Metrics\BaseMetric;
-use Wikimedia\Stats\Metrics\CounterMetric;
+use Wikimedia\Stats\StatsFactory;
 
 /**
  * @covers \CirrusSearch\Sanity\CountingRemediator
@@ -14,23 +12,24 @@ use Wikimedia\Stats\Metrics\CounterMetric;
 class CountingRemediatorTest extends CirrusTestCase {
 
 	public function testRedirectInIndex() {
-		$baseMetric = new BaseMetric( '', 'testMetric' );
-		$metric = new CounterMetric( $baseMetric, new NullLogger() );
+		$statsHelper = StatsFactory::newUnitTestingHelper();
+		$statsFactory = $statsHelper->getStatsFactory();
 
-		$buffer = new BufferedRemediator();
 		$remediator = new CountingRemediator(
-			$buffer,
-			static function ( string $problem ) use ( $metric ) {
-				$metric->setLabel( "problem", $problem );
-				return $metric;
+			new BufferedRemediator(),
+			static function ( string $problem ) use ( $statsFactory ) {
+				return $statsFactory->getCounter( 'testMetric' )
+					->setLabel( 'problem', $problem );
 			}
 		);
 
 		$page = $this->createNoOpMock( WikiPage::class );
-		$this->assertCount( 0, $baseMetric->getSamples() );
+		$this->assertSame( [], $statsHelper->consumeAllFormatted() );
+
 		$remediator->redirectInIndex( '42', $page, 'content' );
-		$this->assertCount( 1, $baseMetric->getSamples() );
-		$this->assertArrayContains( [ "problem" ], $baseMetric->getLabelKeys() );
-		$this->assertArrayContains( [ "redirectInIndex" ], $baseMetric->getLabelValues() );
+		$this->assertSame(
+			[ 'mediawiki.testMetric:1|c|#problem:redirectInIndex' ],
+			$statsHelper->consumeAllFormatted()
+		);
 	}
 }

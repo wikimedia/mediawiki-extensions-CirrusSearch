@@ -74,10 +74,10 @@ abstract class Validator {
 	}
 
 	/**
-	 * Normalize a config value for comparison.  Elasticsearch will accept all kinds
-	 * of config values but it tends to throw back 'true' for true and 'false' for
-	 * false so we normalize everything.  Sometimes, oddly, it'll throw back false
-	 * for false....
+	 * Normalize a config value for comparison.  The search engine will accept
+	 * all kinds of config values but it tends to throw back 'true' for true and
+	 * 'false' for false so we normalize everything.  Sometimes, oddly, it'll
+	 * throw back false for false....
 	 *
 	 * @param mixed $value
 	 * @return mixed

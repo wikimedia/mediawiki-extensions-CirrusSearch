@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mirandese (mwl) data for Elasticsearch analysis config.
+ * Mirandese (mwl) data for search analysis config.
  */
 
 $mirandeseStopwords = [

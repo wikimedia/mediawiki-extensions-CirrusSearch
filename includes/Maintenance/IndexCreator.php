@@ -104,8 +104,8 @@ class IndexCreator {
 		}
 
 		// On wikis with particularly large mappings, such as wikibase, sometimes we
-		// see a race where elastic says it created the index, but then a quick followup
-		// request 404's. Wait for green to ensure it's really ready.
+		// see a race where the search engine says it created the index, but then a
+		// quick followup request 404's. Wait for green to ensure it's really ready.
 		if ( !$this->utils->waitForGreen( $this->index->getName(), $this->greenTimeout ) ) {
 			return Status::newFatal( 'Created index did not reach green state.' );
 		}

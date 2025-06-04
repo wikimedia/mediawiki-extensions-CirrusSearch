@@ -3,7 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 /**
- * Builds elasticsearch analysis config arrays for the completion suggester
+ * Builds search analysis config arrays for the completion suggester
  * index.
  *
  * This program is free software; you can redistribute it and/or modify

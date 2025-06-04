@@ -5,7 +5,7 @@ namespace CirrusSearch\Maintenance;
 use MediaWiki\Json\FormatJson;
 
 /**
- * Filter unused and duplicate entries from elasticsearch index configuration
+ * Filter unused and duplicate entries from search index configuration
  */
 class AnalysisFilter {
 	/** @var string[] List of key's in mappings that reference analyzers */
@@ -15,7 +15,7 @@ class AnalysisFilter {
 	private static $SUBFIELD_FIELDS = [ 'fields', 'properties' ];
 
 	/**
-	 * Recursively finds used analyzers from elasticsearch mappings
+	 * Recursively finds used analyzers from search mappings
 	 *
 	 * @param array $properties a 'properties' or 'fields' list from the mappings
 	 * @return Set The set of referenced analyzers
@@ -38,13 +38,13 @@ class AnalysisFilter {
 	}
 
 	/**
-	 * @param array[] $mappings Elasticsearch mapping configuration
+	 * @param array[] $mappings search mapping configuration
 	 * @return Set The set of analyzer names referenced in $mappings
 	 */
 	public function findUsedAnalyzersInMappings( array $mappings ) {
 		$analyzers = new Set();
 		if ( isset( $mappings['properties'] ) ) {
-			// modern elastic, no index types
+			// modern search, no index types
 			$analyzers->union(
 				$this->findUsedFromField( $mappings['properties'] ) );
 		} else {
@@ -58,7 +58,7 @@ class AnalysisFilter {
 	}
 
 	/**
-	 * Recursively applies analyzer aliases to elasticsearch mappings
+	 * Recursively applies analyzer aliases to search mappings
 	 *
 	 * @param array $properties a 'properties' or 'fields' list from the mappings
 	 * @param string[] $aliases Map from current analyzer name to replacement name
@@ -83,13 +83,13 @@ class AnalysisFilter {
 	}
 
 	/**
-	 * @param array[] $mappings Elasticsearch index mapping configuration
+	 * @param array[] $mappings search index mapping configuration
 	 * @param string[] $aliases Mapping from old name to new name for analyzers
 	 * @return array Updated index mapping configuration
 	 */
 	public function pushAnalyzerAliasesIntoMappings( array $mappings, $aliases ) {
 		if ( isset( $mappings['properties'] ) ) {
-			// modern elastic, no index types
+			// modern search, no index types
 			$mappings['properties'] = $this->pushAnalyzerAliasesIntoField(
 				$mappings['properties'], $aliases
 			);
@@ -114,7 +114,7 @@ class AnalysisFilter {
 	}
 
 	/**
-	 * @param array $analysis The index.analysis field of elasticsearch index settings
+	 * @param array $analysis The index.analysis field of the search index settings
 	 * @param Set $usedAnalyzers Set of analyzers to keep configurations for
 	 * @return array The $analysis array filtered to only pieces needed for $usedAnalyzers
 	 */
@@ -185,7 +185,7 @@ class AnalysisFilter {
 	 * same elements and this deduplication can remove a large fraction of the
 	 * configuration.
 	 *
-	 * @param array $analysis The index.analysis field of elasticsearch index settings
+	 * @param array $analysis The index.analysis field of the search index settings
 	 * @return string[] map from old analyzer name to new analyzer name.
 	 */
 	public function deduplicateAnalysisConfig( array $analysis ) {
@@ -223,14 +223,14 @@ class AnalysisFilter {
 	}
 
 	/**
-	 * Shrink the size of elasticsearch index configuration
+	 * Shrink the size of the search index configuration
 	 *
 	 * Removes analysis chain elements that are defined but never referenced
 	 * from the mappings. Optionally deduplicates elements of the analysis
 	 * chain.
 	 *
-	 * @param array $analysis Elasticsearch index analysis configuration
-	 * @param array $mappings Elasticsearch index mapping configuration
+	 * @param array $analysis search index analysis configuration
+	 * @param array $mappings search index mapping configuration
 	 * @param bool $deduplicate When true deduplicate the analysis chain
 	 * @param string[] $protected list of named analyzers that should not be removed.
 	 * @return array [$settings, $mappings]

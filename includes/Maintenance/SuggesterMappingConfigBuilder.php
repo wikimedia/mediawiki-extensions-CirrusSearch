@@ -6,7 +6,7 @@ use CirrusSearch\SearchConfig;
 use MediaWiki\MediaWikiServices;
 
 /**
- * Builds elasticsearch mapping configuration arrays for the suggester index.
+ * Builds search mapping configuration arrays for the suggester index.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

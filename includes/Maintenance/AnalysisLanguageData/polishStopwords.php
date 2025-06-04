@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Polish (pl) stop word data for Elasticsearch analysis config.
+ * Polish (pl) stop word data for search analysis config.
  */
 
 $polishStopwords = [

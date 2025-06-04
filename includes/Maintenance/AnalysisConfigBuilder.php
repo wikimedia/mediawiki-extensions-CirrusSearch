@@ -9,7 +9,7 @@ use CirrusSearch\SearchConfig;
 use MediaWiki\MediaWikiServices;
 
 /**
- * Builds elasticsearch analysis config arrays.
+ * Builds search analysis config arrays.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,7 +95,7 @@ class AnalysisConfigBuilder {
 
 	/**
 	 * @param string $langCode The language code to build config for
-	 * @param string[] $plugins list of plugins installed in Elasticsearch
+	 * @param string[] $plugins list of installed plugins
 	 * @param SearchConfig|null $config
 	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
 	 */
@@ -109,7 +109,7 @@ class AnalysisConfigBuilder {
 
 		$this->defaultLanguage = $langCode;
 		$this->plugins = $plugins;
-		foreach ( $this->elasticsearchLanguageAnalyzersFromPlugins as $pluginSpec => $extra ) {
+		foreach ( $this->searchLanguageAnalyzersFromPlugins as $pluginSpec => $extra ) {
 			$pluginsPresent = 1;
 			$pluginList = explode( ',', $pluginSpec );
 			foreach ( $pluginList as $plugin ) {
@@ -119,8 +119,8 @@ class AnalysisConfigBuilder {
 				}
 			}
 			if ( $pluginsPresent ) {
-				$this->elasticsearchLanguageAnalyzers =
-					array_merge( $this->elasticsearchLanguageAnalyzers, $extra );
+				$this->customSearchLanguageAnalyzers =
+					array_merge( $this->customSearchLanguageAnalyzers, $extra );
 			}
 		}
 		$this->icu = Plugins::contains( 'analysis-icu', $plugins );
@@ -1679,7 +1679,7 @@ class AnalysisConfigBuilder {
 	 */
 	public function getDefaultTextAnalyzerType( $language ) {
 		// If we match a language exactly, use it
-		return $this->elasticsearchLanguageAnalyzers[ $language ] ?? 'default';
+		return $this->customSearchLanguageAnalyzers[ $language ] ?? 'default';
 	}
 
 	/**
@@ -1857,15 +1857,17 @@ class AnalysisConfigBuilder {
 	}
 
 	/**
-	 * Languages for which we have a custom analysis chain (Elastic built-in or our
+	 * Languages for which we have a custom analysis chain (built-in or our
 	 * own custom analysis). All other languages default to the default analyzer which
 	 * isn't too good. Note that this array is sorted alphabetically by value. The
-	 * Elastic list is sourced from
+	 * OpenSearch list:
+	 * https://docs.opensearch.org/docs/latest/analyzers/language-analyzers/index/
+	 * Elastic list:
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html
 	 *
 	 * @var string[]
 	 */
-	private $elasticsearchLanguageAnalyzers = [
+	private $customSearchLanguageAnalyzers = [
 		'sq' => 'albanian',
 		'anp' => 'angika',
 		'ar' => 'arabic',
@@ -2165,7 +2167,7 @@ class AnalysisConfigBuilder {
 	/**
 	 * @var array[]
 	 */
-	private $elasticsearchLanguageAnalyzersFromPlugins = [
+	private $searchLanguageAnalyzersFromPlugins = [
 		/**
 		 * multiple plugin requirements can be comma separated
 		 *

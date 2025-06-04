@@ -13,7 +13,7 @@ use MediaWiki\MediaWikiServices;
 use SearchIndexField;
 
 /**
- * Builds elasticsearch mapping configuration arrays.
+ * Builds search mapping configuration arrays.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,8 +103,8 @@ class MappingConfigBuilder {
 	 * @return array
 	 */
 	private function getDefaultFields() {
-		// Note never to set something as type='object' here because that isn't returned by elasticsearch
-		// and is inferred anyway.
+		// Note never to set something as type='object' here because that isn't returned
+		// by the search engine and is inferred anyway.
 		$titleExtraAnalyzers = [
 			[ 'analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => false ],
 			[

@@ -5,7 +5,7 @@ namespace CirrusSearch\Maintenance;
 use MediaWiki\Config\ConfigException;
 
 /**
- * Builds one elasticsearch analyzer to add to an analysis config array.
+ * Builds one search analyzer to add to an analysis config array.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

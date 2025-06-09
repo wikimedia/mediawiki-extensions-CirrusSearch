@@ -732,6 +732,13 @@ class AnalysisConfigBuilder {
 						"\u05F2=>\u05D9\u05D9", // double yod
 						"\uFB1F=>\u05D9\u05D9\u05B7", // single char yod-yod-patah decomposed
 						"\u05D9\u05B7\u05D9=>\u05D9\u05D9\u05B7", // rarer alternate order
+						// Malayalam & Bengali regularization (with zwj \u200D) (T375567)
+						'ണ്\u200D=>ൺ',
+						'ന്\u200D=>ൻ',
+						'ര്\u200D=>ർ',
+						'ല്\u200D=>ൽ',
+						'ള്\u200D=>ൾ',
+						'ত্\u200D=>ৎ'
 					],
 				],
 				'arabic_extended_norm' => [
@@ -878,7 +885,6 @@ class AnalysisConfigBuilder {
 			// languages with the default analyzer, plus asciifolding / icu_folding (i.e.,
 			// these have no Latin icu_folding exceptions, or no exceptions at all), plus
 			// possible language-specific normalization char filter
-			case 'assamese':
 			case 'burmese':
 			case 'georgian':
 			case 'kannada':
@@ -897,6 +903,7 @@ class AnalysisConfigBuilder {
 			// Default analyzer, plus asciifolding / icu_folding (i.e., these have no Latin
 			// icu_folding exceptions, or no exceptions at all), indic_normalization, and
 			// possible language-specific normalization char filter
+			case 'assamese':
 			case 'gujarati':
 			case 'malayalam':
 			case 'nepali':
@@ -925,6 +932,7 @@ class AnalysisConfigBuilder {
 			case 'bhojpuri':
 			case 'goan_konkani':
 			case 'maithili':
+			case 'newari':
 			case 'sanskrit':
 				$config = $myAnalyzerBuilder->
 					withFilters( [ 'lowercase', 'indic_normalization' ] )->
@@ -1920,6 +1928,7 @@ class AnalysisConfigBuilder {
 		'mr' => 'marathi',
 		'mwl' => 'mirandese',
 		'ne' => 'nepali',
+		'new' => 'newari',
 		'nb' => 'norwegian',
 		'nn' => 'norwegian',
 		'no' => 'norwegian',
@@ -2037,7 +2046,7 @@ class AnalysisConfigBuilder {
 	 * @var array[] indexed by language code, char filter normalization mappings
 	 */
 	private $langNormCharMap = [
-		'mr' => [ 'र्‍=>ऱ्' ], // T332342 + T375567
+		'mr' => [ 'र्\u200D=>ऱ्' ], // T332342 + T375567
 		'ml' => [ 'ൌ=>ൗ', 'ൎ=>ർ', '഻=>്', '്഼=>്', '്്=>്', '഼=>്' ], // T332342
 		'or' => [ 'ୖେ=>ୈ', 'ାେ=>ୋ', 'ୗେ=>ୌ' ], // T332342
 		'si' => [ 'ෘෘ=>ෲ', 'ෙෙ=>ෛ' ], // T332342

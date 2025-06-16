@@ -180,10 +180,15 @@ class MappingConfigBuilder {
 				'namespace_text' => $this->searchIndexFieldFactory
 					->newKeywordField( 'namespace_text' )
 					->getMapping( $this->engine ),
-				'title' => $this->searchIndexFieldFactory->newStringField( 'title',
-					TextIndexField::ENABLE_NORMS | TextIndexField::COPY_TO_SUGGEST |
-					TextIndexField::SUPPORT_REGEX,
-					$titleExtraAnalyzers )->setMappingFlags( $this->flags )->getMapping( $this->engine ),
+				'title' => $this->searchIndexFieldFactory
+					->newStringField( 'title',
+						TextIndexField::ENABLE_NORMS
+						| TextIndexField::COPY_TO_SUGGEST
+						| TextIndexField::COPY_TO_SUGGEST_VARIANT
+						| TextIndexField::SUPPORT_REGEX,
+						$titleExtraAnalyzers )
+					->setMappingFlags( $this->flags )
+					->getMapping( $this->engine ),
 				'text' => $this->getTextFieldMapping(),
 				'text_bytes' => $this->searchIndexFieldFactory
 					->newLongField( 'text_bytes' )
@@ -200,6 +205,7 @@ class MappingConfigBuilder {
 							->newStringField( 'redirect.title', TextIndexField::ENABLE_NORMS
 								| TextIndexField::SPEED_UP_HIGHLIGHTING
 								| TextIndexField::COPY_TO_SUGGEST
+								| TextIndexField::COPY_TO_SUGGEST_VARIANT
 								| TextIndexField::SUPPORT_REGEX,
 								$titleExtraAnalyzers
 							)
@@ -217,6 +223,10 @@ class MappingConfigBuilder {
 				'suggest' => $suggestField,
 			]
 		];
+
+		if ( $this->config->get( 'CirrusSearchPhraseSuggestBuildVariant' ) ) {
+			$page['properties']['suggest_variant'] = $suggestField;
+		}
 
 		return $page;
 	}

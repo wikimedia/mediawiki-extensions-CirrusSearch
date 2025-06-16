@@ -3,12 +3,12 @@
 namespace CirrusSearch\Search;
 
 /**
- * Simple TextIndexField subclass useful to customize COPY_TO_SUGGEST
+ * Simple TextIndexField subclass useful to customize COPY_TO_SUGGEST_VARIANT
  * @package CirrusSearch
  */
 class OpeningTextIndexField extends TextIndexField {
 	/**
-	 * Force COPY_TO_SUGGEST if CirrusSearchPhraseSuggestUseOpeningText
+	 * Force COPY_TO_SUGGEST_VARIANT if CirrusSearchPhraseSuggestUseOpeningText
 	 * is set.
 	 * @param int $mappingFlags
 	 * @return int
@@ -18,7 +18,7 @@ class OpeningTextIndexField extends TextIndexField {
 		if ( $this->config->get( 'CirrusSearchEnablePhraseSuggest' ) &&
 			 $this->config->get( 'CirrusSearchPhraseSuggestUseOpeningText' )
 		) {
-			$options |= self::COPY_TO_SUGGEST;
+			$options |= self::COPY_TO_SUGGEST_VARIANT;
 		}
 		return $options;
 	}

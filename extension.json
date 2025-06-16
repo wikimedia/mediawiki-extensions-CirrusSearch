@@ -320,6 +320,9 @@
 		"CirrusSearchEnablePhraseSuggest": {
 			"value": true
 		},
+		"CirrusSearchPhraseSuggestBuildVariant": {
+			"value": false
+		},
 		"CirrusSearchPhraseSuggestProfiles": {
 			"value": []
 		},

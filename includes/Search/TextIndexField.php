@@ -25,6 +25,8 @@ class TextIndexField extends CirrusIndexField {
 	 *   ENABLE_NORMS: Enable norms on the field.  Good for text you search against but useless
 	 *     for fields that don't get involved in the score.
 	 *   COPY_TO_SUGGEST: Copy the contents of this field to the suggest field for "Did you mean".
+	 *   COPY_TO_SUGGEST_VARIANT: Copy the contents of this field to the secondary suggest field for
+	 *     ab testing "Did you mean".
 	 *   SPEED_UP_HIGHLIGHTING: Store extra data in the field to speed up highlighting.  This is important for
 	 *     long strings or fields with many values.
 	 *   SUPPORT_REGEX: If the wikimedia-extra plugin is available add a trigram
@@ -33,6 +35,7 @@ class TextIndexField extends CirrusIndexField {
 	public const ENABLE_NORMS = 0x1000000;
 	// FIXME: when exactly we want to disable norms for text fields?
 	public const COPY_TO_SUGGEST = 0x2000000;
+	public const COPY_TO_SUGGEST_VARIANT = 0x0200000;
 	public const SPEED_UP_HIGHLIGHTING = 0x4000000;
 	public const SUPPORT_REGEX = 0x8000000;
 	public const STRING_FIELD_MASK = 0xFFFFFF;
@@ -104,6 +107,7 @@ class TextIndexField extends CirrusIndexField {
 		) {
 			// SCORING fields are not copied since this info is already in other fields
 			$options |= self::COPY_TO_SUGGEST;
+			$options |= self::COPY_TO_SUGGEST_VARIANT;
 		}
 		if ( $this->checkFlag( SearchIndexField::FLAG_NO_HIGHLIGHT ) ) {
 			// Disable highlighting is asked to
@@ -129,7 +133,13 @@ class TextIndexField extends CirrusIndexField {
 		if ( $this->config->get( 'CirrusSearchEnablePhraseSuggest' ) &&
 			 $this->checkFlag( self::COPY_TO_SUGGEST )
 		) {
-			$field[ 'copy_to' ] = [ 'suggest' ];
+			$field[ 'copy_to' ][] = 'suggest';
+		}
+		if ( $this->config->get( 'CirrusSearchEnablePhraseSuggest' ) &&
+			 $this->config->get( 'CirrusSearchPhraseSuggestBuildVariant' ) &&
+			 $this->checkFlag( self::COPY_TO_SUGGEST_VARIANT )
+		) {
+			$field[ 'copy_to' ][] = 'suggest_variant';
 		}
 
 		if ( $this->checkFlag( self::FLAG_NO_INDEX ) ) {

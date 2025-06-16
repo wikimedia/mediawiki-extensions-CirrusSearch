@@ -1726,3 +1726,11 @@ extensions that might populate language information in different fields.  Wikiba
 is one of them where using:
   $wgCirrusSearchLanguageKeywordExtraFields = [ 'lexeme_language.code', 'lexeme_language.entity' ];
 might allow searching for lexemes based on their language code or language entity ID.
+
+; $wgCirrusSearchPhraseSuggestBuildVariant
+
+Default:
+  $wgCirrusSearchPhraseSuggestBuildVariant = false;
+
+When enabled, adds a secondary phrase suggester field to page documents. This is generally used to facilitate
+AB testing and should not be enabled in most circumstances.

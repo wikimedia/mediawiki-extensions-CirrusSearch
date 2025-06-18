@@ -11,6 +11,7 @@
 	"cirrussearch-backend-error": "Kvôli dočasnému problému sme nemohli dokončiť požadované vyhľadávanie. Skúste to znovu neskôr.",
 	"cirrussearch-pref-label": "Nové vyhľadávanie",
 	"cirrussearch-pref-desc": "Vyskúšajte nový vyhľadávač, ktorý podporuje viac jazykov, zobrazuje novšie výsledky a dokonca hľadá text vo vnútri šablón.",
+	"cirrussearch-query-too-long": "Hľadaný výraz je dlhší ako maximálna povolená dĺžka. (Zadaných: $1 znakov; povolených: $2 znakov)",
 	"prefs-completion": "Automatické dokončovanie",
 	"cirrussearch-pref-completion-section-desc": "Dokončovací našepkávač",
 	"cirrussearch-pref-completion-profile-help": "Nastaví správanie pre návrhy automatického dokončovania (hľadanie v priebehu písania).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Navrhovanie dokončovania] ja algoritmus na návrhy pri vyhľadávaní s lepšou opravou chýb a relevanciou vyhľadávania. Vyhľadávanie s prefixmi je pôvodný algoritmus vyhľadávania v priebehu písania.",

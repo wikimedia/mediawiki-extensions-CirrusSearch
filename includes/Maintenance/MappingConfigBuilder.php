@@ -184,7 +184,6 @@ class MappingConfigBuilder {
 					->newStringField( 'title',
 						TextIndexField::ENABLE_NORMS
 						| TextIndexField::COPY_TO_SUGGEST
-						| TextIndexField::COPY_TO_SUGGEST_VARIANT
 						| TextIndexField::SUPPORT_REGEX,
 						$titleExtraAnalyzers )
 					->setMappingFlags( $this->flags )
@@ -205,7 +204,6 @@ class MappingConfigBuilder {
 							->newStringField( 'redirect.title', TextIndexField::ENABLE_NORMS
 								| TextIndexField::SPEED_UP_HIGHLIGHTING
 								| TextIndexField::COPY_TO_SUGGEST
-								| TextIndexField::COPY_TO_SUGGEST_VARIANT
 								| TextIndexField::SUPPORT_REGEX,
 								$titleExtraAnalyzers
 							)

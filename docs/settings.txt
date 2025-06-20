@@ -1732,5 +1732,6 @@ might allow searching for lexemes based on their language code or language entit
 Default:
   $wgCirrusSearchPhraseSuggestBuildVariant = false;
 
-When enabled, adds a secondary phrase suggester field to page documents. This is generally used to facilitate
-AB testing and should not be enabled in most circumstances.
+When enabled, adds a secondary phrase suggester field to page documents. This is generally used to
+facilitate AB testing and should not be enabled in most circumstances. By default nothing is copied
+into this field. Custom code is typically needed to support individual AB tests.

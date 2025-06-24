@@ -123,6 +123,31 @@ class CompSuggestQueryBuilder {
 	}
 
 	/**
+	 * Resolves AUTO fuzziness into a constant value
+	 * @param array $fuzzy FST Fuzziness configuration
+	 * @param int $queryLen The number of codepoints in the query
+	 * @return array Resolve FST Fuzziness configuration
+	 */
+	private function resolveFuzzy( array $fuzzy, $queryLen ): array {
+		if ( !$this->searchContext->getConfig()->get( 'CirrusSearchCompletionResolveFuzzy' ) ) {
+			return $fuzzy;
+		}
+		// TODO: We could support `AUTO:2,8` syntax as well, but didnt seem necessary
+		if ( ( $fuzzy['fuzziness'] ?? null ) === 'AUTO' ) {
+			$low = 3;
+			$high = 6;
+			if ( $queryLen < $low ) {
+				$fuzzy['fuzziness'] = 0;
+			} elseif ( $queryLen < $high ) {
+				$fuzzy['fuzziness'] = 1;
+			} else {
+				$fuzzy['fuzziness'] = 2;
+			}
+		}
+		return $fuzzy;
+	}
+
+	/**
 	 * Builds a suggest query from a profile
 	 * @param string $name name of the suggestion
 	 * @param array $config Profile
@@ -144,7 +169,7 @@ class CompSuggestQueryBuilder {
 		$sug->setPrefix( $query );
 		$sug->setSize( $this->hardLimit * $config['fetch_limit_factor'] );
 		if ( isset( $config['fuzzy'] ) ) {
-			$sug->setFuzzy( $config['fuzzy'] );
+			$sug->setFuzzy( $this->resolveFuzzy( $config['fuzzy'], $queryLen ) );
 		}
 		return $sug;
 	}

@@ -767,6 +767,10 @@
 		"CirrusLanguageLanguageKeywordExtraFields": {
 			"description": "List of fields to query when search using the inlanguage keyword",
 			"value": []
+		},
+		"CirrusSearchCompletionResolveFuzzy": {
+			"description": "When enabled CirrusSearch will resolve AUTO fuzziness in the completion suggester.",
+			"value": false
 		}
 	},
 	"SearchMappings": {

@@ -1735,3 +1735,12 @@ Default:
 When enabled, adds a secondary phrase suggester field to page documents. This is generally used to
 facilitate AB testing and should not be enabled in most circumstances. By default nothing is copied
 into this field. Custom code is typically needed to support individual AB tests.
+
+; $wgCirrusSearchCompletionResolveFuzzy
+
+Default:
+  $wgCirrusSearchCompletionResolveFuzzy = false;
+
+When enabled CirrusSearch will convert any 'AUTO' fuzziness in the completion suggester
+profiles into an exact integer fuzziness. This option is for AB testing in T397732 and
+will either become the default or be removed.

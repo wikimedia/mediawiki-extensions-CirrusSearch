@@ -158,6 +158,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "irish_hyphenation",
                 "irish_elision",
                 "lowercase",
@@ -180,6 +181,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "irish_hyphenation",
                 "irish_elision",
                 "lowercase",

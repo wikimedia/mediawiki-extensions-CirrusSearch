@@ -144,8 +144,8 @@
                 "thai_charfilter"
             ],
             "filter": [
-                "lowercase",
                 "decimal_digit",
+                "lowercase",
                 "thai_stop",
                 "asciifolding"
             ],
@@ -162,8 +162,8 @@
                 "thai_charfilter"
             ],
             "filter": [
-                "lowercase",
                 "decimal_digit",
+                "lowercase",
                 "thai_stop",
                 "asciifolding"
             ],

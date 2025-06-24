@@ -152,6 +152,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "indic_normalization"
             ],
@@ -170,6 +171,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "indic_normalization"
             ],

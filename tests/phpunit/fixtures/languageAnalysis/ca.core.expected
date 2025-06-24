@@ -143,6 +143,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "catalan_elision",
                 "lowercase",
                 "catalan_stop",
@@ -161,6 +162,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "catalan_elision",
                 "lowercase",
                 "catalan_stop",

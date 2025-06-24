@@ -151,6 +151,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "lowercase",
                 "esperanto_stemmer"
             ],
@@ -168,6 +169,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "lowercase",
                 "esperanto_stemmer"
             ],

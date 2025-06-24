@@ -10,7 +10,7 @@
         "lowercase_keyword": {
             "filter": [
                 "truncate_keyword",
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -20,7 +20,7 @@
                 "near_space_flattener"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "no_splitting",
             "type": "custom"
@@ -31,7 +31,7 @@
             ],
             "filter": [
                 "truncate_keyword",
-                "lowercase",
+                "icu_normalizer",
                 "asciifolding"
             ],
             "tokenizer": "no_splitting",
@@ -44,7 +44,7 @@
             ],
             "filter": [
                 "icutokrep_no_camel_split",
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -56,7 +56,7 @@
             ],
             "filter": [
                 "icutokrep_no_camel_split",
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -66,7 +66,7 @@
                 "near_space_flattener"
             ],
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "prefix",
             "type": "custom"
@@ -76,7 +76,7 @@
                 "near_space_flattener"
             ],
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "asciifolding"
             ],
             "tokenizer": "prefix",
@@ -84,7 +84,7 @@
         },
         "short_text": {
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "aggressive_splitting",
                 "asciifolding_preserve"
             ],
@@ -93,7 +93,7 @@
         },
         "short_text_search": {
             "filter": [
-                "lowercase",
+                "icu_normalizer",
                 "aggressive_splitting"
             ],
             "tokenizer": "whitespace",
@@ -105,7 +105,7 @@
             ],
             "filter": [
                 "icutokrep_no_camel_split",
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -116,7 +116,7 @@
             ],
             "filter": [
                 "icutokrep_no_camel_split",
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -124,7 +124,7 @@
         "suggest": {
             "filter": [
                 "icutokrep_no_camel_split",
-                "lowercase",
+                "icu_normalizer",
                 "suggest_shingle"
             ],
             "tokenizer": "textify_icu_tokenizer",
@@ -133,7 +133,7 @@
         "suggest_reverse": {
             "filter": [
                 "icutokrep_no_camel_split",
-                "lowercase",
+                "icu_normalizer",
                 "suggest_shingle",
                 "reverse"
             ],
@@ -145,15 +145,18 @@
                 "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
-                "word_break_helper",
-                "arabic_extended_norm"
+                "dotted_I_fix",
+                "arabic_extended_norm",
+                "sat_period_pat",
+                "sat_colon_pat",
+                "sat_dash_pat",
+                "word_break_helper"
             ],
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
                 "decimal_digit",
-                "lowercase",
-                "serbian_stemmer"
+                "icu_normalizer"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -163,15 +166,18 @@
                 "globo_norm",
                 "acronym_fixer",
                 "camelCase_splitter",
-                "word_break_helper",
-                "arabic_extended_norm"
+                "dotted_I_fix",
+                "arabic_extended_norm",
+                "sat_period_pat",
+                "sat_colon_pat",
+                "sat_dash_pat",
+                "word_break_helper"
             ],
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
                 "decimal_digit",
-                "lowercase",
-                "serbian_stemmer"
+                "icu_normalizer"
             ],
             "tokenizer": "textify_icu_tokenizer",
             "type": "custom"
@@ -185,7 +191,7 @@
         },
         "trigram": {
             "filter": [
-                "lowercase"
+                "icu_normalizer"
             ],
             "tokenizer": "trigram",
             "type": "custom"
@@ -193,7 +199,7 @@
         "word_prefix": {
             "filter": [
                 "icutokrep_no_camel_split",
-                "lowercase",
+                "icu_normalizer",
                 "prefix_ngram_filter"
             ],
             "tokenizer": "textify_icu_tokenizer",
@@ -292,6 +298,10 @@
                 "\u09a4\u09cd\\u200D=>\u09ce"
             ]
         },
+        "icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf"
+        },
         "near_space_flattener": {
             "type": "limited_mapping",
             "mappings": [
@@ -317,6 +327,21 @@
             "type": "pattern_replace",
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
             "replacement": "$1 $2"
+        },
+        "sat_colon_pat": {
+            "type": "pattern_replace",
+            "pattern": "(?<=[^\u1c5a\u1c5f\u1c6e])\u1c7a|\u1c7a(\\p{Nd})",
+            "replacement": ":$1"
+        },
+        "sat_dash_pat": {
+            "type": "pattern_replace",
+            "pattern": "(?<=[^\u1c5c\u1c61\u1c6b\u1c75])\u1c7c|\u1c7c(\\p{Nd})",
+            "replacement": "-$1"
+        },
+        "sat_period_pat": {
+            "type": "pattern_replace",
+            "pattern": "(?<=[^\u1c5a\u1c5f\u1c6e])\u1c79|\u1c79(\\p{Nd})",
+            "replacement": ".$1"
         },
         "word_break_helper": {
             "type": "limited_mapping",
@@ -356,6 +381,10 @@
         "asciifolding_preserve": {
             "type": "asciifolding",
             "preserve_original": true
+        },
+        "icu_normalizer": {
+            "type": "icu_normalizer",
+            "name": "nfkc_cf"
         },
         "icutokrep_no_camel_split": {
             "type": "icu_token_repair",

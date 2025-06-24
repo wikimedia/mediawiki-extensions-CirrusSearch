@@ -145,8 +145,8 @@
             ],
             "filter": [
                 "homoglyph_norm",
-                "icu_normalizer",
                 "decimal_digit",
+                "icu_normalizer",
                 "arabic_extra_stop",
                 "arabic_stop",
                 "arabic_normalization",
@@ -167,8 +167,8 @@
             ],
             "filter": [
                 "homoglyph_norm",
-                "icu_normalizer",
                 "decimal_digit",
+                "icu_normalizer",
                 "arabic_extra_stop",
                 "arabic_stop",
                 "arabic_normalization",

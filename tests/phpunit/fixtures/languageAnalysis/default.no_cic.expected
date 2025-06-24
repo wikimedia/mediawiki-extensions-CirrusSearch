@@ -145,6 +145,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "standard",
@@ -161,6 +162,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "standard",

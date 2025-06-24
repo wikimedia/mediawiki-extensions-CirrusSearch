@@ -151,6 +151,7 @@
                 "sudachi_char_map"
             ],
             "filter": [
+                "decimal_digit",
                 "sudachi_split",
                 "sudachi_baseform",
                 "sudachi_posfilter",
@@ -173,6 +174,7 @@
                 "sudachi_char_map"
             ],
             "filter": [
+                "decimal_digit",
                 "sudachi_split",
                 "sudachi_baseform",
                 "sudachi_posfilter",

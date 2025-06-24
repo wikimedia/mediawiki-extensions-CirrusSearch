@@ -143,6 +143,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "possessive_english",
                 "lowercase",
                 "stop",
@@ -162,6 +163,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "possessive_english",
                 "lowercase",
                 "stop",

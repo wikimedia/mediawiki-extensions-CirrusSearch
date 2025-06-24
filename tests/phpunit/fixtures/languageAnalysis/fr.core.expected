@@ -144,6 +144,7 @@
                 "french_charfilter"
             ],
             "filter": [
+                "decimal_digit",
                 "french_elision",
                 "lowercase",
                 "french_stop",
@@ -163,6 +164,7 @@
                 "french_charfilter"
             ],
             "filter": [
+                "decimal_digit",
                 "french_elision",
                 "lowercase",
                 "french_stop",

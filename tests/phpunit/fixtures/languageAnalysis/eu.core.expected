@@ -143,6 +143,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "basque_stop",
                 "basque_stemmer"
@@ -159,6 +160,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "basque_stop",
                 "basque_stemmer"

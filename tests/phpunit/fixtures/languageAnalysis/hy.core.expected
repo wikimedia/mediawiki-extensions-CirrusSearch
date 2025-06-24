@@ -144,6 +144,7 @@
                 "word_break_helper"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "armenian_norm_stop",
                 "armenian_stop",
@@ -163,6 +164,7 @@
                 "word_break_helper"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "armenian_norm_stop",
                 "armenian_stop",

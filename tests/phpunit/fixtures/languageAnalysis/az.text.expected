@@ -151,6 +151,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "lowercase"
             ],
             "tokenizer": "textify_icu_tokenizer",
@@ -167,6 +168,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "lowercase"
             ],
             "tokenizer": "textify_icu_tokenizer",

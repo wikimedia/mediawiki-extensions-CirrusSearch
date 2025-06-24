@@ -145,6 +145,7 @@
                 "kuromoji_combo_filter"
             ],
             "filter": [
+                "decimal_digit",
                 "kuromoji_baseform",
                 "kuromoji_posfilter",
                 "cjk_width",
@@ -167,6 +168,7 @@
                 "kuromoji_combo_filter"
             ],
             "filter": [
+                "decimal_digit",
                 "kuromoji_baseform",
                 "kuromoji_posfilter",
                 "cjk_width",

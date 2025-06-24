@@ -146,6 +146,7 @@
                 "german_charfilter"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "german_stop",
                 "german_normalization",
@@ -164,6 +165,7 @@
                 "german_charfilter"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "german_stop",
                 "german_normalization",

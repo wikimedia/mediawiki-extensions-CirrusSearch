@@ -144,6 +144,7 @@
                 "s_comma_cedilla"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase"
             ],
             "tokenizer": "standard",
@@ -159,6 +160,7 @@
                 "s_comma_cedilla"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase"
             ],
             "tokenizer": "standard",

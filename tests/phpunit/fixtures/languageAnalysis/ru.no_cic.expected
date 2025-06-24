@@ -154,6 +154,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "russian_stop",
                 "russian_stemmer",
@@ -174,6 +175,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "russian_stop",
                 "russian_stemmer",

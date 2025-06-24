@@ -145,6 +145,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "czech_stop",
                 "czech_stemmer",
@@ -164,6 +165,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "czech_stop",
                 "czech_stemmer",

@@ -144,6 +144,7 @@
                 "marathi_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "asciifolding"
             ],
@@ -160,6 +161,7 @@
                 "marathi_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "asciifolding"
             ],

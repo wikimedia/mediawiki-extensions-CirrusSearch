@@ -143,6 +143,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "galician_stop",
                 "galician_stemmer"
@@ -159,6 +160,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "galician_stop",
                 "galician_stemmer"

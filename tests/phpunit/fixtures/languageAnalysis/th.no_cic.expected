@@ -149,8 +149,8 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
-                "icu_normalizer",
                 "decimal_digit",
+                "icu_normalizer",
                 "thai_stop",
                 "asciifolding"
             ],
@@ -172,8 +172,8 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
-                "icu_normalizer",
                 "decimal_digit",
+                "icu_normalizer",
                 "thai_stop",
                 "asciifolding"
             ],

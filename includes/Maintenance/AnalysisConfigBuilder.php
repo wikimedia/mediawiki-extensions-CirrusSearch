@@ -949,7 +949,6 @@ class AnalysisConfigBuilder {
 				$arBuilder = $myAnalyzerBuilder->
 					withLangName( 'arabic' )->
 					withUnpackedAnalyzer()->
-					withDecimalDigit()->
 					withAsciifolding()->
 					insertFiltersBefore( 'arabic_stemmer', [ 'arabic_normalization' ] );
 
@@ -981,7 +980,6 @@ class AnalysisConfigBuilder {
 			case 'bengali': // Unpack Bengali analyzer T294067
 				$config = $myAnalyzerBuilder->
 					withUnpackedAnalyzer()->
-					withDecimalDigit()->
 					insertFiltersBefore( 'bengali_stop', [ 'indic_normalization' ] )->
 					withAsciifolding()->
 					build( $config );
@@ -1140,7 +1138,6 @@ class AnalysisConfigBuilder {
 				// Unpack Hindi analyzer T289612
 				$config = $myAnalyzerBuilder->
 					withUnpackedAnalyzer()->
-					withDecimalDigit()->
 					insertFiltersBefore( 'hindi_stop',
 						[ 'indic_normalization', 'hindi_normalization' ] )->
 					withAsciifolding()->
@@ -1398,7 +1395,6 @@ class AnalysisConfigBuilder {
 				$config = $myAnalyzerBuilder->
 					withUnpackedAnalyzer()->
 					withLimitedCharMap( [ '\u200C=>\u0020' ], 'zero_width_spaces' )->
-					withDecimalDigit()->
 					omitStemmer()->
 					insertFiltersBefore( 'persian_stop',
 						[ 'arabic_normalization', 'persian_normalization' ] )->
@@ -1486,6 +1482,21 @@ class AnalysisConfigBuilder {
 				$config[ 'analyzer' ][ 'suggest' ][ 'char_filter' ][] = 'russian_charfilter';
 				$config[ 'analyzer' ][ 'suggest_reverse' ][ 'char_filter' ][] = 'russian_charfilter';
 				break;
+			case 'santali':
+				// Map punctuation-like modifier characters to ASCII equivalents when
+				// they are not in their normal alphabetic contexts. See T396530.
+				$config[ 'char_filter' ][ 'sat_period_pat' ] =
+					AnalyzerBuilder::patternFilter( "(?<=[^ᱚᱟᱮ])ᱹ|ᱹ(\\p{Nd})", '.$1' );
+				$config[ 'char_filter' ][ 'sat_colon_pat' ] =
+					AnalyzerBuilder::patternFilter( "(?<=[^ᱚᱟᱮ])ᱺ|ᱺ(\\p{Nd})", ':$1' );
+				$config[ 'char_filter' ][ 'sat_dash_pat' ] =
+					AnalyzerBuilder::patternFilter( "(?<=[^ᱜᱡᱫᱵ])ᱼ|ᱼ(\\p{Nd})", '-$1' );
+
+				$config = $myAnalyzerBuilder->
+					withCharFilters( [ 'sat_period_pat', 'sat_colon_pat', 'sat_dash_pat' ] )->
+					withFilters( [ 'lowercase' ] )->
+					build( $config );
+				break;
 			case 'slovak':
 				// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
 				// and https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
@@ -1502,7 +1513,6 @@ class AnalysisConfigBuilder {
 			case 'sorani':    // Unpack Sorani analyzer T325091
 				$config = $myAnalyzerBuilder->
 					withUnpackedAnalyzer()->
-					withDecimalDigit()->
 					insertFiltersBefore( 'lowercase', [ 'sorani_normalization' ] )->
 					withAsciifolding()->
 					build( $config );
@@ -1572,7 +1582,6 @@ class AnalysisConfigBuilder {
 				// add in the rest of the bits that are always needed, and build
 				$config = $myAnalyzerBuilder->
 					withCharMap( $thCharMap )->
-					withDecimalDigit()->
 					omitStemmer()->
 					withAsciifolding()->
 					build( $config );
@@ -1939,6 +1948,7 @@ class AnalysisConfigBuilder {
 		'ro' => 'romanian',
 		'ru' => 'russian',
 		'sa' => 'sanskrit',
+		'sat' => 'santali',
 		'si' => 'sinhala',
 		'sl' => 'slovene',
 		'ckb' => 'sorani',
@@ -2242,7 +2252,8 @@ class AnalysisConfigBuilder {
 				// * follow armenian_charfilter, which normalizes another period-like
 				//   character, if it is being used
 				setMustFollowFilters( [ 'acronym_fixer', 'regex_acronym_fixer',
-					'armenian_charfilter' ] )->
+					'armenian_charfilter', 'sat_period_pat', 'sat_colon_pat',
+					'sat_dash_pat' ] )->
 				setLanguageDenyList( [ 'ko', 'zh' ] ),
 
 			'dotted_I_fix' => ( new GlobalCustomFilter( 'char_filter' ) )->
@@ -2285,6 +2296,16 @@ class AnalysisConfigBuilder {
 				setMustFollowFilters( [ 'aggressive_splitting' ] )->
 				setDisallowedTokenizers( [ 'icu_tokenizer', 'kuromoji_tokenizer',
 					'sudachi_tokenizer', 'sudachi_tok' ] ),
+
+			'decimal_digit' => ( new GlobalCustomFilter( 'filter' ) )->
+				// Generally, enable digit normalization everywhere. However, icu_folding
+				// also does it, so we don't need this *and* icu_folding. The Chinese/zh
+				// tokenizer (smartcn) splits on non-Arabic digits, so normalizing after
+				// the split is weird; the zh plain analyzer has icu_folding, though, so
+				// that will pick up the slack. We place it after lowercase/icu_norm
+				// mostly because that's the traditional location. (T396530)
+				setDisallowedTokenFilters( [ 'icu_folding' ] )->
+				setLanguageDenyList( [ 'zh' ] ),
 		];
 		// reverse the array so that items are ordered (approximately, modulo incompatible
 		// filters) in the order specified here

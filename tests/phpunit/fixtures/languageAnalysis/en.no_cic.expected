@@ -145,6 +145,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "possessive_english",
                 "icu_normalizer",
                 "stop",
@@ -166,6 +167,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "possessive_english",
                 "icu_normalizer",
                 "stop",

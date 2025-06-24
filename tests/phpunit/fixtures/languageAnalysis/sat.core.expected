@@ -43,10 +43,9 @@
                 "word_break_helper"
             ],
             "filter": [
-                "icutokrep_no_camel_split",
                 "lowercase"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "plain_search": {
@@ -55,10 +54,9 @@
                 "word_break_helper"
             ],
             "filter": [
-                "icutokrep_no_camel_split",
                 "lowercase"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "prefix": {
@@ -104,10 +102,9 @@
                 "word_break_helper_source_text"
             ],
             "filter": [
-                "icutokrep_no_camel_split",
                 "lowercase"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "source_text_plain_search": {
@@ -115,65 +112,62 @@
                 "word_break_helper_source_text"
             ],
             "filter": [
-                "icutokrep_no_camel_split",
                 "lowercase"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "suggest": {
             "filter": [
-                "icutokrep_no_camel_split",
                 "lowercase",
                 "suggest_shingle"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "suggest_reverse": {
             "filter": [
-                "icutokrep_no_camel_split",
                 "lowercase",
                 "suggest_shingle",
                 "reverse"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "text": {
             "char_filter": [
                 "globo_norm",
-                "acronym_fixer",
-                "camelCase_splitter",
-                "word_break_helper",
-                "arabic_extended_norm"
+                "regex_acronym_fixer",
+                "regex_camelCase",
+                "arabic_extended_norm",
+                "sat_period_pat",
+                "sat_colon_pat",
+                "sat_dash_pat",
+                "word_break_helper"
             ],
             "filter": [
-                "icu_token_repair",
-                "homoglyph_norm",
                 "decimal_digit",
-                "lowercase",
-                "serbian_stemmer"
+                "lowercase"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "text_search": {
             "char_filter": [
                 "globo_norm",
-                "acronym_fixer",
-                "camelCase_splitter",
-                "word_break_helper",
-                "arabic_extended_norm"
+                "regex_acronym_fixer",
+                "regex_camelCase",
+                "arabic_extended_norm",
+                "sat_period_pat",
+                "sat_colon_pat",
+                "sat_dash_pat",
+                "word_break_helper"
             ],
             "filter": [
-                "icu_token_repair",
-                "homoglyph_norm",
                 "decimal_digit",
-                "lowercase",
-                "serbian_stemmer"
+                "lowercase"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         },
         "token_reverse": {
@@ -192,17 +186,16 @@
         },
         "word_prefix": {
             "filter": [
-                "icutokrep_no_camel_split",
                 "lowercase",
                 "prefix_ngram_filter"
             ],
-            "tokenizer": "textify_icu_tokenizer",
+            "tokenizer": "standard",
             "type": "custom"
         }
     },
     "char_filter": {
         "arabic_extended_norm": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "\\uFB8E=>\\u0643",
                 "\\uFB8F=>\\u0643",
@@ -242,7 +235,7 @@
             ]
         },
         "dotted_I_fix": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "\u0130=>I"
             ]
@@ -293,7 +286,7 @@
             ]
         },
         "near_space_flattener": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "'=>\\u0020",
                 "\\u2019=>\\u0020",
@@ -303,7 +296,7 @@
             ]
         },
         "nnbsp_norm": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "\\u202F=>\\u0020"
             ]
@@ -318,8 +311,23 @@
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
             "replacement": "$1 $2"
         },
+        "sat_colon_pat": {
+            "type": "pattern_replace",
+            "pattern": "(?<=[^\u1c5a\u1c5f\u1c6e])\u1c7a|\u1c7a(\\p{Nd})",
+            "replacement": ":$1"
+        },
+        "sat_dash_pat": {
+            "type": "pattern_replace",
+            "pattern": "(?<=[^\u1c5c\u1c61\u1c6b\u1c75])\u1c7c|\u1c7c(\\p{Nd})",
+            "replacement": "-$1"
+        },
+        "sat_period_pat": {
+            "type": "pattern_replace",
+            "pattern": "(?<=[^\u1c5a\u1c5f\u1c6e])\u1c79|\u1c79(\\p{Nd})",
+            "replacement": ".$1"
+        },
         "word_break_helper": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "_=>\\u0020",
                 ":=>\\u0020",
@@ -333,7 +341,7 @@
             ]
         },
         "word_break_helper_source_text": {
-            "type": "limited_mapping",
+            "type": "mapping",
             "mappings": [
                 "_=>\\u0020",
                 ".=>\\u0020",
@@ -356,10 +364,6 @@
         "asciifolding_preserve": {
             "type": "asciifolding",
             "preserve_original": true
-        },
-        "icutokrep_no_camel_split": {
-            "type": "icu_token_repair",
-            "keep_camel_split": false
         },
         "lowercase": {
             "type": "lowercase"

@@ -144,8 +144,8 @@
                 "zero_width_spaces"
             ],
             "filter": [
-                "lowercase",
                 "decimal_digit",
+                "lowercase",
                 "arabic_normalization",
                 "persian_normalization",
                 "persian_stop",
@@ -164,8 +164,8 @@
                 "zero_width_spaces"
             ],
             "filter": [
-                "lowercase",
                 "decimal_digit",
+                "lowercase",
                 "arabic_normalization",
                 "persian_normalization",
                 "persian_stop",

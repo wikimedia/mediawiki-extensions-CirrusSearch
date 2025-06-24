@@ -145,6 +145,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "serbian_stemmer"
             ],
@@ -162,6 +163,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "serbian_stemmer"
             ],

@@ -143,8 +143,8 @@
                 "arabic_extended_norm"
             ],
             "filter": [
-                "lowercase",
                 "decimal_digit",
+                "lowercase",
                 "indic_normalization",
                 "bengali_stop",
                 "bengali_stemmer",
@@ -162,8 +162,8 @@
                 "arabic_extended_norm"
             ],
             "filter": [
-                "lowercase",
                 "decimal_digit",
+                "lowercase",
                 "indic_normalization",
                 "bengali_stop",
                 "bengali_stemmer",

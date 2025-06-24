@@ -151,6 +151,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "possessive_english",
                 "lowercase",
                 "stop",
@@ -172,6 +173,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "possessive_english",
                 "lowercase",
                 "stop",

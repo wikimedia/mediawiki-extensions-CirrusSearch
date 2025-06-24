@@ -152,6 +152,7 @@
                 "russian_charfilter"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "russian_stop",
                 "russian_stemmer",
@@ -170,6 +171,7 @@
                 "russian_charfilter"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "russian_stop",
                 "russian_stemmer",

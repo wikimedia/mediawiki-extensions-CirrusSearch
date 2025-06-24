@@ -146,6 +146,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "ukrainian_stop",
                 "ukrainian_stemmer",
@@ -168,6 +169,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "ukrainian_stop",
                 "ukrainian_stemmer",

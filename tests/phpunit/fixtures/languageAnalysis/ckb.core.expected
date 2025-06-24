@@ -142,9 +142,9 @@
                 "word_break_helper"
             ],
             "filter": [
+                "decimal_digit",
                 "sorani_normalization",
                 "lowercase",
-                "decimal_digit",
                 "sorani_stop",
                 "sorani_stemmer",
                 "asciifolding"
@@ -160,9 +160,9 @@
                 "word_break_helper"
             ],
             "filter": [
+                "decimal_digit",
                 "sorani_normalization",
                 "lowercase",
-                "decimal_digit",
                 "sorani_stop",
                 "sorani_stemmer",
                 "asciifolding"

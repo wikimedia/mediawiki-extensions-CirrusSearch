@@ -144,6 +144,7 @@
                 "gagauz_charfilter"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase"
             ],
             "tokenizer": "standard",
@@ -159,6 +160,7 @@
                 "gagauz_charfilter"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase"
             ],
             "tokenizer": "standard",

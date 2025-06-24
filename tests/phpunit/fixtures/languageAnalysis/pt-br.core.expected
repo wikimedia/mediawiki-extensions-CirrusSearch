@@ -143,6 +143,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "brazilian_stop",
                 "brazilian_stemmer",
@@ -160,6 +161,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "brazilian_stop",
                 "brazilian_stemmer",

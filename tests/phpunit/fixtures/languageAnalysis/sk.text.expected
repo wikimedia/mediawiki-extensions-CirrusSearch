@@ -151,6 +151,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "lowercase",
                 "slovak_stemmer",
                 "asciifolding"
@@ -169,6 +170,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "lowercase",
                 "slovak_stemmer",
                 "asciifolding"

@@ -155,7 +155,6 @@
             ],
             "filter": [
                 "icu_normalizer",
-                "decimal_digit",
                 "arabic_extra_stop",
                 "arabic_stop",
                 "arabic_normalization",
@@ -176,7 +175,6 @@
             ],
             "filter": [
                 "icu_normalizer",
-                "decimal_digit",
                 "arabic_extra_stop",
                 "arabic_stop",
                 "arabic_normalization",

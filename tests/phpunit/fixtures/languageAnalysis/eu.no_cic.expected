@@ -145,6 +145,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "basque_stop",
                 "basque_stemmer"
@@ -163,6 +164,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "basque_stop",
                 "basque_stemmer"

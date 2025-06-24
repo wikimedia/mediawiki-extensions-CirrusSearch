@@ -151,8 +151,8 @@
             ],
             "filter": [
                 "homoglyph_norm",
-                "lowercase",
                 "decimal_digit",
+                "lowercase",
                 "thai_stop",
                 "asciifolding"
             ],
@@ -170,8 +170,8 @@
             ],
             "filter": [
                 "homoglyph_norm",
-                "lowercase",
                 "decimal_digit",
+                "lowercase",
                 "thai_stop",
                 "asciifolding"
             ],

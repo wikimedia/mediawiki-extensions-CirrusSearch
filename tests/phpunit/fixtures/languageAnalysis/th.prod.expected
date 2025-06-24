@@ -166,7 +166,6 @@
                 "icu_token_repair",
                 "homoglyph_norm",
                 "icu_normalizer",
-                "decimal_digit",
                 "thai_stop",
                 "icu_folding",
                 "remove_empty"
@@ -189,7 +188,6 @@
                 "icu_token_repair",
                 "homoglyph_norm",
                 "icu_normalizer",
-                "decimal_digit",
                 "thai_stop",
                 "icu_folding",
                 "remove_empty"

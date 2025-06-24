@@ -144,6 +144,7 @@
                 "nori_combo_filter"
             ],
             "filter": [
+                "decimal_digit",
                 "nori_posfilter",
                 "nori_readingform",
                 "lowercase",
@@ -163,6 +164,7 @@
                 "nori_combo_filter"
             ],
             "filter": [
+                "decimal_digit",
                 "nori_posfilter",
                 "nori_readingform",
                 "lowercase",

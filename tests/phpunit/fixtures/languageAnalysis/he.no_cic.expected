@@ -145,6 +145,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "niqqud",
                 "hebrew_lemmatizer",
                 "remove_duplicates",
@@ -165,6 +166,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "niqqud",
                 "hebrew_lemmatizer",
                 "remove_duplicates",

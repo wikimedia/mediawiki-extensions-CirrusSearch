@@ -157,7 +157,6 @@
             ],
             "filter": [
                 "icu_normalizer",
-                "decimal_digit",
                 "thai_stop",
                 "icu_folding",
                 "remove_empty"
@@ -177,7 +176,6 @@
             ],
             "filter": [
                 "icu_normalizer",
-                "decimal_digit",
                 "thai_stop",
                 "icu_folding",
                 "remove_empty"

@@ -143,6 +143,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "norwegian_stop",
                 "norwegian_stemmer"
@@ -159,6 +160,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "norwegian_stop",
                 "norwegian_stemmer"

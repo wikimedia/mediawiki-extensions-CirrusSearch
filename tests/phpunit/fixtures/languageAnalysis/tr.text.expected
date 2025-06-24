@@ -151,6 +151,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "lowercase",
                 "better_apostrophe",
                 "turkish_stop",
@@ -170,6 +171,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "lowercase",
                 "better_apostrophe",
                 "turkish_stop",

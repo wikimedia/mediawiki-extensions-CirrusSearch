@@ -148,6 +148,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "german_stop",
                 "german_normalization",
@@ -168,6 +169,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "icu_normalizer",
                 "german_stop",
                 "german_normalization",

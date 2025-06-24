@@ -146,6 +146,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "nori_posfilter",
                 "nori_readingform",
                 "icu_normalizer",
@@ -167,6 +168,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "nori_posfilter",
                 "nori_readingform",
                 "icu_normalizer",

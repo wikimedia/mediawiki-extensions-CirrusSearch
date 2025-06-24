@@ -143,6 +143,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "dutch_stop",
                 "dutch_override",
@@ -161,6 +162,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "dutch_stop",
                 "dutch_override",

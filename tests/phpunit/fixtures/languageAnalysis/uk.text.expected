@@ -152,6 +152,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "lowercase",
                 "ukrainian_stop",
                 "ukrainian_stemmer",
@@ -174,6 +175,7 @@
             "filter": [
                 "icu_token_repair",
                 "homoglyph_norm",
+                "decimal_digit",
                 "lowercase",
                 "ukrainian_stop",
                 "ukrainian_stemmer",

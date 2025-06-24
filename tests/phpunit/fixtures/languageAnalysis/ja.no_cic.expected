@@ -146,6 +146,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "cjk_width",
                 "icu_normalizer",
                 "cjk_bigram",
@@ -167,6 +168,7 @@
             ],
             "filter": [
                 "homoglyph_norm",
+                "decimal_digit",
                 "cjk_width",
                 "icu_normalizer",
                 "cjk_bigram",

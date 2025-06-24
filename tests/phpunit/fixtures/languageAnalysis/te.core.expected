@@ -144,6 +144,7 @@
                 "telugu_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "asciifolding"
             ],
@@ -160,6 +161,7 @@
                 "telugu_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "lowercase",
                 "asciifolding"
             ],

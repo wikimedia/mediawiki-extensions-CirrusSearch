@@ -143,6 +143,7 @@
                 "cjk_charfilter"
             ],
             "filter": [
+                "decimal_digit",
                 "cjk_width",
                 "lowercase",
                 "cjk_bigram",
@@ -161,6 +162,7 @@
                 "cjk_charfilter"
             ],
             "filter": [
+                "decimal_digit",
                 "cjk_width",
                 "lowercase",
                 "cjk_bigram",

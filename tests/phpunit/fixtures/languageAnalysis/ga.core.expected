@@ -144,6 +144,7 @@
                 "irish_charfilter"
             ],
             "filter": [
+                "decimal_digit",
                 "irish_hyphenation",
                 "irish_elision",
                 "lowercase",
@@ -164,6 +165,7 @@
                 "irish_charfilter"
             ],
             "filter": [
+                "decimal_digit",
                 "irish_hyphenation",
                 "irish_elision",
                 "lowercase",

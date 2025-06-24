@@ -94,6 +94,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "icu_tokenizer",
@@ -109,6 +110,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "icu_tokenizer",
@@ -146,6 +148,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "icu_tokenizer",
@@ -161,6 +164,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "icu_tokenizer",
@@ -198,6 +202,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "icu_tokenizer",
@@ -213,6 +218,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "icu_tokenizer",
@@ -250,6 +256,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "standard",
@@ -265,6 +272,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "standard",
@@ -630,6 +638,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "icu_tokenizer",
@@ -645,6 +654,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "icu_tokenizer",
@@ -750,7 +760,6 @@
             ],
             "filter": [
                 "icu_normalizer",
-                "decimal_digit",
                 "thai_stop",
                 "th_icu_folding",
                 "remove_empty"
@@ -770,7 +779,6 @@
             ],
             "filter": [
                 "icu_normalizer",
-                "decimal_digit",
                 "thai_stop",
                 "th_icu_folding",
                 "remove_empty"
@@ -810,6 +818,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "icu_tokenizer",
@@ -825,6 +834,7 @@
                 "arabic_extended_norm"
             ],
             "filter": [
+                "decimal_digit",
                 "icu_normalizer"
             ],
             "tokenizer": "icu_tokenizer",

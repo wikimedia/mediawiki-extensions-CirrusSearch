@@ -268,7 +268,7 @@ class StepHelpers {
 						consecutiveFailures = 0;
 						break;
 					}
-					if ( ( operation === 'upload' || operation === 'uploadOverwrite' ) && title.slice( 0, 5 ) !== 'File:' ) {
+					if ( ( operation === 'upload' || operation === 'uploadOverwrite' ) && !title.startsWith( 'File:' ) ) {
 						title = 'File:' + title;
 					}
 					const expectExists = operation !== 'delete';

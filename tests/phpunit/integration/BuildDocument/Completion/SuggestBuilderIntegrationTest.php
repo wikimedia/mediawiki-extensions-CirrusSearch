@@ -145,14 +145,13 @@ class SuggestBuilderIntegrationTest extends \MediaWikiIntegrationTestCase {
 	private function buildSuggestions( $builder, $doc ) {
 		$id = $doc['id'];
 		unset( $doc['id'] );
-		return array_map(
-			static function ( $x ) {
-				$dat = $x->getData();
-				unset( $dat['batch_id'] );
-				return $dat;
-			},
-			$builder->build( [ [ 'id' => $id, 'source' => $doc ] ] )
-		);
+		$result = [];
+		foreach ( $builder->build( [ [ 'id' => $id, 'source' => $doc ] ] ) as $sugg ) {
+			$data = $sugg->getData();
+			unset( $data['batch_id'] );
+			$result[] = $data;
+		}
+		return $result;
 	}
 
 	private function buildBuilder() {

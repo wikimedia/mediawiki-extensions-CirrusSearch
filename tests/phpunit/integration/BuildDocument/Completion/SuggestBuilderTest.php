@@ -326,14 +326,13 @@ class SuggestBuilderTest extends CirrusIntegrationTestCase {
 	private function buildSuggestions( $builder, $doc, $explain = false ) {
 		$id = $doc['id'];
 		unset( $doc['id'] );
-		return array_map(
-			static function ( $x ) {
-				$dat = $x->getData();
-				unset( $dat['batch_id'] );
-				return $dat;
-			},
-			$builder->build( [ [ 'id' => $id, 'source' => $doc ] ], $explain )
-		);
+		$result = [];
+		foreach ( $builder->build( [ [ 'id' => $id, 'source' => $doc ] ], $explain ) as $sugg ) {
+			$data = $sugg->getData();
+			unset( $data['batch_id'] );
+			$result[] = $data;
+		}
+		return $result;
 	}
 
 	/**

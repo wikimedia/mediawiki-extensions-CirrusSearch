@@ -538,6 +538,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$totalDocsDumpedFromAllIndices = 0;
 		$totalHitsFromAllIndices = 0;
 		$totalSuggestDocsIndexed = 0;
+		$suggestDocs = [];
 		foreach ( $sourceIndexSuffixes as $sourceIndexSuffix ) {
 			$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexSuffix );
 			$search = new \Elastica\Search( $this->getClient() );
@@ -571,17 +572,20 @@ class UpdateSuggesterIndex extends Maintenance {
 					];
 				}
 
-				$suggestDocs = $this->builder->build( $inputDocs );
-				if ( !$suggestDocs ) {
-					continue;
-				}
-				$totalSuggestDocsIndexed += count( $suggestDocs );
-				$this->outputProgress( $docsDumped, $totalDocsToDump );
-				MWElasticUtils::withRetry( $this->indexRetryAttempts,
-					static function () use ( $destinationIndex, $suggestDocs ) {
-						$destinationIndex->addDocuments( $suggestDocs );
+				// With subphrases there could be 10x or more outputs than inputs
+				foreach ( $this->builder->build( $inputDocs ) as $doc ) {
+					$suggestDocs[] = $doc;
+					$totalSuggestDocsIndexed++;
+					if ( count( $suggestDocs ) >= $this->indexChunkSize ) {
+						$this->flushSuggestDocs( $destinationIndex, $suggestDocs );
+						$suggestDocs = [];
 					}
-				);
+				}
+				$this->outputProgress( $docsDumped, $totalDocsToDump );
+			}
+			if ( $suggestDocs ) {
+				$this->flushSuggestDocs( $destinationIndex, $suggestDocs );
+				$suggestDocs = [];
 			}
 			$this->log( "Indexing from $sourceIndexSuffix index done.\n" );
 			$totalDocsDumpedFromAllIndices += $docsDumped;
@@ -589,6 +593,18 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->log( "Exported $totalDocsDumpedFromAllIndices ($totalHitsFromAllIndices total hits) " .
 					"from the search indices and indexed $totalSuggestDocsIndexed.\n" );
 		return $totalSuggestDocsIndexed;
+	}
+
+	/**
+	 * @param Index $destinationIndex
+	 * @param \Elastica\Document[] $suggestDocs
+	 */
+	private function flushSuggestDocs( Index $destinationIndex, array $suggestDocs ): void {
+		MWElasticUtils::withRetry( $this->indexRetryAttempts,
+			static function () use ( $destinationIndex, $suggestDocs ) {
+				$destinationIndex->addDocuments( $suggestDocs );
+			}
+		);
 	}
 
 	public function validateAlias() {

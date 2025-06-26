@@ -13,5 +13,15 @@
 	"cirrussearch-now-using": "Emañ ar wiki-mañ oc'h implijout ur c'heflusker enklask nevez. ([[mw:Special:MyLanguage/Help:CirrusSearch|Gouzout hiroc'h]])",
 	"cirrussearch-pref-label": "Enklask nevez",
 	"cirrussearch-give-feedback": "Roit ho soñj",
+	"prefs-completion": "Klokaat klask",
+	"cirrussearch-pref-completion-profile-help": "Dibabit emzalc'h ar c'hinnigoù klokaat emgefre (klask-pa-skrivit).\n\nAn [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester erbeder klokaat] zo un algoritm a ginnig erbedadennoù klask, a reizh  vioù-koukoug gwelloc’h hag a zegas erbedadennoù talvoudusoc’h. Klask rakger eo an algoritm kinnig klask-pa-skrivi mod kozh.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Dre ziouer (erbedet)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Reizhañ a ra betek daou fazi. Dilemel a ra an adkasoù a zo heñvel-tre ouzh an titl pennañ.",
+	"cirrussearch-completion-profile-strict-pref-name": "Mod strizh (araokaet)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Reizhadenn fazi ebet. Plegañ tired ebet. Kenglotañ strizh.",
+	"cirrussearch-completion-profile-normal-pref-name": "Mod adkas (araokaet)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Reizhadenn ebet. Diskoulmañ a ra an adkasoù tost.",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Reizhadenn ebet. Diskoulmañ a ra an adkasoù tost. Klotañ a ra isfrazennoù en titloù.",
+	"cirrussearch-completion-profile-classic-pref-name": "Klask rakger mod kozh",
 	"cirrussearch-article-words": "Niver a c'herioù en holl pennadoù"
 }

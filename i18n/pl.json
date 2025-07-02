@@ -82,5 +82,6 @@
 	"cirrussearch-autoselect-profile": "Pozwól silnikowi wyszukiwarki zdecydować, jaki tryb przeszukiwania będzie najlepszy.",
 	"cirrussearch-offset-too-large": "Nie udało się pozyskać wyników. Wspierane jest wyłącznie $1 pierwszych pozycji, podczas gdy zażądano, by rozpocząć od $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorowanie stronicowania losowo posortowanych wyników.",
+	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Nierozpoznana wartość|Nierozpoznane wartości}} dla słowa kluczowego <kbd>$3</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Wykorzystanie przecinków w celu oddzielania słów kluczowych inlanguage jest przestarzałe. Zamiast tego użyj | (pionowej kreski) do oddzielania języków."
 }

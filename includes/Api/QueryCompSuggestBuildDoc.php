@@ -53,7 +53,7 @@ class QueryCompSuggestBuildDoc extends ApiQueryBase {
 
 	private function addExplanation( SuggestBuilder $builder, int $pageId, array $docs ) {
 		$result = $this->getResult();
-		foreach ( $builder->build( $docs ) as $d ) {
+		foreach ( $builder->build( $docs, true ) as $d ) {
 			$result->addValue(
 				[ 'query', 'pages', $pageId ],
 				'cirruscompsuggestbuilddoc',

@@ -3,7 +3,6 @@
 namespace CirrusSearch\Api;
 
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
-use Elastica\Document;
 use InvalidArgumentException;
 use MediaWiki\Api\ApiQuery;
 use MediaWiki\Api\ApiQueryBase;
@@ -53,17 +52,12 @@ class QueryCompSuggestBuildDoc extends ApiQueryBase {
 	}
 
 	private function addExplanation( SuggestBuilder $builder, int $pageId, array $docs ) {
-		$docs = array_map(
-			static function ( Document $d ) {
-				return [ $d->getId() => $d->getData() ];
-			}, $builder->build( $docs, true )
-		);
-
-		foreach ( $docs as $doc ) {
-			$this->getResult()->addValue(
+		$result = $this->getResult();
+		foreach ( $builder->build( $docs ) as $d ) {
+			$result->addValue(
 				[ 'query', 'pages', $pageId ],
 				'cirruscompsuggestbuilddoc',
-				$doc
+				[ $d->getId() => $d->getData() ]
 			);
 		}
 	}

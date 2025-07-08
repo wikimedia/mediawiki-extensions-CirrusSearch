@@ -238,6 +238,31 @@ class UpdateSuggesterIndex extends Maintenance {
 		return true;
 	}
 
+	private function getSourceIndexes(): array {
+		// We build the suggestions by reading CONTENT and GENERAL indices.
+		// This does not support extra indices like FILES on commons.
+		$sourceIndexSuffixes = [
+			Connection::CONTENT_INDEX_SUFFIX,
+			Connection::GENERAL_INDEX_SUFFIX
+		];
+		$sourceIndexes = [];
+		foreach ( $sourceIndexSuffixes as $sourceIndexSuffix ) {
+			$sourceIndexes[$sourceIndexSuffix] = $this->getConnection()
+				->getIndex( $this->indexBaseName, $sourceIndexSuffix );
+		}
+		return $sourceIndexes;
+	}
+
+	protected function requireCirrusReady() {
+		parent::requireCirrusReady();
+
+		foreach ( $this->getSourceIndexes() as $suffix => $index ) {
+			if ( !$index->exists() ) {
+				throw new RuntimeException( "Missing source index: {$index->getName()}" );
+			}
+		}
+	}
+
 	private function workAroundBrokenMessageCache() {
 		// Under some configurations (T288233) the i18n cache fails to
 		// initialize. After failing, at least in this particular deployment,
@@ -513,10 +538,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function indexData(): int {
-		// We build the suggestions by reading CONTENT and GENERAL indices.
-		// This does not support extra indices like FILES on commons.
-		$sourceIndexSuffixes = [ Connection::CONTENT_INDEX_SUFFIX, Connection::GENERAL_INDEX_SUFFIX ];
-
 		$query = new Query();
 		$query->setSource( [
 			'includes' => $this->builder->getRequiredFields()
@@ -539,8 +560,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$totalHitsFromAllIndices = 0;
 		$totalSuggestDocsIndexed = 0;
 		$suggestDocs = [];
-		foreach ( $sourceIndexSuffixes as $sourceIndexSuffix ) {
-			$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexSuffix );
+		foreach ( $this->getSourceIndexes() as $sourceIndexSuffix => $sourceIndex ) {
 			$search = new \Elastica\Search( $this->getClient() );
 			$search->setQuery( $query );
 			$search->addIndex( $sourceIndex );

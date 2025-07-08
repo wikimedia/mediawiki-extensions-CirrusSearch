@@ -8,8 +8,14 @@
 			"شاه زمان پټان"
 		]
 	},
+	"cirrussearch-desc": "مېډياويکي لپاره د اوپن‌سرچ له خوا پرمخ‌وړل‌شوی لټون",
+	"cirrussearch-backend-error": "د يوې لنډمهالې ستونزې له کبله موږ ستاسو پلټنه نشو بشپړولو. مهرباني وکړئ وروسته بيا هڅه وکړئ.",
+	"cirrussearch-parse-error": "تپوس د پوهېدو وړ نه دی. مهرباني وکړئ دا ساده کړئ. دا تپوس د پلټنې غونډال د ښه کولو لپاره ثبت شوی.",
+	"cirrussearch-too-busy-error": "پلټنه وسمهال ډېره بوخته ده. مهرباني وکړئ وروسته بيا هڅه وکړئ.",
+	"cirrussearch-regex-empty-expression": "$1 د يو ناتش ساده بيان تمه لري.",
 	"cirrussearch-now-using": "دا ويکي يو نوی پلټنماشين کاروي. ([https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch نور زده کړئ])",
 	"cirrussearch-pref-label": "نوې پلتڼه",
 	"cirrussearch-give-feedback": "تاسې خپل نظر موږ ته راکړئ",
+	"cirrussearch-pref-completion-profile-help": "د وړانديزونو خپلکاره‌بشپړېدو (پلټل لکه څنگه يې چې ليکئ) لپاره چلند اوڼل.\n\nد [https\n://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester  بشپړېدو وړانديزگر] د لټون وړاندېزونو لپاره يو الگوريتم دی چې غوره ټايپي سمون او پلټونکې اړوندتياوې لري. مختاړې پلټنه د ټاپلو پرمهال پلټنې وړانديزونو پخوانی الگوريتم دی.",
 	"cirrussearch-article-words": "تورې په ټولو منځپانګو کې"
 }

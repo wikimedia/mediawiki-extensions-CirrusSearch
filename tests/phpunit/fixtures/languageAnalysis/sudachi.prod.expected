@@ -169,7 +169,8 @@
                 "icu_normalizer",
                 "icu_folding",
                 "remove_empty",
-                "sudachi_word_delim"
+                "sudachi_word_delim",
+                "flatten_graph"
             ],
             "tokenizer": "sudachi_tok",
             "type": "custom"
@@ -192,7 +193,8 @@
                 "icu_normalizer",
                 "icu_folding",
                 "remove_empty",
-                "sudachi_word_delim"
+                "sudachi_word_delim",
+                "flatten_graph"
             ],
             "tokenizer": "sudachi_tok",
             "type": "custom"

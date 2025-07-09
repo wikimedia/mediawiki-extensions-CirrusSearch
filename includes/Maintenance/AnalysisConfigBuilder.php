@@ -1314,7 +1314,8 @@ class AnalysisConfigBuilder {
 					withCharFilters( [ 'sudachi_combo_filter', 'sudachi_char_map' ] )->
 					withTokenizer( 'sudachi_tok' )->
 					withFilters( [ 'sudachi_split', 'sudachi_baseform', 'sudachi_posfilter',
-						'sudachi_ja_stop', 'lowercase', 'asciifolding', 'sudachi_word_delim' ] )->
+						'sudachi_ja_stop', 'lowercase', 'asciifolding', 'sudachi_word_delim',
+						'flatten_graph' ] )->
 					build( $config );
 
 				break;

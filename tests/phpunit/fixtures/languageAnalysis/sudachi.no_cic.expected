@@ -153,7 +153,8 @@
                 "sudachi_ja_stop",
                 "icu_normalizer",
                 "asciifolding",
-                "sudachi_word_delim"
+                "sudachi_word_delim",
+                "flatten_graph"
             ],
             "tokenizer": "sudachi_tok",
             "type": "custom"
@@ -177,7 +178,8 @@
                 "sudachi_ja_stop",
                 "icu_normalizer",
                 "asciifolding",
-                "sudachi_word_delim"
+                "sudachi_word_delim",
+                "flatten_graph"
             ],
             "tokenizer": "sudachi_tok",
             "type": "custom"

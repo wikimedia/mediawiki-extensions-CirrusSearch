@@ -31,6 +31,10 @@ class ConstantAssignment implements ClusterAssignment {
 		return 'default';
 	}
 
+	public function getManagedClusters(): array {
+		return [ 'default' ];
+	}
+
 	/** @inheritDoc */
 	public function getWritableClusters( string $updateGroup ): array {
 		return [ 'default' ];
@@ -43,6 +47,14 @@ class ConstantAssignment implements ClusterAssignment {
 
 	/** @inheritDoc */
 	public function hasCluster( string $clusterName ): bool {
+		return true;
+	}
+
+	/**
+	 * @param string $clusterName
+	 * @return bool True when the named cluster is in the set of managable clusters.
+	 */
+	public function canManageCluster( $clusterName ): bool {
 		return true;
 	}
 

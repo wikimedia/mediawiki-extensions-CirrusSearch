@@ -65,6 +65,15 @@ Example:
         ]
     ];
 
+; $wgCirrusSearchManagedClusters
+
+Default:
+  $wgCirrusSearchManagedClusters = null
+
+List of clusters, from $wgCirrusSearchClusters, where CirrusSearch is responsible
+for managing indices. CirrusSearch will refuse to perform maintenance operations
+on unlisted clusters. When null all known clusters are used.
+
 ; $wgCirrusSearchWriteClusters
 
 Default:

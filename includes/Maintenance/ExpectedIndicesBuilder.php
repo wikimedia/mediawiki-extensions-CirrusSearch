@@ -43,11 +43,11 @@ class ExpectedIndicesBuilder {
 	private function requestedClusters( ?string $requested ): array {
 		$assignment = $this->searchConfig->getClusterAssignment();
 		if ( $requested !== null ) {
-			return $assignment->hasCluster( $requested )
+			return $assignment->canManageCluster( $requested )
 				? [ $requested ]
 				: [];
 		}
-		return $assignment->getAllKnownClusters();
+		return $assignment->getManagedClusters();
 	}
 
 	private function allIndexNames( Connection $conn ): array {

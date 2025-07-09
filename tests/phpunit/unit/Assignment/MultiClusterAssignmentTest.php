@@ -2,15 +2,14 @@
 
 namespace CirrusSearch\Assignment;
 
-use CirrusSearch\CirrusIntegrationTestCase;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
-use CirrusSearch\SearchConfig;
 use CirrusSearch\UpdateGroup;
 
 /**
  * @covers \CirrusSearch\Assignment\MultiClusterAssignment
  */
-class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
+class MultiClusterAssignmentTest extends CirrusTestCase {
 
 	public function testSimpleConfig() {
 		$clusters = new MultiClusterAssignment( new HashSearchConfig( [
@@ -22,6 +21,8 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 			'CirrusSearchReplicaGroup' => 'default',
 		] ) );
 		$this->assertEquals( 'mycluster', $clusters->getSearchCluster() );
+		$this->assertEquals( [ 'mycluster' ], $clusters->getManagedClusters() );
+		$this->assertTrue( $clusters->canManageCluster( 'mycluster' ) );
 		$this->assertEquals( [ 'mycluster' ], $clusters->getWritableClusters( 'default' ) );
 		$this->assertEquals( [ '127.0.0.1' ], $clusters->getServerList( 'mycluster' ) );
 		// Should this throw exception? Cross cluster usage is invalid
@@ -190,16 +191,34 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 		$this->assertNotEquals( $clusters->uniqueId( 'eqiad' ), $clusters->uniqueId( 'codfw' ) );
 	}
 
+	public function testGenericManagedClusters() {
+		$config = new HashSearchConfig( [
+			'CirrusSearchClusters' => [
+				'one' => [],
+				'two' => [],
+				'unmanaged' => [],
+			],
+			'CirrusSearchManagedClusters' => [ 'one', 'two', 'unknown' ],
+			'CirrusSearchReplicaGroup' => 'default',
+		] );
+		$assignment = $config->getClusterAssignment();
+		$this->assertEquals( [ 'one', 'two', 'unknown' ], $assignment->getManagedClusters() );
+		$this->assertTrue( $assignment->canManageCluster( 'one' ) );
+		$this->assertTrue( $assignment->canManageCluster( 'unknown' ) );
+		$this->assertFalse( $assignment->canManageCluster( 'unmanaged' ) );
+		$this->assertFalse( $assignment->canManageCluster( 'unlisted' ) );
+	}
+
 	public function testGenericWritableClusters() {
-		$this->overrideConfigValues( [
+		$config = new HashSearchConfig( [
 			'CirrusSearchClusters' => [
 				'one' => [],
 				'two' => [],
 				'readonly' => [],
 			],
 			'CirrusSearchWriteClusters' => [ 'one', 'two', 'unknown' ],
+			'CirrusSearchReplicaGroup' => 'default',
 		] );
-		$config = new SearchConfig();
 		// Unclear if it's right to not filter out with available cluster
 		// ElasticaWrite should error out if the cluster is unknown tho.
 		$assignment = $config->getClusterAssignment();
@@ -210,15 +229,15 @@ class MultiClusterAssignmentTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testUseCaseWritableClusters() {
-		$this->overrideConfigValues( [
+		$config = new HashSearchConfig( [
 			'CirrusSearchClusters' => [
 			],
 			'CirrusSearchWriteClusters' => [
 				'default' => [ 'one', 'two', 'unknown' ],
 				'archive' => [ 'one' ],
 			],
+			'CirrusSearchReplicaGroup' => 'default',
 		] );
-		$config = new SearchConfig();
 		$assignment = $config->getClusterAssignment();
 		$this->assertEquals( [ 'one', 'two', 'unknown' ], $assignment->getWritableClusters( UpdateGroup::PAGE ) );
 		$this->assertEquals( [ 'one' ], $assignment->getWritableClusters( UpdateGroup::ARCHIVE ) );

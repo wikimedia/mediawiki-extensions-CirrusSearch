@@ -49,8 +49,11 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 	 */
 	private $searchConfig;
 
-	public function __construct() {
+	public function __construct( ?SearchConfig $searchConfig = null ) {
 		parent::__construct();
+		if ( $searchConfig !== null ) {
+			$this->searchConfig = $searchConfig;
+		}
 		$this->addOption( 'cluster', 'Perform all actions on the specified elasticsearch cluster',
 			false, true );
 		$this->addOption( 'userTestTrigger', 'Use config var and profiles set in the user testing ' .
@@ -140,12 +143,21 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 	 * @return string|null
 	 */
 	private function decideCluster() {
+		$config = $this->getSearchConfig();
+		$assignment = $config->getClusterAssignment();
+
 		$cluster = $this->getOption( 'cluster', null );
-		if ( $cluster === null ) {
-			return null;
-		}
-		if ( $this->getSearchConfig()->has( 'CirrusSearchServers' ) ) {
+		if ( $cluster !== null && $config->has( 'CirrusSearchServers' ) ) {
 			$this->fatalError( 'Not configured for cluster operations.' );
+		}
+		if ( $cluster === null ) {
+			$cluster = $assignment->getSearchCluster();
+		}
+		if ( !$assignment->canManageCluster( $cluster ) ) {
+			$this->fatalError(
+				"Named cluster ($cluster) is not configured for maintenance operations. " .
+				"Allowed clusters: " . implode( ", ", $assignment->getManagedClusters() )
+			);
 		}
 		return $cluster;
 	}

@@ -24,6 +24,11 @@ interface ClusterAssignment {
 	public function getWritableClusters( string $updateGroup ): array;
 
 	/**
+	 * @return string[] List of the cluster groups to manage indexes on.
+	 */
+	public function getManagedClusters(): array;
+
+	/**
 	 * @return string[] List all known cluster groups
 	 */
 	public function getAllKnownClusters(): array;
@@ -40,6 +45,12 @@ interface ClusterAssignment {
 	 * @return bool True when the named cluster is writable for this kind of update
 	 */
 	public function canWriteToCluster( $clusterName, $updateGroup );
+
+	/**
+	 * @param string $clusterName
+	 * @return bool True when the named cluster is in the set of managable clusters.
+	 */
+	public function canManageCluster( $clusterName ): bool;
 
 	/**
 	 * @param string|null $cluster Name of cluster group to return connection

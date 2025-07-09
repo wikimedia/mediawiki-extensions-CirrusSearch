@@ -75,6 +75,14 @@ class MultiClusterAssignment implements ClusterAssignment {
 	}
 
 	/**
+	 * @return string[] List of the cluster groups to manage indexes on.
+	 */
+	public function getManagedClusters(): array {
+		$clusters = $this->config->get( 'CirrusSearchManagedClusters' );
+		return $clusters ?? $this->getAllKnownClusters();
+	}
+
+	/**
 	 * @param string $updateGroup UpdateGroup::* constant
 	 * @return string[] List of CirrusSearch cluster names to write to.
 	 */
@@ -97,6 +105,14 @@ class MultiClusterAssignment implements ClusterAssignment {
 			$this->clusters = $this->initClusters();
 		}
 		return array_keys( $this->clusters );
+	}
+
+	/**
+	 * @param string $cluster
+	 * @return bool True when the named cluster is in the set of managable clusters.
+	 */
+	public function canManageCluster( $cluster ): bool {
+		return in_array( $cluster, $this->getManagedClusters() );
 	}
 
 	/**

@@ -22,7 +22,7 @@ class QueryCompSuggestBuildDoc extends ApiQueryBase {
 		$method = $this->getParameter( 'method' );
 		try {
 			$builder = SuggestBuilder::create( $this->getCirrusConnection(), $method );
-		} catch ( InvalidArgumentException $e ) {
+		} catch ( InvalidArgumentException ) {
 			$this->addError( 'apierror-compsuggestbuilddoc-bad-method' );
 			return;
 		}

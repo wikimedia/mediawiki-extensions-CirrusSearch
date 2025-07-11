@@ -65,7 +65,7 @@ class MetaSaneitizeJobStore implements MetaStore {
 	public function get( $jobName ) {
 		try {
 			return $this->index->getDocument( self::docId( $jobName ) );
-		} catch ( \Elastica\Exception\NotFoundException $e ) {
+		} catch ( \Elastica\Exception\NotFoundException ) {
 			return null;
 		}
 	}

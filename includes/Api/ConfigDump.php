@@ -222,7 +222,7 @@ class ConfigDump extends ApiBase {
 		$profileService = $config->getProfileService();
 		foreach ( self::$PROFILES as $var => $profileType ) {
 			$data = $profileService->listExposedProfiles( $profileType );
-			$this->getResult()->addValue( null, $var, $data, ApiResult::OVERRIDE );
+			$result->addValue( null, $var, $data, ApiResult::OVERRIDE );
 		}
 	}
 

@@ -97,13 +97,14 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 				// tied to WikiPage as well.
 				try {
 					$output = $contentHandler->getParserOutputForIndexing( $page, null, $revision );
-				} catch ( BadRevisionException $e ) {
+				} catch ( BadRevisionException ) {
 					// The revision is corrupted in the db and has been marked as permanently missing,
 					//we can't do much about it so flag that page as broken in CirrusSearch.
 					return self::flagProblem( [], 'CirrusSearchBadRevision' );
 				}
 
 				if ( !$output ) {
+					// @phan-suppress-next-line PhanThrowTypeAbsent
 					throw new BuildDocumentException( "ParserOutput cannot be obtained." );
 				}
 

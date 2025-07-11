@@ -76,7 +76,7 @@ class DocumentSizeLimiter {
 	public static function estimateDataSize( Document $document ): int {
 		try {
 			return strlen( JSON::stringify( $document->getData(), \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE ) );
-		} catch ( \JsonException $je ) {
+		} catch ( \JsonException ) {
 			// Ignore, consider this of length 0, process is likely to fail at later point
 		}
 		return 0;

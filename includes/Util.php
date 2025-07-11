@@ -381,7 +381,7 @@ class Util {
 		$request = RequestContext::getMain()->getRequest();
 		try {
 			$ip = $request->getIP();
-		} catch ( MWException $e ) {
+		} catch ( MWException ) {
 			// No ip, probably running cli?
 			$ip = 'unknown';
 		}

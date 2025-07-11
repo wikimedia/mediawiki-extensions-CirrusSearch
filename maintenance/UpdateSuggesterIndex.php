@@ -272,7 +272,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		// which is acceptable for this script.
 		try {
 			wfMessage( 'ok' )->text();
-		} catch ( \LogicException $e ) {
+		} catch ( \LogicException ) {
 			// The first failure should trigger the fallback mode, this second
 			// try should work (and not throw the LogicException deep in the updates).
 			wfMessage( 'ok' )->text();
@@ -369,7 +369,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			$versionDoc = $this->getMetaStore()
 				->versionStore()
 				->find( $this->indexBaseName, $this->indexSuffix );
-		} catch ( \Elastica\Exception\NotFoundException $nfe ) {
+		} catch ( \Elastica\Exception\NotFoundException ) {
 			$this->error( 'Index missing in mw_cirrus_metastore::version, cannot recycle.' );
 			return false;
 		}

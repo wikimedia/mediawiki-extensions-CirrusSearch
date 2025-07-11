@@ -192,7 +192,7 @@ class BuildDocument {
 			try {
 				$revision ??= $this->revStore->getRevisionById( $docRevision );
 				$title = $revision ? $this->titleFactory->castFromPageIdentity( $revision->getPage() ) : null;
-			} catch ( RevisionAccessException $e ) {
+			} catch ( RevisionAccessException ) {
 				$revision = null;
 			}
 			if ( !$title || !$revision ) {

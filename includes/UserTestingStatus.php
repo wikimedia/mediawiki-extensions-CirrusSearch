@@ -132,6 +132,7 @@ class UserTestingStatus {
 	/**
 	 * @return string When active returns a string that will enable the same
 	 *  test configuration when provided to UserTestingEngine.
+	 * @throws NoActiveTestException
 	 */
 	public function getTrigger(): string {
 		if ( $this->testName === null || $this->bucket == null ) {

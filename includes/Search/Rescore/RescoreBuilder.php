@@ -253,6 +253,7 @@ class RescoreBuilder {
 	 *
 	 * @param array $profile Profile to check
 	 * @return bool True is the profile supports current namespaces
+	 * @throws InvalidRescoreProfileException
 	 */
 	private function isProfileNamespaceSupported( array $profile ) {
 		if ( !is_array( $profile['supported_namespaces'] ) ) {

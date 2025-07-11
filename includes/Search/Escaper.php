@@ -123,7 +123,7 @@ class Escaper {
 
 		// Turn bad fuzzy searches into searches that contain a ~ and set $this->fuzzyQuery for good ones.
 		$string = preg_replace_callback( '/(?<leading>\w)~(?<trailing>\S*)/u',
-			static function ( $matches ) use ( &$fuzzyQuery ) {
+			static function ( $matches ) {
 				if ( preg_match( '/^[0-2]?$/', $matches[ 'trailing' ] ) ) {
 					return $matches[ 0 ];
 				} else {

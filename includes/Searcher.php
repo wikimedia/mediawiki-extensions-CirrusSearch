@@ -468,7 +468,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				$resultSet = $index->search( $query, [ 'search_type' => 'query_then_fetch' ] );
 				self::throwIfNotOk( $connection, $resultSet->getResponse() );
 				return $this->success( $resultSet->getResults(), $connection );
-			} catch ( \Elastica\Exception\NotFoundException $e ) {
+			} catch ( \Elastica\Exception\NotFoundException ) {
 				// NotFoundException just means the field didn't exist.
 				// It is up to the caller to decide if that is an error.
 				return $this->success( [], $connection );
@@ -794,7 +794,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$req = RequestContext::getMain()->getRequest();
 		try {
 			$ip = $req->getIP();
-		} catch ( MWException $e ) {
+		} catch ( MWException ) {
 			// No IP, typically this means a CLI invocation. We are attempting
 			// to segregate external automation, internal automation has its
 			// own ability to control configuration and shouldn't be flagged

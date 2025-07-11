@@ -195,7 +195,7 @@ class UpdateWeightedTags extends Maintenance {
 			} else {
 				try {
 					$identifiers[] = $titleParser->parseTitle( $line );
-				} catch ( MalformedTitleException $e ) {
+				} catch ( MalformedTitleException ) {
 					$this->error( "Invalid page title: $line\n" );
 					continue;
 				}

@@ -71,7 +71,7 @@ class CirrusNeedsToBeBuilt extends Maintenance {
 				$count = $this->getConnection()
 					->getIndex( $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ), $indexSuffix )
 					->count();
-			} catch ( \Elastica\Exception\ResponseException $e ) {
+			} catch ( \Elastica\Exception\ResponseException ) {
 				$this->output( "$indexSuffix doesn't exist.\n" );
 				$this->error( "true" );
 				return true;

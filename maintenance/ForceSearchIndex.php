@@ -606,7 +606,7 @@ class ForceSearchIndex extends Maintenance {
 	private function decidePage( Updater $updater, WikiPage $page ) {
 		try {
 			$content = $page->getContent();
-		} catch ( Throwable $ex ) {
+		} catch ( Throwable ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Error deserializing content, skipping page: {pageId}",
 				[ 'pageId' => $page->getTitle()->getArticleID() ]

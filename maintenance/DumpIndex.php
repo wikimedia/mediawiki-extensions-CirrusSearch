@@ -210,6 +210,7 @@ class DumpIndex extends Maintenance {
 
 	/**
 	 * @param string $data
+	 * @throws IndexDumperException
 	 */
 	private function writeLine( $data ) {
 		if ( !fwrite( STDOUT, $data . "\n" ) ) {

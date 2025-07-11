@@ -288,9 +288,9 @@ class Checker {
 	 * @return bool true if a modification was needed
 	 */
 	private function checkPageInIndex( $docId, $pageId, WikiPage $page, array $fromIndex ) {
-		$insane = $this->checkIndexMismatch( $docId, $pageId, $page, $fromIndex );
+		$insane = $this->checkIndexMismatch( $docId, $page, $fromIndex );
 		if ( !$insane ) {
-			$insane = $this->checkIndexedVersion( $docId, $pageId, $page, $fromIndex );
+			$insane = $this->checkIndexedVersion( $docId, $page, $fromIndex );
 		}
 
 		if ( !$insane ) {
@@ -306,12 +306,11 @@ class Checker {
 	 * namespace.
 	 *
 	 * @param string $docId
-	 * @param int $pageId
 	 * @param WikiPage $page
 	 * @param \Elastica\Result[] $fromIndex
 	 * @return bool true if a modification was needed
 	 */
-	private function checkIndexMismatch( $docId, $pageId, WikiPage $page, array $fromIndex ) {
+	private function checkIndexMismatch( $docId, WikiPage $page, array $fromIndex ) {
 		$foundInsanityInIndex = false;
 		$expectedSuffix = $this->connection->getIndexSuffixForNamespace(
 			$page->getTitle()->getNamespace()
@@ -337,12 +336,11 @@ class Checker {
 	 * latest version in the database.
 	 *
 	 * @param string $docId
-	 * @param int $pageId
 	 * @param WikiPage $page
 	 * @param \Elastica\Result[] $fromIndex
 	 * @return bool true if a modification was needed
 	 */
-	private function checkIndexedVersion( $docId, $pageId, WikiPage $page, array $fromIndex ) {
+	private function checkIndexedVersion( $docId, WikiPage $page, array $fromIndex ) {
 		$latest = $page->getLatest();
 		$foundInsanityInIndex = false;
 		foreach ( $fromIndex as $indexInfo ) {

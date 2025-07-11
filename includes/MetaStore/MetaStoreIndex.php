@@ -404,7 +404,7 @@ class MetaStoreIndex {
 	public function metastoreVersion() {
 		try {
 			$doc = $this->elasticaIndex()->getDocument( self::METASTORE_VERSION_DOCID );
-		} catch ( \Elastica\Exception\NotFoundException $e ) {
+		} catch ( \Elastica\Exception\NotFoundException ) {
 			return 0;
 		} catch ( \Elastica\Exception\ResponseException $e ) {
 			// BC code in case the metastore alias does not exist yet

@@ -28,12 +28,14 @@ use MediaWiki\MediaWikiServices;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+// @codeCoverageIgnoreStart
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once "$IP/maintenance/Maintenance.php";
 require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
+// @codeCoverageIgnoreEnd
 
 class SaneitizeJobs extends Maintenance {
 	/**
@@ -420,5 +422,7 @@ EOD
 	}
 }
 
+// @codeCoverageIgnoreStart
 $maintClass = SaneitizeJobs::class;
 require_once RUN_MAINTENANCE_IF_MAIN;
+// @codeCoverageIgnoreEnd

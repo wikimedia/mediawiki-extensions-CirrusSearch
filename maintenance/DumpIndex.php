@@ -28,12 +28,14 @@ use Elastica\Query;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+// @codeCoverageIgnoreStart
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once "$IP/maintenance/Maintenance.php";
 require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
+// @codeCoverageIgnoreEnd
 
 /**
  * Dump an index from elasticsearch.
@@ -278,5 +280,7 @@ class DumpIndex extends Maintenance {
 
 }
 
+// @codeCoverageIgnoreStart
 $maintClass = DumpIndex::class;
 require_once RUN_MAINTENANCE_IF_MAIN;
+// @codeCoverageIgnoreEnd

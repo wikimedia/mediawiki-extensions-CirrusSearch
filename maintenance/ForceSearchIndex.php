@@ -38,12 +38,14 @@ use Wikimedia\Rdbms\IDBAccessObject;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+// @codeCoverageIgnoreStart
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once "$IP/maintenance/Maintenance.php";
 require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
+// @codeCoverageIgnoreEnd
 
 class ForceSearchIndex extends Maintenance {
 	private const SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS = 3;
@@ -705,5 +707,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 }
 
+// @codeCoverageIgnoreStart
 $maintClass = ForceSearchIndex::class;
 require_once RUN_MAINTENANCE_IF_MAIN;
+// @codeCoverageIgnoreEnd

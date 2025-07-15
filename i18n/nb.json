@@ -75,6 +75,6 @@
 	"cirrussearch-autoselect-profile": "La søkemotoren bestemme den beste profilen å bruke.",
 	"cirrussearch-offset-too-large": "Kunne ikke hente resultater. Opptil $1 {{PLURAL:$1|søkeresultat|søkeresultater}} støttes, men resultater fra og med $2 ble etterspurt.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorerer forespørsel om å dele inn tilfeldig sorterte resultater i sider.",
-	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Ukjent verdi|Ukjente verdier}} for <kbd>$3:</kbd> nøkkelord: $1",
+	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Ukjent verdi|Ukjente verdier}} for nøkkelordet <kbd>$3:</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Bruk av komma som skilletegn for nøkkelordet «inlanguage» støttes ikke lenger. Bruk | (vertikalstrek) for å separere språk."
 }

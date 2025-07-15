@@ -163,8 +163,7 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 		$context = new RequestContext();
 		$context->setRequest( new FauxRequest( $params ) );
 		$apiMain = new ApiMain( $context );
-		$self = $this;
-		$createMock = function ( $remediator ) use ( $self, $checkFns ) {
+		$createMock = function ( $remediator ) use ( $checkFns ) {
 			$mock = $this->createMock( Checker::class );
 			$mock->method( 'check' )
 				->willReturnCallback( static function () use ( $remediator, &$checkFns ) {

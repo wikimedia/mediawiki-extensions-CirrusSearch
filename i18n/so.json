@@ -4,7 +4,6 @@
 			"Abshirdheere"
 		]
 	},
-	"cirrussearch-desc": "OpenSearch-powered search for MediaWiki",
 	"cirrussearch-backend-error": "ma sii wadi karno raadintaadii sabab la xiriirta dhibaato kooban. Fadlan isku day mar kale.",
 	"cirrussearch-parse-error": "Suurta gal maaha in la fasiro. Fadlan ka dhig si kale oo fudud. Waxaa la gaarsiiyey ogaysiis si loo wanaajiyo habka baarista.",
 	"cirrussearch-now-using": "Waxaa wikiga loo adeegsan doonaa mashiin baare cusub. ([[mw:Special:MyLanguage/Help:CirrusSearch|Wax badan ka ogoow]])",

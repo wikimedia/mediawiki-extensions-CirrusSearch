@@ -11,6 +11,7 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
 use MediaWiki\WikiMap\WikiMap;
+use Wikimedia\Services\NoSuchServiceException;
 
 /**
  * Handles logging information about requests made to various destinations,
@@ -42,6 +43,11 @@ class RequestLogger {
 	// We still want to log the fact that the request set generated a hit
 	// for this title.  When this happens, the hit index field value will be this.
 	private const UNKNOWN_HIT_INDEX = '_UNKNOWN_';
+
+	/**
+	 * @const string EventBus stream to log requests to.
+	 */
+	private const STREAM = 'mediawiki.cirrussearch-request';
 
 	/**
 	 * @var RequestLog[] Set of requests made
@@ -89,13 +95,14 @@ class RequestLogger {
 	 */
 	private function reportLogs() {
 		if ( $this->logs ) {
-
-			// Build the mediawiki/search/requestset event and log it to the (json+EventBus)
-			// cirrussearch-request channel.
-			LoggerFactory::getInstance( 'cirrussearch-request' )->debug(
-				'', $this->buildCirrusSearchRequestEvent()
-			);
-
+			try {
+				$eventBusFactory = MediaWikiServices::getInstance()->getService( 'EventBus.EventBusFactory' );
+			} catch ( NoSuchServiceException ) {
+				return;
+			}
+			$stream = $eventBusFactory->getInstanceForStream( self::STREAM );
+			$event = $this->buildCirrusSearchRequestEvent();
+			$stream->send( [ $event ] );
 			// reset logs
 			$this->logs = [];
 		}

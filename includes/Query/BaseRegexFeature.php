@@ -381,11 +381,11 @@ GROOVY;
 	 */
 	private function trimFirstOccurrenceOfSlash( string $quotedValue ) {
 		$pattern = $quotedValue;
-		if ( $pattern[0] == '/' ) {
-			$pattern = substr( $quotedValue, 1 );
+		if ( str_starts_with( $pattern, '/' ) ) {
+			$pattern = substr( $pattern, 1 );
 		}
-		if ( $pattern[strlen( $pattern ) - 1] == '/' ) {
-			$pattern = substr( $pattern, 0, strlen( $pattern ) - 1 );
+		if ( str_ends_with( $pattern, '/' ) ) {
+			$pattern = substr( $pattern, 0, -1 );
 		}
 
 		return $pattern;

@@ -153,7 +153,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 		if ( $cluster === null ) {
 			$cluster = $assignment->getSearchCluster();
 		}
-		if ( !$assignment->canManageCluster( $cluster ) ) {
+		if ( $this->requireManagedCluster() && !$assignment->canManageCluster( $cluster ) ) {
 			$this->fatalError(
 				"Named cluster ($cluster) is not configured for maintenance operations. " .
 				"Allowed clusters: " . implode( ", ", $assignment->getManagedClusters() )
@@ -245,6 +245,15 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 				"Cirrus meta store does not exist, you must index your data first"
 			);
 		}
+	}
+
+	/**
+	 * @return bool True if this script only operates on clusters specified
+	 *  in CirrusSearchManagedClusters. Can be set to false for read-only
+	 *  scripts that don't care where they read from.
+	 */
+	protected function requireManagedCluster() {
+		return true;
 	}
 
 	/**

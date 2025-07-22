@@ -107,6 +107,15 @@ class DumpIndex extends Maintenance {
 		$this->addOption( 'sourceFields', 'List of comma separated source fields to extract.', false, true );
 	}
 
+	/**
+	 * @return bool True if this script only operates on clusters specified
+	 *  in CirrusSearchManagedClusters. Can be set to false for read-only
+	 *  scripts that don't care where they read from.
+	 */
+	protected function requireManagedCluster() {
+		return false;
+	}
+
 	/** @inheritDoc */
 	public function execute() {
 		$this->disablePoolCountersAndLogging();

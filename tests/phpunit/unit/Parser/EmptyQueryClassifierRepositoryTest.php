@@ -1,6 +1,6 @@
 <?php declare( strict_types=1 );
 
-namespace phpunit\unit\Parser;
+namespace CirrusSearch\Tests\Parser;
 
 use CirrusSearch\Parser\AST\ParsedQuery;
 use CirrusSearch\Parser\EmptyQueryClassifiersRepository;

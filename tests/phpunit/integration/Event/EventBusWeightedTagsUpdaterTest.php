@@ -1,6 +1,6 @@
 <?php
 
-namespace extensions\CirrusSearch\tests\phpunit\integration\Event;
+namespace CirrusSearch\Tests\Event;
 
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\EventBusWeightedTagSerializer;

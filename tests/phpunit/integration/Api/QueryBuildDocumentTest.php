@@ -1,6 +1,6 @@
 <?php
 
-namespace extensions\CirrusSearch\tests\phpunit\integration\Api;
+namespace CirrusSearch\Tests\Api;
 
 use CirrusSearch\CirrusIntegrationTestCaseTrait;
 use CirrusSearch\CirrusSearch;

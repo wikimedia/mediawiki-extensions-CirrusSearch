@@ -1,6 +1,6 @@
 <?php
 
-namespace extensions\CirrusSearch\tests\phpunit\unit\Maintenance;
+namespace CirrusSearch\Tests\Maintenance;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Maintenance\ExpectedIndicesBuilder;

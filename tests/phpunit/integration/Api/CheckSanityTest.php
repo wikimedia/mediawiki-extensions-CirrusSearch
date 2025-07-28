@@ -176,6 +176,7 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 		};
 
 		$api = new class( $createMock, $apiMain, "cirrus-check-sanity" ) extends CheckSanity {
+			/** @var Closure */
 			private $createMock;
 
 			public function __construct( $createMock, ApiMain $apiMain, string $moduleName ) {

@@ -25,7 +25,7 @@ class SearchAfterTest extends CirrusTestCase {
 	private function makeClient( array $responses ) {
 		$transport = [
 			"transport" => new class( $responses ) extends AbstractTransport {
-				private $responses;
+				private array $responses;
 
 				public function __construct( array $responses ) {
 					$this->responses = $responses;

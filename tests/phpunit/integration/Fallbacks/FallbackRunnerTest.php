@@ -233,12 +233,14 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		// Fatal error: Cannot make static method CirrusSearch\Fallbacks\FallbackMethod::build() non-static
 		// in class Mock_SearchMetricsProvider_fb4508fb in [..]Framework/MockObject/Generator.php(290)
 		return new class( $prio, $rewritteCallback, $metrics ) implements FallbackMethod, SearchMetricsProvider {
+			/** @var float */
 			private $prio;
+			/** @var callable|null */
 			private $rewritteCallback;
-			private $metrics;
+			private array $metrics;
 
 			/**
-			 * @param int $prio
+			 * @param float $prio
 			 * @param callable|null $rewritteCallback
 			 * @param array $metrics
 			 */
@@ -465,9 +467,13 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			$expectedResponse,
 			$rewritten
 		) implements FallbackMethod, ElasticSearchRequestFallbackMethod {
+			/** @var Query */
 			private $query;
+			/** @var float */
 			private $approx;
+			/** @var \Elastica\ResultSet */
 			private $expectedResponse;
+			/** @var CirrusSearchResultSet */
 			private $rewritten;
 
 			public function __construct( $query, $approx, $expectedResponse, $rewritten ) {

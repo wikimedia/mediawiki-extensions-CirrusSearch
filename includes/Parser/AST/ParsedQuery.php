@@ -255,7 +255,7 @@ class ParsedQuery {
 	public function getCrossSearchStrategy() {
 		if ( $this->crossSearchStrategy === null ) {
 			$visitor = new class() extends KeywordNodeVisitor {
-				public $strategy;
+				public CrossSearchStrategy $strategy;
 
 				public function __construct( array $excludeOccurs = [], array $keywordClasses = [] ) {
 					parent::__construct( $excludeOccurs, $keywordClasses );
@@ -315,7 +315,7 @@ class ParsedQuery {
 	public function getFeaturesUsed() {
 		if ( $this->featuresUsed === null ) {
 			$visitor = new class() extends KeywordNodeVisitor {
-				public $features = [];
+				public array $features = [];
 
 				public function doVisitKeyword( KeywordFeatureNode $node ) {
 					$name = $node->getKeyword()

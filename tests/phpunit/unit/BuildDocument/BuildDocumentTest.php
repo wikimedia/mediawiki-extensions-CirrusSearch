@@ -65,7 +65,7 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 			/** Override create builders to avoid testing those implementations */
 			protected function createBuilders( int $flags ): array {
 				return [ new class() implements PagePropertyBuilder {
-					private $doc;
+					private ?Document $doc = null;
 
 					public function initialize( Document $doc, WikiPage $page, ?RevisionRecord $revision ): void {
 						$this->doc = $doc;

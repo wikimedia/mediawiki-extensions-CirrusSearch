@@ -26,7 +26,7 @@ class MaxQueryLengthExceptionsTest extends CirrusIntegrationTestCase {
 		$config = new HashSearchConfig( [] );
 
 		$registry = new class( $config ) implements KeywordRegistry {
-			private $config;
+			private SearchConfig $config;
 
 			public function __construct( SearchConfig $config ) {
 				$this->config = $config;

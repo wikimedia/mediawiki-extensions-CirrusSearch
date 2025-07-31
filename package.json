@@ -19,7 +19,7 @@
 		"bluebird": "3.5.1",
 		"chai": "4.1.2",
 		"deepmerge": "2.0.1",
-		"eslint-config-wikimedia": "0.30.0",
+		"eslint-config-wikimedia": "0.31.0",
 		"grunt": "1.6.1",
 		"grunt-banana-checker": "0.13.0",
 		"grunt-eslint": "24.3.0",

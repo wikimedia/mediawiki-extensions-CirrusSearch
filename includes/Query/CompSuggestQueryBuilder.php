@@ -129,9 +129,6 @@ class CompSuggestQueryBuilder {
 	 * @return array Resolve FST Fuzziness configuration
 	 */
 	private function resolveFuzzy( array $fuzzy, $queryLen ): array {
-		if ( !$this->searchContext->getConfig()->get( 'CirrusSearchCompletionResolveFuzzy' ) ) {
-			return $fuzzy;
-		}
 		// TODO: We could support `AUTO:2,8` syntax as well, but didnt seem necessary
 		if ( ( $fuzzy['fuzziness'] ?? null ) === 'AUTO' ) {
 			$low = 3;

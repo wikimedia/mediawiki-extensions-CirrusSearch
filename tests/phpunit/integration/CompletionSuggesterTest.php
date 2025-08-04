@@ -134,39 +134,6 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 							'size' => 15.0, // effect of fetch_limit_factor
 							// fuzzy config is simply copied from the profile
 							'fuzzy' => [
-								'fuzziness' => 'AUTO',
-								'prefix_length' => 1,
-								'unicode_aware' => true,
-							],
-						],
-					],
-				],
-			],
-			"simple with resolved fuzzy" => [
-				[
-					'CirrusSearchCompletionSettings' => 'test-fuzzy',
-					'CirrusSearchCompletionProfiles' => $profile,
-					'CirrusSearchCompletionResolveFuzzy' => true,
-				],
-				10,
-				' complete me ',
-				null,
-				$simpleFuzzy, // The profiles remains unmodified here
-				[
-					'plain' => [
-						'prefix' => 'complete me ', // keep trailing white spaces
-						'completion' => [
-							'field' => 'suggest',
-							'size' => 20, // effect of fetch_limit_factor
-						],
-					],
-					'plain-fuzzy' => [
-						'prefix' => 'complete me ', // keep trailing white spaces
-						'completion' => [
-							'field' => 'suggest',
-							'size' => 15.0, // effect of fetch_limit_factor
-							// fuzziness is resolved from AUTO in the profile
-							'fuzzy' => [
 								'fuzziness' => 2,
 								'prefix_length' => 1,
 								'unicode_aware' => true,

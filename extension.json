@@ -768,10 +768,6 @@
 			"description": "List of fields to query when search using the inlanguage keyword",
 			"value": []
 		},
-		"CirrusSearchCompletionResolveFuzzy": {
-			"description": "When enabled CirrusSearch will resolve AUTO fuzziness in the completion suggester.",
-			"value": false
-		},
 		"CirrusSearchManagedClusters": {
 			"description": "Set of clusters CirrusSearch is allowed to maintain indices on. If unset all known clusters are used.",
 			"value": null

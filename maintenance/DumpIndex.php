@@ -148,7 +148,7 @@ class DumpIndex extends Maintenance {
 		// Additionally the cluster setting 'indices.id_field_data.enabled=false' breaks
 		// this.
 		$query->setSort( [
-			[ '_id' => 'asc' ],
+			[ 'page_id' => 'asc' ],
 		] );
 		$query->setTrackTotalHits( true );
 		if ( $this->hasOption( 'sourceFields' ) ) {
@@ -182,7 +182,6 @@ class DumpIndex extends Maintenance {
 			foreach ( $results as $result ) {
 				$document = [
 					'_id' => $result->getId(),
-					'_type' => $result->getType(),
 					'_source' => $result->getSource()
 				];
 				$this->write( $document );

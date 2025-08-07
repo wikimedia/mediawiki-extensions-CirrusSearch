@@ -553,7 +553,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$query->setQuery( $bool );
 		$query->setSort( [
-			[ '_id' => 'asc' ],
+			[ 'page_id' => 'asc' ],
 		] );
 		// Explicitly ask for accurate total_hits even-though we use a scroll request
 		$query->setTrackTotalHits( true );

@@ -92,7 +92,7 @@ class SuggestBuilder {
 	 *
 	 * @var int
 	 */
-	private $targetNamespace = NS_MAIN; // @phan-suppress-current-line PhanUndeclaredConstant NS_MAIN is defined
+	private $targetNamespace = NS_MAIN;
 
 	/**
 	 * @param SuggestScoringMethod $scoringMethod the scoring function to use

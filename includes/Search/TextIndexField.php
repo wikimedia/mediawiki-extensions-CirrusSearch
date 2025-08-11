@@ -195,10 +195,8 @@ class TextIndexField extends CirrusIndexField {
 		];
 		$disableNorms = !$this->checkFlag( self::ENABLE_NORMS );
 		if ( $disableNorms ) {
-			$disableNorms = [ 'norms' => false ];
-			$field = array_merge( $field, $disableNorms );
-			// @phan-suppress-next-line PhanTypeArraySuspicious False positive
-			$field[ 'fields' ][ 'plain' ] = array_merge( $field[ 'fields' ][ 'plain' ], $disableNorms );
+			$field['norms'] = false;
+			$field[ 'fields' ][ 'plain' ][ 'norms' ] = false;
 		}
 		foreach ( $extra as $extraField ) {
 			$extraName = $extraField[ 'fieldName' ] ?? $extraField[ 'analyzer' ];
@@ -210,9 +208,7 @@ class TextIndexField extends CirrusIndexField {
 			], $extraField );
 
 			if ( $disableNorms ) {
-				$field[ 'fields' ][ $extraName ] = array_merge(
-					/** @phan-suppress-next-line PhanTypeMismatchDimFetchNullable phan thinks extraName might be null */
-					$field[ 'fields' ][ $extraName ], $disableNorms );
+				$field[ 'fields' ][ $extraName ][ 'norms' ] = false;
 			}
 		}
 		$this->configureHighlighting( $field,

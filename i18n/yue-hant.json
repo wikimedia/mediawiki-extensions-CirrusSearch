@@ -3,11 +3,14 @@
 		"authors": [
 			"H78c67c",
 			"Ktchankt",
-			"Winston Sung"
+			"Winston Sung",
+			"Yueman"
 		]
 	},
 	"cirrussearch-desc": "基於 OpenSearch 嘅 MediaWiki 搵嘢架撐",
+	"cirrussearch-backend-error": "因為有臨時問題而處理唔到你嘅搵嘢要求。請遲啲再試過。",
 	"cirrussearch-too-busy-error": "搜索引擎而家太忙。請遲啲再試過。",
+	"cirrussearch-regex-too-busy-error": "而家有太多正則表達式行緊。請遲啲再試過。",
 	"cirrussearch-pref-label": "新搜尋",
 	"cirrussearch-give-feedback": "畀意見我哋",
 	"prefs-completion": "完成搵嘢",
@@ -24,5 +27,6 @@
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "唔改正錯別字。修復相近嘅跳轉。比對標題嘅詞組。",
 	"cirrussearch-completion-profile-classic-pref-name": "傳統字首搜尋",
 	"cirrussearch-completion-profile-classic-pref-desc": "唔改正錯別字。比對標題開頭。",
+	"cirrussearch-explore-similar-related-none": "冇相關版面提供到",
 	"cirrussearch-article-words": "全部版嘅字數"
 }

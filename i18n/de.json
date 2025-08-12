@@ -6,7 +6,8 @@
 			"Kghbln",
 			"Metalhead64",
 			"Michawiki",
-			"Tiin"
+			"Tiin",
+			"Inkowik"
 		]
 	},
 	"cirrussearch-desc": "Ermöglicht eine auf „elasticsearch“ gestützte Suche",
@@ -42,7 +43,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Rang, primär basierend auf der Anzahl der Rückverweise",
 	"prefs-completion": "Suchvorschläge mit Autovervollständigung",
 	"cirrussearch-pref-completion-section-desc": "Suchvorschläge (komplexer Algorithmus)",
-	"cirrussearch-pref-completion-profile-help": "Legt das Verhalten der Autovervollständigung zu Suchbegriffen bei der Anzeige von Suchvorschlägen fest, die während des Eingebens im Suchfeld gezeigt werden.\n\nDie [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Vervollständigungsvorschläge] sind ein Algorithmus für Suchvorschläge mit einer besseren Korrektur von Tippfehlern und Suchrelevanz. Die Präfixsuche ist der veraltete Suchen-bei-Eingabe-Vorschlagsalgorithmus.",
+	"cirrussearch-pref-completion-profile-help": "Legt das Verhalten der Autovervollständigung während des Eingebens von Suchbegriffen fest.\n\nDie [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Vervollständigungsvorschläge] sind ein Algorithmus für Suchvorschläge mit besserer Korrektur von Tippfehlern und höherer Suchrelevanz. Die Präfixsuche ist der veraltete Suchen-bei-Eingabe-Vorschlagsalgorithmus.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standardmodus",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Korrigiert bis zu zwei Tippfehler. Entfernt Weiterleitungen, die dem Haupttitel sehr ähnlich sind.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Subphrasenübereinstimmung (empfohlen für längere Seitennamen)",

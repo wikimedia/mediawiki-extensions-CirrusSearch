@@ -47,6 +47,22 @@ require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class UpdateSuggesterIndex extends Maintenance {
 	/**
+	 * @var int perform extra checks prior to validating the new index if the number of docs is above this threshold.
+	 *  For context these extra checks are added in an attempt to understand what's causing T363521.
+	 */
+	private const EXTRA_CHECK_THRESHOLD = 100000;
+
+	/**
+	 * Max deviation between the number of suggestion we build and the count on the resulting index.
+	 */
+	private const BUILT_VS_INDEXED_DOCS_MAX_DEVIATION = 0.01;
+
+	/**
+	 * Max deviation between the new and old index.
+	 */
+	private const PREVIOUS_VS_NEXT_COUNT_MAX_DEVIATION = 0.1;
+
+	/**
 	 * @var string language code we're building for
 	 */
 	private $langCode;
@@ -118,14 +134,30 @@ class UpdateSuggesterIndex extends Maintenance {
 	private $analysisConfig;
 
 	/**
-	 * @var bool
-	 */
-	private $recycle = false;
-
-	/**
 	 * @var string[]
 	 */
 	private $bannedPlugins;
+
+	/**
+	 * @var array
+	 */
+	private $indexingStats = [
+		'bulk_requests' => 0,
+		'retried_bulk_requests' => 0,
+		'doc_sent' => 0,
+		'index_results' => [
+			'created' => 0,
+			'updated' => 0,
+			'noop' => 0,
+			'unknown' => 0,
+			'error' => 0,
+		]
+	];
+
+	/**
+	 * @var bool force the promotion of the new index even it seems wrong.
+	 */
+	private bool $force = false;
 
 	public function __construct() {
 		parent::__construct();
@@ -159,6 +191,8 @@ class UpdateSuggesterIndex extends Maintenance {
 			'Set index.routing.allocation.exclude.tag on the created index. Useful if you want ' .
 			'to force the suggester index not to be allocated on a specific set of nodes.',
 			false, true );
+		$this->addOption( 'force', 'Force promoting the new index even if statistics suggest that a problem occurred',
+			false, false );
 		$this->addOption( 'recreate', "Force the creation of a new index." );
 	}
 
@@ -197,6 +231,8 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->indexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 
 		$this->optimizeIndex = $this->getOption( 'optimize', false );
+
+		$this->force = $this->getOption( 'force', false );
 
 		$this->utils = new ConfigUtils( $this->getClient(), $this );
 
@@ -317,12 +353,35 @@ class UpdateSuggesterIndex extends Maintenance {
 		if ( $this->optimizeIndex ) {
 			$this->optimize();
 		}
-		$this->enableReplicas();
 		$this->getIndex()->refresh();
 		$docsInIndex = $this->getIndex()->count();
+		if ( $this->oldIndex && $this->oldIndex->exists() ) {
+			$oldCount = $this->oldIndex->count();
+			$this->log( "Old index had {$oldCount} docs vs {$docsInIndex} now.\n" );
+			$diffRatio = ( $oldCount - $docsInIndex ) / $oldCount;
+			// Check for relatively large (>EXTRA_CHECK_THRESHOLD docs) indices that the new index is not
+			// abnormally smaller than the new one.
+			// We check only "large" indices to avoid false positives on small indices...
+			if ( !$this->force && $oldCount > self::EXTRA_CHECK_THRESHOLD && $diffRatio > self::PREVIOUS_VS_NEXT_COUNT_MAX_DEVIATION ) {
+				$this->fatalError( "New index seems too small compared to the previous index " .
+								   "$oldCount/$docsInIndex > " . self::PREVIOUS_VS_NEXT_COUNT_MAX_DEVIATION .
+								   " (old/new > threshold). Aborting. (Use --force to bypass)" );
+			}
+
+		}
 		if ( $docsInIndex != $totalSuggestDocs ) {
 			$this->error( "Prepared and indexed $totalSuggestDocs docs but the index has $docsInIndex" );
+			$errorRatio = ( $totalSuggestDocs - $docsInIndex ) / $totalSuggestDocs;
+			if (
+				!$this->force &&
+				$totalSuggestDocs > self::EXTRA_CHECK_THRESHOLD &&
+				$errorRatio > self::BUILT_VS_INDEXED_DOCS_MAX_DEVIATION
+			) {
+				$this->fatalError( "Deviation between docs built vs indexed docs is above " . self::BUILT_VS_INDEXED_DOCS_MAX_DEVIATION .
+								   ". Aborting. (Use --force to bypass)" );
+			}
 		}
+		$this->enableReplicas();
 		$this->validateAlias();
 		$this->updateVersions();
 		$this->deleteOldIndex();
@@ -416,7 +475,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	private function recycle() {
 		$this->log( "Recycling index {$this->getIndex()->getName()}\n" );
-		$this->recycle = true;
 		$indexedDocs = $this->indexData();
 		// This is fragile... hopefully most of the docs will be deleted from the old segments
 		// and will result in a fast operation.
@@ -614,6 +672,14 @@ class UpdateSuggesterIndex extends Maintenance {
 		}
 		$this->log( "Exported $totalDocsDumpedFromAllIndices ($totalHitsFromAllIndices total hits) " .
 					"from the search indices and indexed $totalSuggestDocsIndexed.\n" );
+		$this->log( "Bulk requests {$this->indexingStats["bulk_requests"]} (retried {$this->indexingStats["retried_bulk_requests"]}), " .
+					"{$this->indexingStats["doc_sent"]}/" .
+					"{$this->indexingStats["index_results"]["created"]}/" .
+					"{$this->indexingStats["index_results"]["updated"]}/" .
+					"{$this->indexingStats["index_results"]["noop"]}/" .
+					"{$this->indexingStats["index_results"]["error"]} " .
+					"(sent/created/updated/noop/error)\n"
+		);
 		return $totalSuggestDocsIndexed;
 	}
 
@@ -622,9 +688,36 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * @param \Elastica\Document[] $suggestDocs
 	 */
 	private function flushSuggestDocs( Index $destinationIndex, array $suggestDocs ): void {
+		$attemptedAtLeastOnce = false;
 		MWElasticUtils::withRetry( $this->indexRetryAttempts,
-			static function () use ( $destinationIndex, $suggestDocs ) {
-				$destinationIndex->addDocuments( $suggestDocs );
+			function () use ( $destinationIndex, $suggestDocs, &$attemptedAtLeastOnce ) {
+				$this->indexingStats['bulk_requests']++;
+				$this->indexingStats['doc_sent'] += count( $suggestDocs );
+				if ( $attemptedAtLeastOnce ) {
+					$this->indexingStats['retried_bulk_requests']++;
+				}
+				$attemptedAtLeastOnce = true;
+				$response = $destinationIndex->addDocuments( $suggestDocs );
+				$allowedOps = [ 'created', 'updated', 'noop' ];
+				foreach ( $response->getBulkResponses() as $r ) {
+					if ( $r->hasError() ) {
+						if ( $this->indexingStats['index_results']['error'] < 10000 ) {
+							// do not spam the logs unnecessarily if we encountered 10000 errors.
+							// Hopefully 10000 is already enough to understand what's happening.
+							$this->error( "Failed to index doc {$r->getData()["_id"]} with {$r->getError()}" );
+						}
+						$this->indexingStats['index_results']['error']++;
+						continue;
+					}
+					$opRes = 'unknown';
+					if ( isset( $r->getData()["result"] ) ) {
+						$res = $r->getData()["result"];
+						if ( in_array( $res, $allowedOps ) ) {
+							$opRes = $res;
+						}
+						$this->indexingStats['index_results'][$opRes]++;
+					}
+				}
 			}
 		);
 	}

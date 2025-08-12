@@ -105,7 +105,7 @@ class UpdateSearchIndexConfig extends Maintenance {
 		if ( $cluster === 'all' ) {
 			return $this->getSearchConfig()
 				->getClusterAssignment()
-				->getAllKnownClusters();
+				->getManagedClusters();
 		} else {
 			// single specified cluster. May be null, which
 			// indirectly selects the default search cluster.

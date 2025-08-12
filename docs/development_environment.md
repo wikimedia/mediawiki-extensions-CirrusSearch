@@ -64,7 +64,7 @@ PHPUnit tests can also be run. Note that some of these will fail due to expectin
 to be configured, as long as they mostly work we are ok for the moment. Will get back to this
 in a moment.
 ```sh
-docker exec -it mediawiki_mediawiki_1 /usr/bin/php tests/phpunit/phpunit.php --filter CirrusSearch
+docker exec -it mediawiki_mediawiki_1 vendor/bin/phpunit --filter CirrusSearch
 ```
 
 

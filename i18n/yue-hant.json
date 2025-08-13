@@ -2,16 +2,31 @@
 	"@metadata": {
 		"authors": [
 			"H78c67c",
-			"Winston Sung"
+			"Winston Sung",
+			"Ktchankt",
+			"Yueman"
 		]
 	},
-	"cirrussearch-desc": "基於 OpenSearch 嘅 MediaWiki 搜索工具",
+	"cirrussearch-desc": "基於 OpenSearch 嘅 MediaWiki 搵嘢架撐",
+	"cirrussearch-backend-error": "因為有臨時問題而處理唔到你嘅搵嘢要求。請遲啲再試過。",
 	"cirrussearch-too-busy-error": "搜索引擎而家太忙。請遲啲再試過。",
+	"cirrussearch-regex-too-busy-error": "而家有太多正則表達式行緊。請遲啲再試過。",
 	"cirrussearch-pref-label": "新搜尋",
 	"cirrussearch-give-feedback": "畀意見我哋",
+	"prefs-completion": "完成搵嘢",
+	"cirrussearch-pref-completion-profile-help": "設定自動完成（即打即搵）建議嘅行為。\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester 完成搵嘢建議器]係個有更好嘅錯別字改正同搵嘢相關性嘅搵嘢建議演算法。字頭搵嘢係舊式嘅即打即搵演算法。",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "預設（推薦）",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "改正最多兩個錯別字。剷走同主標題好似嘅跳轉。",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "詞組比對（建議用喺長標題）",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "改正最多兩個錯別字。修復相近嘅跳轉。比對標題嘅詞組。",
 	"cirrussearch-completion-profile-strict-pref-name": "嚴謹模式（高級）",
+	"cirrussearch-completion-profile-strict-pref-desc": "唔改正錯別字。唔改口音。嚴格比對。",
 	"cirrussearch-completion-profile-normal-pref-name": "跳轉模式（高級）",
+	"cirrussearch-completion-profile-normal-pref-desc": "唔改正錯別字。修復相近嘅跳轉。",
+	"cirrussearch-completion-profile-normal-subphrases-pref-name": "有詞組比對嘅跳轉模式（高級）",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "唔改正錯別字。修復相近嘅跳轉。比對標題嘅詞組。",
 	"cirrussearch-completion-profile-classic-pref-name": "傳統字首搜尋",
+	"cirrussearch-completion-profile-classic-pref-desc": "唔改正錯別字。比對標題開頭。",
+	"cirrussearch-explore-similar-related-none": "冇相關版面提供到",
 	"cirrussearch-article-words": "全部版嘅字數"
 }

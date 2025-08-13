@@ -29,11 +29,6 @@ interface ClusterAssignment {
 	public function getManagedClusters(): array;
 
 	/**
-	 * @return string[] List all known cluster groups
-	 */
-	public function getAllKnownClusters(): array;
-
-	/**
 	 * @param string $clusterName
 	 * @return bool True if the cluster is defined
 	 */

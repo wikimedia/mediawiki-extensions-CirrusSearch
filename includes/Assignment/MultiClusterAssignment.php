@@ -100,7 +100,7 @@ class MultiClusterAssignment implements ClusterAssignment {
 		return $clusters[$updateGroup] ?? $clusters['default'];
 	}
 
-	public function getAllKnownClusters(): array {
+	private function getAllKnownClusters(): array {
 		if ( $this->clusters === null ) {
 			$this->clusters = $this->initClusters();
 		}

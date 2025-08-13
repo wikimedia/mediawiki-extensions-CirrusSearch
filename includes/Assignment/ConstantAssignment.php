@@ -41,11 +41,6 @@ class ConstantAssignment implements ClusterAssignment {
 	}
 
 	/** @inheritDoc */
-	public function getAllKnownClusters(): array {
-		return [ 'default' ];
-	}
-
-	/** @inheritDoc */
 	public function hasCluster( string $clusterName ): bool {
 		return true;
 	}

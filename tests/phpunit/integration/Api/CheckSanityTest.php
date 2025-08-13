@@ -21,7 +21,7 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 
 	public function testNoProblems() {
 		$output = $this->doApiRequest(
-			[ 'from' => 0, 'limit' => 10 ],
+			[ 'from' => 0, 'limit' => 10, 'cluster' => 'default' ],
 			// no problems
 			[ static function ( $remediator ) {
 			} ] );
@@ -38,6 +38,7 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 			[
 				'from' => 0,
 				'limit' => 10,
+				'cluster' => 'default'
 			],
 			[
 				static function ( Remediator $remediator ) {
@@ -126,7 +127,7 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 	 */
 	public function testProblems( $errorType, $fn, $extraCallback = null ) {
 		$output = $this->doApiRequest(
-			[ 'from' => 0, 'limit' => 10 ],
+			[ 'from' => 0, 'limit' => 10, 'cluster' => 'default' ],
 			[
 				function ( $remediator ) use ( $fn ) {
 					$fn( $this, $remediator );

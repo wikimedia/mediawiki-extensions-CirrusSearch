@@ -206,8 +206,8 @@ class CheckSanity extends ApiBase {
 		$assignment = $this->getSearchConfig()->getClusterAssignment();
 		return [
 			'cluster' => [
-				ParamValidator::PARAM_DEFAULT => $assignment->getSearchCluster(),
-				ParamValidator::PARAM_TYPE => $assignment->getAllKnownClusters(),
+				ParamValidator::PARAM_REQUIRED => true,
+				ParamValidator::PARAM_TYPE => $assignment->getManagedClusters(),
 			],
 			'from' => [
 				ParamValidator::PARAM_TYPE => 'integer',
@@ -251,17 +251,6 @@ class CheckSanity extends ApiBase {
 	 */
 	public function isInternal() {
 		return true;
-	}
-
-	/**
-	 * @see ApiBase::getExamplesMessages
-	 * @return array
-	 */
-	protected function getExamplesMessages() {
-		return [
-			'action=cirrus-sanity-check&from=0&limit=100' =>
-				'apihelp-cirrus-check-sanity-example',
-		];
 	}
 
 }

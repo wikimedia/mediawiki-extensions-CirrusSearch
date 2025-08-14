@@ -29,7 +29,6 @@
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "Obtener un copia del documento usate per le suggestor de completiones",
 	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Forni le nomine de un methodo de score a esser usate per le suggestor de completamento",
 	"apihelp-cirrus-check-sanity-summary": "Reporta le correctessa de un intervallo de IDs de pagina in le indice de recerca",
-	"apihelp-cirrus-check-sanity-example": "Obtener un reporto sur le correctessa de un intervallo de IDs de pagina in le indice de recerca",
 	"apihelp-cirrus-check-sanity-param-cluster": "Le racemo de recerca in le qual verificar le indices",
 	"apihelp-cirrus-check-sanity-param-from": "Le ID del pagina al qual comenciar le verification",
 	"apihelp-cirrus-check-sanity-param-limit": "Le numero de IDs de pagina a verificar",

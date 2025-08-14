@@ -32,7 +32,6 @@
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "Obter unha descarga do documento utilizado polas suxestións para completar",
 	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Proporcionar un nome de método de puntuación para que o utilicen as suxestións para completar",
 	"apihelp-cirrus-check-sanity-summary": "Informa sobre a corrección dun rango de identificadores de páxina no índice de procura",
-	"apihelp-cirrus-check-sanity-example": "Obter un informe sobre a corrección dun rango de identificadores de páxina no índice de procura",
 	"apihelp-cirrus-check-sanity-param-cluster": "A agrupación de procura na comprobar os índices",
 	"apihelp-cirrus-check-sanity-param-from": "Identificador da páxina na que comezar a consultar",
 	"apihelp-cirrus-check-sanity-param-limit": "O número de identificadores de páxina a comprobar",

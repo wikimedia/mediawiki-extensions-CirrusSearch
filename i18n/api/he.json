@@ -30,7 +30,6 @@
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "קבלת היטל של המסמך שבשימוש מציע ההשלמות",
 	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "יש לספק שם של שיטת דירוג שישמש את מציע ההשלמה",
 	"apihelp-cirrus-check-sanity-summary": "דיווח על על הנכונות של טווח מזהי דף במפתח החיפוש",
-	"apihelp-cirrus-check-sanity-example": "קבלת דו\"ח על הנכונות של טווח של מזהי דפים במפתח החיפוש",
 	"apihelp-cirrus-check-sanity-param-cluster": "אשכול החיפוש לבדיקת מפתחות",
 	"apihelp-cirrus-check-sanity-param-from": "מזהה דף שיש להתחיל לבדוק ממנו",
 	"apihelp-cirrus-check-sanity-param-limit": "כמה מזהי דפים לבדוק",

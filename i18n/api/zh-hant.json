@@ -33,7 +33,6 @@
 	"apihelp-query+cirruscompsuggestbuilddoc-example": "取得由自動補齊所使用的文件匯出",
 	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "透過完成建議器提供使用的評分方法名稱",
 	"apihelp-cirrus-check-sanity-summary": "搜尋索引中一段範圍頁面 ID 的正確性報告",
-	"apihelp-cirrus-check-sanity-example": "取得在搜尋索引中一段範圍頁面 ID 的正確性報告",
 	"apihelp-cirrus-check-sanity-param-cluster": "用於檢查索引的搜尋叢集",
 	"apihelp-cirrus-check-sanity-param-from": "開始檢查的頁面 ID",
 	"apihelp-cirrus-check-sanity-param-limit": "要檢查頁面 ID 的數量",

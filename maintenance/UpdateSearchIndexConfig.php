@@ -53,11 +53,6 @@ class UpdateSearchIndexConfig extends Maintenance {
 	 *  maint class is being created
 	 */
 	public function execute() {
-		// Use the default connection, rather than the one specified
-		// by --cluster, as we are collecting cluster independent metadata.
-		// Also our script specific `all` cluster fails self::getConnection.
-		$conn = Connection::getPool( $this->getSearchConfig() );
-
 		foreach ( $this->clustersToWriteTo() as $cluster ) {
 			$this->outputIndented( "Updating cluster $cluster...\n" );
 
@@ -74,9 +69,10 @@ class UpdateSearchIndexConfig extends Maintenance {
 			$child->execute();
 			$child->done();
 
+			$conn = Connection::getPool( $this->getSearchConfig(), $cluster );
 			foreach ( $conn->getAllIndexSuffixes( null ) as $indexSuffix ) {
 				$this->outputIndented( "$indexSuffix index...\n" );
-				$child = $this->runChild( UpdateOneSearchIndexConfig::class );
+				$child = $this->createChild( UpdateOneSearchIndexConfig::class );
 				$child->done();
 				$child->loadParamsAndArgs(
 					null,

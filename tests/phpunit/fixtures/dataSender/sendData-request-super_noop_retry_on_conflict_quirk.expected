@@ -15,7 +15,7 @@
                     "_id": "1",
                     "_type": "",
                     "_index": "",
-                    "_retry_on_conflict": 5,
+                    "retry_on_conflict": 5,
                     "source": {
                         "version": 16,
                         "wiki": "wiki",
@@ -52,8 +52,7 @@
                     "handlers": {
                         "version": "documentVersion",
                         "incoming_links": "within 20%"
-                    },
-                    "retry_on_conflict": 5
+                    }
                 },
                 "lang": "super_detect_noop"
             },

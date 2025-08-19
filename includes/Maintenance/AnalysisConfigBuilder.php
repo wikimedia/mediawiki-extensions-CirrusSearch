@@ -1301,6 +1301,16 @@ class AnalysisConfigBuilder {
 				$config[ 'char_filter' ][ 'sudachi_combo_filter' ] =
 					AnalyzerBuilder::patternFilter( '[\\u0300-\\u0362]' );
 
+				// The Sudachi tokenizer can choke on very long sequences of kana, emoji,
+				// and other multibyte characters. After word_break_helper and
+				// sudachi_char_map (which convert some characters to spaces), break up
+				// any stretch of over 8K characters containing no spaces and no
+				// token-breaking punctuation. (Japanese regularly has stretches of
+				// hundreds of non-punct characters without spaces, but not thousands.)
+				// Arbitrarily break up really long stretches of such characters.
+				$config[ 'char_filter' ][ 'sudachi_tok_break' ] =
+					AnalyzerBuilder::patternFilter( '([^、。\s「」・]{8000})', '$1 ' );
+
 				$sudachiMap = [
 					"（=>\u0020", "）=>\u0020", // fullwidth parens
 					"〜=>～", // wave dash
@@ -1317,7 +1327,8 @@ class AnalysisConfigBuilder {
 
 				$config = $myAnalyzerBuilder->
 					withLimitedCharMap( $sudachiMap, 'sudachi_char_map' )->
-					withCharFilters( [ 'sudachi_combo_filter', 'sudachi_char_map' ] )->
+					withCharFilters( [ 'sudachi_combo_filter', 'sudachi_char_map',
+						'sudachi_tok_break' ] )->
 					withTokenizer( 'sudachi_tok' )->
 					withFilters( [ 'sudachi_split', 'sudachi_baseform', 'sudachi_posfilter',
 						'sudachi_ja_stop', 'lowercase', 'asciifolding', 'sudachi_word_delim',

@@ -142,7 +142,8 @@
                 "word_break_helper",
                 "arabic_extended_norm",
                 "sudachi_combo_filter",
-                "sudachi_char_map"
+                "sudachi_char_map",
+                "sudachi_tok_break"
             ],
             "filter": [
                 "decimal_digit",
@@ -166,7 +167,8 @@
                 "word_break_helper",
                 "arabic_extended_norm",
                 "sudachi_combo_filter",
-                "sudachi_char_map"
+                "sudachi_char_map",
+                "sudachi_tok_break"
             ],
             "filter": [
                 "decimal_digit",
@@ -345,6 +347,11 @@
             "type": "pattern_replace",
             "pattern": "[\\u0300-\\u0362]",
             "replacement": ""
+        },
+        "sudachi_tok_break": {
+            "type": "pattern_replace",
+            "pattern": "([^\u3001\u3002\\s\u300c\u300d\u30fb]{8000})",
+            "replacement": "$1 "
         },
         "word_break_helper": {
             "type": "mapping",

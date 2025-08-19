@@ -13,6 +13,7 @@ use MediaWiki\Api\ApiQuery;
 use MediaWiki\Api\ApiQueryBase;
 use MediaWiki\Api\ApiResult;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Revision\SlotRecord;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -42,12 +43,35 @@ class QueryBuildDocument extends ApiQueryBase {
 	}
 
 	public function execute() {
-		$result = $this->getResult();
-		$services = MediaWikiServices::getInstance();
-		$engine = $services->getSearchEngineFactory()->create();
+		$engine = MediaWikiServices::getInstance()->getSearchEngineFactory()->create();
 		if ( !( $engine instanceof CirrusSearch ) ) {
 			throw new \RuntimeException( 'Could not create cirrus engine' );
 		}
+
+		if ( $this->getUser()->getName() === $engine->getConfig()->get( "CirrusSearchStreamingUpdaterUsername" ) ) {
+			// Bypass poolcounter protection for the internal cirrus user
+			$this->doExecute( $engine );
+		} else {
+			// Protect against too many concurrent requests
+			// Use a global key this API is internal and could only be useful for manual debugging purposes
+			// so no real need to have it on per user basis.
+			$worker = new PoolCounterWorkViaCallback( 'CirrusSearch-QueryBuildDocument', 'QueryBuildDocument',
+				[
+					'doWork' => function () use ( $engine ) {
+						return $this->doExecute( $engine );
+					},
+					'error' => function () {
+						$this->dieWithError( 'apierror-concurrency-limit' );
+					},
+				]
+			);
+			$worker->execute();
+		}
+	}
+
+	public function doExecute( CirrusSearch $engine ) {
+		$result = $this->getResult();
+		$services = MediaWikiServices::getInstance();
 
 		$builders = $this->getParameter( 'builders' );
 		$profile = $this->getParameter( 'limiterprofile' );

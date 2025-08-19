@@ -1783,3 +1783,11 @@ Default:
 Tell CirrusSearch to use this particular alternative index. Is ignored if the id is not existing or
 if "use" is false.
 Particularly useful to be set in an A/B bucket via wgCirrusSearchUserTesting.
+
+; $wgCirrusSearchStreamingUpdaterUsername
+
+Default:
+  $wgCirrusSearchStreamingUpdaterUsername = null;
+
+Name of the internal Cirrus Streaming Updater user allowed to bypass poolcounter protections on the cirrusbuilddoc API prop.
+Only useful in setup where the updates are managed by the CirrusSearch Streaming Updater.

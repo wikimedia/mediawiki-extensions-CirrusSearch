@@ -1726,3 +1726,11 @@ extensions that might populate language information in different fields.  Wikiba
 is one of them where using:
   $wgCirrusSearchLanguageKeywordExtraFields = [ 'lexeme_language.code', 'lexeme_language.entity' ];
 might allow searching for lexemes based on their language code or language entity ID.
+
+; $wgCirrusSearchStreamingUpdaterUsername
+
+Default:
+  $wgCirrusSearchStreamingUpdaterUsername = null;
+
+Name of the internal Cirrus Streaming Updater user allowed to bypass poolcounter protections on the cirrusbuilddoc API prop.
+Only useful in setup where the updates are managed by the CirrusSearch Streaming Updater.

@@ -10,6 +10,7 @@ use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\Ids;
 use MediaWiki\Message\Message;
+use Wikimedia\Message\ListType;
 
 /**
  * Filter by a set of page IDs. This is useful for re-validating cached query results.
@@ -34,7 +35,7 @@ class PageIdFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		if ( count( $validValues ) < count( $values ) ) {
 			$invalidValues = array_values( array_diff( $values, $validValues ) );
 			$warningCollector->addWarning( 'cirrussearch-feature-pageid-invalid-id',
-				Message::listParam( $invalidValues, 'comma' ), count( $invalidValues ) );
+				Message::listParam( $invalidValues, ListType::COMMA ), count( $invalidValues ) );
 		}
 
 		if ( count( $validValues ) > self::MAX_VALUES ) {

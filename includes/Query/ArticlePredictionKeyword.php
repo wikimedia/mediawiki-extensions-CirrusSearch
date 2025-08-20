@@ -8,6 +8,7 @@ use CirrusSearch\WarningCollector;
 use Elastica\Query\DisMax;
 use Elastica\Query\Term;
 use MediaWiki\Message\Message;
+use Wikimedia\Message\ListType;
 
 /**
  * Finds pages based on how well they match a given keyword
@@ -88,7 +89,7 @@ class ArticlePredictionKeyword extends SimpleKeywordFeature {
 		if ( $invalidKeywords ) {
 
 			$warningCollector->addWarning( self::WARN_MESSAGE_PER_KEYWORD,
-				Message::listParam( $invalidKeywords, 'comma' ), count( $invalidKeywords ), $key );
+				Message::listParam( $invalidKeywords, ListType::COMMA ), count( $invalidKeywords ), $key );
 		}
 		return [ 'keywords' => $validKeywords, 'tag_prefix' => self::PREFIX_PER_KEYWORD[$key] ];
 	}

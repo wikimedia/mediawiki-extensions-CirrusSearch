@@ -24,6 +24,7 @@ use CirrusSearch\Util;
 use LogicException;
 use MediaWiki\Message\Message;
 use Wikimedia\Assert\Assert;
+use Wikimedia\Message\ListType;
 
 /**
  * Full text query parser that uses regex to parse its token.
@@ -823,7 +824,7 @@ class QueryStringRegexParser implements QueryParser {
 			if ( $exemptKeywords ) {
 				sort( $exemptKeywords );
 				throw new SearchQueryParseException( 'cirrussearch-query-too-long-with-exemptions',
-					$queryLen, $this->maxQueryLen, Message::listParam( array_unique( $exemptKeywords ), 'comma' ) );
+					$queryLen, $this->maxQueryLen, Message::listParam( array_unique( $exemptKeywords ), ListType::COMMA ) );
 			} else {
 				throw new SearchQueryParseException( 'cirrussearch-query-too-long', $queryLen,
 					$this->maxQueryLen );

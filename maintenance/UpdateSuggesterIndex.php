@@ -824,11 +824,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			'settings' => [ 'index' => $settings ],
 			'mappings' => $mappingConfigBuilder->buildConfig()
 		];
-		// @todo utilize $this->getIndex()->create(...) once it supports setting
-		// the master_timeout parameter.
-		$this->getIndex()->request(
-			'',
-			Request::PUT,
+		$this->getIndex()->create(
 			$args,
 			[ 'master_timeout' => $this->masterTimeout ]
 		);

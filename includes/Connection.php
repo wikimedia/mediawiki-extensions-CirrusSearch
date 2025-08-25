@@ -55,11 +55,6 @@ class Connection extends ElasticaConnection {
 	public const PAGE_DOC_TYPE = 'page';
 
 	/**
-	 * Name of the title suggest document type
-	 */
-	public const TITLE_SUGGEST_DOC_TYPE = 'titlesuggest';
-
-	/**
 	 * Name of the archive document type
 	 */
 	public const ARCHIVE_DOC_TYPE = 'archive';
@@ -262,16 +257,6 @@ class Connection extends ElasticaConnection {
 
 		return MediaWikiServices::getInstance()->getNamespaceInfo()->isContent( $namespace ) ?
 			self::CONTENT_INDEX_SUFFIX : self::GENERAL_INDEX_SUFFIX;
-	}
-
-	/**
-	 * @param int[]|null $namespaces List of namespaces to check
-	 * @return string|false The suffix to use (e.g. content or general) to
-	 *  query the namespaces, or false if both need to be queried.
-	 * @deprecated 1.38 Use self::pickIndexSuffixForNamespaces
-	 */
-	public function pickIndexTypeForNamespaces( ?array $namespaces = null ) {
-		return $this->pickIndexSuffixForNamespaces( $namespaces );
 	}
 
 	/**

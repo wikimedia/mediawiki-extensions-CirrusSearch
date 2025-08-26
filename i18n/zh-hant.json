@@ -16,7 +16,7 @@
 			"捍粵者"
 		]
 	},
-	"cirrussearch-desc": "以 OpenSearch 為基礎的 MediaWiki 搜尋工具",
+	"cirrussearch-desc": "以 OpenSearch 提供支援的 MediaWiki 搜尋工具",
 	"cirrussearch-backend-error": "因發生暫時性的問題，我們無法完成您的搜尋。請稍後再試。",
 	"cirrussearch-parse-error": "無法理解查詢條件，請簡化查詢條件。該查詢會被記錄以改進搜尋系統。",
 	"cirrussearch-too-busy-error": "搜尋引擎目前過於忙碌，請稍候再試。",
@@ -71,7 +71,7 @@
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint 應被設定成有效的 SPARQL 端點以使用深層分類搜尋。",
 	"cirrussearch-feature-deepcat-exception": "深層分類搜尋 SPARQL 查詢失敗",
 	"cirrussearch-feature-deepcat-timeout": "深層分類搜尋逾時。該分類可能有太多子分類",
-	"cirrussearch-feature-deepcat-toomany": "深層分類查詢回傳太多的分類",
+	"cirrussearch-feature-deepcat-toomany": "深層分類查詢回傳太多的分類。僅應用到部分的分類。",
 	"cirrussearch-feature-deepcat-invalid-title": "提供的分類無效。",
 	"cirrussearch-feature-pageid-invalid-id": "無效頁面 {{PLURAL:$2|ID}}：$1",
 	"cirrussearch-incategory-feature-no-valid-categories": "沒有提供給「$1」可用分類。",
@@ -83,5 +83,6 @@
 	"cirrussearch-autoselect-profile": "讓搜尋引擎決定來使用最好的個人設置。",
 	"cirrussearch-offset-too-large": "結果無法取得。可支援截止至 $1 的結果，但請求為起始自 $2 的結果。",
 	"cirrussearch-offset-not-allowed-with-random-sort": "忽略對隨機排序結果分頁的請求",
+	"cirrussearch-articleprediction-invalid-keyword": "無法辨識 <kbd>$3：</kbd> 關鍵字的{{PLURAL:$2|值}}：$1",
 	"cirrussearch-inlanguage-deprecate-comma": "使用逗號作為 inlanguage 關鍵字的分隔字元已棄用。請改用 |（豎線）來分隔語言。"
 }

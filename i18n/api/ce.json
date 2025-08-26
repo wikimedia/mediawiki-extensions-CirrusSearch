@@ -4,5 +4,6 @@
 			"Умар"
 		]
 	},
+	"apihelp-query+cirrusdoc-example-2": "ХӀокху викина CirrusSearch нисдаран гӀирсан дамп схьаэца йеккъа категорешца, уьш хаьржина йу «includes» параметрца",
 	"apierror-cirrus-requesttoolong": "Лахаран дехар максимум магийначул деха ду. ($1 > $2)"
 }

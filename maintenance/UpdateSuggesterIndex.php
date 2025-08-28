@@ -321,10 +321,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	private function checkAndDeleteBrokenIndices() {
 		$indices = $this->unwrap( $this->utils->getAllIndicesByType( $this->getIndexAliasName() ) );
-		if ( count( $indices ) < 2 ) {
-			return;
-		}
-		$indexByName = [];
 		foreach ( $indices as $indexName ) {
 			$status = $this->utils->isIndexLive( $indexName );
 			if ( !$status->isGood() ) {
@@ -406,6 +402,13 @@ class UpdateSuggesterIndex extends Maintenance {
 		);
 		if ( !$oldIndex->exists() ) {
 			$this->error( 'Index does not exist yet cannot recycle.' );
+			return false;
+		}
+		$currentIndexAlias = $this->getConnection()->getIndex(
+			$this->indexBaseName, $this->indexSuffix
+		);
+		if ( !$currentIndexAlias->exists() ) {
+			$this->error( 'Index has no active alias? cannot recycle.' );
 			return false;
 		}
 		$refresh = $oldIndex->getSettings()->getRefreshInterval();

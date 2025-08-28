@@ -38,7 +38,7 @@ class ArticlePage extends TitlePage {
 	}
 
 	async get_search_suggestions() {
-		const selector = '.cdx-search-result-title';
+		const selector = '.cdx-search-input .cdx-menu-item';
 		await browser.waitUntil(
 			async () => await browser.$( selector ).isExisting(),
 			{ timeout: { timeout: 10000 } }

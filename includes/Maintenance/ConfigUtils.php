@@ -4,9 +4,12 @@ namespace CirrusSearch\Maintenance;
 
 use Elastica\Client;
 use Elastica\Exception\ResponseException;
+use Elastica\Index;
 use Elasticsearch\Endpoints;
+use LogicException;
 use MediaWiki\Extension\Elastica\MWElasticUtils;
 use MediaWiki\Status\Status;
+use RuntimeException;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -332,5 +335,91 @@ class ConfigUtils {
 			return Status::newGood( true );
 		}
 		return Status::newGood( false );
+	}
+
+	/**
+	 * Refresh the index, return a failed Status after $attempts
+	 * @param Index $index
+	 * @param int $attempts
+	 * @return Status
+	 */
+	public static function safeRefresh( Index $index, int $attempts = 3 ): Status {
+		try {
+			MWElasticUtils::withRetry( $attempts, static function () use ( $index ) {
+				$resp = $index->refresh();
+				$data = $resp->getData();
+				if ( is_array( $data ) && isset( $data['_shards'] ) ) {
+					$shards = $data['_shards'];
+					$tot = $shards['total'] ?? -1;
+					$success = $shards['successful'] ?? -1;
+					$failed = $shards['failed'] ?? -1;
+					if ( $tot - ( $success + $failed ) !== 0 ) {
+						throw new RuntimeException( "Inconsistent shard results from response " . json_encode( $data ) );
+					}
+					if ( $tot !== $success ) {
+						throw new RuntimeException( "Some shards failed $failed failed, $success succeeded out of $tot total $success " );
+					}
+				} else {
+					throw new RuntimeException( "Inconsistent refresh response " . print_r( $data, true ) );
+				}
+			} );
+		} catch ( RuntimeException $e ) {
+			return Status::newFatal( new \RawMessage( $e->getMessage() ) );
+		}
+		return Status::newGood();
+	}
+
+	/**
+	 * Count the number of doc in this index, fail the maintenance script with fatalError after $attempts.
+	 * @param Index $index
+	 * @param callable $failureFunction a function that accepts a StatusValue with the error message. must fail.
+	 * @param int $attempts
+	 */
+	public static function safeRefreshOrFail( Index $index, callable $failureFunction, int $attempts = 3 ): void {
+		$status = self::safeRefresh( $index, $attempts );
+		if ( !$status->isGood() ) {
+			$failureFunction( $status );
+			throw new LogicException( '$failureFunction must fail' );
+		}
+	}
+
+	/**
+	 * Count the number of doc in this index, return a failed Status after $attempts.
+	 * @param Index $index
+	 * @param int $attempts
+	 * @return Status<int>
+	 */
+	public static function safeCount( Index $index, int $attempts = 3 ): Status {
+		try {
+			$count = MWElasticUtils::withRetry( $attempts, static function () use ( $index ) {
+				$resp = $index->createSearch( '' )->count( '', true );
+				$count = $resp->getResponse()->getData()['hits']['total']['value'] ?? null;
+				if ( $count === null ) {
+					throw new RuntimeException( "Received search response without total hits: " .
+												 json_encode( $resp->getResponse()->getData() ) );
+				}
+				return (int)$count;
+			} );
+		} catch ( ResponseException | RuntimeException $e ) {
+			return Status::newFatal( new \RawMessage( "Failed to count {$index->getName()}: {$e->getMessage()}" ) );
+		}
+		return Status::newGood( $count );
+	}
+
+	/**
+	 * Count the number of doc in this index, fail the maintenance script with fatalError after $attempts.
+	 * @param Index $index
+	 * @param callable $failureFunction a function that accepts a StatusValue with the error message. must fail.
+	 * @param int $attempts
+	 * @return int
+	 */
+	public static function safeCountOrFail( Index $index, callable $failureFunction, int $attempts = 3 ): int {
+		$status = self::safeCount( $index, $attempts );
+		if ( $status->isGood() ) {
+			return $status->getValue();
+		} else {
+			$failureFunction( $status );
+			throw new \LogicException( '$failureFunction must fail' );
+		}
 	}
 }

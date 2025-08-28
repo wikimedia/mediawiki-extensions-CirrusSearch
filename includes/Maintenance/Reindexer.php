@@ -14,6 +14,7 @@ use Elastica\Request;
 use Elastica\Transport\Http;
 use Elastica\Transport\Https;
 use MediaWiki\Utils\MWTimestamp;
+use StatusValue;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -198,15 +199,15 @@ class Reindexer {
 	}
 
 	private function waitForCounts( float $acceptableCountDeviation ) {
-		$oldCount = (float)$this->oldIndex->count();
-		$this->index->refresh();
+		$oldCount = (float)$this->safeCount( $this->oldIndex );
+		$this->safeRefresh( $this->index );
 		// While elasticsearch should be ready immediately after a refresh, we have seen this return
 		// exceptionally low values in 2% of reindex attempts. Wait around a bit and hope the refresh
 		// becomes available
 		$start = microtime( true );
 		$timeoutAfter = $start + self::MAX_WAIT_FOR_COUNT_SEC;
 		while ( true ) {
-			$newCount = (float)$this->index->count();
+			$newCount = (float)$this->safeCount( $this->index );
 			$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
 			if ( $difference <= $acceptableCountDeviation ) {
 				break;
@@ -567,5 +568,25 @@ class Reindexer {
 			);
 		}
 		return (int)$data[$realIndexName]['settings']['index']['number_of_shards'];
+	}
+
+	private function safeCount( Index $index, int $attempts = 3 ): int {
+		return ConfigUtils::safeCountOrFail(
+			$index,
+			function ( StatusValue $error ): never {
+				$this->fatalError( $error );
+			},
+			$attempts
+		);
+	}
+
+	private function safeRefresh( Index $index, int $attempts = 3 ): void {
+		ConfigUtils::safeRefreshOrFail(
+			$index,
+			function ( StatusValue $error ): never {
+				$this->fatalError( $error );
+			},
+			$attempts
+		);
 	}
 }

@@ -6,11 +6,13 @@ use CirrusSearch\Connection;
 use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\UserTestingEngine;
+use Elastica\Index;
 use MediaWiki\Maintenance\Maintenance as MWMaintenance;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Settings\SettingsBuilder;
 use MediaWiki\Status\Status;
 use RuntimeException;
+use StatusValue;
 
 // Maintenance class is loaded before autoload, so we need to pull the interface
 require_once __DIR__ . '/Printer.php';
@@ -294,6 +296,37 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 			$this->fatalError( (string)$status );
 		}
 		return $status->getValue();
+	}
+
+	/**
+	 * Count the number of doc in this index.
+	 * @param Index $index
+	 * @return int
+	 */
+	protected function safeCount( Index $index, int $attempts = 3 ): int {
+		return ConfigUtils::safeCountOrFail(
+			$index,
+			function ( StatusValue $error ): never {
+				$this->fatalError( $error );
+			},
+			$attempts
+		);
+	}
+
+	/**
+	 * Refresh the index.
+	 * @param Index $index
+	 * @param int $attempts
+	 * @return void
+	 */
+	protected function safeRefresh( Index $index, int $attempts = 3 ): void {
+		ConfigUtils::safeRefreshOrFail(
+			$index,
+			function ( StatusValue $error ): never {
+				$this->fatalError( $error );
+			},
+			$attempts
+		);
 	}
 
 }

@@ -349,22 +349,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		if ( $this->optimizeIndex ) {
 			$this->optimize();
 		}
-		$this->getIndex()->refresh();
-		$docsInIndex = $this->getIndex()->count();
-		if ( $this->oldIndex && $this->oldIndex->exists() ) {
-			$oldCount = $this->oldIndex->count();
-			$this->log( "Old index had {$oldCount} docs vs {$docsInIndex} now.\n" );
-			$diffRatio = ( $oldCount - $docsInIndex ) / $oldCount;
-			// Check for relatively large (>EXTRA_CHECK_THRESHOLD docs) indices that the new index is not
-			// abnormally smaller than the new one.
-			// We check only "large" indices to avoid false positives on small indices...
-			if ( !$this->force && $oldCount > self::EXTRA_CHECK_THRESHOLD && $diffRatio > self::PREVIOUS_VS_NEXT_COUNT_MAX_DEVIATION ) {
-				$this->fatalError( "New index seems too small compared to the previous index " .
-								   "$oldCount/$docsInIndex > " . self::PREVIOUS_VS_NEXT_COUNT_MAX_DEVIATION .
-								   " (old/new > threshold). Aborting. (Use --force to bypass)" );
-			}
-
-		}
+		$docsInIndex = $this->refreshAndWaitForCount();
 		if ( $docsInIndex != $totalSuggestDocs ) {
 			$this->error( "Prepared and indexed $totalSuggestDocs docs but the index has $docsInIndex" );
 			$errorRatio = ( $totalSuggestDocs - $docsInIndex ) / $totalSuggestDocs;
@@ -491,7 +476,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		// Refresh the reader so we can scroll over remaining docs.
 		// At this point we may read the new un-optimized FST segments
 		// Old ones should be pretty small after expungeDeletes
-		$this->getIndex()->refresh();
+		$this->safeRefresh( $this->getIndex() );
 
 		$boolNot = new Elastica\Query\BoolQuery();
 		$boolNot->addMustNot(
@@ -552,8 +537,8 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		// Refresh the reader so it now uses the optimized FST,
 		// and actually free and delete old segments.
-		$this->getIndex()->refresh();
-		$docsInIndex = $this->getIndex()->count();
+		$this->safeRefresh( $this->getIndex() );
+		$docsInIndex = $this->safeCount( $this->getIndex() );
 		if ( $docsInIndex != $indexedDocs ) {
 			$this->error( "Prepared and indexed $indexedDocs docs but the index has $docsInIndex" );
 		}
@@ -918,6 +903,46 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	protected function getIndexAliasName() {
 		return $this->getConnection()->getIndexName( $this->indexBaseName, $this->indexSuffix );
+	}
+
+	/**
+	 * @return int
+	 */
+	private function refreshAndWaitForCount(): int {
+		$this->safeRefresh( $this->getIndex() );
+		$start = microtime( true );
+		$timeoutAfter = $start + 120;
+		$docsInIndex = $this->safeCount( $this->getIndex() );
+		if ( $this->oldIndex && $this->oldIndex->exists() ) {
+			while ( true ) {
+				$docsInIndex = $this->safeCount( $this->getIndex() );
+				$oldCount = $this->safeCount( $this->oldIndex );
+				$this->log( "Old index had {$oldCount} docs vs {$docsInIndex} now.\n" );
+				$diffRatio = ( $oldCount - $docsInIndex ) / $oldCount;
+				// Check for relatively large (>EXTRA_CHECK_THRESHOLD docs) indices that the new index is not
+				// abnormally smaller than the new one.
+				// We check only "large" indices to avoid false positives on small indices...
+				if ( $oldCount > self::EXTRA_CHECK_THRESHOLD &&
+					 $diffRatio > self::PREVIOUS_VS_NEXT_COUNT_MAX_DEVIATION ) {
+					if ( microtime( true ) > $timeoutAfter ) {
+						if ( !$this->force ) {
+							$this->fatalError( "New index seems too small compared to the previous index " .
+											   "$oldCount/$docsInIndex > " .
+											   self::PREVIOUS_VS_NEXT_COUNT_MAX_DEVIATION .
+											   " (old/new > threshold). Aborting. (Use --force to bypass)" );
+						}
+					} else {
+						$this->log( "Waiting to re-check counts...\n" );
+						sleep( 10 );
+					}
+				} else {
+					return $docsInIndex;
+				}
+			}
+
+		}
+
+		return $docsInIndex;
 	}
 }
 

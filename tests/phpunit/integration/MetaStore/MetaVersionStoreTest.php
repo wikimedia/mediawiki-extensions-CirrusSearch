@@ -36,6 +36,21 @@ class MetaVersionStoreTest extends CirrusIntegrationTestCase {
 		$this->assertInstanceOf( \Elastica\Document::class, $doc );
 	}
 
+	public function testDelete() {
+		[ $conn, $type ] = $this->mockConnection();
+		$store = new MetaVersionStore( $type, $conn );
+		$id = null;
+		$type->expects( $this->once() )
+			->method( 'deleteById' )
+			->willReturnCallback( function ( string $id, array $args ) {
+				$this->assertEquals( "version-unittest_titlesuggest_alt_1", $id );
+				$this->assertEquals( [], $args );
+				return new Response( 200, [] );
+			} );
+
+		$store->delete( 'unittest', Connection::TITLE_SUGGEST_INDEX_SUFFIX, true, 1 );
+	}
+
 	public function testUpdateAll() {
 		[ $conn, $type ] = $this->mockConnection();
 		$store = new MetaVersionStore( $type, $conn );

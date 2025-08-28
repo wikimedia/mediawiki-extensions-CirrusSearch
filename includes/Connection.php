@@ -60,6 +60,11 @@ class Connection extends ElasticaConnection {
 	public const ARCHIVE_DOC_TYPE = 'archive';
 
 	/**
+	 * "Alternative" index suffix
+	 */
+	public const ALT_SUFFIX = 'alt';
+
+	/**
 	 * Map of index types (suffix names) indexed by mapping type.
 	 */
 	private const SUFFIX_MAPPING = [

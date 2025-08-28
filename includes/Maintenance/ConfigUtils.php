@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\Connection;
 use Elastica\Client;
 use Elastica\Exception\ResponseException;
 use Elastica\Index;
@@ -78,7 +79,7 @@ class ConfigUtils {
 	 *          'current'    => if there is just one index for this type then use its identifier
 	 *          other string => that string back
 	 * @param string $typeName
-	 * @return Status holds string index identifier to use
+	 * @return Status<string> holds string index identifier to use
 	 */
 	public function pickIndexIdentifierFromOption( $option, $typeName ): Status {
 		if ( $option === 'now' ) {
@@ -121,11 +122,17 @@ class ConfigUtils {
 	 * type $typeName
 	 *
 	 * @param string $typeName the type to filter with
+	 * @param bool $excludeAltIndices exclude alternative indices
 	 * @return Status holds string[] with list of indices
 	 */
-	public function getAllIndicesByType( $typeName ): Status {
+	public function getAllIndicesByType( $typeName, bool $excludeAltIndices = true ): Status {
+		$indexQuery = "$typeName*";
+		if ( $excludeAltIndices ) {
+			$altIndexSuffix = Connection::ALT_SUFFIX;
+			$indexQuery .= ",-{$typeName}_{$altIndexSuffix}_*";
+		}
 		$response = $this->client->requestEndpoint( ( new Endpoints\Indices\Get() )
-			->setIndex( $typeName . '*' ) );
+			->setIndex( $indexQuery ) );
 		if ( !$response->isOK() ) {
 			return Status::newFatal( "Cannot fetch index names for $typeName: "
 				. $response->getError() );

@@ -8,8 +8,11 @@ use CirrusSearch\Maintenance\ArchiveMappingConfigBuilder;
 use CirrusSearch\Maintenance\MappingConfigBuilder;
 use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
 use CirrusSearch\Maintenance\SuggesterMappingConfigBuilder;
+use Elastica\Document;
+use Elastica\Exception\NotFoundException;
 use Elastica\Index;
 use Elastica\Query\BoolQuery;
+use Elastica\ResultSet;
 use MediaWiki\Utils\GitInfo;
 use MediaWiki\WikiMap\WikiMap;
 
@@ -31,12 +34,20 @@ class MetaVersionStore implements MetaStore {
 	 * @param Connection $connection
 	 * @param string $baseName
 	 * @param string $typeName
+	 * @param bool $altIndex
+	 * @param int $altIndexId
 	 * @return string
 	 */
-	public static function docId( Connection $connection, $baseName, $typeName ) {
+	private static function docId(
+		Connection $connection,
+		string $baseName,
+		string $typeName,
+		bool $altIndex = false,
+		int $altIndexId = 0
+	): string {
 		return implode( '-', [
 			self::METASTORE_TYPE,
-			$connection->getIndexName( $baseName, $typeName )
+			$connection->getIndexName( $baseName, $typeName, false, $altIndex, $altIndexId ),
 		] );
 	}
 
@@ -60,9 +71,22 @@ class MetaVersionStore implements MetaStore {
 	/**
 	 * @param string $baseName
 	 * @param string $typeName
+	 * @param bool $altIndex
+	 * @param int $altIndexId
 	 */
-	public function update( $baseName, $typeName ) {
-		$this->index->addDocuments( [ self::buildDocument( $this->connection, $baseName, $typeName ) ] );
+	public function update( string $baseName, string $typeName, bool $altIndex = false, int $altIndexId = 0 ): void {
+		$this->index->addDocuments( [ self::buildDocument( $this->connection, $baseName, $typeName, $altIndex, $altIndexId ) ] );
+	}
+
+	/**
+	 * @param string $baseName
+	 * @param string $typeName
+	 * @param bool $altIndex
+	 * @param int $altIndexId
+	 * @return void
+	 */
+	public function delete( string $baseName, string $typeName, bool $altIndex = false, int $altIndexId = 0 ): void {
+		$this->index->deleteById( self::docId( $this->connection, $baseName, $typeName, $altIndex, $altIndexId ) );
 	}
 
 	/**
@@ -79,19 +103,22 @@ class MetaVersionStore implements MetaStore {
 	/**
 	 * @param string $baseName
 	 * @param string $typeName
-	 * @return \Elastica\Document
+	 * @param bool $altIndex
+	 * @param int $altIndexId
+	 * @return Document
+	 * @throws NotFoundException
 	 */
-	public function find( $baseName, $typeName ) {
-		$docId = self::docId( $this->connection, $baseName, $typeName );
+	public function find( string $baseName, string $typeName, bool $altIndex = false, int $altIndexId = 0 ): Document {
+		$docId = self::docId( $this->connection, $baseName, $typeName, $altIndex, $altIndexId );
 		return $this->index->getDocument( $docId );
 	}
 
 	/**
 	 * @param string|null $baseName Base index name to find, or all to
 	 *  return all indices for all wikis.
-	 * @return \Elastica\ResultSet
+	 * @return ResultSet
 	 */
-	public function findAll( $baseName = null ) {
+	public function findAll( ?string $baseName = null ): ResultSet {
 		$filter = new BoolQuery();
 		$filter->addFilter( ( new \Elastica\Query\Term() )
 			->setTerm( 'type', self::METASTORE_TYPE ) );
@@ -116,7 +143,13 @@ class MetaVersionStore implements MetaStore {
 	 * @param string $typeName
 	 * @return \Elastica\Document
 	 */
-	public static function buildDocument( Connection $connection, $baseName, $typeName ) {
+	public static function buildDocument(
+		Connection $connection,
+		string $baseName,
+		string $typeName,
+		bool $altIndex = false,
+		int $altIndexId = 0
+	): Document {
 		global $IP;
 		if ( $typeName == Connection::TITLE_SUGGEST_INDEX_SUFFIX ) {
 			[ $aMaj, $aMin ] = explode( '.', SuggesterAnalysisConfigBuilder::VERSION, 3 );
@@ -130,15 +163,16 @@ class MetaVersionStore implements MetaStore {
 		}
 		$mwInfo = new GitInfo( $IP );
 		$cirrusInfo = new GitInfo( __DIR__ . '/../..' );
-		$docId = self::docId( $connection, $baseName, $typeName );
+		$docId = self::docId( $connection, $baseName, $typeName, $altIndex, $altIndexId );
 		$data = [
 			'type' => self::METASTORE_TYPE,
 			'wiki' => WikiMap::getCurrentWikiId(),
-			'index_name' => $connection->getIndexName( $baseName, $typeName ),
+			'index_name' => $connection->getIndexName( $baseName, $typeName, false, $altIndex, $altIndexId ),
 			'analysis_maj' => $aMaj,
 			'analysis_min' => $aMin,
 			'mapping_maj' => $mMaj,
 			'mapping_min' => $mMin,
+			// todo: this info might be inaccurate in the case an alternative index fine-tune this.
 			'shard_count' => $connection->getSettings()->getShardCount( $typeName ),
 			'mediawiki_version' => MW_VERSION,
 			'mediawiki_commit' => $mwInfo->getHeadSHA1(),

@@ -144,7 +144,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 	/**
 	 * @return string|null
 	 */
-	private function decideCluster() {
+	protected function decideCluster() {
 		$config = $this->getSearchConfig();
 		$assignment = $config->getClusterAssignment();
 
@@ -288,8 +288,9 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 	/**
 	 * Helper method for Status returning methods, such as via ConfigUtils
 	 *
-	 * @param Status $status
-	 * @return mixed
+	 * @template T
+	 * @param Status<T> $status
+	 * @return T
 	 */
 	protected function unwrap( Status $status ) {
 		if ( !$status->isGood() ) {

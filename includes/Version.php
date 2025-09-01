@@ -31,7 +31,7 @@ class Version extends ElasticsearchIntermediary {
 	/**
 	 * Get the version of Elasticsearch with which we're communicating.
 	 *
-	 * @return Status<string> version number as a string
+	 * @return Status<array<string,string>> version number as a string
 	 */
 	public function get() {
 		try {

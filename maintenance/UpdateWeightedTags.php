@@ -61,7 +61,7 @@ class UpdateWeightedTags extends Maintenance {
 			/** @var WeightedTagsUpdater $updater */
 			$updater = $this->getServiceContainer()->getService( WeightedTagsUpdater::SERVICE );
 			if ( $this->hasOption( 'reset' ) ) {
-				$updater->resetWeightedTags( $pageIdentity, $tagPrefix );
+				$updater->resetWeightedTags( $pageIdentity, [ $tagPrefix ] );
 			} else {
 				$tagNames = $this->getOption( 'tagName' );
 				$tagWeights = $this->getOption( 'weight' );

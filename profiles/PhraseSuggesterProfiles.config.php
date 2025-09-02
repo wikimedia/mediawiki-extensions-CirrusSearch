@@ -22,6 +22,9 @@
 return [
 	// This is the default settings
 	'default' => [
+		// The field to perform phrase suggest queries against
+		'field' => 'suggest',
+
 		// Don't suggest anything if the query has more than total_hits_threshold (set to -1 to disable)
 		'total_hits_threshold' => 15000,
 
@@ -34,6 +37,9 @@ return [
 		// * always: Suggest any matching suggestions based on terms
 		// in the suggest text.
 		'mode' => 'always',
+
+		// The maximum corrections to be generated for scoring per suggest text token.
+		'num_candidates' => 5,
 
 		// Confidence level required to suggest new phrases.
 		// See confidence on https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-phrase.html
@@ -97,9 +103,11 @@ return [
 	// The 'strict' settings will try to avoid displaying weird suggestions.
 	// (suited for small size wikis)
 	'strict' => [
+		'field' => 'suggest',
 		// Don't suggest anything if the query has more than total_hits_threshold (set to -1 to disable)
 		'total_hits_threshold' => 15000,
 		'mode' => 'always',
+		'num_candidates' => 5,
 		'confidence' => 2.0,
 		'max_errors' => 2,
 		'real_word_error_likelihood' => 0.95,
@@ -114,11 +122,58 @@ return [
 			]
 		]
 	],
-	// Alternative settings, confidence set to 1 but with laplace smoothing
-	'alternative' => [
+	// Similar to `default`, but with compute turned up via:
+	// * num_candidates from 5 to 30
+	// * max_errors from 2 to 3
+	// * prefix_length from 2 to 1
+	'expensive_1' => [
+		'field' => 'suggest',
 		'total_hits_threshold' => 15000,
 		'mode' => 'always',
-		'confidence' => 1.0,
+		'num_candidates' => 30,
+		'confidence' => 2.0,
+		'max_errors' => 3,
+		'real_word_error_likelihood' => 0.95,
+		'max_term_freq' => 0.5,
+		'min_doc_freq' => 0.0,
+		'prefix_length' => 1,
+		'collate' => false,
+		'collate_minimum_should_match' => '3<66%',
+		'smoothing_model' => [
+			'stupid_backoff' => [
+				'discount' => 0.4,
+			],
+		],
+	],
+	// Similar to `default`, but with compute turned up via:
+	// * num_candidates from 5 to 30
+	// * max_errors from 2 to 3
+	'expensive_2' => [
+		'field' => 'suggest',
+		'total_hits_threshold' => 15000,
+		'mode' => 'always',
+		'num_candidates' => 30,
+		'confidence' => 2.0,
+		'max_errors' => 3,
+		'real_word_error_likelihood' => 0.95,
+		'max_term_freq' => 0.5,
+		'min_doc_freq' => 0.0,
+		'prefix_length' => 1,
+		'collate' => false,
+		'collate_minimum_should_match' => '3<66%',
+		'smoothing_model' => [
+			'stupid_backoff' => [
+				'discount' => 0.4,
+			],
+		],
+	],
+	// Same settings as `default` but with field => suggest_variant
+	'variant' => [
+		'field' => 'suggest_variant',
+		'total_hits_threshold' => 15000,
+		'mode' => 'always',
+		'num_candidates' => 5,
+		'confidence' => 2.0,
 		'max_errors' => 2,
 		'real_word_error_likelihood' => 0.95,
 		'max_term_freq' => 0.5,
@@ -127,9 +182,49 @@ return [
 		'collate' => false,
 		'collate_minimum_should_match' => '3<66%',
 		'smoothing_model' => [
-			'laplace' => [
-				'alpha' => 0.3
+			'stupid_backoff' => [
+				'discount' => 0.4
 			]
-		]
-	]
+		],
+	],
+	// Same settings as `expensive_1` but with field => suggest_variant
+	'expensive_1_variant' => [
+		'field' => 'suggest_variant',
+		'total_hits_threshold' => 15000,
+		'mode' => 'always',
+		'num_candidates' => 30,
+		'confidence' => 2.0,
+		'max_errors' => 3,
+		'real_word_error_likelihood' => 0.95,
+		'max_term_freq' => 0.5,
+		'min_doc_freq' => 0.0,
+		'prefix_length' => 1,
+		'collate' => false,
+		'collate_minimum_should_match' => '3<66%',
+		'smoothing_model' => [
+			'stupid_backoff' => [
+				'discount' => 0.4,
+			],
+		],
+	],
+	// Same settings as `expensive_2` but with field => suggest_variant
+	'expensive_2_variant' => [
+		'field' => 'suggest_variant',
+		'total_hits_threshold' => 15000,
+		'mode' => 'always',
+		'num_candidates' => 30,
+		'confidence' => 2.0,
+		'max_errors' => 3,
+		'real_word_error_likelihood' => 0.95,
+		'max_term_freq' => 0.5,
+		'min_doc_freq' => 0.0,
+		'prefix_length' => 2,
+		'collate' => false,
+		'collate_minimum_should_match' => '3<66%',
+		'smoothing_model' => [
+			'stupid_backoff' => [
+				'discount' => 0.4,
+			],
+		],
+	],
 ];

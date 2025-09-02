@@ -442,6 +442,7 @@
                                 "max_term_freq": 0.5,
                                 "min_doc_freq": 0,
                                 "prefix_length": 2,
+                                "size": 5,
                                 "suggest_mode": "always"
                             },
                             {

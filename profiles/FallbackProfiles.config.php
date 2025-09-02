@@ -19,75 +19,40 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-return [
-	'phrase_suggest_and_language_detection' => [
+$profiles = [
+	'none' => []
+];
+
+foreach ( [
+	'default', 'strict', 'expensive_1', 'expensive_2',
+	'variant', 'expensive_1_variant', 'expensive_2_variant'
+] as $profileName ) {
+	$suffix = $profileName === 'default' ? '' : "_{$profileName}";
+	$profiles["phrase_suggest{$suffix}"] = [
 		'methods' => [
 			'phrase-default' => [
 				'class' => \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod::class,
 				'params' => [
-					'profile' => 'default',
+					'profile' => $profileName,
 				]
-			],
-			'langdetect' => [
-				'class' => \CirrusSearch\Fallbacks\LangDetectFallbackMethod::class,
-				'params' => []
-			],
-		]
-	],
-	'phrase_suggest' => [
-		'methods' => [
-			'phrase-default' => [
-				'class' => \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod::class,
-				'params' => [
-					'profile' => 'default',
-				]
-			],
-		]
-	],
-	'phrase_suggest_strict' => [
-		'methods' => [
-			'phrase-strict' => [
-				'class' => \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod::class,
-				'params' => [
-					'profile' => 'strict',
-				]
-			],
-		]
-	],
-	'phrase_suggest_glentM0_and_langdetect' => [
-		'methods' => [
-			'glent-m0run' => [
-				'class' => \CirrusSearch\Fallbacks\IndexLookupFallbackMethod::class,
-				'params' => [
-					'profile' => 'glent',
-					'profile_params' => [
-						'methods' => [ 'm0run' ],
-					]
-				]
-			],
-			'glent-m1run' => [
-				'class' => \CirrusSearch\Fallbacks\IndexLookupFallbackMethod::class,
-				'params' => [
-					'profile' => 'glent',
-					'mode' => 'metrics',
-					'profile_params' => [
-						'methods' => [ 'm1run' ],
-					]
-				]
-			],
-			'phrase-default' => [
-				'class' => \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod::class,
-				'params' => [
-					'profile' => 'default',
-				]
-			],
-			'langdetect' => [
-				'class' => \CirrusSearch\Fallbacks\LangDetectFallbackMethod::class,
-				'params' => []
 			],
 		],
-	],
-	'phrase_suggest_glentM01_and_langdetect' => [
+	];
+	$profiles["phrase_suggest{$suffix}_and_language_detection"] = [
+		'methods' => [
+			'phrase-default' => [
+				'class' => \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod::class,
+				'params' => [
+					'profile' => $profileName,
+				]
+			],
+			'langdetect' => [
+				'class' => \CirrusSearch\Fallbacks\LangDetectFallbackMethod::class,
+				'params' => []
+			],
+		]
+	];
+	$profiles["phrase_suggest{$suffix}_glentM01_and_langdetect"] = [
 		'methods' => [
 			'glent-m01run' => [
 				'class' => \CirrusSearch\Fallbacks\IndexLookupFallbackMethod::class,
@@ -101,14 +66,15 @@ return [
 			'phrase-default' => [
 				'class' => \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod::class,
 				'params' => [
-					'profile' => 'default',
+					'profile' => $profileName,
 				]
 			],
 			'langdetect' => [
 				'class' => \CirrusSearch\Fallbacks\LangDetectFallbackMethod::class,
 				'params' => []
 			],
-		]
-	],
-	'none' => []
-];
+		],
+	];
+}
+
+return $profiles;

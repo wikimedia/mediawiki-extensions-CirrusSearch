@@ -11,6 +11,7 @@
                 "direct_generator": [
                     {
                         "field": "suggest",
+                        "size": 5,
                         "suggest_mode": "always",
                         "max_term_freq": 0.5,
                         "min_doc_freq": 0,

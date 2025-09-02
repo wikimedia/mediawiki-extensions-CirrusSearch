@@ -201,9 +201,9 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	 * @return array[] array of Elastica configuration
 	 */
 	private function buildSuggestConfig() {
-		$field = 'suggest';
 		$config = $this->query->getSearchConfig();
 		$suggestSettings = $this->getProfile();
+		$field = $suggestSettings['field'] ?? 'suggest';
 		$settings = [
 			'phrase' => [
 				'field' => $field,
@@ -214,6 +214,9 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 				'direct_generator' => [
 					[
 						'field' => $field,
+						// While not documented, PhraseSuggestionContext.DirectCandidateGenerator
+						// in opensearch defaults size to 5.
+						'size' => $suggestSettings['num_candidates'] ?? 5,
 						'suggest_mode' => $suggestSettings['mode'],
 						'max_term_freq' => $suggestSettings['max_term_freq'],
 						'min_doc_freq' => $suggestSettings['min_doc_freq'],

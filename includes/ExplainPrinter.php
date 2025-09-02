@@ -38,10 +38,10 @@ class ExplainPrinter {
 	}
 
 	/**
-	 * @param array[] $queryResult Elasticsearch result
+	 * @param mixed $queryResult Elasticsearch result
 	 * @return string
 	 */
-	public function format( array $queryResult ) {
+	public function format( mixed $queryResult ) {
 		$result = [];
 		if ( isset( $queryResult['result']['hits']['hits'] ) ) {
 			$queryResult = [ $queryResult ];

@@ -323,7 +323,6 @@ class RequestLogger {
 			'meta' => [
 				'request_id' => $webrequest->getRequestId(),
 				'id' => $gen->newUUIDv4(),
-				'dt' => wfTimestamp( TS_ISO_8601 ),
 				'domain' => $wgServerName,
 				'stream' => 'mediawiki.cirrussearch-request',
 			],

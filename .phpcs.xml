@@ -7,12 +7,12 @@
 	</rule>
 	<rule ref="MediaWiki.NamingConventions.ValidGlobalName">
 		<properties>
-			<property name="ignoreList" type="array" value="$IP" />
+			<property name="ignoreList[]" value="$IP" />
 		</properties>
 	</rule>
 	<rule ref="MediaWiki.NamingConventions.PrefixedGlobalFunctions">
 		<properties>
-			<property name="ignoreList" type="array" value="main,curl_init_pooled" />
+			<property name="ignoreList[]" value="main,curl_init_pooled" />
 		</properties>
 	</rule>
 	<rule ref="Generic.Files.LineLength">

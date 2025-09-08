@@ -853,7 +853,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * If we're supposed to create raw result, create and return it,
 	 * or output it and finish.
 	 *
-	 * @phpcs:disable MediaWiki.Commenting.FunctionAnnotations.NonNormalizedAnnotation
 	 * @template T the type of the result passed and the return value of this function
 	 * @param T $result Search result data
 	 * @param WebRequest $request Request context

@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Xhulianoo"
+		]
+	},
+	"cirrussearch-query-too-long": "Kërkesa e kërkimit është më e gjatë se gjatësia maksimale e lejuar. (Aktualisht: $1; lejuar: $2)",
+	"cirrussearch-query-too-long-with-exemptions": "Kërkesa e kërkimit është më e gjatë se gjatësia maksimale e lejuar. (Aktualisht: $1; lejuar: $2, pa numëruar $3)",
+	"cirrussearch-article-words": "Fjalë në të gjitha faqet e përmbajtjeve"
+}

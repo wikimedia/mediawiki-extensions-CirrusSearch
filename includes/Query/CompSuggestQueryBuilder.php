@@ -17,7 +17,6 @@ use Wikimedia\Assert\Assert;
  * Unlike classic query builders it will :
  * - handle limit differently as offsets are not accepted during suggest queries
  * - store a mutable state in mergedProfiles
- *
  */
 class CompSuggestQueryBuilder {
 	use QueryBuilderTraits;

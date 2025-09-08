@@ -18,7 +18,6 @@ use Elastica\Query\FunctionScore;
  * Based on log10( a . x + 1 ) / log10( a . M + 1 )
  * a: a factor used to adjust the midpoint
  * M: the max value used to scale
- *
  */
 class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 	/** @var string */

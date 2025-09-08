@@ -10,7 +10,7 @@ use Elastica\Query\FunctionScore;
  * Function score builders may not add any function if some
  * criteria are not met. If there's no function we should not
  * not build the rescore query.
- * @todo: find another pattern to deal with this problem and avoid
+ * @todo find another pattern to deal with this problem and avoid
  * this strong dependency to FunctionScore::addFunction signature.
  */
 class FunctionScoreDecorator extends FunctionScore {

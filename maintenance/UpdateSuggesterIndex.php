@@ -123,7 +123,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	private $utils;
 
 	/**
-	 * @todo: public (used in closure)
+	 * @todo public (used in closure)
 	 * @var SuggestBuilder
 	 */
 	public $builder;

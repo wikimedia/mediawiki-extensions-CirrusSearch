@@ -12,7 +12,7 @@ use Wikimedia\Assert\Assert;
  * Holds the Elastic search requests meant to be sent to the _msearch endpoint.
  * Users attach a search request identified by a key and after the search requests have been submitted
  * to the backend the response can later then be retrieved using that same key.
- * @See MSearchResponses
+ * @see MSearchResponses
  */
 class MSearchRequests {
 	/**

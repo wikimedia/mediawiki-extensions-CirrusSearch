@@ -4,7 +4,6 @@ namespace CirrusSearch\Profile;
 
 /**
  * A repository of search profiles
- *
  */
 interface SearchProfileRepository {
 

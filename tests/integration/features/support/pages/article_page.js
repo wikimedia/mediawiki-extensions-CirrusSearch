@@ -41,7 +41,7 @@ class ArticlePage extends TitlePage {
 		const selector = '.cdx-search-input .cdx-menu-item';
 		await browser.waitUntil(
 			async () => await browser.$( selector ).isExisting(),
-			{ timeout: { timeout: 10000 } }
+			{ timeout: 10000, timeoutMsg: 'Search suggestions did not appear.' }
 		);
 		return this.collect_element_texts( selector );
 	}

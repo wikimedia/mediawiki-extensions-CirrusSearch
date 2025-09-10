@@ -24,8 +24,7 @@ $profiles = [
 ];
 
 foreach ( [
-	'default', 'strict', 'expensive_1', 'expensive_2',
-	'variant', 'expensive_1_variant', 'expensive_2_variant'
+	'default', 'strict', 'default_1', 'default_1v',
 ] as $profileName ) {
 	$suffix = $profileName === 'default' ? '' : "_{$profileName}";
 	$profiles["phrase_suggest{$suffix}"] = [

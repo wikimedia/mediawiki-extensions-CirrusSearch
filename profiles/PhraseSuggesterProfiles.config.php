@@ -122,17 +122,14 @@ return [
 			]
 		]
 	],
-	// Similar to `default`, but with compute turned up via:
-	// * num_candidates from 5 to 30
-	// * max_errors from 2 to 3
-	// * prefix_length from 2 to 1
-	'expensive_1' => [
+	// Same settings as `default` but with prefix_length => 1
+	'default_1' => [
 		'field' => 'suggest',
 		'total_hits_threshold' => 15000,
 		'mode' => 'always',
-		'num_candidates' => 30,
+		'num_candidates' => 5,
 		'confidence' => 2.0,
-		'max_errors' => 3,
+		'max_errors' => 2,
 		'real_word_error_likelihood' => 0.95,
 		'max_term_freq' => 0.5,
 		'min_doc_freq' => 0.0,
@@ -141,34 +138,12 @@ return [
 		'collate_minimum_should_match' => '3<66%',
 		'smoothing_model' => [
 			'stupid_backoff' => [
-				'discount' => 0.4,
-			],
+				'discount' => 0.4
+			]
 		],
 	],
-	// Similar to `default`, but with compute turned up via:
-	// * num_candidates from 5 to 30
-	// * max_errors from 2 to 3
-	'expensive_2' => [
-		'field' => 'suggest',
-		'total_hits_threshold' => 15000,
-		'mode' => 'always',
-		'num_candidates' => 30,
-		'confidence' => 2.0,
-		'max_errors' => 3,
-		'real_word_error_likelihood' => 0.95,
-		'max_term_freq' => 0.5,
-		'min_doc_freq' => 0.0,
-		'prefix_length' => 1,
-		'collate' => false,
-		'collate_minimum_should_match' => '3<66%',
-		'smoothing_model' => [
-			'stupid_backoff' => [
-				'discount' => 0.4,
-			],
-		],
-	],
-	// Same settings as `default` but with field => suggest_variant
-	'variant' => [
+	// Same settings as `default` but with field => suggest_variant and prefix_length => 1
+	'default_1v' => [
 		'field' => 'suggest_variant',
 		'total_hits_threshold' => 15000,
 		'mode' => 'always',
@@ -185,46 +160,6 @@ return [
 			'stupid_backoff' => [
 				'discount' => 0.4
 			]
-		],
-	],
-	// Same settings as `expensive_1` but with field => suggest_variant
-	'expensive_1_variant' => [
-		'field' => 'suggest_variant',
-		'total_hits_threshold' => 15000,
-		'mode' => 'always',
-		'num_candidates' => 30,
-		'confidence' => 2.0,
-		'max_errors' => 3,
-		'real_word_error_likelihood' => 0.95,
-		'max_term_freq' => 0.5,
-		'min_doc_freq' => 0.0,
-		'prefix_length' => 1,
-		'collate' => false,
-		'collate_minimum_should_match' => '3<66%',
-		'smoothing_model' => [
-			'stupid_backoff' => [
-				'discount' => 0.4,
-			],
-		],
-	],
-	// Same settings as `expensive_2` but with field => suggest_variant
-	'expensive_2_variant' => [
-		'field' => 'suggest_variant',
-		'total_hits_threshold' => 15000,
-		'mode' => 'always',
-		'num_candidates' => 30,
-		'confidence' => 2.0,
-		'max_errors' => 3,
-		'real_word_error_likelihood' => 0.95,
-		'max_term_freq' => 0.5,
-		'min_doc_freq' => 0.0,
-		'prefix_length' => 2,
-		'collate' => false,
-		'collate_minimum_should_match' => '3<66%',
-		'smoothing_model' => [
-			'stupid_backoff' => [
-				'discount' => 0.4,
-			],
 		],
 	],
 ];

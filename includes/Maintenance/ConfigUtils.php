@@ -131,13 +131,20 @@ class ConfigUtils {
 			$altIndexSuffix = Connection::ALT_SUFFIX;
 			$indexQuery .= ",-{$typeName}_{$altIndexSuffix}_*";
 		}
-		$response = $this->client->requestEndpoint( ( new Endpoints\Indices\Get() )
-			->setIndex( $indexQuery ) );
-		if ( !$response->isOK() ) {
-			return Status::newFatal( "Cannot fetch index names for $typeName: "
-				. $response->getError() );
-		}
-		return Status::newGood( array_keys( $response->getData() ) );
+
+		return $this->listIndices( $indexQuery );
+	}
+
+	/**
+	 * Scan the indices and return the ones that match the
+	 * type $typeName and are alternative indices
+	 *
+	 * @param string $typeName the type to filter with
+	 * @return Status holds string[] with list of indices
+	 */
+	public function getAllAlternativeIndicesByType( $typeName ): Status {
+		$altIndexSuffix = Connection::ALT_SUFFIX;
+		return $this->listIndices( "{$typeName}_{$altIndexSuffix}_*" );
 	}
 
 	/**
@@ -316,8 +323,6 @@ class ConfigUtils {
 			// does not check http status codes and can incorrectly report no aliases.
 			$aliasResponse = $this->client->requestEndpoint( ( new Endpoints\Indices\GetAlias() )
 				->setIndex( $indexName ) );
-			// secondary check, verify no queries have previously run through this index.
-			$stats = $this->client->getIndex( $indexName )->getStats();
 		} catch ( ResponseException $e ) {
 			// Would have expected a NotFoundException? in testing we get ResponseException instead
 			if ( $e->getResponse()->getStatus() === 404 ) {
@@ -428,5 +433,20 @@ class ConfigUtils {
 			$failureFunction( $status );
 			throw new \LogicException( '$failureFunction must fail' );
 		}
+	}
+
+	/**
+	 * @param string $indexQuery
+	 * @return Status
+	 */
+	private function listIndices( string $indexQuery ): Status {
+		$response =
+			$this->client->requestEndpoint( ( new Endpoints\Indices\Get() )->setIndex( $indexQuery ) );
+		if ( !$response->isOK() ) {
+			return Status::newFatal( "Cannot fetch index names for $indexQuery: " .
+									 $response->getError() );
+		}
+
+		return Status::newGood( array_keys( $response->getData() ) );
 	}
 }

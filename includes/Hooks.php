@@ -128,6 +128,7 @@ class Hooks implements
 			$wgCirrusSearchLogElasticRequestsSecret,
 			$wgCirrusSearchEnableAltLanguage,
 			$wgCirrusSearchUseCompletionSuggester,
+			$wgCirrusSearchCompletionSuggesterUseAltIndexId,
 			$wgCirrusSearchMustTrackTotalHits;
 
 		if ( $request->getCheck( 'cirrusApproxTotalHits' ) ) {
@@ -151,6 +152,8 @@ class Hooks implements
 			self::overrideYesNo( $wgCirrusSearchUseCompletionSuggester,
 				$request, 'cirrusUseCompletionSuggester' );
 		}
+		self::overrideNumeric( $wgCirrusSearchCompletionSuggesterUseAltIndexId,
+			$request, 'cirrusCompletionAltIndexId' );
 		self::overrideMoreLikeThisOptions( $request );
 		self::overrideSecret( $wgCirrusSearchLogElasticRequests,
 			$wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );

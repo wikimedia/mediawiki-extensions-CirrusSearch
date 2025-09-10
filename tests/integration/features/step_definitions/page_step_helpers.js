@@ -121,17 +121,22 @@ class StepHelpers {
 		} ).call( this );
 	}
 
-	suggestionSearch( query, limit = 'max' ) {
+	suggestionSearch( query, limit = 'max', idx = -1 ) {
 		return Promise.coroutine( function* () {
 			const client = yield this.apiPromise;
 
+			const params = {
+				action: 'opensearch',
+				search: query,
+				cirrusUseCompletionSuggester: 'yes',
+				limit: limit
+			};
+			if ( idx >= 0 ) {
+				params.cirrusCompletionAltIndexId = idx;
+			}
+
 			try {
-				const response = yield client.request( {
-					action: 'opensearch',
-					search: query,
-					cirrusUseCompletionSuggester: 'yes',
-					limit: limit
-				} );
+				const response = yield client.request( params );
 				this.world.setApiResponse( response );
 			} catch ( err ) {
 				this.world.setApiError( err );

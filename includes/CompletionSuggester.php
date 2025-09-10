@@ -156,12 +156,25 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		}
 
 		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ) );
-		$this->config = $config;
 		$this->limit = $limit;
 		$this->offset = $offset;
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
-		$this->completionIndex = $this->connection->getIndex( $this->indexBaseName,
-			Connection::TITLE_SUGGEST_INDEX_SUFFIX );
+		$altIndexId = $config->get( 'CirrusSearchCompletionSuggesterUseAltIndexId' );
+		// Check if the alternate index id is actually setup
+		$altIndex = null;
+		if ( $altIndexId !== null && ctype_digit( $altIndexId ) ) {
+			$altIndex = AlternativeIndices::build( $config )->getAlternativeIndexById( AlternativeIndices::COMPLETION, (int)$altIndexId );
+			if ( $altIndex !== null && !$altIndex->isUse() ) {
+				$altIndex = null;
+			}
+		}
+		if ( $altIndex !== null ) {
+			$this->completionIndex = $altIndex->getIndex( $this->connection );
+			$this->config = $altIndex->getConfig();
+		} else {
+			$this->completionIndex = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_INDEX_SUFFIX );
+			$this->config = $config;
+		}
 		$this->searchContext = new SearchContext( $this->config, $namespaces, $debugOptions );
 
 		$profileDefinition = $this->config->getProfileService()

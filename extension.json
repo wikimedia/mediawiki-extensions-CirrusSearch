@@ -771,6 +771,16 @@
 		"CirrusSearchManagedClusters": {
 			"description": "Set of clusters CirrusSearch is allowed to maintain indices on. If unset all known clusters are used.",
 			"value": null
+		},
+		"CirrusSearchCompletionSuggesterUseAltIndexId": {
+			"description": "If set the completion suggester will this alternative index id (must be present in CirrusSearchAlternateIndices).",
+			"value": null
+		},
+		"CirrusSearchAlternateIndices": {
+			"description": "List of alternate indices to build.",
+			"value": {
+				"completion": []
+			}
 		}
 	},
 	"SearchMappings": {

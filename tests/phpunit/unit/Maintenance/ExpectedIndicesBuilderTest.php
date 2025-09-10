@@ -42,6 +42,21 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 			],
 			'CirrusSearchEnableArchive' => true
 		];
+		$withAlternativeIndex = $config + [
+			'CirrusSearchUseCompletionSuggester' => true,
+			'CirrusSearchAlternativeIndices' => [
+				"completion" => [
+						[
+								"index_id" => 0,
+								"config_overrides" => [
+										'CirrusSearchShardCount' => [ 'titlesuggest' => 3 ],
+								],
+								"use" => true
+						]
+				]
+			]
+		];
+
 		yield 'all with conn info' => [
 			$config, true, null,
 			[
@@ -170,6 +185,33 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 							"mywiki_id_general" => 1,
 							"mywiki_id_archive" => 1,
 							"mywiki_id_extraindex" => 1,
+						],
+						"group" => "mygroup"
+					]
+				]
+			]
+		];
+		yield 'one without conn info with alternative completion suggester indices' => [
+			$withAlternativeIndex, false, "one",
+			[
+				"dbname" => "mywiki_id",
+				"clusters" => [
+					"one" => [
+						"aliases" => [
+							"mywiki_id_content",
+							"mywiki_id_general",
+							"mywiki_id_archive",
+							"mywiki_id_extraindex",
+							"mywiki_id_titlesuggest",
+							"mywiki_id_titlesuggest_alt_0",
+						],
+						"shard_count" => [
+							"mywiki_id_content" => 1,
+							"mywiki_id_general" => 1,
+							"mywiki_id_archive" => 1,
+							"mywiki_id_extraindex" => 1,
+							"mywiki_id_titlesuggest" => 1,
+							"mywiki_id_titlesuggest_alt_0" => 3,
 						],
 						"group" => "mygroup"
 					]

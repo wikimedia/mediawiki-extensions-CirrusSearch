@@ -2,14 +2,18 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\AlternativeIndices;
+use CirrusSearch\ClusterSettings;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 
 class ExpectedIndicesBuilder {
 	private SearchConfig $searchConfig;
+	private AlternativeIndices $alternativeIndices;
 
 	public function __construct( SearchConfig $searchConfig ) {
 		$this->searchConfig = $searchConfig;
+		$this->alternativeIndices = AlternativeIndices::build( $searchConfig );
 	}
 
 	public function build( bool $withConnectionInfo, ?string $cluster ): array {
@@ -60,7 +64,7 @@ class ExpectedIndicesBuilder {
 		foreach ( $suffixes as $indexSuffix ) {
 			$output[] = $conn->getIndexName( $baseName, $indexSuffix );
 		}
-		return $output;
+		return array_merge( $output, array_keys( $this->getAlternativeIndexNames( $conn ) ) );
 	}
 
 	private function shardCounts( Connection $conn ): array {
@@ -75,7 +79,26 @@ class ExpectedIndicesBuilder {
 			$index = $conn->getIndexName( $baseName, $indexSuffix );
 			$output[$index] = $conn->getSettings()->getShardCount( $indexSuffix );
 		}
+		foreach ( $this->getAlternativeIndexNames( $conn ) as $name => $typeAndConn ) {
+			$output[$name] = $typeAndConn['settings']->getShardCount( $typeAndConn['type'] );
+		}
 		return $output;
+	}
+
+	private function getAlternativeIndexNames( Connection $conn ): array {
+		if ( !$this->searchConfig->isCompletionSuggesterEnabled() ) {
+			return [];
+		}
+		$altIndices = $this->alternativeIndices->getAlternativeIndices( AlternativeIndices::COMPLETION );
+		$indices = [];
+		foreach ( $altIndices as $index ) {
+			$aliasName = $index->getIndex( $conn )->getName();
+			$indices[$aliasName] = [
+				"type" => Connection::TITLE_SUGGEST_INDEX_SUFFIX,
+				"settings" => new ClusterSettings( $index->getConfig(), $conn->getClusterName() )
+			];
+		}
+		return $indices;
 	}
 
 }

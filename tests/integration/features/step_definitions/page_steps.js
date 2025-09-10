@@ -81,6 +81,10 @@ When( /^I ask suggestion API for (.+)$/, function ( query ) {
 	return this.stepHelpers.suggestionSearch( query );
 } );
 
+When( /^I ask suggestion API using the alternative index (\d+) for (.+)$/, function ( idx, query ) {
+	return this.stepHelpers.suggestionSearch( query, 'max', idx );
+} );
+
 When( /^I ask suggestion API at most (\d+) items? for (.+)$/, function ( limit, query ) {
 	return this.stepHelpers.suggestionSearch( query, limit );
 } );

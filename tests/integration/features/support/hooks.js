@@ -763,7 +763,12 @@ BeforeOnce( { tags: '@suggest', timeout: 120000 }, Promise.coroutine( function* 
 	yield new Promise( ( resolve ) => setTimeout( resolve, 2000 ) );
 
 	const client = yield this.onWiki();
-	yield client.request( {
-		action: 'cirrus-suggest-index'
+	console.log( 'Building completion index' );
+	const resp = yield client.request( {
+		action: 'cirrus-suggest-index',
+		format: 'json',
+		formatversion: '2'
 	} );
+	console.log( resp.result );
+	console.log( 'Building completion done' );
 } ) );

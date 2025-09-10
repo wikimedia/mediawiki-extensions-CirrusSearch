@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\AlternativeIndices;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\Connection;
 use CirrusSearch\Elastica\SearchAfter;
@@ -186,7 +187,11 @@ class UpdateSuggesterIndex extends Maintenance {
 		try {
 			$this->requireCirrusReady();
 			$this->checkAndDeleteBrokenIndices();
-			$this->indexers = [ $this->buildIndexer( $cluster, $this->indexBaseName, $this->getSearchConfig() ) ];
+			$this->checkAndDeleteStaleAltIndices();
+			$this->indexers = array_merge(
+				[ $this->buildIndexer( $cluster, $this->indexBaseName, $this->getSearchConfig() ) ],
+				$this->buildAlternativeIndexers( $cluster, $this->indexBaseName, $this->getSearchConfig() )
+			);
 			foreach ( $this->indexers as $indexer ) {
 				$indexer->prepare();
 			}
@@ -229,6 +234,25 @@ class UpdateSuggesterIndex extends Maintenance {
 				->getIndex( $this->indexBaseName, $sourceIndexSuffix );
 		}
 		return $sourceIndexes;
+	}
+
+	/**
+	 * @param string $cluster
+	 * @param string $indexBaseName
+	 * @param SearchConfig $config
+	 * @return CompletionSuggesterIndexer[]
+	 */
+	private function buildAlternativeIndexers(
+		string $cluster,
+		string $indexBaseName,
+		SearchConfig $config,
+	): array {
+		$allAltIndices = AlternativeIndices::build( $config )->getAlternativeIndices( AlternativeIndices::COMPLETION );
+		$altIndexers = [];
+		foreach ( $allAltIndices as $altIndexSetup ) {
+			$altIndexers[] = $this->buildIndexer( $cluster, $indexBaseName, $altIndexSetup->getConfig(), true, $altIndexSetup->getId() );
+		}
+		return $altIndexers;
 	}
 
 	private function buildIndexer(
@@ -342,18 +366,49 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	private function checkAndDeleteBrokenIndices() {
 		$indices = $this->unwrap(
-			$this->utils->getAllIndicesByType( $this->getConnection()->getIndexName( $this->indexBaseName, self::SUFFIX ) )
+			$this->utils->getAllIndicesByType( $this->getConnection()->getIndexName( $this->indexBaseName, self::SUFFIX ), false )
 		);
 		foreach ( $indices as $indexName ) {
 			$status = $this->utils->isIndexLive( $indexName );
 			if ( !$status->isGood() ) {
 				$this->log( (string)$status );
 			} elseif ( $status->getValue() === false ) {
-				$this->log( "Deleting broken index {$indexName}\n" );
+				$this->log( "Deleting broken index $indexName\n" );
 				$this->deleteIndex( $this->getConnection()->getIndex( $indexName ) );
 			}
 		}
 		# If something went wrong the process will fail when calling pickIndexIdentifierFromOption
+	}
+
+	private function checkAndDeleteStaleAltIndices(): void {
+		$indices = $this->unwrap(
+			$this->utils->getAllAlternativeIndicesByType( $this->getConnection()->getIndexName( $this->indexBaseName, self::SUFFIX ) )
+		);
+		$altIndices = AlternativeIndices::build( $this->getSearchConfig() )->getAlternativeIndices( AlternativeIndices::COMPLETION );
+		$mainAliasName = $this->getConnection()->getIndexName( $this->indexBaseName, self::SUFFIX );
+		$versionStore = $this->getMetaStore( $this->getConnection() )->versionStore();
+		foreach ( $indices as $indexName ) {
+			// $indexName is the full index name mywiki_titlesuggest_alt_ID_TIMESTAMP
+			if ( !str_starts_with( $indexName, "{$this->indexBaseName}_titlesuggest_alt_" ) ) {
+				// safeguard to avoid deleting unrelated indices
+				throw new RuntimeException( "Attempted to delete a stale alternative index " .
+											"which does not seem to be an alternative index $indexName." );
+			}
+			$legitimate = array_filter( $altIndices,
+				fn ( $legitimateIndex ) => $legitimateIndex->isInstanceIndex( $indexName, $this->getConnection() )
+			);
+			if ( $legitimate === [] ) {
+				$this->log( "Deleting stale alternative index $indexName\n" );
+				$matches = [];
+				$regex = "/^" . preg_quote( $mainAliasName, '/' ) . "_" . preg_quote( Connection::ALT_SUFFIX, '/' ) . "_(\d+)_(\d+)$/";
+				$ret = preg_match( $regex, $indexName, $matches );
+				if ( $ret ) {
+					$altId = (int)( $matches[0][2] );
+					$versionStore->delete( $this->indexBaseName, self::SUFFIX, true, $altId );
+				}
+				$this->deleteIndex( $this->getConnection()->getIndex( $indexName ) );
+			}
+		}
 	}
 
 	private function canRecycle( Connection $connection, array $analysisConfig, bool $altIndex, int $altIndexId = 0 ): bool {
@@ -451,7 +506,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			$fields = array_merge( $fields, $indexer->getRequiredFields() );
 		}
 		$query->setSource( [
-			'includes' => array_unique( $fields )
+			'includes' => array_values( array_unique( $fields ) )
 		] );
 
 		$pageAndNs = new Elastica\Query\BoolQuery();

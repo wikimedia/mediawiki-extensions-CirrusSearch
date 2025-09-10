@@ -1744,3 +1744,42 @@ Default:
 When enabled, adds a secondary phrase suggester field to page documents. This is generally used to
 facilitate AB testing and should not be enabled in most circumstances. By default nothing is copied
 into this field. Custom code is typically needed to support individual AB tests.
+
+; $wgCirrusSearchAlternateIndices
+
+Default:
+  $wgCirrusSearchAlternateIndices = [
+    "completion" []
+  ];
+
+Allows to set alternative indices to be built and used. Only completion suggester are supported for now.
+Useful to A/B test different setups of the completion suggester.
+
+Examples:
+  $wgCirrusSearchAlternateIndices = [
+    "completion" [
+      [
+        # the ID of the alternative index
+        "index_id" => 0,
+
+        # instructs the system that this index is ready to be used, useful for a two step deployment:
+        # 1/ "use" => false and build the index with UpdateSuggesterIndex
+        # 2/ "use" => true to start using it thanks to wgCirrusSearchCompletionSuggesterUseAltIndexId
+	"use" => true,
+
+	# set of config overrides useful at build & query time
+	"config_overrides" => [
+	  'CirrusSearchSomeConfigOption' => 'some config value'
+	]
+      ]
+    ]
+  ];
+
+; $wgCirrusSearchCompletionSuggesterUseAltIndexId
+
+Default:
+  $wgCirrusSearchCompletionSuggesterUseAltIndexId = null;
+
+Tell CirrusSearch to use this particular alternative index. Is ignored if the id is not existing or
+if "use" is false.
+Particularly useful to be set in an A/B bucket via wgCirrusSearchUserTesting.

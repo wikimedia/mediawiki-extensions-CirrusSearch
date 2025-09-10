@@ -154,7 +154,16 @@ Feature: Prefix search via api
   #   When I type TonsOfRedirects into the search box
   #   Then suggestions should appear
 
-  Scenario: Search suggestions
+  Scenario: Search suggestions with an alternative index
+    # The alt index 128 is built with defaultsort completion (see wgCirrusSearchAlternateIndices in FullyFeaturedConfig)
+	When I ask suggestion API for Wilson Sam
+	  Then the API should produce list of length 0
+	When I ask suggestion API using the alternative index 128 for Wilson Sam
+	  Then the API should produce list starting with Sam Wilson
+		When I ask suggestion API for Wilson
+
+
+	Scenario: Search suggestions
     When I ask suggestion API for main
      Then the API should produce list containing Main Page
 
@@ -231,10 +240,6 @@ Feature: Prefix search via api
     | V:          | V:N               |
     | Z           | Zam Wilson        |
     | Z:          | Z:Navigation      |
-
-  Scenario: Default sort can be used as search input
-    When I ask suggestion API for Wilson
-      Then the API should produce list starting with Sam Wilson
 
   Scenario Outline: Completion and prefixsearch both allow to search over multiple namespaces
     When I get api suggestions for <term> using the <profile> profile on namespaces <namespaces>

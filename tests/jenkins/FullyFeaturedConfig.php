@@ -42,12 +42,30 @@ $wgCirrusSearchNamespaceResolutionMethod = 'utr30';
 // $wgCirrusSearchWikimediaExtraPlugin[ 'token_count_router' ] = true;
 
 $wgCirrusSearchUseCompletionSuggester = 'yes';
-$wgCirrusSearchCompletionSuggesterUseDefaultSort = true;
+$wgCirrusSearchCompletionSuggesterUseDefaultSort = false;
 $wgCirrusSearchCompletionSuggesterSubphrases = [
 	'use' => true,
 	'build' => true,
 	'type' => 'anywords',
 	'limit' => 10,
+];
+
+$wgCirrusSearchAlternativeIndices = [
+	'completion' => [
+		[
+			'index_id' => 128,
+			'use' => true,
+			'config_overrides' => [
+				'CirrusSearchCompletionSuggesterUseDefaultSort' => true,
+				'CirrusSearchCompletionSuggesterSubphrases' => [
+					'use' => true,
+					'build' => true,
+					'type' => 'subpage',
+					'limit' => 10,
+				],
+			],
+		]
+	]
 ];
 
 $wgCirrusSearchPhraseSuggestReverseField = [

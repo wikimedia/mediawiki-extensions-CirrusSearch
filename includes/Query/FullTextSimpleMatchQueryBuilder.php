@@ -275,10 +275,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		foreach ( [ 'all', 'all.plain' ] as $field ) {
 			$m = new \Elastica\Query\MatchQuery();
 			$m->setFieldQuery( $field, $query );
-			$minShouldMatch = '100%';
-			if ( isset( $options['settings'][$field]['minimum_should_match'] ) ) {
-				$minShouldMatch = $options['settings'][$field]['minimum_should_match'];
-			}
+			$minShouldMatch = $options['settings'][$field]['minimum_should_match'] ?? '100%';
 			if ( $minShouldMatch === '100%' ) {
 				$m->setFieldOperator( $field, 'AND' );
 			} else {
@@ -304,10 +301,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	private function buildTitleFilter( $options, $query ) {
 		$filter = new \Elastica\Query\BoolQuery();
 		$filter->addMust( $this->buildSimpleAllFilter( $options, $query ) );
-		$minShouldMatch = '3<80%';
-		if ( isset( $options['settings']['minimum_should_match'] ) ) {
-			$minShouldMatch = $options['settings']['minimum_should_match'];
-		}
+		$minShouldMatch = $options['settings']['minimum_should_match'] ?? '3<80%';
 		$titleFilter = new \Elastica\Query\BoolQuery();
 		$titleFilter->setMinimumShouldMatch( 1 );
 

@@ -266,9 +266,13 @@ class CirrusSearch extends SearchEngine {
 				\CirrusSearch\Query\PrefixFeature::asContextualFilter( $this->prefix ) );
 		}
 
-		$profile = $this->extractProfileFromFeatureData( SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE );
-		if ( $profile !== null ) {
-			$builder->addForcedProfile( SearchProfileService::RESCORE, $profile );
+		$ftProfile = $this->extractProfileFromFeatureData( SearchEngine::FT_QUERY_DEP_PROFILE_TYPE );
+		if ( $ftProfile !== null ) {
+			$builder->addForcedProfile( SearchProfileService::FT_QUERY_BUILDER, $ftProfile );
+		}
+		$rescoreProfile = $this->extractProfileFromFeatureData( SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE );
+		if ( $rescoreProfile !== null ) {
+			$builder->addForcedProfile( SearchProfileService::RESCORE, $rescoreProfile );
 		}
 
 		$query = $builder->build();
@@ -528,6 +532,9 @@ class CirrusSearch extends SearchEngine {
 				break;
 			case SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE:
 				$serviceProfileType = SearchProfileService::RESCORE;
+				break;
+			case SearchEngine::FT_QUERY_DEP_PROFILE_TYPE:
+				$serviceProfileType = SearchProfileService::FT_QUERY_BUILDER;
 				break;
 		}
 

@@ -60,6 +60,7 @@
 	"cirrussearch-feature-deepcat-toomany": "Deep category query returned too many categories. Only a subset of categories has been applied.",
 	"cirrussearch-feature-deepcat-invalid-title": "The provided category is invalid.",
 	"cirrussearch-feature-pageid-invalid-id": "Invalid page {{PLURAL:$2|ID|IDs}}: $1",
+	"cirrussearch-feature-invalid-date-range": "The date provided isn't in a valid format. Please use the recognized formats for year (<code>YYYY</code>), month (<code>YYYY-MM</code>), day (<code>YYYY-MM-DD</code>), or relative time expressions like <code>now-2d</code> or <code>today-1y</code>.",
 	"cirrussearch-incategory-feature-no-valid-categories": "No valid categories provided to '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "No valid titles provided to '$1'.",
 	"cirrussearch-mlt-not-configured": "The '$1' feature is misconfigured. Ask an admin to fix $wgCirrusSearchMoreLikeThisFields",

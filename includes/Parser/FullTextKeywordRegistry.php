@@ -5,6 +5,7 @@ namespace CirrusSearch\Parser;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Query\BoostTemplatesFeature;
 use CirrusSearch\Query\ContentModelFeature;
+use CirrusSearch\Query\DateRangeFeature;
 use CirrusSearch\Query\DeepcatFeature;
 use CirrusSearch\Query\FileTypeFeature;
 use CirrusSearch\Query\HasTemplateFeature;
@@ -90,7 +91,10 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			// morelikethis feature: a non-greedy version of the morelike keyword.
 			new MoreLikeThisFeature( $config ),
 			// ids query
-			new PageIdFeature()
+			new PageIdFeature(),
+			// date range features
+			DateRangeFeature::factory( $config, 'lasteditdate', 'timestamp' ),
+			DateRangeFeature::factory( $config, 'creationdate', 'create_timestamp' ),
 		];
 
 		$extraFeatures = [];

@@ -20,8 +20,11 @@ use MediaWiki\User\UserIdentity;
 use Wikimedia\UUID\GlobalIdGenerator;
 
 class EventBusBridgeTest extends CirrusIntegrationTestCase {
-	protected function setUp(): void {
+
+	public function setUp(): void {
 		parent::setUp();
+
+		$this->markTestSkippedIfExtensionNotLoaded( 'EventBus' );
 	}
 
 	/**

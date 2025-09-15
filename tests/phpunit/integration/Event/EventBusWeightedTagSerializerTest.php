@@ -43,6 +43,8 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 	public function setUp(): void {
 		parent::setUp();
 
+		$this->markTestSkippedIfExtensionNotLoaded( 'EventBus' );
+
 		$config = new HashConfig( [
 			'ServerName' => self::MOCK_SERVER_NAME,
 			'CanonicalServer' => self::MOCK_CANONICAL_SERVER,

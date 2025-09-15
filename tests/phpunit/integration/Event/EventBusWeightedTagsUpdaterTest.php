@@ -6,7 +6,7 @@ use MediaWiki\Extension\EventBus\EventBus;
 use MediaWiki\Extension\EventBus\EventBusFactory;
 use MediaWiki\Page\PageRecord;
 use MediaWiki\Page\WikiPageFactory;
-use MediaWikiUnitTestCase;
+use MediaWikiIntegrationTestCase;
 use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\MockObject\MockObject;
 use WikiPage;
@@ -14,7 +14,7 @@ use WikiPage;
 /**
  * @coversDefaultClass \CirrusSearch\EventBusWeightedTagsUpdater
  */
-class EventBusWeightedTagsUpdaterTest extends MediaWikiUnitTestCase {
+class EventBusWeightedTagsUpdaterTest extends MediaWikiIntegrationTestCase {
 
 	private EventBusWeightedTagsUpdater $updater;
 	/**
@@ -36,6 +36,8 @@ class EventBusWeightedTagsUpdaterTest extends MediaWikiUnitTestCase {
 	private EventBus $mockEventBus;
 
 	protected function setUp(): void {
+		$this->markTestSkippedIfExtensionNotLoaded( 'EventBus' );
+
 		$this->mockEventBusFactory = $this->createMock( EventBusFactory::class );
 		$this->mockEventSerializer = $this->createMock( EventBusWeightedTagSerializer::class );
 		$this->mockWikiPageFactory = $this->createMock( WikiPageFactory::class );

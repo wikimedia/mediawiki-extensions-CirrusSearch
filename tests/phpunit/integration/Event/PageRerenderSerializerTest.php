@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Event;
 
-use CirrusSearch\CirrusTestCase;
+use CirrusSearch\CirrusIntegrationTestCase;
 use MediaWiki\Config\HashConfig;
 use MediaWiki\Extension\EventBus\StreamNameMapper;
 use MediaWiki\MainConfigNames;
@@ -11,7 +11,7 @@ use MediaWiki\Title\TitleFormatter;
 use MediaWiki\Utils\MWTimestamp;
 use Wikimedia\UUID\GlobalIdGenerator;
 
-class PageRerenderSerializerTest extends CirrusTestCase {
+class PageRerenderSerializerTest extends CirrusIntegrationTestCase {
 	private const MOCK_UUID = '00000000-0000-0000-0000-000000000000';
 
 	/**
@@ -20,6 +20,10 @@ class PageRerenderSerializerTest extends CirrusTestCase {
 	private $globalIdGenerator;
 
 	protected function setUp(): void {
+		parent::setUp();
+
+		$this->markTestSkippedIfExtensionNotLoaded( 'EventBus' );
+
 		$this->globalIdGenerator = $this->createMock( GlobalIdGenerator::class );
 		$this->globalIdGenerator->method( 'newUUIDv4' )->willReturn( self::MOCK_UUID );
 	}

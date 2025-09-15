@@ -22,6 +22,8 @@ use Wikimedia\UUID\GlobalIdGenerator;
 class EventBusBridgeTest extends CirrusIntegrationTestCase {
 	protected function setUp(): void {
 		parent::setUp();
+
+		$this->markTestSkippedIfExtensionNotLoaded( 'EventBus' );
 	}
 
 	/**

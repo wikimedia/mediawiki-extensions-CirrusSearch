@@ -62,6 +62,9 @@ class EventBusWeightedTagsUpdaterTest extends CirrusIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
+
+		$this->markTestSkippedIfExtensionNotLoaded( 'EventBus' );
+
 		$this->mockWikiMap();
 		$this->mockEventBusFactory = $this->createMock( EventBusFactory::class );
 		$this->mockWikiPageFactory = $this->createMock( WikiPageFactory::class );

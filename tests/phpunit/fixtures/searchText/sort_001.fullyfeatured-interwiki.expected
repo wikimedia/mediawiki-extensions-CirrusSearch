@@ -224,38 +224,7 @@
                                                         "queries": [
                                                             {
                                                                 "multi_match": {
-                                                                    "boost": 0.4,
-                                                                    "fields": [
-                                                                        "text.plain^1",
-                                                                        "text^0.3"
-                                                                    ],
-                                                                    "minimum_should_match": "1",
-                                                                    "query": "random sort",
-                                                                    "type": "most_fields"
-                                                                }
-                                                            },
-                                                            {
-                                                                "multi_match": {
-                                                                    "boost": 0.5,
-                                                                    "fields": [
-                                                                        "opening_text.plain^1",
-                                                                        "opening_text^0.3"
-                                                                    ],
-                                                                    "minimum_should_match": "1",
-                                                                    "query": "random sort",
-                                                                    "type": "most_fields"
-                                                                }
-                                                            }
-                                                        ],
-                                                        "tie_breaker": 0.2
-                                                    }
-                                                },
-                                                {
-                                                    "dis_max": {
-                                                        "queries": [
-                                                            {
-                                                                "multi_match": {
-                                                                    "boost": 1.05,
+                                                                    "boost": 0.2,
                                                                     "fields": [
                                                                         "suggest"
                                                                     ],
@@ -266,10 +235,40 @@
                                                             },
                                                             {
                                                                 "multi_match": {
-                                                                    "boost": 2,
+                                                                    "boost": 0.27,
                                                                     "fields": [
                                                                         "redirect.title.plain^1",
-                                                                        "redirect.title^0.3"
+                                                                        "redirect.title^3"
+                                                                    ],
+                                                                    "minimum_should_match": "1",
+                                                                    "query": "random sort",
+                                                                    "type": "most_fields"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "dis_max": {
+                                                        "queries": [
+                                                            {
+                                                                "multi_match": {
+                                                                    "boost": 0.5,
+                                                                    "fields": [
+                                                                        "opening_text.plain^1",
+                                                                        "opening_text^3"
+                                                                    ],
+                                                                    "minimum_should_match": "1",
+                                                                    "query": "random sort",
+                                                                    "type": "most_fields"
+                                                                }
+                                                            },
+                                                            {
+                                                                "multi_match": {
+                                                                    "boost": 0.6,
+                                                                    "fields": [
+                                                                        "text.plain^1",
+                                                                        "text^3"
                                                                     ],
                                                                     "minimum_should_match": "1",
                                                                     "query": "random sort",
@@ -281,10 +280,10 @@
                                                 },
                                                 {
                                                     "multi_match": {
-                                                        "boost": 0.2,
+                                                        "boost": 0.05,
                                                         "fields": [
                                                             "auxiliary_text.plain^1",
-                                                            "auxiliary_text^0.3"
+                                                            "auxiliary_text^3"
                                                         ],
                                                         "minimum_should_match": "1",
                                                         "query": "random sort",
@@ -293,34 +292,10 @@
                                                 },
                                                 {
                                                     "multi_match": {
-                                                        "boost": 0.2,
-                                                        "fields": [
-                                                            "file_text.plain^1",
-                                                            "file_text^0.3"
-                                                        ],
-                                                        "minimum_should_match": "1",
-                                                        "query": "random sort",
-                                                        "type": "most_fields"
-                                                    }
-                                                },
-                                                {
-                                                    "multi_match": {
-                                                        "boost": 1.3,
-                                                        "fields": [
-                                                            "heading.plain^1",
-                                                            "heading^0.3"
-                                                        ],
-                                                        "minimum_should_match": "1",
-                                                        "query": "random sort",
-                                                        "type": "most_fields"
-                                                    }
-                                                },
-                                                {
-                                                    "multi_match": {
-                                                        "boost": 1.8,
+                                                        "boost": 0.05,
                                                         "fields": [
                                                             "category.plain^1",
-                                                            "category^0.3"
+                                                            "category^3"
                                                         ],
                                                         "minimum_should_match": "1",
                                                         "query": "random sort",
@@ -329,10 +304,34 @@
                                                 },
                                                 {
                                                     "multi_match": {
-                                                        "boost": 2.3,
+                                                        "boost": 0.05,
+                                                        "fields": [
+                                                            "heading.plain^1",
+                                                            "heading^3"
+                                                        ],
+                                                        "minimum_should_match": "1",
+                                                        "query": "random sort",
+                                                        "type": "most_fields"
+                                                    }
+                                                },
+                                                {
+                                                    "multi_match": {
+                                                        "boost": 0.3,
                                                         "fields": [
                                                             "title.plain^1",
-                                                            "title^0.3"
+                                                            "title^3"
+                                                        ],
+                                                        "minimum_should_match": "1",
+                                                        "query": "random sort",
+                                                        "type": "most_fields"
+                                                    }
+                                                },
+                                                {
+                                                    "multi_match": {
+                                                        "boost": 0.5,
+                                                        "fields": [
+                                                            "file_text.plain^1",
+                                                            "file_text^3"
                                                         ],
                                                         "minimum_should_match": "1",
                                                         "query": "random sort",
@@ -643,38 +642,7 @@
                                             "queries": [
                                                 {
                                                     "multi_match": {
-                                                        "boost": 0.4,
-                                                        "fields": [
-                                                            "text.plain^1",
-                                                            "text^0.3"
-                                                        ],
-                                                        "minimum_should_match": "1",
-                                                        "query": "random sort",
-                                                        "type": "most_fields"
-                                                    }
-                                                },
-                                                {
-                                                    "multi_match": {
-                                                        "boost": 0.5,
-                                                        "fields": [
-                                                            "opening_text.plain^1",
-                                                            "opening_text^0.3"
-                                                        ],
-                                                        "minimum_should_match": "1",
-                                                        "query": "random sort",
-                                                        "type": "most_fields"
-                                                    }
-                                                }
-                                            ],
-                                            "tie_breaker": 0.2
-                                        }
-                                    },
-                                    {
-                                        "dis_max": {
-                                            "queries": [
-                                                {
-                                                    "multi_match": {
-                                                        "boost": 1.05,
+                                                        "boost": 0.2,
                                                         "fields": [
                                                             "suggest"
                                                         ],
@@ -685,10 +653,40 @@
                                                 },
                                                 {
                                                     "multi_match": {
-                                                        "boost": 2,
+                                                        "boost": 0.27,
                                                         "fields": [
                                                             "redirect.title.plain^1",
-                                                            "redirect.title^0.3"
+                                                            "redirect.title^3"
+                                                        ],
+                                                        "minimum_should_match": "1",
+                                                        "query": "random sort",
+                                                        "type": "most_fields"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "dis_max": {
+                                            "queries": [
+                                                {
+                                                    "multi_match": {
+                                                        "boost": 0.5,
+                                                        "fields": [
+                                                            "opening_text.plain^1",
+                                                            "opening_text^3"
+                                                        ],
+                                                        "minimum_should_match": "1",
+                                                        "query": "random sort",
+                                                        "type": "most_fields"
+                                                    }
+                                                },
+                                                {
+                                                    "multi_match": {
+                                                        "boost": 0.6,
+                                                        "fields": [
+                                                            "text.plain^1",
+                                                            "text^3"
                                                         ],
                                                         "minimum_should_match": "1",
                                                         "query": "random sort",
@@ -700,10 +698,10 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 0.2,
+                                            "boost": 0.05,
                                             "fields": [
                                                 "auxiliary_text.plain^1",
-                                                "auxiliary_text^0.3"
+                                                "auxiliary_text^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "random sort",
@@ -712,34 +710,10 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 0.2,
-                                            "fields": [
-                                                "file_text.plain^1",
-                                                "file_text^0.3"
-                                            ],
-                                            "minimum_should_match": "1",
-                                            "query": "random sort",
-                                            "type": "most_fields"
-                                        }
-                                    },
-                                    {
-                                        "multi_match": {
-                                            "boost": 1.3,
-                                            "fields": [
-                                                "heading.plain^1",
-                                                "heading^0.3"
-                                            ],
-                                            "minimum_should_match": "1",
-                                            "query": "random sort",
-                                            "type": "most_fields"
-                                        }
-                                    },
-                                    {
-                                        "multi_match": {
-                                            "boost": 1.8,
+                                            "boost": 0.05,
                                             "fields": [
                                                 "category.plain^1",
-                                                "category^0.3"
+                                                "category^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "random sort",
@@ -748,10 +722,34 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 2.3,
+                                            "boost": 0.05,
+                                            "fields": [
+                                                "heading.plain^1",
+                                                "heading^3"
+                                            ],
+                                            "minimum_should_match": "1",
+                                            "query": "random sort",
+                                            "type": "most_fields"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "boost": 0.3,
                                             "fields": [
                                                 "title.plain^1",
-                                                "title^0.3"
+                                                "title^3"
+                                            ],
+                                            "minimum_should_match": "1",
+                                            "query": "random sort",
+                                            "type": "most_fields"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "boost": 0.5,
+                                            "fields": [
+                                                "file_text.plain^1",
+                                                "file_text^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "random sort",
@@ -831,8 +829,8 @@
                         "rescore_query": {
                             "multi_match": {
                                 "fields": [
-                                    "text.plain^0.2",
-                                    "text^0.14"
+                                    "all.plain^0.1",
+                                    "all^0.06"
                                 ],
                                 "query": "random sort",
                                 "slop": 1,
@@ -1075,38 +1073,7 @@
                                             "queries": [
                                                 {
                                                     "multi_match": {
-                                                        "boost": 0.4,
-                                                        "fields": [
-                                                            "text.plain^1",
-                                                            "text^0.3"
-                                                        ],
-                                                        "minimum_should_match": "1",
-                                                        "query": "random sort",
-                                                        "type": "most_fields"
-                                                    }
-                                                },
-                                                {
-                                                    "multi_match": {
-                                                        "boost": 0.5,
-                                                        "fields": [
-                                                            "opening_text.plain^1",
-                                                            "opening_text^0.3"
-                                                        ],
-                                                        "minimum_should_match": "1",
-                                                        "query": "random sort",
-                                                        "type": "most_fields"
-                                                    }
-                                                }
-                                            ],
-                                            "tie_breaker": 0.2
-                                        }
-                                    },
-                                    {
-                                        "dis_max": {
-                                            "queries": [
-                                                {
-                                                    "multi_match": {
-                                                        "boost": 1.05,
+                                                        "boost": 0.2,
                                                         "fields": [
                                                             "suggest"
                                                         ],
@@ -1117,10 +1084,40 @@
                                                 },
                                                 {
                                                     "multi_match": {
-                                                        "boost": 2,
+                                                        "boost": 0.27,
                                                         "fields": [
                                                             "redirect.title.plain^1",
-                                                            "redirect.title^0.3"
+                                                            "redirect.title^3"
+                                                        ],
+                                                        "minimum_should_match": "1",
+                                                        "query": "random sort",
+                                                        "type": "most_fields"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "dis_max": {
+                                            "queries": [
+                                                {
+                                                    "multi_match": {
+                                                        "boost": 0.5,
+                                                        "fields": [
+                                                            "opening_text.plain^1",
+                                                            "opening_text^3"
+                                                        ],
+                                                        "minimum_should_match": "1",
+                                                        "query": "random sort",
+                                                        "type": "most_fields"
+                                                    }
+                                                },
+                                                {
+                                                    "multi_match": {
+                                                        "boost": 0.6,
+                                                        "fields": [
+                                                            "text.plain^1",
+                                                            "text^3"
                                                         ],
                                                         "minimum_should_match": "1",
                                                         "query": "random sort",
@@ -1132,10 +1129,10 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 0.2,
+                                            "boost": 0.05,
                                             "fields": [
                                                 "auxiliary_text.plain^1",
-                                                "auxiliary_text^0.3"
+                                                "auxiliary_text^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "random sort",
@@ -1144,34 +1141,10 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 0.2,
-                                            "fields": [
-                                                "file_text.plain^1",
-                                                "file_text^0.3"
-                                            ],
-                                            "minimum_should_match": "1",
-                                            "query": "random sort",
-                                            "type": "most_fields"
-                                        }
-                                    },
-                                    {
-                                        "multi_match": {
-                                            "boost": 1.3,
-                                            "fields": [
-                                                "heading.plain^1",
-                                                "heading^0.3"
-                                            ],
-                                            "minimum_should_match": "1",
-                                            "query": "random sort",
-                                            "type": "most_fields"
-                                        }
-                                    },
-                                    {
-                                        "multi_match": {
-                                            "boost": 1.8,
+                                            "boost": 0.05,
                                             "fields": [
                                                 "category.plain^1",
-                                                "category^0.3"
+                                                "category^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "random sort",
@@ -1180,10 +1153,34 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 2.3,
+                                            "boost": 0.05,
+                                            "fields": [
+                                                "heading.plain^1",
+                                                "heading^3"
+                                            ],
+                                            "minimum_should_match": "1",
+                                            "query": "random sort",
+                                            "type": "most_fields"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "boost": 0.3,
                                             "fields": [
                                                 "title.plain^1",
-                                                "title^0.3"
+                                                "title^3"
+                                            ],
+                                            "minimum_should_match": "1",
+                                            "query": "random sort",
+                                            "type": "most_fields"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "boost": 0.5,
+                                            "fields": [
+                                                "file_text.plain^1",
+                                                "file_text^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "random sort",
@@ -1263,8 +1260,8 @@
                         "rescore_query": {
                             "multi_match": {
                                 "fields": [
-                                    "text.plain^0.2",
-                                    "text^0.14"
+                                    "all.plain^0.1",
+                                    "all^0.06"
                                 ],
                                 "query": "random sort",
                                 "slop": 1,

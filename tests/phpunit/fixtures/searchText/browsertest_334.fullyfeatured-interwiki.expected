@@ -221,38 +221,7 @@
                                             "queries": [
                                                 {
                                                     "multi_match": {
-                                                        "boost": 0.4,
-                                                        "fields": [
-                                                            "text.plain^1",
-                                                            "text^0.3"
-                                                        ],
-                                                        "minimum_should_match": "1",
-                                                        "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
-                                                        "type": "most_fields"
-                                                    }
-                                                },
-                                                {
-                                                    "multi_match": {
-                                                        "boost": 0.5,
-                                                        "fields": [
-                                                            "opening_text.plain^1",
-                                                            "opening_text^0.3"
-                                                        ],
-                                                        "minimum_should_match": "1",
-                                                        "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
-                                                        "type": "most_fields"
-                                                    }
-                                                }
-                                            ],
-                                            "tie_breaker": 0.2
-                                        }
-                                    },
-                                    {
-                                        "dis_max": {
-                                            "queries": [
-                                                {
-                                                    "multi_match": {
-                                                        "boost": 1.05,
+                                                        "boost": 0.2,
                                                         "fields": [
                                                             "suggest"
                                                         ],
@@ -263,10 +232,40 @@
                                                 },
                                                 {
                                                     "multi_match": {
-                                                        "boost": 2,
+                                                        "boost": 0.27,
                                                         "fields": [
                                                             "redirect.title.plain^1",
-                                                            "redirect.title^0.3"
+                                                            "redirect.title^3"
+                                                        ],
+                                                        "minimum_should_match": "1",
+                                                        "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
+                                                        "type": "most_fields"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "dis_max": {
+                                            "queries": [
+                                                {
+                                                    "multi_match": {
+                                                        "boost": 0.5,
+                                                        "fields": [
+                                                            "opening_text.plain^1",
+                                                            "opening_text^3"
+                                                        ],
+                                                        "minimum_should_match": "1",
+                                                        "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
+                                                        "type": "most_fields"
+                                                    }
+                                                },
+                                                {
+                                                    "multi_match": {
+                                                        "boost": 0.6,
+                                                        "fields": [
+                                                            "text.plain^1",
+                                                            "text^3"
                                                         ],
                                                         "minimum_should_match": "1",
                                                         "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
@@ -278,10 +277,10 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 0.2,
+                                            "boost": 0.05,
                                             "fields": [
                                                 "auxiliary_text.plain^1",
-                                                "auxiliary_text^0.3"
+                                                "auxiliary_text^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
@@ -290,34 +289,10 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 0.2,
-                                            "fields": [
-                                                "file_text.plain^1",
-                                                "file_text^0.3"
-                                            ],
-                                            "minimum_should_match": "1",
-                                            "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
-                                            "type": "most_fields"
-                                        }
-                                    },
-                                    {
-                                        "multi_match": {
-                                            "boost": 1.3,
-                                            "fields": [
-                                                "heading.plain^1",
-                                                "heading^0.3"
-                                            ],
-                                            "minimum_should_match": "1",
-                                            "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
-                                            "type": "most_fields"
-                                        }
-                                    },
-                                    {
-                                        "multi_match": {
-                                            "boost": 1.8,
+                                            "boost": 0.05,
                                             "fields": [
                                                 "category.plain^1",
-                                                "category^0.3"
+                                                "category^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
@@ -326,10 +301,34 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 2.3,
+                                            "boost": 0.05,
+                                            "fields": [
+                                                "heading.plain^1",
+                                                "heading^3"
+                                            ],
+                                            "minimum_should_match": "1",
+                                            "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
+                                            "type": "most_fields"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "boost": 0.3,
                                             "fields": [
                                                 "title.plain^1",
-                                                "title^0.3"
+                                                "title^3"
+                                            ],
+                                            "minimum_should_match": "1",
+                                            "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
+                                            "type": "most_fields"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "boost": 0.5,
+                                            "fields": [
+                                                "file_text.plain^1",
+                                                "file_text^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
@@ -409,8 +408,8 @@
                         "rescore_query": {
                             "multi_match": {
                                 "fields": [
-                                    "text.plain^0.2",
-                                    "text^0.14"
+                                    "all.plain^0.1",
+                                    "all^0.06"
                                 ],
                                 "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
                                 "slop": 1,
@@ -694,38 +693,7 @@
                                             "queries": [
                                                 {
                                                     "multi_match": {
-                                                        "boost": 0.4,
-                                                        "fields": [
-                                                            "text.plain^1",
-                                                            "text^0.3"
-                                                        ],
-                                                        "minimum_should_match": "1",
-                                                        "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
-                                                        "type": "most_fields"
-                                                    }
-                                                },
-                                                {
-                                                    "multi_match": {
-                                                        "boost": 0.5,
-                                                        "fields": [
-                                                            "opening_text.plain^1",
-                                                            "opening_text^0.3"
-                                                        ],
-                                                        "minimum_should_match": "1",
-                                                        "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
-                                                        "type": "most_fields"
-                                                    }
-                                                }
-                                            ],
-                                            "tie_breaker": 0.2
-                                        }
-                                    },
-                                    {
-                                        "dis_max": {
-                                            "queries": [
-                                                {
-                                                    "multi_match": {
-                                                        "boost": 1.05,
+                                                        "boost": 0.2,
                                                         "fields": [
                                                             "suggest"
                                                         ],
@@ -736,10 +704,40 @@
                                                 },
                                                 {
                                                     "multi_match": {
-                                                        "boost": 2,
+                                                        "boost": 0.27,
                                                         "fields": [
                                                             "redirect.title.plain^1",
-                                                            "redirect.title^0.3"
+                                                            "redirect.title^3"
+                                                        ],
+                                                        "minimum_should_match": "1",
+                                                        "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
+                                                        "type": "most_fields"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "dis_max": {
+                                            "queries": [
+                                                {
+                                                    "multi_match": {
+                                                        "boost": 0.5,
+                                                        "fields": [
+                                                            "opening_text.plain^1",
+                                                            "opening_text^3"
+                                                        ],
+                                                        "minimum_should_match": "1",
+                                                        "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
+                                                        "type": "most_fields"
+                                                    }
+                                                },
+                                                {
+                                                    "multi_match": {
+                                                        "boost": 0.6,
+                                                        "fields": [
+                                                            "text.plain^1",
+                                                            "text^3"
                                                         ],
                                                         "minimum_should_match": "1",
                                                         "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
@@ -751,10 +749,10 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 0.2,
+                                            "boost": 0.05,
                                             "fields": [
                                                 "auxiliary_text.plain^1",
-                                                "auxiliary_text^0.3"
+                                                "auxiliary_text^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
@@ -763,34 +761,10 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 0.2,
-                                            "fields": [
-                                                "file_text.plain^1",
-                                                "file_text^0.3"
-                                            ],
-                                            "minimum_should_match": "1",
-                                            "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
-                                            "type": "most_fields"
-                                        }
-                                    },
-                                    {
-                                        "multi_match": {
-                                            "boost": 1.3,
-                                            "fields": [
-                                                "heading.plain^1",
-                                                "heading^0.3"
-                                            ],
-                                            "minimum_should_match": "1",
-                                            "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
-                                            "type": "most_fields"
-                                        }
-                                    },
-                                    {
-                                        "multi_match": {
-                                            "boost": 1.8,
+                                            "boost": 0.05,
                                             "fields": [
                                                 "category.plain^1",
-                                                "category^0.3"
+                                                "category^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
@@ -799,10 +773,34 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 2.3,
+                                            "boost": 0.05,
+                                            "fields": [
+                                                "heading.plain^1",
+                                                "heading^3"
+                                            ],
+                                            "minimum_should_match": "1",
+                                            "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
+                                            "type": "most_fields"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "boost": 0.3,
                                             "fields": [
                                                 "title.plain^1",
-                                                "title^0.3"
+                                                "title^3"
+                                            ],
+                                            "minimum_should_match": "1",
+                                            "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
+                                            "type": "most_fields"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "boost": 0.5,
+                                            "fields": [
+                                                "file_text.plain^1",
+                                                "file_text^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
@@ -882,8 +880,8 @@
                         "rescore_query": {
                             "multi_match": {
                                 "fields": [
-                                    "text.plain^0.2",
-                                    "text^0.14"
+                                    "all.plain^0.1",
+                                    "all^0.06"
                                 ],
                                 "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
                                 "slop": 1,
@@ -1126,38 +1124,7 @@
                                             "queries": [
                                                 {
                                                     "multi_match": {
-                                                        "boost": 0.4,
-                                                        "fields": [
-                                                            "text.plain^1",
-                                                            "text^0.3"
-                                                        ],
-                                                        "minimum_should_match": "1",
-                                                        "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
-                                                        "type": "most_fields"
-                                                    }
-                                                },
-                                                {
-                                                    "multi_match": {
-                                                        "boost": 0.5,
-                                                        "fields": [
-                                                            "opening_text.plain^1",
-                                                            "opening_text^0.3"
-                                                        ],
-                                                        "minimum_should_match": "1",
-                                                        "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
-                                                        "type": "most_fields"
-                                                    }
-                                                }
-                                            ],
-                                            "tie_breaker": 0.2
-                                        }
-                                    },
-                                    {
-                                        "dis_max": {
-                                            "queries": [
-                                                {
-                                                    "multi_match": {
-                                                        "boost": 1.05,
+                                                        "boost": 0.2,
                                                         "fields": [
                                                             "suggest"
                                                         ],
@@ -1168,10 +1135,40 @@
                                                 },
                                                 {
                                                     "multi_match": {
-                                                        "boost": 2,
+                                                        "boost": 0.27,
                                                         "fields": [
                                                             "redirect.title.plain^1",
-                                                            "redirect.title^0.3"
+                                                            "redirect.title^3"
+                                                        ],
+                                                        "minimum_should_match": "1",
+                                                        "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
+                                                        "type": "most_fields"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "dis_max": {
+                                            "queries": [
+                                                {
+                                                    "multi_match": {
+                                                        "boost": 0.5,
+                                                        "fields": [
+                                                            "opening_text.plain^1",
+                                                            "opening_text^3"
+                                                        ],
+                                                        "minimum_should_match": "1",
+                                                        "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
+                                                        "type": "most_fields"
+                                                    }
+                                                },
+                                                {
+                                                    "multi_match": {
+                                                        "boost": 0.6,
+                                                        "fields": [
+                                                            "text.plain^1",
+                                                            "text^3"
                                                         ],
                                                         "minimum_should_match": "1",
                                                         "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
@@ -1183,10 +1180,10 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 0.2,
+                                            "boost": 0.05,
                                             "fields": [
                                                 "auxiliary_text.plain^1",
-                                                "auxiliary_text^0.3"
+                                                "auxiliary_text^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
@@ -1195,34 +1192,10 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 0.2,
-                                            "fields": [
-                                                "file_text.plain^1",
-                                                "file_text^0.3"
-                                            ],
-                                            "minimum_should_match": "1",
-                                            "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
-                                            "type": "most_fields"
-                                        }
-                                    },
-                                    {
-                                        "multi_match": {
-                                            "boost": 1.3,
-                                            "fields": [
-                                                "heading.plain^1",
-                                                "heading^0.3"
-                                            ],
-                                            "minimum_should_match": "1",
-                                            "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
-                                            "type": "most_fields"
-                                        }
-                                    },
-                                    {
-                                        "multi_match": {
-                                            "boost": 1.8,
+                                            "boost": 0.05,
                                             "fields": [
                                                 "category.plain^1",
-                                                "category^0.3"
+                                                "category^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
@@ -1231,10 +1204,34 @@
                                     },
                                     {
                                         "multi_match": {
-                                            "boost": 2.3,
+                                            "boost": 0.05,
+                                            "fields": [
+                                                "heading.plain^1",
+                                                "heading^3"
+                                            ],
+                                            "minimum_should_match": "1",
+                                            "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
+                                            "type": "most_fields"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "boost": 0.3,
                                             "fields": [
                                                 "title.plain^1",
-                                                "title^0.3"
+                                                "title^3"
+                                            ],
+                                            "minimum_should_match": "1",
+                                            "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
+                                            "type": "most_fields"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "boost": 0.5,
+                                            "fields": [
+                                                "file_text.plain^1",
+                                                "file_text^3"
                                             ],
                                             "minimum_should_match": "1",
                                             "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
@@ -1314,8 +1311,8 @@
                         "rescore_query": {
                             "multi_match": {
                                 "fields": [
-                                    "text.plain^0.2",
-                                    "text^0.14"
+                                    "all.plain^0.1",
+                                    "all^0.06"
                                 ],
                                 "query": "vdy\u0113j\u016byeyafqhrqtwtfmvvbv\u4e0d\u987e\u8981\u6b7b\u4e0d\u6d3b\u7684\u59d1\u5a18\u98ce\u666f\u5982\u5c0fD3\uff1an\u2006t\u2006q\u2006h\u2006ra\u2006r\u2006n\u2006q\u2006r\u2006n\u2006q\u2006n\u2006r\u2006q\u2006r\u2006n\u2006w\u2006t\u2006n\u2006ran\u2006s\u2006g\u662f\u5426\u80fdZ\u6216\u8005 Ru \u4eba\u4e5f\u4e0d\u53d1\u8fbe\u5676\u5206\u6e56\u4eba\u5974\u55ef\u4e5f\u80fd\u4e00\u5e74\u65f6\u5149\u554a\u90ed\u5fb7\u7eb2\uff09n\u8702\u871c\u72b9\u5982\u7684\u8fd8\u662f\u521b\u59cb\u4eba\u53d1\u5e03A\u5927\u80a1\u4e1c",
                                 "slop": 1,

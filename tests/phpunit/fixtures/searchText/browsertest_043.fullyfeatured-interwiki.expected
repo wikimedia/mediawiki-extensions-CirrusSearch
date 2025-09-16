@@ -242,8 +242,8 @@
                         "rescore_query": {
                             "multi_match": {
                                 "fields": [
-                                    "text.plain^0.2",
-                                    "text^0.14"
+                                    "all.plain^0.1",
+                                    "all^0.06"
                                 ],
                                 "query": "catapult \\|\\|",
                                 "slop": 1,
@@ -549,8 +549,8 @@
                         "rescore_query": {
                             "multi_match": {
                                 "fields": [
-                                    "text.plain^0.2",
-                                    "text^0.14"
+                                    "all.plain^0.1",
+                                    "all^0.06"
                                 ],
                                 "query": "catapult \\|\\|",
                                 "slop": 1,
@@ -815,8 +815,8 @@
                         "rescore_query": {
                             "multi_match": {
                                 "fields": [
-                                    "text.plain^0.2",
-                                    "text^0.14"
+                                    "all.plain^0.1",
+                                    "all^0.06"
                                 ],
                                 "query": "catapult \\|\\|",
                                 "slop": 1,

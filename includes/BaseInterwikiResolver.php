@@ -16,7 +16,7 @@ use Wikimedia\ObjectCache\WANObjectCache;
 abstract class BaseInterwikiResolver implements InterwikiResolver {
 	private const CONFIG_CACHE_TTL = 600;
 
-	/** @var array[]|null full IW matrix (@see loadMatrix()) */
+	/** @var array[]|null Full interwiki matrix, {@see loadMatrix} */
 	private ?array $matrix = null;
 
 	/** @var SearchConfig main wiki config */

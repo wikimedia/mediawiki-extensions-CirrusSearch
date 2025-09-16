@@ -63,12 +63,9 @@ abstract class FunctionScoreBuilder implements BoostFunctionBuilder {
 			if ( isset( $value['uri_param_override'] ) ) {
 				// Override factor with uri param
 				$uriParam = $value['uri_param_override'];
-				$request = RequestContext::getMain()->getRequest();
-				if ( $request ) {
-					$fromUri = $request->getVal( $uriParam );
-					if ( $fromUri !== null && is_numeric( $fromUri ) ) {
-						$returnValue = (float)$fromUri;
-					}
+				$fromUri = RequestContext::getMain()->getRequest()->getVal( $uriParam );
+				if ( is_numeric( $fromUri ) ) {
+					$returnValue = (float)$fromUri;
 				}
 			}
 			return $returnValue;

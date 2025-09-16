@@ -109,7 +109,7 @@ class ArchiveChangeListenerTest extends CirrusIntegrationTestCase {
 	 */
 	public function testOnPageUndeleteComplete( bool $withDeletesEnabled, $config, bool $expectedJob ) {
 		$jobqueue = $this->createMock( JobQueueGroup::class );
-		$page = new PageIdentityValue( 124, 0, 'A_Restored_Page', false );
+		$page = PageIdentityValue::localIdentity( 124, 0, 'A_Restored_Page' );
 		$title = Title::castFromPageIdentity( $page );
 		$restoredPageIds = [ 123, 124 ];
 		$listener = new ArchiveChangeListener( $jobqueue,

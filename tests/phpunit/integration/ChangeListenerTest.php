@@ -284,8 +284,8 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 	public function testOnPageDelete( array $config, bool $expectedJob ) {
 		$jobqueue = $this->createMock( JobQueueGroup::class );
 		$redirectLookup = $this->createMock( RedirectLookup::class );
-		$redirect = new PageIdentityValue( 123, 0, 'Deleted_Redirect', false );
-		$page = new PageIdentityValue( 124, 0, 'A_Page', false );
+		$redirect = PageIdentityValue::localIdentity( 123, 0, 'Deleted_Redirect' );
+		$page = PageIdentityValue::localIdentity( 124, 0, 'A_Page' );
 		$deleter = $this->createNoOpMock( Authority::class );
 
 		$target = Title::makeTitle( 0, 'Redir_Target' );

@@ -17,7 +17,7 @@ use MediaWiki\User\UserIdentity;
  */
 class PageChangeTrackerTest extends CirrusTestCase {
 	private function pageIdentity( int $pageId ): ProperPageIdentity {
-		return new PageIdentityValue( $pageId, 0, 'unused', false );
+		return PageIdentityValue::localIdentity( $pageId, 0, 'unused' );
 	}
 
 	public function testOnPageDelete() {

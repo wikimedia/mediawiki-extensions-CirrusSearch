@@ -1,17 +1,5 @@
 <?php
-
-namespace CirrusSearch\Extra\Query;
-
-use Elastica\Query\AbstractQuery;
-use Wikimedia\Assert\Assert;
-
 /**
- * Filtering based on integer comparisons on the frequency of a term
- *
- * @link https://github.com/wikimedia/search-extra/blob/master/docs/term_freq_token_filter.md
- *
- * NOTE: only available if CirrusSearchWikimediaExtraPlugin['term_freq'] is set to true.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -28,6 +16,18 @@ use Wikimedia\Assert\Assert;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace CirrusSearch\Extra\Query;
+
+use Elastica\Query\AbstractQuery;
+use Wikimedia\Assert\Assert;
+
+/**
+ * Filtering based on integer comparisons on the frequency of a term
+ *
+ * @link https://github.com/wikimedia/search-extra/blob/master/docs/term_freq_token_filter.md
+ *
+ * NOTE: only available if CirrusSearchWikimediaExtraPlugin['term_freq'] is set to true.
+ */
 class TermFreq extends AbstractQuery {
 
 	/** @var string[] */

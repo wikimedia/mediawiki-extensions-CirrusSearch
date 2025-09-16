@@ -1,21 +1,5 @@
 <?php
-
-namespace CirrusSearch\Sanity;
-
-use ArrayObject;
-use CirrusSearch\Connection;
-use CirrusSearch\SearchConfig;
-use CirrusSearch\Searcher;
-use MediaWiki\MediaWikiServices;
-use MediaWiki\Page\WikiPage;
-use MediaWiki\Title\Title;
-use Wikimedia\Stats\Metrics\CounterMetric;
-use Wikimedia\Stats\Metrics\NullMetric;
-use Wikimedia\Stats\StatsFactory;
-
 /**
- * Checks if a WikiPage's representation in search index is sane.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -32,6 +16,22 @@ use Wikimedia\Stats\StatsFactory;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace CirrusSearch\Sanity;
+
+use ArrayObject;
+use CirrusSearch\Connection;
+use CirrusSearch\SearchConfig;
+use CirrusSearch\Searcher;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\WikiPage;
+use MediaWiki\Title\Title;
+use Wikimedia\Stats\Metrics\CounterMetric;
+use Wikimedia\Stats\Metrics\NullMetric;
+use Wikimedia\Stats\StatsFactory;
+
+/**
+ * Checks if a WikiPage's representation in search index is sane.
+ */
 class Checker {
 	/**
 	 * @var SearchConfig

@@ -1,10 +1,4 @@
 <?php
-
-namespace CirrusSearch\Search\Rescore;
-
-use CirrusSearch\SearchConfig;
-use MediaWiki\Context\RequestContext;
-
 /**
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +15,11 @@ use MediaWiki\Context\RequestContext;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
+
+namespace CirrusSearch\Search\Rescore;
+
+use CirrusSearch\SearchConfig;
+use MediaWiki\Context\RequestContext;
 
 abstract class FunctionScoreBuilder implements BoostFunctionBuilder {
 	/**

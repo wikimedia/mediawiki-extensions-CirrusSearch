@@ -1,13 +1,4 @@
 <?php
-
-namespace CirrusSearch\Search\Rescore;
-
-use CirrusSearch\CirrusSearchHookRunner;
-use CirrusSearch\Profile\ArrayPathSetter;
-use CirrusSearch\Profile\SearchProfileService;
-use CirrusSearch\Search\SearchContext;
-use Elastica\Query\FunctionScore;
-
 /**
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +15,14 @@ use Elastica\Query\FunctionScore;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
+
+namespace CirrusSearch\Search\Rescore;
+
+use CirrusSearch\CirrusSearchHookRunner;
+use CirrusSearch\Profile\ArrayPathSetter;
+use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Search\SearchContext;
+use Elastica\Query\FunctionScore;
 
 class FunctionScoreChain {
 	/**

@@ -1,13 +1,5 @@
 <?php
-
-namespace CirrusSearch\Sanity;
-
-use MediaWiki\Page\WikiPage;
-use MediaWiki\Title\Title;
-
 /**
- * Remediation actions for insanity in the search index.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -24,6 +16,14 @@ use MediaWiki\Title\Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace CirrusSearch\Sanity;
+
+use MediaWiki\Page\WikiPage;
+use MediaWiki\Title\Title;
+
+/**
+ * Remediation actions for insanity in the search index.
+ */
 interface Remediator {
 	/**
 	 * There is a redirect in the index.

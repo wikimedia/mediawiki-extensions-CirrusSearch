@@ -1,19 +1,5 @@
 <?php
-
-namespace CirrusSearch\Maintenance;
-
-use CirrusSearch\Job\CheckerJob;
-use Elastica\Document;
-use MediaWiki\JobQueue\JobQueueGroup;
-use MediaWiki\MediaWikiServices;
-use MediaWiki\Utils\MWTimestamp;
-
 /**
- * Create saneitize jobs for a single execution of a saneitizer loop
- *
- * Maintains state in the job info pertaining to current position in
- * the loop. The job info must be persisted between runs.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -30,6 +16,20 @@ use MediaWiki\Utils\MWTimestamp;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace CirrusSearch\Maintenance;
+
+use CirrusSearch\Job\CheckerJob;
+use Elastica\Document;
+use MediaWiki\JobQueue\JobQueueGroup;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Utils\MWTimestamp;
+
+/**
+ * Create saneitize jobs for a single execution of a saneitizer loop
+ *
+ * Maintains state in the job info pertaining to current position in
+ * the loop. The job info must be persisted between runs.
+ */
 class SaneitizeLoop {
 	/** @var string Name of the saneitizer profile to use in created jobs */
 	private $profileName;

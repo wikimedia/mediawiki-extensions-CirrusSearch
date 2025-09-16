@@ -1,13 +1,5 @@
 <?php
-
-namespace CirrusSearch\Sanity;
-
-use MediaWiki\Page\WikiPage;
-use MediaWiki\Title\Title;
-
 /**
- * Counts problems seen and delegates remediation to another instance.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -24,6 +16,14 @@ use MediaWiki\Title\Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace CirrusSearch\Sanity;
+
+use MediaWiki\Page\WikiPage;
+use MediaWiki\Title\Title;
+
+/**
+ * Counts problems seen and delegates remediation to another instance.
+ */
 class CountingRemediator implements Remediator {
 
 	/** @var Remediator Instance to delgate to */

@@ -1,11 +1,5 @@
 <?php
-
-namespace CirrusSearch\Maintenance;
-
 /**
- * Builds search analysis config arrays for the completion suggester
- * index.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -22,6 +16,12 @@ namespace CirrusSearch\Maintenance;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace CirrusSearch\Maintenance;
+
+/**
+ * Builds search analysis config arrays for the completion suggester
+ * index.
+ */
 class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	public const VERSION = "1.4";
 

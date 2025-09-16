@@ -1,14 +1,5 @@
 <?php
-
-namespace CirrusSearch\Extra\Query;
-
-use Elastica\Query\AbstractQuery;
-
 /**
- * Source regex filter for trigram accelerated regex matching.
- *
- * @link https://github.com/wikimedia/search-extra/blob/master/docs/source_regex.md
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -25,6 +16,15 @@ use Elastica\Query\AbstractQuery;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace CirrusSearch\Extra\Query;
+
+use Elastica\Query\AbstractQuery;
+
+/**
+ * Source regex filter for trigram accelerated regex matching.
+ *
+ * @link https://github.com/wikimedia/search-extra/blob/master/docs/source_regex.md
+ */
 class SourceRegex extends AbstractQuery {
 	/**
 	 * List of language code that may be used by WMF wikis which are not valid java locales.

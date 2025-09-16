@@ -1,15 +1,5 @@
 <?php
-
-namespace CirrusSearch\Extra\Query;
-
-use Elastica\Query\AbstractQuery;
-
 /**
- * TokenCountRouter query used to trigger a particular query by counting
- * the number of tokens in the user query.
- *
- * @link https://github.com/wikimedia/search-extra/blob/master/docs/token_count_router.md
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -26,6 +16,16 @@ use Elastica\Query\AbstractQuery;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+namespace CirrusSearch\Extra\Query;
+
+use Elastica\Query\AbstractQuery;
+
+/**
+ * TokenCountRouter query used to trigger a particular query by counting
+ * the number of tokens in the user query.
+ *
+ * @link https://github.com/wikimedia/search-extra/blob/master/docs/token_count_router.md
+ */
 class TokenCountRouter extends AbstractQuery {
 	/**
 	 * @const string greater than

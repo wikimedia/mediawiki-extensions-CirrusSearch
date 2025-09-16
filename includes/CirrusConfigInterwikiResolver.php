@@ -8,7 +8,6 @@ namespace CirrusSearch;
  * - wgCirrusSearchInterwikiSources: a map of cross project interwiki prefixes to wikiId
  * - wgCirrusSearchWikiToNameMap: a map of language interwiki prefixes to wikiId
  */
-
 class CirrusConfigInterwikiResolver extends BaseInterwikiResolver {
 	/**
 	 * @param SearchConfig $config

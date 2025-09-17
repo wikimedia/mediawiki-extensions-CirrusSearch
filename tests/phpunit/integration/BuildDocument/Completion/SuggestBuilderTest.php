@@ -163,51 +163,53 @@ class SuggestBuilderTest extends CirrusIntegrationTestCase {
 		$this->assertSame( $expected, $suggestions );
 	}
 
-	public function testDefaultSort() {
+	public function providesDefaultSort(): \Generator {
+		yield 'simple' => [
+			'Albert Einstein (Physicist)',
+			'Einstein, Albert',
+			[ 'Albert Einstein (Physicist)', 'Einstein, Albert' ],
+		];
+		yield 'unrelated' => [
+			'Albert Einstein (Physicist)',
+			'123',
+			[ 'Albert Einstein (Physicist)' ],
+		];
+		yield 'simple with diacritics' => [
+			'Cesária Évora',
+			'Evora , Cesaria',
+			[ 'Cesária Évora', 'Evora , Cesaria' ],
+		];
+	}
+
+	/**
+	 * @dataProvider providesDefaultSort
+	 */
+	public function testDefaultSort( string $title, string $defaultSort, array $expectedInput ) {
 		$builder = $this->buildBuilder();
 		$this->assertContains( 'defaultsort', $builder->getRequiredFields() );
 		$score = 10;
-		$redirScore = (int)( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = [
 			'id' => 123,
-			'title' => 'Albert Einstein',
+			'title' => $title,
 			'namespace' => 0,
-			'defaultsort' => 'Einstein, Albert',
-			'redirect' => [
-				[ 'title' => "Albert Enstein", 'namespace' => 0 ],
-				[ 'title' => "Einstein", 'namespace' => 0 ],
-			],
+			'defaultsort' => $defaultSort,
+			'redirect' => [],
 			'incoming_links' => $score
 		];
 		$expected = [
 			[
 				'source_doc_id' => 123,
 				'target_title' => [
-					'title' => 'Albert Einstein',
+					'title' => $title,
 					'namespace' => 0,
 				],
 				'suggest' => [
-					'input' => [ 'Albert Einstein', 'Albert Enstein', 'Einstein, Albert' ],
+					'input' => $expectedInput,
 					'weight' => $score
 				],
 				'suggest-stop' => [
-					'input' => [ 'Albert Einstein', 'Albert Enstein', 'Einstein, Albert' ],
+					'input' => $expectedInput,
 					'weight' => $score
-				]
-			],
-			[
-				'source_doc_id' => 123,
-				'target_title' => [
-					'title' => 'Albert Einstein',
-					'namespace' => 0,
-				],
-				'suggest' => [
-					'input' => [ 'Einstein' ],
-					'weight' => $redirScore
-				],
-				'suggest-stop' => [
-					'input' => [ 'Einstein' ],
-					'weight' => $redirScore
 				]
 			]
 		];

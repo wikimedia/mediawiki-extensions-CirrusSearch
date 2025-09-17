@@ -746,7 +746,7 @@ BeforeOnce( { tags: '@suggest', timeout: 120000 }, Promise.coroutine( function* 
 			'The Doors': 'The Doors were an American rock band formed in 1965 in Los Angeles.',
 			'Hyperion Cantos/Endymion': 'Endymion is the third science fiction novel by Dan Simmons.',
 			はーい: 'makes sure we do not fail to index empty tokens (T156234)',
-			'Sam Wilson': 'Warren Kenneth Worthington III: originally known as Angel and later as Archangel: ... Marvel Comics like [[Venom]]. {{DEFAULTSORTKEY:Wilson: Sam}}'
+			'Sam Wilson': 'Warren Kenneth Worthington III: originally known as Angel and later as Archangel: ... Marvel Comics like [[Venom]]. {{DEFAULTSORTKEY:Wilson, Sam}}'
 		}
 	} );
 

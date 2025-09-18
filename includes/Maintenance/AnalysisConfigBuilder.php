@@ -1585,12 +1585,17 @@ class AnalysisConfigBuilder {
 					// if we have to settle for the Thai tokenizer, add some additional
 					// character filters to accommodate some of its weaknesses
 					$thThaiTokSplits = [
-						'\u200B=>', // delete zero width space
-						'-=>\u0020', // split tokens on hyphen-minus ..
+						'\u200B=>\u0020', // split tokens on zero width space ..
+						'-=>\u0020', // .. hyphen-minus
 						'‐=>\u0020', // .. hyphen
+						'‑=>\u0020', // .. non-breaking hyphen
+						'‒=>\u0020', // .. figure dash
 						'–=>\u0020', // .. en dash
 						'—=>\u0020', // .. em dash
 						'―=>\u0020', // .. horizontal bar
+						'⹀=>\u0020', // .. double hyphen
+						'゠=>\u0020', // .. katakana-hiragana double hyphen
+						'﹣=>\u0020', // .. small hyphen-minus
 						'－=>\u0020', // .. fullwidth hyphen
 						'"=>\u0020', // .. & double quote
 					];

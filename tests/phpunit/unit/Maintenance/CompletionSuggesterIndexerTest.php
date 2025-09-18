@@ -268,6 +268,7 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 							$this->assertEquals( [], $param );
 							$state = $firstPage ? "delete_by_query_page_1" : "delete_by_query_page_2";
 							return new Response( [
+								'_shards' => [ 'total' => 1, 'successful' => 1, 'failed' => 0 ],
 								"hits" => [
 									"total" => [ "value" => 2, "relation" => "eq" ],
 									"hits" => [ [ "_id" => "1", "sort" => [ "1" ] ] ]
@@ -294,6 +295,7 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 						case "last_query_old_batch_page":
 							$state = "optimize";
 							return new Response( [
+								'_shards' => [ 'total' => 1, 'successful' => 1, 'failed' => 0 ],
 								"hits" => [
 									"total" => [ "value" => 2, "relation" => "eq" ],
 									"hits" => []

@@ -4,12 +4,12 @@ declare( strict_types = 1 );
 namespace CirrusSearch\Elastica;
 
 use Elastica\Exception\ExceptionInterface as ElasticaExceptionInterface;
+use Elastica\Exception\RuntimeException;
 use Elastica\Query;
 use Elastica\ResultSet;
 use Elastica\Search;
 use InvalidArgumentException;
 use MediaWiki\Logger\LoggerFactory;
-use RuntimeException;
 
 class SearchAfter implements \Iterator {
 	private const MAX_BACKOFF_SEC = 120;
@@ -80,7 +80,7 @@ class SearchAfter implements \Iterator {
 	private function runSearch(): ResultSet {
 		foreach ( $this->backoff as $backoffSec ) {
 			try {
-				return $this->search->search();
+				return $this->doSearch();
 			} catch ( ElasticaExceptionInterface $e ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Exception thrown during SearchAfter iteration. Retrying in {backoffSec}s.",
@@ -89,11 +89,26 @@ class SearchAfter implements \Iterator {
 						'backoffSec' => $backoffSec,
 					]
 				);
-				usleep( (int)( $backoffSec * self::MICROSEC_PER_SEC ) );
+				if ( !defined( 'MW_PHPUNIT_TEST' ) ) {
+					usleep( (int)( $backoffSec * self::MICROSEC_PER_SEC ) );
+				}
 			}
 		}
 		// Final attempt after exhausting retries.
-		return $this->search->search();
+		return $this->doSearch();
+	}
+
+	private function doSearch(): ResultSet {
+		$rs = $this->search->search();
+		if ( $rs->getResponse()->getStatus() >= 400 ) {
+			throw new RuntimeException( "Search request returned HTTP {$rs->getResponse()->getStatus()}: " .
+										print_r( $rs->getResponse()->getData(), true ) );
+		}
+		if ( !isset( $rs->getResponse()->getData()['_shards'] ) ) {
+			throw new RuntimeException( 'Incoherent search response: ' .
+										print_r( $rs->getResponse()->getData(), true ) );
+		}
+		return $rs;
 	}
 
 	public function rewind(): void {

@@ -51,7 +51,10 @@ class SearchAfterTest extends CirrusTestCase {
 	}
 
 	private function makeResponse( array $hits ): Response {
-		$response = [ 'hits' => [ 'hits' => $hits ] ];
+		$response = [
+			'_shards' => [ 'total' => 1, 'failed' => 0, 'successful' => 0 ],
+			'hits' => [ 'hits' => $hits ]
+		];
 		return new Response( $response, 200 );
 	}
 
@@ -165,6 +168,8 @@ class SearchAfterTest extends CirrusTestCase {
 			$this->makeResponse( [
 				[ '_id' => 42, 'sort' => [ 42 ] ],
 			] ),
+			new Response( [ 'message' => 'Error' ], 403 ),
+			new Response( [ 'Apache2 Debian Default Page' ], 200 ),
 			$this->makeResponse( [
 				[ '_id' => 43, 'sort' => [ 43 ] ],
 			] ),

@@ -140,7 +140,7 @@ class DumpIndex extends Maintenance {
 		$limit = (int)$this->getOption( 'limit', 0 );
 
 		$query = new Query();
-		$query->setStoredFields( [ '_id', '_type', '_source' ] );
+		$query->setStoredFields( [ '_id', '_source' ] );
 		$query->setSize( $this->inputChunkSize );
 		// Elasticsearch docs (mapping-id-field.html) say that sorting by _id is restricted
 		// from use, but at least on 7.10.2 this works as one would expect. The _id comes
@@ -206,7 +206,6 @@ class DumpIndex extends Maintenance {
 	public function write( array $document ) {
 		$indexOp = [
 			'index' => [
-				'_type' => $document['_type'],
 				'_id' => $document['_id']
 			] ];
 

@@ -80,6 +80,7 @@
 	"cirrussearch-feature-deepcat-toomany": "De diepgaande categorie-zoekopdracht heeft te veel categorieën geretourneerd. Er is slechts een deel van de categorieën toegepast.",
 	"cirrussearch-feature-deepcat-invalid-title": "De opgegeven categorie is ongeldig.",
 	"cirrussearch-feature-pageid-invalid-id": "Ongelidge pagina-{{PLURAL:$2|ID|IDs}}: $1",
+	"cirrussearch-feature-invalid-date-range": "De opgegeven datum is in een onjuiste notatie. Gebruik de erkende notaties voor jaar (<code>JJJJ</code>), maand (<code>JJJJ-MM</code>), dag (<code>JJJJ-MM-DD</code>) of Engelstalige relatieve tijdsuitdrukkingen zoals <code>now-2d</code> of <code>today-1y</code>.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Geen geldige categorieën opgegeven voor '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Geen geldige titels verstrekt aan '$1'.",
 	"cirrussearch-mlt-not-configured": "De functie '$1' is verkeerd ingesteld. Vraag een beheerder om $wgCirrusSearchMoreLikeThisFields te corrigeren.",

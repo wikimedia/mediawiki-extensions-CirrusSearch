@@ -68,6 +68,7 @@
 	"cirrussearch-feature-deepcat-toomany": "A pescuda profunda de categorías devolveu demasiadas categorías. Só se aplicou un subconxunto de categorías.",
 	"cirrussearch-feature-deepcat-invalid-title": "A categoría especificada non é válida.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Identificador|Identificadores}} de páxina non {{PLURAL:$2|válido|válidos}}: $1",
+	"cirrussearch-feature-invalid-date-range": "A data proporcionada non ten un formato válido. Emprega os formatos recoñecidos para ano (<code>AAAA</code>), mes (<code>AAAA-MM</code>) e día (<code>AAAA-MM-DD</code>) ou expresións de tempo relativo como <code>now-2d</code> ou <code>today-1y</code>.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Categorías non válidas proporcionadas a \"$1\".",
 	"cirrussearch-mlt-feature-no-valid-titles": "Títulos non válidos proporcionados a \"$1\".",
 	"cirrussearch-mlt-not-configured": "A funcionalidade \"$1\" está mal configurada. Solicite a un administrador que amañe $wgCirrusSearchMoreLikeThisFields",

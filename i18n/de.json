@@ -68,6 +68,7 @@
 	"cirrussearch-feature-deepcat-toomany": "Die Deepcat-Abfrage hat zu viele Kategorien zurückgegeben. Es wurde nur eine Teilmenge der Kategorien angewandt.",
 	"cirrussearch-feature-deepcat-invalid-title": "Die angegebene Kategorie ist ungültig.",
 	"cirrussearch-feature-pageid-invalid-id": "Ungültige Seiten-{{PLURAL:$2|ID|IDs}}: $1",
+	"cirrussearch-feature-invalid-date-range": "Das angegebene Datum hat kein gültiges Format. Verwende die anerkannten Formate für Jahr (<code>YYYY</code>), Monat (<code>YYYY-MM</code>), Tag (<code>YYYY-MM-DD</code>) oder relative Zeitausdrücke wie <code>now-2d</code> oder <code>today-1y</code>.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Es wurden keine gültigen Kategorien für „$1“ angegeben.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Keine gültigen Titel für „$1“ angegeben.",
 	"cirrussearch-mlt-not-configured": "Die Funktion „$1“ ist falsch konfiguriert. Bitte einen Administrator, $wgCirrusSearchMoreLikeThisFields anzupassen.",

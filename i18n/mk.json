@@ -63,6 +63,7 @@
 	"cirrussearch-feature-deepcat-toomany": "Длабокото пребарување даде премногу категории. Применето е само едно подмножество од категориите.",
 	"cirrussearch-feature-deepcat-invalid-title": "Укажаната категорија е неважечка.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Неважечка назнака на страница|Неважечки назнаки на страници}}: $1",
+	"cirrussearch-feature-invalid-date-range": "Внесениот датум има неважечки формат. Користете ги признаените формати за година (<code>ГГГГ</code>), месец (<code>ГГГГ-ММ</code>), ден (<code>ГГГГ-ММ-ДД</code>), или пак односни временски изрази како <code>now-2d</code> или <code>today-1y</code>.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Нема укажано важечки категории за „$1“.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Нема укажано важечки наслови за „$1“.",
 	"cirrussearch-mlt-not-configured": "Можноста „$1“ е погрешно поставена. Обратете се кај администратор за да го исправи $wgCirrusSearchMoreLikeThisFields",

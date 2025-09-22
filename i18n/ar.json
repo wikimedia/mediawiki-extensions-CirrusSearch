@@ -72,6 +72,7 @@
 	"cirrussearch-feature-deepcat-toomany": "أعاد استعلام التصنيف العميق عددا كبيرا جدا من التصنيفات. تم تطبيق مجموعة فرعية فقط من التصنيفات.",
 	"cirrussearch-feature-deepcat-invalid-title": "التصنيف المقدم غير صالح.",
 	"cirrussearch-feature-pageid-invalid-id": "صفحة غير صالحة {{PLURAL:$2| المعرف | المعرفات}}: $1",
+	"cirrussearch-feature-invalid-date-range": "التاريخ المُدخل ليس بتنسيق صحيح. يُرجى استخدام التنسيقات المُعتمدة للسنة ( <code>YYYY</code> )، والشهر ( <code>YYYY-MM</code> )، واليوم ( <code>YYYY-MM-DD</code> )، أو تعبيرات الوقت النسبية مثل <code>now-2d</code> أو <code>today-1y</code> .",
 	"cirrussearch-incategory-feature-no-valid-categories": "لا تصنيفات صحيحة تم توفيرها ل'$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "لا عناوين صحيحة تم توفيرها ل'$1'.",
 	"cirrussearch-mlt-not-configured": "الخاصية '$1' مضبوطة بشكل غير صحيح. سل إداريا أن يصلح $wgCirrusSearchMoreLikeThisFields",

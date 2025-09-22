@@ -79,6 +79,7 @@
 	"cirrussearch-feature-deepcat-toomany": "Derin kategori sorgusu çok fazla kategori döndürdü. Kategorilerin yalnızca bir alt kümesi uygulandı.",
 	"cirrussearch-feature-deepcat-invalid-title": "Sağlanan kategori geçersiz.",
 	"cirrussearch-feature-pageid-invalid-id": "Geçersiz sayfa {{PLURAL:$2|kimliği|kimlikleri}}: $1",
+	"cirrussearch-feature-invalid-date-range": "Belirtilen tarih geçerli bir biçimde değil. Lütfen yıl (<code>YYYY</code>), ay (<code>YYYY-MM</code>), gün (<code>YYYY-MM-DD</code>) veya <code>now-2d</code> ya da <code>today-1y</code> gibi göreceli zaman ifadeleri için tanınan biçimleri kullanın.",
 	"cirrussearch-incategory-feature-no-valid-categories": "'$1' için geçerli bir kategori sağlanmadı.",
 	"cirrussearch-mlt-feature-no-valid-titles": "'$1' için geçerli başlık yok.",
 	"cirrussearch-mlt-not-configured": "'$1' özelliği yanlış yapılandırılmış. Bir yöneticiden $wgCirrusSearchMoreLikeThisFields düzeltmesini isteyin",

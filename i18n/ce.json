@@ -62,6 +62,7 @@
 	"cirrussearch-feature-deepcat-toomany": "КӀорггера категори лехамо тӀех дукха категореш йухаерзийра. Категорешна йукъара цхьа бухара тоба бен ца лелийна.",
 	"cirrussearch-feature-deepcat-invalid-title": "Билгалйина категори нийса йац.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Нийса доцу агӀонан ID}}: $1",
+	"cirrussearch-feature-invalid-date-range": "Цу тӀехь дӀайазйина хан нийсачу форматехь йац. Дехар до, леладе йевзаш йолу форматаш шеран (<code>YYYY</code>), баттана (<code>YYYY-MM</code>), денна (<code>YYYY-MM-DD</code>), йа гергара хенан гайтамашна санна <code>now-2d</code> йа <code>today-1y</code>.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Нийса категореш схьайелла йац '$1' чохь.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Нийса кортош схьабелла бац '$1' чохь.",
 	"cirrussearch-mlt-not-configured": "'$1' функци нисйина йац. Деха администраторе нисйе але $wgCirrusSearchMoreLikeThisFields",

@@ -107,23 +107,6 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * DRY helper to assert two events are equal
-	 * (minus dt and meta.dt, which is not deterministcally generated).
-	 * @param array $expected
-	 * @param array $actual
-	 * @return void
-	 */
-	private function assertEventEquals( array $expected, array $actual ): void {
-		// remove meta.dt from expected and actual,
-		// since it is dynamically set to current timestamp.
-		$this->assertTrue( isset( $actual['meta']['dt'] ) );
-		unset( $expected['meta']['dt'] );
-		unset( $actual['meta']['dt'] );
-
-		$this->assertEquals( $expected, $actual );
-	}
-
 	public static function provideSetEventData(): array {
 		return [
 			[ [ 'weighted_tags' => [ 'set' => [ 'prefix-0' => [ 'tag-a' => 1 ] ] ] ] ],
@@ -156,7 +139,7 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 			$dt
 		);
 
-		$this->assertEventEquals( $expected, $actual );
+		$this->assertEquals( $expected, $actual );
 	}
 
 	public static function provideClearEventData(): array {
@@ -191,6 +174,6 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 			$dt
 		);
 
-		$this->assertEventEquals( $expected, $actual );
+		$this->assertEquals( $expected, $actual );
 	}
 }

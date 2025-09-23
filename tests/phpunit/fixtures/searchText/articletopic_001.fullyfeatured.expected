@@ -169,14 +169,6 @@
                                         "term": {
                                             "weighted_tags": {
                                                 "boost": 1,
-                                                "value": "classification.ores.articletopic\/Culture.Biography.Biography*"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "term": {
-                                            "weighted_tags": {
-                                                "boost": 1,
                                                 "value": "classification.prediction.articletopic\/Culture.Biography.Biography*"
                                             }
                                         }

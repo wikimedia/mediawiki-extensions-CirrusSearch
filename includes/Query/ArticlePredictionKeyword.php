@@ -19,28 +19,12 @@ use Wikimedia\Message\ListType;
  */
 class ArticlePredictionKeyword extends SimpleKeywordFeature {
 	public const ARTICLE_TOPIC_TAG_PREFIX = 'classification.prediction.articletopic';
-	/**
-	 * @var string
-	 * @deprecated TODO remove, once all indexes have been reindexed
-	 */
-	public const ARTICLE_TOPIC_TAG_PREFIX_LEGACY = 'classification.ores.articletopic';
 	public const DRAFT_TOPIC_TAG_PREFIX = 'classification.prediction.drafttopic';
-	/**
-	 * @var string
-	 * @deprecated TODO remove, once all indexes have been reindexed
-	 */
-	public const DRAFT_TOPIC_TAG_PREFIX_LEGACY = 'classification.ores.drafttopic';
 	public const ARTICLE_COUNTRY_TAG_PREFIX = 'classification.prediction.articlecountry';
 
 	private const PREFIX_PER_KEYWORD = [
-		'articletopic' => [
-			self::ARTICLE_TOPIC_TAG_PREFIX,
-			self::ARTICLE_TOPIC_TAG_PREFIX_LEGACY
-		],
-		'drafttopic' => [
-			self::DRAFT_TOPIC_TAG_PREFIX,
-			self::DRAFT_TOPIC_TAG_PREFIX_LEGACY
-		],
+		'articletopic' => self::ARTICLE_TOPIC_TAG_PREFIX,
+		'drafttopic' => self::DRAFT_TOPIC_TAG_PREFIX,
 		'articlecountry' => self::ARTICLE_COUNTRY_TAG_PREFIX,
 	];
 
@@ -103,7 +87,6 @@ class ArticlePredictionKeyword extends SimpleKeywordFeature {
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$parsed = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
 		$keywords = $parsed['keywords'];
-		$tagPrefixes = is_array( $parsed['tag_prefix'] ) ? $parsed['tag_prefix'] : [ $parsed['tag_prefix'] ];
 		if ( $keywords === [] ) {
 			$context->setResultsPossible( false );
 			return [ null, true ];
@@ -111,11 +94,9 @@ class ArticlePredictionKeyword extends SimpleKeywordFeature {
 
 		$query = new DisMax();
 		foreach ( $keywords as $keyword ) {
-			foreach ( $tagPrefixes as $tagPrefix ) {
-				$keywordQuery = new Term();
-				$keywordQuery->setTerm( WeightedTagsHooks::FIELD_NAME, $tagPrefix . '/' . $keyword );
-				$query->addQuery( $keywordQuery );
-			}
+			$keywordQuery = new Term();
+			$keywordQuery->setTerm( WeightedTagsHooks::FIELD_NAME, $parsed['tag_prefix'] . '/' . $keyword );
+			$query->addQuery( $keywordQuery );
 		}
 
 		if ( !$negated ) {

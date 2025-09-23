@@ -52,8 +52,7 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 		};
 		$terms = static function ( string $topic, string $prefix ) use ( $term ) {
 			return [
-				$term( $topic, "classification.prediction.$prefix" ),
-				$term( $topic, "classification.ores.$prefix" )
+				$term( $topic, "classification.prediction.$prefix" )
 			];
 		};
 		$match = static function ( array $query ) {
@@ -71,7 +70,7 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 				'articletopic:stem',
 				[
 					'keywords' => [ 'STEM.STEM*' ],
-					'tag_prefix' => [ 'classification.prediction.articletopic', 'classification.ores.articletopic' ],
+					'tag_prefix' => 'classification.prediction.articletopic',
 				],
 				$match( [
 					'dis_max' => [
@@ -83,7 +82,7 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 				'drafttopic:stem',
 				[
 					'keywords' => [ 'STEM.STEM*' ],
-					'tag_prefix' => [ 'classification.prediction.drafttopic', 'classification.ores.drafttopic' ],
+					'tag_prefix' => 'classification.prediction.drafttopic',
 				],
 				$match( [
 					'dis_max' => [
@@ -95,7 +94,7 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 				'-articletopic:stem',
 				[
 					'keywords' => [ 'STEM.STEM*' ],
-					'tag_prefix' => [ 'classification.prediction.articletopic', 'classification.ores.articletopic' ],
+					'tag_prefix' => 'classification.prediction.articletopic',
 				],
 				$filter( [
 					'dis_max' => [
@@ -107,7 +106,7 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 				'articletopic:media|music',
 				[
 					'keywords' => [ 'Culture.Media.Media*', 'Culture.Media.Music' ],
-					'tag_prefix' => [ 'classification.prediction.articletopic', 'classification.ores.articletopic' ],
+					'tag_prefix' => 'classification.prediction.articletopic',
 				],
 				$match( [
 					'dis_max' => [

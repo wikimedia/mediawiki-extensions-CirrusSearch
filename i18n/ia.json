@@ -62,6 +62,7 @@
 	"cirrussearch-feature-deepcat-toomany": "Le consulta de categoria in profunditate ha retornate troppo de categorias. Solmente un subinsimul de categorias ha essite applicate.",
 	"cirrussearch-feature-deepcat-invalid-title": "Le categoria fornite non es valide.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|ID|IDs}} de pagina invalide: $1",
+	"cirrussearch-feature-invalid-date-range": "Le data fornite non es in un formato valide. Usa le formatos recognoscite pro anno (<code>AAAA</code>), mense (<code>AAAA-MM</code>), die (<code>AAAA-MM-DD</code>) o expressiones temporal relative (in anglese) como <code>now-2d</code> o <code>today-1y</code>.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nulle categorias valide fornite pro '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nulle titulos valide fornite pro '$1'.",
 	"cirrussearch-mlt-not-configured": "Le function '$1' es mal configurate. Demanda a un administrator de corriger $wgCirrusSearchMoreLikeThisFields",

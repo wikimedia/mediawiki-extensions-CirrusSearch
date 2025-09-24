@@ -80,6 +80,19 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	private const MAX_OFFSET_LIMIT = 10000;
 
 	/**
+	 * Queries with offset + limit greater than this value are considered
+	 * potentially automated and may, after considering other related signals,
+	 * be placed into the automated pool counter bucket.
+	 */
+	private const AUTOMATED_RESULT_DEPTH_THRESHOLD_SMALL = 100;
+
+	/**
+	 * Queries with offset + limit greater than this value are considered
+	 * expensive and will use the expensive pool counter
+	 */
+	private const AUTOMATED_RESULT_DEPTH_THRESHOLD_LARGE = 1000;
+
+	/**
 	 * Identifies the main search in MSearchRequests/MSearchResponses
 	 */
 	public const MAINSEARCH_MSEARCH_KEY = '__main__';
@@ -786,12 +799,23 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		// significantly more load than expected.
 		if ( $pool !== 'CirrusSearch-ExpensiveFullText' && $this->isAutomatedRequest() ) {
 			$pool = 'CirrusSearch-Automated';
+		} elseif ( $this->offset + $this->limit >= self::AUTOMATED_RESULT_DEPTH_THRESHOLD_LARGE ) {
+			// Deep pagination is always expensive, but if the request was
+			// already flagged as automated leave it in the automated bucket.
+			// We don't want to accidently split a bot's requests into both
+			// buckets, allowing them to use all the capacity of both.
+			$pool = 'CirrusSearch-ExpensiveFullText';
 		}
 		return $pool;
 	}
 
 	private function isAutomatedRequest(): bool {
 		$req = RequestContext::getMain()->getRequest();
+
+		if ( $this->isDeepWebScrapingRequest( $req ) ) {
+			return true;
+		}
+
 		try {
 			$ip = $req->getIP();
 		} catch ( MWException ) {
@@ -808,6 +832,21 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		}
 		return Util::looksLikeAutomation(
 			$this->config, $ip, $req->getAllHeaders() );
+	}
+
+	/**
+	 * Flags requests that look potentially automated
+	 *
+	 * See https://phabricator.wikimedia.org/T405482
+	 */
+	private function isDeepWebScrapingRequest( WebRequest $req ): bool {
+		// Request issued via index.php (web). We could consider api requests,
+		// but the no cookie signal is only useful in the web context.
+		return MW_ENTRY_POINT === 'index'
+			// Request has no cookies (signal for simple bots).
+			&& !$req->getHeader( 'Cookie' )
+			// Asks for results well beyond the typical
+			&& $this->offset + $this->limit >= self::AUTOMATED_RESULT_DEPTH_THRESHOLD_SMALL;
 	}
 
 	/**

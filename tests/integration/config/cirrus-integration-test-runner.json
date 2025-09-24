@@ -1,0 +1,5 @@
+{
+	"fresh": {
+		"image": "docker-registry.wikimedia.org/releng/node24-test-browser:latest"
+	}
+}

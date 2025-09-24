@@ -2,7 +2,8 @@
 
 const child_process = require( 'child_process' ),
 	path = require( 'path' ),
-	fs = require( 'fs' );
+	fs = require( 'fs' ),
+	{ setValue: setSharedStoreValue } = require( '@wdio/shared-store-service' );
 
 function relPath( foo ) {
 	return path.resolve( __dirname, '../..', foo );
@@ -20,58 +21,56 @@ function fallback( ...args ) {
 let forkedTracker;
 let unixSocket;
 
+const FEATURES_DIR = path.resolve( __dirname, '../features' );
+
 exports.config = {
 
-	//
-	// ======
-	//
 	// ======
 	// Custom
 	// ======
-	// Define any custom variables.
-	// Example:
-	// username: 'Admin',
-	// Use if from tests with:
-	// browser.options.username
-	username: fallback( process.env.MEDIAWIKI_USER, 'Admin' ),
-	password: fallback( process.env.MEDIAWIKI_PASSWORD, 'vagrant' ),
-	botPassword: fallback( process.env.MEDIAWIKI_BOT_PASSWORD, 'vagrant' ),
-	baseUrl: 'http://cirrustest.wiki.local.wmftest.net:8080',
-	wikis: {
-		default: 'cirrustest',
-		cirrustest: {
-			username: 'Admin',
-			password: fallback( process.env.MEDIAWIKI_PASSWORD, 'vagrant' ),
-			botPassword: fallback( process.env.MEDIAWIKI_CIRRUSTEST_BOT_PASSWORD, process.env.MEDIAWIKI_BOT_PASSWORD, 'vagrant' ),
-			apiUrl: 'http://cirrustest.wiki.local.wmftest.net:8080/w/api.php',
-			baseUrl: 'http://cirrustest.wiki.local.wmftest.net:8080'
-		},
-		commons: {
-			username: 'Admin',
-			password: fallback( process.env.MEDIAWIKI_PASSWORD, 'vagrant' ),
-			botPassword: fallback( process.env.MEDIAWIKI_COMMONS_BOT_PASSWORD, process.env.MEDIAWIKI_BOT_PASSWORD, 'vagrant' ),
-			apiUrl: 'http://commons.wiki.local.wmftest.net:8080/w/api.php',
-			baseUrl: 'http://commons.wiki.local.wmftest.net:8080'
-		},
-		ru: {
-			username: 'Admin',
-			password: fallback( process.env.MEDIAWIKI_PASSWORD, 'vagrant' ),
-			botPassword: fallback( process.env.MEDIAWIKI_RU_BOT_PASSWORD, process.env.MEDIAWIKI_BOT_PASSWORD, 'vagrant' ),
-			apiUrl: 'http://ru.wiki.local.wmftest.net:8080/w/api.php',
-			baseUrl: 'http://ru.wiki.local.wmftest.net:8080'
-		},
-		wikidata: {
-			username: 'Admin',
-			password: fallback( process.env.MEDIAWIKI_PASSWORD, 'vagrant' ),
-			botPassword: fallback( process.env.MEDIAWIKI_RU_BOT_PASSWORD, process.env.MEDIAWIKI_BOT_PASSWORD, 'vagrant' ),
-			apiUrl: 'http://wikidata.wiki.local.wmftest.net:8080/w/api.php',
-			baseUrl: 'http://wikidata.wiki.local.wmftest.net:8080'
-		},
-		beta: {},
-		test2: {},
-		integration: {},
-		cindy: {},
-		searchdemo: {}
+	appOptions: {
+		username: fallback( process.env.MEDIAWIKI_USER, 'Admin' ),
+		password: fallback( process.env.MEDIAWIKI_PASSWORD, 'vagrant' ),
+		botPassword: fallback( process.env.MEDIAWIKI_BOT_PASSWORD, 'vagrant' ),
+		baseUrl: 'http://cirrustest.wiki.local.wmftest.net:8080',
+		// unix socket path for tag tracker
+		trackerPath: '/tmp/cirrussearch-integration-tagtracker',
+		wikis: {
+			default: 'cirrustest',
+			cirrustest: {
+				username: 'Admin',
+				password: fallback( process.env.MEDIAWIKI_PASSWORD, 'vagrant' ),
+				botPassword: fallback( process.env.MEDIAWIKI_CIRRUSTEST_BOT_PASSWORD, process.env.MEDIAWIKI_BOT_PASSWORD, 'vagrant' ),
+				apiUrl: 'http://cirrustest.wiki.local.wmftest.net:8080/w/api.php',
+				baseUrl: 'http://cirrustest.wiki.local.wmftest.net:8080'
+			},
+			commons: {
+				username: 'Admin',
+				password: fallback( process.env.MEDIAWIKI_PASSWORD, 'vagrant' ),
+				botPassword: fallback( process.env.MEDIAWIKI_COMMONS_BOT_PASSWORD, process.env.MEDIAWIKI_BOT_PASSWORD, 'vagrant' ),
+				apiUrl: 'http://commons.wiki.local.wmftest.net:8080/w/api.php',
+				baseUrl: 'http://commons.wiki.local.wmftest.net:8080'
+			},
+			ru: {
+				username: 'Admin',
+				password: fallback( process.env.MEDIAWIKI_PASSWORD, 'vagrant' ),
+				botPassword: fallback( process.env.MEDIAWIKI_RU_BOT_PASSWORD, process.env.MEDIAWIKI_BOT_PASSWORD, 'vagrant' ),
+				apiUrl: 'http://ru.wiki.local.wmftest.net:8080/w/api.php',
+				baseUrl: 'http://ru.wiki.local.wmftest.net:8080'
+			},
+			wikidata: {
+				username: 'Admin',
+				password: fallback( process.env.MEDIAWIKI_PASSWORD, 'vagrant' ),
+				botPassword: fallback( process.env.MEDIAWIKI_RU_BOT_PASSWORD, process.env.MEDIAWIKI_BOT_PASSWORD, 'vagrant' ),
+				apiUrl: 'http://wikidata.wiki.local.wmftest.net:8080/w/api.php',
+				baseUrl: 'http://wikidata.wiki.local.wmftest.net:8080'
+			},
+			beta: {},
+			test2: {},
+			integration: {},
+			cindy: {},
+			searchdemo: {}
+		}
 	},
 	//
 	// ======
@@ -91,12 +90,12 @@ exports.config = {
 	// directory is where your package.json resides, so `wdio` will be called from there.
 	//
 	specs: [
-		process.env.CIRRUS_FEATURES || relPath( './integration/features/*.feature' )
+		path.resolve( FEATURES_DIR, process.env.CIRRUS_FEATURES || '*.feature' )
 	],
 	cucumberOpts: {
 		tagsInTitle: true,
 		timeout: 60000,
-		tagExpression: process.env.CIRRUS_TAGS,
+		tags: process.env.CIRRUS_TAGS,
 		require: [
 			relPath( './integration/features/support/world.js' ),
 			relPath( './integration/features/support/hooks.js' ),
@@ -126,6 +125,8 @@ exports.config = {
 	// from the same test should run tests.
 	//
 	maxInstances: 1,
+	// Disable xvfb, full headless
+	autoXvfb: false,
 	//
 	// If you have trouble getting all important capabilities together, check out the
 	// Sauce Labs platform configurator - a great tool to configure your capabilities:
@@ -137,11 +138,13 @@ exports.config = {
 		// grid with only 5 firefox instances available you can make sure that not more than
 		// 5 instances get started at a time.
 		maxInstances: 8,
-		//
 		browserName: 'chrome',
-		// Since Chrome v57 https://bugs.chromium.org/p/chromedriver/issues/detail?id=1625
 		'goog:chromeOptions': {
-			args: [ '--headless' ]
+			args: [
+				'--headless',
+				'--no-sandbox',
+				'--disable-gpu'
+			]
 		}
 	} ],
 	//
@@ -191,7 +194,7 @@ exports.config = {
 	// Services take over a specific job you don't want to take care of. They enhance
 	// your test setup with almost no effort. Unlike plugins, they don't add new
 	// commands. Instead, they hook themselves up into the test process.
-	// services: [],//
+	services: [ 'shared-store' ],
 	// Framework you want to run your specs with.
 	// The following are supported: Mocha, Jasmine, and Cucumber
 	// see also: http://webdriver.io/guide/testrunner/frameworks.html
@@ -220,13 +223,13 @@ exports.config = {
 	// methods to it. If one of them returns with a promise, WebdriverIO will wait until that promise got
 	// resolved to continue.
 	//
-	// unix socket path for tag tracker
-	trackerPath: '/tmp/cirrussearch-integration-tagtracker',
-	//
 	// Gets executed once before all workers get launched.
-	onPrepare: function ( config ) {
+	onPrepare: async function ( config ) {
 		forkedTracker = child_process.fork( relPath( './integration/lib/tracker.js' ) );
-		unixSocket = config.trackerPath;
+		unixSocket = config.appOptions.trackerPath;
+		// This value is for the feature file executors, not the tracker. But same idea, share
+		// out the config to the places that need it.
+		await setSharedStoreValue( 'appOptions', config.appOptions );
 		return new Promise( ( resolve, reject ) => {
 			forkedTracker.on( 'message', ( msg ) => {
 				if ( msg.initialized ) {
@@ -238,7 +241,7 @@ exports.config = {
 					reject( msg.error );
 				}
 			} );
-			forkedTracker.send( { config: config } );
+			forkedTracker.send( { config: config.appOptions } );
 		} );
 	},
 	//

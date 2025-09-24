@@ -10,7 +10,8 @@
 
 'use strict';
 
-const { setWorldConstructor } = require( '@cucumber/cucumber' ),
+const { Before, setWorldConstructor } = require( '@cucumber/cucumber' ),
+	{ getValue: getSharedStoreValue } = require( '@wdio/shared-store-service' ),
 	request = require( 'request-promise-native' ),
 	log = require( 'semlog' ).log,
 	Bot = require( 'mwbot' ),
@@ -58,7 +59,6 @@ class TagClient {
 	}
 }
 
-const tagClient = new TagClient( browser.config );
 // world gets re-created all the time. Try and save some time logging
 // in by sharing api clients
 const apiClients = {};
@@ -84,13 +84,6 @@ function World( { attach, parameters } ) {
 		this.apiResponse = undefined;
 		this.apiError = error;
 	};
-
-	// Shortcut to environment configs
-	this.config = browser.config;
-
-	// Extra process tracking what tags have been initialized
-	this.tags = tagClient;
-
 	// Per-wiki api clients
 	this.onWiki = function ( wiki = this.config.wikis.default ) {
 		if ( apiClients[ wiki ] ) {
@@ -137,11 +130,6 @@ function World( { attach, parameters } ) {
 		return apiClients[ wiki ];
 	};
 
-	// Binding step helpers to this World.
-	// Step helpers are just step functions that are abstracted
-	// for the purpose of using them outside of the steps themselves (like in hooks).
-	this.stepHelpers = new StepHelpers( this );
-
 	// Shortcut for browser.url(), accepts a Page object
 	// as well as a string, assumes the Page object
 	// has a url property
@@ -163,5 +151,22 @@ function World( { attach, parameters } ) {
 		log( `[D] Visited page: ${ browser.getUrl() }`, this.tags.silentLog );
 	};
 }
+
+// Can't do anything async in constructor, anything config dependent happens here.
+Before( async function () {
+	// appOptions from wdio.conf.js
+	this.config = await getSharedStoreValue( 'appOptions' );
+
+	// Extra process tracking what tags have been initialized
+	this.tags = new TagClient( this.config );
+
+	// Binding step helpers to this World.
+	// Step helpers are just step functions that are abstracted
+	// for the purpose of using them outside of the steps themselves (like in hooks).
+	this.stepHelpers = new StepHelpers( this );
+
+	// We depend on the browser being large enough that the search input isn't hidden
+	await browser.setWindowSize( 1920, 1080 );
+} );
 
 setWorldConstructor( World );

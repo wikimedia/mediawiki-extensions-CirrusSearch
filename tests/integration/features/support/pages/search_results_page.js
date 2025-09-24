@@ -19,7 +19,8 @@ class SearchResultsPage extends Page {
 	}
 
 	async has_search_results() {
-		return await browser.$( '.searchresults ul.mw-search-results' ).isExisting();
+		const elt = await browser.$( '.searchresults ul.mw-search-results' );
+		return elt.isExisting();
 	}
 
 	async get_warnings() {
@@ -40,20 +41,24 @@ class SearchResultsPage extends Page {
 	}
 
 	async has_create_page_link() {
-		return await browser.$( '.searchresults p.mw-search-createlink a.new' ).isExisting();
+		const elt = await browser.$( '.searchresults p.mw-search-createlink a.new' );
+		return elt.isExisting();
 	}
 
 	async is_on_srp() {
-		return await browser.$( 'form#search div#mw-search-top-table' ).isExisting() ||
-			await browser.$( 'form#powersearch div#mw-search-top-table' ).isExisting();
+		const search = await browser.$( 'form#search div#mw-search-top-table' );
+		const powersearch = await browser.$( 'form#powersearch div#mw-search-top-table' );
+		return await search.isExisting() || await powersearch.isExisting();
 	}
 
 	async set_search_query( search ) {
-		await browser.$( 'div#searchText input[name="search"]' ).setValue( search );
+		const elt = browser.$( 'div#searchText input[name="search"]' );
+		await elt.setValue( search );
 	}
 
 	async get_search_query() {
-		return await browser.$( 'div#searchText input[name="search"]' ).getValue();
+		const elt = await browser.$( 'div#searchText input[name="search"]' );
+		return elt.getValue();
 	}
 
 	async get_result_element_at( nth ) {
@@ -63,7 +68,7 @@ class SearchResultsPage extends Page {
 		if ( !await resultLink.isExisting() ) {
 			return null;
 		}
-		return resultLink.$( '..' );
+		return resultLink.parentElement();
 	}
 
 	async get_result_image_link_at( nth ) {
@@ -80,7 +85,8 @@ class SearchResultsPage extends Page {
 
 	async has_search_data_in_results( data ) {
 		const elt = await this.results_block();
-		return elt.$( `div.mw-search-result-data*=${ data }` ).isExisting();
+		const subelt = await elt.$( `div.mw-search-result-data*=${ data }` );
+		return subelt.isExisting();
 	}
 
 	async get_search_alt_title_at( nth ) {
@@ -118,7 +124,8 @@ class SearchResultsPage extends Page {
 		for ( const form of forms ) {
 			const elt = await browser.$( form );
 			if ( await elt.isExisting() ) {
-				return elt.$( 'button[type="submit"]' ).click();
+				const button = await elt.$( 'button[type="submit"]' );
+				return button.click();
 			}
 		}
 		throw new Error( 'Cannot click the search button, are you on the Search page?' );
@@ -129,7 +136,9 @@ class SearchResultsPage extends Page {
 	 */
 	async click_filter( filter ) {
 		const linkSel = `a=${ filter }`;
-		return browser.$( 'div.search-types' ).$( linkSel ).click();
+		const divs = await browser.$( 'div.search-types' );
+		const link = await divs.$( linkSel );
+		return link.click();
 	}
 
 	/**

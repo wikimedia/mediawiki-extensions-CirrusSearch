@@ -4,7 +4,8 @@
 
 'use strict';
 
-const TitlePage = require( './title_page' );
+const TitlePage = require( './title_page' ),
+	{ Key } = require( 'webdriverio' );
 
 class ArticlePage extends TitlePage {
 
@@ -23,7 +24,8 @@ class ArticlePage extends TitlePage {
 	 * and forth between clickable and not-clickable in vector 2.
 	 */
 	async submit_search_top_right() {
-		return browser.$( '#searchform [name=search]' ).keys( '\n' );
+		const elt = await browser.$( '#searchform [name=search]' );
+		return elt.addValue( Key.Enter );
 	}
 
 	async has_search_suggestions() {
@@ -40,18 +42,19 @@ class ArticlePage extends TitlePage {
 	async get_search_suggestions() {
 		const selector = '.cdx-search-input .cdx-menu-item';
 		await browser.waitUntil(
-			async () => await browser.$( selector ).isExisting(),
+			async () => {
+				const elt = await browser.$( selector );
+				return elt.isExisting();
+			},
 			{ timeout: 10000, timeoutMsg: 'Search suggestions did not appear.' }
 		);
 		return this.collect_element_texts( selector );
 	}
 
 	async set_search_query_top_right( search ) {
-		return browser.$( '#searchform [name=search]' ).setValue( search );
-	}
-
-	async get_search_query_top_right() {
-		return browser.$( '#searchform [name=search]' );
+		const elt = await browser.$( '#searchform [name=search]' );
+		await elt.waitForClickable();
+		return elt.setValue( search );
 	}
 }
 

@@ -9,20 +9,24 @@ class SpecialUndelete extends TitlePage {
 	}
 
 	async set_search_input( search ) {
-		return browser.$( '#prefix' ).setValue( search );
+		const elt = await browser.$( '#prefix' );
+		return elt.setValue( search );
 	}
 
 	async get_search_input() {
-		return browser.$( '#prefix' ).getValue();
+		const elt = await browser.$( '#prefix' );
+		return elt.getValue();
 	}
 
 	async click_search_button() {
-		await browser.$( '#searchUndelete' ).click();
+		const elt = await browser.$( '#searchUndelete' );
+		await elt.click();
 	}
 
 	// nth is 1-indexed, not 0 like might be expected
 	async get_result_at( nth ) {
-		return browser.$( `.undeleteResult:nth-child(${ nth }) a` ).getText();
+		const elt = await browser.$( `.undeleteResult:nth-child(${ nth }) a` );
+		return elt.getText();
 	}
 }
 

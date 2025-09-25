@@ -72,4 +72,35 @@ class SecondTrySearchTest extends CirrusTestCase {
 		];
 	}
 
+	/**
+	 * @dataProvider provideGeorgianTransliteration
+	 */
+	public function testGeorgianTransliteration( string $input, string $expected ) {
+		$this->transformer = new SecondTrySearch();
+		$actual = $this->transformer->georgianTransliteration( $input );
+		$this->assertEquals( $expected, $actual );
+	}
+
+	public static function provideGeorgianTransliteration() {
+		return [
+			'mixed-case latin to geo' => [ 'saqarTvelos istoria', 'საქართველოს ისტორია' ],
+			'latin with digraphs' => [ 'chubinashvili', 'ჩუბინაშვილი' ],
+			'first letter capitalized latin' => [ 'beroshvili Beroshvili', 'ბეროშვილი ბეროშვილი' ],
+			'unmappable latin 1' => [ 'été', 'été' ],
+			'unmappable latin 2' => [ 'ʃəzæm', 'ʃəzæm' ],
+			'overlapping latin diagraphs 1' => [ 'hatsha HATSHA HaTsha', 'ჰაცჰა ჰაცჰა ჰაცჰა' ], // ts + h
+			'overlapping latin diagraphs 2' => [ 'hatSha', 'ჰატშა' ], // t + sh
+			'simple cyrillic' => [ 'кавазашвили', 'კავაზაშვილი' ],
+			'cyrillic with diacritics' => [ 'Кавазашви́ли', 'კავაზაშვილი' ],
+			'cyrillic digraphs' => [ 'Ягор Абашидзе', 'იაგორ აბაშიძე' ],
+			'unmappable cyrillic 1' => [ 'щёлк', 'щёлк' ],
+			'unmappable cyrillic 2' => [ 'Аҧсуа', 'Аҧсуа' ],
+			'contextual cyrillic' => [ 'трото тлатла ппп ттт', 'ტროტო თლათლა ფფპ თტთ' ], // nonsense syllables
+			'mixed latin + cyrillic' => [ 'Дaviд', 'დავიდ' ], // why? people are weird
+			'ignore georgian' => [ 'ვიკიპედია', 'ვიკიპედია' ],
+			'ignore mixed georgian' => [ 'ვიკიპედია Wikipedia Википедия', 'ვიკიპედია Wikipedia Википедия' ],
+			'nothing relevant' => [ 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ' ], // Japanese, Inuktitut
+		];
+	}
+
 }

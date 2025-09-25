@@ -166,11 +166,10 @@
                             "dis_max": {
                                 "queries": [
                                     {
-                                        "term": {
-                                            "weighted_tags": {
-                                                "boost": 1,
-                                                "value": "classification.prediction.articletopic\/Culture.Biography.Biography*"
-                                            }
+                                        "terms": {
+                                            "weighted_tags": [
+                                                "classification.prediction.articletopic\/Culture.Biography.Biography*"
+                                            ]
                                         }
                                     }
                                 ]

@@ -40,19 +40,22 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 	}
 
 	public static function parseProvider() {
-		$term = static function ( string $topic, string $prefix ) {
-			return [
-				'term' => [
+		$term = static function ( string $topic, string $prefix, ?float $boost = null ) {
+			$q = [
+				'terms' => [
 					'weighted_tags' => [
-						'value' => "$prefix/$topic",
-						'boost' => 1.0,
+						"$prefix/$topic",
 					],
-				],
+				]
 			];
+			if ( $boost !== null ) {
+				$q['terms']['boost'] = $boost;
+			}
+			return $q;
 		};
-		$terms = static function ( string $topic, string $prefix ) use ( $term ) {
+		$terms = static function ( string $topic, string $prefix, ?float $boost = null ) use ( $term ) {
 			return [
-				$term( $topic, "classification.prediction.$prefix" )
+				$term( $topic, "classification.prediction.$prefix", $boost )
 			];
 		};
 		$match = static function ( array $query ) {
@@ -69,7 +72,7 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 			'basic search' => [
 				'articletopic:stem',
 				[
-					'keywords' => [ 'STEM.STEM*' ],
+					'keywords' => [ [ 'terms' => [ 'STEM.STEM*' ], 'boost' => null ] ],
 					'tag_prefix' => 'classification.prediction.articletopic',
 				],
 				$match( [
@@ -81,7 +84,7 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 			'basic search with drafttopic' => [
 				'drafttopic:stem',
 				[
-					'keywords' => [ 'STEM.STEM*' ],
+					'keywords' => [ [ 'terms' => [ 'STEM.STEM*' ], 'boost' => null ] ],
 					'tag_prefix' => 'classification.prediction.drafttopic',
 				],
 				$match( [
@@ -93,7 +96,7 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 			'negated' => [
 				'-articletopic:stem',
 				[
-					'keywords' => [ 'STEM.STEM*' ],
+					'keywords' => [ [ 'terms' => [ 'STEM.STEM*' ], 'boost' => null ] ],
 					'tag_prefix' => 'classification.prediction.articletopic',
 				],
 				$filter( [
@@ -105,7 +108,10 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 			'multiple topics' => [
 				'articletopic:media|music',
 				[
-					'keywords' => [ 'Culture.Media.Media*', 'Culture.Media.Music' ],
+					'keywords' => [
+						[ 'terms' => [ 'Culture.Media.Media*' ], 'boost' => null ],
+						[ 'terms' => [ 'Culture.Media.Music' ], 'boost' => null ]
+					],
 					'tag_prefix' => 'classification.prediction.articletopic',
 				],
 				$match( [
@@ -113,6 +119,24 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 						'queries' => array_merge(
 							$terms( 'Culture.Media.Media*', 'articletopic' ),
 							$terms( 'Culture.Media.Music', 'articletopic' )
+						),
+					],
+				] ),
+			],
+			'multiple topics with boost' => [
+				'articletopic:media^0.2|music^1.2',
+				[
+					'keywords' => [
+						[ 'terms' => [ 'Culture.Media.Media*' ], 'boost' => 0.2 ],
+						[ 'terms' => [ 'Culture.Media.Music' ], 'boost' => 1.2 ]
+					],
+					'tag_prefix' => 'classification.prediction.articletopic',
+				],
+				$match( [
+					'dis_max' => [
+						'queries' => array_merge(
+							$terms( 'Culture.Media.Media*', 'articletopic', 0.2 ),
+							$terms( 'Culture.Media.Music', 'articletopic', 1.2 )
 						),
 					],
 				] ),

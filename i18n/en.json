@@ -71,5 +71,6 @@
 	"cirrussearch-offset-too-large": "Could not retrieve results. Up to $1 search results are supported, but results starting at $2 were requested.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignoring request to paginate randomly sorted results.",
 	"cirrussearch-articleprediction-invalid-keyword": "Unrecognized {{PLURAL:$2|value|values}} for the <kbd>$3:</kbd> keyword: $1",
-	"cirrussearch-inlanguage-deprecate-comma": "Using a comma as a separator for the inlanguage keyword is deprecated. Please use | (pipe) to separate languages."
+	"cirrussearch-inlanguage-deprecate-comma": "Using a comma as a separator for the inlanguage keyword is deprecated. Please use | (pipe) to separate languages.",
+	"cirrussearch-invalid-keyword-boost": "Invalid boost value '$1' provided. Expected a positive decimal number."
 }

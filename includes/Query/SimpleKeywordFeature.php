@@ -7,6 +7,7 @@ use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
+use MediaWiki\Message\Message;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -16,6 +17,8 @@ use Wikimedia\Assert\Assert;
  * getValueRegex() where possible.
  */
 abstract class SimpleKeywordFeature implements KeywordFeature {
+	public const WARN_MESSAGE_INVALID_BOOST = "cirrussearch-invalid-keyword-boost";
+
 	/**
 	 * NOTE: will be removed once all implementations implement getKeywordStrings
 	 * (transitional state to change the visibility of getKeywords())
@@ -306,4 +309,33 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 			$term
 		);
 	}
+
+	/**
+	 * Parses boosted term: term^2.3
+	 * @param string $keyword
+	 * @param WarningCollector $warningCollector
+	 * @return array
+	 * @phan-return array{term:string,boost:float|null}
+	 */
+	public function parseBoost( string $keyword, WarningCollector $warningCollector ): array {
+		$termAndBoost = explode( '^', $keyword, 2 );
+		if ( count( $termAndBoost ) === 1 ) {
+			return [ 'term' => $termAndBoost[0], 'boost' => null ];
+		}
+		[ $term, $boost ] = $termAndBoost;
+		if ( is_numeric( $boost ) ) {
+			$boost = floatval( $boost );
+			if ( $boost < 0 ) {
+				$warningCollector->addWarning( self::WARN_MESSAGE_INVALID_BOOST,
+					Message::numParam( $boost ) );
+				return [ 'term' => $term, 'boost' => null ];
+			}
+			return [ 'term' => $term, 'boost' => $boost ];
+		} else {
+			$warningCollector->addWarning( self::WARN_MESSAGE_INVALID_BOOST,
+				Message::plaintextParam( $boost ) );
+			return [ 'term' => $term, 'boost' => null ];
+		}
+	}
+
 }

@@ -5,6 +5,8 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Test\MockSimpleKeywordFeature;
+use CirrusSearch\WarningCollector;
+use Wikimedia\Message\MessageParam;
 
 /**
  * @group CirrusSearch
@@ -186,5 +188,32 @@ class SimpleKeywordFeatureTest extends CirrusTestCase {
 		);
 
 		$this->assertEquals( $expectedArgs, $feature->getApplyCallArguments() );
+	}
+
+	public function provideParseBoost(): \Generator {
+		yield 'no boost' => [ 'foo', [ 'term' => 'foo', 'boost' => null ], false ];
+		yield '1.0 boost' => [ 'foo^1', [ 'term' => 'foo', 'boost' => 1.0 ], false ];
+		yield '0.03 boost' => [ 'foo^0.03', [ 'term' => 'foo', 'boost' => 0.03 ], false ];
+		yield '0 boost' => [ 'foo^0', [ 'term' => 'foo', 'boost' => 0 ], false ];
+		yield 'not a number' => [ 'foo^foo', [ 'term' => 'foo', 'boost' => null ], true ];
+		yield 'negative' => [ 'foo^-1', [ 'term' => 'foo', 'boost' => null ], true ];
+	}
+
+	/**
+	 * @dataProvider provideParseBoost
+	 */
+	public function testParseBoost( string $boostedTerm, array $parsed, bool $warning ) {
+		$collector = $this->createMock( WarningCollector::class );
+		$collector->expects( $warning ? $this->once() : $this->never() )
+			->method( 'addWarning' )
+			->willReturnCallback( function ( $warning, ...$params ) use ( $boostedTerm ): void {
+				$this->assertEquals( SimpleKeywordFeature::WARN_MESSAGE_INVALID_BOOST, $warning );
+				$this->assertCount( 1, $params );
+				/** @var $params MessageParam[] */
+				$this->assertStringEndsWith( "^{$params[0]->getValue()}", $boostedTerm );
+			} );
+
+		$feature = new MockSimpleKeywordFeature();
+		$this->assertEquals( $parsed, $feature->parseBoost( $boostedTerm, $collector ) );
 	}
 }

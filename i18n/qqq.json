@@ -84,5 +84,6 @@
 	"cirrussearch-offset-too-large": "Warning shown when search results are requested beyond the supported limit.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Warning shown when user attempts to paginate when also requesting randomly sorted results.",
 	"cirrussearch-articleprediction-invalid-keyword": "Warning shown when the <kbd>articlprediction:</kbd> search keywords are used with an unrecognized term.\n\nParameters:\n* $1 - comma-separated list of terms.\n* $2 - number of unrecognized terms $3 - search keyword.",
-	"cirrussearch-inlanguage-deprecate-comma": "Warning shown when the <kbd>inlanguage:</kbd> search keyword is used with a comma instead of a pipe as the separator between multiple provided languages."
+	"cirrussearch-inlanguage-deprecate-comma": "Warning shown when the <kbd>inlanguage:</kbd> search keyword is used with a comma instead of a pipe as the separator between multiple provided languages.",
+	"cirrussearch-invalid-keyword-boost": "Warning shown when using a search keyword able to boost terms: <kbd>somekeyword:term^boost</kbd> where <kbd>boost</kbd> must be a positive float number."
 }

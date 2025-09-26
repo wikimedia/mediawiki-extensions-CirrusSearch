@@ -38,7 +38,7 @@ class MaxQueryLengthExceptionsTest extends CirrusIntegrationTestCase {
 					new InSourceFeature( $this->config ),
 					new ArticlePredictionKeyword(),
 					new PageIdFeature(),
-					new HasRecommendationFeature(),
+					new HasRecommendationFeature( 1000 ),
 					new HasTemplateFeature(),
 				];
 			}

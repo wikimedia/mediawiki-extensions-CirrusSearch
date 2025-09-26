@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\Extra\Query\TermFreq;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Filters;
@@ -10,6 +11,7 @@ use CirrusSearch\Search\WeightedTagsHooks;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\MatchQuery;
+use MediaWiki\Message\Message;
 
 /**
  * Filters the result set based on the existing article recommendation.
@@ -20,12 +22,18 @@ use Elastica\Query\MatchQuery;
  *   hasrecommendation:link|image
  */
 class HasRecommendationFeature extends SimpleKeywordFeature implements FilterQueryFeature {
+	public const WARN_MESSAGE_INVALID_THRESHOLD = "cirrussearch-invalid-keyword-threshold";
 
 	/**
 	 * Limit filtering to 5 recommendation types. Arbitrarily chosen, but should be more
 	 * than enough and some sort of limit has to be enforced.
 	 */
 	public const QUERY_LIMIT = 5;
+	private int $maxScore;
+
+	public function __construct( int $maxScore ) {
+		$this->maxScore = $maxScore;
+	}
 
 	/** @inheritDoc */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
@@ -58,6 +66,40 @@ class HasRecommendationFeature extends SimpleKeywordFeature implements FilterQue
 			);
 			$recFlags = array_slice( $recFlags, 0, self::QUERY_LIMIT );
 		}
+		$recFlags = array_map(
+			static function ( string $k ) use ( $warningCollector ): array {
+				$matches = [];
+				preg_match( '/(?<tag>[^<>=]+)((?<comp>>=|<=|[<>=])(?<thresh>.*$))?/', $k, $matches );
+				$comp = null;
+				$threshold = null;
+				$tag = $k;
+				if ( isset( $matches['comp'] ) ) {
+					$invalidThreshold = false;
+					$tag = $matches['tag'];
+					if ( !is_numeric( $matches['thresh'] ) ) {
+						$invalidThreshold = true;
+					} else {
+						$t = floatval( $matches['thresh'] );
+						if ( $t <= 1.0 && $t >= 0.0 ) {
+							$threshold = $t;
+							$comp = $matches['comp'];
+						} else {
+							$invalidThreshold = true;
+						}
+					}
+					if ( $invalidThreshold ) {
+						$warningCollector->addWarning( self::WARN_MESSAGE_INVALID_THRESHOLD,
+							Message::plaintextParam( $matches['thresh'] ) );
+					}
+				}
+				return [
+					'flag' => $tag,
+					'comp' => $comp,
+					'threshold' => $threshold,
+				];
+			},
+			$recFlags
+		);
 		return [ 'recommendationflags' => $recFlags ];
 	}
 
@@ -68,12 +110,19 @@ class HasRecommendationFeature extends SimpleKeywordFeature implements FilterQue
 	private function doGetFilterQuery( array $parsedValue ): ?AbstractQuery {
 		$queries = [];
 		foreach ( $parsedValue['recommendationflags'] as $recFlag ) {
-			$tagValue = "recommendation." . $recFlag . '/exists';
-			$queries[] = ( new MatchQuery() )->setFieldQuery( WeightedTagsHooks::FIELD_NAME, $tagValue );
+			$tagValue = "recommendation." . $recFlag['flag'] . '/exists';
+			if ( $recFlag['comp'] ) {
+				$queries[] = new TermFreq(
+					WeightedTagsHooks::FIELD_NAME,
+					$tagValue,
+					$recFlag['comp'],
+					(int)( $recFlag['threshold'] * $this->maxScore )
+				);
+			} else {
+				$queries[] = ( new MatchQuery() )->setFieldQuery( WeightedTagsHooks::FIELD_NAME, $tagValue );
+			}
 		}
-		$query = Filters::booleanOr( $queries, false );
-
-		return $query;
+		return Filters::booleanOr( $queries, false );
 	}
 
 	/**

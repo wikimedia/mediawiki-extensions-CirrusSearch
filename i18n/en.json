@@ -72,5 +72,6 @@
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignoring request to paginate randomly sorted results.",
 	"cirrussearch-articleprediction-invalid-keyword": "Unrecognized {{PLURAL:$2|value|values}} for the <kbd>$3:</kbd> keyword: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Using a comma as a separator for the inlanguage keyword is deprecated. Please use | (pipe) to separate languages.",
-	"cirrussearch-invalid-keyword-boost": "Invalid boost value '$1' provided. Expected a positive decimal number."
+	"cirrussearch-invalid-keyword-boost": "Invalid boost value '$1' provided. Expected a positive decimal number.",
+	"cirrussearch-invalid-keyword-threshold": "Invalid threshold value '$1' provided. Expected a decimal number between 0 and 1."
 }

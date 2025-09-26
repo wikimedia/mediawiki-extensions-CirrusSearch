@@ -119,7 +119,7 @@ class WeightedTagsHooks implements
 			// articletopic keyword, matches by ORES  scores
 			$extraFeatures[] = new ArticlePredictionKeyword();
 			// article recommendations filter
-			$extraFeatures[] = new HasRecommendationFeature();
+			$extraFeatures[] = new HasRecommendationFeature( $this->maxScore() );
 		}
 	}
 

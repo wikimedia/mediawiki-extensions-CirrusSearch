@@ -4,8 +4,10 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
+use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\AbstractQuery;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Helper for writing tests of classes extending from
@@ -146,6 +148,12 @@ trait SimpleKeywordFeatureTestTrait {
 	}
 
 	/**
+	 * @param string $originalClassName
+	 * @return MockObject
+	 */
+	abstract protected function createMock( string $originalClassName ): MockObject;
+
+	/**
 	 * @param KeywordFeature $feature
 	 * @param string $term
 	 * @param callable|BoostFunctionBuilder|null $boostAssertions
@@ -159,5 +167,23 @@ trait SimpleKeywordFeatureTestTrait {
 		?SearchConfig $config = null
 	) {
 		$this->kwAssertions->assertBoost( $feature, $term, $boostAssertions, $warnings, $config );
+	}
+
+	/**
+	 * @param KeywordFeature $feature
+	 * @param string $query
+	 * @param array $expectedQueries
+	 * @return void
+	 */
+	protected function assertNonTextQuery( KeywordFeature $feature, string $query, array $expectedQueries ): void {
+		$context = $this->createMock( SearchContext::class );
+		$actualQueries = [];
+		$context->expects( $this->exactly( count( $expectedQueries ) ) )
+			->method( 'addNonTextQuery' )
+			->willReturnCallback( static function ( AbstractQuery $query ) use ( &$actualQueries ) {
+				$actualQueries[] = $query->toArray();
+			} );
+		$feature->apply( $context, $query );
+		$this->assertEquals( $expectedQueries, $actualQueries );
 	}
 }

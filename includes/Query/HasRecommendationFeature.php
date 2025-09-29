@@ -38,6 +38,12 @@ class HasRecommendationFeature extends SimpleKeywordFeature implements FilterQue
 	/** @inheritDoc */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
+		if ( !$negated ) {
+			$query = $this->doGetRankedQueries( $parsedValue );
+			if ( $query !== null ) {
+				$context->addNonTextQuery( $query );
+			}
+		}
 		return [ $this->doGetFilterQuery( $parsedValue ), false ];
 	}
 
@@ -67,7 +73,7 @@ class HasRecommendationFeature extends SimpleKeywordFeature implements FilterQue
 			$recFlags = array_slice( $recFlags, 0, self::QUERY_LIMIT );
 		}
 		$recFlags = array_map(
-			static function ( string $k ) use ( $warningCollector ): array {
+			function ( string $k ) use ( $warningCollector ): array {
 				$matches = [];
 				preg_match( '/(?<tag>[^<>=]+)((?<comp>>=|<=|[<>=])(?<thresh>.*$))?/', $k, $matches );
 				$comp = null;
@@ -92,10 +98,12 @@ class HasRecommendationFeature extends SimpleKeywordFeature implements FilterQue
 							Message::plaintextParam( $matches['thresh'] ) );
 					}
 				}
+				$boostedTag = $this->parseBoost( $tag, $warningCollector );
 				return [
-					'flag' => $tag,
+					'flag' => $boostedTag['term'],
 					'comp' => $comp,
 					'threshold' => $threshold,
+					'boost' => $boostedTag['boost'],
 				];
 			},
 			$recFlags
@@ -120,6 +128,23 @@ class HasRecommendationFeature extends SimpleKeywordFeature implements FilterQue
 				);
 			} else {
 				$queries[] = ( new MatchQuery() )->setFieldQuery( WeightedTagsHooks::FIELD_NAME, $tagValue );
+			}
+		}
+		return Filters::booleanOr( $queries, false );
+	}
+
+	/**
+	 * @param array $parsedValue
+	 * @return AbstractQuery|\Elastica\Query\BoolQuery|\Elastica\Query\MatchAll|null
+	 */
+	private function doGetRankedQueries( array $parsedValue ) {
+		$queries = [];
+		foreach ( $parsedValue['recommendationflags'] as $recFlag ) {
+			$tagValue = "recommendation." . $recFlag['flag'] . '/exists';
+			if ( $recFlag['boost'] !== null ) {
+				$queries[] = ( new MatchQuery() )
+					->setFieldQuery( WeightedTagsHooks::FIELD_NAME, $tagValue )
+					->setFieldBoost( WeightedTagsHooks::FIELD_NAME, $recFlag['boost'] );
 			}
 		}
 		return Filters::booleanOr( $queries, false );

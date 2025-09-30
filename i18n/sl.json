@@ -9,7 +9,7 @@
 	"cirrussearch-desc": "Iskanje za MediaWiki, ki ga poganja Elasticsearch",
 	"cirrussearch-backend-error": "Zaradi začasne težave nam ni uspelo izvesti vašega iskanja. Prosimo, poskusite pozneje.",
 	"cirrussearch-parse-error": "Poizvedba ni bila razumljiva. Prosimo, poenostavite jo. Poizvedba je bila zabeležena za izboljšanje iskalnega sistema.",
-	"cirrussearch-too-busy-error": "Iskanje je trenutno preobremenjeno. Prosimo, poskusi znova pozneje.",
+	"cirrussearch-too-busy-error": "Iskanje je trenutno preobremenjeno. Prosimo, poskusite znova pozneje.",
 	"cirrussearch-regex-empty-expression": "$1 pročakuje neprazen regularni izraz.",
 	"cirrussearch-regex-syntax-error": "Skladenjska napaka regularnega izraza na mestu $2: $1",
 	"cirrussearch-regex-too-busy-error": "Trenutno poteka preveč iskanj z regularnimi izrazi. Prosimo, poskusite znova pozneje.",

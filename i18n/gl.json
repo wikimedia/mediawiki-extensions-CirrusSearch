@@ -79,5 +79,7 @@
 	"cirrussearch-offset-too-large": "Non se puideron recuperar os resultados. Pódense obter ata $1 resultados, pero solicitáronse os resultados desde a posición $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignórase a pescuda para paxinar os resultados ordenados aleatoriamente.",
 	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Valor non recoñecido|Valores non recoñecidos}} para a clave <kbd>$3:</kbd>: $1",
-	"cirrussearch-inlanguage-deprecate-comma": "O uso dunha coma como separador para a palabra clave \"inlanguage\" está obsoleto. Utiliza unha barra vertical (\"|\") para separar as linguas."
+	"cirrussearch-inlanguage-deprecate-comma": "O uso dunha coma como separador para a palabra clave \"inlanguage\" está obsoleto. Utiliza unha barra vertical (\"|\") para separar as linguas.",
+	"cirrussearch-invalid-keyword-boost": "Proporcionouse un valor de aumento non válido \"$1\". Esperábase un número decimal positivo.",
+	"cirrussearch-invalid-keyword-threshold": "Proporcionouse un valor límite non válido \"$1\". Esperábase un número decimal entre 0 e 1."
 }

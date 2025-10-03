@@ -22,85 +22,76 @@ use CirrusSearch\CirrusTestCase;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  *
- * @covers \CirrusSearch\SecondTry\SecondTrySearch
+ * @covers \CirrusSearch\SecondTry\SecondTryHebrewKeyboard
+ * @covers \CirrusSearch\SecondTry\SecondTryRussianKeyboard
+ * @covers \CirrusSearch\SecondTry\SecondTryGeorgianTransliteration
  * @group CirrusSearch
  */
 class SecondTrySearchTest extends CirrusTestCase {
+	public static function provideTestSecondTry(): \Generator {
+		// hebrew_keyboard
+		yield 'he to qwerty' => [ 'hebrew_keyboard', 'מםא חודא עןננקרןדי', [ 'not just gibberish' ] ];
+		yield 'he qwerty to he lower' => [ 'hebrew_keyboard', 'ndsk thhpk', [ 'מגדל אייפל' ] ];
+		yield 'he qwerty to he upper' => [ 'hebrew_keyboard', 'NDSK THHPK', [ 'מגדל אייפל' ] ];
+		yield 'he mixed scripts' => [ 'hebrew_keyboard', 'מםא חודא עןננקרןדי NDSK thhpk',
+								 [ 'not just gibberish מגדל אייפל' ] ];
+		yield 'he mixed case' => [ 'hebrew_keyboard', 'MבMשמדןםמ', [ 'McMansion' ] ];
+		yield 'he nothing relevant' => [ 'hebrew_keyboard', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', [] ]; // Japanese, Inuktitut
 
-	/** @var SecondTrySearch */
-	private $transformer;
+		// russian_keyboard
+		yield 'ru to qwerty' => [ 'russian_keyboard', 'тще огые пшииукшыр', [ 'not just gibberish' ] ];
+		yield 'ru qwerty to ru lower' => [ 'russian_keyboard', 'qatktdf ,fiyz', [ 'йфелева башня' ] ];
+		yield 'ru qwerty to ru upper' => [ 'russian_keyboard', 'QATKTDF <FIYZ', [ 'ЙФЕЛЕВА БАШНЯ' ] ];
+		yield 'ru all punctuation to ru' => [ 'russian_keyboard', ':\'[\' :\',\'[\' <\'.', [ 'Жэхэ Жэбэхэ Бэю' ] ];
+		yield 'ru mixed scripts' => [ 'russian_keyboard', 'qatktdf ,fiyz тще огые пшииукшыр',
+				[ 'йфелева башня not just gibberish' ] ];
+		yield 'ru nothing relevant' => [ 'russian_keyboard', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', [] ]; // Japanese, Inuktitut
 
-	/**
-	 * @dataProvider provideRuQwertyWrongKeyboard
-	 */
-	public function testRussianWrongKeyboard( string $input, string $expected ) {
-		$this->transformer = new SecondTrySearch();
-		$actual = $this->transformer->russianWrongKeyboard( $input );
-		$this->assertEquals( $expected, $actual );
-	}
-
-	public static function provideRuQwertyWrongKeyboard() {
-		return [
-			'ru to qwerty' => [ 'тще огые пшииукшыр', 'not just gibberish' ],
-			'qwerty to ru lower' => [ 'qatktdf ,fiyz', 'йфелева башня' ],
-			'qwerty to ru upper' => [ 'QATKTDF <FIYZ', 'ЙФЕЛЕВА БАШНЯ' ],
-			'all punctuation to ru' => [ ':\'[\' :\',\'[\' <\'.', 'Жэхэ Жэбэхэ Бэю' ],
-			'mixed scripts' => [ 'qatktdf ,fiyz тще огые пшииукшыр',
-				'йфелева башня not just gibberish' ],
-			'nothing relevant' => [ 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ' ], // Japanese, Inuktitut
-		];
-	}
-
-	/**
-	 * @dataProvider provideHeQwertyWrongKeyboard
-	 */
-	public function testHebrewWrongKeyboard( string $input, string $expected ) {
-		$this->transformer = new SecondTrySearch();
-		$actual = $this->transformer->hebrewWrongKeyboard( $input );
-		$this->assertEquals( $expected, $actual );
-	}
-
-	public static function provideHeQwertyWrongKeyboard() {
-		return [
-			'he to qwerty' => [ 'מםא חודא עןננקרןדי', 'not just gibberish' ],
-			'qwerty to he lower' => [ 'ndsk thhpk', 'מגדל אייפל' ],
-			'qwerty to he upper' => [ 'NDSK THHPK', 'מגדל אייפל' ],
-			'mixed scripts' => [ 'מםא חודא עןננקרןדי NDSK thhpk',
-				'not just gibberish מגדל אייפל' ],
-			'mixed case' => [ 'MבMשמדןםמ', 'McMansion' ],
-			'nothing relevant' => [ 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ' ], // Japanese, Inuktitut
-		];
+		// georgian_transliteration
+		yield 'geo_tr mixed-case latin to geo' => [ 'georgian_transliteration', 'saqarTvelos istoria', [ 'საქართველოს ისტორია' ] ];
+		yield 'geo_tr latin with digraphs' => [ 'georgian_transliteration', 'chubinashvili', [ 'ჩუბინაშვილი' ] ];
+		yield 'geo_tr first letter capitalized latin' => [ 'georgian_transliteration', 'beroshvili Beroshvili', [ 'ბეროშვილი ბეროშვილი' ] ];
+		yield 'geo_tr unmappable latin 1' => [ 'georgian_transliteration', 'été', [] ];
+		yield 'geo_tr unmappable latin 2' => [ 'georgian_transliteration', 'ʃəzæm', [] ];
+		yield 'geo_tr overlapping latin diagraphs 1' => [ 'georgian_transliteration',
+														  'hatsha HATSHA HaTsha', [ 'ჰაცჰა ჰაცჰა ჰაცჰა' ] ]; // ts + h
+		yield 'geo_tr overlapping latin diagraphs 2' => [ 'georgian_transliteration', 'hatSha', [ 'ჰატშა' ] ]; // t + sh
+		yield 'geo_tr simple cyrillic' => [ 'georgian_transliteration', 'кавазашвили', [ 'კავაზაშვილი' ] ];
+		yield 'geo_tr cyrillic with diacritics' => [ 'georgian_transliteration', 'Кавазашви́ли', [ 'კავაზაშვილი' ] ];
+		yield 'geo_tr cyrillic digraphs' => [ 'georgian_transliteration', 'Ягор Абашидзе', [ 'იაგორ აბაშიძე' ] ];
+		yield 'geo_tr unmappable cyrillic 1' => [ 'georgian_transliteration', 'щёлк', [] ];
+		yield 'geo_tr unmappable cyrillic 2' => [ 'georgian_transliteration', 'Аҧсуа', [] ];
+		yield 'geo_tr contextual cyrillic' => [ 'georgian_transliteration',
+												'трото тлатла ппп ттт', [ 'ტროტო თლათლა ფფპ თტთ' ] ]; // nonsense syllables
+		yield 'geo_tr mixed latin + cyrillic' => [ 'georgian_transliteration', 'Дaviд', [ 'დავიდ' ] ]; // why? people are weird
+		yield 'geo_tr ignore georgian' => [ 'georgian_transliteration', 'ვიკიპედია', [] ];
+		yield 'geo_tr ignore mixed georgian' => [ 'georgian_transliteration', 'ვიკიპედია Wikipedia Википедия', [] ];
+		yield 'geo_tr nothing relevant' => [ 'georgian_transliteration', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', [] ]; // Japanese, Inuktitut
 	}
 
 	/**
-	 * @dataProvider provideGeorgianTransliteration
+	 * @dataProvider provideTestSecondTry
 	 */
-	public function testGeorgianTransliteration( string $input, string $expected ) {
-		$this->transformer = new SecondTrySearch();
-		$actual = $this->transformer->georgianTransliteration( $input );
-		$this->assertEquals( $expected, $actual );
+	public function testSecondTry( string $strategy, string $input, array $expected ): void {
+		$transformer = SecondTrySearchFactory::build( $strategy );
+		$this->assertEquals( $expected, $transformer->candidates( $input ) );
 	}
 
-	public static function provideGeorgianTransliteration() {
-		return [
-			'mixed-case latin to geo' => [ 'saqarTvelos istoria', 'საქართველოს ისტორია' ],
-			'latin with digraphs' => [ 'chubinashvili', 'ჩუბინაშვილი' ],
-			'first letter capitalized latin' => [ 'beroshvili Beroshvili', 'ბეროშვილი ბეროშვილი' ],
-			'unmappable latin 1' => [ 'été', 'été' ],
-			'unmappable latin 2' => [ 'ʃəzæm', 'ʃəzæm' ],
-			'overlapping latin diagraphs 1' => [ 'hatsha HATSHA HaTsha', 'ჰაცჰა ჰაცჰა ჰაცჰა' ], // ts + h
-			'overlapping latin diagraphs 2' => [ 'hatSha', 'ჰატშა' ], // t + sh
-			'simple cyrillic' => [ 'кавазашвили', 'კავაზაშვილი' ],
-			'cyrillic with diacritics' => [ 'Кавазашви́ли', 'კავაზაშვილი' ],
-			'cyrillic digraphs' => [ 'Ягор Абашидзе', 'იაგორ აბაშიძე' ],
-			'unmappable cyrillic 1' => [ 'щёлк', 'щёлк' ],
-			'unmappable cyrillic 2' => [ 'Аҧсуа', 'Аҧсуа' ],
-			'contextual cyrillic' => [ 'трото тлатла ппп ттт', 'ტროტო თლათლა ფფპ თტთ' ], // nonsense syllables
-			'mixed latin + cyrillic' => [ 'Дaviд', 'დავიდ' ], // why? people are weird
-			'ignore georgian' => [ 'ვიკიპედია', 'ვიკიპედია' ],
-			'ignore mixed georgian' => [ 'ვიკიპედია Wikipedia Википедия', 'ვიკიპედია Wikipedia Википедия' ],
-			'nothing relevant' => [ 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ' ], // Japanese, Inuktitut
-		];
+	public function provideTestFactory(): \Generator {
+		yield 'he' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class ];
+		yield 'ru' => [ 'russian_keyboard', SecondTryRussianKeyboard::class ];
+		yield 'geo_tr' => [ 'georgian_transliteration', SecondTryGeorgianTransliteration::class ];
+		yield 'invalid' => [ 'foo', null ];
 	}
 
+	/**
+	 * @dataProvider provideTestFactory
+	 * @covers \CirrusSearch\SecondTry\SecondTrySearchFactory
+	 */
+	public function testFactory( string $strategy, ?string $expectedClass ): void {
+		if ( $expectedClass === null ) {
+			$this->expectException( \InvalidArgumentException::class );
+		}
+		$this->assertInstanceOf( $expectedClass, SecondTrySearchFactory::build( $strategy ) );
+	}
 }

@@ -446,7 +446,6 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	private function prepareClientMock( int $count ): Client {
 		$mockClient =
 			$this->getMockBuilder( Client::class )
-				->disableOriginalConstructor()
 				->setProxyTarget( new Client( [ 'connections' => [] ] ) )
 				->onlyMethods( [ 'request' ] )
 				->getMock();

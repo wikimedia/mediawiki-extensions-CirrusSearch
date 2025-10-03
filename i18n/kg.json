@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Marphy 123"
+		]
+	},
+	"cirrussearch-invalid-keyword-boost": "Ntalu ya bo me pesa '$1'. Bo vandaka kuvingila ntalu ya mbote ya ba décimal.",
+	"cirrussearch-invalid-keyword-threshold": "Ntalu ya ndilu ya kukonda mfunu '$1' me pesama. Bo vandaka kuvingila ntalu ya ba décimal na kati ya 0 ti 1."
+}

@@ -84,5 +84,7 @@
 	"cirrussearch-offset-too-large": "لا يمكن استرجاع النتائج، يتم دعم ما يصل إلى $1 نتائج بحث، ولكن تم طلب النتائج بدءا من $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "تجاهل طلب نتائج ترقيم الصفحات بالفرز العشوائي.",
 	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|قيمة|قيم}} غير معترف يها للكلمة الرئيسية <kbd>$3</kbd> : $1",
-	"cirrussearch-inlanguage-deprecate-comma": "تم إهمال استخدام الفاصلة كفاصل للكلمة الأساسية باللغة. الرجاء استخدام | (أنبوب) لفصل اللغات."
+	"cirrussearch-inlanguage-deprecate-comma": "تم إهمال استخدام الفاصلة كفاصل للكلمة الأساسية باللغة. الرجاء استخدام | (أنبوب) لفصل اللغات.",
+	"cirrussearch-invalid-keyword-boost": "تم إدخال قيمة تعزيز غير صالحة ' $1 '. من المتوقع الحصول على رقم عشري موجب.",
+	"cirrussearch-invalid-keyword-threshold": "تم إدخال قيمة حدية غير صالحة ' $1 '. من المتوقع أن يكون العدد العشري بين 0 و1."
 }

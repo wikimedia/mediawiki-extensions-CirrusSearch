@@ -66,6 +66,7 @@
 	"cirrussearch-feature-deepcat-toomany": "Spørringen for dype kategorier returnerte for mange kategorier Bare et undersett av kategorier har blitt tatt i bruk.",
 	"cirrussearch-feature-deepcat-invalid-title": "Den gitte kategorien er ugyldig.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Ugyldig side-ID|Ugyldige side-ID-er}}: $1",
+	"cirrussearch-feature-invalid-date-range": "Den angitte datoen har ikke et gyldig format. Bruk formatene for år (<code>ÅÅÅÅ</code>, måned (<code>ÅÅÅÅ-MM</code>, dag (<code>ÅÅÅÅ-MM-DD</code>, eller relative tidsuttrykk som <code>now-2d</code> eller <code>today-1y</code>.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Ingen gyldige kategorier gitt til «$1».",
 	"cirrussearch-mlt-feature-no-valid-titles": "Ingen gyldige titler gitt til «$1».",
 	"cirrussearch-mlt-not-configured": "Funksjonen «$1» er feilkonfigurert. Be en administrator om å fikse $wgCirrusSearchMoreLikeThisFields",
@@ -76,5 +77,7 @@
 	"cirrussearch-offset-too-large": "Kunne ikke hente resultater. Opptil $1 {{PLURAL:$1|søkeresultat|søkeresultater}} støttes, men resultater fra og med $2 ble etterspurt.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorerer forespørsel om å dele inn tilfeldig sorterte resultater i sider.",
 	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Ukjent verdi|Ukjente verdier}} for nøkkelordet <kbd>$3:</kbd>: $1",
-	"cirrussearch-inlanguage-deprecate-comma": "Bruk av komma som skilletegn for nøkkelordet «inlanguage» støttes ikke lenger. Bruk | (vertikalstrek) for å separere språk."
+	"cirrussearch-inlanguage-deprecate-comma": "Bruk av komma som skilletegn for nøkkelordet «inlanguage» støttes ikke lenger. Bruk | (vertikalstrek) for å separere språk.",
+	"cirrussearch-invalid-keyword-boost": "Den gitte boost-verdien «$1» er ugyldig. Forventet et positivt desimaltall.",
+	"cirrussearch-invalid-keyword-threshold": "Den angitte terskelverdien «$1» er ugyldig. Forventet et desimaltall mellom 0 og 1."
 }

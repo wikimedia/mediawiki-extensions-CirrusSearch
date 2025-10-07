@@ -86,6 +86,7 @@
 	"cirrussearch-feature-deepcat-toomany": "深度分类查询返回了太多分类。仅应用了部分分类。",
 	"cirrussearch-feature-deepcat-invalid-title": "提供的类别无效。",
 	"cirrussearch-feature-pageid-invalid-id": "无效页面{{PLURAL:$2|ID|IDs}}：$1",
+	"cirrussearch-feature-invalid-date-range": "提供的日期格式无效。请使用可识别的年（<code>YYYY</code>）、月（<code>YYYY-MM</code>）、日（<code>YYYY-MM-DD</code>）格式，或使用相对时间表达式，例如<code>now-2d</code>或<code>today-1y</code>。",
 	"cirrussearch-incategory-feature-no-valid-categories": "没有为“$1”提供有效分类。",
 	"cirrussearch-mlt-feature-no-valid-titles": "没有为“$1”提供有效标题。",
 	"cirrussearch-mlt-not-configured": "“$1”功能未被配置。请向管理员请求修复$wgCirrusSearchMoreLikeThisFields",
@@ -95,5 +96,6 @@
 	"cirrussearch-autoselect-profile": "让搜索引擎决定使用的最佳个人资料。",
 	"cirrussearch-offset-too-large": "无法检索结果。最多支持$1搜索结果，但请求从$2开始的结果。",
 	"cirrussearch-offset-not-allowed-with-random-sort": "忽略分页随机排序结果的请求。",
+	"cirrussearch-articleprediction-invalid-keyword": "无法识别<kbd>$3:</kbd>关键词的{{PLURAL:$2|值}}：$1",
 	"cirrussearch-inlanguage-deprecate-comma": "已不再使用半角逗号作为inlanguage关键词的分隔符。请使用“|”（竖线）分隔语言。"
 }

@@ -178,7 +178,6 @@ class ParserOutputPagePropertiesTest extends \MediaWikiIntegrationTestCase {
 	private static function forceTitleLang( Title $title, $langCode ) {
 		global $wgLanguageCode;
 		$refl = new \ReflectionProperty( Title::class, 'mPageLanguage' );
-		$refl->setAccessible( true );
 		$refl->setValue( $title, [ $langCode, $wgLanguageCode ] );
 	}
 }

@@ -497,6 +497,9 @@ class CompletionSuggesterIndexer {
 			while ( true ) {
 				$docsInIndex = $this->safeCount( $this->index );
 				$this->log( "Old index had $oldCount docs vs $docsInIndex now.\n" );
+				if ( $oldCount === 0 ) {
+					return $docsInIndex;
+				}
 				$diffRatio = ( $oldCount - $docsInIndex ) / $oldCount;
 				// Check for relatively large (>EXTRA_CHECK_THRESHOLD docs) indices that the new index is not
 				// abnormally smaller than the new one.

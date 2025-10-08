@@ -5,7 +5,8 @@
 			"Shizhao",
 			"StarrySky",
 			"佛壁灯",
-			"星海"
+			"星海",
+			"GuoPC"
 		]
 	},
 	"apihelp-cirrus-config-dump-summary": "CirrusSearch配置的转储。",
@@ -20,13 +21,23 @@
 	"apihelp-cirrus-profiles-dump-param-verbose": "获取配置文件内容",
 	"apihelp-query+cirrusdoc-summary": "来自搜索服务器的CirrusSearch条目文档的转储",
 	"apihelp-query+cirrusdoc-example": "获取当前索引进搜索的单个CirrusSearch条目的转储。",
+	"apihelp-query+cirrusdoc-example-2": "获取此wiki的CirrusSearch设置转储，其中仅包含使用“includes”参数选择的分类",
 	"apihelp-query+cirrusdoc-param-includes": "定义搜索应返回哪些字段。",
 	"apihelp-query+cirrusbuilddoc-summary": "来自数据库服务器的CirrusSearch条目文档的转储",
 	"apihelp-query+cirrusbuilddoc-example": "获取生成自数据库的单个CirrusSearch条目的转储。",
 	"apihelp-query+cirrusbuilddoc-param-builders": "要提取的数据类型",
+	"apihelp-query+cirrusbuilddoc-param-limiterprofile": "限制文档大小时使用的配置文件",
 	"apierror-cirrus-requesttoolong": "前缀搜索请求超过最大允许长度。（$1&gt;$2）",
 	"apihelp-query+compsuggestbuilddoc-param-method": "使用的评分方法",
 	"apierror-compsuggestbuilddoc-bad-method": "未知的评分方法",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "完成建议器使用的文档的转储",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "获取完成建议器使用的文档的转储"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "获取完成建议器使用的文档的转储",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "提供完成建议器使用的评分方法名称",
+	"apihelp-cirrus-check-sanity-summary": "搜索索引中一段范围页面ID的正确性报告",
+	"apihelp-cirrus-check-sanity-param-cluster": "用于检查索引的搜索集群",
+	"apihelp-cirrus-check-sanity-param-from": "开始检查的页面ID",
+	"apihelp-cirrus-check-sanity-param-limit": "要检查的页面ID数量",
+	"apihelp-cirrus-check-sanity-param-sequenceid": "此组页面ID被检查过的次数",
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "页面应在经过多少次检查后重新渲染。基于提供的序列ID。",
+	"apiwarn-cirrus-ignore-revisions": "为页面提供多个修订。仅返回最新的修订。"
 }

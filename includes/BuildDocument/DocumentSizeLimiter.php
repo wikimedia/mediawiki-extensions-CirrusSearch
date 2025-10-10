@@ -136,37 +136,24 @@ class DocumentSizeLimiter {
 			$fieldData = [ $fieldData ];
 			$plainString = true;
 		}
-		if ( !is_array( $fieldData ) ) {
-			return;
-		}
 
-		$onlyStrings = array_reduce( $fieldData, static function ( $isString, $str ) {
-			return $isString && is_string( $str );
-		}, true );
-
-		$onlyStrings = array_reduce( $fieldData, static function ( $isString, $str ) {
-			return $isString && is_string( $str );
-		}, true );
-		if ( !$onlyStrings ) {
+		if ( !is_array( $fieldData ) ||
 			// not messing-up with mixed-types
+			array_any( $fieldData, static fn ( $val ) => !is_string( $val ) )
+		) {
 			return;
 		}
 
-		$fieldLen = array_reduce( $fieldData, static function ( $siz, $str ) {
-			return $siz + strlen( $str );
-		}, 0 );
+		$fieldLen = array_reduce( $fieldData, static fn ( $sum, $str ) => $sum + strlen( $str ), 0 );
 		$sizeReduction = 0;
 		// Since we generally truncate the end of a text we also remove array elements from the end.
-		for ( $index = count( $fieldData ) - 1; $index >= 0; $index-- ) {
+		for ( $index = count( $fieldData ); $index--; ) {
 			$remainingFieldLen = $fieldLen - $sizeReduction;
 			$maxSizeToRemove = $this->docLength - $sizeReduction - $maxDocSize;
-			if ( $remainingFieldLen <= $minFieldLength ) {
-				break;
-			}
-			if ( $maxSizeToRemove <= 0 ) {
-				break;
-			}
-			if ( $remainingFieldLen <= 0 ) {
+			if ( $remainingFieldLen <= $minFieldLength ||
+				$maxSizeToRemove <= 0 ||
+				$remainingFieldLen <= 0
+			) {
 				break;
 			}
 			$data = &$fieldData[$index];

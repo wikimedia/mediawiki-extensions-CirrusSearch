@@ -169,10 +169,10 @@ Set this to 1 to prevent two shards from the same high traffic index from being 
 onto the same node.
 
 You can also set this setting for each cluster:
-	$wgCirrusSearchMaxShardsPerNode = [
-		'cluster1' => [ 'content' => 1 ],
-		'cluster2' => [ 'content' => 'unlimited' ],
-	];
+    $wgCirrusSearchMaxShardsPerNode = [
+        'cluster1' => [ 'content' => 1 ],
+        'cluster2' => [ 'content' => 'unlimited' ],
+    ];
 
 Example:
     $wgCirrusSearchMaxShardsPerNode[ 'content' ] = 1;
@@ -592,19 +592,19 @@ Maximum number of redirects per target page to index.
 ; $wgCirrusSearchIndexFieldsToCleanup
 
 Default:
-	$wgCirrusSearchIndexFieldsToCleanup = []
+    $wgCirrusSearchIndexFieldsToCleanup = []
 
 List of strings identifying the fields to remove from the index when the next in-place re-index is run.
 
 ; $wgCirrusSearchIndexWeightedTagsPrefixMap
 
 Default:
-	$wgCirrusSearchIndexWeightedTagsPrefixMap = [];
+    $wgCirrusSearchIndexWeightedTagsPrefixMap = [];
 
 Map of weighted tag prefix replacements, mapping old (key) to new (value) prefixes.
 
 Example:
-	$wgCirrusSearchIndexWeightedTagsPrefixMap = [ "old.prefix" => "new.prefix" ];
+    $wgCirrusSearchIndexWeightedTagsPrefixMap = [ "old.prefix" => "new.prefix" ];
 
 ; $wgCirrusSearchLinkedArticlesToUpdate
 
@@ -1260,7 +1260,7 @@ supported.
 ; wgCirrusSearchNumCrossProjectSearchResults
 
 Default:
-	$wgCirrusSearchNumCrossProjectSearchResults = 1
+    $wgCirrusSearchNumCrossProjectSearchResults = 1
 
 Controls the number of search results returned for cross project search
 
@@ -1505,7 +1505,7 @@ Workarounds:
 ; $wgCirrusSearchExtraIndexSettings
 
 Default:
-	$wgCirrusSearchExtraIndexSettings = [];
+    $wgCirrusSearchExtraIndexSettings = [];
 
 Custom settings to be provided with index creation. Used for setting
 slow logs threhsolds and such. Alternatively index templates could
@@ -1536,7 +1536,7 @@ for archived pages can be done by manually indexing them too.
 ; $wgCirrusSearchInterleaveConfig
 
 Default:
-	$wgCirrusSearchInterleaveConfig = [];
+    $wgCirrusSearchInterleaveConfig = [];
 
 Map of configuration variable name to value used to override cirrus config
 during interleaved full text search. Generally tis should *not* be set
@@ -1547,7 +1547,7 @@ performance of two different search configurations.
 ; $wgCirrusSearchMaxPhraseTokens
 
 Default:
-	$wgCirrusSearchMaxPhraseTokens = null;
+    $wgCirrusSearchMaxPhraseTokens = null;
 
 Maximum number of tokens in a phrase rescore query. Only activated
 when token_count_router is enabled in $wgCirrusSearchWikimediaExtraPlugin.
@@ -1765,12 +1765,12 @@ Examples:
         # instructs the system that this index is ready to be used, useful for a two step deployment:
         # 1/ "use" => false and build the index with UpdateSuggesterIndex
         # 2/ "use" => true to start using it thanks to wgCirrusSearchCompletionSuggesterUseAltIndexId
-	"use" => true,
+        "use" => true,
 
-	# set of config overrides useful at build & query time
-	"config_overrides" => [
-	  'CirrusSearchSomeConfigOption' => 'some config value'
-	]
+        # set of config overrides useful at build & query time
+        "config_overrides" => [
+          'CirrusSearchSomeConfigOption' => 'some config value'
+        ]
       ]
     ]
   ];

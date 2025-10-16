@@ -1,0 +1,58 @@
+{
+	"fields": {
+		"title": {
+			"boost": 0.18109507858753204,
+			"is_plain": false,
+			"stem_boost": 0.23950926959514618,
+			"plain_boost": 1.7219492747244658e-06
+		},
+		"category": {
+			"boost": 0.09806489944458008,
+			"is_plain": false,
+			"stem_boost": 0.28254827857017517,
+			"plain_boost": 0.008355917409062386
+		},
+		"heading": {
+			"boost": 0.13624359667301178,
+			"is_plain": false,
+			"stem_boost": 0.1271803379058838,
+			"plain_boost": 0.1498202681541443
+		},
+		"auxiliary_text": {
+			"boost": 0.09907399117946625,
+			"is_plain": false,
+			"stem_boost": 0.012632853351533413,
+			"plain_boost": 0.3212403357028961
+		},
+		"redirect.title": {
+			"boost": 0.14214245975017548,
+			"is_plain": false,
+			"stem_boost": 0.46842411160469055,
+			"plain_boost": 0.00028347622719593346,
+			"in_dismax": "redirects_or_shingles"
+		},
+		"suggest": {
+			"boost": 0.05234126001596451,
+			"is_plain": true,
+			"in_dismax": "redirects_or_shingles"
+		},
+		"text": {
+			"boost": 0.16966715455055237,
+			"is_plain": false,
+			"stem_boost": 0.28985410928726196,
+			"plain_boost": 0.5848596692085266,
+			"in_dismax": "text_and_opening_text"
+		},
+		"opening_text": {
+			"boost": 0.1556941717863083,
+			"is_plain": false,
+			"stem_boost": 0.4419015049934387,
+			"plain_boost": 0.5203686356544495,
+			"in_dismax": "text_and_opening_text"
+		}
+	},
+	"rescore": {
+		"popularity_score": 3.157860040664673,
+		"incoming_links": 3.7621023807332676e-07
+	}
+}

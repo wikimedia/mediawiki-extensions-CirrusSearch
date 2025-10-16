@@ -1,0 +1,14 @@
+{
+	"fields": {
+		"all": {
+			"boost": 0.3119542896747589,
+			"is_plain": false,
+			"stem_boost": 0.49288660287857056,
+			"plain_boost": 0.5935354232788086
+		}
+	},
+	"rescore": {
+		"popularity_score": 4.856583595275879,
+		"incoming_links": 0.339893639087677
+	}
+}

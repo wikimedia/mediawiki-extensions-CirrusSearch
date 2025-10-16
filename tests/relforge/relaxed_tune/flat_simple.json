@@ -1,0 +1,50 @@
+{
+	"fields": {
+		"heading": {
+			"boost": 0.08883596956729889,
+			"is_plain": false,
+			"stem_boost": 0.13188928365707397,
+			"plain_boost": 0.2899942100048065
+		},
+		"opening_text": {
+			"boost": 0.07777990400791168,
+			"is_plain": false,
+			"stem_boost": 0.08384700119495392,
+			"plain_boost": 0.13182727992534637
+		},
+		"text": {
+			"boost": 0.31394249200820923,
+			"is_plain": false,
+			"stem_boost": 0.12836644053459167,
+			"plain_boost": 0.32054343819618225
+		},
+		"category": {
+			"boost": 0.1097361296415329,
+			"is_plain": false,
+			"stem_boost": 0.22074003517627716,
+			"plain_boost": 0.030635571107268333
+		},
+		"auxiliary_text": {
+			"boost": 0.1269453912973404,
+			"is_plain": false,
+			"stem_boost": 0.010149008594453335,
+			"plain_boost": 0.26520419120788574
+		},
+		"title": {
+			"boost": 0.21102429926395416,
+			"is_plain": false,
+			"stem_boost": 0.40424877405166626,
+			"plain_boost": 0.015959620475769043
+		},
+		"redirect.title": {
+			"boost": 0.10235937684774399,
+			"is_plain": false,
+			"stem_boost": 0.41730058193206787,
+			"plain_boost": 0.09039822965860367
+		}
+	},
+	"rescore": {
+		"popularity_score": 3.236281156539917,
+		"incoming_links": 2.7343580200067663e-07
+	}
+}

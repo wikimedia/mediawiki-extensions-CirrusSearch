@@ -6,7 +6,7 @@
  */
 
 // Load it now so it won't override our settings
-require_once __DIR__ . "/../jenkins/Jenkins.php";
+require_once __DIR__ . "/../jenkins/FullyFeaturedConfig.php";
 
 // pop score is global
 $wgHooks['CirrusSearchMappingConfig'][] = static function ( array &$config, $mappingConfigBuilder ) {

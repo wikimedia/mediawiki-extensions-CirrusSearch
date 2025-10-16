@@ -1,0 +1,84 @@
+{
+	"fields": {
+		"all": {
+			"boost": 0.014904864132404327,
+			"is_plain": true
+		},
+		"all.plain": {
+			"boost": 0.07778860628604889,
+			"is_plain": true
+		},
+		"heading": {
+			"boost": 0.008488088846206665,
+			"is_plain": true
+		},
+		"heading.plain": {
+			"boost": 0.0222155898809433,
+			"is_plain": true
+		},
+		"opening_text": {
+			"boost": 0.007775966078042984,
+			"is_plain": true
+		},
+		"opening_text.plain": {
+			"boost": 0.0023565401788800955,
+			"is_plain": true
+		},
+		"text": {
+			"boost": 0.043195322155952454,
+			"is_plain": true
+		},
+		"text.plain": {
+			"boost": 0.041907865554094315,
+			"is_plain": true
+		},
+		"category": {
+			"boost": 0.015191184356808662,
+			"is_plain": true
+		},
+		"category.plain": {
+			"boost": 3.4583226806716993e-06,
+			"is_plain": true
+		},
+		"auxiliary_text": {
+			"boost": 0.0008877286454662681,
+			"is_plain": true
+		},
+		"auxiliary_text.plain": {
+			"boost": 0.011318697594106197,
+			"is_plain": true
+		},
+		"title": {
+			"boost": 0.07220454514026642,
+			"is_plain": true
+		},
+		"title.plain": {
+			"boost": 5.038279141444946e-06,
+			"is_plain": true
+		},
+		"redirect.title": {
+			"boost": 0.02219233848154545,
+			"is_plain": true
+		},
+		"redirect.title.plain": {
+			"boost": 6.583557023986941e-06,
+			"is_plain": true
+		},
+		"suggest": {
+			"boost": 0.026045797392725945,
+			"is_plain": true
+		},
+		"all_near_match": {
+			"boost": 0.03227460756897926,
+			"is_plain": true
+		},
+		"all_near_match.asciifolding": {
+			"boost": 0.031061014160513878,
+			"is_plain": true
+		}
+	},
+	"rescore": {
+		"popularity_score": 3.389914035797119,
+		"incoming_links": 5.460530587697576e-07
+	}
+}

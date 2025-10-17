@@ -3,6 +3,9 @@
 namespace CirrusSearch\SecondTry;
 
 use CirrusSearch\CirrusTestCase;
+use MediaWiki\Language\LanguageConverter;
+use MediaWiki\Language\LanguageConverterFactory;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Test escaping search strings.
@@ -73,7 +76,7 @@ class SecondTrySearchTest extends CirrusTestCase {
 	 * @dataProvider provideTestSecondTry
 	 */
 	public function testSecondTry( string $strategy, string $input, array $expected ): void {
-		$transformer = SecondTrySearchFactory::build( $strategy );
+		$transformer = SecondTrySearchFactory::build( $strategy, $this->createMock( MediaWikiServices::class ), [] );
 		$this->assertEquals( $expected, $transformer->candidates( $input ) );
 	}
 
@@ -81,6 +84,7 @@ class SecondTrySearchTest extends CirrusTestCase {
 		yield 'he' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class ];
 		yield 'ru' => [ 'russian_keyboard', SecondTryRussianKeyboard::class ];
 		yield 'geo_tr' => [ 'georgian_transliteration', SecondTryGeorgianTransliteration::class ];
+		yield 'lang_converter' => [ 'language_converter', SecondTryLanguageConverter::class ];
 		yield 'invalid' => [ 'foo', null ];
 	}
 
@@ -89,9 +93,14 @@ class SecondTrySearchTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\SecondTry\SecondTrySearchFactory
 	 */
 	public function testFactory( string $strategy, ?string $expectedClass ): void {
+		$languageConverter = $this->createMock( LanguageConverter::class );
+		$languageConverterFactory = $this->createMock( LanguageConverterFactory::class );
+		$languageConverterFactory->method( 'getLanguageConverter' )->willReturn( $languageConverter );
+		$mwServices = $this->createMock( MediaWikiServices::class );
+		$mwServices->method( 'getLanguageConverterFactory' )->willReturn( $languageConverterFactory );
 		if ( $expectedClass === null ) {
 			$this->expectException( \InvalidArgumentException::class );
 		}
-		$this->assertInstanceOf( $expectedClass, SecondTrySearchFactory::build( $strategy ) );
+		$this->assertInstanceOf( $expectedClass, SecondTrySearchFactory::build( $strategy, $mwServices, [] ) );
 	}
 }

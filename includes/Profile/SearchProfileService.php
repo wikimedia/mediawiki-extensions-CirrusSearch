@@ -118,6 +118,12 @@ class SearchProfileService {
 	public const FALLBACKS = 'fallbacks';
 
 	/**
+	 * Profile type used to build second try searches.
+	 * @see \CirrusSearch\SecondTry\SecondTrySearch
+	 */
+	public const SECOND_TRY = 'second_try';
+
+	/**
 	 * Profile context used for prefix search queries
 	 */
 	public const CONTEXT_PREFIXSEARCH = 'prefixsearch';
@@ -126,6 +132,11 @@ class SearchProfileService {
 	 * Default profile context (used by fulltext queries)
 	 */
 	public const CONTEXT_DEFAULT = 'default';
+
+	/**
+	 * Default profile context (used by fulltext queries)
+	 */
+	public const CONTEXT_COMPLETION = 'completion';
 
 	/**
 	 * List of profile repositories, grouped by type and then by repository name.

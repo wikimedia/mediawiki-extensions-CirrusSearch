@@ -41,7 +41,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			'rescore prefix' => [ SearchProfileService::RESCORE, SearchProfileService::CONTEXT_PREFIXSEARCH ],
 			'similarity prefix' => [ SearchProfileService::SIMILARITY, SearchProfileService::CONTEXT_DEFAULT ],
 			'crossproject block order' => [ SearchProfileService::CROSS_PROJECT_BLOCK_SCORER, SearchProfileService::CONTEXT_DEFAULT ],
-			'completion' => [ SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT ],
+			'completion' => [ SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_COMPLETION ],
 			'fallback' => [ SearchProfileService::FALLBACKS, SearchProfileService::CONTEXT_DEFAULT ],
 			'fulltext query builder' => [ SearchProfileService::FT_QUERY_BUILDER, SearchProfileService::CONTEXT_DEFAULT ],
 			'document size limiter' => [ SearchProfileService::DOCUMENT_SIZE_LIMITER, SearchProfileService::CONTEXT_DEFAULT ],
@@ -117,11 +117,11 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 				'config', 'CirrusSearchCrossProjectOrder', [ 'unittest' => [] ]
 			],
 			'completion by user pref' => [
-				SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT,
+				SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_COMPLETION,
 				'pref', 'cirrussearch-pref-completion-profile', [ 'unittest' => [] ]
 			],
 			'completion by config' => [
-				SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT,
+				SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_COMPLETION,
 				'config', 'CirrusSearchCompletionSettings', [ 'unittest' => [] ],
 			],
 			'fallbacks by config' => [
@@ -139,6 +139,14 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			'fulltext query builder by config' => [
 				SearchProfileService::FT_QUERY_BUILDER, SearchProfileService::CONTEXT_DEFAULT,
 				'config', 'CirrusSearchFullTextQueryBuilderProfile', [ 'unittest' => [] ],
+			],
+			'second try prefix search by config' => [
+				SearchProfileService::SECOND_TRY, SearchProfileService::CONTEXT_COMPLETION,
+				'config', 'CirrusSearchCompletionUseSecondTryProfile', [ 'unittest' => [] ],
+			],
+			'second try prefix search by uri' => [
+				SearchProfileService::SECOND_TRY, SearchProfileService::CONTEXT_COMPLETION,
+				'uri', 'cirrusUseSecondTryProfile', [ 'unittest' => [] ],
 			],
 		];
 	}

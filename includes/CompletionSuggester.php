@@ -178,7 +178,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$this->searchContext = new SearchContext( $this->config, $namespaces, $debugOptions );
 
 		$profileDefinition = $this->config->getProfileService()
-			->loadProfile( SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT, $profileName );
+			->loadProfile( SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_COMPLETION, $profileName );
 		$this->compSuggestBuilder = new CompSuggestQueryBuilder(
 			$this->searchContext,
 			$profileDefinition,

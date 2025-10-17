@@ -2,10 +2,16 @@
 
 namespace CirrusSearch\SecondTry;
 
-use MediaWiki\MediaWikiServices;
+use MediaWiki\Language\LanguageConverterFactory;
 
 class SecondTrySearchFactory {
-	public static function build( string $strategy, MediaWikiServices $mediaWikiServices, array $config ): SecondTrySearch {
+	private LanguageConverterFactory $languageConverterFactory;
+
+	public function __construct( LanguageConverterFactory $languageConverterFactory ) {
+		$this->languageConverterFactory = $languageConverterFactory;
+	}
+
+	public function build( string $strategy, array $config ): SecondTrySearch {
 		switch ( $strategy ) {
 			case 'georgian_transliteration':
 				return new SecondTryGeorgianTransliteration();
@@ -15,12 +21,11 @@ class SecondTrySearchFactory {
 				return new SecondTryHebrewKeyboard();
 			case 'language_converter':
 				return SecondTryLanguageConverter::build(
-					$mediaWikiServices->getLanguageConverterFactory()->getLanguageConverter(),
+					$this->languageConverterFactory->getLanguageConverter(),
 					$config
 				);
 			default:
 				throw new \InvalidArgumentException( "Unknown search strategy {$strategy}" );
 		}
 	}
-
 }

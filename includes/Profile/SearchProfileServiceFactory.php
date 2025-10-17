@@ -147,6 +147,7 @@ class SearchProfileServiceFactory {
 		$this->loadCrossProjectBlockScorer( $service, $config );
 		$this->loadSimilarityProfiles( $service, $config );
 		$this->loadRescoreProfiles( $service, $config );
+		$this->loadSecondTryProfiles( $service, $config );
 		$this->loadCompletionProfiles( $service, $config );
 		$this->loadPhraseSuggesterProfiles( $service, $config );
 		$this->loadIndexLookupFallbackProfiles( $service, $config );
@@ -227,6 +228,19 @@ class SearchProfileServiceFactory {
 		// No default profiles for function chains, these profiles are always accessed explicitly
 	}
 
+	private function loadSecondTryProfiles( SearchProfileService $service, SearchConfig $config ) {
+		$service->registerFileRepository( SearchProfileService::SECOND_TRY,
+			self::CIRRUS_BASE, __DIR__ . '/../../profiles/SecondTryProfiles.config.php' );
+		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::SECOND_TRY,
+			self::CIRRUS_CONFIG, 'CirrusSearchSecondTryProfiles', $config ) );
+		$service->registerDefaultProfile( SearchProfileService::SECOND_TRY,
+			SearchProfileService::CONTEXT_COMPLETION, 'default' );
+		$service->registerConfigOverride( SearchProfileService::SECOND_TRY,
+			SearchProfileService::CONTEXT_COMPLETION, $config, 'CirrusSearchCompletionUseSecondTryProfile' );
+		$service->registerUriParamOverride( SearchProfileService::SECOND_TRY,
+			SearchProfileService::CONTEXT_COMPLETION, 'cirrusUseSecondTryProfile' );
+	}
+
 	private function loadCompletionProfiles( SearchProfileService $service, SearchConfig $config ) {
 		$service->registerRepository( CompletionSearchProfileRepository::fromFile( SearchProfileService::COMPLETION,
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/SuggestProfiles.config.php', $config ) );
@@ -236,15 +250,15 @@ class SearchProfileServiceFactory {
 			new ExtensionRegistryProfileRepository( SearchProfileService::COMPLETION,
 			self::EXTENSION_REGISTRY, 'CirrusSearchCompletionProfiles', $this->extensionRegistry ), $config ) );
 		$service->registerDefaultProfile( SearchProfileService::COMPLETION,
-			SearchProfileService::CONTEXT_DEFAULT, 'fuzzy' );
+			SearchProfileService::CONTEXT_COMPLETION, 'fuzzy' );
 		// XXX: We don't really override the default here
 		// Due to the way User preference works we may always end up using
 		// the user pref overrides because we initialize default user pref
 		// in Hooks::onUserGetDefaultOptions
 		$service->registerConfigOverride( SearchProfileService::COMPLETION,
-			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchCompletionSettings' );
+			SearchProfileService::CONTEXT_COMPLETION, $config, 'CirrusSearchCompletionSettings' );
 		$service->registerUserPrefOverride( SearchProfileService::COMPLETION,
-			SearchProfileService::CONTEXT_DEFAULT, 'cirrussearch-pref-completion-profile' );
+			SearchProfileService::CONTEXT_COMPLETION, 'cirrussearch-pref-completion-profile' );
 	}
 
 	private function loadPhraseSuggesterProfiles( SearchProfileService $service, SearchConfig $config ) {

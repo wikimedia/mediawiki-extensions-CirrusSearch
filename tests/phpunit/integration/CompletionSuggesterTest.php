@@ -207,7 +207,7 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 		$completion = new CompSuggestQueryBuilder(
 			new SearchContext( $config ),
 			$config->getProfileService()
-				->loadProfile( SearchProfileService::COMPLETION ),
+				->loadProfile( SearchProfileService::COMPLETION, SearchProfileService::COMPLETION ),
 		1 );
 		$suggest = $completion->build( $query, [] )->toArray()['suggest'];
 		$profiles = $completion->getMergedProfiles();

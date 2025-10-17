@@ -3,9 +3,8 @@
 namespace CirrusSearch\SecondTry;
 
 use CirrusSearch\CirrusTestCase;
-use MediaWiki\Language\LanguageConverter;
+use MediaWiki\Language\ILanguageConverter;
 use MediaWiki\Language\LanguageConverterFactory;
-use MediaWiki\MediaWikiServices;
 
 /**
  * Test escaping search strings.
@@ -76,7 +75,8 @@ class SecondTrySearchTest extends CirrusTestCase {
 	 * @dataProvider provideTestSecondTry
 	 */
 	public function testSecondTry( string $strategy, string $input, array $expected ): void {
-		$transformer = SecondTrySearchFactory::build( $strategy, $this->createMock( MediaWikiServices::class ), [] );
+		$secondTryFactory = new SecondTrySearchFactory( $this->createMock( LanguageConverterFactory::class ) );
+		$transformer = $secondTryFactory->build( $strategy, [] );
 		$this->assertEquals( $expected, $transformer->candidates( $input ) );
 	}
 
@@ -93,14 +93,13 @@ class SecondTrySearchTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\SecondTry\SecondTrySearchFactory
 	 */
 	public function testFactory( string $strategy, ?string $expectedClass ): void {
-		$languageConverter = $this->createMock( LanguageConverter::class );
+		$languageConverter = $this->createMock( ILanguageConverter::class );
 		$languageConverterFactory = $this->createMock( LanguageConverterFactory::class );
 		$languageConverterFactory->method( 'getLanguageConverter' )->willReturn( $languageConverter );
-		$mwServices = $this->createMock( MediaWikiServices::class );
-		$mwServices->method( 'getLanguageConverterFactory' )->willReturn( $languageConverterFactory );
+		$factory = new SecondTrySearchFactory( $languageConverterFactory );
 		if ( $expectedClass === null ) {
 			$this->expectException( \InvalidArgumentException::class );
 		}
-		$this->assertInstanceOf( $expectedClass, SecondTrySearchFactory::build( $strategy, $mwServices, [] ) );
+		$this->assertInstanceOf( $expectedClass, $factory->build( $strategy, [] ) );
 	}
 }

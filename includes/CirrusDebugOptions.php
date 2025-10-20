@@ -11,11 +11,6 @@ use MediaWiki\Request\WebRequest;
 class CirrusDebugOptions {
 
 	/**
-	 * @var string[]|null
-	 */
-	private $cirrusCompletionVariant;
-
-	/**
 	 * @var bool
 	 */
 	private $cirrusDumpQuery = false;
@@ -54,7 +49,6 @@ class CirrusDebugOptions {
 	 */
 	public static function fromRequest( WebRequest $request ): self {
 		$options = new self();
-		$options->cirrusCompletionVariant = $request->getArray( 'cirrusCompletionVariant' );
 		$options->cirrusDumpQuery = $request->getCheck( 'cirrusDumpQuery' );
 		$options->cirrusDumpQueryAST = $request->getCheck( 'cirrusDumpQueryAST' );
 		$options->cirrusDumpResult = $request->getCheck( 'cirrusDumpResult' );
@@ -109,13 +103,6 @@ class CirrusDebugOptions {
 			return $val;
 		}
 		return null;
-	}
-
-	/**
-	 * @return null|string[]
-	 */
-	public function getCirrusCompletionVariant() {
-		return $this->cirrusCompletionVariant;
 	}
 
 	/**

@@ -20,7 +20,6 @@ class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 		$request = new FauxRequest( [
 			'cirrusMLRModel' => 'my_model',
 			'cirrusSuppressSuggest' => '',
-			'cirrusCompletionVariant' => [ 'foo', 'bar' ],
 			'cirrusDumpQuery' => '',
 			'cirrusDumpQueryAST' => '',
 			'cirrusDumpResult' => '',
@@ -31,7 +30,6 @@ class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 		$this->assertTrue( $debugOptions->isCirrusDumpQuery() );
 		$this->assertTrue( $debugOptions->isCirrusDumpQueryAST() );
 		$this->assertTrue( $debugOptions->isCirrusDumpResult() );
-		$this->assertEquals( [ 'foo', 'bar' ], $debugOptions->getCirrusCompletionVariant() );
 		$this->assertTrue( $debugOptions->isReturnRaw() );
 		$this->assertTrue( $debugOptions->isDumpAndDie() );
 		// cirrusExplain should be ignored when cirrusDumpQuery or cirrusDumpQueryAST is set
@@ -40,7 +38,6 @@ class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 		$request = new FauxRequest( [
 			'cirrusMLRModel' => 'my_model',
 			'cirrusSuppressSuggest' => '',
-			'cirrusCompletionVariant' => [ 'foo', 'bar' ],
 			'cirrusDumpResult' => '',
 			'cirrusExplain' => 'pretty'
 		] );
@@ -58,7 +55,6 @@ class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 		$this->assertNull( $debugOptions->getCirrusExplainFormat() );
 		$this->assertTrue( $debugOptions->isCirrusDumpQuery() );
 		$this->assertFalse( $debugOptions->isCirrusDumpResult() );
-		$this->assertNull( $debugOptions->getCirrusCompletionVariant() );
 		$this->assertTrue( $debugOptions->isReturnRaw() );
 		$this->assertFalse( $debugOptions->isDumpAndDie() );
 	}
@@ -66,16 +62,14 @@ class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 	public function testRelTest() {
 		$debugOptions = CirrusDebugOptions::forRelevanceTesting( true );
 		$this->assertFalse( $debugOptions->isReturnRaw() );
-		$this->assertTrue( $debugOptions->getCirrusExplainFormat() );
 	}
 
-	private function assertNone( CirrusDebugOptions $debugOptions ) {
+	private function assertNone( CirrusDebugOptions $debugOptions ): void {
 		$this->assertNull( $debugOptions->getCirrusMLRModel() );
 		$this->assertNull( $debugOptions->getCirrusExplainFormat() );
 		$this->assertFalse( $debugOptions->isCirrusDumpQuery() );
 		$this->assertFalse( $debugOptions->isCirrusDumpQueryAST() );
 		$this->assertFalse( $debugOptions->isCirrusDumpResult() );
-		$this->assertNull( $debugOptions->getCirrusCompletionVariant() );
 		$this->assertFalse( $debugOptions->isReturnRaw() );
 		$this->assertFalse( $debugOptions->isDumpAndDie() );
 	}

@@ -162,6 +162,9 @@ Feature: Prefix search via api
 	  Then the API should produce list starting with Sam Wilson
 		When I ask suggestion API for Wilson
 
+  Scenario: Search suggestions with a custom second try search profile
+	When I ask suggestion API using the second try profile language_converter_and_russian_wrong_keyboard for мутщь
+	  Then the API should produce list starting with Venom
 
 	Scenario: Search suggestions
     When I ask suggestion API for main

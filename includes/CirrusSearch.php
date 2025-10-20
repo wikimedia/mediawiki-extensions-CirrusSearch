@@ -15,6 +15,8 @@ use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Search\TitleResultsType;
+use CirrusSearch\SecondTry\SecondTryRunnerFactory;
+use CirrusSearch\SecondTry\SecondTrySearchFactory;
 use ISearchResultSet;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
@@ -149,6 +151,8 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private $cirrusSearchHookRunner;
 
+	private SecondTryRunnerFactory $secondTryRunnerFactory;
+
 	/**
 	 * @param SearchConfig|null $config
 	 * @param CirrusDebugOptions|null $debugOptions
@@ -159,7 +163,9 @@ class CirrusSearch extends SearchEngine {
 	public function __construct( ?SearchConfig $config = null,
 		?CirrusDebugOptions $debugOptions = null,
 		?NamespacePrefixParser $namespacePrefixParser = null,
-		?InterwikiResolver $interwikiResolver = null, ?TitleHelper $titleHelper = null
+		?InterwikiResolver $interwikiResolver = null,
+		?TitleHelper $titleHelper = null,
+		?SecondTryRunnerFactory $secondTryRunnerFactory = null
 	) {
 		// Initialize UserTesting before we create a Connection
 		// This is useful to do tests across multiple clusters
@@ -171,6 +177,14 @@ class CirrusSearch extends SearchEngine {
 		$this->requestContext = RequestContext::getMain();
 		$this->request = $this->requestContext->getRequest();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
+		if ( $secondTryRunnerFactory === null ) {
+			$this->secondTryRunnerFactory = new SecondTryRunnerFactory(
+				new SecondTrySearchFactory( MediaWikiServices::getInstance()->getLanguageConverterFactory() ),
+				$this->config
+			);
+		} else {
+			$this->secondTryRunnerFactory = $secondTryRunnerFactory;
+		}
 		$this->namespacePrefixParser = $namespacePrefixParser ?: new class() implements NamespacePrefixParser {
 			/** @inheritDoc */
 			public function parse( $query ) {
@@ -349,11 +363,10 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * Look for suggestions using ES completion suggester.
 	 * @param string $search Search string
-	 * @param string[]|null $variants Search term variants
 	 * @param SearchConfig $config search configuration
 	 * @return SearchSuggestionSet Set of suggested names
 	 */
-	protected function getSuggestions( $search, $variants, SearchConfig $config ) {
+	protected function getSuggestions( $search, SearchConfig $config ) {
 		// Inspect features to check if the user selected a specific profile
 		$profile = $this->extractProfileFromFeatureData( SearchEngine::COMPLETION_PROFILE_TYPE );
 
@@ -367,7 +380,7 @@ class CirrusSearch extends SearchEngine {
 				$this->offset, $config, $this->namespaces, null,
 				false, $profile, $this->debugOptions );
 
-		$response = $suggester->suggest( $search, $variants );
+		$response = $suggester->suggest( $search );
 
 		if ( !$response->isOK() ) {
 			return SearchSuggestionSet::emptySuggestionSet();
@@ -429,40 +442,26 @@ class CirrusSearch extends SearchEngine {
 			return parent::completionSearchBackend( $search );
 		}
 
-		// Not really useful, mostly for testing purpose
-		$variants = $this->debugOptions->getCirrusCompletionVariant();
-		if ( !$variants ) {
-			$converter = MediaWikiServices::getInstance()->getLanguageConverterFactory()->getLanguageConverter();
-			$variants = $converter->autoConvertToAllVariants( $search );
-		} elseif ( count( $variants ) > 3 ) {
-			// We should not allow too many variants
-			$variants = array_slice( $variants, 0, 3 );
+		// fallback to classic prefix search if the completion suggester is not enabled or if NS_MAIN
+		// is not requested
+		if ( !$this->config->isCompletionSuggesterEnabled() || !in_array( NS_MAIN, $this->namespaces ) ) {
+			$profile = self::COMPLETION_PREFIX_FALLBACK_PROFILE;
+		} else {
+			$profile = $this->extractProfileFromFeatureData( SearchEngine::COMPLETION_PROFILE_TYPE );
+			if ( $profile === null ) {
+				// Need to fetch the name to fallback to prefix (not ideal)
+				// We should probably refactor this to have a single code path for prefix and completion suggester.
+				$profile = $this->config->getProfileService()
+					->getProfileName( SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_COMPLETION );
+			}
 		}
 
-		if ( !$this->config->isCompletionSuggesterEnabled() ) {
-			// Completion suggester is not enabled, fallback to
-			// default implementation
-			return $this->prefixSearch( $search, $variants );
-		}
-
-		// the completion suggester is only worth a try if NS_MAIN is requested
-		if ( !in_array( NS_MAIN, $this->namespaces ) ) {
-			return $this->prefixSearch( $search, $variants );
-		}
-
-		$profile = $this->extractProfileFromFeatureData( SearchEngine::COMPLETION_PROFILE_TYPE );
-		if ( $profile === null ) {
-			// Need to fetch the name to fallback to prefix (not ideal)
-			// We should probably refactor this to have a single code path for prefix and completion suggester.
-			$profile = $this->config->getProfileService()
-				->getProfileName( SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_COMPLETION );
-		}
 		if ( $profile === self::COMPLETION_PREFIX_FALLBACK_PROFILE ) {
 			// Fallback to prefixsearch if the classic profile was selected.
-			return $this->prefixSearch( $search, $variants );
+			return $this->prefixSearch( $search );
 		}
 
-		return $this->getSuggestions( $search, $variants, $this->config );
+		return $this->getSuggestions( $search, $this->config );
 	}
 
 	/**
@@ -479,11 +478,11 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * Older prefix search.
 	 * @param string $search search text
-	 * @param string[] $variants
 	 * @return SearchSuggestionSet
 	 */
-	protected function prefixSearch( $search, $variants ) {
+	protected function prefixSearch( $search ) {
 		$searcher = $this->makeSearcher();
+		$secondTryRunner = $this->secondTryRunnerFactory->create( SearchProfileService::CONTEXT_COMPLETION );
 
 		if ( $search ) {
 			$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
@@ -492,7 +491,7 @@ class CirrusSearch extends SearchEngine {
 			$searcher->setResultsType( new TitleResultsType() );
 		}
 
-		$status = $searcher->prefixSearch( $search, $variants );
+		$status = $searcher->prefixSearch( $search, $secondTryRunner );
 
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status

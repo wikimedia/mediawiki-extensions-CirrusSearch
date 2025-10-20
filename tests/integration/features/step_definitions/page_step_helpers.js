@@ -121,7 +121,7 @@ class StepHelpers {
 		} ).call( this );
 	}
 
-	suggestionSearch( query, limit = 'max', idx = -1 ) {
+	suggestionSearch( query, limit = 'max', secondTryProfile = undefined, idx = -1 ) {
 		return Promise.coroutine( function* () {
 			const client = yield this.apiPromise;
 
@@ -133,6 +133,9 @@ class StepHelpers {
 			};
 			if ( idx >= 0 ) {
 				params.cirrusCompletionAltIndexId = idx;
+			}
+			if ( secondTryProfile ) {
+				params.cirrusUseSecondTryProfile = secondTryProfile;
 			}
 
 			try {

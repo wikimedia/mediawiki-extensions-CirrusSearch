@@ -2,7 +2,10 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\SecondTry\SecondTryRunnerFactory;
+use CirrusSearch\SecondTry\SecondTrySearchFactory;
 use MediaWiki\HookContainer\HookContainer;
+use MediaWiki\Language\LanguageConverterFactory;
 use MediaWiki\Status\Status;
 
 /**
@@ -131,8 +134,12 @@ class CirrusSearchTest extends CirrusTestCase {
 		// use cirrus base profiles
 		// only set needed config for Connection
 		$config = $this->newHashSearchConfig( ( $config ?: [] ) + $this->getMinimalConfig() );
+		$languageConverterFactory = $this->createMock( LanguageConverterFactory::class );
+		$secondTryFactory = new SecondTrySearchFactory( $languageConverterFactory );
 		return new CirrusSearch( $config, CirrusDebugOptions::defaultOptions(),
-			$this->namespacePrefixParser(), $this->getInterWikiResolver( $config ), self::newTitleHelper() );
+			$this->namespacePrefixParser(), $this->getInterWikiResolver( $config ), self::newTitleHelper(),
+			new SecondTryRunnerFactory( $secondTryFactory, $config )
+		);
 	}
 
 	/**

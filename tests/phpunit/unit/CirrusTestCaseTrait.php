@@ -9,13 +9,17 @@ use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Search\TitleHelper;
+use CirrusSearch\SecondTry\SecondTryRunnerFactory;
+use CirrusSearch\SecondTry\SecondTrySearchFactory;
 use MediaWiki\Config\Config;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Interwiki\InterwikiLookup;
+use MediaWiki\Language\LanguageConverterFactory;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Options\StaticUserOptionsLookup;
 use MediaWiki\User\Options\UserOptionsLookup;
+use PHPUnit\Framework\MockObject\MockObject;
 use Wikimedia\Http\MultiHttpClient;
 use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\ObjectCache\HashBagOStuff;
@@ -306,8 +310,16 @@ trait CirrusTestCaseTrait {
 	}
 
 	public function newEngine(): CirrusSearch {
-		return new CirrusSearch( $this->newHashSearchConfig( [ 'CirrusSearchServers' => [] ] ),
-			CirrusDebugOptions::defaultOptions(), $this->namespacePrefixParser(), new EmptyInterwikiResolver() );
+		$config = $this->newHashSearchConfig( [ 'CirrusSearchServers' => [] ] );
+		$secondTryFactory = new SecondTrySearchFactory( $this->createMock( LanguageConverterFactory::class ) );
+		return new CirrusSearch(
+			$config,
+			CirrusDebugOptions::defaultOptions(),
+			$this->namespacePrefixParser(),
+			new EmptyInterwikiResolver(),
+			null,
+			new SecondTryRunnerFactory( $secondTryFactory, $config )
+		);
 	}
 
 	public static function sanitizeLinkFragment( string $id ): string {
@@ -409,4 +421,6 @@ trait CirrusTestCaseTrait {
 	 * @return HookContainer
 	 */
 	abstract protected function createHookContainer( $hooks = [] );
+
+	abstract protected function createMock( string $originalClassName ): MockObject;
 }

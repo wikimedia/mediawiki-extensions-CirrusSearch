@@ -5,6 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SecondTry\SecondTryRunner;
 
 /**
  * @covers \CirrusSearch\Query\PrefixSearchQueryBuilder
@@ -18,8 +19,15 @@ class PrefixSearchQueryBuilderTest extends CirrusTestCase {
 		'redirect_asciifolding' => 0.1
 	];
 
+	private ?SecondTryRunner $secondTryRunner;
+
+	public function setUp(): void {
+		parent::setUp();
+		$this->secondTryRunner = new SecondTryRunner( [], [] );
+	}
+
 	public function testBuildsQuery() {
-		$qb = new PrefixSearchQueryBuilder();
+		$qb = new PrefixSearchQueryBuilder( $this->secondTryRunner );
 		$config = new HashSearchConfig( [
 			'CirrusSearchPrefixSearchStartsWithAnyWord' => false,
 			'CirrusSearchPrefixWeights' => self::$WEIGHTS,
@@ -31,22 +39,8 @@ class PrefixSearchQueryBuilderTest extends CirrusTestCase {
 		$this->assertTrue( $context->isDirty() );
 	}
 
-	public function buildsPerWordQuery() {
-		$qb = new PrefixSearchQueryBuilder();
-		$config = new HashSearchConfig( [
-			'CirrusSearchPrefixSearchStartsWithAnyWord' => true,
-			'CirrusSearchPrefixWeights' => self::$WEIGHTS,
-		] );
-		$context = $this->getSearchContext( $config );
-		$this->assertSame( [], $context->getFilters() );
-		$qb->build( $context, 'per word prefix' );
-		$context->assertCount( 1, $context->getFilters() );
-		$filter = $context->getFilters()[0];
-		// ???
-	}
-
 	public function testRejectsOversizeQueries() {
-		$qb = new PrefixSearchQueryBuilder();
+		$qb = new PrefixSearchQueryBuilder( $this->secondTryRunner );
 		$config = $this->newHashSearchConfig( [
 			'CirrusSearchPrefixSearchStartsWithAnyWord' => false,
 			'CirrusSearchPrefixWeights' => [],

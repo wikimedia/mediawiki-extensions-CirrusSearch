@@ -26,6 +26,7 @@ use CirrusSearch\Search\SearchRequestBuilder;
 use CirrusSearch\Search\TeamDraftInterleaver;
 use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Search\TitleResultsType;
+use CirrusSearch\SecondTry\SecondTryRunner;
 use Elastica\Exception\RuntimeException;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query;
@@ -289,11 +290,10 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	/**
 	 * Perform a prefix search.
 	 * @param string $term text by which to search
-	 * @param string[] $variants variants to search for
 	 * @return Status status containing results defined by resultsType on success
 	 */
-	public function prefixSearch( $term, $variants = [] ) {
-		( new PrefixSearchQueryBuilder() )->build( $this->searchContext, $term, $variants );
+	public function prefixSearch( string $term, SecondTryRunner $secondTryRunner ): Status {
+		( new PrefixSearchQueryBuilder( $secondTryRunner ) )->build( $this->searchContext, $term );
 		return $this->searchOne();
 	}
 

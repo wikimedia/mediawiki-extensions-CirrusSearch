@@ -354,6 +354,7 @@ class Reindexer {
 			}
 		}
 		$script['source'] .= $this->makeWeightedTagsPrefixReplaceScript();
+		$script['source'] .= $this->pruneWeightedTagsDeleteMarkersScript();
 		// Populate the page_id if it's the first time we add the page_id field to the mapping
 		if ( !isset( $this->oldIndex->getMapping()['properties']['page_id'] )
 				 && isset( $this->index->getMapping()['properties']['page_id'] ) ) {
@@ -383,6 +384,15 @@ class Reindexer {
 		}
 		$scriptSource .= "}";
 		return $scriptSource;
+	}
+
+	private function pruneWeightedTagsDeleteMarkersScript(): string {
+		// There was at one point a bug that inserted these tags directly, instead of interpreting them
+		// as markers. Prune them back out.
+		return "
+            if (ctx._source.containsKey('weighted_tags') && ctx._source.weighted_tags instanceof List) {
+                ctx._source.weighted_tags.removeIf(item -> item != null && item.endsWith('/__DELETE_GROUPING__'));
+            }";
 	}
 
 	/**

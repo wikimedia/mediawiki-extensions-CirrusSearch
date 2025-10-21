@@ -8,7 +8,8 @@
 			"Prenn",
 			"Quenhitran",
 			"Trần Nguyễn Minh Huy",
-			"Vinhtantran"
+			"Vinhtantran",
+			"Nvdtn19"
 		]
 	},
 	"cirrussearch-desc": "Công cụ tìm kiếm Elasticsearch dành cho MediaWiki",
@@ -53,7 +54,7 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Không sửa lỗi sai. Đổi hướng các trang có tên gần giống nhau.",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Chế độ đổi hướng có tìm cụm từ con (nâng cao)",
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Không sửa lỗi chính tả. Sửa đổi hướng gần. Tìm cụm từ con trong tiêu đề.",
-	"cirrussearch-completion-profile-classic-pref-name": "Tìm tiền tố cổ điển",
+	"cirrussearch-completion-profile-classic-pref-name": "Tìm tiền tố (cũ)",
 	"cirrussearch-completion-profile-classic-pref-desc": "Không sửa lỗi sai. Tìm kiếm từ đầu tên trang.",
 	"cirrussearch-timed-out": "Truy vấn bị hết thời gian. Chỉ có sẵn một số kết quả.",
 	"cirrussearch-regex-timed-out": "Tìm bằng biểu thức chính quy đã hết thời hạn, chỉ có được một phần kết quả. Hãy thử viết biểu thức chính quy đơn giản hơn để có được kết quả đầy đủ.",

@@ -11,26 +11,30 @@ class AnalysisFilter {
 	/** @var string[] List of key's in mappings that reference analyzers */
 	private static $ANALYZER_FIELDS = [ 'analyzer', 'search_analyzer', 'search_quote_analyzer' ];
 
+	/** @var string[] List of key's in mappings that reference analyzers */
+	private static $NORMALIZER_FIELDS = [ 'normalizer' ];
+
 	/** @var string[] List of key's in mappings that must be recursively searched */
 	private static $SUBFIELD_FIELDS = [ 'fields', 'properties' ];
 
 	/**
-	 * Recursively finds used analyzers from search mappings
+	 * Recursively finds used analysis components from search mappings
 	 *
 	 * @param array $properties a 'properties' or 'fields' list from the mappings
+	 * @param string[] $fieldsToLookAt inspect these mapping properties
 	 * @return Set The set of referenced analyzers
 	 */
-	private function findUsedFromField( array $properties ) {
+	private function findUsedFromField( array $properties, array $fieldsToLookAt ) {
 		$analyzers = new Set();
 		foreach ( $properties as $name => $config ) {
-			foreach ( self::$ANALYZER_FIELDS as $key ) {
+			foreach ( $fieldsToLookAt as $key ) {
 				if ( isset( $config[$key] ) ) {
 					$analyzers->add( $config[$key] );
 				}
 			}
 			foreach ( self::$SUBFIELD_FIELDS as $key ) {
 				if ( isset( $config[$key] ) ) {
-					$analyzers->union( $this->findUsedFromField( $config[$key] ) );
+					$analyzers->union( $this->findUsedFromField( $config[$key], $fieldsToLookAt ) );
 				}
 			}
 		}
@@ -39,22 +43,31 @@ class AnalysisFilter {
 
 	/**
 	 * @param array[] $mappings search mapping configuration
+	 * @param string[] $fieldsToLookAt inspect these mapping properties
 	 * @return Set The set of analyzer names referenced in $mappings
 	 */
-	public function findUsedAnalyzersInMappings( array $mappings ) {
+	public function findUsedAnalysisComponentsInMappings( array $mappings, array $fieldsToLookAt ): Set {
 		$analyzers = new Set();
 		if ( isset( $mappings['properties'] ) ) {
 			// modern search, no index types
 			$analyzers->union(
-				$this->findUsedFromField( $mappings['properties'] ) );
+				$this->findUsedFromField( $mappings['properties'], $fieldsToLookAt ) );
 		} else {
 			// BC for parts still using index types
 			foreach ( $mappings as $config ) {
 				$analyzers->union(
-					$this->findUsedFromField( $config['properties'] ) );
+					$this->findUsedFromField( $config['properties'], $fieldsToLookAt ) );
 			}
 		}
 		return $analyzers;
+	}
+
+	public function findUsedAnalyzersInMappings( array $mappings ): Set {
+		return $this->findUsedAnalysisComponentsInMappings( $mappings, self::$ANALYZER_FIELDS );
+	}
+
+	public function findUsedNormalizersInMappings( array $mappings ): Set {
+		return $this->findUsedAnalysisComponentsInMappings( $mappings, self::$NORMALIZER_FIELDS );
 	}
 
 	/**
@@ -62,19 +75,20 @@ class AnalysisFilter {
 	 *
 	 * @param array $properties a 'properties' or 'fields' list from the mappings
 	 * @param string[] $aliases Map from current analyzer name to replacement name
+	 * @param string[] $fieldsToLookAt inspect these mapping properties
 	 * @return array $properties with analyzer aliases applied
 	 */
-	private function pushAnalyzerAliasesIntoField( array $properties, array $aliases ) {
+	private function pushAnalysisComponentAliasesIntoField( array $properties, array $aliases, array $fieldsToLookAt ): array {
 		foreach ( $properties as &$config ) {
-			foreach ( self::$ANALYZER_FIELDS as $key ) {
+			foreach ( $fieldsToLookAt as $key ) {
 				if ( isset( $config[$key] ) && isset( $aliases[$config[$key]] ) ) {
 					$config[$key] = $aliases[$config[$key]];
 				}
 			}
 			foreach ( self::$SUBFIELD_FIELDS as $key ) {
 				if ( isset( $config[$key] ) && is_array( $config[$key] ) ) {
-					$config[$key] = $this->pushAnalyzerAliasesIntoField(
-						$config[$key], $aliases
+					$config[$key] = $this->pushAnalysisComponentAliasesIntoField(
+						$config[$key], $aliases, $fieldsToLookAt
 					);
 				}
 			}
@@ -84,20 +98,39 @@ class AnalysisFilter {
 
 	/**
 	 * @param array[] $mappings search index mapping configuration
-	 * @param string[] $aliases Mapping from old name to new name for analyzers
+	 * @param array<string, string> $aliases Mapping from old name to new name for analyzers
 	 * @return array Updated index mapping configuration
 	 */
-	public function pushAnalyzerAliasesIntoMappings( array $mappings, $aliases ) {
+	public function pushAnalyzerAliasesIntoMappings( array $mappings, array $aliases ): array {
+		return $this->pushAnalysisComponentAliasesIntoMappings( $mappings, $aliases, self::$ANALYZER_FIELDS );
+	}
+
+	/**
+	 * @param array[] $mappings search index mapping configuration
+	 * @param array<string, string> $aliases Mapping from old name to new name for analyzers
+	 * @return array Updated index mapping configuration
+	 */
+	public function pushNormalizerAliasesIntoMappings( array $mappings, array $aliases ): array {
+		return $this->pushAnalysisComponentAliasesIntoMappings( $mappings, $aliases, self::$NORMALIZER_FIELDS );
+	}
+
+	/**
+	 * @param array[] $mappings search index mapping configuration
+	 * @param array<string, string> $aliases Mapping from old name to new name for analyzers
+	 * @param string[] $fieldsToLookAt inspect these mapping properties
+	 * @return array Updated index mapping configuration
+	 */
+	private function pushAnalysisComponentAliasesIntoMappings( array $mappings, array $aliases, array $fieldsToLookAt ): array {
 		if ( isset( $mappings['properties'] ) ) {
 			// modern search, no index types
-			$mappings['properties'] = $this->pushAnalyzerAliasesIntoField(
-				$mappings['properties'], $aliases
+			$mappings['properties'] = $this->pushAnalysisComponentAliasesIntoField(
+				$mappings['properties'], $aliases, $fieldsToLookAt
 			);
 		} else {
 			// BC for parts still using index types
 			foreach ( $mappings as $mappingType => $config ) {
-				$mappings[$mappingType]['properties'] = $this->pushAnalyzerAliasesIntoField(
-					$config['properties'], $aliases
+				$mappings[$mappingType]['properties'] = $this->pushAnalysisComponentAliasesIntoField(
+					$config['properties'], $aliases, $fieldsToLookAt
 				);
 			}
 		}
@@ -116,16 +149,18 @@ class AnalysisFilter {
 	/**
 	 * @param array $analysis The index.analysis field of the search index settings
 	 * @param Set $usedAnalyzers Set of analyzers to keep configurations for
+	 * @param Set $usedNormalizers Set of normalizers to keep configurations for
 	 * @return array The $analysis array filtered to only pieces needed for $usedAnalyzers
 	 */
-	public function filterUnusedAnalysisChain( $analysis, Set $usedAnalyzers ) {
+	public function filterUnusedAnalysisChain( $analysis, Set $usedAnalyzers, Set $usedNormalizers ) {
 		$sets = [
 			'analyzer' => $usedAnalyzers,
+			'normalizer' => $usedNormalizers,
 			'filter' => new Set(),
 			'char_filter' => new Set(),
 			'tokenizer' => new Set(),
 		];
-		foreach ( $analysis['analyzer'] as $name => $config ) {
+		foreach ( $analysis['analyzer'] ?? [] as $name => $config ) {
 			if ( !$usedAnalyzers->contains( $name ) ) {
 				continue;
 			}
@@ -136,6 +171,17 @@ class AnalysisFilter {
 			}
 			if ( isset( $config['tokenizer'] ) ) {
 				$sets['tokenizer']->add( $config['tokenizer'] );
+			}
+		}
+
+		foreach ( $analysis['normalizer'] ?? [] as $name => $config ) {
+			if ( !$usedNormalizers->contains( $name ) ) {
+				continue;
+			}
+			foreach ( [ 'filter', 'char_filter' ] as $k ) {
+				if ( isset( $config[$k] ) ) {
+					$sets[$k]->addAll( $config[$k] );
+				}
 			}
 		}
 
@@ -186,9 +232,9 @@ class AnalysisFilter {
 	 * configuration.
 	 *
 	 * @param array $analysis The index.analysis field of the search index settings
-	 * @return string[] map from old analyzer name to new analyzer name.
+	 * @return array<string[]> list of (analyzer, normalizer) map from old component name to new name.
 	 */
-	public function deduplicateAnalysisConfig( array $analysis ) {
+	public function deduplicateAnalysisConfig( array $analysis ): array {
 		// Deduplicate children first to normalize analyzer configuration.
 		foreach ( [ 'tokenizer', 'filter', 'char_filter' ] as $k ) {
 			if ( !isset( $analysis[$k] ) ) {
@@ -197,29 +243,37 @@ class AnalysisFilter {
 			$aliases = $this->calcDeduplicationAliases( $analysis[$k] );
 			$analysis[$k] = $this->filter( $analysis[$k], new Set( $aliases ) );
 
-			// Push deduplications into analyzers that reference them
-			foreach ( $analysis['analyzer'] as $name => $analyzerConfig ) {
-				if ( !isset( $analyzerConfig[$k] ) ) {
+			foreach ( [ 'analyzer', 'normalizer' ] as $component ) {
+				// Push deduplications into analyzers/normalizers that reference them
+				if ( !isset( $analysis[$component] ) ) {
 					continue;
 				}
-				if ( is_array( $analyzerConfig[$k] ) ) {
-					// filter, char_filter
-					foreach ( $analyzerConfig[$k] as $i => $value ) {
-						// TODO: in theory, all values should be set already?
-						if ( isset( $aliases[$value] ) ) {
-							$analysis['analyzer'][$name][$k][$i] = $aliases[$value];
-						}
+				foreach ( $analysis[$component] as $name => $analyzerConfig ) {
+					if ( !isset( $analyzerConfig[$k] ) ) {
+						continue;
 					}
-				} elseif ( isset( $aliases[$analyzerConfig[$k]] ) ) {
-					// tokenizer
-					$analysis['analyzer'][$name][$k] = $aliases[$analyzerConfig[$k]];
+					if ( is_array( $analyzerConfig[$k] ) ) {
+						// filter, char_filter
+						foreach ( $analyzerConfig[$k] as $i => $value ) {
+							// TODO: in theory, all values should be set already?
+							if ( isset( $aliases[$value] ) ) {
+								$analysis[$component][$name][$k][$i] = $aliases[$value];
+							}
+						}
+					} elseif ( isset( $aliases[$analyzerConfig[$k]] ) ) {
+						// tokenizer
+						$analysis[$component][$name][$k] = $aliases[$analyzerConfig[$k]];
+					}
 				}
 			}
 		}
 
-		// Once the analyzer configuration has been normalized by deduplication
+		// Once the analyzer/normalizer configuration has been normalized by deduplication
 		// we can figure out which of the analyzers are duplicates as well.
-		return $this->calcDeduplicationAliases( $analysis['analyzer'] );
+		return [
+			$this->calcDeduplicationAliases( $analysis['analyzer'] ?? [] ),
+			$this->calcDeduplicationAliases( $analysis['normalizer'] ?? [] ),
+		];
 	}
 
 	/**
@@ -232,19 +286,29 @@ class AnalysisFilter {
 	 * @param array $analysis search index analysis configuration
 	 * @param array $mappings search index mapping configuration
 	 * @param bool $deduplicate When true deduplicate the analysis chain
-	 * @param string[] $protected list of named analyzers that should not be removed.
+	 * @param string[] $protectedAnalyzers list of named analyzers that should not be removed.
+	 * @param string[] $protectedNormalizers list of named normalizers that should not be removed.
 	 * @return array [$settings, $mappings]
 	 */
-	public function filterAnalysis( array $analysis, array $mappings, $deduplicate = false, array $protected = [] ) {
+	public function filterAnalysis(
+		array $analysis,
+		array $mappings,
+		bool $deduplicate = false,
+		array $protectedAnalyzers = [],
+		array $protectedNormalizers = []
+	) {
 		if ( $deduplicate ) {
-			$aliases = $this->deduplicateAnalysisConfig( $analysis );
-			$mappings = $this->pushAnalyzerAliasesIntoMappings( $mappings, $aliases );
+			[ $analyzerAliases, $normalizerAliases ] = $this->deduplicateAnalysisConfig( $analysis );
+			$mappings = $this->pushAnalyzerAliasesIntoMappings( $mappings, $analyzerAliases );
+			$mappings = $this->pushNormalizerAliasesIntoMappings( $mappings, $normalizerAliases );
 		}
 		$usedAnalyzers = $this->findUsedAnalyzersInMappings( $mappings );
+		$usedNormalizers = $this->findUsedNormalizersInMappings( $mappings );
 		// protected analyzers may be renamed in the mappings, but this retains them in the config as well
 		// to ensure they are available for query-time.
-		$usedAnalyzers->addAll( $protected );
-		$analysis = $this->filterUnusedAnalysisChain( $analysis, $usedAnalyzers );
+		$usedAnalyzers->addAll( $protectedAnalyzers );
+		$usedNormalizers->addAll( $protectedNormalizers );
+		$analysis = $this->filterUnusedAnalysisChain( $analysis, $usedAnalyzers, $usedNormalizers );
 		return [ $analysis, $mappings ];
 	}
 }

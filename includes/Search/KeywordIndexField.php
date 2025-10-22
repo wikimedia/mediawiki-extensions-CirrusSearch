@@ -12,51 +12,48 @@ use SearchIndexField;
  */
 class KeywordIndexField extends CirrusIndexField {
 	/**
-	 * Using text type here since it's better for our purposes than native
-	 * keyword type.
 	 * @var string
 	 */
-	protected $typeName = 'text';
+	protected $typeName = 'keyword';
 	/**
 	 * @var bool
 	 */
 	private $caseSensitiveSubfield;
+	/** @var bool true to skip doc values */
+	private bool $withDocValues;
 
 	/**
 	 * @param string $name
 	 * @param string $type
 	 * @param SearchConfig $config
 	 * @param bool $caseSensitiveSubfield
+	 * @param bool $withDocValues set to true to enable indexing/storing doc values
 	 */
-	public function __construct( $name, $type, SearchConfig $config, bool $caseSensitiveSubfield = false ) {
+	public function __construct( $name, $type, SearchConfig $config, bool $caseSensitiveSubfield = false, bool $withDocValues = false ) {
 		parent::__construct( $name, $type, $config );
 		if ( $caseSensitiveSubfield ) {
 			$this->setFlag( SearchIndexField::FLAG_CASEFOLD );
 		}
 		$this->caseSensitiveSubfield = $caseSensitiveSubfield;
+		$this->withDocValues = $withDocValues;
 	}
 
-	/**
-	 * Maximum number of characters allowed in keyword terms.
-	 */
-	private const KEYWORD_IGNORE_ABOVE = 5000;
+	public function withDocValues(): self {
+		$this->withDocValues = true;
+		return $this;
+	}
 
 	/** @inheritDoc */
 	public function getMapping( \SearchEngine $engine ) {
 		$config = parent::getMapping( $engine );
-		$config['analyzer'] =
+		$config['doc_values'] = $this->withDocValues;
+		$config['normalizer'] =
 			$this->checkFlag( self::FLAG_CASEFOLD ) ? 'lowercase_keyword' : 'keyword';
-		$config += [
-			'norms' => false,
-			// Omit the length norm because there is only even one token
-			'index_options' => 'docs',
-		];
 		if ( $this->caseSensitiveSubfield ) {
 			$config['fields']['keyword'] = [
-				'type' => 'text',
-				'analyzer' => 'keyword',
-				'index_options' => 'docs',
-				'norms' => false,
+				'type' => 'keyword',
+				'normalizer' => 'keyword',
+				'doc_values' => $this->withDocValues
 			];
 		}
 		return $config;

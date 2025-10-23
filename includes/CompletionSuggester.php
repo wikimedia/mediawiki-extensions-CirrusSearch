@@ -162,7 +162,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$altIndexId = $config->get( 'CirrusSearchCompletionSuggesterUseAltIndexId' );
 		// Check if the alternate index id is actually setup
 		$altIndex = null;
-		if ( $altIndexId !== null && ctype_digit( $altIndexId ) ) {
+		if ( $altIndexId !== null && AlternativeIndices::isValidAltIndexId( $altIndexId ) ) {
 			$altIndex = AlternativeIndices::build( $config )->getAlternativeIndexById( AlternativeIndices::COMPLETION, (int)$altIndexId );
 			if ( $altIndex !== null && !$altIndex->isUse() ) {
 				$altIndex = null;

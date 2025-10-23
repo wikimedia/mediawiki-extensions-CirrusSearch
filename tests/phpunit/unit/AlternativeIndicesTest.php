@@ -122,4 +122,21 @@ class AlternativeIndicesTest extends CirrusTestCase {
 		$this->assertFalse( $altIndex->isInstanceIndex( "mywiki_othertype_alt_1_2348", $connection ) );
 		$this->assertFalse( $altIndex->isInstanceIndex( "mywiki_othertype_alt_1", $connection ) );
 	}
+
+	public function provideIsValidIndexId(): \Generator {
+		yield 'good int' => [ 0, true ];
+		yield 'good string' => [ "0", true ];
+		yield 'negative int' => [ -1, false ];
+		yield 'bad string' => [ "-1", false ];
+		yield 'empty string' => [ "", false ];
+		yield 'array' => [ [ 0 ], false ];
+		yield 'class' => [ new \stdClass(), false ];
+	}
+
+	/**
+	 * @dataProvider provideIsValidIndexId
+	 */
+	public function testIdValidIndexId( mixed $id, bool $valid ): void {
+		$this->assertEquals( $valid, AlternativeIndices::isValidAltIndexId( $id ) );
+	}
 }

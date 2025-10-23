@@ -66,7 +66,7 @@
 	"cirrussearch-feature-deepcat-toomany": "Spørringen for dype kategorier returnerte for mange kategorier Bare et undersett av kategorier har blitt tatt i bruk.",
 	"cirrussearch-feature-deepcat-invalid-title": "Den gitte kategorien er ugyldig.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Ugyldig side-ID|Ugyldige side-ID-er}}: $1",
-	"cirrussearch-feature-invalid-date-range": "Den angitte datoen har ikke et gyldig format. Bruk formatene for år (<code>ÅÅÅÅ</code>, måned (<code>ÅÅÅÅ-MM</code>, dag (<code>ÅÅÅÅ-MM-DD</code>, eller relative tidsuttrykk som <code>now-2d</code> eller <code>today-1y</code>.",
+	"cirrussearch-feature-invalid-date-range": "Den angitte datoen har ikke et gyldig format. Bruk formatene for år (<code>ÅÅÅÅ</code>), måned (<code>ÅÅÅÅ-MM</code>), dag (<code>ÅÅÅÅ-MM-DD</code>), eller relative tidsuttrykk som <code>now-2d</code> eller <code>today-1y</code>.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Ingen gyldige kategorier gitt til «$1».",
 	"cirrussearch-mlt-feature-no-valid-titles": "Ingen gyldige titler gitt til «$1».",
 	"cirrussearch-mlt-not-configured": "Funksjonen «$1» er feilkonfigurert. Be en administrator om å fikse $wgCirrusSearchMoreLikeThisFields",

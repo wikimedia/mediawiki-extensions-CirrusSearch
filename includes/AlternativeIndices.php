@@ -34,7 +34,7 @@ class AlternativeIndices {
 			if ( $id === null ) {
 				throw new ConfigException( "Missing [index_id] in CirrusSearchAlternativeIndices." );
 			}
-			if ( ( is_string( $id ) && !ctype_digit( $id ) ) || ( !is_string( $id ) && !is_int( $id ) ) ) {
+			if ( !self::isValidAltIndexId( $id ) ) {
 				throw new ConfigException( "Expected a positive integer for [index_id] but got [$id]." );
 			}
 			$id = (int)$id;
@@ -54,5 +54,19 @@ class AlternativeIndices {
 
 	public function getAlternativeIndexById( string $type, int $id ): ?AlternativeIndex {
 		return $this->getAlternativeIndices( $type )[$id] ?? null;
+	}
+
+	/**
+	 * Check whether the provided $id is a valid alternative index id:
+	 * - a positive integer represented as a string
+	 * - a positive integer
+	 * @param mixed $id
+	 * @return bool true if $id is a valid alt index id and can safely be cast to int, false otherwise
+	 */
+	public static function isValidAltIndexId( mixed $id ): bool {
+		if ( ( is_string( $id ) && ctype_digit( $id ) ) || is_int( $id ) ) {
+			return (int)$id >= 0;
+		}
+		return false;
 	}
 }

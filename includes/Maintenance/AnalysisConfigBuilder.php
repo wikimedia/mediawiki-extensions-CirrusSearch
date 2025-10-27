@@ -544,7 +544,7 @@ class AnalysisConfigBuilder {
 					'type' => 'custom',
 					'char_filter' => [ 'near_space_flattener' ],
 					'tokenizer' => 'no_splitting',
-					'filter' => [ 'lowercase' ],
+					'filter' => [ 'truncate_keyword', 'lowercase' ],
 				],
 				'near_match_asciifolding' => [
 					'type' => 'custom',

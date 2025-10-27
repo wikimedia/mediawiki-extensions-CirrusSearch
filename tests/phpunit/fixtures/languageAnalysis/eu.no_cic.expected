@@ -20,6 +20,7 @@
                 "near_space_flattener"
             ],
             "filter": [
+                "truncate_keyword",
                 "icu_normalizer"
             ],
             "tokenizer": "no_splitting",

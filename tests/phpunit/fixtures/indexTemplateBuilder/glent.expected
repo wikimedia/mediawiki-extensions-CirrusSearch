@@ -20,11 +20,16 @@
                         ],
                         "tokenizer": "no_splitting",
                         "filter": [
+                            "truncate_keyword",
                             "icu_normalizer"
                         ]
                     }
                 },
                 "filter": {
+                    "truncate_keyword": {
+                        "type": "truncate",
+                        "length": 5000
+                    },
                     "icu_normalizer": {
                         "type": "icu_normalizer",
                         "name": "nfkc_cf"

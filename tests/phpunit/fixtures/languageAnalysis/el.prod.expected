@@ -23,6 +23,7 @@
                 "near_space_flattener"
             ],
             "filter": [
+                "truncate_keyword",
                 "lowercase",
                 "icu_normalizer"
             ],

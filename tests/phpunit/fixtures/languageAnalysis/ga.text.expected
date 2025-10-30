@@ -310,7 +310,8 @@
                 "\u0d30\u0d4d\\u200D=>\u0d7c",
                 "\u0d32\u0d4d\\u200D=>\u0d7d",
                 "\u0d33\u0d4d\\u200D=>\u0d7e",
-                "\u09a4\u09cd\\u200D=>\u09ce"
+                "\u09a4\u09cd\\u200D=>\u09ce",
+                "\\u061C=>"
             ]
         },
         "irish_charfilter": {

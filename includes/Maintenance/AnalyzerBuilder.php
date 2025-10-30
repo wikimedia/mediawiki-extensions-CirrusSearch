@@ -66,6 +66,9 @@ class AnalyzerBuilder {
 	/** @var string|null name of char filter mapping digits (using $langZero) */
 	private $numCharMapName;
 
+	/** @var string|null name of char filter for cleaning up invisibles */
+	private $invisCharMapName;
+
 	/** @var bool is elision processing case INsensitive? */
 	private $elisionArticleCase = true;
 
@@ -187,6 +190,15 @@ class AnalyzerBuilder {
 	 */
 	public function withLimitedCharMap( array $mappings, ?string $name = null ): self {
 		return $this->withCharMap( $mappings, $name, true );
+	}
+
+	/**
+	 * @param string|null $name
+	 * @return self
+	 */
+	public function withInvisCharMap( ?string $name = 'invis_cleanup' ): self {
+		$this->invisCharMapName = $name;
+		return $this;
 	}
 
 	/**
@@ -473,6 +485,48 @@ class AnalyzerBuilder {
 		if ( $this->numCharMapName ) {
 			$config[ 'char_filter' ][ $this->numCharMapName ] =
 				$this->numberCharFilter( $this->langZero, $this->numCharMapReversed );
+		}
+
+		if ( $this->invisCharMapName ) {
+			$config[ 'char_filter' ][ $this->invisCharMapName ] = [
+				'type' => 'mapping',
+				'mappings' => [
+					// split on ...
+					'\u200B=>\u0020', // ... zero-width space
+					// remove ...
+					'\u00AD=>', // ... soft hyphen
+					'\u200C=>', // ... zero-width non-joiner
+					'\u200D=>', // ... zero-width joiner
+					'\u2060=>', // ... word joiner
+					'\uFEFF=>', // ... zero-width non-breaking space
+					'\u200E=>', // ... LTR mark
+					'\u200F=>', // ... RTL mark
+					'\u202A=>', // ... LTR embedding
+					'\u202B=>', // ... RTL embedding
+					'\u202C=>', // ... pop directional formatting
+					'\u202D=>', // ... LTR override
+					'\u202E=>', // ... RTL override
+					'\u2066=>', // ... LTR isolate
+					'\u2067=>', // ... RTL isolate
+					'\u2068=>', // ... first strong isolate
+					'\u2069=>', // ... pop directional isolate
+					'\u2061=>', // ... function application
+					'\u2062=>', // ... invisible times
+					'\u2063=>', // ... invisible separator
+					'\u2064=>', // ... invisible plus
+					// remove variation selectors 1-16 & 17-256 (below)
+				]
+			];
+
+			// add all 256 variation selectors to invisCharMapName
+			for ( $varIdx = 1; $varIdx <= 16; $varIdx++ ) { // 1-16 (FE00-FE0F)
+				$chr = mb_chr( 65023 + $varIdx, 'UTF-8' ); // xFE00 = 65024
+				$config[ 'char_filter' ][ $this->invisCharMapName ][ 'mappings' ][] = "$chr=>";
+			}
+			for ( $varIdx = 17; $varIdx <= 256; $varIdx++ ) { // 17-256 (E0100-E01EF)
+				$chr = mb_chr( 917743 + $varIdx, 'UTF-8' ); // E0100 = 917760
+				$config[ 'char_filter' ][ $this->invisCharMapName ][ 'mappings' ][] = "$chr=>";
+			}
 		}
 
 		if ( $this->elisionName ) {

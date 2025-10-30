@@ -293,7 +293,8 @@
                 "\u0d30\u0d4d\\u200D=>\u0d7c",
                 "\u0d32\u0d4d\\u200D=>\u0d7d",
                 "\u0d33\u0d4d\\u200D=>\u0d7e",
-                "\u09a4\u09cd\\u200D=>\u09ce"
+                "\u09a4\u09cd\\u200D=>\u09ce",
+                "\\u061C=>"
             ]
         },
         "near_space_flattener": {
@@ -351,7 +352,8 @@
                 "\u30a0=>\\u0020",
                 "\ufe63=>\\u0020",
                 "\uff0d=>\\u0020",
-                "\"=>\\u0020"
+                "\"=>\\u0020",
+                "\\udb40\\uddef=>"
             ]
         },
         "word_break_helper": {

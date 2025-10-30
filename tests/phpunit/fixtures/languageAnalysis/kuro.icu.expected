@@ -153,6 +153,7 @@
                 "regex_camelCase",
                 "word_break_helper",
                 "arabic_extended_norm",
+                "kuromoji_char_map",
                 "icu_normalizer",
                 "kuromoji_combo_filter"
             ],
@@ -174,6 +175,7 @@
                 "regex_camelCase",
                 "word_break_helper",
                 "arabic_extended_norm",
+                "kuromoji_char_map",
                 "icu_normalizer",
                 "kuromoji_combo_filter"
             ],
@@ -310,12 +312,19 @@
                 "\u0d30\u0d4d\\u200D=>\u0d7c",
                 "\u0d32\u0d4d\\u200D=>\u0d7d",
                 "\u0d33\u0d4d\\u200D=>\u0d7e",
-                "\u09a4\u09cd\\u200D=>\u09ce"
+                "\u09a4\u09cd\\u200D=>\u09ce",
+                "\\u061C=>"
             ]
         },
         "icu_normalizer": {
             "type": "icu_normalizer",
             "name": "nfkc_cf"
+        },
+        "kuromoji_char_map": {
+            "type": "mapping",
+            "mappings": [
+                "\\u200B=>\\u0020"
+            ]
         },
         "kuromoji_combo_filter": {
             "type": "pattern_replace",

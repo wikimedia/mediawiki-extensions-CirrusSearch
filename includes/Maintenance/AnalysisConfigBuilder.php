@@ -744,7 +744,9 @@ class AnalysisConfigBuilder {
 						'ര്\u200D=>ർ',
 						'ല്\u200D=>ൽ',
 						'ള്\u200D=>ൾ',
-						'ত্\u200D=>ৎ'
+						'ত্\u200D=>ৎ',
+						// clean up invisibles
+						'\u061C=>', // delete Arabic letter mark so icu_tok can't split on it
 					],
 				],
 				'arabic_extended_norm' => [
@@ -809,6 +811,7 @@ class AnalysisConfigBuilder {
 				],
 			],
 		];
+
 		foreach ( $defaults[ 'analyzer' ] as &$analyzer ) {
 			if ( $analyzer[ 'type' ] === 'default' ) {
 				$analyzer = [
@@ -1025,11 +1028,12 @@ class AnalysisConfigBuilder {
 				//   tokens so no folding here in the text field. However, the plain field pick up
 				//   icu_folding.
 				$config = $myAnalyzerBuilder->
+					withInvisCharMap()->
 					withCharMap( [ '\u606d\u5f18=>\u606d \u5f18', '\u5138=>\u3469' ], 'stconvertfix' )->
-					withCharFilters( [ 'stconvertfix', 'tsconvert' ] )->
+					withCharFilters( [ 'invis_cleanup', 'stconvertfix', 'tsconvert' ] )->
 					withTokenizer( 'smartcn_tokenizer' )->
 					withStop( [ ',' ], 'smartcn_stop' )->
-					withFilters( [ 'smartcn_stop', 'lowercase' ] )->
+					withFilters( [ 'smartcn_stop', 'lowercase', 'remove_empty' ] )->
 					build( $config );
 
 				$config[ 'analyzer' ][ 'plain' ][ 'filter' ] = [ 'smartcn_stop', 'lowercase' ];
@@ -1136,6 +1140,8 @@ class AnalysisConfigBuilder {
 			case 'hebrew':
 				$config = $myAnalyzerBuilder->
 					withTokenizer( 'hebrew' )->
+					withInvisCharMap()->
+					withCharFilters( [ 'invis_cleanup' ] )->
 					withFilters( [ 'niqqud', 'hebrew_lemmatizer', 'remove_duplicates',
 						'lowercase', 'asciifolding' ] )->
 					build( $config );
@@ -1253,7 +1259,12 @@ class AnalysisConfigBuilder {
 						'cjk_width' );
 				}
 
+				// invisibles cleanup must come before icu_normalizer, if added
+				$kuroCharMap = [ '\u200B=>\u0020' ]; // split on zero-width space
+				array_unshift( $kuroCharFilters, 'kuromoji_char_map' );
+
 				$config = $myAnalyzerBuilder->
+					withLimitedCharMap( $kuroCharMap, 'kuromoji_char_map' )->
 					withCharFilters( $kuroCharFilters )->
 					withTokenizer( 'kuromoji_tokenizer' )->
 					withFilters( $kuroTokFilters )->
@@ -1326,9 +1337,10 @@ class AnalysisConfigBuilder {
 					];
 
 				$config = $myAnalyzerBuilder->
+					withInvisCharMap()->
 					withLimitedCharMap( $sudachiMap, 'sudachi_char_map' )->
-					withCharFilters( [ 'sudachi_combo_filter', 'sudachi_char_map',
-						'sudachi_tok_break' ] )->
+					withCharFilters( [ 'invis_cleanup', 'sudachi_combo_filter',
+						'sudachi_char_map', 'sudachi_tok_break' ] )->
 					withTokenizer( 'sudachi_tok' )->
 					withFilters( [ 'sudachi_split', 'sudachi_baseform', 'sudachi_posfilter',
 						'sudachi_ja_stop', 'lowercase', 'asciifolding', 'sudachi_word_delim',
@@ -1367,8 +1379,6 @@ class AnalysisConfigBuilder {
 				$noriMap = [
 					'\u00B7=>\u0020', // convert middle dot to space
 					'\u318D=>\u0020', // arae-a to space
-					'\u00AD=>', // remove soft hyphens
-					'\u200C=>', // remove zero-width non-joiners
 				];
 
 				// Nori-specific pattern_replace to strip combining diacritics
@@ -1391,8 +1401,9 @@ class AnalysisConfigBuilder {
 				];
 
 				$config = $myAnalyzerBuilder->
+					withInvisCharMap()->
 					withLimitedCharMap( $noriMap, 'nori_charfilter' )->
-					withCharFilters( [ 'nori_charfilter', 'nori_combo_filter' ] )->
+					withCharFilters( [ 'invis_cleanup', 'nori_charfilter', 'nori_combo_filter' ] )->
 					withTokenizer( 'nori_tok' )->
 					withFilters( [ 'nori_posfilter', 'nori_readingform', 'lowercase',
 						'asciifolding', 'remove_empty' ] )->
@@ -1598,6 +1609,8 @@ class AnalysisConfigBuilder {
 						'﹣=>\u0020', // .. small hyphen-minus
 						'－=>\u0020', // .. fullwidth hyphen
 						'"=>\u0020', // .. & double quote
+						// the thai tokenizer splits on (but shouldn't) ..
+						'\udb40\uddef=>', // .. just variation selector-256 (weird!)
 					];
 					array_push( $thCharMap, ...$thThaiTokSplits );
 				}
@@ -2201,7 +2214,7 @@ class AnalysisConfigBuilder {
 		'nan' => true, // zh-min-nan
 		'zh-min-nan' => true, // deprecated code for nan
 
-		// false => do not use any version of icu_tokenizer (i.e., textify_icu_tokenzier)
+		// false => do not use any version of icu_tokenizer (i.e., textify_icu_tokenizer)
 		// over the standard tokenizer, even when icu_token_repair is available
 		// 'xyz' => false, // <-- example entry for now, since there are no actual instances
 	];

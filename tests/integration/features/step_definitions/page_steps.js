@@ -2,8 +2,8 @@
  * Step definitions. Each step definition is bound to the World object,
  * so any methods or properties in World are available here.
  *
- * Not: Do not use the fat-arrow syntax to define step functions, because
- * Cucumber explicity binds the 'this' to 'World'. Arrow function would
+ * Note: Do not use the fat-arrow syntax to define step functions, because
+ * Cucumber explicitly binds the 'this' to 'World'. Arrow function would
  * bind `this` to the parent function instead, which is not what we want.
  */
 
@@ -14,8 +14,7 @@ const { defineParameterType, Given, When, Then } = require( '@cucumber/cucumber'
 	ArticlePage = require( '../support/pages/article_page' ),
 	TitlePage = require( '../support/pages/title_page' ),
 	expect = require( 'chai' ).expect,
-	querystring = require( 'querystring' ),
-	Promise = require( 'bluebird' );
+	querystring = require( 'querystring' );
 
 const namedPositions = [ 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth', 'ninth', 'tenth' ];
 
@@ -44,7 +43,7 @@ function withApi( world, fn ) {
 const epoch = Date.now();
 const searchVars = {};
 // These expressions are string matches against capture groups in steps. For
-// any capture group whos regex string matches against the expression apply a
+// any capture group whose regex string matches against the expression apply a
 // few minor transformations from an explicit name into the actual underlying
 // value desired.
 const expressions = [ '.+', '.+?' ];
@@ -351,10 +350,8 @@ Then( /^the first api search result is a match to file content$/, function () {
 	} );
 } );
 
-Then( /^I locate the page id of (.+) and store it as (%.+%)$/, function ( title, varname ) {
-	return Promise.coroutine( function* () {
-		searchVars[ varname ] = yield this.stepHelpers.pageIdOf( title );
-	} ).call( this );
+Then( /^I locate the page id of (.+) and store it as (%.+%)$/, async function ( title, varname ) {
+	searchVars[ varname ] = await this.stepHelpers.pageIdOf( title );
 } );
 
 Then( /^I wait (\d+) seconds/, function ( seconds ) {
@@ -491,17 +488,17 @@ Then( /^I wait for (.+) to have (.+) of (.+)$/, function ( title, field, value )
 	} ) );
 } );
 
-When( /^I dump the cirrus config$/, Promise.coroutine( function* () {
-	const client = yield this.onWiki();
+When( /^I dump the cirrus config$/, async function () {
+	const client = await this.onWiki();
 	try {
-		const response = yield client.request( {
+		const response = await client.request( {
 			action: 'cirrus-config-dump'
 		} );
 		this.setApiResponse( response );
 	} catch ( err ) {
 		this.setApiError( err );
 	}
-} ) );
+} );
 
 Then( /^the config dump contains (.+)$/, function ( key ) {
 	return withApi( this, () => {
@@ -516,17 +513,17 @@ Then( /^the config dump text does not contain (.+)$/, function ( key ) {
 	} );
 } );
 
-When( /^I dump the cirrus mapping$/, Promise.coroutine( function* () {
-	const client = yield this.onWiki();
+When( /^I dump the cirrus mapping$/, async function () {
+	const client = await this.onWiki();
 	try {
-		const response = yield client.request( {
+		const response = await client.request( {
 			action: 'cirrus-mapping-dump'
 		} );
 		this.setApiResponse( response );
 	} catch ( err ) {
 		this.setApiError( err );
 	}
-} ) );
+} );
 
 Then( /^A valid mapping dump is produced$/, function () {
 	return withApi( this, () => {
@@ -543,17 +540,17 @@ Then( /^A valid mapping dump is produced$/, function () {
 	} );
 } );
 
-When( /^I dump the cirrus settings$/, Promise.coroutine( function* () {
-	const client = yield this.onWiki();
+When( /^I dump the cirrus settings$/, async function () {
+	const client = await this.onWiki();
 	try {
-		const response = yield client.request( {
+		const response = await client.request( {
 			action: 'cirrus-settings-dump'
 		} );
 		this.setApiResponse( response );
 	} catch ( err ) {
 		this.setApiError( err );
 	}
-} ) );
+} );
 
 Then( /^A valid settings dump is produced$/, function () {
 	return withApi( this, () => {
@@ -564,21 +561,19 @@ Then( /^A valid settings dump is produced$/, function () {
 	} );
 } );
 
-Given( /^I request a query dump for (.+)$/, function ( query ) {
-	return Promise.coroutine( function* () {
-		const client = yield this.onWiki();
-		try {
-			const response = yield client.request( {
-				action: 'query',
-				list: 'search',
-				srsearch: query,
-				cirrusDumpQuery: 1
-			} );
-			this.setApiResponse( response );
-		} catch ( err ) {
-			this.setApiError( err );
-		}
-	} ).call( this );
+Given( /^I request a query dump for (.+)$/, async function ( query ) {
+	const client = await this.onWiki();
+	try {
+		const response = await client.request( {
+			action: 'query',
+			list: 'search',
+			srsearch: query,
+			cirrusDumpQuery: 1
+		} );
+		this.setApiResponse( response );
+	} catch ( err ) {
+		this.setApiError( err );
+	}
 } );
 
 Then( /^A valid query dump for (.+) is produced$/, function ( query ) {
@@ -593,22 +588,20 @@ Then( /^A valid query dump for (.+) is produced$/, function ( query ) {
 	} );
 } );
 
-When( /^I wbsearchentities on (.+) for (.+)/, function ( wiki, query ) {
-	return Promise.coroutine( function* () {
-		const client = yield this.onWiki( wiki );
-		try {
-			const response = yield client.request( {
-				action: 'wbsearchentities',
-				search: query,
-				language: 'en',
-				format: 'json',
-				formatversion: 2
-			} );
-			this.setApiResponse( response );
-		} catch ( err ) {
-			this.setApiError( err );
-		}
-	} ).call( this );
+When( /^I wbsearchentities on (.+) for (.+)/, async function ( wiki, query ) {
+	const client = await this.onWiki( wiki );
+	try {
+		const response = await client.request( {
+			action: 'wbsearchentities',
+			search: query,
+			language: 'en',
+			format: 'json',
+			formatversion: 2
+		} );
+		this.setApiResponse( response );
+	} catch ( err ) {
+		this.setApiError( err );
+	}
 } );
 
 Then( /^(.+) is the label of the (.+) wbsearchentities result/, function ( label, position ) {

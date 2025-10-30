@@ -1,7 +1,5 @@
 'use strict';
-
-const restify = require( 'restify' ),
-	Promise = require( 'bluebird' );
+const restify = require( 'restify' );
 
 class Server {
 	constructor( options ) {
@@ -102,7 +100,6 @@ class Server {
 				server.close();
 			}
 			// The explicit design is to exit when requested by controlling process.
-
 			process.exit();
 		}
 	} );

@@ -15,8 +15,7 @@ const { setWorldConstructor } = require( '@cucumber/cucumber' ),
 	log = require( 'semlog' ).log,
 	Bot = require( 'mwbot' ),
 	StepHelpers = require( '../step_definitions/page_step_helpers' ),
-	Page = require( './pages/page' ),
-	Promise = require( 'bluebird' );
+	Page = require( './pages/page' );
 
 // Client for the Server implemented in lib/tracker.js. The server
 // tracks what tags have already been initialized so we don't have
@@ -28,19 +27,17 @@ class TagClient {
 		this.silentLog = options.logLevel !== 'verbose';
 	}
 
-	check( tag ) {
-		return Promise.coroutine( function* () {
-			if ( this.tags[ tag ] ) {
-				return this.tags[ tag ];
-			}
-			log( `[D] TAG >> ${ tag }`, this.silentLog );
-			const response = yield this.post( { check: tag } );
-			log( `[D] TAG << ${ tag }`, this.silentLog );
-			if ( response.status === 'complete' || response.status === 'reject' ) {
-				this.tags[ tag ] = response.status;
-			}
-			return response.status;
-		} ).call( this );
+	async check( tag ) {
+		if ( this.tags[ tag ] ) {
+			return this.tags[ tag ];
+		}
+		log( `[D] TAG >> ${ tag }`, this.silentLog );
+		const response = await this.post( { check: tag } );
+		log( `[D] TAG << ${ tag }`, this.silentLog );
+		if ( response.status === 'complete' || response.status === 'reject' ) {
+			this.tags[ tag ] = response.status;
+		}
+		return response.status;
 	}
 
 	reject( tag ) {

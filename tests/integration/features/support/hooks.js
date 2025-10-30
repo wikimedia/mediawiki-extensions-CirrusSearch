@@ -1,37 +1,36 @@
 'use strict';
 
 const { Before } = require( '@cucumber/cucumber' );
-const Promise = require( 'bluebird' );
 const MWBot = require( 'mwbot' );
 const fs = require( 'fs' );
 const path = require( 'path' );
 const articlePath = path.dirname( path.dirname( path.dirname( __dirname ) ) ) + '/integration/articles/';
 
 const BeforeOnce = function ( options, fn ) {
-	Before( options, Promise.coroutine( function* () {
-		const response = yield this.tags.check( options.tags );
+	Before( options, async function () {
+		const response = await this.tags.check( options.tags );
 		if ( response === 'complete' ) {
 			return;
 		} else if ( response === 'new' ) {
 			try {
-				yield fn.call( this );
+				await fn.call( this );
 			} catch ( err ) {
 				console.log( `Failed initializing tag ${ options.tags }: `, err );
-				yield this.tags.reject( options.tags );
+				await this.tags.reject( options.tags );
 				return;
 			}
-			yield this.tags.complete( options.tags );
+			await this.tags.complete( options.tags );
 		} else if ( response === 'reject' ) {
 			throw new Error( 'Tag failed to initialize previously' );
 		} else {
 			throw new Error( 'Unknown tag check response: ' + response );
 		}
-	} ) );
+	} );
 };
 
 const articleText = ( fileName ) => fs.readFileSync( articlePath + fileName ).toString();
 
-const waitForBatch = Promise.coroutine( function* ( wiki, batchJobs ) {
+const waitForBatch = async function ( wiki, batchJobs ) {
 	const stepHelpers = this.stepHelpers.onWiki( wiki );
 	const queue = [];
 	if ( Array.isArray( batchJobs ) ) {
@@ -53,8 +52,8 @@ const waitForBatch = Promise.coroutine( function* ( wiki, batchJobs ) {
 		}
 	}
 
-	yield stepHelpers.waitForOperations( queue, ( title, i ) => MWBot.logStatus( '[=] ', i, queue.length, 'incirrus', title ) );
-} );
+	await stepHelpers.waitForOperations( queue, ( title, i ) => MWBot.logStatus( '[=] ', i, queue.length, 'incirrus', title ) );
+};
 
 const flattenJobs = ( batchJobs ) => {
 	if ( !Array.isArray( batchJobs ) ) {
@@ -81,9 +80,9 @@ const flattenJobs = ( batchJobs ) => {
 
 // Run both in parallel so we don't have to wait for the batch to finish
 // to start checking things. Hopefully they run in the same order...
-const runBatch = Promise.coroutine( function* ( world, wiki, batchJobs ) {
+const runBatch = async function ( world, wiki, batchJobs ) {
 	wiki = wiki || world.config.wikis.default;
-	const client = yield world.onWiki( wiki );
+	const client = await world.onWiki( wiki );
 	batchJobs = flattenJobs( batchJobs );
 	// separate redirect edits from the rest and process after, this might give better chances of having this redirect
 	// indexed.
@@ -99,7 +98,7 @@ const runBatch = Promise.coroutine( function* ( world, wiki, batchJobs ) {
 
 	// TODO: If the batch operation fails the waitForBatch will never complete,
 	// it will just stick around forever ...
-	yield Promise.all( [
+	await Promise.all( [
 		client.batch( nonRedirJobs, 'CirrusSearch integration test edit', 2 ),
 		waitForBatch.call( world, wiki, nonRedirJobs )
 	] );
@@ -108,7 +107,7 @@ const runBatch = Promise.coroutine( function* ( world, wiki, batchJobs ) {
 	for ( const redirJob of redirJobs ) {
 		let currentTargets = [];
 		if ( currentTargets.includes( redirJob[ 2 ] ) ) {
-			yield Promise.all( [
+			await Promise.all( [
 				client.batch( currentBatch, 'CirrusSearch integration test edit', 2 ),
 				waitForBatch.call( world, wiki, currentBatch )
 			] );
@@ -119,20 +118,20 @@ const runBatch = Promise.coroutine( function* ( world, wiki, batchJobs ) {
 		currentBatch.push( redirJob );
 	}
 	if ( currentBatch.length > 0 ) {
-		yield Promise.all( [
+		await Promise.all( [
 			client.batch( currentBatch, 'CirrusSearch integration test edit', 2 ),
 			waitForBatch.call( world, wiki, currentBatch )
 		] );
 	}
-} );
+};
 
-const runBatchFn = ( wiki, batchJobs ) => Promise.coroutine( function* () {
+const runBatchFn = ( wiki, batchJobs ) => async function () {
 	if ( batchJobs === undefined ) {
 		batchJobs = wiki;
 		wiki = this.config.wikis.default;
 	}
-	yield runBatch( this, wiki, batchJobs );
-} );
+	await runBatch( this, wiki, batchJobs );
+};
 
 // Helpers for defining mwbot jobs in array syntax. Mostly needed
 // for upload to specify text, but others come along for the ride
@@ -194,8 +193,8 @@ BeforeOnce( { tags: '@accented_namespace' }, runBatchFn( {
 	}
 } ) );
 
-BeforeOnce( { tags: '@setup_main or @filters or @prefix or @bad_syntax or @wildcard or @exact_quotes or @phrase_prefix', timeout: 60000 }, Promise.coroutine( function* () {
-	yield runBatch( this, false, {
+BeforeOnce( { tags: '@setup_main or @filters or @prefix or @bad_syntax or @wildcard or @exact_quotes or @phrase_prefix', timeout: 60000 }, async function () {
+	await runBatch( this, false, {
 		edit: {
 			'Template:Template Test': 'pickles [[Category:TemplateTagged]]',
 			'Catapult/adsf': 'catapult subpage [[Catapult|Catapults]]',
@@ -220,9 +219,10 @@ BeforeOnce( { tags: '@setup_main or @filters or @prefix or @bad_syntax or @wildc
 
 	// Help incoming_links get counted when using the sql job queue. Ideally this should
 	// be at least CirrusSearchRefreshInterval seconds after the above finishes.
-	yield new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
-	yield this.stepHelpers.onWiki().editPage( 'Catapult', null );
-} ) );
+	// eslint-disable-next-line no-promise-executor-return
+	await new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
+	await this.stepHelpers.onWiki().editPage( 'Catapult', null );
+} );
 
 BeforeOnce( { tags: '@setup_main or @prefix or @bad_syntax or @filesearch' }, runBatchFn( [
 	job.edit( 'Rdir', '#REDIRECT [[Two Words]]' ),
@@ -237,8 +237,8 @@ BeforeOnce( { tags: '@setup_main or @prefix or @go or @bad_syntax or @smoke' }, 
 	}
 } ) );
 
-BeforeOnce( { tags: '@boost_template' }, Promise.coroutine( function* () {
-	yield runBatch( this, false, {
+BeforeOnce( { tags: '@boost_template' }, async function () {
+	await runBatch( this, false, {
 		edit: {
 			'Template:BoostTemplateHigh': 'BoostTemplateTest',
 			'Template:BoostTemplateLow': 'BoostTemplateTest',
@@ -247,13 +247,13 @@ BeforeOnce( { tags: '@boost_template' }, Promise.coroutine( function* () {
 	} );
 	// Delay to ensure templates have been saved before the pages using
 	// them get rendered.
-	yield runBatch( this, false, {
+	await runBatch( this, false, {
 		edit: {
 			HighTemplate: '{{BoostTemplateHigh}}',
 			LowTemplate: '{{BoostTemplateLow}}'
 		}
 	} );
-} ) );
+} );
 
 BeforeOnce( { tags: '@did_you_mean', timeout: 240000 }, function () {
 	const edits = {
@@ -310,11 +310,11 @@ BeforeOnce( { tags: '@exact_quotes' }, runBatchFn( {
 	}
 } ) );
 
-BeforeOnce( { tags: '@redirect_loop' }, Promise.coroutine( function* () {
+BeforeOnce( { tags: '@redirect_loop' }, async function () {
 	// These can't go through the normal runBatch because, as redirects that never
 	// end up at an article, they don't actually make it into elasticsearch.
-	const client = yield this.onWiki();
-	yield client.batch( {
+	const client = await this.onWiki();
+	await client.batch( {
 		edit: {
 			'Redirect Loop': '#REDIRECT [[Redirect Loop 1]]',
 			'Redirect Loop 1': '#REDIRECT [[Redirect Loop 2]]',
@@ -322,8 +322,8 @@ BeforeOnce( { tags: '@redirect_loop' }, Promise.coroutine( function* () {
 		}
 	} );
 	// Randomly guess at how long to wait ...
-	yield this.stepHelpers.waitForMs( 3000 );
-} ) );
+	await this.stepHelpers.waitForMs( 3000 );
+} );
 
 BeforeOnce( { tags: '@headings' }, runBatchFn( {
 	edit: {
@@ -501,21 +501,21 @@ BeforeOnce( { tags: '@go or @options', timeout: 120000 }, runBatchFn( {
 	}
 } ) );
 
-BeforeOnce( { tags: '@file_text or @filesearch', timeout: 60000 }, Promise.coroutine( function* () {
+BeforeOnce( { tags: '@file_text or @filesearch', timeout: 60000 }, async function () {
 	// TODO: this one is really unclear to me, figure out why we need such hack
 	// This file is available on commons.wikimedia.org and because $wgUseInstantCommons is set to true
 	// mwbot may think it's a dup and won't upload it. Use uploadOverwrite to avoid that.
 	// But to use uploadOverwrite we first make sure that the file is not here otherwise mwbot
 	// will complain about perfect duplicate...
-	yield runBatch( this, false, {
+	await runBatch( this, false, {
 		delete: [
 			'File:Linux_Distribution_Timeline_text_version.pdf'
 		]
 	} );
-	yield runBatch( this, false, [
+	await runBatch( this, false, [
 		job.uploadOverwrite( 'Linux_Distribution_Timeline_text_version.pdf', 'Linux distribution timeline.' )
 	] );
-} ) );
+} );
 
 BeforeOnce( { tags: '@match_stopwords' }, runBatchFn( {
 	edit: {
@@ -624,8 +624,8 @@ BeforeOnce( { tags: '@regex' }, runBatchFn( {
 	}
 } ) );
 
-BeforeOnce( { tags: '@linksto' }, Promise.coroutine( function* () {
-	yield runBatch( this, false, {
+BeforeOnce( { tags: '@linksto' }, async function () {
+	await runBatch( this, false, {
 		edit: {
 			'LinksToTest Target': 'LinksToTest Target',
 			'LinksToTest Plain': '[[LinksToTest Target]]',
@@ -636,12 +636,12 @@ BeforeOnce( { tags: '@linksto' }, Promise.coroutine( function* () {
 		}
 	} );
 	// We need to guarantee the template exists before this edit goes through.
-	yield runBatch( this, false, {
+	await runBatch( this, false, {
 		edit: {
 			'LinksToTest Using Template': '{{LinksToTest Template}}'
 		}
 	} );
-} ) );
+} );
 
 BeforeOnce( { tags: '@filenames' }, runBatchFn( [
 	job.upload( 'No_SVG.svg', '[[Category:Red circle with left slash]]' ),
@@ -654,18 +654,18 @@ BeforeOnce( { tags: '@removed_text' }, runBatchFn( {
 	}
 } ) );
 
-BeforeOnce( { tags: '@setup_main or @commons or @filesearch' }, Promise.coroutine( function* () {
-	yield runBatch( this, 'commons', {
+BeforeOnce( { tags: '@setup_main or @commons or @filesearch' }, async function () {
+	await runBatch( this, 'commons', {
 		delete: [
 			'File:OnCommons.svg',
 			'File:DuplicatedLocally.svg'
 		]
 	} );
-	yield runBatch( this, false, {
+	await runBatch( this, false, {
 		delete: [ 'File:DuplicatedLocally.svg' ]
 	} );
 
-	yield runBatch( this, 'commons', [
+	await runBatch( this, 'commons', [
 		// TODO: Why is overwrite necessary here? Otherwise the upload is rejected
 		// with was-deleted or some such?
 		job.uploadOverwrite( 'OnCommons.svg', 'File stored on commons for test purposes' ),
@@ -673,10 +673,10 @@ BeforeOnce( { tags: '@setup_main or @commons or @filesearch' }, Promise.coroutin
 	] );
 	// For duplications to track correctly commons has to be uploaded first. This is a bug
 	// in cirrus, but no current plans to fix.
-	yield runBatch( this, false, [
+	await runBatch( this, false, [
 		job.uploadOverwrite( 'DuplicatedLocally.svg', 'Locally stored file duplicated on commons' )
 	] );
-} ) );
+} );
 
 BeforeOnce( { tags: '@ru' }, runBatchFn( 'ru', {
 	edit: {
@@ -694,12 +694,12 @@ BeforeOnce( { tags: '@geo' }, runBatchFn( {
 	}
 } ) );
 
-BeforeOnce( { tags: '@wbcs' }, Promise.coroutine( function* () {
+BeforeOnce( { tags: '@wbcs' }, async function () {
 	// This could all be generalized, but for now we need a single entity
 	// to exist that we can search for.
 	const wiki = 'wikidata';
-	const client = yield this.onWiki( wiki );
-	const response = yield client.request( {
+	const client = await this.onWiki( wiki );
+	const response = await client.request( {
 		action: 'wbeditentity',
 		new: 'item',
 		data: JSON.stringify( {
@@ -714,14 +714,14 @@ BeforeOnce( { tags: '@wbcs' }, Promise.coroutine( function* () {
 	} );
 	const title = 'Item:' + response.entity.id;
 	const revId = response.entity.lastrevid;
-	yield this.stepHelpers.onWiki( wiki ).waitForOperation( 'edit', title, null, revId );
-} ) );
+	await this.stepHelpers.onWiki( wiki ).waitForOperation( 'edit', title, null, revId );
+} );
 
 // This needs to be the *last* hook added. That gives us some hope that everything
 // else is inside elasticsearch by the time cirrus-suggest-index runs and builds
 // the completion suggester
-BeforeOnce( { tags: '@suggest', timeout: 120000 }, Promise.coroutine( function* () {
-	yield runBatch( this, false, {
+BeforeOnce( { tags: '@suggest', timeout: 120000 }, async function () {
+	await runBatch( this, false, {
 		edit: {
 			Venom: 'Venom: or the Venom Symbiote: is a fictional supervillain appearing in American comic books published by Marvel Comics. The character is a sentient alien Symbiote with an amorphous, liquid-like form, who requires a host, usually human, to bond with for its survival.',
 			'X-Men': 'The X-Men are a fictional team of superheroes',
@@ -753,22 +753,23 @@ BeforeOnce( { tags: '@suggest', timeout: 120000 }, Promise.coroutine( function* 
 	// A couple null edits before building the suggest index to hopefully get the right incoming links counts.
 	// Necessary when using the sql job queue as it doesn't delay the link counting jobs after the edits.
 	const stepHelpers = this.stepHelpers.onWiki();
-	yield stepHelpers.editPage( 'PrefixRedirectRanking_1', null );
-	yield stepHelpers.editPage( 'TargetOfPrefixRedirectRanking_2', null );
+	await stepHelpers.editPage( 'PrefixRedirectRanking_1', null );
+	await stepHelpers.editPage( 'TargetOfPrefixRedirectRanking_2', null );
 
 	// Null edits don't trigger any kind of waiting, they don't make a new
 	// revision id. so inject an arbitrary pause to hope the null edits make it
 	// to elasticsearch and refresh.
 	// TODO: Wait for specific incoming link count?
-	yield new Promise( ( resolve ) => setTimeout( resolve, 2000 ) );
+	// eslint-disable-next-line no-promise-executor-return
+	await new Promise( ( resolve ) => setTimeout( resolve, 2000 ) );
 
-	const client = yield this.onWiki();
+	const client = await this.onWiki();
 	console.log( 'Building completion index' );
-	const resp = yield client.request( {
+	const resp = await client.request( {
 		action: 'cirrus-suggest-index',
 		format: 'json',
 		formatversion: '2'
 	} );
 	console.log( resp.result );
 	console.log( 'Building completion done' );
-} ) );
+} );

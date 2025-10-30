@@ -1,18 +1,13 @@
 'use strict';
-const restify = require( 'restify' );
+const fastify = require( 'fastify' );
 
 class Server {
 	constructor( options ) {
-		this.server = restify.createServer( {
-			name: 'tracker',
-			version: '1.0.0'
+		this.server = fastify( {
+			logger: false
 		} );
 
 		this.unixSocketPath = options.trackerPath;
-
-		this.server.use( restify.plugins.acceptParser( this.server.acceptable ) );
-		this.server.use( restify.plugins.queryParser() );
-		this.server.use( restify.plugins.bodyParser() );
 
 		const globals = {
 			tags: {},
@@ -20,7 +15,7 @@ class Server {
 			resolvers: {}
 		};
 
-		this.server.post( '/tracker', ( req, res, next ) => {
+		this.server.post( '/tracker', async ( req, reply ) => {
 			const data = req.body;
 
 			if ( globals.resolvers[ data.complete ] ) {
@@ -29,8 +24,7 @@ class Server {
 					tag: data.complete,
 					status: 'complete'
 				} );
-				res.send( data );
-				return next();
+				return reply.send( data );
 			}
 
 			if ( globals.resolvers[ data.reject ] ) {
@@ -38,36 +32,41 @@ class Server {
 					tag: data.reject,
 					status: 'reject'
 				} );
-				res.send( data );
-				return next();
+				return reply.send( data );
 			}
 
 			if ( globals.pending[ data.check ] ) {
-				globals.pending[ data.check ].then( ( sendData ) => {
-					res.send( sendData );
-					next();
-				} );
+				const sendData = await globals.pending[ data.check ];
+				return reply.send( sendData );
 			} else if ( data.check ) {
 				globals.pending[ data.check ] = new Promise( ( resolve ) => {
 					globals.resolvers[ data.check ] = resolve;
 				} );
-				res.send( {
+				return reply.send( {
 					tag: data.check,
 					status: 'new'
 				} );
-				return next();
 			} else {
-				return next( new Error( 'Unrecognized tag server request: ' + JSON.stringify( data ) ) );
+				return reply.code( 400 ).send( {
+					error: 'Unrecognized tag server request: ' + JSON.stringify( data )
+				} );
 			}
 		} );
 	}
 
 	close() {
-		this.server.close();
+		return this.server.close();
 	}
 
 	start( success ) {
-		this.server.listen( this.unixSocketPath, success );
+		this.server.listen( { path: this.unixSocketPath }, ( err ) => {
+			if ( err ) {
+				throw err;
+			}
+			if ( success ) {
+				success();
+			}
+		} );
 	}
 }
 
@@ -79,9 +78,17 @@ class Server {
 				process.send( { error: 'Already initialized' } );
 			} else {
 				server = new Server( msg.config );
-				server.server.on( 'error', ( err ) => {
-					process.send( { error: err.message } );
-					server = undefined;
+				server.server.addHook( 'onError', async ( request, reply, error ) => {
+					process.send( { error: error.message } );
+				} );
+
+				// Handle server initialization errors
+				server.server.ready( ( err ) => {
+					if ( err ) {
+						process.send( { error: err.message } );
+						server = undefined;
+						return;
+					}
 				} );
 
 				server.start(
@@ -97,10 +104,15 @@ class Server {
 		if ( msg.exit ) {
 			console.log( 'tracker received shutdown message' );
 			if ( server ) {
-				server.close();
+				server.close().then( () => {
+					// The explicit design is to exit when requested by controlling process.
+					process.exit();
+				} ).catch( () => {
+					process.exit( 1 );
+				} );
+			} else {
+				process.exit();
 			}
-			// The explicit design is to exit when requested by controlling process.
-			process.exit();
 		}
 	} );
 } )();

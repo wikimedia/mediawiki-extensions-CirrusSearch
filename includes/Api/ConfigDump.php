@@ -177,6 +177,27 @@ class ConfigDump extends ApiBase {
 	}
 
 	/**
+	 * When encoding to json when an array is constructed starting
+	 * from zero and adding only sequential keys it will be emit
+	 * as a list, instead of a map. Re-order the array so it doesn't
+	 * start at zero, unless it's a single element list.
+	 *
+	 * This does not solve the single element list problem, but in
+	 * practice the use case always has multiple values.
+	 *
+	 * @param array $items
+	 * @return array associative array version of source if 2+ elements exist.
+	 */
+	private function ensureAssociative( array $items ): array {
+		if ( isset( $items[0] ) ) {
+			$value = $items[0];
+			unset( $items[0] );
+			$items[0] = $value;
+		}
+		return $items;
+	}
+
+	/**
 	 * Include a complete mapping from namespace id to index containing pages.
 	 *
 	 * Intended for external services/users that need to interact
@@ -188,9 +209,13 @@ class ConfigDump extends ApiBase {
 		$nsInfo = MediaWikiServices::getInstance()->getNamespaceInfo();
 		$conn = $this->getCirrusConnection();
 		$indexBaseName = $conn->getConfig()->get( SearchConfig::INDEX_BASE_NAME );
+		$items = [];
 		foreach ( $nsInfo->getValidNamespaces() as $ns ) {
 			$indexSuffix = $conn->getIndexSuffixForNamespace( $ns );
 			$indexName = $conn->getIndexName( $indexBaseName, $indexSuffix );
+			$items[$ns] = $indexName;
+		}
+		foreach ( self::ensureAssociative( $items ) as $ns => $indexName ) {
 			$result->addValue( 'CirrusSearchConcreteNamespaceMap', $ns, $indexName );
 		}
 	}

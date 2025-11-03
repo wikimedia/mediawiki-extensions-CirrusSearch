@@ -149,6 +149,12 @@ class ForceSearchIndex extends Maintenance {
 
 	/** @inheritDoc */
 	public function execute() {
+		if ( $this->getConfig()->get( 'CirrusSearchDisableUpdate' ) ) {
+			$this->fatalError(
+				'Updates are currenly disabled. ' .
+				'Set $wgCirrusSearchDisableUpdate to false to re-enable.'
+			);
+		}
 		$this->disablePoolCountersAndLogging();
 		$wiki = sprintf( "[%20s]", WikiMap::getCurrentWikiId() );
 

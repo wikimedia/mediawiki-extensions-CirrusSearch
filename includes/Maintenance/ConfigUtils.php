@@ -9,6 +9,7 @@ use Elastica\Index;
 use Elasticsearch\Endpoints;
 use LogicException;
 use MediaWiki\Extension\Elastica\MWElasticUtils;
+use MediaWiki\Language\RawMessage;
 use MediaWiki\Status\Status;
 use RuntimeException;
 
@@ -376,7 +377,7 @@ class ConfigUtils {
 				}
 			} );
 		} catch ( RuntimeException $e ) {
-			return Status::newFatal( new \RawMessage( $e->getMessage() ) );
+			return Status::newFatal( new RawMessage( $e->getMessage() ) );
 		}
 		return Status::newGood();
 	}
@@ -413,7 +414,7 @@ class ConfigUtils {
 				return (int)$count;
 			} );
 		} catch ( ResponseException | RuntimeException $e ) {
-			return Status::newFatal( new \RawMessage( "Failed to count {$index->getName()}: {$e->getMessage()}" ) );
+			return Status::newFatal( new RawMessage( "Failed to count {$index->getName()}: {$e->getMessage()}" ) );
 		}
 		return Status::newGood( $count );
 	}

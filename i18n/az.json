@@ -3,7 +3,8 @@
 		"authors": [
 			"NMW03",
 			"Nemoralis",
-			"Toghrul Rahimli"
+			"Toghrul Rahimli",
+			"Əkrəm"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki üçün Elasticsearch ilə dəstəklənən axtarış",
@@ -28,6 +29,6 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Yazı səhvləri düzəldilmir. Yaxın istiqamətləndirmələri həll edir.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klassik prefiks axtarışı",
 	"cirrussearch-completion-profile-classic-pref-desc": "Yazı səhvləri düzəldilmir. Başlığın əvvəli uyğunlaşdırılır.",
-	"cirrussearch-regex-timed-out": "Regex axtarışının vaxtı bitdi, ona görə də yalnız qismən nəticələr göstərilir. Tam nəticələri əldə etmək üçün requlyar ifadənizi sadələşdirməyə çalışın.",
+	"cirrussearch-regex-timed-out": "Regex axtarışının vaxtı bitdi, ona görə də nəticələrin yalnız bir hissəsi göstərilir. Tam nəticələri əldə etmək üçün requlyar ifadənizi sadələşdirməyə çalışın.",
 	"cirrussearch-article-words": "Bütün məqalələrdəki sözlərin cəmi"
 }

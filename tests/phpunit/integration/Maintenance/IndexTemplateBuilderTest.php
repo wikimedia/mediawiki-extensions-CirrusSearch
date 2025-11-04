@@ -46,7 +46,9 @@ class IndexTemplateBuilderTest extends CirrusIntegrationTestCase {
 		$profile = ( $config )->getProfileService()
 			->loadProfileByName( SearchProfileService::INDEX_LOOKUP_FALLBACK, $testProfile );
 		$this->assertArrayHasKey( 'index_template', $profile );
-		$tmplBuilder = IndexTemplateBuilder::build( $connection, $profile['index_template'], [ 'analysis-icu' ] );
+		$tmplBuilder = IndexTemplateBuilder::build(
+			$connection, $profile['index_template'], [ 'distribution' => 'opensearch' ], [ 'analysis-icu' ]
+		);
 		$tmplBuilder->execute();
 	}
 
@@ -70,6 +72,7 @@ class IndexTemplateBuilderTest extends CirrusIntegrationTestCase {
 		$tmplBuilder = IndexTemplateBuilder::build(
 			$connection,
 			$profile['index_template'],
+			[ 'distribution' => 'opensearch' ],
 			[ 'analysis-icu' ]
 		);
 		$this->expectException( RuntimeException::class );

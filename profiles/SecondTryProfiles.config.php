@@ -21,6 +21,17 @@ return [
 			'russian_keyboard' => 0.5
 		],
 	],
+	'language_converter_and_russian_wrong_keyboard_cyr2lat' => [
+		'strategies' => [
+			'language_converter' => 1.0,
+			'russian_keyboard' => [
+				'weight' => 0.5,
+				'settings' => [
+					'dir' => 'c2l'
+				]
+			]
+		],
+	],
 	'language_converter_and_hebrew_wrong_keyboard' => [
 		'strategies' => [
 			'language_converter' => 1.0,

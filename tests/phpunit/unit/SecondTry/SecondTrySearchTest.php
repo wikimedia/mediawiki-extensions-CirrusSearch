@@ -80,6 +80,36 @@ class SecondTrySearchTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $transformer->candidates( $input ) );
 	}
 
+	public static function provideTestOneWayDwim(): \Generator {
+		// hebrew_keyboard
+		yield 'he-h2q' => [ 'hebrew_keyboard', 'h2q', 'עןננקרןדי NDSK', [ 'gibberish NDSK' ] ];
+		yield 'he-h2l' => [ 'hebrew_keyboard', 'h2l', 'עןננקרןדי NDSK', [ 'gibberish NDSK' ] ];
+		yield 'he-q2h' => [ 'hebrew_keyboard', 'q2h', 'עןננקרןדי NDSK', [ 'עןננקרןדי מגדל' ] ];
+		yield 'he-l2h' => [ 'hebrew_keyboard', 'l2h', 'עןננקרןדי NDSK', [ 'עןננקרןדי מגדל' ] ];
+		yield 'he-both' => [ 'hebrew_keyboard', 'both', 'עןננקרןדי NDSK', [ 'gibberish מגדל' ] ];
+
+		yield 'he mixed case-h2q' => [ 'hebrew_keyboard', 'h2q', 'MבMשמדןםמ', [ 'McMansion' ] ];
+		yield 'he mixed case-q2h' => [ 'hebrew_keyboard', 'q2h', 'MבMשמדןםמ', [] ];
+		yield 'he mixed case-both' => [ 'hebrew_keyboard', 'both', 'MבMשמדןםמ', [ 'McMansion' ] ];
+
+		// russian_keyboard
+		yield 'ru-r2q' => [ 'russian_keyboard', 'r2q', ',fiyz пшииукшыр', [ ',fiyz gibberish' ] ];
+		yield 'ru-c2l' => [ 'russian_keyboard', 'c2l', ',fiyz пшииукшыр', [ ',fiyz gibberish' ] ];
+		yield 'ru-q2r' => [ 'russian_keyboard', 'q2r', ',fiyz пшииукшыр', [ 'башня пшииукшыр' ] ];
+		yield 'ru-l2c' => [ 'russian_keyboard', 'l2c', ',fiyz пшииукшыр', [ 'башня пшииукшыр' ] ];
+		yield 'ru-both' => [ 'russian_keyboard', 'both', ',fiyz пшииукшыр', [ 'башня gibberish' ] ];
+	}
+
+	/**
+	 * @dataProvider provideTestOneWayDwim
+	 */
+	public function testOneWayDwim( string $strategy, string $dir, string $input, array $expected ): void {
+		$config[ 'dir' ] = $dir;
+		$secondTryFactory = new SecondTrySearchFactory();
+		$transformer = $secondTryFactory->build( $strategy, $config );
+		$this->assertEquals( $expected, $transformer->candidates( $input ) );
+	}
+
 	public function provideTestFactory(): \Generator {
 		yield 'he' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class ];
 		yield 'ru' => [ 'russian_keyboard', SecondTryRussianKeyboard::class ];
@@ -101,5 +131,14 @@ class SecondTrySearchTest extends CirrusTestCase {
 			$this->expectException( \InvalidArgumentException::class );
 		}
 		$this->assertInstanceOf( $expectedClass, $factory->build( $strategy, [] ) );
+	}
+
+	/**
+	 * @covers \CirrusSearch\SecondTry\SecondTrySearchFactory
+	 */
+	public function testLangConvUninit(): void {
+		$secondTryFactory = new SecondTrySearchFactory();
+		$this->expectException( \InvalidArgumentException::class );
+		$transformer = $secondTryFactory->build( 'language_converter', [] );
 	}
 }

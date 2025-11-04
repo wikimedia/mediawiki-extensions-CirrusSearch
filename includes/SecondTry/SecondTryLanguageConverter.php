@@ -8,6 +8,11 @@ class SecondTryLanguageConverter implements SecondTrySearch {
 	private ILanguageConverter $converter;
 	private int $topK;
 
+	/**
+	 * @param ILanguageConverter $converter the converter to use
+	 * @param array $config build options
+	 *        tok_k (int): the max number of variants to keep
+	 */
 	public static function build( ILanguageConverter $converter, array $config ): SecondTryLanguageConverter {
 		return new self( $converter, $config['top_k'] ?? 3 );
 	}

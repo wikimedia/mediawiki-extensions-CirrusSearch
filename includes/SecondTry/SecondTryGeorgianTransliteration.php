@@ -107,7 +107,7 @@ class SecondTryGeorgianTransliteration implements SecondTrySearch {
 	];
 
 	/**
-	 * Map Latin/Cyrillic -> Georgian
+	 * Map Latin/Cyrillic -> Georgian.
 	 *
 	 * {@inheritDoc}
 	 */

@@ -34,20 +34,43 @@ class SecondTryRussianKeyboard implements SecondTrySearch {
 	/** Wrong Keyboard Map Indexing constants */
 	private const QWERTY_TO_RU = 0;
 	private const RU_TO_QWERTY = 1;
+	private const MAP_DIR_BOTH = 2;
+
+	/** Allowed mapping direction names to values */
+	private const DIR_NAMES = [
+		'q2r' => self::QWERTY_TO_RU,
+		'l2c' => self::QWERTY_TO_RU,
+		'r2q' => self::RU_TO_QWERTY,
+		'c2l' => self::RU_TO_QWERTY,
+		'both' => self::MAP_DIR_BOTH
+	];
 
 	/** @var array<int, array<string, string>> */
 	private array $ruQwertyMaps;
 
-	public function __construct() {
+	/**
+	 * @param array $config build options
+	 *        dir (string): mapping direction ('q2r'/'l2c': Latin Qwerty->Russian Cyrillic;
+	 *             'r2q'/'c2l': Russian Cyrillic->Latin Qwerty; 'both': both directions)
+	 */
+	public static function build( array $config ): SecondTryRussianKeyboard {
+		return new self( self::DIR_NAMES[ $config['dir'] ?? 'both' ] );
+	}
+
+	/**
+	 * @param int $dir mapping direction (0:QWERTY_TO_RU; 1:RU_TO_QWERTY; 2:both)
+	 */
+	public function __construct( int $dir = self::MAP_DIR_BOTH ) {
 		// set up Ru PC <-> QWERTY mappings
 		$this->ruQwertyMaps = self::stringToWrongKeyboardMaps(
 			'QqWwEeRrTtYyUuIiOoPpAaSsDdFfGgHhJjKkLlZzXxCcVvBbNnMm{[}]~`:^;$<,?&>./|#"\'',
-			'ЙйЦцУуКкЕеНнГгШшЩщЗзФфЫыВвАаПпРрОоЛлДдЯяЧчСсМмИиТтЬьХхЪъЁёЖ:ж;Бб,?Юю./№Ээ'
+			'ЙйЦцУуКкЕеНнГгШшЩщЗзФфЫыВвАаПпРрОоЛлДдЯяЧчСсМмИиТтЬьХхЪъЁёЖ:ж;Бб,?Юю./№Ээ',
+			$dir
 		);
 	}
 
 	/**
-	 * Map Ru PC Cyrillic <-> Latin qwerty, word by word
+	 * Map Ru PC Cyrillic <-> Latin qwerty, word by word.
 	 * {@inheritDoc}
 	 */
 	public function candidates( string $searchQuery ): array {

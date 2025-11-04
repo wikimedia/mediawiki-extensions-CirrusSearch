@@ -27,7 +27,7 @@ class SecondTryRunnerFactory {
 		$weights = [];
 		foreach ( $profile['strategies'] as $name => $config ) {
 			$weight = $config['weight'] ?? $config;
-			$settings = is_array( $config ) ? $config : [];
+			$settings = $config['settings'] ?? [];
 			if ( !is_float( $weight ) ) {
 				throw new SearchProfileException( "Invalid search strategy $name settings in second-try profile" );
 			}

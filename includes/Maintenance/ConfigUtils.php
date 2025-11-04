@@ -64,11 +64,18 @@ class ConfigUtils {
 		if ( strpos( $version, $required ) !== 0 ) {
 			$this->output( "Not supported!\n" );
 			return Status::newFatal(
-				"Only Elasticsearch 7.10.x and OpenSearch 1.3.x are supported."
-				. "  Your version: $distribution $version." );
+				"Only OpenSearch 1.3.x is supported; Elasticsearch 7.10.x is now deprecated "
+				. " and support will be removed soon.\n  Your version: $distribution $version." );
 		}
-
-		$this->output( "ok\n" );
+		if ( $distribution === 'elasticsearch' ) {
+			$this->output( "deprecated.\n" );
+			$this->outputIndented(
+				"*** ElasticSearch support is deprecated and will be End-of-Life in the next "
+				. "release. Upgrading to OpenSearch will be required. ***\n"
+			);
+		} else {
+			$this->output( "ok\n" );
+		}
 		return Status::newGood();
 	}
 

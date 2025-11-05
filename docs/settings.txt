@@ -1684,16 +1684,13 @@ Default:
   ];
 
 Enables the usage of the title_natural_asc and title_natural_desc sort orders.
-Requires definining both the language and country sort should be specialized
-to. This requires the analysis-icu elasticsearch plugin to be installed.
+This requires the analysis-icu elasticsearch plugin to be installed.
 
 Example english configuration:
 
   $wgCirrusSearchNaturalTitleSort = [
       'build' => true,
-      'use' => true,
-      'language' => 'en',
-      'country' => 'US',
+      'use' => true
   ];
 
 Set build to true and reindex before setting use to true.

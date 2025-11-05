@@ -173,8 +173,10 @@ class SearchRequestBuilder {
 			case 'title_natural_asc':
 			case 'title_natural_desc':
 				if ( $this->searchContext->getConfig()->getElement( 'CirrusSearchNaturalTitleSort', 'use' ) ) {
+					$dir = explode( '_', $this->sort, 3 )[2];
 					$query->setSort( [
-						'title.natural_sort' => explode( '_', $this->sort, 3 )[2],
+						'namespace_text' => $dir,
+						'title.natural_sort' => $dir,
 					] );
 					break;
 				}

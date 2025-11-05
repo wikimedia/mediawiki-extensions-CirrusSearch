@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use MediaWiki\Json\FormatJson;
+use MediaWiki\Language\Language;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MainConfigSchema;
 use MediaWiki\Registration\ExtensionRegistry;
@@ -44,6 +45,7 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 		] );
 		$scopedCallback = ExtensionRegistry::getInstance()->setAttributeForTest( 'Hooks', [] );
 
+		$plugins = $extraConfig[ '__plugins' ] ?? [];
 		$defaultConfig = [
 			'CirrusSearchSimilarityProfile' => 'bm25_with_defaults',
 			'CirrusSearchWikimediaExtraPlugin' => [
@@ -54,7 +56,9 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 			],
 		];
 		$config = new HashSearchConfig( $defaultConfig + $extraConfig, [ HashSearchConfig::FLAG_INHERIT ] );
-		$builder = new $buildClass( true, 0, $config, $this->createCirrusSearchHookRunner() );
+		$language = $this->createMock( Language::class );
+		$language->method( 'toBcp47Code' )->willReturn( 'my-language-bcp47-code' );
+		$builder = new $buildClass( true, $plugins, 0, $config, $this->createCirrusSearchHookRunner(), $language );
 		$flags = 0;
 		$mapping = $builder->buildConfig( $flags );
 		$mappingJson = FormatJson::encode( $mapping, true );

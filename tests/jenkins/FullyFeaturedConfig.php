@@ -68,6 +68,11 @@ $wgCirrusSearchAlternativeIndices = [
 	]
 ];
 
+$wgCirrusSearchNaturalTitleSort = [
+	'build' => true,
+	'use' => true
+];
+
 $wgCirrusSearchPhraseSuggestReverseField = [
 	'build' => true,
 	'use' => true,

@@ -242,8 +242,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 		}
 
-		$this->initMappingConfigBuilder();
-
 		try {
 			$indexSuffixes = $this->getConnection()->getAllIndexSuffixes( null );
 			if ( !in_array( $this->indexSuffix, $indexSuffixes ) ) {
@@ -254,6 +252,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->unwrap( $utils->checkElasticsearchVersion() );
 			$this->availablePlugins = $this->unwrap( $utils->scanAvailablePlugins( $this->bannedPlugins ) );
 			$this->serverVersion = $this->unwrap( $utils->getServerVersion() );
+
+			$this->initMappingConfigBuilder();
 
 			if ( $this->getOption( 'justAllocation', false ) ) {
 				$this->validateShardAllocation();
@@ -534,10 +534,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 		switch ( $this->indexSuffix ) {
 			case Connection::ARCHIVE_DOC_TYPE:
-				$mappingConfigBuilder = new ArchiveMappingConfigBuilder( $this->optimizeIndexForExperimentalHighlighter, $configFlags );
+				$mappingConfigBuilder = new ArchiveMappingConfigBuilder( $this->optimizeIndexForExperimentalHighlighter,
+					$this->availablePlugins, $configFlags );
 				break;
 			default:
-				$mappingConfigBuilder = new MappingConfigBuilder( $this->optimizeIndexForExperimentalHighlighter, $configFlags );
+				$mappingConfigBuilder = new MappingConfigBuilder( $this->optimizeIndexForExperimentalHighlighter,
+					$this->availablePlugins, $configFlags );
 		}
 		$this->mapping = $mappingConfigBuilder->buildConfig();
 		$this->safeToOptimizeAnalysisConfig = $mappingConfigBuilder->canOptimizeAnalysisConfig();

@@ -125,11 +125,11 @@
                 "natural_sort": {
                     "similarity": "bm25",
                     "type": "icu_collation_keyword",
+                    "ignore_above": 5000,
                     "index": false,
                     "numeric": true,
                     "strength": "tertiary",
-                    "language": "en",
-                    "country": "US"
+                    "language": "my-language-bcp47-code"
                 },
                 "trigram": {
                     "similarity": "bm25",
@@ -284,11 +284,11 @@
                         "natural_sort": {
                             "similarity": "bm25",
                             "type": "icu_collation_keyword",
+                            "ignore_above": 5000,
                             "index": false,
                             "numeric": true,
                             "strength": "tertiary",
-                            "language": "en",
-                            "country": "US"
+                            "language": "my-language-bcp47-code"
                         },
                         "trigram": {
                             "similarity": "bm25",

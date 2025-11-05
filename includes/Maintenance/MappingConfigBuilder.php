@@ -9,6 +9,7 @@ use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
 use CirrusSearch\Search\SourceTextIndexField;
 use CirrusSearch\Search\TextIndexField;
 use CirrusSearch\SearchConfig;
+use MediaWiki\Language\Language;
 use MediaWiki\MediaWikiServices;
 use SearchIndexField;
 
@@ -73,28 +74,41 @@ class MappingConfigBuilder {
 	 */
 	private $cirrusSearchHookRunner;
 
+	/** @var bool if the icu plugin is available */
+	private bool $icu;
+	/**
+	 * @var Language the content language
+	 */
+	private Language $language;
+
 	/**
 	 * @param bool $optimizeForExperimentalHighlighter should the index be optimized for the experimental highlighter?
+	 * @param array $plugins list of installed plugins
 	 * @param int $flags
 	 * @param SearchConfig|null $config
 	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
+	 * @param Language|null $language
 	 */
 	public function __construct(
-		$optimizeForExperimentalHighlighter,
-		$flags = 0,
+		bool $optimizeForExperimentalHighlighter,
+		array $plugins,
+		int $flags = 0,
 		?SearchConfig $config = null,
-		?CirrusSearchHookRunner $cirrusSearchHookRunner = null
+		?CirrusSearchHookRunner $cirrusSearchHookRunner = null,
+		?Language $language = null
 	) {
 		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;
 		if ( $this->optimizeForExperimentalHighlighter ) {
 			$flags |= self::OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER;
 		}
 		$this->flags = $flags;
+		$this->icu = Plugins::contains( 'analysis-icu', $plugins );
 		$this->engine = new CirrusSearch( $config );
 		$this->config = $this->engine->getConfig();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
 		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner ?: new CirrusSearchHookRunner(
 			MediaWikiServices::getInstance()->getHookContainer() );
+		$this->language = $language ?: MediaWikiServices::getInstance()->getContentLanguage();
 	}
 
 	/**
@@ -124,17 +138,18 @@ class MappingConfigBuilder {
 				'index_options' => 'docs'
 			];
 		}
-		if ( $this->config->getElement( 'CirrusSearchNaturalTitleSort', 'build' ) ) {
+		if ( $this->icu && $this->config->getElement( 'CirrusSearchNaturalTitleSort', 'build' ) ) {
 			$titleExtraAnalyzers[] = [
 				'fieldName' => 'natural_sort',
 				'type' => 'icu_collation_keyword',
+				'ignore_above' => AnalysisConfigBuilder::KEYWORD_IGNORE_ABOVE,
 				// doc values only
 				'index' => false,
 				'numeric' => true,
 				'strength' => 'tertiary',
-				// Does icu support all the language codes?
-				'language' => $this->config->getElement( 'CirrusSearchNaturalTitleSort', 'language' ),
-				'country' => $this->config->getElement( 'CirrusSearchNaturalTitleSort', 'country' ),
+				// icu_collation_keyword will use new ULocale(String $l) if only provided the language
+				// which supports BCP 47 language code.
+				'language' => $this->language->toBcp47Code()
 			];
 		}
 

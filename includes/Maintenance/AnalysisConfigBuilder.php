@@ -41,7 +41,7 @@ class AnalysisConfigBuilder {
 	/**
 	 * Maximum number of characters allowed in keyword terms.
 	 */
-	private const KEYWORD_IGNORE_ABOVE = 5000;
+	public const KEYWORD_IGNORE_ABOVE = 5000;
 
 	/**
 	 * Temporary magic value to prevent enabling ICU tokenizer in specific analyzers

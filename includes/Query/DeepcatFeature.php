@@ -10,6 +10,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
+use Elastica\Query\Terms;
 use MediaWiki\Config\Config;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -245,18 +246,13 @@ SPARQL;
 
 	/**
 	 * @param array $categories
-	 * @return \Elastica\Query\BoolQuery|null
+	 * @return \Elastica\Query\AbstractQuery|null
 	 */
 	protected function doGetFilterQuery( array $categories ) {
 		if ( $categories == [] ) {
 			return null;
 		}
 
-		$filter = new \Elastica\Query\BoolQuery();
-		foreach ( $categories as $cat ) {
-			$filter->addShould( QueryHelper::matchPage( 'category.lowercase_keyword', $cat ) );
-		}
-
-		return $filter;
+		return new Terms( 'category.lowercase_keyword', $categories );
 	}
 }

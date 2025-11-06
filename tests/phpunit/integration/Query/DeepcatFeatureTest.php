@@ -51,19 +51,8 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 					[ 'out' => 'Wigeons' ],
 				],
 				[
-					'bool' => [
-						'should' => [
-							[
-								'match' => [
-									'category.lowercase_keyword' => [ 'query' => 'Ducks' ]
-								]
-							],
-							[
-								'match' => [
-									'category.lowercase_keyword' => [ 'query' => 'Wigeons' ]
-								]
-							],
-						]
+					'terms' => [
+						"category.lowercase_keyword" => [ 'Ducks', 'Wigeons' ]
 					]
 				]
 			],
@@ -73,14 +62,8 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 					[ 'out' => 'Wigeons' ],
 				],
 				[
-					'bool' => [
-						'should' => [
-							[
-								'match' => [
-									'category.lowercase_keyword' => [ 'query' => 'Wigeons' ]
-								]
-							],
-						]
+					'terms' => [
+						"category.lowercase_keyword" => [ 'Wigeons' ]
 					]
 				]
 			],
@@ -98,25 +81,9 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 					[ 'out' => 'There is no such thing as too many ducks' ],
 				],
 				[
-					'bool' => [
-						'should' => [
-							[
-								'match' => [
-									'category.lowercase_keyword' => [ 'query' => 'Ducks' ],
-								],
-							],
-							[
-								'match' => [
-									'category.lowercase_keyword' => [ 'query' => 'Wigeons' ],
-								],
-							],
-							[
-								'match' => [
-									'category.lowercase_keyword' => [ 'query' => 'Paddling' ],
-								],
-							],
-						],
-					],
+					'terms' => [
+						"category.lowercase_keyword" => [ 'Ducks', 'Wigeons', 'Paddling' ]
+					]
 				],
 			],
 			'url encoding' => [
@@ -126,21 +93,10 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 					[ 'out' => 'Vögel' ],
 				],
 				[
-					'bool' => [
-						'should' => [
-							[
-								'match' => [
-									'category.lowercase_keyword' => [ 'query' => 'Утки' ]
-								]
-							],
-							[
-								'match' => [
-									'category.lowercase_keyword' => [ 'query' => 'Vögel' ]
-								]
-							],
-						]
+					'terms' => [
+						"category.lowercase_keyword" => [ 'Утки', 'Vögel' ]
 					]
-				]
+				],
 			],
 		];
 	}
@@ -229,12 +185,8 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 		);
 		$feature = new DeepcatFeature( $config, $client );
 		$filter = [
-			'bool' => [
-				'should' => [ [
-					'match' => [
-						'category.lowercase_keyword' => [ 'query' => 'Test' ]
-					]
-				] ]
+			"terms" => [
+				'category.lowercase_keyword' => [ 'Test' ]
 			]
 		];
 		$this->assertFilter( $feature, "deepcat:Test", $filter, [ [ 'cirrussearch-feature-deepcat-exception' ] ] );

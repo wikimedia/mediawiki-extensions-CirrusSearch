@@ -1570,11 +1570,11 @@ Maximum tree depth to descend when using deep category queries.
 ; $wgCirrusSearchCategoryMax
 
 Default:
-    $wgCirrusSearchCategoryMax = 1000
+    $wgCirrusSearchCategoryMax = 5000
 
-Maximum overall category count for deep category query. Note that ElasticSearch
-has limit of 1024 clauses in a single boolean query by default, this limit
-must be under the Elastic limits.
+Maximum overall category count for deep category query. Note that OpenSearch
+has limit of 65,536 terms in a single terms query by default, this limit
+must be under the Opensearch limits.
 
 ; $wgCirrusSearchNamespaceResolutionMethod
 

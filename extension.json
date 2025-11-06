@@ -694,7 +694,7 @@
 			"value": 5
 		},
 		"CirrusSearchCategoryMax": {
-			"value": 1000
+			"value": 5000
 		},
 		"CirrusSearchNamespaceResolutionMethod": {
 			"value": "elastic"

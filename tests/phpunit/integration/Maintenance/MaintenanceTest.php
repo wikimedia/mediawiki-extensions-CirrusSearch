@@ -1,15 +1,17 @@
 <?php
 
-namespace CirrusSearch\Maintenance;
+namespace CirrusSearch\Tests\Maintenance;
 
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Maintenance\Maintenance;
 use MediaWiki\Maintenance\MaintenanceFatalError;
-use MediaWikiIntegrationTestCase;
+use MediaWiki\Tests\Maintenance\MaintenanceBaseTestCase;
+use Wikimedia\TestingAccessWrapper;
 
 /**
  * @group CirrusSearch
  */
-class MaintenanceTest extends MediaWikiIntegrationTestCase {
+class MaintenanceTest extends MaintenanceBaseTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -17,6 +19,26 @@ class MaintenanceTest extends MediaWikiIntegrationTestCase {
 			'build' => false,
 			'use' => false
 		] );
+	}
+
+	/** @inheritDoc */
+	protected function getMaintenanceClass() {
+		return Maintenance::class;
+	}
+
+	/** @inheritDoc */
+	protected function createMaintenance() {
+		$obj = new class extends Maintenance {
+			// Instantiate the abstract method for testing
+			public function execute() {
+			}
+
+			// Allow test case to set the search config after construction
+			public function setSearchConfig( array $config ) {
+				$this->searchConfig = new HashSearchConfig( $config );
+			}
+		};
+		return TestingAccessWrapper::newFromObject( $obj );
 	}
 
 	public static function decideClusterProvider() {
@@ -87,18 +109,15 @@ class MaintenanceTest extends MediaWikiIntegrationTestCase {
 	 * @covers \CirrusSearch\Maintenance\Maintenance::decideCluster
 	 */
 	public function testDecideCluster( $expected, $requested, array $config ) {
-		$maint = new class ( new HashSearchConfig( $config ) ) extends Maintenance {
-			public function execute() {
-			}
-		};
-		$maint->loadWithArgv( [ '--cluster', $requested ] );
+		$this->maintenance->setSearchConfig( $config );
+		$this->maintenance->loadWithArgv( [ '--cluster', $requested ] );
 		if ( $expected === null ) {
 			$this->expectException( MaintenanceFatalError::class );
 			$this->expectOutputRegex(
 				"/not configured for (cluster|maintenance) operations/i"
 			);
 		}
-		$conn = $maint->getConnection();
+		$conn = $this->maintenance->getConnection();
 		if ( $expected !== null ) {
 			$this->assertEquals( $expected, $conn->getClusterName() );
 		}

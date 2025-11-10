@@ -49,7 +49,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 	/**
 	 * @var SearchConfig
 	 */
-	private $searchConfig;
+	protected $searchConfig;
 
 	public function __construct( ?SearchConfig $searchConfig = null ) {
 		parent::__construct();

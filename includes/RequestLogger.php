@@ -280,9 +280,7 @@ class RequestLogger {
 
 				Util::setIfDefined(
 					$requestContext, 'hits', $requestEntry, 'hits',
-					function ( $v ) {
-						return $this->encodeHits( $v );
-					}
+					$this->encodeHits( ... )
 				);
 				if ( isset( $requestEntry['hits'] ) ) {
 					$allHits = array_merge( $allHits, $requestEntry['hits'] );

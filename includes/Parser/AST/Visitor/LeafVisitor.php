@@ -27,7 +27,7 @@ abstract class LeafVisitor implements Visitor {
 	 * @param string[] $excludeOccurs
 	 */
 	public function __construct( array $excludeOccurs = [] ) {
-		array_walk( $excludeOccurs, static fn ( $x ) => BooleanClause::validateOccur( $x ) );
+		array_walk( $excludeOccurs, BooleanClause::validateOccur( ... ) );
 		$this->excludeOccurs = $excludeOccurs;
 	}
 

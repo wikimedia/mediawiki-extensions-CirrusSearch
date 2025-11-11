@@ -107,12 +107,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	public function testgetDefaultBoostTemplatesLocal() {
 		$services = MediaWikiServices::getInstance();
 		$services->resetServiceForTesting( 'MessageCache' );
-		$services->redefineService(
-			'MessageCache',
-			function () {
-				return $this->getMockCache();
-			}
-		);
+		$services->redefineService( 'MessageCache', $this->getMockCache( ... ) );
 		TestingAccessWrapper::newFromClass( Util::class )->defaultBoostTemplates = null;
 
 		$cache = $this->getWanCache();

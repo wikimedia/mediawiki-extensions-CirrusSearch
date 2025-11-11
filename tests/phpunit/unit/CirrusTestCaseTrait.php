@@ -335,9 +335,7 @@ trait CirrusTestCaseTrait {
 		return new class(
 			$hostWikiID,
 			$iwResolver ?: new EmptyInterwikiResolver(),
-			static function ( $v ) {
-				return self::sanitizeLinkFragment( $v );
-			}
+			self::sanitizeLinkFragment( ... )
 		) extends TitleHelper {
 			/** @inheritDoc */
 			public function __construct( $hostWikiId,

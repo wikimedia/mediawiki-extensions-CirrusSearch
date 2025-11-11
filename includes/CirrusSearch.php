@@ -198,9 +198,7 @@ class CirrusSearch extends SearchEngine {
 		$this->features['show-multimedia-search-results'] = $this->config->get( 'CirrusSearchCrossProjectShowMultimedia' ) == true;
 		$this->debugOptions = $debugOptions ?? CirrusDebugOptions::fromRequest( $this->request );
 		$this->titleHelper = $titleHelper ?: new TitleHelper( WikiMap::getCurrentWikiId(), $interwikiResolver,
-			static function ( $v ) {
-				return Sanitizer::escapeIdForLink( $v );
-			}
+			Sanitizer::escapeIdForLink( ... )
 		);
 		$extraFieldsInSearchResults = $this->config->get( 'CirrusSearchExtraFieldsInSearchResults' );
 		if ( $extraFieldsInSearchResults ) {

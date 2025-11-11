@@ -9,13 +9,15 @@
 			"Quenhitran",
 			"Trần Nguyễn Minh Huy",
 			"Vinhtantran",
-			"Nvdtn19"
+			"Nvdtn19",
+			"SongNgu.xyz"
 		]
 	},
 	"cirrussearch-desc": "Công cụ tìm kiếm Elasticsearch dành cho MediaWiki",
 	"cirrussearch-backend-error": "Không thể hoàn tất truy vấn của bạn vì một vấn đề tạm thời. Xin vui lòng thử lại sau.",
 	"cirrussearch-parse-error": "Không hiểu truy vấn. Xin hãy làm nó đơn giản hơn. Truy vấn này được ghi vào nhật trình để giúp cải thiện công cụ tìm kiếm.",
 	"cirrussearch-too-busy-error": "Công cụ tìm kiếm đang quá bận rộn. Xin vui lòng thử lại sau.",
+	"cirrussearch-regex-empty-expression": "$1 yêu cầu một biểu thức chính quy.",
 	"cirrussearch-regex-syntax-error": "Lỗi cú pháp biểu thức chính quy tại vị trí $2: $1",
 	"cirrussearch-regex-too-busy-error": "Có quá nhiều truy vấn biểu thức chính quy đang được thực hiện. Xin vui lòng thử lại sau.",
 	"cirrussearch-regex-too-complex-error": "Biểu thức chính quy này quá phức tạp. Tìm hiểu cách làm nó đơn giản hơn [https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch/RegexTooComplex tại đây].",
@@ -27,6 +29,7 @@
 	"cirrussearch-morelikethis-settings": "#<!-- để nguyên dòng này, đừng thay đổi --> <pre>\n# Thông điệp này giúp bạn thay đổi thiết lập tính năng “trang tương tự”.\n# Các thay đổi tại đây sẽ có hiệu lực tức thì.\n# Cú pháp như sau:\n#   * Những dòng bắt đầu bằng ký tự “#” thì toàn bộ dòng là chú thích.\n#   * Những dòng có nội dung thì sẽ là tên thiết lập theo sau là ký tự “:” rồi đến giá trị thiết lập\n# Các thiết lập gồm có:\n#   * min_doc_freq (số nguyên): Số tài liệu tối thiểu (cho mỗi cụm từ) có chứa cụm từ đủ để được xét đến.\n#   * max_doc_freq (số nguyên): Số tài liệu tối đa (cho mỗi cụm từ) có chứa cụm từ được xét đến.\n#                   Cụm từ có tần suất cao thường là “từ kết”.\n#   * max_query_terms (số nguyên): Số cụm từ tối đa được xem xét. Giá trị này có giới hạn trên là $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit (100).\n#   * min_term_freq (số nguyên): Số lần xuất hiện tối thiểu của cụm từ trong tài liệu để tài liệu được xem xét. Đối với các trường nhỏ (tiêu đề) giá trị này nên là 1.\n#   * minimum_should_match (phần trăm -100% đến 100%, hoặc số nguyên là số cụm từ): Phần trăm cụm từ trùng khớp. Mặc định là 30%.\n#   * min_word_len (số nguyên): Chiều dài tối thiểu của cụm từ để được xem xét. Mặc định là 0.\n#   * max_word_len (số nguyên): Chiều dài tối đa của cụm từ, trên giới hạn này sẽ bị bỏ qua. Mặc định là không có giới hạn (0).\n#   * fields (giá trị phân tách bằng dấu phẩy): Các trường sẽ dùng. Các trường cho phép gồm có title (tiêu đề), text (nội dung), auxiliary_text (nội dung phụ), opening_text (đoạn mở đầu), headings (đầu đề mục).\n# Ví dụ về các thiết lập đúng:\n# min_doc_freq:2\n# max_doc_freq:20000\n# max_query_terms:25\n# min_term_freq:2\n# minimum_should_match:30%\n# min_word_len:2\n# max_word_len:40\n# fields:text,opening_text\n# </pre> <!-- để yên dòng này, đừng thay đổi -->",
 	"cirrussearch-didyoumean-settings": "  #<!-- để nguyên dòng này, đừng thay đổi --> <pre>\n# Thông điệp này giúp bạn thay đổi thiết lập tính năng “Có phải ý bạn là”.\n# Xem thêm https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-phrase.html\n# Các thay đổi tại đây sẽ có hiệu lực tức thì.\n# Cú pháp như sau:\n#   * Mọi thứ từ ký tự “#” đến hết dòng là một nhận xét.\n#   * Mọi dòng không trắng là một thiết lập; sau tên thiết lập lần lượt là dấu “:” và giá trị của thiết lập đó\n# Các thiết lập gồm có:\n#   * max_errors (số nguyên): số cụm từ tối đa bị xem là sai chính tả và cần sửa lại. 1 hoặc 2.\n#   * confidence (số thập phân): Mức tin cậy định nghĩa hệ số áp dụng vào điểm từ nhập để dùng làm giá trị biên cho các ứng viên được đề xuất. Chỉ những ứng viên có điểm số cao hơn giá trị biên mới được đưa vào kết quả hiển thị. Ví dụ với mức tin cậy là 1.0 thì chỉ trả về đề xuất có điểm số cao hơn cụm từ nhập vào. Nếu giá trị của thiết lập này là 0.0 thì ứng viên tốt nhất sẽ được trả về.\n#   * min_doc_freq (số thập phân, giữa 0 và 1): Số tài liệu tối thiểu mà một đề xuất cần xuất hiện trong đó.\n#                   Các cụm từ có tần suất cao thường là “từ kết”.\n#   * max_term_freq (số thập phân, giữa 0 và 1): Số tài liệu tối đa mà một thuật ngữ có thể tồn tại trong đó để có thể được đưa vào.\n#   * prefix_length (số nguyên): Số ký tự tiền tố tối thiểu phải khớp với thuật ngữ để được coi là một đề xuất.\n#   * suggest_mode (một trong ba giá trị: missing (thiếu), popular (phổ biến), always (luôn luôn)): Chế độ đề xuất sẽ quản lý cách đưa đề xuất vào kết quả.\n# Ví dụ về các thiết lập đúng:\n# max_errors:2\n# confidence:2.0\n# max_term_freq:0.5\n# min_doc_freq:0.01\n# prefix_length:2\n# suggest_mode:always\n#\n# </pre> <!-- để nguyên dòng này, đừng thay đổi. -->",
 	"cirrussearch-query-too-long": "Yêu cầu tìm kiếm vượt quá số ký tự tối đa được cho phép. (Thực tế: $1; được phép: $2)",
+	"cirrussearch-query-too-long-with-exemptions": "Yêu cầu tìm kiếm vượt quá số ký tự tối đa được cho phép. (Thực tế: $1; được phép: $2, không bao gồm $3)",
 	"cirrussearch-completion-profile-strict": "Đề xuất sát, chỉ bỏ một số dấu chấm phẩy nhưng giữ nguyên dấu thanh mũ và dấu nhấn.",
 	"cirrussearch-completion-profile-classic": "Tiền tố phổ biến, bỏ một số dấu chấm phẩy và dấu thanh mũ.",
 	"cirrussearch-completion-profile-normal": "Bỏ một vài dấu chấm phẩy, dấu thanh mũ và từ dừng.",
@@ -64,8 +67,10 @@
 	"cirrussearch-feature-too-many-conditions": "Quá nhiều điều kiện trong '$1', rút ngắn lại thành $2.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint nên được chỉnh thành một điểm cuối SPARQL hợp lệ để có thể dùng tìm kiếm thể loại sâu bên trong.",
 	"cirrussearch-feature-deepcat-exception": "Truy vấn SPARQL để tìm kiếm thể loại sâu bên trong thất bại",
+	"cirrussearch-feature-deepcat-timeout": "Truy vấn thể loại sâu đã hết thời gian chờ. Nhiều khả năng thể loại này có quá nhiều thể loại con.",
 	"cirrussearch-feature-deepcat-toomany": "Truy vấn thể loại sâu bên trong trả về quá nhiều thể loại",
 	"cirrussearch-feature-deepcat-invalid-title": "Thể loại cung cấp không hợp lệ.",
+	"cirrussearch-feature-pageid-invalid-id": "Trang không hợp lệ {{PLURAL:$2|ID}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Không có thể loại hợp lệ trong '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Không có tiêu đề hợp lệ trong '$1'.",
 	"cirrussearch-mlt-not-configured": "Tính năng '$1' bị cấu hình sai. Hãy yêu cầu người quản trị sửa lại $wgCirrusSearchMoreLikeThisFields",
@@ -75,5 +80,6 @@
 	"cirrussearch-autoselect-profile": "Để bộ máy tìm kiếm quyết định dùng hồ sơ tốt nhất.",
 	"cirrussearch-offset-too-large": "Không truy xuất được kết quả. Số kết quả tìm kiếm tối đa là $1, nhưng lại yêu cầu kết quả từ $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Bỏ qua yêu cầu phân trang kết quả được sắp xếp ngẫu nhiên.",
-	"cirrussearch-articletopic-invalid-topic": "Không hiểu {{PLURAL:$2}}tên chủ đề của từ khóa <kbd>articletopic:</kbd>: $1"
+	"cirrussearch-articletopic-invalid-topic": "Không hiểu {{PLURAL:$2}}tên chủ đề của từ khóa <kbd>articletopic:</kbd>: $1",
+	"cirrussearch-inlanguage-deprecate-comma": "Việc sử dụng dấu phẩy để phân cách từ khóa inlanguage đã lỗi thời. Vui lòng sử dụng | (dấu xổ dọc) để phân tách ngôn ngữ."
 }

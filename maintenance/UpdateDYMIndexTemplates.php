@@ -60,7 +60,6 @@ class UpdateDYMIndexTemplates extends Maintenance {
 		$configUtils = new ConfigUtils( $this->getConnection()->getClient(), $this );
 		$availablePlugins = $this->unwrap(
 			$configUtils->scanAvailablePlugins( $this->getConfig()->get( 'CirrusSearchBannedPlugins' ) ) );
-		$serverVersion = $this->unwrap( $configUtils->getServerVersion() );
 		foreach ( $profiles as $profileName => $profile ) {
 			if ( !isset( $profile['index_template'] ) ) {
 				$this->output( "Skipping template for [$profileName], no template definition found." );
@@ -71,7 +70,6 @@ class UpdateDYMIndexTemplates extends Maintenance {
 				 $templateBuilders[] = IndexTemplateBuilder::build(
 					$this->getConnection(),
 					$profile['index_template'],
-					$serverVersion,
 					$availablePlugins
 				 );
 			} catch ( \InvalidArgumentException $iae ) {

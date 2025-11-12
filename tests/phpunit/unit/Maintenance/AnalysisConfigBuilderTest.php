@@ -209,11 +209,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 	/** @dataProvider provideICUFoldingFilters */
 	public function testICUFolding( array $input, array $expected ) {
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => 'yes' ] );
-		$serverVersion = [ 'distribution' => 'opensearch' ];
 		$plugins = [ 'extra', 'analysis-icu' ];
-		$builder = new AnalysisConfigBuilder(
-			'unknown_language', $serverVersion, $plugins, $config, $this->createCirrusSearchHookRunner( [] )
-		);
+		$builder = new AnalysisConfigBuilder( 'unknown_language', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		$result = $builder->enableICUFolding( $input, 'unknown_language' );
 		$this->assertEquals( $expected[ 'analyzer' ], $result[ 'analyzer' ] );
 		$this->assertTrue( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
@@ -223,7 +220,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		// Test default
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => 'default' ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
-		$builder = new AnalysisConfigBuilder( 'en', $serverVersion, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
+		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		$result = $builder->enableICUFolding( $input, 'unknown_language' );
 		$this->assertEquals( $expected[ 'analyzer' ], $result[ 'analyzer' ] );
 		$this->assertFalse( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
@@ -232,7 +229,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		// test BC code: true = 'yes'
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => true ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
-		$builder = new AnalysisConfigBuilder( 'en', $serverVersion, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
+		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		$this->assertTrue( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
 		$this->assertTrue( $builder->shouldActivateIcuFolding( 'en' ) );
 		$this->assertEquals( $expected[ 'analyzer' ], $result[ 'analyzer' ] );
@@ -240,21 +237,21 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		// Test that we can force disabling ICU folding
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => 'no' ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
-		$builder = new AnalysisConfigBuilder( 'en', $serverVersion, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
+		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		$this->assertFalse( $builder->shouldActivateIcuFolding( 'en' ) );
 		$this->assertFalse( $builder->shouldActivateIcuFolding( 'simple' ) );
 
 		// test BC code: false = 'no'
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => false ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
-		$builder = new AnalysisConfigBuilder( 'en', $serverVersion, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
+		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		$this->assertFalse( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
 		$this->assertFalse( $builder->shouldActivateIcuFolding( 'en' ) );
 
 		// Test that ICU folding cannot be enable without the required plugins
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => 'yes' ] );
 		$plugins = [ 'analysis-icu' ];
-		$builder = new AnalysisConfigBuilder( 'en', $serverVersion, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
+		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		$this->assertFalse( $builder->shouldActivateIcuFolding( 'en' ) );
 		$this->assertFalse( $builder->shouldActivateIcuFolding( 'simple' ) );
 	}
@@ -305,9 +302,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 	/** @dataProvider provideICUTokenizer */
 	public function testICUTokenizer( array $input, array $expected ) {
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuTokenizer' => 'yes' ] );
-		$serverVersion = [ 'distribution' => 'opensearch' ];
 		$plugins = [ 'extra', 'analysis-icu' ];
-		$builder = new AnalysisConfigBuilder( 'en', $serverVersion, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
+		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		$result = $builder->enableICUTokenizer( $input );
 		$this->assertTrue( $builder->shouldActivateIcuTokenization( 'en' ) );
 		$this->assertTrue( $builder->shouldActivateIcuTokenization( 'bo' ) );
@@ -315,13 +311,13 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuTokenizer' => 'no' ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
-		$builder = new AnalysisConfigBuilder( 'en', $serverVersion, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
+		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		$this->assertFalse( $builder->shouldActivateIcuTokenization( 'en' ) );
 		$this->assertFalse( $builder->shouldActivateIcuTokenization( 'bo' ) );
 
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuTokenizer' => 'default' ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
-		$builder = new AnalysisConfigBuilder( 'bo', $serverVersion, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
+		$builder = new AnalysisConfigBuilder( 'bo', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		$this->assertFalse( $builder->shouldActivateIcuTokenization( 'en' ) );
 		$this->assertTrue( $builder->shouldActivateIcuTokenization( 'bo' ) );
 	}
@@ -498,9 +494,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 	/** @dataProvider provideHomoglyphPluginFilters */
 	public function testHomoglyphPluginOrdering( array $input, array $expected ) {
 		$config = $this->buildConfig( [] );
-		$serverVersion = [ 'distribution' => 'opensearch' ];
 		$plugins = [ 'extra', 'extra-analysis-homoglyph' ];
-		$builder = new AnalysisConfigBuilder( 'xx', $serverVersion, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
+		$builder = new AnalysisConfigBuilder( 'xx', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 
 		// keep things simple and only enable homoglyph_norm for testing
 		// specify badfilter[12] as incompatible
@@ -655,8 +650,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			}
 		}
 
-		$serverVersion = [ 'distribution' => 'opensearch' ];
-		$builder = new AnalysisConfigBuilder( $langCode, $serverVersion, $plugins, $config,
+		$builder = new AnalysisConfigBuilder( $langCode, $plugins, $config,
 			$this->createCirrusSearchHookRunner( [] ) );
 
 		if ( is_string( $expected ) ) {
@@ -765,8 +759,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => 'default',
 										'CirrusSearchUseIcuTokenizer' => 'default' ] );
 
-		$serverVersion = [ 'distribution' => 'opensearch' ];
-		$builder = new AnalysisConfigBuilder( 'en', $serverVersion, $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
+		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config, $this->createCirrusSearchHookRunner( [] ) );
 		$builder->buildLanguageConfigs( $oldConfig, $languages,
 			[ 'plain', 'plain_search', 'text', 'text_search' ] );
 		$oldConfig = $this->normalizeAnalysisConfig( $oldConfig );
@@ -925,8 +918,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			'not_yy' => ( new GlobalCustomFilter( 'filter' ) )->
 			setLanguageDenyList( [ 'yy' ] ),
 		] );
-		$serverVersion = [ 'distribution' => 'opensearch' ];
-		$builder = new AnalysisConfigBuilder( $lang, $serverVersion, [], $this->buildConfig( [] ),
+		$builder = new AnalysisConfigBuilder( $lang, [], $this->buildConfig( [] ),
 			$this->createCirrusSearchHookRunner( [] ) );
 		$builder->globalCustomFilters = $gcf;
 		$empty_analyzer = [ 'analyzer' => [ 'text' => [ 'type' => 'custom', 'filter' => [] ] ] ];
@@ -1044,8 +1036,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			setDisallowedCharFilters( [ 'bad_char_filter' ] ),
 		] );
 
-		$serverVersion = [ 'distribution' => 'opensearch' ];
-		$builder = new AnalysisConfigBuilder( 'xx', $serverVersion, [], $this->buildConfig( [] ),
+		$builder = new AnalysisConfigBuilder( 'xx', [], $this->buildConfig( [] ),
 			$this->createCirrusSearchHookRunner( [] ) );
 		$builder->globalCustomFilters = $gcf;
 
@@ -1152,8 +1143,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			'new_filter2' => new GlobalCustomFilter( 'filter' ),
 		] );
 
-		$serverVersion = [ 'distribution' => 'opensearch' ];
-		$builder = new AnalysisConfigBuilder( 'xx', $serverVersion, [], $this->buildConfig( [] ),
+		$builder = new AnalysisConfigBuilder( 'xx', [], $this->buildConfig( [] ),
 			$this->createCirrusSearchHookRunner( [] ) );
 		$builder->globalCustomFilters = $gcf;
 

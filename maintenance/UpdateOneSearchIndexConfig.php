@@ -113,11 +113,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $availablePlugins;
 
 	/**
-	 * @var array Version section of server banner response
-	 */
-	private $serverVersion;
-
-	/**
 	 * @var array
 	 */
 	protected $bannedPlugins;
@@ -253,7 +248,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 			$this->unwrap( $utils->checkElasticsearchVersion() );
 			$this->availablePlugins = $this->unwrap( $utils->scanAvailablePlugins( $this->bannedPlugins ) );
-			$this->serverVersion = $this->unwrap( $utils->getServerVersion() );
 
 			if ( $this->getOption( 'justAllocation', false ) ) {
 				$this->validateShardAllocation();
@@ -511,12 +505,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
+	 * @param string $langCode
+	 * @param array $availablePlugins
 	 * @return AnalysisConfigBuilder
 	 */
-	private function pickAnalyzer() {
-		$analysisConfigBuilder = new AnalysisConfigBuilder( $this->langCode, $this->serverVersion, $this->availablePlugins );
+	private function pickAnalyzer( $langCode, array $availablePlugins = [] ) {
+		$analysisConfigBuilder = new \CirrusSearch\Maintenance\AnalysisConfigBuilder(
+			$langCode, $availablePlugins );
 		$this->outputIndented( 'Picking analyzer...' .
-								$analysisConfigBuilder->getDefaultTextAnalyzerType( $this->langCode ) .
+								$analysisConfigBuilder->getDefaultTextAnalyzerType( $langCode ) .
 								"\n" );
 		return $analysisConfigBuilder;
 	}
@@ -618,7 +615,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function initAnalysisConfig() {
-		$analysisConfigBuilder = $this->pickAnalyzer();
+		$analysisConfigBuilder = $this->pickAnalyzer( $this->langCode, $this->availablePlugins );
 
 		$this->analysisConfig = $analysisConfigBuilder->buildConfig();
 		if ( $this->safeToOptimizeAnalysisConfig ) {

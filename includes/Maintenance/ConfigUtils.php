@@ -44,33 +44,19 @@ class ConfigUtils {
 		$this->out = $out;
 	}
 
-	/**
-	 * @return Status The contained value is the `version` array
-	 *  of the sever banner response.
-	 */
-	public function getServerVersion(): Status {
+	public function checkElasticsearchVersion(): Status {
+		$this->outputIndented( 'Fetching server version...' );
 		$response = $this->client->request( '' );
 		if ( !$response->isOK() ) {
-			return Status::newFatal( "Cannot fetch server version: "
+			return Status::newFatal( "Cannot fetch elasticsearch version: "
 				. $response->getError() );
 		}
 		$banner = $response->getData();
 		if ( !isset( $banner['version']['number'] ) ) {
-			return Status::newFatal( 'unable to determine server version, aborting.' );
+			return Status::newFatal( 'unable to determine, aborting.' );
 		}
-		return Status::newGood( $banner['version'] );
-	}
-
-	public function checkElasticsearchVersion(): Status {
-		$this->outputIndented( 'Fetching server version...' );
-		$versionStatus = $this->getServerVersion();
-		if ( !$versionStatus->isOk() ) {
-			return $versionStatus;
-		}
-		$version = $versionStatus->getValue();
-
-		$distribution = $version['distribution'] ?? 'elasticsearch';
-		$version = $version['number'];
+		$distribution = $banner['version']['distribution'] ?? 'elasticsearch';
+		$version = $banner['version']['number'];
 		$this->output( "$distribution $version..." );
 
 		$required = $distribution === 'opensearch' ? '1.3' : '7.10';

@@ -19,11 +19,6 @@ class IndexTemplateBuilder {
 	private $templateName;
 
 	/**
-	 * @var array
-	 */
-	private $serverVersion;
-
-	/**
 	 * @var string[]
 	 */
 	private $availablePlugins;
@@ -42,7 +37,6 @@ class IndexTemplateBuilder {
 	 * @param Connection $connection
 	 * @param string $templateName
 	 * @param array $templateDefinition
-	 * @param array $serverVersion
 	 * @param string[] $availablePlugins
 	 * @param string $languageCode
 	 */
@@ -50,7 +44,6 @@ class IndexTemplateBuilder {
 		Connection $connection,
 		$templateName,
 		array $templateDefinition,
-		array $serverVersion,
 		array $availablePlugins,
 		$languageCode
 	) {
@@ -59,7 +52,6 @@ class IndexTemplateBuilder {
 		$this->connection = $connection;
 		$this->templateName = $templateName;
 		$this->templateDefinition = $templateDefinition;
-		$this->serverVersion = $serverVersion;
 		$this->availablePlugins = $availablePlugins;
 		$this->languageCode = $languageCode;
 	}
@@ -67,7 +59,6 @@ class IndexTemplateBuilder {
 	/**
 	 * @param Connection $connection
 	 * @param array $templateDefinition
-	 * @param array $serverVersion
 	 * @param string[] $availablePlugins
 	 * @return self
 	 * @throws \InvalidArgumentException
@@ -75,7 +66,6 @@ class IndexTemplateBuilder {
 	public static function build(
 		Connection $connection,
 		array $templateDefinition,
-		array $serverVersion,
 		array $availablePlugins
 	): self {
 		$templateName = $templateDefinition['template_name'] ?? null;
@@ -85,14 +75,12 @@ class IndexTemplateBuilder {
 		}
 		unset( $templateDefinition['template_name'] );
 		unset( $templateDefinition['language_code'] );
-		return new self( $connection, $templateName, $templateDefinition, $serverVersion, $availablePlugins, $langCode );
+		return new self( $connection, $templateName, $templateDefinition, $availablePlugins, $langCode );
 	}
 
 	public function execute() {
 		$indexTemplate = $this->createIndexTemplate();
-		$analysisConfigBuilder = new AnalysisConfigBuilder(
-			$this->languageCode, $this->serverVersion, $this->availablePlugins, $this->getSearchConfig()
-		);
+		$analysisConfigBuilder = new AnalysisConfigBuilder( $this->languageCode, $this->availablePlugins, $this->getSearchConfig() );
 		$filter = new AnalysisFilter();
 		[ $analysis, $mappings ] = $filter->filterAnalysis( $analysisConfigBuilder->buildConfig(),
 			$this->templateDefinition['mappings'], true );

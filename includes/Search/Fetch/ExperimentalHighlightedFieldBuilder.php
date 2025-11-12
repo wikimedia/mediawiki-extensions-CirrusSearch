@@ -83,7 +83,6 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 	 * @param string $pattern
 	 * @param bool $caseInsensitive
 	 * @param int $priority
-	 * @param string $regexFlavor
 	 * @return self
 	 */
 	public static function newRegexField(
@@ -92,15 +91,14 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 		$target,
 		$pattern,
 		$caseInsensitive,
-		$priority,
-		$regexFlavor = 'lucene'
+		$priority
 	): self {
 		// TODO: verify that we actually need to have all the text() options when running a regex
 		/** @var self $self */
 		$self = ( self::text() )( $config, $name, $target, $priority );
 		$self->addOption( 'regex', [ $pattern ] );
 		$self->addOption( 'locale', $config->get( 'LanguageCode' ) );
-		$self->addOption( 'regex_flavor', $regexFlavor );
+		$self->addOption( 'regex_flavor', 'lucene' );
 		$self->addOption( 'skip_query', true );
 		$self->addOption( 'regex_case_insensitive', $caseInsensitive );
 		$self->addOption( 'max_determinized_states', $config->get( 'CirrusSearchRegexMaxDeterminizedStates' ) );

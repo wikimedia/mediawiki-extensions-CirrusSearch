@@ -584,12 +584,6 @@ class AnalysisConfigBuilder {
 					'tokenizer' => 'trigram',
 					'filter' => [ 'lowercase' ],
 				],
-				'trigram_anchored' => [
-					'type' => 'custom',
-					'tokenizer' => 'trigram',
-					'filter' => [ 'lowercase' ],
-					'char_filter' => [ 'add_regex_start_end_anchors' ],
-				],
 			],
 			'filter' => [
 				'suggest_shingle' => [

@@ -124,7 +124,7 @@
                                 "ab?c"
                             ],
                             "regex_case_insensitive": false,
-                            "regex_flavor": "lucene_anchored",
+                            "regex_flavor": "lucene",
                             "skip_query": true,
                             "top_scoring": true
                         },
@@ -178,7 +178,7 @@
                                 "ab?c"
                             ],
                             "regex_case_insensitive": false,
-                            "regex_flavor": "lucene_anchored",
+                            "regex_flavor": "lucene",
                             "skip_query": true,
                             "top_scoring": true
                         },

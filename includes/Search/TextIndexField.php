@@ -168,11 +168,9 @@ class TextIndexField extends CirrusIndexField {
 
 		if ( $this->allowTrigrams && $this->checkFlag( self::SUPPORT_REGEX ) ) {
 			$extra[] = [
-				'fieldName' => 'trigram',
 				'norms' => false,
 				'type' => 'text',
-				'analyzer' => 'trigram_anchored',
-				'search_analyzer' => 'trigram',
+				'analyzer' => 'trigram',
 				'index_options' => 'docs',
 			];
 		}

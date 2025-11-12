@@ -230,12 +230,6 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	abstract protected function getNonRegexFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context );
 
 	/**
-	 * Determine the flavor of regex highlighting to apply.
-	 * @return string one of: java, lucene, lucene_extended, lucene_anchored
-	 */
-	abstract protected function getRegexHLFlavor(): string;
-
-	/**
 	 * @param string $pattern
 	 * @param bool $insensitive
 	 * @return AbstractQuery
@@ -268,11 +262,9 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 		if ( !$generator->supportsRegexFields() ) {
 			return $fields;
 		}
-		$regexFlavor = $this->getRegexHLFlavor();
 		foreach ( $this->fields as $field => $hlTarget ) {
 			$fields[] = $generator->newRegexField( "$field.plain", $hlTarget,
-				$pattern, $insensitive, HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY,
-				$regexFlavor );
+				$pattern, $insensitive, HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY );
 		}
 		return $fields;
 	}

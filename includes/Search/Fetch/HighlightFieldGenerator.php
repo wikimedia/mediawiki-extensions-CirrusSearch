@@ -9,7 +9,6 @@ interface HighlightFieldGenerator {
 	 * @param string $pattern
 	 * @param bool $caseInsensitive
 	 * @param int $priority
-	 * @param string $regexFlavor
 	 * @return BaseHighlightedField
 	 * @see HighlightFieldGenerator::supportsRegexFields()
 	 */
@@ -18,8 +17,7 @@ interface HighlightFieldGenerator {
 		$target,
 		$pattern,
 		$caseInsensitive,
-		$priority = HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY,
-		$regexFlavor = 'lucene'
+		$priority = HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY
 	): BaseHighlightedField;
 
 	/**

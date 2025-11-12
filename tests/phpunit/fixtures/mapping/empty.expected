@@ -126,8 +126,7 @@
                     "similarity": "bm25",
                     "type": "text",
                     "norms": false,
-                    "analyzer": "trigram_anchored",
-                    "search_analyzer": "trigram",
+                    "analyzer": "trigram",
                     "index_options": "docs"
                 }
             }
@@ -276,8 +275,7 @@
                             "similarity": "bm25",
                             "type": "text",
                             "norms": false,
-                            "analyzer": "trigram_anchored",
-                            "search_analyzer": "trigram",
+                            "analyzer": "trigram",
                             "index_options": "docs"
                         }
                     },

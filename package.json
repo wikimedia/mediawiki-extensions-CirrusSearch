@@ -19,7 +19,8 @@
 		"@wdio/spec-reporter": "9.19.2",
 		"chai": "4.1.2",
 		"deepmerge": "2.0.1",
-		"eslint-config-wikimedia": "0.31.0",
+		"eslint-config-wikimedia": "0.32.1",
+		"fastify": "^4.28.1",
 		"grunt": "1.6.1",
 		"grunt-banana-checker": "0.13.0",
 		"grunt-eslint": "24.3.0",
@@ -27,7 +28,6 @@
 		"mwbot": "1.0.9",
 		"request": "2.88.2",
 		"request-promise-native": "1.0.5",
-		"fastify": "^4.28.1",
 		"semlog": "0.6.10",
 		"stylelint-config-wikimedia": "0.18.0",
 		"wdio-mediawiki": "4.1.3"

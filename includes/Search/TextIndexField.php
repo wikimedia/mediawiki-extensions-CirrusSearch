@@ -158,8 +158,11 @@ class TextIndexField extends CirrusIndexField {
 		}
 		if ( $this->checkFlag( SearchIndexField::FLAG_CASEFOLD ) ) {
 			$extra[] = [
-				'type' => 'keyword',
-				'normalizer' => 'lowercase_keyword',
+				'analyzer' => 'lowercase_keyword',
+				'norms' => false,
+				'index_options' => 'docs',
+				// TODO: Re-enable in ES 5.2 with keyword type and s/analyzer/normalizer/
+				// 'ignore_above' => KeywordIndexField::KEYWORD_IGNORE_ABOVE,
 			];
 		}
 
@@ -196,7 +199,7 @@ class TextIndexField extends CirrusIndexField {
 			$field[ 'fields' ][ 'plain' ][ 'norms' ] = false;
 		}
 		foreach ( $extra as $extraField ) {
-			$extraName = $extraField[ 'fieldName' ] ?? $extraField[ 'analyzer' ] ?? $extraField['normalizer'];
+			$extraName = $extraField[ 'fieldName' ] ?? $extraField[ 'analyzer' ];
 			unset( $extraField[ 'fieldName' ] );
 
 			$field[ 'fields' ][ $extraName ] = array_merge( [

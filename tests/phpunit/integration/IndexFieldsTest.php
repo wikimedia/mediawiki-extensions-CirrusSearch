@@ -15,7 +15,7 @@ class IndexFieldsTest extends CirrusIntegrationTestCase {
 	public static function provideTypes() {
 		return [
 			[ SearchIndexField::INDEX_TYPE_TEXT, 'text', 'CirrusSearch\\Search\\TextIndexField' ],
-			[ SearchIndexField::INDEX_TYPE_KEYWORD, 'keyword', 'CirrusSearch\\Search\\KeywordIndexField' ],
+			[ SearchIndexField::INDEX_TYPE_KEYWORD, 'text', 'CirrusSearch\\Search\\KeywordIndexField' ],
 			[ SearchIndexField::INDEX_TYPE_INTEGER, 'long', 'CirrusSearch\\Search\\IntegerIndexField' ],
 			[ SearchIndexField::INDEX_TYPE_NUMBER, 'double', 'CirrusSearch\\Search\\NumberIndexField' ],
 			[ SearchIndexField::INDEX_TYPE_DATETIME, 'date', 'CirrusSearch\\Search\\DatetimeIndexField' ],

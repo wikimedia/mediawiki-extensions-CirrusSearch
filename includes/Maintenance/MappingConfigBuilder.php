@@ -129,7 +129,7 @@ class MappingConfigBuilder {
 			],
 			[ 'analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => false ],
 			[ 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => false ],
-			[ 'type' => 'keyword', 'normalizer' => 'keyword' ],
+			[ 'analyzer' => 'keyword', 'index_options' => 'docs', 'norms' => false ],
 		];
 		if ( $this->flags & self::PREFIX_START_WITH_ANY ) {
 			$titleExtraAnalyzers[] = [
@@ -194,7 +194,6 @@ class MappingConfigBuilder {
 					->getMapping( $this->engine ),
 				'namespace_text' => $this->searchIndexFieldFactory
 					->newKeywordField( 'namespace_text' )
-					->withDocValues()
 					->getMapping( $this->engine ),
 				'title' => $this->searchIndexFieldFactory
 					->newStringField( 'title',

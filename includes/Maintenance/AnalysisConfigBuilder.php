@@ -634,8 +634,12 @@ class AnalysisConfigBuilder {
 					'type' => 'asciifolding',
 					'preserve_original' => true
 				],
+				// The 'keyword' type in ES seems like a hack
+				// and doesn't allow normalization (like lowercase)
+				// prior to 5.2. Instead we consistently use 'text'
+				// and truncate where necessary.
 				'truncate_keyword' => [
-					'type' => 'truncate_norm',
+					'type' => 'truncate',
 					'length' => self::KEYWORD_IGNORE_ABOVE,
 				],
 				'remove_empty' => [
@@ -822,21 +826,6 @@ class AnalysisConfigBuilder {
 					],
 				],
 			],
-			'normalizer' => [
-				'lowercase_keyword' => [
-					'type' => 'custom',
-					'filter' => [
-						'truncate_keyword',
-						'lowercase'
-					],
-				],
-				'keyword' => [
-					'type' => 'custom',
-					'filter' => [
-						'truncate_keyword',
-					],
-				]
-			]
 		];
 
 		foreach ( $defaults[ 'analyzer' ] as &$analyzer ) {
@@ -1720,30 +1709,28 @@ class AnalysisConfigBuilder {
 
 		// replace lowercase filters with icu_normalizer filter
 		if ( $this->isIcuAvailable() ) {
-			foreach ( [ 'analyzer', 'normalizer' ] as $componentType ) {
-				foreach ( $config[ $componentType ] as &$component ) {
-					if ( !isset( $component[ 'filter'  ] ) ) {
-						continue;
-					}
-					$tmpFilters = [];
-					foreach ( $component[ 'filter' ] as $filter ) {
-						if ( $filter === 'lowercase' ) {
-							// If lowercase filter has language-specific processing, keep it,
-							// and do it before ICU normalization, particularly for Greek,
-							// Irish, and Turkish
-							// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T203117
-							// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T217602
-							if ( isset( $config[ 'filter' ][ 'lowercase' ][ 'language' ] ) ) {
-								$tmpFilters[] = 'lowercase';
-							}
-							$tmpFilters[] = 'icu_normalizer';
-						} else {
-							$tmpFilters[] = $filter;
-						}
-					}
-					$component[ 'filter' ] = $tmpFilters;
+			foreach ( $config[ 'analyzer' ] as &$analyzer ) {
+				if ( !isset( $analyzer[ 'filter'  ] ) ) {
+					continue;
 				}
 
+				$tmpFilters = [];
+				foreach ( $analyzer[ 'filter' ] as $filter ) {
+					if ( $filter === 'lowercase' ) {
+						// If lowercase filter has language-specific processing, keep it,
+						// and do it before ICU normalization, particularly for Greek,
+						// Irish, and Turkish
+						// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T203117
+						// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T217602
+						if ( isset( $config[ 'filter' ][ 'lowercase' ][ 'language' ] ) ) {
+							$tmpFilters[] = 'lowercase';
+						}
+						$tmpFilters[] = 'icu_normalizer';
+					} else {
+						$tmpFilters[] = $filter;
+					}
+				}
+				$analyzer[ 'filter' ] = $tmpFilters;
 			}
 		}
 
@@ -1861,51 +1848,40 @@ class AnalysisConfigBuilder {
 	 * @param string $name Name for analyzer whose config we're merging
 	 * @param string $prefix Prefix for this configuration
 	 */
-	private function mergeAnalyzerConfig( array &$config, array $langConfig, $name, $prefix ): void {
+	private function mergeConfig( array &$config, array $langConfig, $name, $prefix ) {
 		$analyzer = $langConfig[ 'analyzer' ][ $name ];
 		$config[ 'analyzer' ][ $prefix . '_' . $name ] = $analyzer;
-		foreach ( [ 'filter', 'char_filter', 'tokenizer' ] as $component ) {
-			$this->mergeAnalysisComponent( $analyzer, $component, $langConfig, $config );
-		}
-	}
-
-	/**
-	 * Merge per-language config into the main config.
-	 * It will copy specific normalizer and all dependant filters and char_filters.
-	 * @param array &$config Main config
-	 * @param array $langConfig Per-language config
-	 * @param string $name Name for analyzer whose config we're merging
-	 * @param string $prefix Prefix for this configuration
-	 */
-	private function mergeNormalizerConfig( array &$config, array $langConfig, string $name, string $prefix ): void {
-		$normalizer = $langConfig[ 'normalizer' ][ $name ];
-		$config[ 'normalizer' ][ $prefix . '_' . $name ] = $normalizer;
-		foreach ( [ 'filter', 'char_filter' ] as $componentType ) {
-			$this->mergeAnalysisComponent( $normalizer, $componentType, $langConfig, $config );
-		}
-	}
-
-	/**
-	 * @param array $customAnalysisComponent the custom analysis component (analyzer or normalizer)
-	 * @param string $type the type of component to merge (filter, char_filter or tokenizer)
-	 * @param array $langConfig the langConfig to merge from
-	 * @param array &$config the target config to merge into
-	 */
-	private function mergeAnalysisComponent( array $customAnalysisComponent, string $type, array $langConfig, array &$config ): void {
-		if ( !empty( $customAnalysisComponent[$type] ) ) {
-			// Add private filters for this normalizer
-			$components = is_array( $customAnalysisComponent[$type] ) ?
-				$customAnalysisComponent[$type] :
-				[ $customAnalysisComponent[$type] ];
-			foreach ( $components as $componentName ) {
-				// Copy type of analysis components that are in language config but not in the main config.
+		if ( !empty( $analyzer[ 'filter' ] ) ) {
+			// Add private filters for this analyzer
+			foreach ( $analyzer[ 'filter' ] as $filter ) {
+				// Copy filters that are in language config but not in the main config.
 				// We would not copy the same filter into the main config since due to
 				// the resolution step we know they are the same (otherwise we would have
 				// renamed it).
-				if ( isset( $langConfig[$type][$componentName] ) &&
-					 !isset( $config[$type][$componentName] ) ) {
-					$config[$type][$componentName] = $langConfig[$type][$componentName];
+				if ( isset( $langConfig[ 'filter' ][ $filter ] ) &&
+					!isset( $config[ 'filter' ][ $filter ] ) ) {
+					$config[ 'filter' ][ $filter ] = $langConfig[ 'filter' ][ $filter ];
 				}
+			}
+		}
+		if ( !empty( $analyzer[ 'char_filter' ] ) ) {
+			// Add private char_filters for this analyzer
+			foreach ( $analyzer[ 'char_filter' ] as $filter ) {
+				// Copy char_filters that are in lang config but not in the main config.
+				// Need to check whether the filter exists in langConfig because some
+				// non-configurable filters are defined in plugins and do not have a
+				// local definition (e.g., camelCase_splitter)
+				if ( isset( $langConfig[ 'char_filter' ][ $filter ] ) &&
+					!isset( $config[ 'char_filter' ][ $filter ] ) ) {
+					$config[ 'char_filter' ][ $filter ] = $langConfig[ 'char_filter' ][ $filter ];
+				}
+			}
+		}
+		if ( !empty( $analyzer[ 'tokenizer' ] ) ) {
+			$tokenizer = $analyzer[ 'tokenizer' ];
+			if ( isset( $langConfig[ 'tokenizer' ][ $tokenizer ] ) &&
+					!isset( $config[ 'tokenizer' ][ $tokenizer ] ) ) {
+				$config[ 'tokenizer' ][ $tokenizer ] = $langConfig[ 'tokenizer' ][ $tokenizer ];
 			}
 		}
 	}
@@ -1916,9 +1892,8 @@ class AnalysisConfigBuilder {
 	 * @param array &$config Existing config, will be modified
 	 * @param string[] $languages List of languages to process
 	 * @param string[] $analyzers List of analyzers to process
-	 * @param string[] $normalizers List of normalizers to process
 	 */
-	public function buildLanguageConfigs( array &$config, array $languages, array $analyzers, array $normalizers = [] ) {
+	public function buildLanguageConfigs( array &$config, array $languages, array $analyzers ) {
 		$defaultFilters = $this->getDefaultFilters( $config, $analyzers );
 		foreach ( $languages as $lang ) {
 			$langConfig = $this->buildConfig( $lang );
@@ -1934,10 +1909,7 @@ class AnalysisConfigBuilder {
 				$this->resolveFilters( $langConfig, $config[ 'filter' ], $defaultFilters, $lang );
 			// Merge configs
 			foreach ( $analyzers as $analyzer ) {
-				$this->mergeAnalyzerConfig( $config, $langConfig, $analyzer, $lang );
-			}
-			foreach ( $normalizers as $normalizer ) {
-				$this->mergeNormalizerConfig( $config, $langConfig, $normalizer, $lang );
+				$this->mergeConfig( $config, $langConfig, $analyzer, $lang );
 			}
 		}
 	}

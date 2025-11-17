@@ -441,23 +441,8 @@
             "output_unigrams": true
         },
         "truncate_keyword": {
-            "type": "truncate_norm",
+            "type": "truncate",
             "length": 5000
-        }
-    },
-    "normalizer": {
-        "keyword": {
-            "type": "custom",
-            "filter": [
-                "truncate_keyword"
-            ]
-        },
-        "lowercase_keyword": {
-            "type": "custom",
-            "filter": [
-                "truncate_keyword",
-                "icu_normalizer"
-            ]
         }
     },
     "tokenizer": {

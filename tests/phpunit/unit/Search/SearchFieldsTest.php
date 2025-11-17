@@ -14,7 +14,7 @@ class SearchFieldsTest extends CirrusTestCase {
 	public static function provideFields() {
 		return [
 			[ SearchIndexField::INDEX_TYPE_TEXT, 'text' ],
-			[ SearchIndexField::INDEX_TYPE_KEYWORD, 'keyword' ],
+			[ SearchIndexField::INDEX_TYPE_KEYWORD, 'text' ],
 			[ SearchIndexField::INDEX_TYPE_INTEGER, 'long' ],
 			[ SearchIndexField::INDEX_TYPE_NUMBER, 'double' ],
 			[ SearchIndexField::INDEX_TYPE_DATETIME, 'date' ],

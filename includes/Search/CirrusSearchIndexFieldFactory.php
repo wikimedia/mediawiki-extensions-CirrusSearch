@@ -42,7 +42,7 @@ class CirrusSearchIndexFieldFactory {
 	 * @return SearchIndexField
 	 */
 	public function makeSearchFieldMapping( $name, $type ): SearchIndexField {
-		// Specific type for opening_text
+		// Specific types
 		switch ( $name ) {
 			case 'opening_text':
 				return new OpeningTextIndexField( $name, $type, $this->searchConfig );

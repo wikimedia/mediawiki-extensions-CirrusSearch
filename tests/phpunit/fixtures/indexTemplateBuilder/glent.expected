@@ -27,7 +27,7 @@
                 },
                 "filter": {
                     "truncate_keyword": {
-                        "type": "truncate",
+                        "type": "truncate_norm",
                         "length": 5000
                     },
                     "icu_normalizer": {
@@ -51,7 +51,8 @@
                             "-=>\\u0020"
                         ]
                     }
-                }
+                },
+                "normalizer": []
             }
         },
         "mappings": {

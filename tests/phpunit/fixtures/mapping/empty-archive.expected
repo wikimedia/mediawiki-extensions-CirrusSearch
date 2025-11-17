@@ -21,10 +21,9 @@
             }
         },
         "wiki": {
-            "type": "text",
-            "analyzer": "keyword",
-            "norms": false,
-            "index_options": "docs"
+            "type": "keyword",
+            "doc_values": false,
+            "normalizer": "keyword"
         }
     }
 }

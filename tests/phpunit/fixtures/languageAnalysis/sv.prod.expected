@@ -430,8 +430,23 @@
             "stopwords": "_swedish_"
         },
         "truncate_keyword": {
-            "type": "truncate",
+            "type": "truncate_norm",
             "length": 5000
+        }
+    },
+    "normalizer": {
+        "keyword": {
+            "type": "custom",
+            "filter": [
+                "truncate_keyword"
+            ]
+        },
+        "lowercase_keyword": {
+            "type": "custom",
+            "filter": [
+                "truncate_keyword",
+                "icu_normalizer"
+            ]
         }
     },
     "tokenizer": {

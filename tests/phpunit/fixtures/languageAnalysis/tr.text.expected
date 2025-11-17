@@ -396,7 +396,7 @@
             "output_unigrams": true
         },
         "truncate_keyword": {
-            "type": "truncate",
+            "type": "truncate_norm",
             "length": 5000
         },
         "turkish_stemmer": {
@@ -406,6 +406,21 @@
         "turkish_stop": {
             "type": "stop",
             "stopwords": "_turkish_"
+        }
+    },
+    "normalizer": {
+        "keyword": {
+            "type": "custom",
+            "filter": [
+                "truncate_keyword"
+            ]
+        },
+        "lowercase_keyword": {
+            "type": "custom",
+            "filter": [
+                "truncate_keyword",
+                "lowercase"
+            ]
         }
     },
     "tokenizer": {

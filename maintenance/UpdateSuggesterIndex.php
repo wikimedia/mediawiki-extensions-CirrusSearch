@@ -274,10 +274,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		$indexAliasName = $connection->getIndexName( $indexBaseName, self::SUFFIX, false, $altIndex, $altIndexId );
 		$bannedPlugins = $config->get( 'CirrusSearchBannedPlugins' );
 
-		$serverVersion = $this->unwrap( $utils->getServerVersion() );
 		$availablePlugins = $this->unwrap( $utils->scanAvailablePlugins( $bannedPlugins ) );
 		$analysisConfigBuilder = new SuggesterAnalysisConfigBuilder( $connection->getConfig()->get( 'LanguageCode' ),
-			$serverVersion, $availablePlugins, $config );
+			$availablePlugins, $config );
 		$analysisConfig = $analysisConfigBuilder->buildConfig();
 		$recycle = $this->canRecycle( $connection, $analysisConfig, $altIndex, $altIndexId );
 		$oldIndexIdentifier = $this->unwrap( $utils->pickIndexIdentifierFromOption(

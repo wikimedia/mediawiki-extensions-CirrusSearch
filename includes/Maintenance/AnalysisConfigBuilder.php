@@ -79,11 +79,6 @@ class AnalysisConfigBuilder {
 	private $plugins;
 
 	/**
-	 * @var array The `version` field of the sever banner response
-	 */
-	private $serverVersion;
-
-	/**
 	 * @var string
 	 */
 	protected $defaultLanguage;
@@ -100,14 +95,12 @@ class AnalysisConfigBuilder {
 
 	/**
 	 * @param string $langCode The language code to build config for
-	 * @param array $serverVersion The `version` field of the sever banner response
 	 * @param string[] $plugins list of installed plugins
 	 * @param SearchConfig|null $config
 	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
 	 */
 	public function __construct(
 		$langCode,
-		array $serverVersion,
 		array $plugins,
 		?SearchConfig $config = null,
 		?CirrusSearchHookRunner $cirrusSearchHookRunner = null
@@ -115,7 +108,6 @@ class AnalysisConfigBuilder {
 		$this->globalCustomFilters = $this->buildGlobalCustomFilters();
 
 		$this->defaultLanguage = $langCode;
-		$this->serverVersion = $serverVersion;
 		$this->plugins = $plugins;
 		foreach ( $this->searchLanguageAnalyzersFromPlugins as $pluginSpec => $extra ) {
 			$pluginsPresent = 1;
@@ -476,14 +468,6 @@ class AnalysisConfigBuilder {
 			default:
 				return null;
 		}
-	}
-
-	/**
-	 * @return bool True if we are operating against an opensearch cluster
-	 */
-	private function isOpenSearch() {
-		// On elasticsearch 'distribution' is unset.
-		return ( $this->serverVersion['distribution'] ?? null ) === 'opensearch';
 	}
 
 	/**
@@ -848,21 +832,6 @@ class AnalysisConfigBuilder {
 				];
 			}
 		}
-
-		if ( !$this->isOpenSearch() ) {
-			// The elastic version of the extra plugin doesn't have the needed
-			// support for anchored regex search. The use case is for
-			// `trigram_anchored` to be used at index time, and `trigram` to be
-			// used at search time. Without the anchor support we can make them
-			// the same.
-			//
-			// We keep the named analyzer as it seems easier to perform the
-			// change here in the config builder rather than passing server
-			// version information down into field definitions so they can
-			// name the appropriate analyzers.
-			$defaults['analyzer']['trigram_anchored'] = $defaults['analyzer']['trigram'];
-		}
-
 		if ( $this->isTextifyAvailable() && $this->shouldActivateIcuTokenization( $language ) ) {
 			$defaults[ 'filter' ][ 'icutokrep_no_camel_split' ] = [
 				'type' => 'icu_token_repair',

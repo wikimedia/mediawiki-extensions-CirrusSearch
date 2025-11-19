@@ -169,14 +169,10 @@ class MetaStoreIndex {
 		if ( !$pluginsStatus->isGood() ) {
 			throw new \RuntimeException( (string)$pluginsStatus );
 		}
-		$serverVersion = $this->configUtils->getServerVersion();
-		if ( !$serverVersion->isGood() ) {
-			throw new \RuntimeException( (string)$serverVersion );
-		}
 		$filter = new AnalysisFilter();
 		[ $analysis, $mappings ] = $filter->filterAnalysis(
 			// Why 'aa'? It comes first? Hoping it receives generic language treatment.
-			( new AnalysisConfigBuilder( 'aa', $serverVersion->getValue(), $pluginsStatus->getValue() ) )->buildConfig(),
+			( new AnalysisConfigBuilder( 'aa', $pluginsStatus->getValue() ) )->buildConfig(),
 			$this->buildMapping()
 		);
 

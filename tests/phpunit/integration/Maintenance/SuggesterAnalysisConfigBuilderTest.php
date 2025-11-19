@@ -37,7 +37,6 @@ class SuggesterAnalysisConfigBuilderTest extends CirrusIntegrationTestCase {
 			}
 		);
 		$config = new HashSearchConfig( $extraConfig + [ 'CirrusSearchSimilarityProfile' => 'default' ] );
-		$serverVersion = [ 'distribution' => 'opensearch' ];
 		$plugins = [
 			'analysis-stempel', 'analysis-kuromoji',
 			'analysis-smartcn', 'analysis-hebrew',
@@ -45,7 +44,7 @@ class SuggesterAnalysisConfigBuilderTest extends CirrusIntegrationTestCase {
 			'extra-analysis-serbian', 'extra-analysis-slovak',
 			'extra-analysis-esperanto', 'analysis-nori',
 		];
-		$builder = new SuggesterAnalysisConfigBuilder( $langCode, $serverVersion, $plugins, $config );
+		$builder = new SuggesterAnalysisConfigBuilder( $langCode, $plugins, $config );
 		if ( !CirrusIntegrationTestCase::hasFixture( $expected ) ) {
 			if ( self::canRebuildFixture() ) {
 				CirrusIntegrationTestCase::saveFixture( $expected, $builder->buildConfig() );

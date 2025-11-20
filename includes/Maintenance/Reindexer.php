@@ -6,6 +6,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\Elastica\ReindexRequest;
 use CirrusSearch\Elastica\ReindexResponse;
 use CirrusSearch\Elastica\ReindexTask;
+use CirrusSearch\Query\ArticlePredictionKeyword;
 use CirrusSearch\SearchConfig;
 use Elastica\Client;
 use Elastica\Exception\Connection\HttpException;
@@ -355,6 +356,7 @@ class Reindexer {
 		}
 		$script['source'] .= $this->makeWeightedTagsPrefixReplaceScript();
 		$script['source'] .= $this->pruneWeightedTagsDeleteMarkersScript();
+		$script['source'] .= $this->migrateArticleTopicUnderscoresScript();
 		// Populate the page_id if it's the first time we add the page_id field to the mapping
 		if ( !isset( $this->oldIndex->getMapping()['properties']['page_id'] )
 				 && isset( $this->index->getMapping()['properties']['page_id'] ) ) {
@@ -392,6 +394,21 @@ class Reindexer {
 		return "
             if (ctx._source.containsKey('weighted_tags') && ctx._source.weighted_tags instanceof List) {
                 ctx._source.weighted_tags.removeIf(item -> item != null && item.endsWith('/__DELETE_GROUPING__'));
+            }";
+	}
+
+	private function migrateArticleTopicUnderscoresScript(): string {
+		// At some point the data source for article topics changed from
+		// providing the values with spaces to providing them with underscores.
+		// Normalize the previously indexed data to match.
+		$prefix = ArticlePredictionKeyword::ARTICLE_TOPIC_TAG_PREFIX;
+		return "
+            if (ctx._source.containsKey('weighted_tags') && ctx._source.weighted_tags instanceof List) {
+                for (int i = 0; i < ctx._source.weighted_tags.length; i++) {
+                    if (ctx._source.weighted_tags[i].startsWith('$prefix/')) {
+                        ctx._source.weighted_tags[i] = ctx._source.weighted_tags[i].replace(' ', '_');
+                    }
+                }
             }";
 	}
 

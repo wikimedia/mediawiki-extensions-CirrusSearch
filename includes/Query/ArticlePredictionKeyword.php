@@ -63,12 +63,24 @@ class ArticlePredictionKeyword extends SimpleKeywordFeature {
 			static fn ( array $k ): bool => array_key_exists( $k['term'], $allowedTerms )
 		);
 
+		$isArticleTopic = $key === 'articletopic';
 		$validKeywords = array_map(
-			static function ( array $k ) use ( $allowedTerms ): array {
-				$terms = $allowedTerms[$k['term']];
-				if ( is_string( $terms ) ) {
-					$terms = [ $terms ];
+			static function ( array $k ) use ( $allowedTerms, $isArticleTopic ): array {
+				$rawTerms = $allowedTerms[$k['term']];
+				$terms = is_string( $rawTerms ) ? [ $rawTerms ] : $rawTerms;
+				// At some point articletopic predictions changed from spaces to
+				// underscores, but the index is still mixed. Once the live indexes
+				// have been made consistent via reindexing this can be removed.
+				if ( $isArticleTopic ) {
+					$bcTerms = [];
+					foreach ( $terms as $term ) {
+						if ( str_contains( $term, '_' ) ) {
+							$bcTerms[] = strtr( $term, [ '_' => ' ' ] );
+						}
+					}
+					$terms = array_merge( $terms, $bcTerms );
 				}
+
 				return [
 					'terms' => $terms,
 					'boost' => $k['boost']

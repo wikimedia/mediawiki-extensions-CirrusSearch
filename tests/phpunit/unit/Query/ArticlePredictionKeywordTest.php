@@ -34,7 +34,7 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 	}
 
 	public function testGetTopicScores() {
-		$rawTopicData = [ 'Culture.Visual arts.Visual arts*|123', 'History and Society.History|456' ];
+		$rawTopicData = [ 'Culture.Visual_arts.Visual_arts*|123', 'History_and_Society.History|456' ];
 		$topics = self::getTopicScores( $rawTopicData );
 		$this->assertSame( [ 'visual-arts' => 0.123, 'history' => 0.456 ], $topics );
 	}

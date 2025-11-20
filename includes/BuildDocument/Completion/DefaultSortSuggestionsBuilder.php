@@ -83,13 +83,16 @@ class DefaultSortSuggestionsBuilder implements ExtraSuggestionsBuilder {
 		if ( $normalizedDefaultSort === false ) {
 			return false;
 		}
-		$normalizedDefaultSort = preg_replace( '/\s+/', $normalizedDefaultSort, ' ' );
-		$normalizedDefaultSort = preg_replace( '/\s+$/', $normalizedDefaultSort, '' );
-		$normalizedTitle = preg_replace( '/\s+/', $normalizedTitle, ' ' );
-		$normalizedTitle = preg_replace( '/\s+$/', $normalizedTitle, '' );
-		if ( $normalizedDefaultSort !== null && $normalizedTitle !== null ) {
-			return str_starts_with( $normalizedTitle, $normalizedDefaultSort );
+		$normalizedDefaultSort = preg_replace( '/\s+/', ' ', $normalizedDefaultSort );
+		if ( $normalizedDefaultSort === null ) {
+			return false;
 		}
-		return false;
+		$normalizedDefaultSort = rtrim( $normalizedDefaultSort );
+		$normalizedTitle = preg_replace( '/\s+/', ' ', $normalizedTitle );
+		if ( $normalizedTitle === null ) {
+			return false;
+		}
+		$normalizedTitle = rtrim( $normalizedTitle );
+		return str_starts_with( $normalizedTitle, $normalizedDefaultSort );
 	}
 }

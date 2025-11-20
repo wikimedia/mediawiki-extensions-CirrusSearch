@@ -179,6 +179,11 @@ class SuggestBuilderTest extends CirrusIntegrationTestCase {
 			'Evora , Cesaria',
 			[ 'Cesária Évora', 'Evora , Cesaria' ],
 		];
+		yield 'irrelevant' => [
+			'Foo',
+			'Bar, Baz',
+			[ 'Foo' ],
+		];
 	}
 
 	/**

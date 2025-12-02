@@ -61,7 +61,7 @@ class UserTestingEngine {
 			// testing doesn't have any globally accessible config.
 			$config->get( 'CirrusSearchUserTesting' ) ?? [],
 			$config->get( 'CirrusSearchActiveTest' ),
-			[ __CLASS__, 'stableUserProbability' ]
+			self::stableUserProbability( ... )
 		);
 	}
 

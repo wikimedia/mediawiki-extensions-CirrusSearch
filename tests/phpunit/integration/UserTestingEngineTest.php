@@ -22,13 +22,13 @@ class UserTestingEngineTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testUnconfigured() {
-		$engine = new UserTestingEngine( [], null, [ __CLASS__, 'one' ] );
+		$engine = new UserTestingEngine( [], null, $this->one( ... ) );
 		$this->assertFalse( $engine->decideTestByTrigger( '' )->isActive() );
 		$this->assertFalse( $engine->decideTestByAutoenroll()->isActive() );
 	}
 
 	public function testConfiguredButNoActiveTest() {
-		$engine = new UserTestingEngine( self::CONFIG, null, [ __CLASS__, 'one' ] );
+		$engine = new UserTestingEngine( self::CONFIG, null, $this->one( ... ) );
 		$this->assertFalse( $engine->decideTestByAutoenroll()->isActive() );
 		$this->assertFalse( $engine->decideTestByTrigger( 'doesnt:exist' )->isActive() );
 		$this->assertFalse( $engine->decideTestByTrigger( 'some_test:nope' )->isActive() );
@@ -55,7 +55,7 @@ class UserTestingEngineTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testAutoenrollment() {
-		$engine = new UserTestingEngine( self::CONFIG, 'some_test', [ __CLASS__, 'one' ] );
+		$engine = new UserTestingEngine( self::CONFIG, 'some_test', $this->one( ... ) );
 		$status = $engine->decideTestByAutoenroll();
 		$this->assertTrue( $status->isActive() );
 		$this->assertSame( 'some_test', $status->getTestName() );
@@ -71,7 +71,7 @@ class UserTestingEngineTest extends CirrusIntegrationTestCase {
 			'dontsetthisvariable' => true,
 		];
 
-		$engine = new UserTestingEngine( $config, 'some_test', [ __CLASS__, 'one' ] );
+		$engine = new UserTestingEngine( $config, 'some_test', $this->one( ... ) );
 		$GLOBALS['wgCirrusSearchRescoreProfile'] = 'global';
 		try {
 			$engine->activateTest( UserTestingStatus::active( 'some_test', 'a' ) );
@@ -88,7 +88,7 @@ class UserTestingEngineTest extends CirrusIntegrationTestCase {
 		$config['some_test']['globals'] = [ 'wgCirrusSearchRescoreProfile' => 'test' ];
 		$config['some_test']['buckets']['a']['globals']['wgCirrusSearchRescoreProfile'] = 'bucket';
 
-		$engine = new UserTestingEngine( $config, 'some_test', [ __CLASS__, 'one' ] );
+		$engine = new UserTestingEngine( $config, 'some_test', $this->one( ... ) );
 		$status = UserTestingStatus::active( 'some_test', 'a' );
 		$GLOBALS['wgCirrusSearchRescoreProfile'] = 'global';
 		try {
@@ -102,7 +102,7 @@ class UserTestingEngineTest extends CirrusIntegrationTestCase {
 	public function testDoesntActivateInactiveStatus() {
 		$config = self::CONFIG;
 		$config['some_test']['globals'] = [ 'wgCirrusSearchRescoreProfile' => 'test' ];
-		$engine = new UserTestingEngine( $config, 'some_test', [ __CLASS__, 'one' ] );
+		$engine = new UserTestingEngine( $config, 'some_test', $this->one( ... ) );
 		$status = UserTestingStatus::inactive();
 		$GLOBALS['wgCirrusSearchRescoreProfile'] = 'global';
 		try {

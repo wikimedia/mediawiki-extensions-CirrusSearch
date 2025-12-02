@@ -15,5 +15,15 @@
 	"cirrussearch-regex-too-complex-error": "Reglulega segðin er of flókin. Lærðu meira um hvernig þú getur einfaldað hana [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|hér]].",
 	"cirrussearch-now-using": "Þessi wiki notar nýja leitarvél. ([[mw:Special:MyLanguage/Help:CirrusSearch|Læra meira]])",
 	"cirrussearch-pref-label": "Ný leit",
-	"cirrussearch-give-feedback": "Gefðu okkur þína ábendingu"
+	"cirrussearch-give-feedback": "Gefðu okkur þína ábendingu",
+	"prefs-completion": "Orðaklárun í leit",
+	"cirrussearch-pref-completion-profile-help": "Stilltu hegðun á sjálfvirkum útfyllingartillögum (leita-við-skrif).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Útfyllingartillögur] koma frá reikniriti fyrir leitartillögur, með betri leiðréttingum á innsláttarvillum og leitarniðurstöðum. Leit með forskeytum er eldra reiknirit fyrir tillögur í leita-við-að-skrifa.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Sjálfgefið (ráðlagt)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Leiðréttir allt að tvær innsláttarvillur. Fjarlægir tilvísanir sem eru mjög líkar aðaltitlinum.",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Leiðréttir allt að tvær innsláttarvillur. Lagfærir lokaðar tilvísanir. Finnur undirsetningar í titlum.",
+	"cirrussearch-completion-profile-strict-pref-name": "Strangur hamur (ítarlegt)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Engin leiðrétting á innsláttarvillum. Lagar nálægar tilvísanir.",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Engin leiðrétting á innsláttarvillum. Lagar nálægar tilvísanir. Finnur undirsetningar í titlum.",
+	"cirrussearch-completion-profile-classic-pref-name": "Klassísk forskeytaleit",
+	"cirrussearch-completion-profile-classic-pref-desc": "Engin leiðrétting á innsláttarvillum. Finnur samsvörun við upphaf titla."
 }

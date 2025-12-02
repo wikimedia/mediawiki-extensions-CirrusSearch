@@ -396,8 +396,8 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		}
 
 		// Do same for the requests in the log
-		foreach ( array_keys( $log['context']['elasticsearch_requests'] ) as $idx ) {
-			$this->assertArrayHasKey( 'request_time_ms', $log['context']['elasticsearch_requests'][$idx], $debug );
+		foreach ( $log['context']['elasticsearch_requests'] as $idx => $request ) {
+			$this->assertArrayHasKey( 'request_time_ms', $request, $debug );
 			unset( $log['context']['elasticsearch_requests'][$idx]['request_time_ms'] );
 		}
 		return $log;

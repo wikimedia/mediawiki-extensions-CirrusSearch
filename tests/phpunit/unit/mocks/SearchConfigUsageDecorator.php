@@ -8,8 +8,8 @@ use CirrusSearch\SearchConfig;
  * Keeps track of all requested configuration keys
  */
 class SearchConfigUsageDecorator extends SearchConfig {
-	/** @var true[] */
-	private static $usedConfigKeys = [];
+	/** @var array<string,true> */
+	private static array $usedConfigKeys = [];
 
 	/** @inheritDoc */
 	public function get( $name ) {
@@ -22,7 +22,7 @@ class SearchConfigUsageDecorator extends SearchConfig {
 	}
 
 	public static function getUsedConfigKeys(): array {
-		return static::$usedConfigKeys;
+		return array_keys( static::$usedConfigKeys );
 	}
 
 	public static function resetUsedConfigKeys() {

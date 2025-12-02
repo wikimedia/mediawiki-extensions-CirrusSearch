@@ -168,7 +168,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		try {
 			$notInApi = [];
 			$notInSearchConfig = [];
-			foreach ( array_keys( SearchConfigUsageDecorator::getUsedConfigKeys() ) as $k ) {
+			foreach ( SearchConfigUsageDecorator::getUsedConfigKeys() as $k ) {
 				if ( in_array( $k, self::$CONFIG_VARS_FALSE_POSITIVES ) ) {
 					continue;
 				}

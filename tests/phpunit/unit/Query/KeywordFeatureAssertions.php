@@ -549,7 +549,7 @@ class KeywordFeatureAssertions {
 
 	/**
 	 * @param KeywordParser $parser
-	 * @return array
+	 * @return array[]
 	 */
 	protected function extractWarnings( KeywordParser $parser ): array {
 		return array_map( static function ( ParseWarning $warning ) {

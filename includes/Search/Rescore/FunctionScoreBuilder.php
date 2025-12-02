@@ -34,7 +34,7 @@ abstract class FunctionScoreBuilder implements BoostFunctionBuilder {
 
 	/**
 	 * @param SearchConfig $config the search config
-	 * @param float $weight the global weight
+	 * @param float|array $weight the global weight
 	 */
 	public function __construct( $config, $weight ) {
 		$this->config = $config;
@@ -45,7 +45,7 @@ abstract class FunctionScoreBuilder implements BoostFunctionBuilder {
 	 * Utility method to extract a factor (float) that can
 	 * be overridden by a config value or an URI param
 	 *
-	 * @param float|array $value
+	 * @param float|array{value:float,config_override:string,uri_param_override:string} $value
 	 * @return float
 	 */
 	protected function getOverriddenFactor( $value ) {

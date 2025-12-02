@@ -11,7 +11,7 @@ use MediaWiki\MediaWikiServices;
  * valid way to query max page id.
  *
  * @group Database
- * @covers CirrusSearch\Hooks\CirrusSearchApiQuerySiteInfoGeneralInfoHook
+ * @covers \CirrusSearch\Hooks\CirrusSearchApiQuerySiteInfoGeneralInfoHook
  */
 class CirrusSearchApiQuerySiteInfoGeneralInfoHookTest extends CirrusIntegrationTestCase {
 	public function testHappyPath() {

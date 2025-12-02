@@ -56,7 +56,7 @@ class KeywordFeatureNode extends ParsedNode {
 	 * @param string $quotedValue
 	 * @param string $delimiter
 	 * @param string $suffix
-	 * @param array|null $parsedValue value as parsed by KeywordFeature::parseValue()
+	 * @param array|null $parsedValue value as parsed by {@link KeywordFeature::parseValue}
 	 * @see KeywordFeature::parseValue()
 	 */
 	public function __construct(

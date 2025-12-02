@@ -551,9 +551,9 @@ class KeywordFeatureAssertions {
 	 * @param KeywordParser $parser
 	 * @return array
 	 */
-	protected function extractWarnings( $parser ) {
+	protected function extractWarnings( KeywordParser $parser ): array {
 		return array_map( static function ( ParseWarning $warning ) {
-			return array_merge( [ $warning->getMessage() ], $warning->getMessageParams() );
+			return [ $warning->getMessage(), ...$warning->getMessageParams() ];
 		}, $parser->getWarnings() );
 	}
 

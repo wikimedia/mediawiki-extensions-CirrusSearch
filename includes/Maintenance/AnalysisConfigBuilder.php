@@ -132,9 +132,7 @@ class AnalysisConfigBuilder {
 		$config ??= MediaWikiServices::getInstance()->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
 		$similarity = $config->getProfileService()->loadProfile( SearchProfileService::SIMILARITY );
-		if ( !array_key_exists( 'similarity', $similarity ) ) {
-			$similarity['similarity'] = [];
-		}
+		$similarity['similarity'] ??= [];
 		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner ?: new CirrusSearchHookRunner(
 			MediaWikiServices::getInstance()->getHookContainer() );
 		$this->cirrusSearchHookRunner->onCirrusSearchSimilarityConfig( $similarity['similarity'] );

@@ -47,7 +47,7 @@ class UpdateSearchIndexConfig extends Maintenance {
 
 	/**
 	 * @return bool|null
-	 * @suppress PhanUndeclaredMethod runChild technically returns a
+	 * @suppress PhanUndeclaredMethod createChild technically returns a
 	 *  \Maintenance instance but only \CirrusSearch\Maintenance\Maintenance
 	 *  classes have the done method. Just allow it since we know what type of
 	 *  maint class is being created
@@ -57,7 +57,7 @@ class UpdateSearchIndexConfig extends Maintenance {
 			$this->outputIndented( "Updating cluster $cluster...\n" );
 
 			$this->outputIndented( "indexing namespaces...\n" );
-			$child = $this->runChild( IndexNamespaces::class );
+			$child = $this->createChild( IndexNamespaces::class );
 			$child->done();
 			$child->loadParamsAndArgs(
 				null,

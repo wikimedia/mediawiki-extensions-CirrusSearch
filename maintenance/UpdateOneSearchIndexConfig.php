@@ -308,13 +308,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * @suppress PhanUndeclaredMethod runChild technically returns a
+	 * @suppress PhanUndeclaredMethod createChild technically returns a
 	 *  \Maintenance instance but only \CirrusSearch\Maintenance\Maintenance
 	 *  classes have the done method. Just allow it since we know what type of
 	 *  maint class is being created
 	 */
 	private function updateVersions() {
-		$child = $this->runChild( Metastore::class );
+		$child = $this->createChild( Metastore::class );
 		$child->done();
 		$child->loadParamsAndArgs(
 			null,

@@ -19,7 +19,7 @@
 		"@wdio/spec-reporter": "9.19.2",
 		"chai": "4.1.2",
 		"deepmerge": "2.0.1",
-		"eslint-config-wikimedia": "0.32.2",
+		"eslint-config-wikimedia": "0.32.3",
 		"fastify": "^4.28.1",
 		"grunt": "1.6.1",
 		"grunt-banana-checker": "0.13.0",

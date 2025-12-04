@@ -74,6 +74,7 @@
 	"cirrussearch-feature-deepcat-toomany": "深層分類查詢回傳太多的分類。僅應用到部分的分類。",
 	"cirrussearch-feature-deepcat-invalid-title": "提供的分類無效。",
 	"cirrussearch-feature-pageid-invalid-id": "無效頁面 {{PLURAL:$2|ID}}：$1",
+	"cirrussearch-feature-invalid-date-range": "提供的日期格式無效。請使用公認的年（<code>YYYY</code>）、月（<code>YYYY-MM</code>）、日（<code>YYYY-MM-DD</code>）格式，或是使用相對時間表達式，例如 <code>now-2d</code> 或 <code>today-1y</code>。",
 	"cirrussearch-incategory-feature-no-valid-categories": "沒有提供給「$1」可用分類。",
 	"cirrussearch-mlt-feature-no-valid-titles": "沒有提供給「$1」可用標題。",
 	"cirrussearch-mlt-not-configured": "「$1」功能未被設置，請向管理員請求修正 $wgCirrusSearchMoreLikeThisFields",
@@ -84,5 +85,7 @@
 	"cirrussearch-offset-too-large": "結果無法取得。可支援截止至 $1 的結果，但請求為起始自 $2 的結果。",
 	"cirrussearch-offset-not-allowed-with-random-sort": "忽略對隨機排序結果分頁的請求",
 	"cirrussearch-articleprediction-invalid-keyword": "無法辨識 <kbd>$3：</kbd> 關鍵字的{{PLURAL:$2|值}}：$1",
-	"cirrussearch-inlanguage-deprecate-comma": "使用逗號作為 inlanguage 關鍵字的分隔字元已棄用。請改用 |（豎線）來分隔語言。"
+	"cirrussearch-inlanguage-deprecate-comma": "使用逗號作為 inlanguage 關鍵字的分隔字元已棄用。請改用 |（豎線）來分隔語言。",
+	"cirrussearch-invalid-keyword-boost": "提供的增值「$1」無效。應為正十進制數。",
+	"cirrussearch-invalid-keyword-threshold": "提供的閾值「$1」無效。應為介於 0 和 1 之間的十進制數。"
 }

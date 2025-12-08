@@ -15,6 +15,7 @@
 			"LittlePaw365",
 			"Liuxinyu970226",
 			"Mywood",
+			"Peterxy12",
 			"Qiyue2001",
 			"Shizhao",
 			"TianyinLee",
@@ -97,5 +98,7 @@
 	"cirrussearch-offset-too-large": "无法检索结果。最多支持$1搜索结果，但请求从$2开始的结果。",
 	"cirrussearch-offset-not-allowed-with-random-sort": "忽略分页随机排序结果的请求。",
 	"cirrussearch-articleprediction-invalid-keyword": "无法识别<kbd>$3:</kbd>关键词的{{PLURAL:$2|值}}：$1",
-	"cirrussearch-inlanguage-deprecate-comma": "已不再使用半角逗号作为inlanguage关键词的分隔符。请使用“|”（竖线）分隔语言。"
+	"cirrussearch-inlanguage-deprecate-comma": "已不再使用半角逗号作为inlanguage关键词的分隔符。请使用“|”（竖线）分隔语言。",
+	"cirrussearch-invalid-keyword-boost": "提供的增值“$1”无效。应为正十进制数。",
+	"cirrussearch-invalid-keyword-threshold": "提供的阈值“$1”无效。应为介于0和1之间的十进制数。"
 }

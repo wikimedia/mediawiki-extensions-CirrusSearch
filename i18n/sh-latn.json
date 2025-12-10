@@ -41,7 +41,7 @@
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Pronalaženje podizraza (preporučuje se za dulje naslove stranica)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Ispravlja do dva tipfelera. Rješava bliska preusmjerenja. Traži podizraz u naslovima.",
 	"cirrussearch-completion-profile-strict-pref-name": "Strogi režim (napredno)",
-	"cirrussearch-completion-profile-strict-pref-desc": "Ne ispravlja greške u kucanju. Ne ispravlja znakove za ancente. Zahtijeva strogo podudaranje.",
+	"cirrussearch-completion-profile-strict-pref-desc": "Ne ispravlja greške u kucanju. Ne ispravlja znakove za akcente. Zahtijeva strogo podudaranje.",
 	"cirrussearch-completion-profile-normal-pref-name": "Režim preusmjerenja (napredno)",
 	"cirrussearch-completion-profile-normal-pref-desc": "Ne ispravlja greške u kucanju. Rješava bliska preusmjerenja.",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Preusmjeravajući režim s traženjem podizraza (napredno)",

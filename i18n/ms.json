@@ -24,7 +24,7 @@
 	"cirrussearch-query-too-long": "Permintaan carian lebih panjang daripada panjang maksimum yang dibenarkan. ($1> $2)",
 	"prefs-completion": "Penyempurnaan carian",
 	"cirrussearch-pref-completion-section-desc": "Saranan penyempurnaan",
-	"cirrussearch-pref-completion-profile-help": "Tetapkan tindak laku untuk cadangan autolengkap (cari-sambil-taip).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester] merupakan sebuah algoritma untuk cadangan carian dengan pembetulan taip dan perkaitan carian yang lebih baik. Carian awalan ialah algoritma cadangan cari-sambil-taip.",
+	"cirrussearch-pref-completion-profile-help": "Tetapkan tingkah laku untuk cadangan autolengkap (cari-sambil-taip).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester] merupakan sebuah algoritma untuk cadangan carian dengan pembetulan taip dan perkaitan carian yang lebih baik. Carian awalan ialah algoritma cadangan cari-sambil-taip.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Lalai (disyorkan)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Membetulkan sehingga dua kesilapan. Mengalih keluar lencongan yang hampir sama dengan tajuk utama.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Padanan subfrasa (disyorkan untuk tajuk laman yang lebih panjang)",

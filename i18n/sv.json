@@ -9,6 +9,7 @@
 			"Lokal Profil",
 			"Sabelöga",
 			"Skalman",
+			"Stefan2255",
 			"WikiPhoenix"
 		]
 	},
@@ -19,8 +20,8 @@
 	"cirrussearch-regex-empty-expression": "$1 förväntar ett icke-tomt reguljärt uttryck.",
 	"cirrussearch-regex-syntax-error": "Syntaxfel i reguljärt uttryck vid $2: $1",
 	"cirrussearch-regex-too-busy-error": "För många sökningar med reguljära uttryck körs för närvarande. Försök igen senare.",
-	"cirrussearch-regex-too-complex-error": "Det reguljära uttryckt är för komplext. Läs mer om att förenkla det [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|här]].",
-	"cirrussearch-now-using": "Denna wiki använder en ny sökmotor ([[mw:Special:MyLanguage/Help:CirrusSearch|Läs mer]])",
+	"cirrussearch-regex-too-complex-error": "Reguljära uttryck är för komplexa. Läs mer om hur man förenklar dem [https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch/RegexTooComplex/sv här].",
+	"cirrussearch-now-using": "Denna wiki använder en ny sökmotor. ([https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch/sv Läs mer])",
 	"cirrussearch-boost-templates": " #<!-- lämna denna rad precis som den är --> <pre>\n# Om en sida innehåller en av följande mallar multipliceras dess sökbetyg med den konfigurerade procentsatsen.\n# Ändringar till detta träder i kraft med omedelbar verkan.\n# Syntaxen är följande:\n#   * Alt efter en \"#\"-tecknet till slutet på raden är en kommentar\n#   * Var icke-tom rad är exakt det mallnamn som ska förstärkas, namnrymd, versalisering och allt, följt av ett \"|\"-tecken, följt av ett nummer, följt av ett \"%\"-tecken.\n# Exempel på välformaterade rader:\n# Mall:Bra|150%\n# Mall:Väldigt Väldigt bra|300%\n# Mall:Dålig|50%\n# Exempel på ogiltiga rader:\n# Mall:Foo|150.234234% # decimaltal tillåts inte!\n# Foo|150% # fungerar tekniskt sett men för mallinkluderingar av Foo-sidan i huvudnamnrymden\n# Du kan testa konfigurationsändringar genom att utföra en förfrågan med boost-templates:\"XX\" där XX är alla de mallar du önskar förstärka, separerade med blanksteg istället för radbrytningar.\n# Förfrågor som anger boost-templates:\"XX\" ignorerar innehållet av detta fält.\n #</pre> <!-- lämna denna rad precis som den är -->",
 	"cirrussearch-pref-label": "Ny sökning",
 	"cirrussearch-pref-desc": "Prova vår nya sökning som stöder ett större antal språk, ger mer uppdaterade resultat och som även kan hitta text inuti mallar.",
@@ -66,7 +67,7 @@
 	"cirrussearch-feature-too-many-conditions": "För många villkor tillhandahålls till \"$1\", kortas av till $2.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint bör ändras till en giltig SPARQL-endpoint för att använda djup kategorisökning.",
 	"cirrussearch-feature-deepcat-exception": "Djup kategorisökning med SPARQL-fråga misslyckades",
-	"cirrussearch-feature-deepcat-toomany": "Frågan för djup kategori returnerade för många svar",
+	"cirrussearch-feature-deepcat-toomany": "Djupgående kategorisökning returnerade för många kategorier. Endast en delmängd av kategorierna har tillämpats.",
 	"cirrussearch-feature-deepcat-invalid-title": "Den angivna kategorin är ogiltig.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Ogiltigt sid-ID|Ogiltiga sid-ID:n}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Inga giltiga kategorier tillhandahölls i \"$1\".",

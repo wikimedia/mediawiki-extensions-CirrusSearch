@@ -73,6 +73,7 @@
 	"cirrussearch-feature-deepcat-toomany": "Głębokie przeszukiwanie kategorii zwróciło zbyt wiele kategorii. Jedynie podzbiór kategorii został zastosowany.",
 	"cirrussearch-feature-deepcat-invalid-title": "Podana kategoria jest nieprawidłowa.",
 	"cirrussearch-feature-pageid-invalid-id": "Nieprawidłowe ID {{PLURAL:$2|strony|stron}}: $1",
+	"cirrussearch-feature-invalid-date-range": "Podana data jest w nieprawidłowym formacie. Proszę użyć uznanych formatów dla roku (<code>YYYY</code>), miesiąca (<code>YYYY-MM</code>), dnia (<code>YYYY-MM-DD</code>) lub wyrażeń czasu względnego, takich jak <code>now-2d</code>, czy <code>today-1y</code>.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nie określono poprawnych kategorii do „$1”.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nie określono poprawnych tytułów do „$1”.",
 	"cirrussearch-mlt-not-configured": "Funkcja „$1” jest błędne skonfigurowana. Poproś administratora, aby naprawił $wgCirrusSearchMoreLikeThisFields",
@@ -83,5 +84,7 @@
 	"cirrussearch-offset-too-large": "Nie udało się pozyskać wyników. Wspierane jest wyłącznie $1 pierwszych pozycji, podczas gdy zażądano, by rozpocząć od $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorowanie stronicowania losowo posortowanych wyników.",
 	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Nierozpoznana wartość|Nierozpoznane wartości}} dla słowa kluczowego <kbd>$3</kbd>: $1",
-	"cirrussearch-inlanguage-deprecate-comma": "Wykorzystanie przecinków w celu oddzielania słów kluczowych inlanguage jest przestarzałe. Zamiast tego użyj | (pionowej kreski) do oddzielania języków."
+	"cirrussearch-inlanguage-deprecate-comma": "Wykorzystanie przecinków w celu oddzielania słów kluczowych inlanguage jest przestarzałe. Zamiast tego użyj | (pionowej kreski) do oddzielania języków.",
+	"cirrussearch-invalid-keyword-boost": "Podano nieprawidłową wartość wzmocnienia „$1”. Oczekiwano dodatniej liczby dziesiętnej.",
+	"cirrussearch-invalid-keyword-threshold": "Podano nieprawidłową wartość progową „$1”. Oczekiwano liczby dziesiętnej z zakresu od 0 do 1."
 }

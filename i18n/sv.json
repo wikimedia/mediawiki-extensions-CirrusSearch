@@ -67,6 +67,7 @@
 	"cirrussearch-feature-too-many-conditions": "För många villkor tillhandahålls till \"$1\", kortas av till $2.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint bör ändras till en giltig SPARQL-endpoint för att använda djup kategorisökning.",
 	"cirrussearch-feature-deepcat-exception": "Djup kategorisökning med SPARQL-fråga misslyckades",
+	"cirrussearch-feature-deepcat-timeout": "Djupgående kategorisökning har nått tidsgränsen. Kategorin har troligtvis för många underkategorier.",
 	"cirrussearch-feature-deepcat-toomany": "Djupgående kategorisökning returnerade för många kategorier. Endast en delmängd av kategorierna har tillämpats.",
 	"cirrussearch-feature-deepcat-invalid-title": "Den angivna kategorin är ogiltig.",
 	"cirrussearch-feature-pageid-invalid-id": "{{PLURAL:$2|Ogiltigt sid-ID|Ogiltiga sid-ID:n}}: $1",
@@ -79,5 +80,6 @@
 	"cirrussearch-autoselect-profile": "Låt sökmotorn bestämma den bästa profilen att använda.",
 	"cirrussearch-offset-too-large": "Kunde inte hämta resultat. Upp till $1 sökresultat stöds, men resultat från $2 efterfrågades.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Ignorerar begäran att paginera slumpvist sorterade resultat.",
+	"cirrussearch-articleprediction-invalid-keyword": "Okänt {{PLURAL:$2|värde|värden}} för nyckelordet <kbd>$3</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Användningen av komma för att separera nyckelord inlanguage är föråldrat. Var god använd | (lodstreck) för att separera språk."
 }

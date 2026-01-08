@@ -42,9 +42,8 @@ class DefaultPageProperties implements PagePropertyBuilder {
 		$doc->set( 'title', $title->getText() );
 		$doc->set( 'timestamp',
 			wfTimestamp( TS_ISO_8601, $revision->getTimestamp() ) );
-		$createTs = $this->loadCreateTimestamp(
-			$page->getId(), TS_ISO_8601 );
-		if ( $createTs !== false ) {
+		$createTs = $this->loadCreateTimestamp( $page->getId() );
+		if ( $createTs ) {
 			$doc->set( 'create_timestamp', $createTs );
 		}
 	}
@@ -65,21 +64,17 @@ class DefaultPageProperties implements PagePropertyBuilder {
 
 	/**
 	 * Timestamp the oldest revision of this page was created.
-	 * @param int $pageId
-	 * @param int $style TS_* output format constant
-	 * @return string|bool Formatted timestamp or false on failure
 	 */
-	private function loadCreateTimestamp( int $pageId, int $style ) {
-		$row = $this->db->newSelectQueryBuilder()
-			->select( 'rev_timestamp' )
+	private function loadCreateTimestamp( int $pageId ): ?string {
+		$createTs = $this->db->newSelectQueryBuilder()
+			->select( 'MIN(rev_timestamp)' )
 			->from( 'revision' )
 			->where( [ 'rev_page' => $pageId ] )
-			->orderBy( 'rev_timestamp' )
 			->caller( __METHOD__ )
-			->fetchRow();
-		if ( !$row ) {
-			return false;
+			->fetchField();
+		if ( $createTs ) {
+			$createTs = MWTimestamp::convert( TS_ISO_8601, $createTs );
 		}
-		return MWTimestamp::convert( $style, $row->rev_timestamp );
+		return $createTs ?: null;
 	}
 }

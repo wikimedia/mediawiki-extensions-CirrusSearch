@@ -18,9 +18,7 @@ trait SecondTrySearchTrait {
 	 */
 	public static function stringToWrongKeyboardMaps( string $scr0, string $scr1,
 			int $dirFrom = 2 ): array {
-		$dwim = [];
-		$dwim[0] = [];
-		$dwim[1] = [];
+		$dwim = [ [], [] ];
 		for ( $i = 0; $i < mb_strlen( $scr0 ); $i++ ) {
 			$c1 = mb_substr( $scr0, $i, 1 );
 			$c2 = mb_substr( $scr1, $i, 1 );

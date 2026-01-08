@@ -214,8 +214,7 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 				new ExperimentalHighlightedFieldBuilder( 'test', 'test', 123 )
 			],
 		];
-		foreach ( $fields as $couple ) {
-			[ $field1, $field2 ] = $couple;
+		foreach ( $fields as [ $field1, $field2 ] ) {
 			$field1->setHighlightQuery( new MatchAll() );
 			$field2->setHighlightQuery( new MatchAll() );
 			$field1 = $field1->merge( $field2 );

@@ -366,11 +366,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// We still need to add title.plain with a high boost otherwise
 		// match in titles be poorly scored (actually it breaks some tests).
 		$titleWeight = $context->getConfig()->getElement( 'CirrusSearchWeights', 'title' );
-		$fields = [];
-		$fields[] = "title.plain:$term^{$titleWeight}";
-		$fields[] = "all.plain:$term";
-		$exact = implode( ' OR ', $fields );
-		return "($exact)";
+		return "(title.plain:$term^$titleWeight OR all.plain:$term)";
 	}
 
 	/**

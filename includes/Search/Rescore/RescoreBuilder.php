@@ -74,15 +74,16 @@ class RescoreBuilder {
 			if ( $windowSize <= 0 ) {
 				continue;
 			}
-			$rescore = [
-				'window_size' => $windowSize,
-			];
 
-			$rescore['query'] = $this->prepareQueryParams( $rescoreDef );
 			$rescoreQuery = $this->buildRescoreQuery( $rescoreDef );
 			if ( $rescoreQuery === null ) {
 				continue;
 			}
+
+			$rescore = [
+				'window_size' => $windowSize,
+				'query' => $this->prepareQueryParams( $rescoreDef ),
+			];
 			$rescore['query']['rescore_query'] = $rescoreQuery;
 			$rescores[] = $rescore;
 		}

@@ -5,6 +5,9 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\Maintenance\Validators\MappingValidator;
+use CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator;
+use CirrusSearch\Maintenance\Validators\NumberOfShardsValidator;
+use CirrusSearch\Maintenance\Validators\ReplicaRangeValidator;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use MediaWiki\Config\ConfigException;
@@ -359,15 +362,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return \CirrusSearch\Maintenance\Validators\Validator[]
 	 */
 	private function getIndexSettingsValidators() {
-		$validators = [];
-		$validators[] = new \CirrusSearch\Maintenance\Validators\NumberOfShardsValidator(
-			$this->getIndex(), $this->getShardCount(), $this );
-		$validators[] = new \CirrusSearch\Maintenance\Validators\ReplicaRangeValidator(
-			$this->getIndex(), $this->getReplicaCount(), $this );
-		$validators[] = $this->getShardAllocationValidator();
-		$validators[] = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator(
-			$this->getIndex(), $this->getMaxShardsPerNode(), $this );
-		return $validators;
+		return [
+			new NumberOfShardsValidator( $this->getIndex(), $this->getShardCount(), $this ),
+			new ReplicaRangeValidator( $this->getIndex(), $this->getReplicaCount(), $this ),
+			$this->getShardAllocationValidator(),
+			new MaxShardsPerNodeValidator( $this->getIndex(), $this->getMaxShardsPerNode(), $this ),
+		];
 	}
 
 	private function validateIndexSettings() {

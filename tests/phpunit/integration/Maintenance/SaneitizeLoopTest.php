@@ -137,9 +137,7 @@ class SaneitizeLoopTest extends CirrusIntegrationTestCase {
 	private function assertJobs( array $expect, array $jobs ) {
 		$this->assertSameSize( $expect, $jobs, 'number of jobs' );
 		// same as python zip(expect, jobs) when same length
-		foreach ( array_map( null, $expect, $jobs ) as $pair ) {
-			[ $expectJob, $job ] = $pair;
-			[ $loopId, $from, $to ] = $expectJob;
+		foreach ( array_map( null, $expect, $jobs ) as [ [ $loopId, $from, $to ], $job ] ) {
 			$this->assertInstanceOf( CheckerJob::class, $job );
 			$this->assertEquals( 'phpunit-profile', $job->params['profile'], 'profile' );
 			$this->assertEquals( 'default', $job->params['cluster'], 'cluster' );

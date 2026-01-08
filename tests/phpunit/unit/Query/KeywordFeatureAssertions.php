@@ -433,8 +433,7 @@ class KeywordFeatureAssertions {
 			$mi = new \MultipleIterator();
 			$mi->attachIterator( new \ArrayIterator( $highlightField ?: [] ) );
 			$mi->attachIterator( new \ArrayIterator( $highlightQuery ?: [] ) );
-			foreach ( $mi as $tuple ) {
-				[ $fieldName, $hlQuery ] = $tuple;
+			foreach ( $mi as [ $fieldName, $hlQuery ] ) {
 				if ( isset( $hlQuery['pattern'] ) && !$useExp ) {
 					$this->testCase->assertArrayNotHasKey( $fieldName, $hlFieldsPerName );
 					continue;

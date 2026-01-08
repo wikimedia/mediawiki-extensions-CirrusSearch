@@ -328,22 +328,26 @@ class SuggestScoringTest extends CirrusTestCase {
 		$all_templates = array_keys( $templates );
 		$all_templates += [ 'Foo', 'Bar' ];
 		for ( $i = 0; $i < 50; $i++ ) {
-			$scorers = [];
-			$scorers[] = new PQScore( [ 'Good' => 2, 'Bad' => 0.5 ] );
-			$scorers[] = new QualityScore( [ 'Good' => 2, 'Bad' => 0.5 ] );
-			$scorers[] = new IncomingLinksScoringMethod();
+			$scorers = [
+				new PQScore( [ 'Good' => 2, 'Bad' => 0.5 ] ),
+				new QualityScore( [ 'Good' => 2, 'Bad' => 0.5 ] ),
+				new IncomingLinksScoringMethod(),
+			];
+
 			$tmpl = [];
 			for ( $j = mt_rand( 0, count( $all_templates ) - 1 ); $j >= 0; $j-- ) {
 				$tmpl[] = $all_templates[$j];
 			}
-			$page = [];
-			$page['incoming_links'] = mt_rand( 0, 1 ) ? mt_rand( 0, 200 ) : null;
-			$page['external_link'] = $this->randomArray( 200 );
-			$page['text_bytes'] = mt_rand( 0, 1 ) ? (string)mt_rand( 0, 230000 ) : null;
-			$page['heading'] = $this->randomArray( 30 );
-			$page['redirect'] = $this->randomArray( 100 );
-			$page['popularity_score'] = mt_rand( 0, 1 ) ? 1 / mt_rand( 1, 1800000 ) : null;
-			$page['templates'] = mt_rand( 0, 1 ) ? $tmpl : null;
+
+			$page = [
+				'incoming_links' => mt_rand( 0, 1 ) ? mt_rand( 0, 200 ) : null,
+				'external_link' => $this->randomArray( 200 ),
+				'text_bytes' => mt_rand( 0, 1 ) ? (string)mt_rand( 0, 230000 ) : null,
+				'heading' => $this->randomArray( 30 ),
+				'redirect' => $this->randomArray( 100 ),
+				'popularity_score' => mt_rand( 0, 1 ) ? 1 / mt_rand( 1, 1800000 ) : null,
+				'templates' => mt_rand( 0, 1 ) ? $tmpl : null,
+			];
 
 			$maxDocs = mt_rand( 0, 100 );
 			foreach ( $scorers as $scorer ) {

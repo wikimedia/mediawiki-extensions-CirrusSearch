@@ -79,8 +79,7 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 			'CirrusSearchReplicaGroup' => 'default',
 		] );
 
-		foreach ( $assertions as $assertion ) {
-			[ $namespaces, $indices ] = $assertion;
+		foreach ( $assertions as [ $namespaces, $indices ] ) {
 			$found = array_map(
 				static function ( $other ) {
 					return $other->getSearchIndex( 'default' );
@@ -136,8 +135,7 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 			->method( 'runUpdates' )
 			->willReturnCallback( function ( Title $title, array $updates ) {
 				$this->assertCount( 1, $updates );
-				foreach ( $updates as $data ) {
-					[ $otherIndex, $actions ] = $data;
+				foreach ( $updates as [ $otherIndex, $actions ] ) {
 					$this->assertIsArray( $actions );
 					$this->assertCount( 1, $actions );
 					$action = $actions[0];

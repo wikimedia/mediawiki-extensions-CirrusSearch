@@ -16,15 +16,12 @@ use CirrusSearch\Query\DeepcatFeature;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Updater;
 use CirrusSearch\WeightedTagsUpdater;
-use MediaWiki\Extension\EventBus\Serializers\EventSerializer;
-use MediaWiki\Extension\EventBus\Serializers\MediaWiki\PageEntitySerializer;
-use MediaWiki\Http\Telemetry;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Sparql\SparqlClient;
 
 // PHP unit does not understand code coverage for this file
-// as the @covers annotation cannot cover a specific file
+// as the @covers annotation cannot cover a specific file.
 // This is fully tested in ServiceWiringTest.php
 // @codeCoverageIgnoreStart
 
@@ -86,12 +83,10 @@ return [
 		if ( $searchConfig->get( 'CirrusSearchEnableEventBusWeightedTags' ) ) {
 			$eventBusFactory = $services->getService( 'EventBus.EventBusFactory' );
 
-			$mainConfig = $services->getMainConfig();
-			$globalIdGenerator = $services->getGlobalIdGenerator();
-
-			$eventSerializer = new EventSerializer( $mainConfig, $globalIdGenerator, Telemetry::getInstance() );
-			$pageEntitySerializer = new PageEntitySerializer( $mainConfig, $services->getTitleFormatter() );
-			$weightedTagSerializer = new EventBusWeightedTagSerializer( $eventSerializer, $pageEntitySerializer );
+			$weightedTagSerializer = new EventBusWeightedTagSerializer(
+				$services->get( 'EventBus.EventSerializer' ),
+				$services->get( 'EventBus.PageEntitySerializer' ),
+			);
 			$wikiPageFactory = $services->getWikiPageFactory();
 
 			return new EventBusWeightedTagsUpdater( $eventBusFactory, $weightedTagSerializer, $wikiPageFactory );

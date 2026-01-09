@@ -96,6 +96,26 @@ class MappingConfigBuilder {
 		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner ?? new CirrusSearchHookRunner(
 			MediaWikiServices::getInstance()->getHookContainer() );
 		$this->language = $language ?? MediaWikiServices::getInstance()->getContentLanguage();
+
+		$this->validatePlugins( $plugins );
+	}
+
+	private function validatePlugins( array $plugins ) {
+		if ( $this->config->get( 'CirrusSearchOptimizeForExperimentalHighlighter' ) &&
+			!Plugins::contains( 'experimental-highlighter', $plugins )
+		) {
+			throw new \InvalidArgumentException(
+				"wgCirrusSearchOptimizeIndexForExperimentalHighlighter is set to true but the " .
+				"'experimental-highlighter' plugin is not available."
+			);
+		}
+
+		if ( $this->config->getElement( 'CirrusSearchNaturalTitleSort', 'build' ) && !$this->icu ) {
+			throw new \InvalidArgumentException(
+				"wgCirrusSearchNaturalTitleSort is set to build but the 'analysis-icu' plugin " .
+				"is not available."
+			);
+		}
 	}
 
 	/**

@@ -262,3 +262,13 @@ Feature: Prefix search via api
     | Magnet      | fuzzy       |     0      | Help:Magneto is not in the api suggestions |
     | Magnet      | normal      |     0      | Help:Magneto is not in the api suggestions |
     | Magnet      | classic     |     0      | Help:Magneto is not in the api suggestions |
+
+  # While this might make sense in it's own dump_schema.feature file, this depends on titlesuggest
+  # being pre-initialized, and we currently have a tangled mess where some prefix tests depend on
+  # page initialized in random hooks and not just @suggest.
+  Scenario: You can dump the mapping CirrusSearch set on Elasticsearch's indexes
+    When I dump the cirrus schema
+    Then A valid mapping dump is produced
+     And A valid settings dump is produced
+
+

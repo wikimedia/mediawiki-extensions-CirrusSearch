@@ -8,7 +8,6 @@ use MediaWiki\Json\FormatJson;
 use MediaWiki\Language\Language;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MainConfigSchema;
-use MediaWiki\Registration\ExtensionRegistry;
 
 /**
  * @covers \CirrusSearch\Maintenance\MappingConfigBuilder
@@ -43,7 +42,6 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 			'GetContentModels',
 			'SearchIndexFields',
 		] );
-		$scopedCallback = ExtensionRegistry::getInstance()->setAttributeForTest( 'Hooks', [] );
 
 		$plugins = $extraConfig[ '__plugins' ] ?? [];
 		$defaultConfig = [
@@ -54,8 +52,10 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 			'CirrusSearchPhraseSuggestReverseField' => [
 				'build' => true,
 			],
+			'CirrusSearchNaturalTitleSort' => [ 'build' => false ],
+			'CirrusSearchOptimizeIndexForExperimentalHighlighter' => false,
 		];
-		$config = new HashSearchConfig( $defaultConfig + $extraConfig, [ HashSearchConfig::FLAG_INHERIT ] );
+		$config = new HashSearchConfig( $extraConfig + $defaultConfig, [ HashSearchConfig::FLAG_INHERIT ] );
 		$language = $this->createMock( Language::class );
 		$language->method( 'toBcp47Code' )->willReturn( 'my-language-bcp47-code' );
 		$builder = new $buildClass( true, $plugins, 0, $config, $this->createCirrusSearchHookRunner(), $language );

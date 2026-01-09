@@ -513,11 +513,11 @@ Then( /^the config dump text does not contain (.+)$/, function ( key ) {
 	} );
 } );
 
-When( /^I dump the cirrus mapping$/, async function () {
+When( /^I dump the cirrus schema$/, async function () {
 	const client = await this.onWiki();
 	try {
 		const response = await client.request( {
-			action: 'cirrus-mapping-dump'
+			action: 'cirrus-schema-dump'
 		} );
 		this.setApiResponse( response );
 	} catch ( err ) {
@@ -528,36 +528,25 @@ When( /^I dump the cirrus mapping$/, async function () {
 Then( /^A valid mapping dump is produced$/, function () {
 	return withApi( this, () => {
 		expect( this.apiError ).to.equal( undefined );
-		expect( this.apiResponse ).to.include.all.keys( 'content', 'general', 'archive' );
-		expect( this.apiResponse.content ).to.have.all.keys(
+		expect( this.apiResponse ).to.include.all.keys( 'content', 'general', 'archive', 'titlesuggest' );
+		expect( this.apiResponse.content ).to.include.all.keys( 'mappings' );
+		expect( this.apiResponse.content.mappings ).to.have.all.keys(
 			'dynamic', 'properties' );
-		expect( this.apiResponse.general ).to.have.all.keys(
+		expect( this.apiResponse.general.mappings ).to.have.all.keys(
 			'dynamic', 'properties' );
-		expect( this.apiResponse.archive ).to.have.all.keys(
+		expect( this.apiResponse.archive.mappings ).to.have.all.keys(
 			'dynamic', 'properties' );
-		expect( this.apiResponse.content.properties ).to.include.keys(
+		expect( this.apiResponse.content.mappings.properties ).to.include.keys(
 			'all', 'all_near_match', 'title', 'category', 'redirect' );
 	} );
-} );
-
-When( /^I dump the cirrus settings$/, async function () {
-	const client = await this.onWiki();
-	try {
-		const response = await client.request( {
-			action: 'cirrus-settings-dump'
-		} );
-		this.setApiResponse( response );
-	} catch ( err ) {
-		this.setApiError( err );
-	}
 } );
 
 Then( /^A valid settings dump is produced$/, function () {
 	return withApi( this, () => {
 		expect( this.apiError ).to.equal( undefined );
-		expect( this.apiResponse ).to.include.all.keys( 'content', 'general' );
-		expect( this.apiResponse.content ).to.include.all.keys( 'page' );
-		expect( this.apiResponse.content.page.index ).to.include.all.keys( 'refresh_interval' );
+		expect( this.apiResponse ).to.include.all.keys( 'content', 'general', 'archive', 'titlesuggest' );
+		expect( this.apiResponse.content.settings ).to.include.all.keys( 'index' );
+		expect( this.apiResponse.content.settings.index ).to.include.all.keys( 'refresh_interval' );
 	} );
 } );
 

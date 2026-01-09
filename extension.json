@@ -20,9 +20,8 @@
 	},
 	"APIModules": {
 		"cirrus-config-dump": "CirrusSearch\\Api\\ConfigDump",
-		"cirrus-mapping-dump": "CirrusSearch\\Api\\MappingDump",
-		"cirrus-settings-dump": "CirrusSearch\\Api\\SettingsDump",
 		"cirrus-profiles-dump": "CirrusSearch\\Api\\ProfilesDump",
+		"cirrus-schema-dump": "CirrusSearch\\Api\\SchemaDump",
 		"cirrus-check-sanity": "CirrusSearch\\Api\\CheckSanity"
 	},
 	"APIPropModules": {

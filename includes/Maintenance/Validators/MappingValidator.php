@@ -3,7 +3,6 @@
 namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\ElasticaErrorHandler;
-use CirrusSearch\Maintenance\Plugins;
 use CirrusSearch\Maintenance\Printer;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
@@ -68,32 +67,11 @@ class MappingValidator extends Validator {
 		$this->mappingConfig = $mappingConfig;
 	}
 
-	private function isNaturalSortConfigured(): bool {
-		// awkward much?
-		return isset( $this->mappingConfig['properties']['title']['fields']['natural_sort'] );
-	}
-
 	/**
 	 * @return Status
 	 */
 	public function validate() {
 		$this->outputIndented( "Validating mappings..." );
-		if ( $this->optimizeIndexForExperimentalHighlighter &&
-			!Plugins::contains( 'experimental-highlighter', $this->availablePlugins )
-		) {
-			$this->output( "impossible!\n" );
-			return Status::newFatal( new RawMessage(
-				"wgCirrusSearchOptimizeIndexForExperimentalHighlighter is set to true but the " .
-				"'experimental-highlighter' plugin is not installed on all hosts." ) );
-		}
-		if ( $this->isNaturalSortConfigured() &&
-			!Plugins::contains( 'analysis-icu', $this->availablePlugins ) ) {
-			$this->output( "impossible!\n" );
-			return Status::newFatal( new RawMessage(
-				"wgCirrusSearchNaturalTitleSort is set to build but the " .
-				"'analysis-icu' plugin is not installed on all hosts." ) );
-		}
-
 		if ( !$this->compareMappingToActual() ) {
 			$action = new Mapping( $this->mappingConfig['properties'] );
 			$action->setParam( "dynamic", false );

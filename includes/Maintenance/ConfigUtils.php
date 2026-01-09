@@ -184,15 +184,29 @@ class ConfigUtils {
 			$this->output( 'none' );
 		}
 		$this->output( "\n" );
-		if ( count( $bannedPlugins ) ) {
-			$availablePlugins = array_diff( $availablePlugins, $bannedPlugins );
-		}
-		foreach ( array_chunk( $availablePlugins, 5 ) as $pluginChunk ) {
+		$filteredPlugins = $this->removeBannedPlugins(
+			$availablePlugins, $bannedPlugins );
+		foreach ( array_chunk( $filteredPlugins, 5 ) as $pluginChunk ) {
 			$plugins = implode( ', ', $pluginChunk );
 			$this->outputIndented( "\t$plugins\n" );
 		}
 
-		return Status::newGood( $availablePlugins );
+		return Status::newGood( $filteredPlugins );
+	}
+
+	/**
+	 * @param string[] $availablePlugins
+	 * @param string[] $bannedPlugins
+	 * @return string[] Filtered plugins list
+	 */
+	public function removeBannedPlugins(
+		array $availablePlugins,
+		array $bannedPlugins
+	): array {
+		if ( count( $bannedPlugins ) ) {
+			return array_diff( $availablePlugins, $bannedPlugins );
+		}
+		return $availablePlugins;
 	}
 
 	/**

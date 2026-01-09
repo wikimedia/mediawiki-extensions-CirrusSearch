@@ -4,7 +4,7 @@ Feature: Searches that prompt, or not, for new page creation
     Given I am logged in and at a random page
 
   @incategory @wildcard
-  Scenario Outline: Something something
+  Scenario Outline: special syntax can remove the create new page link
     When I search for <query>
     Then there is <condition> to create a new page from the search result
   Examples:

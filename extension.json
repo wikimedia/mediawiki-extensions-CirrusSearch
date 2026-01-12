@@ -16,7 +16,8 @@
 		}
 	},
 	"Actions": {
-		"cirrusdump": "CirrusSearch\\Dump"
+		"cirrusdump": "CirrusSearch\\Dump",
+		"cirrussuggestdump": "CirrusSearch\\SuggestDump"
 	},
 	"APIModules": {
 		"cirrus-config-dump": "CirrusSearch\\Api\\ConfigDump",

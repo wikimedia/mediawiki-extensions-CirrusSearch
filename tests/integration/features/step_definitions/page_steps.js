@@ -444,7 +444,11 @@ Then( /^deleted page search returns (.+) as first result$/, async ( title ) => {
 } );
 
 When( /^I dump the cirrus data for (.+)$/, async function ( title ) {
-	return this.visit( new TitlePage( title + '&action=cirrusDump' ) );
+	return this.visit( new TitlePage( title + '&action=cirrusdump' ) );
+} );
+
+When( /^I dump the cirrus suggest data for (.+)$/, async function ( title ) {
+	return this.visit( new TitlePage( title + '&action=cirrussuggestdump' ) );
 } );
 
 Then( /^the page text contains (.+)$/, async ( text ) => {

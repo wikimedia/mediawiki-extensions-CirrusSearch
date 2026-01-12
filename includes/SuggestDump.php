@@ -6,12 +6,12 @@ use MediaWiki\Actions\FormlessAction;
 use MediaWiki\MediaWikiServices;
 
 /**
- * action=cirrusDump handler.  Dumps contents of Elasticsearch indexes for the
- * page.
+ * action=cirrusSuggestDump handler. Dumps contents of Elasticsearch suggester
+ * index for the page.
  *
  * @license GPL-2.0-or-later
  */
-class Dump extends FormlessAction {
+class SuggestDump extends FormlessAction {
 	/** @inheritDoc */
 	public function onView() {
 		// Disable regular results
@@ -30,13 +30,13 @@ class Dump extends FormlessAction {
 
 		/** @phan-suppress-next-line PhanUndeclaredMethod Phan doesn't know $config is a SearchConfig */
 		$docId = $config->makeId( $this->getTitle()->getArticleID() );
-		$esSources = $searcher->get( [ $docId ], true );
+
+		$esSources = $searcher->getSuggest( [ $docId ] );
 		if ( !$esSources->isOK() ) {
-			// echo for consistency with below
+			// happens when, for example, the completion index doesn't exist.
 			echo '{"error": "exception has been logged"}';
 			return null;
 		}
-
 		$result = [];
 		foreach ( $esSources->getValue() as $esResult ) {
 			$result[] = [
@@ -47,9 +47,11 @@ class Dump extends FormlessAction {
 				'_source' => $esResult->getData(),
 			];
 		}
+
 		// Echoing raw json to avoid any mangling that would prevent providing
 		// the resulting structures to elasticsearch.
 		echo json_encode( $result );
+
 		return null;
 	}
 
@@ -57,7 +59,7 @@ class Dump extends FormlessAction {
 	 * @return string
 	 */
 	public function getName() {
-		return 'cirrusdump';
+		return 'cirrussuggestdump';
 	}
 
 	/**

@@ -271,4 +271,11 @@ Feature: Prefix search via api
     Then A valid mapping dump is produced
      And A valid settings dump is produced
 
+  Scenario: Can dump suggestions
+    When I dump the cirrus suggest data for Main Page
+    Then the page text contains target_title
+     And the page text contains Main Page
+     And the page text contains source_doc_id
+     And the page text contains suggest-stop
+     And the page text contains weight
 

@@ -439,26 +439,64 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		) );
 		$size *= count( $docIds );
 
-		$work = function () use ( $docIds, $sourceFiltering, $indexSuffix, $size, $connection ) {
+		$query = new \Elastica\Query( new \Elastica\Query\Ids( $docIds ) );
+		if ( is_array( $sourceFiltering ) ) {
+			// The title is a required field in the ApiTrait. Maybe the API should be injecting
+			// that requirement?
+			if ( !in_array( "title", $sourceFiltering ) ) {
+				array_push( $sourceFiltering, "title" );
+			}
+			$query->setParam( '_source', $sourceFiltering );
+		}
+
+		$logMeta = [ 'docIds' => $docIds ];
+
+		$work = $this->buildPoolWorkForGet( $query, $logMeta, $indexSuffix, $size, $connection );
+
+		if ( $usePoolCounter ) {
+			return Util::doPoolCounterWork( $this->getPoolCounterType(), $this->user, $work );
+		} else {
+			return $work();
+		}
+	}
+
+	/**
+	 * Get the completion documents associated with $docIds.
+	 * @param int[] $docIds
+	 * @return Status containing pages found, containing an empty array if not found,
+	 *    or an error if there was an error
+	 */
+	public function getSuggest( array $docIds ) {
+		$connection = $this->getOverriddenConnection();
+		$query = new \Elastica\Query( new \Elastica\Query\Terms( 'source_doc_id', $docIds ) );
+		$indexSuffix = Connection::TITLE_SUGGEST_INDEX_SUFFIX;
+		$logMeta = [ 'docIds' => $docIds ];
+
+		// Should be two docs per source doc id
+		$size = count( $docIds ) * 3;
+
+		$work = $this->buildPoolWorkForGet( $query, $logMeta, $indexSuffix, $size, $connection );
+		return Util::doPoolCounterWork( $this->getPoolCounterType(), $this->user, $work );
+	}
+
+	private function buildPoolWorkForGet(
+		\Elastica\Query $query,
+		array $logMeta,
+		string $indexSuffix,
+		int $size,
+		Connection $connection
+	): \Closure {
+		return function () use ( $query, $logMeta, $indexSuffix, $size, $connection ) {
 			try {
 				$this->startNewLog( 'get of {indexSuffix}.{docIds}', 'get', [
 					'indexSuffix' => $indexSuffix,
-					'docIds' => $docIds,
-				] );
+				] + $logMeta );
 				// Shard timeout not supported on get requests so we just use the client side timeout
 				$connection->setTimeout( $this->getClientTimeout( 'get' ) );
 				// We use a search query instead of _get/_mget, these methods are
 				// theorically well suited for this kind of job but they are not
 				// supported on aliases with multiple indices (content/general)
 				$index = $connection->getIndex( $this->indexBaseName, $indexSuffix );
-				$query = new \Elastica\Query( new \Elastica\Query\Ids( $docIds ) );
-				if ( is_array( $sourceFiltering ) ) {
-					// The title is a required field in the ApiTrait
-					if ( !in_array( "title", $sourceFiltering ) ) {
-						array_push( $sourceFiltering, "title" );
-					}
-					$query->setParam( '_source', $sourceFiltering );
-				}
 				$query->addParam( 'stats', 'get' );
 				// We ignore limits provided to the searcher
 				// otherwize we could return fewer results than
@@ -476,12 +514,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				return $this->failure( $e, $connection );
 			}
 		};
-
-		if ( $usePoolCounter ) {
-			return Util::doPoolCounterWork( $this->getPoolCounterType(), $this->user, $work );
-		} else {
-			return $work();
-		}
 	}
 
 	/**

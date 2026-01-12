@@ -3,15 +3,12 @@
 namespace CirrusSearch\Event;
 
 use CirrusSearch\EventBusWeightedTagSerializer;
-use MediaWiki\Config\HashConfig;
 use MediaWiki\Extension\EventBus\Serializers\EventSerializer;
 use MediaWiki\Extension\EventBus\Serializers\MediaWiki\PageEntitySerializer;
-use MediaWiki\Http\Telemetry;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
 use MediaWikiIntegrationTestCase;
-use Wikimedia\UUID\GlobalIdGenerator;
 
 /**
  * @coversDefaultClass \CirrusSearch\EventBusWeightedTagSerializer
@@ -45,31 +42,14 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 
 		$this->markTestSkippedIfExtensionNotLoaded( 'EventBus' );
 
-		$config = new HashConfig( [
-			'ServerName' => self::MOCK_SERVER_NAME,
-			'CanonicalServer' => self::MOCK_CANONICAL_SERVER,
-			'ArticlePath' => self::MOCK_ARTICLE_PATH
-		] );
-		$globalIdGenerator = $this->createMock( GlobalIdGenerator::class );
-		$globalIdGenerator->method( 'newUUIDv4' )->willReturn( self::MOCK_UUID );
-
-		$telemetry = $this->createMock( Telemetry::class );
-		$telemetry->method( 'getRequestId' )->willReturn( 'requestid' );
-
-		$this->eventSerializer = new EventSerializer(
-			$config,
-			$globalIdGenerator,
-			$telemetry
-		);
-
-		$this->pageEntitySerializer = new PageEntitySerializer(
-			$config,
-			$this->getServiceContainer()->getTitleFormatter()
-		);
+		// Tests will use EventBus' MediaWiki Service instance of entity serializers.
+		$this->eventSerializer = $this->getServiceContainer()->get( 'EventBus.EventSerializer' );
+		$this->pageEntitySerializer = $this->getServiceContainer()->get( 'EventBus.PageEntitySerializer' );
 
 		$this->weightedTagSerializer = new EventBusWeightedTagSerializer(
 			$this->eventSerializer,
-			$this->pageEntitySerializer, self::MOCK_STREAM_NAME
+			$this->pageEntitySerializer,
+			self::MOCK_STREAM_NAME
 		);
 	}
 
@@ -101,7 +81,11 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 					'dt' => EventSerializer::timestampToDt( $eventTimestamp ),
 					'page' => $this->pageEntitySerializer->toArray( $wikiPage ),
 				],
-				$wikiId
+				$wikiId,
+				null,
+			// TODO: uncomment this after
+			// https://gerrit.wikimedia.org/r/c/mediawiki/extensions/CirrusSearch/+/1225570 is deployed.
+			// Telemetry::getInstance()->getRequestId(),
 			),
 			$eventAttrs
 		);
@@ -139,6 +123,9 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 			$dt
 		);
 
+		// unset meta.id as it is not deterministic.
+		unset( $expected['meta']['id'] );
+		unset( $actual['meta']['id'] );
 		$this->assertEquals( $expected, $actual );
 	}
 
@@ -174,6 +161,9 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 			$dt
 		);
 
+		// unset meta.id as it is not deterministic.
+		unset( $expected['meta']['id'] );
+		unset( $actual['meta']['id'] );
 		$this->assertEquals( $expected, $actual );
 	}
 }

@@ -60,7 +60,14 @@ class EventBusWeightedTagSerializer {
 				'page' => $page,
 				'weighted_tags' => $weightedTags
 			] ),
-			self::getWikiId( $wikiPage )
+			self::getWikiId( $wikiPage ),
+			null,
+		// TODO: uncomment this after
+		// https://gerrit.wikimedia.org/r/c/mediawiki/extensions/CirrusSearch/+/1225570 is deployed.
+		// NOTE: This is using a global Telemetry instance, and it might be better to
+		// pass $requestId here as a parameter (obtaining the value of it in
+		// this method's caller instead of here in the serializer).
+		// Telemetry::getInstance()->getRequestId(),
 		);
 	}
 

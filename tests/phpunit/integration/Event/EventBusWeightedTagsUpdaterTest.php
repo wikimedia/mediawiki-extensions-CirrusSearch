@@ -11,9 +11,6 @@ use JsonSchema\Validator;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\EventBus\EventBus;
 use MediaWiki\Extension\EventBus\EventBusFactory;
-use MediaWiki\Extension\EventBus\Serializers\EventSerializer;
-use MediaWiki\Extension\EventBus\Serializers\MediaWiki\PageEntitySerializer;
-use MediaWiki\Http\Telemetry;
 use MediaWiki\Json\FormatJson;
 use MediaWiki\Page\PageRecord;
 use MediaWiki\Page\WikiPage;
@@ -23,7 +20,6 @@ use MediaWiki\Tests\MockWikiMapTrait;
 use MediaWiki\Title\TitleFormatter;
 use PHPUnit\Framework\Constraint\TraversableContainsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
-use Wikimedia\UUID\GlobalIdGenerator;
 
 /**
  * @coversDefaultClass \CirrusSearch\EventBusWeightedTagsUpdater
@@ -94,12 +90,14 @@ class EventBusWeightedTagsUpdaterTest extends CirrusIntegrationTestCase {
 	protected function createEventSerializerMock(): EventBusWeightedTagSerializer {
 		$mainConfig = $this->createMock( Config::class );
 		$mainConfig->expects( $this->any() )->method( 'get' )->willReturnArgument( 0 );
-		$idGenerator = $this->createMock( GlobalIdGenerator::class );
-		$telemetry = $this->createMock( Telemetry::class );
 		$titleFormatter = $this->createMock( TitleFormatter::class );
 		$titleFormatter->expects( $this->any() )->method( 'getPrefixedDBkey' )->willReturn( 'test' );
+		$this->setService( 'TitleFormatter', $titleFormatter );
+
+		// Tests will use EventBus' MediaWiki Service instance of entity serializers.
 		return new EventBusWeightedTagSerializer(
-			new EventSerializer( $mainConfig, $idGenerator, $telemetry ), new PageEntitySerializer( $mainConfig, $titleFormatter )
+			$this->getServiceContainer()->get( 'EventBus.EventSerializer' ),
+			$this->getServiceContainer()->get( 'EventBus.PageEntitySerializer' ),
 		);
 	}
 
@@ -154,10 +152,10 @@ class EventBusWeightedTagsUpdaterTest extends CirrusIntegrationTestCase {
 
 		foreach ( ( $tagWeights === null ? [ 'exists' ] : array_keys( $tagWeights ) ) as $tagName ) {
 			$mappedWeightedTag = [ 'tag' => $tagName ];
-			if ( $tagName !== 'exists' && isset( $tagWeights[ $tagName ] ) ) {
-				$mappedWeightedTag[ 'score' ] = $tagWeights[ $tagName ] / 1000;
+			if ( $tagName !== 'exists' && isset( $tagWeights[$tagName] ) ) {
+				$mappedWeightedTag['score'] = $tagWeights[$tagName] / 1000;
 			}
-			self::assertThat( $set[ $tagPrefix ] ?? null, new TraversableContainsEqual( $mappedWeightedTag ) );
+			self::assertThat( $set[$tagPrefix] ?? null, new TraversableContainsEqual( $mappedWeightedTag ) );
 		}
 
 		$this->assertCompliesToSchema( $event );
@@ -302,7 +300,7 @@ class EventBusWeightedTagsUpdaterTest extends CirrusIntegrationTestCase {
 	}
 
 	private function assertCompliesToSchema( array $event ): void {
-		$this->assertFalse( isset( $event['meta']['id'] ) );
+		// override meta.id to avoid non deterministic global id generator.
 		$event['meta']['id'] = 'test';
 
 		$eventObj = json_decode( FormatJson::encode( $event ) );

@@ -55,7 +55,7 @@ class Result extends CirrusSearchResult {
 	 * @param TitleHelper|null $titleHelper
 	 */
 	public function __construct( $results, $result, ?TitleHelper $titleHelper = null ) {
-		$this->titleHelper = $titleHelper ?: new TitleHelper();
+		$this->titleHelper = $titleHelper ?? new TitleHelper();
 		parent::__construct( $this->titleHelper->makeTitle( $result ) );
 		$this->namespaceText = $result->namespace_text;
 		$this->docId = $result->getId();

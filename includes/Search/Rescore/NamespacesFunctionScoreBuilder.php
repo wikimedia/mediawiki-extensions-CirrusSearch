@@ -39,7 +39,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 	public function __construct( SearchConfig $config, $namespaces, $weight, ?NamespaceInfo $namespaceInfo = null ) {
 		parent::__construct( $config, $weight );
 
-		$this->namespaceInfo = $namespaceInfo ?: MediaWikiServices::getInstance()->getNamespaceInfo();
+		$this->namespaceInfo = $namespaceInfo ?? MediaWikiServices::getInstance()->getNamespaceInfo();
 		$this->namespacesToBoost =
 			$namespaces ?: $this->namespaceInfo->getValidNamespaces();
 		if ( !$this->namespacesToBoost || count( $this->namespacesToBoost ) == 1 ) {

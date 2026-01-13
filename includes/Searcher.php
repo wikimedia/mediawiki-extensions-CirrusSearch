@@ -182,9 +182,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
 		// TODO: Make these params mandatory once WBCS stops extending this class
 		$this->namespacePrefixParser = $namespacePrefixParser;
-		$this->interwikiResolver = $interwikiResolver ?: MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
-		$this->titleHelper = $titleHelper ?: new TitleHelper( WikiMap::getCurrentWikiId(), $this->interwikiResolver );
-		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner ?: new CirrusSearchHookRunner(
+		$this->interwikiResolver = $interwikiResolver ?? MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
+		$this->titleHelper = $titleHelper ?? new TitleHelper( WikiMap::getCurrentWikiId(), $this->interwikiResolver );
+		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner ?? new CirrusSearchHookRunner(
 			MediaWikiServices::getInstance()->getHookContainer() );
 		$this->searchContext = new SearchContext( $this->config, $namespaces, $options, null, null, $this->cirrusSearchHookRunner );
 	}
@@ -586,7 +586,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				// Used syntax
 				'syntax' => $this->searchContext->getSyntaxUsed(),
 			],
-			$this->searchContext->getNamespaces() ?: []
+			$this->searchContext->getNamespaces() ?? []
 		);
 
 		// Similar to indexing support only the bulk code path, rather than

@@ -172,19 +172,19 @@ class CirrusSearch extends SearchEngine {
 		} else {
 			$this->secondTryRunnerFactory = $secondTryRunnerFactory;
 		}
-		$this->namespacePrefixParser = $namespacePrefixParser ?: new class() implements NamespacePrefixParser {
+		$this->namespacePrefixParser = $namespacePrefixParser ?? new class() implements NamespacePrefixParser {
 			/** @inheritDoc */
 			public function parse( $query ) {
 				return CirrusSearch::parseNamespacePrefixes( $query, true, true );
 			}
 		};
-		$this->interwikiResolver = $interwikiResolver ?: MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
+		$this->interwikiResolver = $interwikiResolver ?? MediaWikiServices::getInstance()->getService( InterwikiResolver::SERVICE );
 
 		// enable interwiki by default
 		$this->features['interwiki'] = true;
 		$this->features['show-multimedia-search-results'] = $this->config->get( 'CirrusSearchCrossProjectShowMultimedia' ) == true;
 		$this->debugOptions = $debugOptions ?? CirrusDebugOptions::fromRequest( $this->request );
-		$this->titleHelper = $titleHelper ?: new TitleHelper( WikiMap::getCurrentWikiId(), $interwikiResolver,
+		$this->titleHelper = $titleHelper ?? new TitleHelper( WikiMap::getCurrentWikiId(), $interwikiResolver,
 			Sanitizer::escapeIdForLink( ... )
 		);
 		$extraFieldsInSearchResults = $this->config->get( 'CirrusSearchExtraFieldsInSearchResults' );

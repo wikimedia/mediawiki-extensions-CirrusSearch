@@ -93,9 +93,9 @@ class MappingConfigBuilder {
 		$this->engine = new CirrusSearch( $config );
 		$this->config = $this->engine->getConfig();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
-		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner ?: new CirrusSearchHookRunner(
+		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner ?? new CirrusSearchHookRunner(
 			MediaWikiServices::getInstance()->getHookContainer() );
-		$this->language = $language ?: MediaWikiServices::getInstance()->getContentLanguage();
+		$this->language = $language ?? MediaWikiServices::getInstance()->getContentLanguage();
 	}
 
 	/**

@@ -88,7 +88,7 @@ class ResultSet extends BaseSearchResultSet implements CirrusSearchResultSet {
 	) {
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->result = $elasticResultSet;
-		$this->titleHelper = $titleHelper ?: new TitleHelper();
+		$this->titleHelper = $titleHelper ?? new TitleHelper();
 		$this->resultBuilder = new FullTextCirrusSearchResultBuilder( $this->titleHelper, [] );
 	}
 

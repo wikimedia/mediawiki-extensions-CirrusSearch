@@ -49,7 +49,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	private $namespacePrefixParser;
 
 	public function __construct( ?NamespacePrefixParser $namespacePrefixParser = null ) {
-		$this->namespacePrefixParser = $namespacePrefixParser ?: self::defaultNSPrefixParser();
+		$this->namespacePrefixParser = $namespacePrefixParser ?? self::defaultNSPrefixParser();
 	}
 
 	private static function defaultNSPrefixParser(): NamespacePrefixParser {

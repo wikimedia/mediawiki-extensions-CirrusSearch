@@ -33,7 +33,7 @@ class QueueingRemediator implements Remediator {
 	 */
 	public function __construct( $cluster, ?JobQueueGroup $jobQueueGroup = null ) {
 		$this->cluster = $cluster;
-		$this->jobQueue = $jobQueueGroup ?: MediaWikiServices::getInstance()->getJobQueueGroup();
+		$this->jobQueue = $jobQueueGroup ?? MediaWikiServices::getInstance()->getJobQueueGroup();
 	}
 
 	/**

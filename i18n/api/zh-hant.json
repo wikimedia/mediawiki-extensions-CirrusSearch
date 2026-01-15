@@ -18,6 +18,8 @@
 	"apihelp-cirrus-profiles-dump-summary": "用於此 wiki 的 CirrusSearch 匯出設定檔。",
 	"apihelp-cirrus-profiles-dump-example": "取得用於此 wiki 的 CirrusSearch 匯出設定檔。",
 	"apihelp-cirrus-profiles-dump-param-verbose": "匯出設定檔內容",
+	"apihelp-cirrus-schema-dump-example-build": "以代碼組態產生 CirrusSearch 架構。",
+	"apihelp-cirrus-schema-dump-example-build-plugins": "啟用特定套件後產生 CirrusSearch 架構。",
 	"apihelp-query+cirrusdoc-summary": "來自搜尋伺服器的 CirrusSearch 匯出條目文件",
 	"apihelp-query+cirrusdoc-example": "取得目前編入索引至搜尋的單一 CirrusSearch 匯出條目。",
 	"apihelp-query+cirrusdoc-example-2": "取得此 wiki 的 CirrusSearch 設定傾印，其中僅包含使用「includes」參數選取的分類",

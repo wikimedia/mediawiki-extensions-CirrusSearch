@@ -134,9 +134,14 @@ class SearchProfileService {
 	public const CONTEXT_DEFAULT = 'default';
 
 	/**
-	 * Default profile context (used by fulltext queries)
+	 * Profile context used for completion (fuzzy autocomplete) queries.
 	 */
 	public const CONTEXT_COMPLETION = 'completion';
+
+	/**
+	 * Profile context used for semantic queries
+	 */
+	public const CONTEXT_SEMANTIC = 'semantic';
 
 	/**
 	 * List of profile repositories, grouped by type and then by repository name.

@@ -251,6 +251,10 @@ class SearchQuery {
 		return $this->limit;
 	}
 
+	public function getMaximumResultPosition(): int {
+		return $this->offset + $this->limit;
+	}
+
 	/**
 	 * List of namespaces required to run this query.
 	 *

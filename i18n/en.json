@@ -73,5 +73,7 @@
 	"cirrussearch-articleprediction-invalid-keyword": "Unrecognized {{PLURAL:$2|value|values}} for the <kbd>$3:</kbd> keyword: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Using a comma as a separator for the inlanguage keyword is deprecated. Please use | (pipe) to separate languages.",
 	"cirrussearch-invalid-keyword-boost": "Invalid boost value '$1' provided. Expected a positive decimal number.",
-	"cirrussearch-invalid-keyword-threshold": "Invalid threshold value '$1' provided. Expected a decimal number between 0 and 1."
+	"cirrussearch-invalid-keyword-threshold": "Invalid threshold value '$1' provided. Expected a decimal number between 0 and 1.",
+	"cirrussearch-semantic-empty-query": "Semantic search requires a non-empty search term.",
+	"cirrussearch-semantic-too-many-results": "Too many results requested from semantic search. Only the top $1 will be properly ranked."
 }

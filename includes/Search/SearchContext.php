@@ -881,6 +881,10 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		return $this->fallbackRunner;
 	}
 
+	public function disableFallbackRunner(): void {
+		$this->fallbackRunner = FallbackRunner::noopRunner();
+	}
+
 	public function setTrackTotalHits( bool $trackTotalHits ): void {
 		if ( $trackTotalHits !== $this->trackTotalHits ) {
 			$this->isDirty = true;

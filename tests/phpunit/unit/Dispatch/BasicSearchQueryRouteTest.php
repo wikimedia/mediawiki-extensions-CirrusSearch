@@ -89,7 +89,7 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
 			->setInitialNamespaces( $queryNs )
 			->build();
-		$expectedScore = $acceptRoute ? 1.0 : 0.0;
+		$expectedScore = $acceptRoute ? 1.0 : SearchQueryRoute::REJECT_ROUTE;
 		$this->assertSame( $expectedScore, $route->score( $query ) );
 	}
 
@@ -136,7 +136,7 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 		$route = new BasicSearchQueryRoute( SearchQuery::SEARCH_TEXT, [], $acceptedClasses, 'foo', 1.0 );
 		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), $query )
 			->build();
-		$expectedScore = $acceptRoute ? 1.0 : 0.0;
+		$expectedScore = $acceptRoute ? 1.0 : SearchQueryRoute::REJECT_ROUTE;
 		$this->assertSame( $expectedScore, $route->score( $query ) );
 	}
 
@@ -164,7 +164,7 @@ class BasicSearchQueryRouteTest extends CirrusTestCase {
 		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), $query )
 			->setInitialNamespaces( $queryNs )
 			->build();
-		$expectedScore = $acceptRoute ? 1.0 : 0.0;
+		$expectedScore = $acceptRoute ? 1.0 : SearchQueryRoute::REJECT_ROUTE;
 		$this->assertSame( $expectedScore, $route->score( $query ) );
 	}
 }

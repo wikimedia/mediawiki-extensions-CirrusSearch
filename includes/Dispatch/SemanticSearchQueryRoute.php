@@ -2,47 +2,37 @@
 
 namespace CirrusSearch\Dispatch;
 
+use CirrusSearch\CirrusDebugOptions;
+use CirrusSearch\CirrusSearch;
+use CirrusSearch\Profile\SearchProfileService;
 use Wikimedia\Assert\Assert;
 
 /**
- * Basic SearchQuery routing functionality which produces a constant
+ * Semantic SearchQuery routing functionality which produces a constant
  * score when successful, 0.0 otherwise.
- * Inspect the requested namespaces and the classes of the query.
+ * Inspects CirrusDebugOptions
  */
-class BasicSearchQueryRoute implements SearchQueryRoute {
-	/** @var string */
-	private $searchEngineEntryPoint;
-
-	/** @var int[] */
-	private $namespaces;
-
-	/** @var string[] */
-	private $acceptableQueryClasses;
-
-	/** @var string */
-	private $profileContext;
-
-	/** @var float */
-	private $score;
+class SemanticSearchQueryRoute implements SearchQueryRoute {
+	private string $searchEngineEntryPoint;
+	private CirrusDebugOptions $cirrusDebugOptions;
+	private array $namespaces;
+	private float $score;
 
 	/**
 	 * @param string $searchEngineEntryPoint
+	 * @param CirrusDebugOptions $cirrusDebugOptions
 	 * @param int[] $namespaces
-	 * @param string[] $acceptableQueryClasses
-	 * @param string $profileContext
 	 * @param float $score
 	 */
 	public function __construct(
-		$searchEngineEntryPoint,
+		string $searchEngineEntryPoint,
+		CirrusDebugOptions $cirrusDebugOptions,
 		array $namespaces,
-		array $acceptableQueryClasses,
-		$profileContext,
-		$score
+		float $score
 	) {
 		$this->searchEngineEntryPoint = $searchEngineEntryPoint;
+		$this->cirrusDebugOptions = $cirrusDebugOptions;
 		$this->namespaces = $namespaces;
-		$this->acceptableQueryClasses = $acceptableQueryClasses;
-		$this->profileContext = $profileContext;
 		$this->score = $score;
 	}
 
@@ -55,6 +45,10 @@ class BasicSearchQueryRoute implements SearchQueryRoute {
 			'query',
 			"must be {$this->searchEngineEntryPoint} but {$query->getSearchEngineEntryPoint()} given." );
 
+		if ( !$this->cirrusDebugOptions->isCirrusSemanticSearch() ) {
+			return self::REJECT_ROUTE;
+		}
+
 		if ( $this->namespaces !== [] ) {
 			$qNs = $query->getNamespaces();
 			if ( $qNs === [] ) {
@@ -64,19 +58,14 @@ class BasicSearchQueryRoute implements SearchQueryRoute {
 				return self::REJECT_ROUTE;
 			}
 		}
-		if ( $this->acceptableQueryClasses !== [] ) {
-			$parsedQuery = $query->getParsedQuery();
-			$match = false;
-			foreach ( $this->acceptableQueryClasses as $qClass ) {
-				if ( $parsedQuery->isQueryOfClass( $qClass ) ) {
-					$match = true;
-					break;
-				}
-			}
-			if ( !$match ) {
+
+		// Semantic search does not support user-selected profiles currently, only autoselect.
+		foreach ( $query->getForcedProfiles() as $profileName ) {
+			if ( $profileName !== CirrusSearch::AUTOSELECT_PROFILE ) {
 				return self::REJECT_ROUTE;
 			}
 		}
+
 		return $this->score;
 	}
 
@@ -98,6 +87,6 @@ class BasicSearchQueryRoute implements SearchQueryRoute {
 	 * @return string
 	 */
 	public function getProfileContext() {
-		return $this->profileContext;
+		return SearchProfileService::CONTEXT_SEMANTIC;
 	}
 }

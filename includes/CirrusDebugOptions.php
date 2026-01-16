@@ -25,6 +25,8 @@ class CirrusDebugOptions {
 	 */
 	private $cirrusDumpResult = false;
 
+	private bool $cirrusSemanticSearch = false;
+
 	/**
 	 * @var string|null
 	 */
@@ -52,6 +54,7 @@ class CirrusDebugOptions {
 		$options->cirrusDumpQuery = $request->getCheck( 'cirrusDumpQuery' );
 		$options->cirrusDumpQueryAST = $request->getCheck( 'cirrusDumpQueryAST' );
 		$options->cirrusDumpResult = $request->getCheck( 'cirrusDumpResult' );
+		$options->cirrusSemanticSearch = $request->getCheck( 'cirrusSemanticSearch' );
 		$options->cirrusExplain = self::debugOption( $request, 'cirrusExplain', [ 'verbose', 'pretty', 'hot', 'raw' ] );
 		$options->cirrusMLRModel = $request->getVal( 'cirrusMLRModel' );
 		$options->dumpAndDie = $options->cirrusDumpQuery || $options->cirrusDumpQueryAST || $options->cirrusDumpResult;
@@ -83,6 +86,12 @@ class CirrusDebugOptions {
 	public static function forRelevanceTesting( $withExplain = null ): self {
 		$options = new self();
 		$options->cirrusExplain = $withExplain;
+		return $options;
+	}
+
+	public static function forSemanticSearchUnitTests(): self {
+		$options = new self();
+		$options->cirrusSemanticSearch = true;
 		return $options;
 	}
 
@@ -124,6 +133,10 @@ class CirrusDebugOptions {
 	 */
 	public function isCirrusDumpResult() {
 		return $this->cirrusDumpResult;
+	}
+
+	public function isCirrusSemanticSearch(): bool {
+		return $this->cirrusSemanticSearch;
 	}
 
 	/**

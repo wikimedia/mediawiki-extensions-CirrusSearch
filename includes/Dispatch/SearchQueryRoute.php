@@ -15,6 +15,7 @@ use CirrusSearch\Search\SearchQuery;
  * @see \CirrusSearch\Profile\SearchProfileService
  */
 interface SearchQueryRoute {
+	public const REJECT_ROUTE = 0.0;
 
 	/**
 	 * Compute a score for this particular $query.

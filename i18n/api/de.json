@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Brettchenweber",
 			"Metalhead64",
 			"Tiin",
 			"TomatoCake"
@@ -20,7 +21,7 @@
 	"apihelp-cirrus-schema-dump-param-build": "Ob das Schema aus dem Code erstellt (true) oder aus dem Live-Cluster abgerufen werden soll (false).",
 	"apihelp-cirrus-schema-dump-param-plugins": "Liste der auf dem Zielcluster verfügbaren OpenSearch/Elasticsearch-Plugins. Wird nur verwendet, wenn build=true gesetzt ist. Falls keine Liste angegeben wird, werden die Plugins vom verbundenen Cluster erkannt.",
 	"apihelp-cirrus-schema-dump-example": "Holt ein CirrusSearch-Schema aus dem Live-Cluster.",
-	"apihelp-cirrus-schema-dump-example-build": "Generert CirrusSearch-Schema aus der Codekonfiguration.",
+	"apihelp-cirrus-schema-dump-example-build": "Generiert CirrusSearch-Schema aus der Codekonfiguration.",
 	"apihelp-cirrus-schema-dump-example-build-plugins": "Generiert CirrusSearch-Schema mit spezifischen, aktivierten Plugins.",
 	"apihelp-query+cirrusdoc-summary": "Auszug eines CirrusSearch-Artikeldokuments von den Suchservern",
 	"apihelp-query+cirrusdoc-example": "Ruft einen Auszug eines einzelnen CirrusSearch-Artikels ab, wie er derzeit in der Suche indexiert ist.",

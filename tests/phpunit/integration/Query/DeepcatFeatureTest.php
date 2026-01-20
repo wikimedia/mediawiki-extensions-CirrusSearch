@@ -47,12 +47,12 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 			'two results' => [
 				'Duck',
 				[
-					[ 'out' => 'Ducks' ],
+					[ 'out' => 'Cute_Ducks' ],
 					[ 'out' => 'Wigeons' ],
 				],
 				[
 					'terms' => [
-						"category.lowercase_keyword" => [ 'Ducks', 'Wigeons' ]
+						"category.lowercase_keyword" => [ 'Cute Ducks', 'Wigeons' ]
 					]
 				]
 			],

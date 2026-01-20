@@ -219,7 +219,6 @@ SPARQL;
 
 		if ( count( $result ) > $this->limit ) {
 			// We went over the limit.
-			// According to T181549 this means we fail the filter application
 			$warningCollector->addWarning( 'cirrussearch-feature-deepcat-toomany' );
 			Util::getStatsFactory()
 				->getCounter( 'deepcat_too_many_total' )
@@ -251,6 +250,11 @@ SPARQL;
 	protected function doGetFilterQuery( array $categories ) {
 		if ( $categories == [] ) {
 			return null;
+		}
+
+		// Categories are stored in search with spaces, but deepcat has the underscored variant
+		foreach ( $categories as &$cat ) {
+			$cat = strtr( $cat, '_', ' ' );
 		}
 
 		return new Terms( 'category.lowercase_keyword', $categories );

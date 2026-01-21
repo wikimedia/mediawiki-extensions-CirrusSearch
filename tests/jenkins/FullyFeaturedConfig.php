@@ -180,4 +180,21 @@ $wgCirrusSearchFullTextQueryBuilderProfiles = [
 			],
 		],
 	],
+
+	'default_semantic' => [
+		'builder_class' => \CirrusSearch\Query\SemanticSearchQueryBuilder::class,
+		'undocumented' => true,
+		'settings' => [
+			'nested_field' => 'passage_chunk_embedding',
+			'vector_field' => 'knn',
+			'source_fields' => [ 'section', 'text' ],
+			// Field from nested doc used as link anchor
+			'anchor_field' => 'section',
+			// Field from nested doc used as snippet
+			'snippet_field' => 'text',
+			'k' => 21,
+			'score_mode' => 'max',
+		],
+	],
+
 ];

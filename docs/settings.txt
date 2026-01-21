@@ -1812,3 +1812,11 @@ Default:
   $wgCirrusSearchCompletionUseSecondTryProfile = null;
 
 Force the use of this second-try search profile instead of the 'default' one.
+
+; $wgCirrusSearchDefaultSemanticProfile
+
+Default
+  $wgCirrusSearchDefaultSemanticProfile = null;
+
+EXPERIMENTAL. Selects the profile to use when CirrusDebugOptions requests the use
+of semantic search.

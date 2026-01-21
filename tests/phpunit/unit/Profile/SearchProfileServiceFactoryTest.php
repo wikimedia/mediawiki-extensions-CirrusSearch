@@ -210,6 +210,48 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 		$this->assertEquals( [ 'INTERWIKI' ], $service->loadProfile( $profileType ) );
 	}
 
+	public function testSemanticSearchNotLoadedWhenConfigAbsent() {
+		$factory = $this->getFactory( [], null, [] );
+		$service = $factory->loadService( new HashSearchConfig( [] ) );
+		$this->expectException( SearchProfileException::class );
+		$service->getProfileName( SearchProfileService::FT_QUERY_BUILDER, SearchProfileService::CONTEXT_SEMANTIC );
+	}
+
+	public function testSemanticSearchDefaults() {
+		$cirrusSearchHookRunner = $this->createCirrusSearchHookRunner( [
+			'CirrusSearchProfileService' => static function ( SearchProfileService $service ) {
+				$service->registerArrayRepository( SearchProfileService::FT_QUERY_BUILDER,
+					'unit_test', [ 'default_semantic' => [] ] );
+			}
+		] );
+		$factory = $this->getFactory( [], $cirrusSearchHookRunner, [] );
+		$config = new HashSearchConfig( [ 'CirrusSearchDefaultSemanticProfile' => 'default_semantic' ] );
+		$service = $factory->loadService( $config, null, null, true );
+		$this->assertEquals( 'default_semantic',
+			$service->getProfileName( SearchProfileService::FT_QUERY_BUILDER, SearchProfileService::CONTEXT_SEMANTIC ) );
+		$this->assertEquals( 'empty',
+			$service->getProfileName( SearchProfileService::RESCORE, SearchProfileService::CONTEXT_SEMANTIC ) );
+	}
+
+	public function testSemanticSearchRouteRegistered() {
+		$cirrusSearchHookRunner = $this->createCirrusSearchHookRunner( [
+			'CirrusSearchProfileService' => static function ( SearchProfileService $service ) {
+				$service->registerArrayRepository( SearchProfileService::FT_QUERY_BUILDER,
+					'unit_test', [ 'default_semantic' => [] ] );
+			}
+		] );
+		$factory = $this->getFactory( [], $cirrusSearchHookRunner, [] );
+		$config = new HashSearchConfig( [ 'CirrusSearchDefaultSemanticProfile' => 'default_semantic' ] );
+		$request = new FauxRequest( [ 'cirrusSemanticSearch' => '1' ] );
+		$service = $factory->loadService( $config, $request, null, true );
+
+		$dispatch = $service->getDispatchService();
+		$query = $this->getNewFTSearchQueryBuilder( $config, 'foo' )
+			->setInitialNamespaces( [ NS_MAIN ] )
+			->build();
+		$this->assertEquals( SearchProfileService::CONTEXT_SEMANTIC, $dispatch->bestRoute( $query )->getProfileContext() );
+	}
+
 	private function getFactory( array $hostWikiConfig = [],
 								 ?CirrusSearchHookRunner $cirrusSearchHookRunner = null,
 								 $userOption = []

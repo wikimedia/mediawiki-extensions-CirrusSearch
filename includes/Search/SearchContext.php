@@ -151,14 +151,16 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @var int[] weights of different syntaxes
 	 */
 	private static $syntaxWeights = [
-		// regex is really tough
+		// Deep category searches can have thousands of terms
+		'deepcategory' => 20,
 		'full_text' => 10,
-		'regex' => PHP_INT_MAX,
 		'more_like' => 100,
 		'near_match' => 10,
 		'prefix' => 2,
-		// Deep category searches
-		'deepcategory' => 20,
+		// regex is really tough
+		'regex' => PHP_INT_MAX,
+		// depends, filtered semantic is pretty expensive
+		'semantic' => 20,
 	];
 
 	/**

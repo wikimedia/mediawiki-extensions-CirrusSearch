@@ -3,11 +3,13 @@
 namespace CirrusSearch\Profile;
 
 use CirrusSearch\BuildDocument\DocumentSizeLimiter;
+use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\Dispatch\BasicSearchQueryRoute;
 use CirrusSearch\Dispatch\CirrusDefaultSearchQueryRoute;
 use CirrusSearch\Dispatch\DefaultSearchQueryDispatchService;
 use CirrusSearch\Dispatch\SearchQueryDispatchService;
 use CirrusSearch\Dispatch\SearchQueryRoute;
+use CirrusSearch\Dispatch\SemanticSearchQueryRoute;
 use CirrusSearch\Search\SearchQuery;
 use MediaWiki\Config\Config;
 use MediaWiki\Context\RequestContext;
@@ -368,6 +370,11 @@ class SearchProfileService {
 		if ( isset( $this->repositories[$type] ) ) {
 			foreach ( $this->repositories[$type] as $repo ) {
 				foreach ( $repo->listExposedProfiles() as $name => $profile ) {
+					if ( $profile['undocumented'] ?? false ) {
+						// Undocumented profiles are selected either internally or
+						// via CirrusDebugOptions.
+						continue;
+					}
 					if ( !isset( $profiles[$name] ) ) {
 						$profiles[$name] = $profile;
 					}
@@ -467,6 +474,20 @@ class SearchProfileService {
 			throw new SearchProfileException( "Unsupported search engine entry point {$route->getSearchEngineEntryPoint()}" );
 		}
 		$this->routes[$route->getSearchEngineEntryPoint()][] = $route;
+	}
+
+	/**
+	 * Register a new static route for semantic search queries
+	 *
+	 * @param int[] $supportedNamespaces
+	 * @param float $score score of the route
+	 * @see SearchProfileService::getDispatchService()
+	 * @see SearchQueryDispatchService::CIRRUS_DEFAULTS_SCORE
+	 */
+	public function registerSemanticSearchQueryRoute( array $supportedNamespaces, float $score ) {
+		$debugOptions = CirrusDebugOptions::fromRequest( $this->request );
+		$this->registerSearchQueryRoute( new SemanticSearchQueryRoute(
+			SearchQuery::SEARCH_TEXT, $debugOptions, $supportedNamespaces, $score ) );
 	}
 
 	/**

@@ -797,6 +797,10 @@
 		"CirrusSearchCategoriesClientCacheTTL": {
 			"description": "How long, in seconds, to cache responses from the categories sparql client",
 			"value": 900
+		},
+		"CirrusSearchDefaultSemanticProfile": {
+			"description": "EXPERIMENTAL. Selects the profile to use when CirrusDebugOptions requests the use of semantic search",
+			"value": null
 		}
 	},
 	"SearchMappings": {

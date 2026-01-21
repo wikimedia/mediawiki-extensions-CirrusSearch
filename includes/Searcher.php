@@ -23,6 +23,7 @@ use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchRequestBuilder;
+use CirrusSearch\Search\SemanticResultsType;
 use CirrusSearch\Search\TeamDraftInterleaver;
 use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Search\TitleResultsType;
@@ -208,15 +209,30 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$this->sort = $query->getSort();
 
 		if ( $query->getSearchEngineEntryPoint() === SearchQuery::SEARCH_TEXT ) {
-			$this->searchContext->setResultsType(
-				new FullTextResultsType(
-					$this->searchContext->getFetchPhaseBuilder(),
-					$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ),
-					$this->titleHelper,
-					$query->getExtraFieldsToExtract(),
-					$this->searchContext->getConfig()->getElement( 'CirrusSearchDeduplicateInMemory' ) === true
-				)
-			);
+			switch ( $this->searchContext->getProfileContext() ) {
+				case SearchProfileService::CONTEXT_SEMANTIC:
+					$profileSettings = $this->config->getProfileService()
+						->loadProfileByName( SearchProfileService::FT_QUERY_BUILDER,
+							$this->searchContext->getFulltextQueryBuilderProfile() );
+					$this->searchContext->setResultsType(
+						new SemanticResultsType(
+							$this->titleHelper,
+							$query->getExtraFieldsToExtract(),
+							$profileSettings,
+						)
+					);
+					break;
+				default:
+					$this->searchContext->setResultsType(
+						new FullTextResultsType(
+							$this->searchContext->getFetchPhaseBuilder(),
+							$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ),
+							$this->titleHelper,
+							$query->getExtraFieldsToExtract(),
+							$this->searchContext->getConfig()->getElement( 'CirrusSearchDeduplicateInMemory' ) === true
+						)
+					);
+			}
 			return $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );
 		} else {
 			throw new \RuntimeException( 'Only ' . SearchQuery::SEARCH_TEXT . ' is supported for now' );
@@ -796,11 +812,13 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		// separate expensive or high-volume traffic into dedicated
 		// pools with specific limits. Prefix is only high volume
 		// when completion is disabled.
+		// TODO: Should this be configuration?
 		$poolCounterTypes = [
 			'deepcat' => 'CirrusSearch-ExpensiveFullText',
 			'regex' => 'CirrusSearch-ExpensiveFullText',
 			'prefix' => 'CirrusSearch-Prefix',
 			'more_like' => 'CirrusSearch-MoreLike',
+			'semantic' => 'CirrusSearch-Semantic',
 		];
 		foreach ( $poolCounterTypes as $type => $counter ) {
 			if ( $this->searchContext->isSyntaxUsed( $type ) ) {

@@ -165,6 +165,57 @@ class SearchProfileServiceTest extends CirrusTestCase {
 		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT, $route->getProfileContext() );
 	}
 
+	public function testUndocumentedProfilesExcludedFromListExposedProfiles() {
+		$profiles = [
+			'documented' => [ 'key' => 'value' ],
+			'undocumented_profile' => [ 'key' => 'value', 'undocumented' => true ],
+		];
+		$service = $this->getSearchProfileService();
+		$service->registerArrayRepository( 'type', 'name', $profiles );
+		$service->registerDefaultProfile( 'type', 'context', 'documented' );
+		$service->freeze();
+
+		$exposed = $service->listExposedProfiles( 'type' );
+		$this->assertArrayHasKey( 'documented', $exposed );
+		$this->assertArrayNotHasKey( 'undocumented_profile', $exposed );
+	}
+
+	public function testRegisterSemanticSearchQueryRoute() {
+		$requestWithSemantic = new FauxRequest( [ 'cirrusSemanticSearch' => '1' ] );
+		$service = new SearchProfileService( new StaticUserOptionsLookup( [] ), $requestWithSemantic );
+		$service->registerSemanticSearchQueryRoute( [ NS_MAIN ], 1.0 );
+		$service->freeze();
+
+		$dispatch = $service->getDispatchService();
+
+		// A main-namespace query with semantic search enabled should route to semantic context
+		$queryInMain = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
+			->setInitialNamespaces( [ NS_MAIN ] )
+			->build();
+		$this->assertEquals( SearchProfileService::CONTEXT_SEMANTIC, $dispatch->bestRoute( $queryInMain )->getProfileContext() );
+
+		// A non-main-namespace query should not route to the semantic route
+		$queryOutsideMain = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
+			->setInitialNamespaces( [ NS_TALK ] )
+			->build();
+		$this->assertNotEquals( SearchProfileService::CONTEXT_SEMANTIC, $dispatch->bestRoute( $queryOutsideMain )->getProfileContext() );
+	}
+
+	public function testRegisterSemanticSearchQueryRouteWithoutSemanticOption() {
+		// Without the semantic debug option, the route should not be selected
+		$requestWithoutSemantic = new FauxRequest( [] );
+		$service = new SearchProfileService( new StaticUserOptionsLookup( [] ), $requestWithoutSemantic );
+		$service->registerSemanticSearchQueryRoute( [ NS_MAIN ], 1.0 );
+		$service->freeze();
+
+		$dispatch = $service->getDispatchService();
+		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
+			->setInitialNamespaces( [ NS_MAIN ] )
+			->build();
+		$route = $dispatch->bestRoute( $query );
+		$this->assertNotEquals( SearchProfileService::CONTEXT_SEMANTIC, $route->getProfileContext() );
+	}
+
 	private function getSearchProfileService(): SearchProfileService {
 		return new SearchProfileService( new StaticUserOptionsLookup( [] ) );
 	}

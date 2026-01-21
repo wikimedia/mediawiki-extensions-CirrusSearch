@@ -144,6 +144,7 @@ class SearchProfileServiceFactory {
 	 */
 	public function loadService( SearchConfig $config, ?WebRequest $request = null, ?UserIdentity $user = null, $forceHook = false ) {
 		$service = new SearchProfileService( $this->userOptionsLookup, $request, $user );
+		$this->loadSemanticSearch( $service, $config );
 		$this->loadCrossProjectBlockScorer( $service, $config );
 		$this->loadSimilarityProfiles( $service, $config );
 		$this->loadRescoreProfiles( $service, $config );
@@ -168,6 +169,20 @@ class SearchProfileServiceFactory {
 		}
 		$service->freeze();
 		return $service;
+	}
+
+	private function loadSemanticSearch( SearchProfileService $service, SearchConfig $config ) {
+		$defaultProfile = $config->get( 'CirrusSearchDefaultSemanticProfile' );
+		if ( !$defaultProfile ) {
+			return;
+		}
+		$service->registerSemanticSearchQueryRoute( [ NS_MAIN ], 1.0 );
+		// Seems incorrect that all FT_QUERY_BUILDER's have access to semantic profile?
+		// Maybe we should allow the profile to define the profile to get query building from?
+		$service->registerDefaultProfile( SearchProfileService::FT_QUERY_BUILDER,
+			SearchProfileService::CONTEXT_SEMANTIC, $defaultProfile );
+		$service->registerDefaultProfile( SearchProfileService::RESCORE,
+			SearchProfileService::CONTEXT_SEMANTIC, 'empty' );
 	}
 
 	private function loadCrossProjectBlockScorer( SearchProfileService $service, SearchConfig $config ) {

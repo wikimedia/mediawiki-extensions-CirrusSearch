@@ -19,7 +19,7 @@
 	"apihelp-cirrus-profiles-dump-param-verbose": "Descargar o contigo dos perfís",
 	"apihelp-query+cirrusdoc-summary": "Descarga do documento dun artigo de CirrusSearch dos servidores de procura",
 	"apihelp-query+cirrusdoc-example": "Obter unha descarga dun artigo individual de CirrusSearch tal e como está indexado arestora na procura.",
-	"apihelp-query+cirrusdoc-example-2": "Obter unha descarga da configuración de CirrusSearch para este wiki só coas categorías que se seleccionaron mediante o parámetro \"include\"",
+	"apihelp-query+cirrusdoc-example-2": "Obter unha descarga da configuración de CirrusSearch para este wiki só coas categorías que se seleccionaron mediante o parámetro «include»",
 	"apihelp-query+cirrusdoc-param-includes": "Definir os campos que debe devolver a procura.",
 	"apihelp-query+cirrusbuilddoc-summary": "Descarga do documento dun artigo de CirrusSearch dos servidores da base de datos",
 	"apihelp-query+cirrusbuilddoc-example": "Obter unha descarga dun artigo individual de CirrusSearch xerado a partir da base de datos.",
@@ -36,6 +36,6 @@
 	"apihelp-cirrus-check-sanity-param-from": "Identificador da páxina na que comezar a consultar",
 	"apihelp-cirrus-check-sanity-param-limit": "O número de identificadores de páxina a comprobar",
 	"apihelp-cirrus-check-sanity-param-sequenceid": "O número de veces que se comprobou este conxunto de identificadores de páxina",
-	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Número de comprobacións despois das cales se debe volver renderizar unha páxina. Baseado no parámetro \"sequenceid\" proporcionado.",
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Número de comprobacións despois das cales se debe volver renderizar unha páxina. Baseado no parámetro «sequenceid» proporcionado.",
 	"apiwarn-cirrus-ignore-revisions": "Proporcionouse máis dunha revisión para unha páxina. Só se devolverá a revisión máis recente."
 }

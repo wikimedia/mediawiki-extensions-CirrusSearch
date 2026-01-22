@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Sparql\SparqlClient;
 
 /**
  * A simple wrapper for MediaWikiServices, to support type safety when accessing
@@ -26,7 +25,7 @@ class CirrusSearchServices {
 		return $this->services->get( 'CirrusSearch' );
 	}
 
-	public function getCirrusCategoriesClient(): SparqlClient {
+	public function getCirrusCategoriesClient(): CachedSparqlClient {
 		return $this->services->get( 'CirrusCategoriesClient' );
 	}
 

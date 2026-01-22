@@ -793,6 +793,10 @@
 		"CirrusSearchCompletionUseSecondTryProfile": {
 			"description": "Use this second try profile instead of the 'default' one",
 			"value": null
+		},
+		"CirrusSearchCategoriesClientCacheTTL": {
+			"description": "How long, in seconds, to cache responses from the categories sparql client",
+			"value": 900
 		}
 	},
 	"SearchMappings": {

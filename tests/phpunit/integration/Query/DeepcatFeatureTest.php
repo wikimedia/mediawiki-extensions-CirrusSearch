@@ -2,10 +2,10 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CachedSparqlClient;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use MediaWiki\Config\HashConfig;
-use MediaWiki\Sparql\SparqlClient;
 use MediaWiki\Sparql\SparqlException;
 use MediaWiki\Title\Title;
 
@@ -19,13 +19,13 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 	/**
 	 * @param array $expectInQuery
 	 * @param array $result
-	 * @return SparqlClient
+	 * @return CachedSparqlClient
 	 */
 	private function getSparqlClient( array $expectInQuery, array $result ) {
 		/**
-		 * @var SparqlClient $client
+		 * @var CachedSparqlClient $client
 		 */
-		$client = $this->createMock( SparqlClient::class );
+		$client = $this->createMock( CachedSparqlClient::class );
 		// 2 calls we still test old and new parsing behaviors
 		$client->expects( $this->atMost( 2 ) )->method( 'query' )->willReturnCallback(
 			function ( $sparql ) use ( $expectInQuery, $result ) {
@@ -174,7 +174,7 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 			'CirrusSearchCategoryMax' => 100,
 			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'
 		] );
-		$client = $this->createMock( SparqlClient::class );
+		$client = $this->createMock( CachedSparqlClient::class );
 		// 3 runs:
 		// 1: for asserting expandData
 		// 2: for asserting old & new parsing techniques

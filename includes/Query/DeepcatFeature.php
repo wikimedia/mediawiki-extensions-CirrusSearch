@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CachedSparqlClient;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
@@ -14,7 +15,6 @@ use Elastica\Query\Terms;
 use MediaWiki\Config\Config;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Sparql\SparqlClient;
 use MediaWiki\Sparql\SparqlException;
 use MediaWiki\Title\Title;
 
@@ -42,9 +42,9 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	 */
 	private $prefix;
 	/**
-	 * @var SparqlClient
+	 * @var CachedSparqlClient
 	 */
-	private $client;
+	private $sparql;
 
 	/**
 	 * User agent to use for SPARQL queries
@@ -58,14 +58,14 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 
 	/**
 	 * @param Config $config
-	 * @param SparqlClient|null $client
+	 * @param ?CachedSparqlClient $sparql
 	 */
-	public function __construct( Config $config, ?SparqlClient $client = null ) {
+	public function __construct( Config $config, ?CachedSparqlClient $sparql = null ) {
 		$this->depth = (int)$config->get( 'CirrusSearchCategoryDepth' );
 		$this->limit = (int)$config->get( 'CirrusSearchCategoryMax' );
 		$endpoint = $config->get( 'CirrusSearchCategoryEndpoint' );
 		if ( $endpoint !== null && $endpoint !== '' ) {
-			$this->client = $client ?? MediaWikiServices::getInstance()->getService( 'CirrusCategoriesClient' );
+			$this->sparql = $sparql ?? MediaWikiServices::getInstance()->getService( 'CirrusCategoriesClient' );
 		}
 	}
 
@@ -134,7 +134,7 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	 * @return array
 	 */
 	private function doExpand( $value, WarningCollector $warningCollector ) {
-		if ( !$this->client ) {
+		if ( !$this->sparql ) {
 			$warningCollector->addWarning( 'cirrussearch-feature-deepcat-endpoint' );
 			return [];
 		}
@@ -215,7 +215,7 @@ SELECT ?out WHERE {
 } ORDER BY ASC(?depth)
 LIMIT $limit1
 SPARQL;
-		$result = $this->client->query( $query );
+		$result = $this->sparql->query( $query );
 
 		if ( count( $result ) > $this->limit ) {
 			// We went over the limit.

@@ -2,11 +2,11 @@
 
 namespace CirrusSearch\Parser;
 
+use CirrusSearch\CachedSparqlClient;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\SearchConfig;
-use MediaWiki\Sparql\SparqlClient;
 
 /**
  * Simple factory to create QueryParser instance based on the host wiki config.
@@ -19,7 +19,7 @@ class QueryParserFactory {
 	 * @param SearchConfig $config the host wiki config
 	 * @param NamespacePrefixParser $namespacePrefix
 	 * @param CirrusSearchHookRunner $cirrusSearchHookRunner
-	 * @param SparqlClient|null $client
+	 * @param CachedSparqlClient|null $sparql
 	 * @return QueryParser
 	 * @throws ParsedQueryClassifierException
 	 */
@@ -27,11 +27,11 @@ class QueryParserFactory {
 		SearchConfig $config,
 		NamespacePrefixParser $namespacePrefix,
 		CirrusSearchHookRunner $cirrusSearchHookRunner,
-		?SparqlClient $client = null
+		?CachedSparqlClient $sparql = null
 	) {
 		$escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 		$repository = new FTQueryClassifiersRepository( $config, $cirrusSearchHookRunner );
-		return new QueryStringRegexParser( new FullTextKeywordRegistry( $config, $cirrusSearchHookRunner, $namespacePrefix, $client ),
+		return new QueryStringRegexParser( new FullTextKeywordRegistry( $config, $cirrusSearchHookRunner, $namespacePrefix, $sparql ),
 			$escaper, $config->get( 'CirrusSearchStripQuestionMarks' ), $repository, $namespacePrefix,
 			$config->get( "CirrusSearchMaxFullTextQueryLength" ) );
 	}

@@ -3,6 +3,7 @@
  * Services for CirrusSearch extensions
  */
 
+use CirrusSearch\CachedSparqlClient;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Connection;
@@ -33,15 +34,20 @@ return [
 	},
 
 	// SPARQL client for deep category search
-	'CirrusCategoriesClient' => static function ( MediaWikiServices $services ): SparqlClient {
+	'CirrusCategoriesClient' => static function ( MediaWikiServices $services ): CachedSparqlClient {
 		$config = $services->getMainConfig();
-		$client = new SparqlClient( $config->get( 'CirrusSearchCategoryEndpoint' ),
-			$services->getHttpRequestFactory() );
+		$endpoint = $config->get( 'CirrusSearchCategoryEndpoint' );
+		$client = new SparqlClient( $endpoint, $services->getHttpRequestFactory() );
 		$client->setTimeout( DeepcatFeature::TIMEOUT );
 		$client->setClientOptions( [
 			'userAgent' => DeepcatFeature::USER_AGENT,
 		] );
-		return $client;
+		return new CachedSparqlClient(
+			$client,
+			$services->getMainWANObjectCache(),
+			$config->get( 'CirrusSearchCategoriesClientCacheTTL' ),
+			$endpoint
+		);
 	},
 	InterwikiResolver::SERVICE => static function ( MediaWikiServices $services ): InterwikiResolver {
 		$config = $services->getConfigFactory()

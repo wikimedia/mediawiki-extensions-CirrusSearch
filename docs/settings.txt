@@ -1576,6 +1576,16 @@ Maximum overall category count for deep category query. Note that OpenSearch
 has limit of 65,536 terms in a single terms query by default, this limit
 must be under the Opensearch limits.
 
+; $wgCirrusSearchCategoriesClientCacheTTL
+
+Default:
+  $wgCirrusSearchCategoriesClientCacheTTL = 900;
+
+How long, in seconds, to cache responses from the categories sparql client.
+This primarily applies to the deepcat search keyword. The supporting service is
+typically updated on a daily basis, this cache mostly helps users avoid errors
+when repeating a query as the backend service can be flakey.
+
 ; $wgCirrusSearchNamespaceResolutionMethod
 
 Default:

@@ -3,6 +3,7 @@
 		"authors": [
 			"GuoPC",
 			"Liuxinyu970226",
+			"Peterxy12",
 			"Shizhao",
 			"StarrySky",
 			"佛壁灯",
@@ -19,6 +20,7 @@
 	"apihelp-cirrus-profiles-dump-summary": "此Wiki上的CirrusSearch配置文件转储。",
 	"apihelp-cirrus-profiles-dump-example": "获取此Wiki上的CirrusSearch配置文件转储。",
 	"apihelp-cirrus-profiles-dump-param-verbose": "获取配置文件内容",
+	"apihelp-cirrus-schema-dump-summary": "此wiki的CirrusSearch架构（设置和映射）转储。",
 	"apihelp-query+cirrusdoc-summary": "来自搜索服务器的CirrusSearch条目文档的转储",
 	"apihelp-query+cirrusdoc-example": "获取当前索引进搜索的单个CirrusSearch条目的转储。",
 	"apihelp-query+cirrusdoc-example-2": "获取此wiki的CirrusSearch设置转储，其中仅包含使用“includes”参数选择的分类",

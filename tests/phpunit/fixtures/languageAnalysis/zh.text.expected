@@ -676,7 +676,7 @@
             "type": "lowercase"
         },
         "prefix_ngram_filter": {
-            "type": "edgeNGram",
+            "type": "edge_ngram",
             "max_gram": 255
         },
         "remove_empty": {
@@ -720,7 +720,7 @@
             "type": "keyword"
         },
         "prefix": {
-            "type": "edgeNGram",
+            "type": "edge_ngram",
             "max_gram": 255
         },
         "trigram": {

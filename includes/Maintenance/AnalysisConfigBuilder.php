@@ -592,7 +592,7 @@ class AnalysisConfigBuilder {
 					'preserve_original' => false
 				],
 				'prefix_ngram_filter' => [
-					'type' => 'edgeNGram',
+					'type' => 'edge_ngram',
 					'max_gram' => CirrusSearch::MAX_TITLE_SEARCH,
 				],
 				'asciifolding' => [
@@ -614,7 +614,7 @@ class AnalysisConfigBuilder {
 			],
 			'tokenizer' => [
 				'prefix' => [
-					'type' => 'edgeNGram',
+					'type' => 'edge_ngram',
 					'max_gram' => CirrusSearch::MAX_TITLE_SEARCH,
 				],
 				'no_splitting' => [ // Just grab the whole term.

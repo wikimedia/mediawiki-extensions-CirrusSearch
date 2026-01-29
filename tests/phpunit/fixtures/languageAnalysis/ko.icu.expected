@@ -716,7 +716,7 @@
             ]
         },
         "prefix_ngram_filter": {
-            "type": "edgeNGram",
+            "type": "edge_ngram",
             "max_gram": 255
         },
         "remove_empty": {
@@ -758,7 +758,7 @@
             "decompound_mode": "mixed"
         },
         "prefix": {
-            "type": "edgeNGram",
+            "type": "edge_ngram",
             "max_gram": 255
         },
         "trigram": {

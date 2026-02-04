@@ -3,12 +3,13 @@
 		"authors": [
 			"Christian List",
 			"Saederup92",
-			"Weblars"
+			"Weblars",
+			"Peterleth"
 		]
 	},
-	"cirrussearch-desc": "Søgning for MediaWiki drevet af OpenSearch",
+	"cirrussearch-desc": "OpenSearch-drevet søgning til MediaWiki",
 	"cirrussearch-backend-error": "Vi kunne ikke fuldføre søgningen på grund af et midlertidigt problem.  Prøv igen senere.",
-	"cirrussearch-now-using": "Denne wiki bruger en ny søgemaskine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Læs mere]])",
+	"cirrussearch-now-using": "Denne wiki bruger en ny søgemaskine. ([https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch Læs mere])",
 	"cirrussearch-pref-label": "Ny søgning",
 	"cirrussearch-pref-desc": "Prøv vores nye søgning, som understøtter et større antal sprog, giver mere opdaterede resultater og kan endda finde tekst inden i skabeloner.",
 	"cirrussearch-give-feedback": "Giv os tilbagemelding",

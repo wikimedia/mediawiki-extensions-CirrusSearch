@@ -5,6 +5,7 @@ namespace CirrusSearch\Event;
 use CirrusSearch\EventBusWeightedTagSerializer;
 use MediaWiki\Extension\EventBus\Serializers\EventSerializer;
 use MediaWiki\Extension\EventBus\Serializers\MediaWiki\PageEntitySerializer;
+use MediaWiki\Http\Telemetry;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
@@ -83,9 +84,7 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 				],
 				$wikiId,
 				null,
-			// TODO: uncomment this after
-			// https://gerrit.wikimedia.org/r/c/mediawiki/extensions/CirrusSearch/+/1225570 is deployed.
-			// Telemetry::getInstance()->getRequestId(),
+				Telemetry::getInstance()->getRequestId(),
 			),
 			$eventAttrs
 		);

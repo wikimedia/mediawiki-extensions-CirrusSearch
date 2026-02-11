@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use MediaWiki\Extension\EventBus\Serializers\EventSerializer;
 use MediaWiki\Extension\EventBus\Serializers\MediaWiki\PageEntitySerializer;
+use MediaWiki\Http\Telemetry;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\WikiMap\WikiMap;
@@ -62,12 +63,10 @@ class EventBusWeightedTagSerializer {
 			] ),
 			self::getWikiId( $wikiPage ),
 			null,
-		// TODO: uncomment this after
-		// https://gerrit.wikimedia.org/r/c/mediawiki/extensions/CirrusSearch/+/1225570 is deployed.
-		// NOTE: This is using a global Telemetry instance, and it might be better to
-		// pass $requestId here as a parameter (obtaining the value of it in
-		// this method's caller instead of here in the serializer).
-		// Telemetry::getInstance()->getRequestId(),
+			// NOTE: This is using a global Telemetry instance, and it might be better to
+			// pass $requestId here as a parameter (obtaining the value of it in
+			// this method's caller instead of here in the serializer).
+			Telemetry::getInstance()->getRequestId(),
 		);
 	}
 

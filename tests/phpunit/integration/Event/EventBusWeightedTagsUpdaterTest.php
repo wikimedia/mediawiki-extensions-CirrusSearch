@@ -8,7 +8,6 @@ use CirrusSearch\EventBusWeightedTagsUpdater;
 use CirrusSearch\WeightedTagsException;
 use Exception;
 use JsonSchema\Validator;
-use MediaWiki\Config\Config;
 use MediaWiki\Extension\EventBus\EventBus;
 use MediaWiki\Extension\EventBus\EventBusFactory;
 use MediaWiki\Json\FormatJson;
@@ -88,8 +87,6 @@ class EventBusWeightedTagsUpdaterTest extends CirrusIntegrationTestCase {
 	 * @return EventBusWeightedTagSerializer&MockObject
 	 */
 	protected function createEventSerializerMock(): EventBusWeightedTagSerializer {
-		$mainConfig = $this->createMock( Config::class );
-		$mainConfig->expects( $this->any() )->method( 'get' )->willReturnArgument( 0 );
 		$titleFormatter = $this->createMock( TitleFormatter::class );
 		$titleFormatter->expects( $this->any() )->method( 'getPrefixedDBkey' )->willReturn( 'test' );
 		$this->setService( 'TitleFormatter', $titleFormatter );

@@ -4,6 +4,7 @@ namespace CirrusSearch\Search\Fetch;
 
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\SearchConfig;
+use MediaWiki\MainConfigNames;
 
 class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 	public const EXPERIMENTAL_HL_TYPE = 'experimental';
@@ -99,7 +100,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 		/** @var self $self */
 		$self = ( self::text() )( $config, $name, $target, $priority );
 		$self->addOption( 'regex', [ $pattern ] );
-		$self->addOption( 'locale', $config->get( 'LanguageCode' ) );
+		$self->addOption( 'locale', $config->get( MainConfigNames::LanguageCode ) );
 		$self->addOption( 'regex_flavor', $regexFlavor );
 		$self->addOption( 'skip_query', true );
 		$self->addOption( 'regex_case_insensitive', $caseInsensitive );

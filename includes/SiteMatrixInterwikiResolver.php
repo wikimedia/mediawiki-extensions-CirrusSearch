@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use MediaWiki\Extension\SiteMatrix\SiteMatrix;
 use MediaWiki\Interwiki\InterwikiLookup;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\Http\MultiHttpClient;
@@ -64,7 +65,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 			global $wgConf;
 
 			$matrix = new SiteMatrix;
-			$wikiDBname = $this->config->get( 'DBname' );
+			$wikiDBname = $this->config->get( MainConfigNames::DBname );
 			[ , $myLang ] = $wgConf->siteFromDB( $wikiDBname );
 			$siteConf = $this->config->get( 'SiteMatrixSites' );
 			$prefixOverrides = $this->config->get( 'CirrusSearchInterwikiPrefixOverrides' );

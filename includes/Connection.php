@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use Exception;
 use LogicException;
 use MediaWiki\Extension\Elastica\ElasticaConnection;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\Assert\Assert;
 
@@ -242,7 +243,7 @@ class Connection extends ElasticaConnection {
 		if ( isset( $mappings[$namespace] ) ) {
 			return $mappings[$namespace];
 		}
-		$defaultSearch = $this->config->get( 'NamespacesToBeSearchedDefault' );
+		$defaultSearch = $this->config->get( MainConfigNames::NamespacesToBeSearchedDefault );
 		if ( isset( $defaultSearch[$namespace] ) && $defaultSearch[$namespace] ) {
 			return self::CONTENT_INDEX_SUFFIX;
 		}

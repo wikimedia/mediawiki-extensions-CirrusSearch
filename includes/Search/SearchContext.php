@@ -17,6 +17,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Elastica\Aggregation\AbstractAggregation;
 use Elastica\Query\AbstractQuery;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\Assert\Assert;
 
@@ -249,8 +250,11 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		return $other;
 	}
 
-	private function loadConfig() {
-		$this->escaper = new Escaper( $this->config->get( 'LanguageCode' ), $this->config->get( 'CirrusSearchAllowLeadingWildcard' ) );
+	private function loadConfig(): void {
+		$this->escaper = new Escaper(
+			$this->config->get( MainConfigNames::LanguageCode ),
+			$this->config->get( 'CirrusSearchAllowLeadingWildcard' )
+		);
 	}
 
 	public function __clone() {

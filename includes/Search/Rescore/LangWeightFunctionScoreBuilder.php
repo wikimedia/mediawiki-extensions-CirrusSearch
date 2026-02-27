@@ -5,6 +5,7 @@ namespace CirrusSearch\Search\Rescore;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\MainConfigNames;
 
 /**
  * Boosts documents in user language and in wiki language if different
@@ -42,7 +43,7 @@ class LangWeightFunctionScoreBuilder extends FunctionScoreBuilder {
 		$this->userLang = $userLang;
 		$this->userWeight =
 			$config->getElement( 'CirrusSearchLanguageWeight', 'user' );
-		$this->wikiLang = $config->get( 'LanguageCode' );
+		$this->wikiLang = $config->get( MainConfigNames::LanguageCode );
 		$this->wikiWeight =
 			$config->getElement( 'CirrusSearchLanguageWeight', 'wiki' );
 	}

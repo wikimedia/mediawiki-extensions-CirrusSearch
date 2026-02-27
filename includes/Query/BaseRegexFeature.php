@@ -14,6 +14,7 @@ use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
+use MediaWiki\MainConfigNames;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -69,7 +70,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	 */
 	public function __construct( SearchConfig $config, array $fields ) {
 		$this->enabled = $config->get( 'CirrusSearchEnableRegex' );
-		$this->languageCode = $config->get( 'LanguageCode' );
+		$this->languageCode = $config->get( MainConfigNames::LanguageCode );
 		$this->regexPlugin = $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' );
 		$this->maxDeterminizedStates = $config->get( 'CirrusSearchRegexMaxDeterminizedStates' );
 		Assert::precondition( $fields !== [], 'must have at least one field' );

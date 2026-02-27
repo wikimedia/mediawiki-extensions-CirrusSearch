@@ -38,7 +38,7 @@ class DefaultPagePropertiesIntegrationTest extends \MediaWikiIntegrationTestCase
 		try {
 			// first revision should match create timestamp with revision
 			$status = $this->editPage( $pageName, 'phpunit' );
-			$this->assertTrue( $status->isOk() );
+			$this->assertStatusOK( $status );
 			$created = wfTimestamp(
 				TS_ISO_8601,
 				$status->getValue()['revision-record']->getTimestamp()
@@ -52,7 +52,7 @@ class DefaultPagePropertiesIntegrationTest extends \MediaWikiIntegrationTestCase
 			$currentTime += 42;
 			$status = $this->editPage( $pageName, 'phpunit and maybe other things' );
 			$revision = $status->getValue()['revision-record'];
-			$this->assertTrue( $status->isOk() );
+			$this->assertStatusOK( $status );
 			$doc = $this->buildDoc( $page, $revision );
 			$this->assertEquals( $created, $doc->get( 'create_timestamp' ) );
 		} finally {

@@ -23,8 +23,8 @@ class MSearchRequestsTest extends CirrusIntegrationTestCase {
 		$requests = MSearchRequests::build( 'first', $search1 );
 		$requests->addRequest( 'second', $search2 );
 		$dumpQuery = $requests->dumpQuery( 'my description' );
-		$this->assertTrue( $dumpQuery->isOK() );
-		$this->assertEquals( [
+		$this->assertStatusOK( $dumpQuery );
+		$this->assertStatusValue( [
 			'first' => [
 				'description' => 'my description',
 				'path' => 'test_one/_search',
@@ -39,7 +39,7 @@ class MSearchRequestsTest extends CirrusIntegrationTestCase {
 				'params' => [ 'terminate_after' => 100 ],
 				'query' => [ 'query' => ( new MatchQuery( 'two', 'test' ) )->toArray() ],
 			]
-		], $dumpQuery->getValue() );
+		], $dumpQuery );
 	}
 
 	public function testTimeout() {
@@ -103,26 +103,26 @@ class MSearchRequestsTest extends CirrusIntegrationTestCase {
 		};
 
 		$status = $responses->transformAndGetSingle( $type, 'first' );
-		$this->assertTrue( $status->isOK() );
-		$this->assertEquals( 'one', $status->getValue() );
+		$this->assertStatusOK( $status );
+		$this->assertStatusValue( 'one', $status );
 
 		$status = $responses->transformAndGetSingle( $type, 'second' );
-		$this->assertTrue( $status->isOK() );
-		$this->assertEquals( 'two', $status->getValue() );
+		$this->assertStatusOK( $status );
+		$this->assertStatusValue( 'two', $status );
 
 		$status = $responses->transformAndGetMulti( $type, [ 'first', 'second', 'third' ] );
-		$this->assertTrue( $status->isOK() );
+		$this->assertStatusOK( $status );
 		$this->assertArrayEquals( [ 'first' => 'one', 'second' => 'two' ], $status->getValue(), true );
 		$this->assertArrayEquals( [ 'first' => 'one', 'second' => 'two' ], $status->getValue(), false, true );
 
 		$status = $responses->transformAndGetMulti( $type, [ 'first', 'second', 'third' ], 'array_reverse' );
-		$this->assertTrue( $status->isOK() );
+		$this->assertStatusOK( $status );
 		$this->assertArrayEquals( [ 'second' => 'two', 'first' => 'one' ], $status->getValue(), true );
 		$this->assertArrayEquals( [ 'second' => 'two', 'first' => 'one' ], $status->getValue(), false, true );
 
 		$status = $responses->dumpResults( 'my description' );
-		$this->assertTrue( $status->isOK() );
-		$this->assertEquals(
+		$this->assertStatusOK( $status );
+		$this->assertStatusValue(
 			[
 				'first' => [
 					'description' => 'my description',
@@ -135,7 +135,7 @@ class MSearchRequestsTest extends CirrusIntegrationTestCase {
 					'result' => [ 'dump' => 'two' ],
 				],
 			],
-			$status->getValue()
+			$status
 		);
 	}
 }

@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"GrogeXaKaba"
+			"GrogeXaKaba",
+			"Letra.berdi"
 		]
 	},
 	"cirrussearch-backend-error": "Ka foi pusívi kunklui bu piskiza pamodi un prabuléma tenpurári. Tenta otu bes más tardi.",
@@ -9,12 +10,12 @@
 	"cirrussearch-too-busy-error": "Faraménta di piskiza sta mutu okupadu na es mumentu. Di sumóla, tenta otu bes más tardi.",
 	"cirrussearch-regex-empty-expression": "$1 ta spera un sprison ragular non baziu.",
 	"cirrussearch-regex-syntax-error": "Éru di sintasi di sprison ragular na $2:$1",
-	"cirrussearch-regex-too-busy-error": "Ta ten txeu piskizas ku sprisons ragular na andamentu. Di sumóla, tenta otu bes más tardi.",
-	"cirrussearch-regex-too-complex-error": "Sprison ragular é mutu kunpléksu. Prende kuma sinplifika-l [https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch/RegexTooComplex li].",
+	"cirrussearch-regex-too-busy-error": "Ta ten txeu piskiza ku sprisons ragular na andamentu. Di sumóla, tenta otu bes más tardi.",
+	"cirrussearch-regex-too-complex-error": "Sprison ragular é mutu kunpléksu. Pa prende kuma sinplifika-l [https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch/RegexTooComplex klika li].",
 	"cirrussearch-now-using": "Es uiki sa-ta uza un nobu mikanismu di piskiza. (https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch Kunxe-l midjór)",
-	"cirrussearch-boost-templates": " #<!-- txa es linha tálikual el sta --> <pre>\n# Si un pájina konte un di es pridifinisons, antan, si pontuason di piskiza ta ser multiplikadu pa pursentáji konfiguradu.\n# Alterasons fetu li tene ifetu imidiatu.\n# Sintasi é kel siginti:\n#   * Tudu ki ta ben dispos di un karaktéri \"#\", ti fin di linha, é un kumentári.\n#   * Tudu linha non branku ta konte nómi izatu di pridifinison ki ta mesti otimizason, spasu di nómi, maiúsklu ku minúsklu i tudu más, ki é sigidu pa un karaktéri \"|\", sigidu pa un nunbru i, pa fin, un karaktéri \"%\".\n# Izénplus di linhas bálidu:\n# Pridifinison:Bon|150%\n# Pridifinison:Divéras Mutu Bon|300%\n# Pridifinison:Runhu|50%\n# Izénplus di linhas nbálidu:\n# Pridifinison:Foo|150.234234% # ka ta pirmitidu kasas disimal!\n# Foo|150% # ta funsona teknikamenti, ma so pa transkluzons di pájina Foo di spasu di nómi prinsipal\n# Bu podi testa alterasons di kunfigurason trabés di izikuson di un kunsulta prifikasdu ku boost-templates:\"XX\" undi XX é tudu kes pridifinison ki bu kre otimiza, siparadu pa spasus nbes di kébras di linha.\n# Kunsultas ki ta spisifika boost-templates:\"XX\" igunora kuntiúdu di es kanpu.\n #</pre> <!-- txa es linha tálikual el sta -->",
+	"cirrussearch-boost-templates": " #<!-- txa es linha tálikual el sta --> <pre>\n# Si un pájina tene un di es mudelus pridifinidu, antan, si pontuason di piskiza ta ser multiplikadu pa pursentáji kunfiguradu.\n# Alterasons fetu li tene ifetu imidiatu.\n# Sintasi é kel siginti:\n#   * Tudu ki ta ben dispos di un karaktéri \"#\", ti fin di linha, é un kumentári.\n#   * Tudu linha non branku ta konte nómi izatu di mudelu pridifinidu ki ta mesti otimizason, tipu di pájina, maiúsklu ku minúsklu i tudu más, ki é sigidu pa un karaktéri \"|\", sigidu pa un nunbru i, pa fin, un karaktéri \"%\".\n# Izénplus di linhas bálidu:\n# Mudelu pridifinidu:Bon|150%\n# Mudelu pridifinidu:Divéras Mutu Bon|300%\n# Mudelu pridifinidu:Runhu|50%\n# Izénplus di linhas nbálidu:\n# Mudelu pridifinidu:Foo|150.234234% # ka ta pirmitidu kasas disimal!\n# Foo|150% # ta funsona teknikamenti, ma so pa transkluzons di pájina Foo di tipu di pájina prinsipal\n# Bu podi testa alterasons di kunfigurason trabés di izikuson di un kunsulta prifiksadu ku boost-templates:\"XX\" undi XX é tudu kes mudelu pridifinidu ma bu kre otimiza, siparadu pa spasus nbes di kébras di linha.\n# Kunsultas ki ta spisifika boost-templates:\"XX\" igunora kuntiúdu di es kanpu.\n #</pre> <!-- txa es linha tálikual el sta -->",
 	"cirrussearch-pref-label": "Nobu piskiza",
-	"cirrussearch-pref-desc": "Spurmenta nos nobu faraménta di piskiza, ki ta feresi sapórti pa un nunbru más grandi di lingas, ta furnisi razultadus más atualizadu, i ki podi ti atxa testu dentu-l pridifinisons.",
+	"cirrussearch-pref-desc": "Spurmenta nos nobu faraménta di piskiza, ki ta feresi sapórti pa un nunbru más grandi di lingas, ta furnisi razultadus más atualizadu, i ki podi ti utxa testu dentu-l mudelus pridifinidu.",
 	"cirrussearch-give-feedback": "Da-nu bu opinion",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Padron (rakumendadu)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Ta kuriji ti dos éru di dijitason. Ta ramovi radiresonamentus ki é mutu parsedu ku titlu prinsipal.",
@@ -27,16 +28,16 @@
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Niun kureson di érus di dijitason. Ta razolbi radiresonamentus fitxadu. Ta nkontra kuruspondénsas di subifrazis na titlus.",
 	"cirrussearch-completion-profile-classic-pref-name": "Piskiza klásiku di prifíksu",
 	"cirrussearch-completion-profile-classic-pref-desc": "Niun kureson di érus di dijitason. Ta kuruspondi ku inísi di titlus.",
-	"cirrussearch-timed-out": "Piskiza isedi ténpu limiti. Antan, txaskan razultadus parsial sta dispunívi.",
+	"cirrussearch-timed-out": "Piskiza isedi ténpu limiti. Antan, so razultadus parsial sta dispunívi.",
 	"cirrussearch-regex-timed-out": "Piskiza di sprison ragular isedi ténpu limiti, antan, so sta dispunívi razultadus parsial. Tenta sinplifika bu sprison ragular pa kunsigi razultadus kunplétu.",
-	"cirrussearch-incategory-feature-no-valid-categories": "Niun katiguria bálidu foi furnisidu pa $1.",
-	"cirrussearch-mlt-feature-no-valid-titles": "Niun titlu bálidu foi furnisidu pa $1.",
+	"cirrussearch-incategory-feature-no-valid-categories": "Niun katiguria bálidu ka foi furnisidu pa '$1'.",
+	"cirrussearch-mlt-feature-no-valid-titles": "Niun titlu bálidu ka foi furnisidu pa '$1'.",
 	"cirrussearch-mlt-not-configured": "Funsonalidadi $1 sta kunfiguradu nkuretamenti. Pidi pa un jistor kuriji $wgCirrusSearchMoreLikeThisFields",
 	"cirrussearch-explore-similar-related-none": "Niun pájina ralasonadu dispunívi",
-	"cirrussearch-article-words": "Palabras na tudu pájinas di kuntiúdu",
-	"cirrussearch-keyword-prefix-ns-mismatch": "Spasu di nómi nkontradu na térmu di piskiza <code>prefix:</code> ka é kunpatívi ku spasus di nómi sulisitadu. Bu podi kuriji-l si bu prifiksa kunsulta ku <code>all:</code>.",
-	"cirrussearch-autoselect-profile": "Txa mikanismu di piskiza ta ben disidi kol ki é midjór pirfil pa ser uzadu.",
-	"cirrussearch-offset-too-large": "Ka foi pusívi rakupera razultadus. Ta saportadu ti $1 razultadus di piskiza, ma foi sulisitadu razultadus ki ta kumesa na $2.",
+	"cirrussearch-article-words": "Palabras na tudu pájina di kuntiúdu",
+	"cirrussearch-keyword-prefix-ns-mismatch": "Tipu di pájina nkontradu na térmu di piskiza <code>prefix:</code> ka é kunpatívi ku tipus di pájina sulisitadu. Bu podi kuriji-l si bu prifiksa kunsulta ku <code>all:</code>.",
+	"cirrussearch-autoselect-profile": "Txa mikanismu di piskiza ta ben disidi kal ki é midjór pirfil pa ser uzadu.",
+	"cirrussearch-offset-too-large": "Ka foi pusívi rakupera razultadus. Ta saportadu ti $1 razultadu di piskiza, ma foi sulisitadu razultadus ki ta kumesa na $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Igunora sulisitason pa pajina razultadus klasifikadu aliatoriamenti.",
 	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Balor|Baloris}} non rakunxedu pa palabra-txabi <kbd>$3:</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Utilizason di un vírgla kumó siparador pa palabra-txabi interlinga foi diskuntinuadu. Di sumóla, uza un bara vertikal (|) pa sipara lingas."

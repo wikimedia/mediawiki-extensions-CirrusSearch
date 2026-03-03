@@ -230,22 +230,21 @@ See tests
 
 Job Queue
 ---------
-Cirrus makes heavy use of the job queue.  You can run it without any job queue customization but
-if you switch the job queue to Redis with checkDelay enabled then Cirrus's results will be more
-correct.  The reason for this is that this configuration allows Cirrus to delay link counts
-until OpenSearch has appropriately refreshed.  This is an example of configuring it:
+Cirrus makes heavy use of the job queue.  You can run it without any job queue
+customization but if you switch the job queue to Redis then Cirrus's results
+will be more correct.  The reason for this is that this configuration allows
+Cirrus to delay link counts until OpenSearch has appropriately refreshed.  This
+is an example of configuring it:
  $redisPassword = '<password goes here>';
  $wgJobTypeConf['default'] = [
-	'class' => 'JobQueueRedis',
-	'order' => 'fifo',
-	'redisServer' => 'localhost',
-	'checkDelay' => true,
-	'redisConfig' => [
-		'password' => $redisPassword,
-	],
+     'class' => 'JobQueueRedis',
+     'redisServer' => 'localhost',
+     'redisConfig' => [
+         'password' => $redisPassword,
+     ],
  ];
 
-Note: some MediaWiki setups have trouble running the job queue.  It can be finicky.	 The most
+Note: some MediaWiki setups have trouble running the job queue.  It can be finicky. The most
 sure fire way to get it to work is also the slowest.  Add this to your LocalSettings.php:
  $wgRunJobsAsync = false;
 

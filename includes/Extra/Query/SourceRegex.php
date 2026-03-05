@@ -150,7 +150,7 @@ class SourceRegex extends AbstractQuery {
 	 * @return self
 	 */
 	public function setLocale( $locale ) {
-		$locale = self::MW_LANG_CODE_TO_JAVA_LOCALE[$locale] ?? $locale;
+		$locale = self::MW_LANG_CODE_TO_JAVA_LOCALE[$locale ?? ''] ?? $locale;
 		return $this->setParam( 'locale', $locale );
 	}
 

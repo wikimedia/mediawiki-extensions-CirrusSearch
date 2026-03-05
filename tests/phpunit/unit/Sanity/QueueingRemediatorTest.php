@@ -76,7 +76,15 @@ class QueueingRemediatorTest extends CirrusTestCase {
 		$jobQueueGroup->expects( $this->exactly( count( $jobs ) ) )
 			->method( 'push' )
 			->willReturnCallback( function ( $j ) use ( &$jobs ): void {
-				$this->assertEquals( array_shift( $jobs ), $j );
+				$expected = array_shift( $jobs );
+				// Ignore requestId: it is set by the Job constructor from a
+				// process-level singleton, and may differ between the data
+				// provider (which runs during suite construction) and the
+				// test method.
+				$this->assertEquals(
+					$expected->getDeduplicationInfo(),
+					$j->getDeduplicationInfo()
+				);
 			} );
 		$remediator = new QueueingRemediator( $cluster, $jobQueueGroup );
 		$remediator->$methodCall( ...$methodParams );

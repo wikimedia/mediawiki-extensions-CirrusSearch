@@ -75,5 +75,7 @@
 	"cirrussearch-articleprediction-invalid-keyword": "Valor{{PLURAL:$2||es}} non recognoscite pro le parola-clave <kbd>$3</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Le uso de un comma como separator pro le parola clave <kbd>inlanguage</kbd> es obsolete. Per favor usa le barra vertical <kbd>|</kbd> pro separar linguas.",
 	"cirrussearch-invalid-keyword-boost": "Le valor de amplification fornite, ‘$1’, non es valide. Es expectate un numero decimal positive.",
-	"cirrussearch-invalid-keyword-threshold": "Le valor de limine fornite, ‘$1’, non es valide. Es expectate un numero decimal inter 0 e 1."
+	"cirrussearch-invalid-keyword-threshold": "Le valor de limine fornite, ‘$1’, non es valide. Es expectate un numero decimal inter 0 e 1.",
+	"cirrussearch-semantic-empty-query": "Le recerca semantic require un termino de recerca non vacue.",
+	"cirrussearch-semantic-too-many-results": "Troppo de resultatos requestate al recerca semantic. Solmente le prime $1 essera correctemente classificate."
 }

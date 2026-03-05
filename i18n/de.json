@@ -81,5 +81,7 @@
 	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Unbekannter Wert|Unbekannte Werte}} für das <kbd>$3:</kbd> Schlüsselwort: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Die Verwendung eines Kommas als Trennzeichen für das Schlüsselwort inlanguage ist veraltet. Bitte verwende | (Pipe), um Sprachen zu trennen.",
 	"cirrussearch-invalid-keyword-boost": "Ungültiger Boost-Wert „$1“ angegeben. Es wird eine positive Dezimalzahl erwartet.",
-	"cirrussearch-invalid-keyword-threshold": "Ungültiger Schwellenwert „$1“ angegeben. Erwartet wird eine Dezimalzahl zwischen 0 und 1."
+	"cirrussearch-invalid-keyword-threshold": "Ungültiger Schwellenwert „$1“ angegeben. Erwartet wird eine Dezimalzahl zwischen 0 und 1.",
+	"cirrussearch-semantic-empty-query": "Für die semantische Suche ist ein nicht leerer Suchbegriff erforderlich.",
+	"cirrussearch-semantic-too-many-results": "Zu viele Ergebnisse wurden von der semantischen Suche verlangt. Nur die Top $1 werden ordnungsgemäß eingestuft."
 }

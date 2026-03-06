@@ -81,5 +81,7 @@
 	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Valor non recoñecido|Valores non recoñecidos}} para a clave <kbd>$3:</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "O uso dunha coma como separador para a palabra clave \"inlanguage\" está obsoleto. Utiliza unha barra vertical (\"|\") para separar as linguas.",
 	"cirrussearch-invalid-keyword-boost": "Proporcionouse un valor de aumento non válido \"$1\". Esperábase un número decimal positivo.",
-	"cirrussearch-invalid-keyword-threshold": "Proporcionouse un valor límite non válido \"$1\". Esperábase un número decimal entre 0 e 1."
+	"cirrussearch-invalid-keyword-threshold": "Proporcionouse un valor límite non válido \"$1\". Esperábase un número decimal entre 0 e 1.",
+	"cirrussearch-semantic-empty-query": "A busca semántica necesita un termo de procura que non estea baleiro.",
+	"cirrussearch-semantic-too-many-results": "A busca semántica solicitou demasiados resultados. Só os primeiros $1 se clasificarán correctamente."
 }

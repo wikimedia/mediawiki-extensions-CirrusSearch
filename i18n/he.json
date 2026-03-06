@@ -77,5 +77,7 @@
 	"cirrussearch-articleprediction-invalid-keyword": "למילת המפתח <kbd>$3:</kbd> נכתבו {{PLURAL:$2|ערך לא מזוהה|ערכים לא מזוהים}}: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "שימוש בפסיק בתור מפריד למילת המפתח inlanguage הוכרז בתור מיושן. נא להשתמש בתו | (קו ניצב) להפרדת שפות.",
 	"cirrussearch-invalid-keyword-boost": "סופק ערך הגברה בלתי־תקין \"$1\". מצופה מספר עשרוני חיובי.",
-	"cirrussearch-invalid-keyword-threshold": "סופק ערך סף בלתי־תקין \"$1\". מצופה מספר עשרוני בין 0 ל־1."
+	"cirrussearch-invalid-keyword-threshold": "סופק ערך סף בלתי־תקין \"$1\". מצופה מספר עשרוני בין 0 ל־1.",
+	"cirrussearch-semantic-empty-query": "חיפוש סמנטי דורש מונח חיפוש שאינו ריק.",
+	"cirrussearch-semantic-too-many-results": "התבקשו יותר מדי תוצאות מחיפוש סמנטי. רק {{PLURAL:$1|התוצאה המובילה תדורג כראוי|רק $1 התוצאות המובילות ידורגו כראוי}}."
 }

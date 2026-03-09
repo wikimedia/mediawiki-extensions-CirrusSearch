@@ -27,6 +27,7 @@ class SemanticSearchQueryBuilder implements FullTextQueryBuilder {
 	private array $sourceFields;
 	private int $maxK;
 	private string $scoreMode;
+	private string $instructions;
 
 	/**
 	 * @param SearchConfig $config Not used, but part of standard constructor
@@ -37,6 +38,7 @@ class SemanticSearchQueryBuilder implements FullTextQueryBuilder {
 	 *   - source_fields: The name of the sub-fields to return (default: section, text)
 	 *   - maxK: Maximum number of requested results
 	 *   - score_mode: ??? (default: max)
+	 *   - instructions: If set, will be prepended to the query. (default: empty string)
 	 */
 	public function __construct( SearchConfig $config, array $features, array $settings = [] ) {
 		$this->nestedField = $settings['nested_field'] ?? 'passage_chunk_embedding';
@@ -44,6 +46,7 @@ class SemanticSearchQueryBuilder implements FullTextQueryBuilder {
 		$this->sourceFields = $settings['source_fields'] ?? [ 'section', 'text' ];
 		$this->maxK = $settings['k'] ?? 21;
 		$this->scoreMode = $settings['score_mode'] ?? 'max';
+		$this->instructions = $settings['instructions'] ?? '';
 	}
 
 	/**
@@ -88,7 +91,8 @@ class SemanticSearchQueryBuilder implements FullTextQueryBuilder {
 			->setPath( $this->nestedField )
 			->setQuery( new NeuralQuery(
 				"{$this->nestedField}.{$this->vectorField}",
-				$term, $k
+				$this->instructions . $term,
+				$k
 			) )
 			->setScoreMode( $this->scoreMode )
 			->setInnerHits( ( new InnerHits() )

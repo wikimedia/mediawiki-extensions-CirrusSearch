@@ -143,6 +143,39 @@ class SemanticSearchQueryBuilderTest extends CirrusTestCase {
 		$this->assertSame( 'search with spaces', $queryArray['nested']['query']['neural']['passage_chunk_embedding.knn']['query_text'] );
 	}
 
+	public function testBuildPrependsInstructions() {
+		$builder = $this->newSemanticSearchQueryBuilder( [
+			'instructions' => 'Represent this query: ',
+		] );
+		$context = $this->newSearchContext();
+
+		$builder->build( $context, 'search term' );
+
+		$this->assertTrue( $context->areResultsPossible() );
+		$this->assertSame( 'search term', $context->getCleanedSearchTerm() );
+
+		$queryArray = $context->getQuery()->toArray();
+		$this->assertSame(
+			'Represent this query: search term',
+			$queryArray['nested']['query']['neural']['passage_chunk_embedding.knn']['query_text']
+		);
+	}
+
+	public function testBuildWithEmptyInstructionsDoesNotAlterQuery() {
+		$builder = $this->newSemanticSearchQueryBuilder( [
+			'instructions' => '',
+		] );
+		$context = $this->newSearchContext();
+
+		$builder->build( $context, 'search term' );
+
+		$queryArray = $context->getQuery()->toArray();
+		$this->assertSame(
+			'search term',
+			$queryArray['nested']['query']['neural']['passage_chunk_embedding.knn']['query_text']
+		);
+	}
+
 	public function testBuildDegradedReturnsFalse() {
 		$builder = $this->newSemanticSearchQueryBuilder( [] );
 		$context = $this->newSearchContext();

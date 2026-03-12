@@ -70,9 +70,9 @@ class IntegrationTesting {
 	 * If the page ends in '/<language code>' then set the page's language to that code.
 	 * @param Title $title
 	 * @param string|Language|StubUserLang &$pageLang the page content language
-	 * @param Language|StubUserLang $wgLang the user language
+	 * @param Language|StubUserLang $userLang the user language
 	 */
-	public static function setLanguage( $title, &$pageLang, $wgLang ) {
+	public static function setLanguage( $title, &$pageLang, $userLang ) {
 		$matches = [];
 		if ( preg_match( '/\/..$/', $title->getText(), $matches ) ) {
 			$pageLang = MediaWikiServices::getInstance()->getLanguageFactory()->getLanguage( substr( $matches[0], 1 ) );

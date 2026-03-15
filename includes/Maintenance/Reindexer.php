@@ -55,7 +55,7 @@ class Reindexer {
 	private $connection;
 
 	/**
-	 * @var Printer
+	 * @var ?Printer
 	 */
 	private $out;
 
@@ -307,7 +307,7 @@ class Reindexer {
 	}
 
 	/**
-	 * @param string $message
+	 * @param string|StatusValue $message
 	 */
 	private function error( $message ) {
 		if ( $this->out ) {
@@ -316,7 +316,7 @@ class Reindexer {
 	}
 
 	/**
-	 * @param string $message
+	 * @param string|StatusValue $message
 	 * @param int $exitCode
 	 * @return never
 	 */

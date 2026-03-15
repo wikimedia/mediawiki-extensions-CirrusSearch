@@ -23,7 +23,7 @@ class IndexHasChangedValidator extends Validator {
 	}
 
 	/**
-	 * @return Status
+	 * @return Status<bool>
 	 */
 	public function validate() {
 		$this->out->outputIndented( "Validating new index is different..." );

@@ -109,7 +109,7 @@ class CirrusSearchResultBuilder {
 	}
 
 	/**
-	 * @param string $redirectTitle
+	 * @param Title|null $redirectTitle
 	 * @return self
 	 */
 	public function redirectTitle( $redirectTitle ): self {

@@ -36,7 +36,7 @@ class Result extends CirrusSearchResult {
 	private $wordCount;
 	/** @var int */
 	private $byteSize;
-	/** @var string */
+	/** @var MWTimestamp */
 	private $timestamp;
 	/** @var string */
 	private $docId;

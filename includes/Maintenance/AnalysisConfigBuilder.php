@@ -325,7 +325,6 @@ class AnalysisConfigBuilder {
 			}
 			$config[ 'analyzer' ][ 'plain' ][ 'filter' ] =
 				$this->switchFiltersToICUFoldingPreserve(
-					// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 					$config[ 'analyzer' ][ 'plain' ][ 'filter' ], true );
 		}
 

@@ -111,6 +111,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 
 	public function getSearchConfig(): SearchConfig {
 		if ( $this->searchConfig == null ) {
+			// @phan-suppress-next-line PhanTypeMismatchProperty
 			$this->searchConfig = MediaWikiServices::getInstance()
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );

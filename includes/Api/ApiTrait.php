@@ -34,6 +34,7 @@ trait ApiTrait {
 	 */
 	protected function getSearchConfig() {
 		if ( $this->searchConfig === null ) {
+			// @phan-suppress-next-line PhanTypeMismatchProperty
 			$this->searchConfig = MediaWikiServices::getInstance()
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );

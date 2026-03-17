@@ -92,7 +92,6 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 
 		$query->getRoot()->accept( $this );
 
-		// @phan-suppress-next-line PhanSuspiciousValueComparison
 		if ( $this->maxDepth === 0 && in_array( 'more_like', $query->getFeaturesUsed() ) ) {
 			$classes[] = self::MORE_LIKE_ONLY;
 		}

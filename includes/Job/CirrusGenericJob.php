@@ -30,6 +30,7 @@ abstract class CirrusGenericJob extends Job implements GenericParameterJob {
 		// data.  Luckily, this is how the JobQueue implementations work.
 		$this->removeDuplicates = true;
 
+		// @phan-suppress-next-line PhanTypeMismatchProperty
 		$this->searchConfig = MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );

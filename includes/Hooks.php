@@ -268,7 +268,6 @@ class Hooks implements
 						$wgCirrusSearchMoreLikeThisAllowedFields );
 					break;
 			}
-			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 			if ( $wgCirrusSearchMoreLikeThisConfig['max_query_terms'] > $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit ) {
 				$wgCirrusSearchMoreLikeThisConfig['max_query_terms'] = $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit;
 			}
@@ -309,7 +308,6 @@ class Hooks implements
 			$request, 'cirrusMltMinDocFreq' );
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_doc_freq'],
 			$request, 'cirrusMltMaxDocFreq' );
-		// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_query_terms'],
 			$request, 'cirrusMltMaxQueryTerms', $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit );
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_term_freq'],

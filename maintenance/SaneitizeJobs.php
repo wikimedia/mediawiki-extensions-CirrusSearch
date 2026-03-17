@@ -356,7 +356,6 @@ EOD
 		if ( $job === null ) {
 			$this->fatalError( "No job created, metastores failed to create?" );
 		}
-		// @phan-suppress-next-line PhanTypeMismatchReturnNullable T240141
 		return $job;
 	}
 

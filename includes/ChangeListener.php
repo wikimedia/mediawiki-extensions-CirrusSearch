@@ -254,7 +254,7 @@ class ChangeListener extends PageChangeTracker implements
 			DeletePages::build(
 				$title,
 				$this->searchConfig->makeId( $pageID ),
-				$logEntry->getTimestamp() !== false ? MWTimestamp::convert( TS_UNIX, $logEntry->getTimestamp() ) : MWTimestamp::time()
+				$logEntry->getTimestamp() !== false ? (int)MWTimestamp::convert( TS_UNIX, $logEntry->getTimestamp() ) : MWTimestamp::time()
 			)
 		);
 	}

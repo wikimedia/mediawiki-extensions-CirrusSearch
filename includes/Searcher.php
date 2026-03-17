@@ -541,6 +541,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			'CirrusSearch-NamespaceLookup',
 			$this->user,
 			function () use ( $name ) {
+				$connection = null;
 				try {
 					$this->startNewLog( 'lookup namespace for {namespaceName}', 'namespace', [
 						'namespaceName' => $name,
@@ -1159,7 +1160,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		}
 
 		/** @var FullTextQueryBuilder $qb */
-		// @phan-suppress-next-line PhanTypeInvalidCallableArraySize
 		$qb = ObjectFactory::getObjectFromSpec( $objectFactorySpecs );
 		if ( !( $qb instanceof FullTextQueryBuilder ) ) {
 			throw new RuntimeException( 'Bad builder class configured.' );

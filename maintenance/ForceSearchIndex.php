@@ -522,8 +522,8 @@ class ForceSearchIndex extends Maintenance {
 		// the other has a sane default value.
 		if ( $this->fromDate !== null ) {
 			$it->addConditions( [
-				$dbr->expr( "{$columnPrefix}_timestamp", '>=', $dbr->timestamp( $this->fromDate ) ),
-				$dbr->expr( "{$columnPrefix}_timestamp", '<=', $dbr->timestamp( $this->toDate ) ),
+				$dbr->expr( "{$columnPrefix}_timestamp", '>=', $dbr->timestamp( $this->fromDate->getTimestamp( TS_MW ) ) ),
+				$dbr->expr( "{$columnPrefix}_timestamp", '<=', $dbr->timestamp( $this->toDate->getTimestamp( TS_MW ) ) ),
 			] );
 		}
 	}

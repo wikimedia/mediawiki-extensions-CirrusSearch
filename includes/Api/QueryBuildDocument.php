@@ -47,7 +47,7 @@ class QueryBuildDocument extends ApiQueryBase {
 					'doWork' => function () use ( $engine ) {
 						return $this->doExecute( $engine );
 					},
-					'error' => function () {
+					'error' => function (): never {
 						$this->dieWithError( 'apierror-concurrency-limit' );
 					},
 				]

@@ -176,6 +176,7 @@ class BuildDocument {
 			if ( $revision !== null && $docRevision !== $revision->getId() ) {
 				throw new \RuntimeException( "Revision id mismatch: {$revision->getId()} != $docRevision" );
 			}
+			$title = null;
 			try {
 				$revision ??= $this->revStore->getRevisionById( $docRevision );
 				$title = $revision ? $this->titleFactory->castFromPageIdentity( $revision->getPage() ) : null;

@@ -214,7 +214,7 @@ class AnalysisFilter {
 		$aliases = [];
 		foreach ( $keysByContent as $keys ) {
 			// Min to give a stable winner for each group.
-			$winner = count( $keys ) === 1 ? reset( $keys ) : min( ...$keys );
+			$winner = min( $keys );
 			foreach ( $keys as $key ) {
 				$aliases[$key] = $winner;
 			}

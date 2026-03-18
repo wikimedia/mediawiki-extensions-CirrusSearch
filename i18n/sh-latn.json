@@ -11,7 +11,7 @@
 	"cirrussearch-parse-error": "Nisam razumjela upit. Pojednostavite ga. Uspavam ovo poboljšati sistem za pretragu.",
 	"cirrussearch-too-busy-error": "Pretraga je trenutno prezauzeta. Pokušajte ponovo kasnije.",
 	"cirrussearch-regex-syntax-error": "Sintaksna greška regularnoga izraza u $2: $1",
-	"cirrussearch-regex-too-busy-error": "Trenutačno postoji previše pretraživanja regularnih izraza. Pokušajte ponovo kasnije.",
+	"cirrussearch-regex-too-busy-error": "Trenutno se izvršava previše pretraga regularnim izrazima. Pokušajte ponovo kasnije.",
 	"cirrussearch-regex-too-complex-error": "Regularni izraz je previše složen. Saznajte više o njegovom pojednostavljenju [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|ovdje]].",
 	"cirrussearch-now-using": "Ovaj wiki koristi novi pretraživač. ([[mw:Special:MyLanguage/Help:CirrusSearch|Saznajte više]])",
 	"cirrussearch-pref-label": "Nova pretraga",

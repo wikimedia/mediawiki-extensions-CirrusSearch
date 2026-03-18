@@ -48,7 +48,13 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "खोज शब्द '$1' कई तर्कों और '$2' के साथ एक संकेत प्रदान करने की अनुमति नहीं देता है",
 	"cirrussearch-feature-not-available": "इस विकि पर खोज कीवर्ड '$1' सक्षम नहीं है",
 	"cirrussearch-feature-too-many-conditions": "'$1' के लिए बहुत सारी स्थितियां प्रदान की गईं, जो $2 में कटौती की गईं।",
-	"cirrussearch-incategory-feature-no-valid-categories": "'$1' के लिए कोई मान्य श्रेणी नहीं दिया गया।",
-	"cirrussearch-mlt-feature-no-valid-titles": "'$1' के लिए कोई मान्य शीर्षक नहीं दिया गया।",
-	"cirrussearch-mlt-not-configured": "'$1' सुविधा को गलत तरीके से कॉन्फ़िगर किया गया है। $WgCirrusSearchMoreLikeThisFields को ठीक करने के लिए एक प्रबन्धक से पूछें।"
+	"cirrussearch-feature-deepcat-invalid-title": "दी गई श्रेणी अमान्य है।",
+	"cirrussearch-feature-pageid-invalid-id": "अमान्य पृष्ठ {{PLURAL:$2|ID}}: $1",
+	"cirrussearch-incategory-feature-no-valid-categories": "'$1' के लिए कोई मान्य श्रेणी नहीं दी गई है।",
+	"cirrussearch-mlt-feature-no-valid-titles": "'$1' के लिए कोई मान्य शीर्षक नहीं दिया गया है।",
+	"cirrussearch-mlt-not-configured": "'$1' सुविधा को गलत तरीके से कॉन्फ़िगर किया गया है। किसी प्रबंधक से $WgCirrusSearchMoreLikeThisFields को ठीक करने को कहें।",
+	"cirrussearch-explore-similar-related-none": "कोई संबंधित पृष्ठ उपलब्ध नहीं है",
+	"cirrussearch-article-words": "सभी सामग्री पृष्ठों में शब्द",
+	"cirrussearch-keyword-prefix-ns-mismatch": "<code>prefix:</code> खोज शब्द में मिला उपसर्ग अनुरोधित उपसर्गों के अनुकूल नहीं है। आप अपनी क्वेरी के आरंभ में <code>all:</code> जोड़कर इसे ठीक कर सकते हैं।",
+	"cirrussearch-articleprediction-invalid-keyword": "<kbd>$3:</kbd> कीवर्ड के लिए अपरिचित {{PLURAL:$2|वैल्यू}}: $1"
 }

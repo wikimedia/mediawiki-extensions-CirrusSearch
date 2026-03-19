@@ -37,7 +37,7 @@
 	"cirrussearch-article-words": "Palabras na tudu pájina di kuntiúdu",
 	"cirrussearch-keyword-prefix-ns-mismatch": "Tipu di pájina nkontradu na térmu di piskiza <code>prefix:</code> ka é kunpatívi ku tipus di pájina sulisitadu. Bu podi kuriji-l si bu prifiksa kunsulta ku <code>all:</code>.",
 	"cirrussearch-autoselect-profile": "Txa mikanismu di piskiza ta ben disidi kal ki é midjór pirfil pa ser uzadu.",
-	"cirrussearch-offset-too-large": "Ka foi pusívi rakupera razultadus. Ta saportadu ti $1 razultadu di piskiza, ma foi sulisitadu razultadus ki ta kumesa na $2.",
+	"cirrussearch-offset-too-large": "Ka foi pusívi rakupera razultadus. Ta saportadu ti $1 razultadu di piskiza, mas sulisitadu razultadus ki ta kunsa na $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Igunora sulisitason pa pajina razultadus klasifikadu aliatoriamenti.",
 	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Balor|Baloris}} non rakunxedu pa palabra-txabi <kbd>$3:</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Utilizason di un vírgla kumó siparador pa palabra-txabi nterlinga foi diskuntinuadu. Di sumóla, uza un bara vertikal (|) pa sipara lingas."

@@ -93,5 +93,7 @@
 	"cirrussearch-articleprediction-invalid-keyword": "Onbekende waarde{{PLURAL:$2||n}} voor het sleutelwoord <kbd>$3</kbd>: $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Het gebruik van een komma als scheidingsteken voor het sleutelwoord inlanguage is verouderd. Gebruik een | (sluisteken) om talen te scheiden.",
 	"cirrussearch-invalid-keyword-boost": "Onjuiste ophoogwaarde ‘$1’ opgegeven. Er werd een positief decimaal getal verwacht.",
-	"cirrussearch-invalid-keyword-threshold": "Onjuiste drempelwaarde ‘$1’ opgegeven. Er werd een decimaal getal tussen 0 en 1 verwacht."
+	"cirrussearch-invalid-keyword-threshold": "Onjuiste drempelwaarde ‘$1’ opgegeven. Er werd een decimaal getal tussen 0 en 1 verwacht.",
+	"cirrussearch-semantic-empty-query": "Voor een semantische zoekopdracht is een zoekterm vereist die niet leeg is.",
+	"cirrussearch-semantic-too-many-results": "Er zijn te veel resultaten opgevraagd via semantisch zoeken. Alleen de $1 resultaten worden correct gerangschikt."
 }

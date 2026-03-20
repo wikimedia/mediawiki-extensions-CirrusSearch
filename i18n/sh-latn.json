@@ -54,7 +54,7 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Pretražani tekst '$1' ne dopušta višestruke argumente i znak s '$2'.",
 	"cirrussearch-feature-not-available": "Tražena ključna riječ '$1' nije omogućena na ovom wikiju.",
 	"cirrussearch-feature-too-many-conditions": "Pruženi su previše uslova za '$1'. Skraćujem na $2.",
-	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint treba dati valjanu SPARQL-završnicu kako bi koristio duboku pretragu kategorija.",
+	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint treba dati ispravnu SPARQL završnicu kako bi koristio duboku pretragu kategorija.",
 	"cirrussearch-feature-deepcat-exception": "Nije uspjelo duboko SPARQL-pretraživanje kategorija",
 	"cirrussearch-feature-deepcat-timeout": "Duboko pretraživanje kategorije isteklo je. Najvjerojatnije kategorija ima previše potkategorija",
 	"cirrussearch-feature-deepcat-toomany": "Duboka pretraga dala je previše kategorija",

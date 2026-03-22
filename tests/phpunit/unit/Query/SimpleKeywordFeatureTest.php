@@ -190,7 +190,7 @@ class SimpleKeywordFeatureTest extends CirrusTestCase {
 		$this->assertEquals( $expectedArgs, $feature->getApplyCallArguments() );
 	}
 
-	public function provideParseBoost(): \Generator {
+	public static function provideParseBoost(): \Generator {
 		yield 'no boost' => [ 'foo', [ 'term' => 'foo', 'boost' => null ], false ];
 		yield '1.0 boost' => [ 'foo^1', [ 'term' => 'foo', 'boost' => 1.0 ], false ];
 		yield '0.03 boost' => [ 'foo^0.03', [ 'term' => 'foo', 'boost' => 0.03 ], false ];

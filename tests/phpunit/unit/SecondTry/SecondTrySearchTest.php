@@ -97,7 +97,7 @@ class SecondTrySearchTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $transformer->candidates( $input ) );
 	}
 
-	public function provideTestFactory(): \Generator {
+	public static function provideTestFactory(): \Generator {
 		yield 'he' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class ];
 		yield 'ru' => [ 'russian_keyboard', SecondTryRussianKeyboard::class ];
 		yield 'geo_tr' => [ 'georgian_transliteration', SecondTryGeorgianTransliteration::class ];

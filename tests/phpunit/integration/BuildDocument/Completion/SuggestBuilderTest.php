@@ -150,7 +150,7 @@ class SuggestBuilderTest extends CirrusIntegrationTestCase {
 		$this->assertSame( $expected, $suggestions );
 	}
 
-	public function providesDefaultSort(): \Generator {
+	public static function providesDefaultSort(): \Generator {
 		yield 'simple' => [
 			'Albert Einstein (Physicist)',
 			'Einstein, Albert',

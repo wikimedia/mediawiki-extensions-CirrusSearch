@@ -9,7 +9,7 @@ use MediaWiki\Language\ILanguageConverter;
  * @covers \CirrusSearch\SecondTry\SecondTryLanguageConverter
  */
 class SecondTryLanguageConverterTest extends CirrusTestCase {
-	public function providesTest(): \Generator {
+	public static function providesTest(): \Generator {
 		yield 'simple' => [ 'foo', [ 'bar', 'baz' ], [ 'bar', 'baz' ], [] ];
 		yield 'simple limited' => [ 'foo', [ 'bar', 'baz' ], [ 'bar' ], [ 'top_k' => 1 ], ];
 		yield 'default limit' => [ 'foo', [ 'bar', 'baz', 'qux', 'quux' ], [ 'bar', 'baz', 'qux' ], [], ];

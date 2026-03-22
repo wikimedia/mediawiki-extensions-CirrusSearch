@@ -49,7 +49,7 @@ class AlternativeIndicesTest extends CirrusTestCase {
 		);
 	}
 
-	public function providesBadConfig(): \Generator {
+	public static function providesBadConfig(): \Generator {
 		yield 'missing index_id' => [
 			[
 				'CirrusSearchAlternativeIndices' => [
@@ -123,7 +123,7 @@ class AlternativeIndicesTest extends CirrusTestCase {
 		$this->assertFalse( $altIndex->isInstanceIndex( "mywiki_othertype_alt_1", $connection ) );
 	}
 
-	public function provideIsValidIndexId(): \Generator {
+	public static function provideIsValidIndexId(): \Generator {
 		yield 'good int' => [ 0, true ];
 		yield 'good string' => [ "0", true ];
 		yield 'negative int' => [ -1, false ];

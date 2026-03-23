@@ -7,6 +7,7 @@ use CirrusSearch\SecondTry\SecondTrySearchFactory;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Language\LanguageConverterFactory;
 use MediaWiki\Status\Status;
+use Wikimedia\UUID\GlobalIdGenerator;
 
 /**
  * @group CirrusSearch
@@ -136,9 +137,14 @@ class CirrusSearchTest extends CirrusTestCase {
 		$config = $this->newHashSearchConfig( ( $config ?: [] ) + $this->getMinimalConfig() );
 		$languageConverterFactory = $this->createMock( LanguageConverterFactory::class );
 		$secondTryFactory = new SecondTrySearchFactory( $languageConverterFactory );
+		$generator = new GlobalIdGenerator(
+			true,
+			fn ( string $cmd ): never => $this->fail( 'should not be called' )
+		);
 		return new CirrusSearch( $config, CirrusDebugOptions::defaultOptions(),
 			$this->namespacePrefixParser(), $this->getInterWikiResolver( $config ), self::newTitleHelper(),
-			new SecondTryRunnerFactory( $secondTryFactory, $config )
+			new SecondTryRunnerFactory( $secondTryFactory, $config ),
+			$generator
 		);
 	}
 

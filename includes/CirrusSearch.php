@@ -29,6 +29,7 @@ use MediaWiki\WikiMap\WikiMap;
 use SearchEngine;
 use SearchIndexField;
 use SearchSuggestionSet;
+use Wikimedia\UUID\GlobalIdGenerator;
 
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
@@ -152,11 +153,13 @@ class CirrusSearch extends SearchEngine {
 		?NamespacePrefixParser $namespacePrefixParser = null,
 		?InterwikiResolver $interwikiResolver = null,
 		?TitleHelper $titleHelper = null,
-		?SecondTryRunnerFactory $secondTryRunnerFactory = null
+		?SecondTryRunnerFactory $secondTryRunnerFactory = null,
+		?GlobalIdGenerator $globalIdGenerator = null
 	) {
 		// Initialize UserTesting before we create a Connection
 		// This is useful to do tests across multiple clusters
 		UserTestingStatus::getInstance();
+		$this->setFeatureData( SearchEngine::SEARCH_ID, Util::getRequestSetToken( $globalIdGenerator ) );
 		$this->config = $config ?? MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );

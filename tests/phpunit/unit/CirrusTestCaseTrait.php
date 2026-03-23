@@ -24,6 +24,7 @@ use Wikimedia\Http\MultiHttpClient;
 use Wikimedia\ObjectCache\BagOStuff;
 use Wikimedia\ObjectCache\HashBagOStuff;
 use Wikimedia\ObjectCache\WANObjectCache;
+use Wikimedia\UUID\GlobalIdGenerator;
 
 trait CirrusTestCaseTrait {
 	/** @var string */
@@ -312,13 +313,17 @@ trait CirrusTestCaseTrait {
 	public function newEngine(): CirrusSearch {
 		$config = $this->newHashSearchConfig( [ 'CirrusSearchServers' => [] ] );
 		$secondTryFactory = new SecondTrySearchFactory( $this->createMock( LanguageConverterFactory::class ) );
+
+		$generator = $this->createMock( GlobalIdGenerator::class );
+		$generator->method( 'newUUIDv4' )->willReturn( '00000000-0000-0000-0000-000000000000' );
 		return new CirrusSearch(
 			$config,
 			CirrusDebugOptions::defaultOptions(),
 			$this->namespacePrefixParser(),
 			new EmptyInterwikiResolver(),
 			null,
-			new SecondTryRunnerFactory( $secondTryFactory, $config )
+			new SecondTryRunnerFactory( $secondTryFactory, $config ),
+			$generator
 		);
 	}
 

@@ -16,6 +16,7 @@ use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\Assert\Assert;
 use Wikimedia\IPUtils;
 use Wikimedia\Stats\StatsFactory;
+use Wikimedia\UUID\GlobalIdGenerator;
 
 /**
  * Random utility functions that don't have a better home
@@ -342,14 +343,15 @@ class Util {
 	 * history.replaceState(). This means click through's from supported browsers
 	 * will record this token as part of the referrer.
 	 *
+	 * @param GlobalIdGenerator|null $gen id generator
 	 * @return string
 	 */
-	public static function getRequestSetToken() {
+	public static function getRequestSetToken( ?GlobalIdGenerator $gen = null ): string {
 		static $token;
 		if ( $token === null ) {
 			// random UID, 70B tokens have a collision probability of 4*10^-16
 			// so should work for marking unique queries.
-			$gen = MediaWikiServices::getInstance()->getGlobalIdGenerator();
+			$gen = $gen ?: MediaWikiServices::getInstance()->getGlobalIdGenerator();
 			$uuid = $gen->newUUIDv4();
 			// make it a little shorter by using straight base36
 			$hex = substr( $uuid, 0, 8 ) . substr( $uuid, 9, 4 ) .

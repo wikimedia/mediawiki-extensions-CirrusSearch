@@ -14,5 +14,9 @@ return [
 	'utr30' => [
 		'index_second_try_profile' => 'icu_folding_utr30',
 		'search_second_try_profile' => 'icu_folding_utr30',
+	],
+	'utr30_with_hebrew_wrong_keyboard' => [
+		'index_second_try_profile' => 'icu_folding_utr30',
+		'search_second_try_profile' => 'utr30_and_hebrew_wrong_keyboard',
 	]
 ];

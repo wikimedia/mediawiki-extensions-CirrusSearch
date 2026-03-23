@@ -69,5 +69,11 @@ return [
 				]
 			]
 		]
+	],
+	'utr30_and_hebrew_wrong_keyboard' => [
+		'strategies' => [
+			'icu_folding' => [ 'weight' => 1.0, 'settings' => [ 'method' => 'utr30' ] ],
+			'hebrew_keyboard' => [ 'weight' => 0.5, 'settings' => [ 'dir' => 'both' ] ]
+		]
 	]
 ];

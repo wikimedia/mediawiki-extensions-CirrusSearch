@@ -27,6 +27,11 @@ class SecondTrySearchTest extends CirrusTestCase {
 								 [ 'not just gibberish מגדל אייפל' ] ];
 		yield 'he mixed case' => [ 'hebrew_keyboard', 'MבMשמדןםמ', [ 'McMansion' ] ];
 		yield 'he nothing relevant' => [ 'hebrew_keyboard', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', [] ]; // Japanese, Inuktitut
+		// namespace handling: colon passes through strtr unchanged
+		yield 'he namespace qwerty to he' => [ 'hebrew_keyboard', 'uhehpshv:cn', [ 'ויקיפדיה:במ' ] ];
+		yield 'he namespace he to qwerty' => [ 'hebrew_keyboard', "'ןלןפקגןש:מפםה", [ 'wikipedia:npov' ] ];
+		yield 'he namespace mixed case' => [ 'hebrew_keyboard', 'Wןלןפקגןש:NPOV', [ 'Wikipedia:NPOV' ] ];
+		yield 'he namespace with body words' => [ 'hebrew_keyboard', 'uhehpshv:cn cv', [ 'ויקיפדיה:במ בה' ] ];
 
 		// russian_keyboard
 		yield 'ru to qwerty' => [ 'russian_keyboard', 'тще огые пшииукшыр', [ 'not just gibberish' ] ];

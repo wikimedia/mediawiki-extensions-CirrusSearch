@@ -19,35 +19,18 @@ class NamespaceMatcherTest extends CirrusTestCase {
 			'laetitia',
 			null
 		];
-		yield 'custom profiles for hebrew' => [
+		yield 'hebrew wrong keyboard' => [
 			[
 				'CirrusSearchNamespaceResolutionMethod' => 'utr30_with_hebrew_wrong_keyboard',
-				'CirrusSearchNamespaceMatcherProfiles' => [
-					'utr30_with_hebrew_wrong_keyboard' => [
-						'index_second_try_profile' => 'icu_folding_utr30',
-						'search_second_try_profile' => 'utr30_and_hebrew_wrong_keyboard',
-					]
-				],
-				'CirrusSearchSecondTryProfiles' => [
-					'utr30_and_hebrew_wrong_keyboard' => [
-						'strategies' => [
-							'icu_folding' => [
-								'weight' => 1.0,
-								'settings' => [
-									'method' => 'utr30',
-								]
-							],
-							'hebrew_keyboard' => [
-								'weight' => 0.5,
-								'settings' => [
-									'dir' => 'l2h'
-								]
-							]
-						]
-					]
-				],
 			],
-			'uhehpshv',
+			'uhehpshv', // wrong keyboard for ויקיפדיה
+			4
+		];
+		yield 'hebrew wrong keyboard reverse' => [
+			[
+				'CirrusSearchNamespaceResolutionMethod' => 'utr30_with_hebrew_wrong_keyboard',
+			],
+			'ויקיפדיה', // correct Hebrew
 			4
 		];
 	}

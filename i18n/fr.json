@@ -94,5 +94,7 @@
 	"cirrussearch-articleprediction-invalid-keyword": "Valeurs {{PLURAL:$2|Valeur|valeurs}} non reconnues pour le mot clé <kbd>$3</kbd> : $1",
 	"cirrussearch-inlanguage-deprecate-comma": "L’utilisation de la virgule comme séparateur pour le mot-clé « inlanguage » est obsolète. Veuillez utiliser la barre verticale « | » pour séparer les langues.",
 	"cirrussearch-invalid-keyword-boost": "Valeur de boost « $1 » fournie non valide. Un nombre décimal positif était attendu.",
-	"cirrussearch-invalid-keyword-threshold": "Valeur de seuil « $1 » non valide. Un nombre décimal compris entre 0 et 1 est attendu."
+	"cirrussearch-invalid-keyword-threshold": "Valeur de seuil « $1 » non valide. Un nombre décimal compris entre 0 et 1 est attendu.",
+	"cirrussearch-semantic-empty-query": "La recherche sémantique nécessite un terme de recherche non vide.",
+	"cirrussearch-semantic-too-many-results": "Trop de résultats demandés pour la recherche sémantique. {{PLURAL:$1|Seul le premier résultat sera correctement classé|Seuls les $1 premiers résultats seront correctement classés}}."
 }

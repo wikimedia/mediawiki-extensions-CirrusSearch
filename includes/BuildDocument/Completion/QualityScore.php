@@ -200,9 +200,9 @@ class QualityScore implements SuggestScoringMethod {
 		$this->maxDocs = $maxDocs;
 		// We normalize incoming links according to the size of the index
 		$this->incomingLinksNorm = (int)( $maxDocs * self::INCOMING_LINKS_MAX_DOCS_FACTOR );
-		if ( $this->incomingLinksNorm < 1 ) {
-			// it's a very small wiki let's force the norm to 1
-			$this->incomingLinksNorm = 1;
+		if ( $this->incomingLinksNorm < 100 ) {
+			// it's a very small wiki let's force the norm to 100
+			$this->incomingLinksNorm = 100;
 		}
 	}
 

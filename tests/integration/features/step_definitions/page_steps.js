@@ -125,8 +125,7 @@ When( /^the api returns error code (.+)$/, function ( code ) {
 } );
 
 When( /^I get api suggestions for (.+?)(?: using the (.+) profile)?(?: on namespaces (\d+(?:,\d+)*))?$/, function ( search, profile, namespaces ) {
-	// TODO: Add step helper
-	return this.stepHelpers.suggestionsWithProfile( search, profile || 'fuzzy', namespaces );
+	return withApi( this, () => this.stepHelpers.suggestionsWithProfile( search, profile || 'fuzzy', namespaces ) );
 } );
 
 Then( /^(.+) is the (.+) api suggestion$/, function ( title, position ) {

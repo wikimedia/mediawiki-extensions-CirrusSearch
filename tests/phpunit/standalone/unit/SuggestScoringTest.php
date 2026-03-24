@@ -290,7 +290,8 @@ class SuggestScoringTest extends CirrusTestCase {
 		$qs = new QualityScore( [] );
 		$qs->setMaxDocs( 1 );
 		$page = [
-			'incoming_links' => 1,
+			# for small wikis (<1000) we clamp the incoming links feature to 100 not 10% of the max docs
+			'incoming_links' => 100,
 			'external_link' => array_fill( 0, QualityScore::EXTERNAL_LINKS_NORM, null ),
 			'text_bytes' => QualityScore::PAGE_SIZE_NORM,
 			'heading' => array_fill( 0, QualityScore::HEADING_NORM, null ),

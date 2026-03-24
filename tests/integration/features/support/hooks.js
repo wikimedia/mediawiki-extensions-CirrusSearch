@@ -255,7 +255,7 @@ BeforeOnce( { tags: '@boost_template' }, async function () {
 	} );
 } );
 
-BeforeOnce( { tags: '@did_you_mean', timeout: 240000 }, function () {
+BeforeOnce( { tags: '@did_you_mean', timeout: 115000 }, function () {
 	const edits = {
 		'Popular Culture': 'popular culture',
 		'Nobel Prize': 'nobel prize',
@@ -465,7 +465,7 @@ BeforeOnce( { tags: '@go' }, runBatchFn( {
 	}
 } ) );
 
-BeforeOnce( { tags: '@go or @options', timeout: 120000 }, runBatchFn( {
+BeforeOnce( { tags: '@go or @options', timeout: 115000 }, runBatchFn( {
 	edit: {
 		'son Nearmatchflattentest': 'son Nearmatchflattentest',
 		'Son Nearmatchflattentest': 'Son Nearmatchflattentest',
@@ -538,7 +538,7 @@ BeforeOnce( { tags: '@many_redirects' }, runBatchFn( {
 	}
 } ) );
 
-BeforeOnce( { tags: '@relevancy', timeout: 160000 }, runBatchFn( {
+BeforeOnce( { tags: '@relevancy', timeout: 115000 }, runBatchFn( {
 	edit: {
 		'Relevancyredirecttest Smaller': 'Relevancyredirecttest A text text text text text text text text text text text text text',
 		'Relevancyredirecttest Smaller/A': '[[Relevancyredirecttest Smaller]]',
@@ -720,7 +720,7 @@ BeforeOnce( { tags: '@wbcs' }, async function () {
 // This needs to be the *last* hook added. That gives us some hope that everything
 // else is inside elasticsearch by the time cirrus-suggest-index runs and builds
 // the completion suggester
-BeforeOnce( { tags: '@suggest', timeout: 120000 }, async function () {
+BeforeOnce( { tags: '@suggest', timeout: 115000 }, async function () {
 	await runBatch( this, false, {
 		edit: {
 			Venom: 'Venom: or the Venom Symbiote: is a fictional supervillain appearing in American comic books published by Marvel Comics. The character is a sentient alien Symbiote with an amorphous, liquid-like form, who requires a host, usually human, to bond with for its survival.',

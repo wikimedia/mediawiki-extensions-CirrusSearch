@@ -94,7 +94,8 @@ exports.config = {
 	],
 	cucumberOpts: {
 		tagsInTitle: true,
-		timeout: 60000,
+		// Has to be long enough for hooks to initialize
+		timeout: 120000,
 		tags: process.env.CIRRUS_TAGS,
 		require: [
 			relPath( './integration/features/support/world.js' ),

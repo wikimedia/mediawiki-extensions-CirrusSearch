@@ -601,7 +601,7 @@ class SearchQueryTest extends CirrusTestCase {
 	}
 
 	public static function provideMustTrackTotalHits(): Generator {
-		yield 'always true' => [ 'foo', 'CirrusSearchMustTrackTotalHits' => [ 'default' => true ], true ];
+		yield 'always true' => [ 'foo', [ 'CirrusSearchMustTrackTotalHits' => [ 'default' => true ] ], true ];
 		yield 'always false' => [ 'foo', [ 'CirrusSearchMustTrackTotalHits' => [ 'default' => false ] ], false ];
 		yield 'true on simple bag of words with a bag of words' => [
 			'foo',

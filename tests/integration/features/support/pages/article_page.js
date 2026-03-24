@@ -24,8 +24,20 @@ class ArticlePage extends TitlePage {
 	 * and forth between clickable and not-clickable in vector 2.
 	 */
 	async submit_search_top_right() {
+		const oldUrl = await browser.getUrl();
 		const elt = await browser.$( '#searchform [name=search]' );
-		return elt.addValue( Key.Enter );
+		await elt.addValue( Key.Enter );
+		// This could send the user to an article or Special:Search, to wait for
+		// the next page to load wait for a url change, and then documentReady.
+		await browser.waitUntil(
+			async () => ( await browser.getUrl() ) !== oldUrl,
+			{ timeout: 10000, timeoutMsg: 'URL never changed after submitting form' }
+		);
+		/* global document */
+		await browser.waitUntil(
+			async () => ( await browser.execute( () => document.readyState ) ) === 'complete',
+			{ timeout: 10000, timeoutMsg: 'New page did not finish loading' }
+		);
 	}
 
 	async has_search_suggestions() {

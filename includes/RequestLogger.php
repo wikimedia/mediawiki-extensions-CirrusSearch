@@ -189,8 +189,8 @@ class RequestLogger {
 	 * @return array mediawiki/search/requestset event object
 	 */
 	private function buildCirrusSearchRequestEvent() {
-		global $wgRequest, $wgServerName;
-		$webrequest = $wgRequest;
+		global $wgServerName;
+		$webRequest = RequestContext::getMain()->getRequest();
 
 		// for the moment RequestLog::getRequests() is still created in the
 		// old format to serve the old log formats, so here we transform the
@@ -306,15 +306,15 @@ class RequestLogger {
 			// The $schema URI here should be updated if we increment schema versions.
 			'$schema' => '/mediawiki/cirrussearch/request/0.0.1',
 			'meta' => [
-				'request_id' => $webrequest->getRequestId(),
+				'request_id' => $webRequest->getRequestId(),
 				'id' => $gen->newUUIDv4(),
 				'domain' => $wgServerName,
 				'stream' => 'mediawiki.cirrussearch-request',
 			],
 			'http' => [
-				'method' => $webrequest->getMethod(),
-				'client_ip' => $webrequest->getIP(),
-				'has_cookies' => $webrequest->getHeader( 'Cookie' ) ? true : false,
+				'method' => $webRequest->getMethod(),
+				'client_ip' => $webRequest->getIP(),
+				'has_cookies' => $webRequest->getHeader( 'Cookie' ) ? true : false,
 			],
 			'database' => WikiMap::getCurrentWikiId(),
 			'mediawiki_host' => gethostname(),
@@ -325,7 +325,7 @@ class RequestLogger {
 			'all_elasticsearch_requests_cached' => $allRequestsCached,
 		];
 
-		$webRequestValues = $webrequest->getValues();
+		$webRequestValues = $webRequest->getValues();
 		if ( $webRequestValues ) {
 			$requestEvent['params'] = [];
 			// Make sure all params are string keys and values
@@ -338,7 +338,7 @@ class RequestLogger {
 					// parameters can be parsed into.
 					$v = FormatJson::encode( $v );
 				}
-				$k = $webrequest->normalizeUnicode( $k );
+				$k = $webRequest->normalizeUnicode( $k );
 				$requestEvent['params'][(string)$k] = (string)$v;
 			}
 		}
@@ -365,9 +365,9 @@ class RequestLogger {
 		// If in webrequests, log these request headers in http.headers.
 		$httpRequestHeadersToLog = [ 'accept-language', 'referer', 'user-agent' ];
 		foreach ( $httpRequestHeadersToLog as $header ) {
-			if ( $webrequest->getHeader( $header ) ) {
+			if ( $webRequest->getHeader( $header ) ) {
 				$requestEvent['http']['request_headers'][$header] =
-					(string)$webrequest->normalizeUnicode( $webrequest->getHeader( $header ) );
+					(string)$webRequest->normalizeUnicode( $webRequest->getHeader( $header ) );
 			}
 		}
 

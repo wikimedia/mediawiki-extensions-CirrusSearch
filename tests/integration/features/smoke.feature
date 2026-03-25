@@ -27,6 +27,6 @@ Feature: Smoke test
 
   @en.wikipedia.beta.wmflabs.org
   Scenario: Search with accent yields result page with accent
-    Given I am at a random page
+    Given I am at a random page not named África
     When I search for África
     Then I am on a page titled África

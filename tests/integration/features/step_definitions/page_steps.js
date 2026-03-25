@@ -375,8 +375,13 @@ Then( /^I am on a page titled (.+)$/, async ( title ) => {
 	expect( await ArticlePage.articleTitle(), `I am on ${ title }` ).to.equal( title );
 } );
 
-Given( /^I am at a random page$/, async function () {
-	return this.visit( new TitlePage( 'Special:Random' ) );
+Given( /^I am at a random page(?: not named (.+))?$/, async function ( not_named ) {
+	await this.visit( new TitlePage( 'Special:Random' ) );
+	if ( not_named ) {
+		while ( ( await ArticlePage.articleTitle() ) === not_named ) {
+			await this.visit( new TitlePage( 'Special:Random' ) );
+		}
+	}
 } );
 
 Given( /^I am logged in and at a random page$/, async function () {

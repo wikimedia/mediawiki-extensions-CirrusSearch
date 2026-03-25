@@ -56,7 +56,13 @@ class ArticlePage extends TitlePage {
 		await browser.waitUntil(
 			async () => {
 				const elt = await browser.$( selector );
-				return elt.isExisting();
+				if ( !( await elt.isExisting() ) ) {
+					return false;
+				}
+				if ( ( await elt.getText() ) === 'Loading search suggestions' ) {
+					return false;
+				}
+				return true;
 			},
 			{ timeout: 10000, timeoutMsg: 'Search suggestions did not appear.' }
 		);

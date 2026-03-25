@@ -124,8 +124,19 @@ class SearchResultsPage extends Page {
 		for ( const form of forms ) {
 			const elt = await browser.$( form );
 			if ( await elt.isExisting() ) {
+				const oldUrl = await browser.getUrl();
 				const button = await elt.$( 'button[type="submit"]' );
-				return button.click();
+				await button.click();
+				await browser.waitUntil(
+					async () => ( await browser.getUrl() ) !== oldUrl,
+					{ timeout: 10000, timeoutMsg: 'URL never changed after submitting form' }
+				);
+				await browser.waitUntil(
+					// eslint-disable-next-line
+					async () => ( await browser.execute( () => document.readyState ) ) === 'complete',
+					{ timeout: 10000, timeoutMsg: 'New page did not finish loading' }
+				);
+				return;
 			}
 		}
 		throw new Error( 'Cannot click the search button, are you on the Search page?' );

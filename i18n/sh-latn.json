@@ -56,7 +56,7 @@
 	"cirrussearch-feature-too-many-conditions": "Pruženi su previše uslova za '$1'. Skraćujem na $2.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint treba dati ispravnu SPARQL završnicu kako bi koristio duboku pretragu kategorija.",
 	"cirrussearch-feature-deepcat-exception": "Nije uspjelo duboko SPARQL-pretraživanje kategorija",
-	"cirrussearch-feature-deepcat-timeout": "Duboko pretraživanje kategorije isteklo je. Najvjerojatnije kategorija ima previše potkategorija",
+	"cirrussearch-feature-deepcat-timeout": "Duboko pretraživanje kategorije je isteklo. Najvjerojatnije kategorija ima previše potkategorija",
 	"cirrussearch-feature-deepcat-toomany": "Duboka pretraga dala je previše kategorija",
 	"cirrussearch-feature-deepcat-invalid-title": "Navedena kategorija nije ispravna.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nisu pružene ispravne kategorije za '$1'.",

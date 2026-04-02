@@ -36,7 +36,11 @@ class SuggesterAnalysisConfigBuilderTest extends CirrusIntegrationTestCase {
 			static function () {
 			}
 		);
-		$config = new HashSearchConfig( $extraConfig + [ 'CirrusSearchSimilarityProfile' => 'default' ] );
+		$baseConfig = [
+			'CirrusSearchSimilarityProfile' => 'default',
+			'CirrusSearchCompletionPlainTokenizer' => 'whitespace'
+		];
+		$config = new HashSearchConfig( $extraConfig + $baseConfig );
 		$plugins = [
 			'analysis-stempel', 'analysis-kuromoji',
 			'analysis-smartcn', 'analysis-hebrew',

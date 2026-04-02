@@ -38,7 +38,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 			}
 		}
 		$textTokenizer = 'standard';
-		$plainTokenizer = 'whitespace';
+		$plainTokenizer = $this->config->get( 'CirrusSearchCompletionPlainTokenizer' );
 		if ( $this->shouldActivateIcuTokenization( $language ) ) {
 			$textTokenizer = 'icu_tokenizer';
 			// We cannot use the icu_tokenizer for plain here

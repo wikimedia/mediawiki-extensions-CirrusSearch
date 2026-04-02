@@ -535,6 +535,9 @@
 		"CirrusSearchCompletionSettings": {
 			"value": "fuzzy"
 		},
+		"CirrusSearchCompletionPlainTokenizer": {
+			"value": "whitespace"
+		},
 		"CirrusSearchUseIcuFolding": {
 			"value": "default"
 		},

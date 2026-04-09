@@ -6,7 +6,8 @@
 			"CyberTroopers",
 			"Hakimi97",
 			"Jeluang Terluang",
-			"Tofeiku"
+			"Tofeiku",
+			"SNN95"
 		]
 	},
 	"cirrussearch-desc": "Carian dengan kuasa OpenSearch untuk MediaWiki",
@@ -21,7 +22,7 @@
 	"cirrussearch-pref-label": "Carian baru",
 	"cirrussearch-pref-desc": "Cuba carian baru kami yang menyokong lebih banyak bahasa, memberikan hasil yang lebih terkini, dan bahkan dapat mencari teks di dalam templat.",
 	"cirrussearch-give-feedback": "Berikan kami maklum balas anda",
-	"cirrussearch-query-too-long": "Permintaan carian lebih panjang daripada panjang maksimum yang dibenarkan. ($1> $2)",
+	"cirrussearch-query-too-long": "Permintaan carian melebihi had panjang maksimum yang dibenarkan. (Sebenar: $1; dibenarkan: $2)",
 	"prefs-completion": "Penyempurnaan carian",
 	"cirrussearch-pref-completion-section-desc": "Saranan penyempurnaan",
 	"cirrussearch-pref-completion-profile-help": "Tetapkan tingkah laku untuk cadangan autolengkap (cari-sambil-taip).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester] merupakan sebuah algoritma untuk cadangan carian dengan pembetulan taip dan perkaitan carian yang lebih baik. Carian awalan ialah algoritma cadangan cari-sambil-taip.",

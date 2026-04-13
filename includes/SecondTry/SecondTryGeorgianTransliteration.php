@@ -15,7 +15,7 @@ namespace CirrusSearch\SecondTry;
 class SecondTryGeorgianTransliteration implements SecondTrySearch {
 
 	/* Georgian Transliteration Tables */
-	/** @var array */
+	/** @var array<string,string> */
 	private array $latToGeoMap = [
 		// case variants of digraphs/trigraph
 		'TCH' => 'ჭ', 'Tch' => 'ჭ', 'tch' => 'ჭ',
@@ -35,7 +35,7 @@ class SecondTryGeorgianTransliteration implements SecondTrySearch {
 		'x' => 'ხ', 'j' => 'ჯ', 'h' => 'ჰ'
 	];
 
-	/** @var array */
+	/** @var array<string,string> */
 	private array $latToGeoLcOnlyMap = [
 		// single letters that have no uppercase mapping
 		'a' => 'ა', 'b' => 'ბ', 'g' => 'გ', 'd' => 'დ', 'e' => 'ე', 'v' => 'ვ',
@@ -44,7 +44,7 @@ class SecondTryGeorgianTransliteration implements SecondTrySearch {
 		'h' => 'ჰ',
 	];
 
-	/** @var array */
+	/** @var array<string,string> */
 	private array $cyrToGeoMap = [
 		// delete combining  ̀  ́  ̂  ̄
 		"\u{0300}" => '', "\u{0301}" => '', "\u{0302}" => '', "\u{0304}" => '',
@@ -58,7 +58,7 @@ class SecondTryGeorgianTransliteration implements SecondTrySearch {
 		'ґ' => 'გ',
 	];
 
-	/** @var array */
+	/** @var array<string,string> */
 	private array $cyrToGeoAmbigMap = [
 		// т and п are extra ambiguous, play the odds
 		// most specific
@@ -76,21 +76,14 @@ class SecondTryGeorgianTransliteration implements SecondTrySearch {
 		'пუ' => 'პუ', 'აп' => 'აფ', 'ოп' => 'ოფ',
 	];
 
-	/** @var array */
-	private array $cyrToGeoAmbigRegexFrom = [
+	/** @var array<string,string> */
+	private array $cyrToGeoAmbigRegexMap = [
 		// word boundary regexes
-		'/\\bтრ/u', '/\\bтი/u', '/\\bпა/u', '/\\bпო/u', '/\\bпრ/u',
-		'/\\bт/u', '/т\\b/u', '/\\bп/u', '/п\\b/u',
+		'/\\bтრ/u' => 'ტრ', '/\\bтი/u' => 'ტი', '/\\bпა/u' => 'პა', '/\\bпო/u' => 'პო',
+		'/\\bпრ/u' => 'პრ', '/\\bт/u' => 'თ', '/т\\b/u' => 'თ', '/\\bп/u' => 'ფ',
+		'/п\\b/u' => 'პ',
 		// defaults (these aren't regexes, but we can pick them up here)
-		'/т/u', '/п/u'
-	];
-	/** @var array */
-	private array $cyrToGeoAmbigRegexTo = [
-		// word boundary regexes
-		'ტრ', 'ტი', 'პა', 'პო', 'პრ',
-		'თ', 'თ', 'ფ', 'პ',
-		// defaults
-		'ტ', 'ფ'
+		'/т/u' => 'ტ', '/п/u' => 'ფ'
 	];
 
 	/**
@@ -127,8 +120,8 @@ class SecondTryGeorgianTransliteration implements SecondTrySearch {
 			// non-regex ambiguous contexts
 			$out = strtr( $out, $this->cyrToGeoAmbigMap );
 			// map regex ambiguous contexts, and ambiguous defaults
-			$out = preg_replace( $this->cyrToGeoAmbigRegexFrom,
-				$this->cyrToGeoAmbigRegexTo, $out );
+			$out = preg_replace( array_keys( $this->cyrToGeoAmbigRegexMap ),
+				array_values( $this->cyrToGeoAmbigRegexMap ), $out );
 			// if there is any leftover Cyrillic, it's a failure!
 			if ( preg_match( '/\p{Cyrillic}/u', $out ) ) {
 				return [];

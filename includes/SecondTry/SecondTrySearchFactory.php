@@ -19,6 +19,8 @@ class SecondTrySearchFactory {
 		switch ( $strategy ) {
 			case 'georgian_transliteration':
 				return new SecondTryGeorgianTransliteration();
+			case 'hindi_transliteration':
+				return new SecondTryHindiTransliteration();
 			case 'russian_keyboard':
 				return SecondTryRussianKeyboard::build( $config );
 			case 'hebrew_keyboard':

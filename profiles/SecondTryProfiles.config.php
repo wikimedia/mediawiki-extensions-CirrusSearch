@@ -43,5 +43,11 @@ return [
 			'language_converter' => 1.0,
 			'georgian_transliteration' => 0.5
 		],
+	],
+	'language_converter_and_hindi_transliteration' => [
+		'strategies' => [
+			'language_converter' => 1.0,
+			'hindi_transliteration' => 0.5
+		],
 	]
 ];

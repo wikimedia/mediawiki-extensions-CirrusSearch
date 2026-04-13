@@ -14,6 +14,7 @@ use MediaWiki\Language\LanguageConverterFactory;
  * @covers \CirrusSearch\SecondTry\SecondTryHebrewKeyboard
  * @covers \CirrusSearch\SecondTry\SecondTryRussianKeyboard
  * @covers \CirrusSearch\SecondTry\SecondTryGeorgianTransliteration
+ * @covers \CirrusSearch\SecondTry\SecondTryHindiTransliteration
  * @group CirrusSearch
  */
 class SecondTrySearchTest extends CirrusTestCase {
@@ -56,6 +57,51 @@ class SecondTrySearchTest extends CirrusTestCase {
 		yield 'geo_tr ignore georgian' => [ 'georgian_transliteration', 'ვიკიპედია', [] ];
 		yield 'geo_tr ignore mixed georgian' => [ 'georgian_transliteration', 'ვიკიპედია Wikipedia Википедия', [] ];
 		yield 'geo_tr nothing relevant' => [ 'georgian_transliteration', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', [] ]; // Japanese, Inuktitut
+
+		// hindi_transliteration
+			// no mapping accidentally gets this one, so test hard-coding
+			// Mix up the cases and make sure word splitting is working
+		yield 'hin_tr hard-coded word 1' => [ 'hindi_transliteration', 'om', [ 'ॐ' ] ];
+		yield 'hin_tr hard-coded word 2' => [ 'hindi_transliteration', 'OM oM Om', [ 'ॐ ॐ ॐ' ] ];
+
+			// mixed script / mixed case variations
+		yield 'hin_tr mixed script 1' => [ 'hindi_transliteration', 'hInDi हिंदी', [ 'हिंदी हिंदी' ] ];
+		yield 'hin_tr mixed script 2' => [ 'hindi_transliteration', 'हिंदी HindI', [ 'हिंदी हिंदी' ] ];
+		yield 'hin_tr mixed script 3' => [ 'hindi_transliteration', 'SHooNYa एक Do तीन cHAR पांच',
+			[ 'शून्य एक दो तीन चार पांच' ] ]; // multi-chunk, Latin chunk first, Hindi chunk last
+		yield 'hin_tr mixed script 4' => [ 'hindi_transliteration', 'एक dO तीन cHaR पांच shOOnyA',
+			[ 'एक दो तीन चार पांच शून्य' ] ]; // multi-chunk, Hindi chunk first, Latin chunk last
+
+			// admittedly weird, but test parsing chunks
+		yield 'hin_tr preserve symbols and spacing' => [ 'hindi_transliteration',
+			'hiNdi   hIndI-हिंदीhinDiहिंदी÷hindi.0*(हिंदी', [ 'हिंदी   हिंदी-हिंदीहिंदीहिंदी÷हिंदी.0*(हिंदी' ] ];
+
+			// non-hard-coded words we get right, touching various specific rules
+		yield 'hin_tr rules 1' => [ 'hindi_transliteration', 'aavAAseeya', [ 'आवासीय' ] ]; # eeya
+		yield 'hin_tr rules 2' => [ 'hindi_transliteration', 'aksHAr', [ 'अक्षर' ] ]; # sh
+		yield 'hin_tr rules 3' => [ 'hindi_transliteration', 'bhaNWar', [ 'भंवर' ] ]; # bh,w
+		yield 'hin_tr rules 4' => [ 'hindi_transliteration', 'coaCHuveli', [ 'कोचुवेली' ] ]; # oa,ch
+		yield 'hin_tr rules 5' => [ 'hindi_transliteration', 'husSAin', [ 'हुसैन' ] ]; # ss
+		yield 'hin_tr rules 6' => [ 'hindi_transliteration', 'jivAK', [ 'जीवक' ] ]; # jiv
+		yield 'hin_tr rules 7' => [ 'hindi_transliteration', 'jujHAar', [ 'जुझार' ] ]; # jh
+		yield 'hin_tr rules 8' => [ 'hindi_transliteration', 'kicHHu', [ 'किछु' ] ]; # chh
+		yield 'hin_tr rules 9' => [ 'hindi_transliteration', 'knoCK', [ 'नोक' ] ]; # kn,ck
+		yield 'hin_tr rules 10' => [ 'hindi_transliteration', 'laCChe', [ 'लच्छे' ] ]; # cch
+		yield 'hin_tr rules 11' => [ 'hindi_transliteration', 'meNTion', [ 'मेंशन' ] ]; # n,tion
+		yield 'hin_tr rules 12' => [ 'hindi_transliteration', 'miSSion', [ 'मिशन' ] ]; # sion
+		yield 'hin_tr rules 13' => [ 'hindi_transliteration', 'miXTure', [ 'मिक्सचर' ] ]; # x,ture
+		yield 'hin_tr rules 14' => [ 'hindi_transliteration', 'ouTReach', [ 'आउटरीच' ] ]; # out,ch
+		yield 'hin_tr rules 15' => [ 'hindi_transliteration', 'paAMir', [ 'पामीर' ] ]; # ir
+		yield 'hin_tr rules 16' => [ 'hindi_transliteration', 'paSChaat', [ 'पश्चात' ] ]; # sch
+		yield 'hin_tr rules 17' => [ 'hindi_transliteration', 'paTRikaaaen', [ 'पत्रिकाएं' ] ]; # aaae
+		yield 'hin_tr rules 18' => [ 'hindi_transliteration', 'riDGe', [ 'रिज' ] ]; # dge
+		yield 'hin_tr rules 19' => [ 'hindi_transliteration', 'roDHi', [ 'रोधी' ] ]; # dh
+		yield 'hin_tr rules 20' => [ 'hindi_transliteration', 'siNGham', [ 'सिंघम' ] ]; # ngh
+
+		yield 'hin_tr all devanagari' => [ 'hindi_transliteration', 'हिंदी', [] ];
+		yield 'hin_tr unmappable latin 1' => [ 'hindi_transliteration', 'été', [] ];
+		yield 'hin_tr unmappable latin 2' => [ 'hindi_transliteration', 'ʃəzæm', [] ];
+		yield 'hin_tr nothing relevant' => [ 'hindi_transliteration', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', [] ]; // Japanese, Inuktitut
 	}
 
 	/**
@@ -98,9 +144,10 @@ class SecondTrySearchTest extends CirrusTestCase {
 	}
 
 	public static function provideTestFactory(): \Generator {
-		yield 'he' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class ];
-		yield 'ru' => [ 'russian_keyboard', SecondTryRussianKeyboard::class ];
+		yield 'he_kbd' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class ];
+		yield 'ru_kbd' => [ 'russian_keyboard', SecondTryRussianKeyboard::class ];
 		yield 'geo_tr' => [ 'georgian_transliteration', SecondTryGeorgianTransliteration::class ];
+		yield 'hin_tr' => [ 'hindi_transliteration', SecondTryHindiTransliteration::class ];
 		yield 'lang_converter' => [ 'language_converter', SecondTryLanguageConverter::class ];
 		yield 'invalid' => [ 'foo', null ];
 	}

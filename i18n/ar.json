@@ -86,5 +86,7 @@
 	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|قيمة|قيم}} غير معترف يها للكلمة الرئيسية <kbd>$3</kbd> : $1",
 	"cirrussearch-inlanguage-deprecate-comma": "تم إهمال استخدام الفاصلة كفاصل للكلمة الأساسية باللغة. الرجاء استخدام | (أنبوب) لفصل اللغات.",
 	"cirrussearch-invalid-keyword-boost": "تم إدخال قيمة تعزيز غير صالحة ' $1 '. من المتوقع الحصول على رقم عشري موجب.",
-	"cirrussearch-invalid-keyword-threshold": "تم إدخال قيمة حدية غير صالحة ' $1 '. من المتوقع أن يكون العدد العشري بين 0 و1."
+	"cirrussearch-invalid-keyword-threshold": "تم إدخال قيمة حدية غير صالحة ' $1 '. من المتوقع أن يكون العدد العشري بين 0 و1.",
+	"cirrussearch-semantic-empty-query": "يتطلب البحث الدلالي مصطلح بحث غير فارغ.",
+	"cirrussearch-semantic-too-many-results": "تم طلب عدد كبير جدًا من النتائج من البحث الدلالي. سيتم ترتيب $1 الأولى فقط بشكل صحيح."
 }

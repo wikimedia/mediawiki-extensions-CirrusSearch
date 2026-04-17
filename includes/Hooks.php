@@ -397,37 +397,16 @@ class Hooks implements
 		if ( $wgSearchType !== 'CirrusSearch' ) {
 			return true;
 		}
-		return self::prefixSearchExtractNamespaceWithConnection( self::getConnection(), $namespaces, $search );
-	}
-
-	/**
-	 * @param Connection $connection
-	 * @param array &$namespaces
-	 * @param string &$search
-	 * @return false
-	 */
-	public static function prefixSearchExtractNamespaceWithConnection(
-		Connection $connection,
-		&$namespaces,
-		&$search
-	) {
-		$method = $connection->getConfig()->get( 'CirrusSearchNamespaceResolutionMethod' );
-		if ( $method === 'elastic' ) {
-			$searcher =
-				new Searcher( $connection, 0, 1, $connection->getConfig(), $namespaces );
-			$searcher->updateNamespacesFromQuery( $search );
-			$namespaces = $searcher->getSearchContext()->getNamespaces();
-		} else {
-			$colon = strpos( $search, ':' );
-			if ( $colon === false ) {
-				return false;
-			}
-			$namespaceName = substr( $search, 0, $colon );
-			$ns = Util::identifyNamespace( $namespaceName, $method );
-			if ( $ns !== false ) {
-				$namespaces = [ $ns ];
-				$search = substr( $search, $colon + 1 );
-			}
+		$method = self::getConfig()->get( 'CirrusSearchNamespaceResolutionMethod' );
+		$colon = strpos( $search, ':' );
+		if ( $colon === false ) {
+			return false;
+		}
+		$namespaceName = substr( $search, 0, $colon );
+		$ns = Util::identifyNamespace( $namespaceName, $method );
+		if ( $ns !== false ) {
+			$namespaces = [ $ns ];
+			$search = substr( $search, $colon + 1 );
 		}
 
 		return false;

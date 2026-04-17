@@ -4,8 +4,6 @@ namespace CirrusSearch;
 
 use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\Fallbacks\SearcherFactory;
-use CirrusSearch\Maintenance\NullPrinter;
-use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Parser\FullTextKeywordRegistry;
 use CirrusSearch\Parser\NamespacePrefixParser;
@@ -533,39 +531,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	}
 
 	/**
-	 * @param string $name
-	 * @return Status
-	 */
-	private function findNamespace( $name ) {
-		return Util::doPoolCounterWork(
-			'CirrusSearch-NamespaceLookup',
-			$this->user,
-			function () use ( $name ) {
-				$connection = null;
-				try {
-					$this->startNewLog( 'lookup namespace for {namespaceName}', 'namespace', [
-						'namespaceName' => $name,
-						'query' => $name,
-					] );
-					$connection = $this->getOverriddenConnection();
-					$connection->setTimeout( $this->getClientTimeout( 'namespace' ) );
-
-					// A bit awkward, but accepted as this is the backup
-					// implementation of namespace lookup. Deployments should
-					// prefer to install php-intl and use utr30.
-					$store = ( new MetaStoreIndex( $connection, new NullPrinter(), $this->config ) )
-						->namespaceStore();
-					$resultSet = $store->find( $name, [
-						'timeout' => $this->getTimeout( 'namespace' ),
-					] );
-					return $this->success( $resultSet->getResults(), $connection );
-				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					return $this->failure( $e, $connection );
-				}
-			} );
-	}
-
-	/**
 	 * @return \Elastica\Search
 	 */
 	protected function buildSearch() {
@@ -783,18 +748,12 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			return;
 		}
 		$namespaceName = substr( $query, 0, $colon );
-		$status = $this->findNamespace( $namespaceName );
-		// Failure case is already logged so just handle success case
-		if ( !$status->isOK() ) {
+		$namespaceId = Util::identifyNamespace( $namespaceName, $this->config->get( 'CirrusSearchNamespaceResolutionMethod' ) );
+		if ( $namespaceId === false ) {
 			return;
 		}
-		$foundNamespace = $status->getValue();
-		if ( !$foundNamespace ) {
-			return;
-		}
-		$foundNamespace = $foundNamespace[ 0 ];
 		$query = substr( $query, $colon + 1 );
-		$this->searchContext->setNamespaces( [ $foundNamespace->namespace_id ] );
+		$this->searchContext->setNamespaces( [ $namespaceId ] );
 	}
 
 	/**

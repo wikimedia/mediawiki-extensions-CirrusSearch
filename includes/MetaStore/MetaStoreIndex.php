@@ -90,13 +90,6 @@ class MetaStoreIndex {
 	}
 
 	/**
-	 * @return MetaNamespaceStore
-	 */
-	public function namespaceStore() {
-		return new MetaNamespaceStore( $this->elasticaIndex(), $this->config->getWikiId() );
-	}
-
-	/**
 	 * @return MetaSaneitizeJobStore
 	 */
 	public function saneitizeJobStore() {
@@ -109,7 +102,6 @@ class MetaStoreIndex {
 	public function stores() {
 		return [
 			'version' => $this->versionStore(),
-			'namespace' => $this->namespaceStore(),
 			'saneitize' => $this->saneitizeJobStore(),
 		];
 	}

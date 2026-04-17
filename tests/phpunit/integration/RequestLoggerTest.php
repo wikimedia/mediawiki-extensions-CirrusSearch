@@ -8,7 +8,6 @@ use CirrusSearch\CompletionSuggester;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\HashSearchConfig;
-use CirrusSearch\Hooks;
 use CirrusSearch\RequestLog;
 use CirrusSearch\RequestLogger;
 use CirrusSearch\SearchConfig;
@@ -31,7 +30,7 @@ use Wikimedia\TestingAccessWrapper;
  * @group CirrusSearch
  * @covers \CirrusSearch\RequestLogger
  * @covers \CirrusSearch\ElasticsearchIntermediary
- * @covers \CirrusSearch\Hooks::prefixSearchExtractNamespaceWithConnection()
+ * @covers \CirrusSearch\Hooks::onPrefixSearchExtractNamespace()
  */
 class RequestLoggerTest extends CirrusIntegrationTestCase {
 	/** @var array mediawiki/cirrussearch/request schema */
@@ -141,7 +140,6 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		$configs = [
 			'CirrusSearchFullTextQueryBuilderProfile' => 'default',
 			'CirrusSearchInterwikiSources' => [],
-			'CirrusSearchNamespaceResolutionMethod' => 'elastic',
 		];
 		if ( isset( $query['interwiki'] ) ) {
 			$configs['CirrusSearchInterwikiSources'] = $query['interwiki'];
@@ -268,15 +266,8 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 					[ 'transport' => $transport ],
 				]
 			],
-			'CirrusSearchNamespaceResolutionMethod' => 'utr30',
 		] );
 		$connection = new Connection( $config, 'default' );
-		$this->setTemporaryHook( 'PrefixSearchExtractNamespace',
-			static function ( &$namespace, &$query ) use ( $connection ) {
-				return Hooks::prefixSearchExtractNamespaceWithConnection( $connection,
-					$namespace, $query );
-			}
-		);
 		return [ $loggers, $config, $connection, $transport ];
 	}
 

@@ -700,7 +700,7 @@
 			"value": 5000
 		},
 		"CirrusSearchNamespaceResolutionMethod": {
-			"value": "elastic"
+			"value": "utr30"
 		},
 		"CirrusSearchWeightedTags": {
 			"description": "Configuration for features using weighted tags.",

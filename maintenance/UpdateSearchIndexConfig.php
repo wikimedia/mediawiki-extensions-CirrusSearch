@@ -43,19 +43,6 @@ class UpdateSearchIndexConfig extends Maintenance {
 		foreach ( $this->clustersToWriteTo() as $cluster ) {
 			$this->outputIndented( "Updating cluster $cluster...\n" );
 
-			$this->outputIndented( "indexing namespaces...\n" );
-			$child = $this->createChild( IndexNamespaces::class );
-			$child->done();
-			$child->loadParamsAndArgs(
-				null,
-				array_merge( $this->parameters->getOptions(), [
-					'cluster' => $cluster,
-				] ),
-				$this->parameters->getArgs()
-			);
-			$child->execute();
-			$child->done();
-
 			$conn = Connection::getPool( $this->getSearchConfig(), $cluster );
 			foreach ( $conn->getAllIndexSuffixes( null ) as $indexSuffix ) {
 				$this->outputIndented( "$indexSuffix index...\n" );

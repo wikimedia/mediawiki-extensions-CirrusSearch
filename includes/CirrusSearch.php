@@ -169,7 +169,7 @@ class CirrusSearch extends SearchEngine {
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
 		if ( $secondTryRunnerFactory === null ) {
 			$this->secondTryRunnerFactory = new SecondTryRunnerFactory(
-				new SecondTrySearchFactory( MediaWikiServices::getInstance()->getLanguageConverterFactory() ),
+				MediaWikiServices::getInstance()->getService( SecondTrySearchFactory::SERVICE ),
 				$this->config
 			);
 		} else {

@@ -14,6 +14,7 @@ use CirrusSearch\InterwikiResolverFactory;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Query\DeepcatFeature;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\SecondTry\SecondTrySearchFactory;
 use CirrusSearch\Updater;
 use CirrusSearch\WeightedTagsUpdater;
 use MediaWiki\MediaWikiServices;
@@ -94,7 +95,10 @@ return [
 
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
 		return new Updater( new Connection( $searchConfig ) );
-	}
+	},
+	SecondTrySearchFactory::SERVICE => static function ( MediaWikiServices $services ): SecondTrySearchFactory {
+		return new SecondTrySearchFactory( $services->getLanguageConverterFactory() );
+	},
 ];
 
 // @codeCoverageIgnoreEnd

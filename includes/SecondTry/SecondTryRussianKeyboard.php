@@ -41,7 +41,24 @@ class SecondTryRussianKeyboard implements SecondTrySearch {
 	 *             'r2q'/'c2l': Russian Cyrillic->Latin Qwerty; 'both': both directions)
 	 */
 	public static function build( array $config ): SecondTryRussianKeyboard {
-		return new self( self::DIR_NAMES[ $config['dir'] ?? 'both' ] );
+		return new self( self::DIR_NAMES[self::getDirFromConfig( $config )] );
+	}
+
+	/**
+	 * Builds a cache key for this strategy
+	 * @param array $config
+	 * @return string
+	 */
+	public static function cacheKey( array $config ): string {
+		return self::class . ":" . self::getDirFromConfig( $config );
+	}
+
+	/**
+	 * @param array $config
+	 * @return string
+	 */
+	private static function getDirFromConfig( array $config ): string {
+		return $config['dir'] ?? 'both';
 	}
 
 	/**

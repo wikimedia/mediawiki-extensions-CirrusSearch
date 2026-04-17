@@ -144,19 +144,29 @@ class SecondTrySearchTest extends CirrusTestCase {
 	}
 
 	public static function provideTestFactory(): \Generator {
-		yield 'he_kbd' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class ];
-		yield 'ru_kbd' => [ 'russian_keyboard', SecondTryRussianKeyboard::class ];
-		yield 'geo_tr' => [ 'georgian_transliteration', SecondTryGeorgianTransliteration::class ];
-		yield 'hin_tr' => [ 'hindi_transliteration', SecondTryHindiTransliteration::class ];
-		yield 'lang_converter' => [ 'language_converter', SecondTryLanguageConverter::class ];
-		yield 'invalid' => [ 'foo', null ];
+		yield 'he_kbd' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class, [], [ 'dir' => 'h2l' ] ];
+		yield 'he_kbd-h2l' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class, [ 'dir' => 'h2l' ] ];
+		yield 'he_kbd-h2q' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class, [ 'dir' => 'h2q' ] ];
+		yield 'he_kbd-q2h' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class, [ 'dir' => 'q2h' ] ];
+		yield 'he_kbd-l2h' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class, [ 'dir' => 'l2h' ] ];
+		yield 'he_kbd-both' => [ 'hebrew_keyboard', SecondTryHebrewKeyboard::class, [ 'dir' => 'both' ] ];
+		yield 'ru_kbd' => [ 'russian_keyboard', SecondTryRussianKeyboard::class, [], [ 'dir' => 'r2q' ] ];
+		yield 'ru_kbd-r2q' => [ 'russian_keyboard', SecondTryRussianKeyboard::class, [ 'dir' => 'r2q' ] ];
+		yield 'ru_kbd-c2l' => [ 'russian_keyboard', SecondTryRussianKeyboard::class, [ 'dir' => 'c2l' ] ];
+		yield 'ru_kbd-q2r' => [ 'russian_keyboard', SecondTryRussianKeyboard::class, [ 'dir' => 'q2r' ] ];
+		yield 'ru_kbd-l2c' => [ 'russian_keyboard', SecondTryRussianKeyboard::class, [ 'dir' => 'l2c' ] ];
+		yield 'ru_kbd-both' => [ 'russian_keyboard', SecondTryRussianKeyboard::class, [ 'dir' => 'both' ] ];
+		yield 'geo_tr' => [ 'georgian_transliteration', SecondTryGeorgianTransliteration::class, [] ];
+		yield 'hin_tr' => [ 'hindi_transliteration', SecondTryHindiTransliteration::class, [] ];
+		yield 'lang_converter' => [ 'language_converter', SecondTryLanguageConverter::class, [] ];
+		yield 'invalid' => [ 'foo', null, [] ];
 	}
 
 	/**
 	 * @dataProvider provideTestFactory
 	 * @covers \CirrusSearch\SecondTry\SecondTrySearchFactory
 	 */
-	public function testFactory( string $strategy, ?string $expectedClass ): void {
+	public function testFactory( string $strategy, ?string $expectedClass, ?array $config, ?array $anotherConfig = null ): void {
 		$languageConverter = $this->createMock( ILanguageConverter::class );
 		$languageConverterFactory = $this->createMock( LanguageConverterFactory::class );
 		$languageConverterFactory->method( 'getLanguageConverter' )->willReturn( $languageConverter );
@@ -164,7 +174,16 @@ class SecondTrySearchTest extends CirrusTestCase {
 		if ( $expectedClass === null ) {
 			$this->expectException( \InvalidArgumentException::class );
 		}
-		$this->assertInstanceOf( $expectedClass, $factory->build( $strategy, [] ) );
+		$actual = $factory->build( $strategy, $config );
+		$this->assertInstanceOf( $expectedClass, $factory->build( $strategy, $config ) );
+		$this->assertSame( $actual, $factory->build( $strategy, $config ) );
+		if ( $anotherConfig !== null ) {
+			// when provided another config make sure we don't pollute the cache with unrelated
+			// strategies
+			$anotherStrategy = $factory->build( $strategy, $anotherConfig );
+			$this->assertInstanceOf( $expectedClass, $anotherStrategy );
+			$this->assertNotSame( $actual, $anotherStrategy );
+		}
 	}
 
 	/**

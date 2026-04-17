@@ -107,7 +107,7 @@
 			"changelistener",
 			"eventbusbridge"
 		],
-		"PrefixSearchExtractNamespace": "default",
+		"PrefixSearchExtractNamespace": "prefixsearch_extract_namespace",
 		"ResourceLoaderGetConfigVars": "default",
 		"SearchIndexFields": [
 			"weightedtags",
@@ -178,6 +178,15 @@
 			"class": "CirrusSearch\\Hooks\\CirrusSearchApiQuerySiteInfoGeneralInfoHook",
 			"services": [
 				"ConnectionProvider"
+			]
+		},
+		"prefixsearch_extract_namespace": {
+			"class": "MediaWiki\\Search\\Hook\\PrefixSearchExtractNamespaceHook",
+			"factory": "CirrusSearch\\PrefixSearchExtractNamespace::create",
+			"services": [
+				"MainConfig",
+				"ConfigFactory",
+				"ContentLanguage"
 			]
 		}
 	},

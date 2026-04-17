@@ -30,7 +30,7 @@ use Wikimedia\TestingAccessWrapper;
  * @group CirrusSearch
  * @covers \CirrusSearch\RequestLogger
  * @covers \CirrusSearch\ElasticsearchIntermediary
- * @covers \CirrusSearch\Hooks::onPrefixSearchExtractNamespace()
+ * @covers \CirrusSearch\PrefixSearchExtractNamespace
  */
 class RequestLoggerTest extends CirrusIntegrationTestCase {
 	/** @var array mediawiki/cirrussearch/request schema */

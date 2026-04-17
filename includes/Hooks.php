@@ -21,7 +21,6 @@ use MediaWiki\Output\OutputPage;
 use MediaWiki\Preferences\Hook\GetPreferencesHook;
 use MediaWiki\Request\WebRequest;
 use MediaWiki\ResourceLoader\Hook\ResourceLoaderGetConfigVarsHook;
-use MediaWiki\Search\Hook\PrefixSearchExtractNamespaceHook;
 use MediaWiki\Search\Hook\SearchGetNearMatchHook;
 use MediaWiki\Search\Hook\ShowSearchHitTitleHook;
 use MediaWiki\Search\ISearchResultSet;
@@ -49,7 +48,6 @@ class Hooks implements
 	ApiBeforeMainHook,
 	APIQuerySiteInfoStatisticsInfoHook,
 	BeforeInitializeHook,
-	PrefixSearchExtractNamespaceHook,
 	ResourceLoaderGetConfigVarsHook,
 	SearchGetNearMatchHook,
 	ShowSearchHitTitleHook,
@@ -385,32 +383,6 @@ class Hooks implements
 		);
 		$block = Html::rawElement( 'div', [], $anchor );
 		$out->addHTML( $block );
-	}
-
-	/**
-	 * Extract namespaces from query string.
-	 * @param array &$namespaces
-	 * @param string &$search
-	 * @return bool
-	 */
-	public function onPrefixSearchExtractNamespace( &$namespaces, &$search ) {
-		global $wgSearchType;
-		if ( $wgSearchType !== 'CirrusSearch' ) {
-			return true;
-		}
-		$method = self::getConfig()->get( 'CirrusSearchNamespaceResolutionMethod' );
-		$colon = strpos( $search, ':' );
-		if ( $colon === false ) {
-			return false;
-		}
-		$namespaceName = substr( $search, 0, $colon );
-		$ns = Util::identifyNamespace( $namespaceName, $method );
-		if ( $ns !== false ) {
-			$namespaces = [ $ns ];
-			$search = substr( $search, $colon + 1 );
-		}
-
-		return false;
 	}
 
 	/** @inheritDoc */

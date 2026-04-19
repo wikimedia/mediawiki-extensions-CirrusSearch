@@ -4,7 +4,7 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\SearchConfig;
-use SearchEngine;
+use MediaWiki\Search\SearchEngine;
 
 /**
  * Index field representing the source_text data.

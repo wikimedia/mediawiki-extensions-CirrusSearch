@@ -3,7 +3,8 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\SearchConfig;
-use SearchIndexField;
+use MediaWiki\Search\SearchEngine;
+use MediaWiki\Search\SearchIndexField;
 
 /**
  * Index field representing keyword.
@@ -44,7 +45,7 @@ class KeywordIndexField extends CirrusIndexField {
 	}
 
 	/** @inheritDoc */
-	public function getMapping( \SearchEngine $engine ) {
+	public function getMapping( SearchEngine $engine ) {
 		$config = parent::getMapping( $engine );
 		$config['doc_values'] = $this->withDocValues;
 		$config['normalizer'] =

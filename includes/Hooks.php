@@ -3,8 +3,6 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Search\FancyTitleResultsType;
-use HtmlArmor;
-use ISearchResultSet;
 use MediaWiki\Actions\ActionEntryPoint;
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiMain;
@@ -16,10 +14,6 @@ use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Hook\ApiBeforeMainHook;
 use MediaWiki\Hook\BeforeInitializeHook;
-use MediaWiki\Hook\SoftwareInfoHook;
-use MediaWiki\Hook\SpecialSearchResultsAppendHook;
-use MediaWiki\Hook\SpecialSearchResultsHook;
-use MediaWiki\Hook\SpecialStatsAddExtraHook;
 use MediaWiki\Html\Html;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -30,11 +24,18 @@ use MediaWiki\ResourceLoader\Hook\ResourceLoaderGetConfigVarsHook;
 use MediaWiki\Search\Hook\PrefixSearchExtractNamespaceHook;
 use MediaWiki\Search\Hook\SearchGetNearMatchHook;
 use MediaWiki\Search\Hook\ShowSearchHitTitleHook;
+use MediaWiki\Search\ISearchResultSet;
+use MediaWiki\Search\SearchEngine;
+use MediaWiki\Search\SearchResult;
+use MediaWiki\Specials\Hook\SoftwareInfoHook;
+use MediaWiki\Specials\Hook\SpecialSearchResultsAppendHook;
+use MediaWiki\Specials\Hook\SpecialSearchResultsHook;
+use MediaWiki\Specials\Hook\SpecialStatsAddExtraHook;
 use MediaWiki\Specials\SpecialSearch;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Hook\UserGetDefaultOptionsHook;
 use MediaWiki\User\User;
-use SearchResult;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * All CirrusSearch's external hooks.
@@ -582,7 +583,7 @@ class Hooks implements
 	/** @inheritDoc */
 	public function onGetPreferences( $user, &$prefs ) {
 		$search = new CirrusSearch();
-		$profiles = $search->getProfiles( \SearchEngine::COMPLETION_PROFILE_TYPE, $user );
+		$profiles = $search->getProfiles( SearchEngine::COMPLETION_PROFILE_TYPE, $user );
 		if ( !$profiles ) {
 			return;
 		}

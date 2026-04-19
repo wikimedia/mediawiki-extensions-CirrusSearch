@@ -11,9 +11,9 @@ use CirrusSearch\SearchConfig;
 use MediaWiki\Maintenance\OrderedStreamingForkController;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\PageArchive;
+use MediaWiki\Search\SearchSuggestionSet;
 use MediaWiki\Settings\SettingsBuilder;
 use MediaWiki\Status\Status;
-use SearchSuggestionSet;
 use Wikimedia\Rdbms\IResultWrapper;
 
 /**

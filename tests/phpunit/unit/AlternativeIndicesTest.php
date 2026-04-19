@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Search\AlternativeIndex;
+use MediaWiki\Config\ConfigException;
 
 /**
  * @covers \CirrusSearch\AlternativeIndices \CirrusSearch\AlternativeIndex
@@ -100,7 +101,7 @@ class AlternativeIndicesTest extends CirrusTestCase {
 	 * @dataProvider providesBadConfig
 	 */
 	public function testBadConfig( array $config, string $type = AlternativeIndices::COMPLETION ): void {
-		$this->expectException( \ConfigException::class );
+		$this->expectException( ConfigException::class );
 		AlternativeIndices::build( $this->newHashSearchConfig( $config ) )->getAlternativeIndices( $type );
 	}
 

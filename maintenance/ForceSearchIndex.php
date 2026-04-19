@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Maintenance;
 
-use BatchRowIterator;
 use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\Iterator\CallbackIterator;
 use CirrusSearch\Job;
@@ -12,6 +11,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
+use MediaWiki\Utils\BatchRowIterator;
 use MediaWiki\Utils\MWTimestamp;
 use MediaWiki\WikiMap\WikiMap;
 use Throwable;

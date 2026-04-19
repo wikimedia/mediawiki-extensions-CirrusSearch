@@ -3,8 +3,8 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\SearchConfig;
-use NullIndexField;
-use SearchIndexField;
+use MediaWiki\Search\NullIndexField;
+use MediaWiki\Search\SearchIndexField;
 
 /**
  * Create different types of SearchIndexFields.

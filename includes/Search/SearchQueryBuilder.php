@@ -12,6 +12,7 @@ use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\Query\Builder\ContextualFilter;
 use CirrusSearch\SearchConfig;
 use MediaWiki\MainConfigNames;
+use MediaWiki\Search\SearchEngine;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -141,7 +142,7 @@ final class SearchQueryBuilder {
 		$builder->parsedQuery = QueryParserFactory::newFullTextQueryParser( $config,
 			$namespacePrefixParser, $cirrusSearchHookRunner )->parse( $queryString );
 		$builder->initialNamespaces = [ NS_MAIN ];
-		$builder->sort = \SearchEngine::DEFAULT_SORT;
+		$builder->sort = SearchEngine::DEFAULT_SORT;
 		$builder->randomSeed = null;
 		$builder->debugOptions = CirrusDebugOptions::defaultOptions();
 		$builder->limit = 10;

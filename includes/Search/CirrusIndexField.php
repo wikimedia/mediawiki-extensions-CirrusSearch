@@ -6,9 +6,9 @@ use CirrusSearch\CirrusSearch;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
 use Elastica\Param;
-use SearchEngine;
-use SearchIndexField;
-use SearchIndexFieldDefinition;
+use MediaWiki\Search\SearchEngine;
+use MediaWiki\Search\SearchIndexField;
+use MediaWiki\Search\SearchIndexFieldDefinition;
 
 /**
  * Basic ElasticSearch index field

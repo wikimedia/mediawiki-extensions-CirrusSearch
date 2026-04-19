@@ -16,7 +16,7 @@ use Elastica\Query\Term;
 use Elastica\Request;
 use Elastica\Search;
 use Elastica\Status;
-use MWElasticUtils;
+use MediaWiki\Extension\Elastica\MWElasticUtils;
 use RuntimeException;
 use StatusValue;
 

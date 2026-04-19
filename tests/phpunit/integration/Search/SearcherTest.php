@@ -8,12 +8,12 @@ use CirrusSearch\Test\DummyConnection;
 use CirrusSearch\Test\SearchConfigUsageDecorator;
 use Elastica\Query;
 use Elastica\Response;
-use HtmlArmor;
 use LinkCacheTestTrait;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * @covers \CirrusSearch\Searcher

@@ -6,8 +6,8 @@ use CirrusSearch\CirrusSearch;
 use CirrusSearch\Maintenance\MappingConfigBuilder;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
-use SearchEngine;
-use SearchIndexField;
+use MediaWiki\Search\SearchEngine;
+use MediaWiki\Search\SearchIndexField;
 
 /**
  * Index field representing keyword.

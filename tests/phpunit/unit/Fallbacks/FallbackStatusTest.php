@@ -4,7 +4,7 @@ namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Test\DummySearchResultSet;
-use HtmlArmor;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * @covers \CirrusSearch\Fallbacks\FallbackStatus

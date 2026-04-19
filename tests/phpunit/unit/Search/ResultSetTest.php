@@ -3,7 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
-use HtmlArmor;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * @covers \CirrusSearch\Search\ResultSet

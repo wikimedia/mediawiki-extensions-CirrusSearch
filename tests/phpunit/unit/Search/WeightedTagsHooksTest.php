@@ -9,6 +9,8 @@ use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Query\ArticlePredictionKeyword;
 use CirrusSearch\Query\HasRecommendationFeature;
 use MediaWiki\Config\ConfigFactory;
+use MediaWiki\Search\SearchEngine;
+use MediaWiki\Search\SearchIndexField;
 
 /**
  * @covers \CirrusSearch\Search\WeightedTagsHooks
@@ -59,7 +61,7 @@ class WeightedTagsHooksTest extends CirrusTestCase {
 		] );
 		$searchEngine = $this->createNoOpMock( CirrusSearch::class );
 		/**
-		 * @var \SearchIndexField[] $fields
+		 * @var SearchIndexField[] $fields
 		 */
 		$fields = [];
 		$handler->onSearchIndexFields( $fields, $searchEngine );
@@ -137,11 +139,11 @@ class WeightedTagsHooksTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @param \SearchIndexField $fields
-	 * @param \SearchEngine $searchEngine
+	 * @param SearchIndexField $fields
+	 * @param SearchEngine $searchEngine
 	 * @return void
 	 */
-	private function assertSearchIndexFieldsRegistered( array $fields, \SearchEngine $searchEngine ): void {
+	private function assertSearchIndexFieldsRegistered( array $fields, SearchEngine $searchEngine ): void {
 		$this->assertArrayHasKey( WeightedTagsHooks::FIELD_NAME, $fields );
 		$field = $fields[WeightedTagsHooks::FIELD_NAME];
 		$this->assertInstanceOf( WeightedTags::class, $field );

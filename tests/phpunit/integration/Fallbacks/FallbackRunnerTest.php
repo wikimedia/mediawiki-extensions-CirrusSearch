@@ -22,6 +22,7 @@ use Elastica\ResultSet;
 use Elastica\ResultSet\DefaultBuilder;
 use Elastica\Search;
 use LogicException;
+use MediaWiki\Search\ISearchResultSet;
 use MediaWiki\Status\Status;
 use PHPUnit\Framework\Assert;
 
@@ -350,7 +351,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			$this->createCirrusSearchHookRunner()
 		);
 		$this->assertEquals( 2, $newResults->getTotalHits() );
-		$iwResults = $newResults->getInterwikiResults( \ISearchResultSet::INLINE_RESULTS );
+		$iwResults = $newResults->getInterwikiResults( ISearchResultSet::INLINE_RESULTS );
 		$this->assertSame( [], $iwResults );
 
 		// LangDetect wins and runs its fallback query
@@ -375,7 +376,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			$this->createCirrusSearchHookRunner()
 		);
 		$this->assertSame( 0, $newResults->getTotalHits() );
-		$iwResults = $newResults->getInterwikiResults( \ISearchResultSet::INLINE_RESULTS );
+		$iwResults = $newResults->getInterwikiResults( ISearchResultSet::INLINE_RESULTS );
 		$this->assertNotEmpty( $iwResults );
 		$this->assertArrayHasKey( 'frwiki', $iwResults );
 		$this->assertEquals( 3, $iwResults['frwiki']->getTotalHits() );

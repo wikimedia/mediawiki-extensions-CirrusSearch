@@ -3,7 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Search\CompletionResultsCollector;
-use SearchSuggestion;
+use MediaWiki\Search\SearchSuggestion;
 
 /**
  * @covers \CirrusSearch\Search\CompletionResultsCollector

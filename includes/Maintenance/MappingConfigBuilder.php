@@ -11,7 +11,7 @@ use CirrusSearch\Search\TextIndexField;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Language\Language;
 use MediaWiki\MediaWikiServices;
-use SearchIndexField;
+use MediaWiki\Search\SearchIndexField;
 
 /**
  * Builds search mapping configuration arrays.

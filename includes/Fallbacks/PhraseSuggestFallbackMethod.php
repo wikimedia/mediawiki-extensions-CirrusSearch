@@ -10,8 +10,8 @@ use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Searcher;
-use HtmlArmor;
 use Wikimedia\Assert\Assert;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * Fallback method based on the elastic phrase suggester.

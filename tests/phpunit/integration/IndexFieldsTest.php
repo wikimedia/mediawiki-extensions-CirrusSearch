@@ -3,7 +3,7 @@
 namespace CirrusSearch;
 
 use MediaWiki\MediaWikiServices;
-use SearchIndexField;
+use MediaWiki\Search\SearchIndexField;
 
 /**
  * @group CirrusSearch

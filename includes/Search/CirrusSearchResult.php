@@ -7,9 +7,9 @@ use CirrusSearch\Util;
 use LogicException;
 use MediaWiki\FileRepo\File\File;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Search\SearchResult;
+use MediaWiki\Search\SearchResultTrait;
 use MediaWiki\Title\Title;
-use SearchResult;
-use SearchResultTrait;
 
 /**
  * Base class for SearchResult

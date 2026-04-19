@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use SearchSuggestion;
+use MediaWiki\Search\SearchSuggestion;
 
 class CompletionRequestLog extends BaseRequestLog {
 

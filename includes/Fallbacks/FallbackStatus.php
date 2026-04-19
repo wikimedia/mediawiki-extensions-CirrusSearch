@@ -4,7 +4,8 @@ namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\Search\CirrusSearchResultSet;
 use Closure;
-use HtmlArmor;
+use MediaWiki\Search\SearchResultSet;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * Representation of the result of running a FallbackMethod.
@@ -85,7 +86,7 @@ class FallbackStatus {
 		return new self( self::ACTION_ADD_INTERWIKI_RESULTS, static function (
 			CirrusSearchResultSet $currentSet
 		) use ( $results, $wikiId ) {
-			$currentSet->addInterwikiResults( $results, \SearchResultSet::INLINE_RESULTS, $wikiId );
+			$currentSet->addInterwikiResults( $results, SearchResultSet::INLINE_RESULTS, $wikiId );
 			return $currentSet;
 		} );
 	}

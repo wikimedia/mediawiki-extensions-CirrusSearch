@@ -5,7 +5,7 @@ namespace CirrusSearch\Test;
 use CirrusSearch\Search\BaseCirrusSearchResultSet;
 use CirrusSearch\Search\Result;
 use CirrusSearch\Search\TitleHelper;
-use SearchResult;
+use MediaWiki\Search\SearchResult;
 
 class DummySearchResultSet extends BaseCirrusSearchResultSet {
 	/**

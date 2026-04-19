@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Search;
 
-use SearchEngine;
-use SearchIndexFieldDefinition;
+use MediaWiki\Search\SearchEngine;
+use MediaWiki\Search\SearchIndexFieldDefinition;
 
 /**
  * Field definitions for the weighted_tags search feature.

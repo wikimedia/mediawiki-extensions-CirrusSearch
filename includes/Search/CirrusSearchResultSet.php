@@ -2,9 +2,10 @@
 
 namespace CirrusSearch\Search;
 
-use HtmlArmor;
+use MediaWiki\Search\ISearchResultSet;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
-interface CirrusSearchResultSet extends \ISearchResultSet {
+interface CirrusSearchResultSet extends ISearchResultSet {
 	/**
 	 * @return \Elastica\Response|null
 	 */

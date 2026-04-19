@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Event;
 
-use MediaWiki\Hook\LinksUpdateCompleteHook;
+use MediaWiki\Deferred\Hook\LinksUpdateCompleteHook;
 
 /**
  * Empty interface to help the EventBusBridge::factory method to return the same type

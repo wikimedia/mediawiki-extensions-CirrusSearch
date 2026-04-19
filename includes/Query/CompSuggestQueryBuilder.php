@@ -10,7 +10,7 @@ use CirrusSearch\SecondTry\SecondTryRunner;
 use Elastica\ResultSet;
 use Elastica\Suggest;
 use Elastica\Suggest\Completion;
-use SearchSuggestion;
+use MediaWiki\Search\SearchSuggestion;
 use Wikimedia\Assert\Assert;
 
 /**

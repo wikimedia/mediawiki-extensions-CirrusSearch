@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Search;
 
-use SearchEngine;
-use SearchIndexField;
+use MediaWiki\Search\SearchEngine;
+use MediaWiki\Search\SearchIndexField;
 
 class NestedIndexField extends CirrusIndexField {
 	/** @inheritDoc */

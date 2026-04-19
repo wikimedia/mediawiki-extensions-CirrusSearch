@@ -12,6 +12,7 @@ use CirrusSearch\SecondTry\SecondTrySearch;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet;
+use MediaWiki\Search\SearchSuggestionSet;
 
 /**
  * Completion Suggester Tests
@@ -272,7 +273,7 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 			$builder->postProcess( $collector, $results, "wiki_titlesuggest" );
 			$suggestions = $collector->logAndGetSet( $log );
 		} else {
-			$suggestions = \SearchSuggestionSet::emptySuggestionSet();
+			$suggestions = SearchSuggestionSet::emptySuggestionSet();
 		}
 		$this->assertEquals( $size, $suggestions->getSize() );
 		if ( $size > 0 ) {

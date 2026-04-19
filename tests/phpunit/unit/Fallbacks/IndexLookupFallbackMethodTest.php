@@ -12,7 +12,7 @@ use Elastica\Index;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet\DefaultBuilder;
-use HtmlArmor;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * @covers \CirrusSearch\Fallbacks\IndexLookupFallbackMethod

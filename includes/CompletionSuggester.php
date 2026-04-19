@@ -20,9 +20,10 @@ use Elastica\Query;
 use Elastica\ResultSet;
 use Elastica\Search;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Search\SearchSuggestion;
+use MediaWiki\Search\SearchSuggestionSet;
 use MediaWiki\Status\Status;
 use MediaWiki\User\User;
-use SearchSuggestionSet;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -334,7 +335,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			if ( $title === false ) {
 				continue;
 			}
-			$suggestion = new \SearchSuggestion( $score--, $title->getPrefixedText(), $title, $pageId );
+			$suggestion = new SearchSuggestion( $score--, $title->getPrefixedText(), $title, $pageId );
 			if ( !$collector->collect( $suggestion, 'prefix', $indexName ) && $collector->isFull() ) {
 				break;
 			}

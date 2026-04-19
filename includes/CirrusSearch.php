@@ -17,18 +17,18 @@ use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\SecondTry\SecondTryRunnerFactory;
 use CirrusSearch\SecondTry\SecondTrySearchFactory;
-use ISearchResultSet;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\Sanitizer;
 use MediaWiki\Request\WebRequest;
+use MediaWiki\Search\ISearchResultSet;
+use MediaWiki\Search\SearchEngine;
+use MediaWiki\Search\SearchIndexField;
+use MediaWiki\Search\SearchSuggestionSet;
 use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
 use MediaWiki\WikiMap\WikiMap;
-use SearchEngine;
-use SearchIndexField;
-use SearchSuggestionSet;
 use Wikimedia\UUID\GlobalIdGenerator;
 
 /**

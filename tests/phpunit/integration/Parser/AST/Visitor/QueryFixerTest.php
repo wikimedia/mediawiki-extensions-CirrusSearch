@@ -4,7 +4,7 @@ namespace CirrusSearch\Parser\AST\Visitor;
 
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
-use HtmlArmor;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * @covers \CirrusSearch\Parser\AST\Visitor\QueryFixer

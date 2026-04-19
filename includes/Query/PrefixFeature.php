@@ -13,6 +13,7 @@ use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Term;
+use MediaWiki\Search\SearchEngine;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -56,7 +57,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		return new class() implements NamespacePrefixParser {
 			/** @inheritDoc */
 			public function parse( $query ) {
-				return \SearchEngine::parseNamespacePrefixes( $query, true, false );
+				return SearchEngine::parseNamespacePrefixes( $query, true, false );
 			}
 		};
 	}

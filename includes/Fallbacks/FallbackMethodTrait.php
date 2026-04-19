@@ -8,9 +8,9 @@ use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
 use Elastica\ResultSet as ElasticaResultSet;
-use HtmlArmor;
-use ISearchResultSet;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Search\ISearchResultSet;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 trait FallbackMethodTrait {
 

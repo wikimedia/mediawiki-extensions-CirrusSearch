@@ -6,9 +6,9 @@ use CirrusSearch\CirrusSearch;
 use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Search\Hook\SearchIndexFieldsHook;
-use NullIndexField;
-use SearchEngine;
-use SearchIndexField;
+use MediaWiki\Search\NullIndexField;
+use MediaWiki\Search\SearchEngine;
+use MediaWiki\Search\SearchIndexField;
 
 /**
  * Hooks to allow custom fields to be added to the search index for pages

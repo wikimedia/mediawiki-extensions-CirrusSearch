@@ -16,8 +16,8 @@ use CirrusSearch\Parser\AST\PhraseQueryNode;
 use CirrusSearch\Parser\AST\PrefixNode;
 use CirrusSearch\Parser\AST\WildcardNode;
 use CirrusSearch\Parser\AST\WordsQueryNode;
-use HtmlArmor;
 use Wikimedia\Assert\Assert;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * Inspect a query and determine what parts of it can be sent to a typo correction mechanism and

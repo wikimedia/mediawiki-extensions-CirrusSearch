@@ -3,8 +3,8 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CompletionRequestLog;
-use SearchSuggestion;
-use SearchSuggestionSet;
+use MediaWiki\Search\SearchSuggestion;
+use MediaWiki\Search\SearchSuggestionSet;
 
 /**
  * Collect results from multiple result sets

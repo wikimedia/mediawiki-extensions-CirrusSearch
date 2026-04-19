@@ -2,13 +2,14 @@
 
 namespace CirrusSearch\Search;
 
-use BaseSearchResultSet;
-use HtmlArmor;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Search\BaseSearchResultSet;
+use MediaWiki\Search\ISearchResultSet;
+use MediaWiki\Search\SearchResult;
+use MediaWiki\Search\SearchResultSetTrait;
 use MediaWiki\Title\Title;
-use SearchResult;
-use SearchResultSetTrait;
 use Wikimedia\Assert\Assert;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * Base class to represent a CirrusSearchResultSet
@@ -167,7 +168,7 @@ abstract class BaseCirrusSearchResultSet extends BaseSearchResultSet implements 
 
 	/**
 	 * @param int $type One of the ISearchResultSet::…_RESULTS constants
-	 * @return \ISearchResultSet[]
+	 * @return ISearchResultSet[]
 	 */
 	final public function getInterwikiResults( $type = self::SECONDARY_RESULTS ) {
 		return $this->interwikiResults[$type] ?? [];

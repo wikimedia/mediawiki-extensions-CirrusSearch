@@ -2,12 +2,14 @@
 
 namespace CirrusSearch\Search;
 
+use MediaWiki\Search\SearchEngine;
+
 /**
  * @covers \CirrusSearch\Search\WeightedTags
  */
 class WeightedTagsFieldTest extends \MediaWikiUnitTestCase {
 	public function testField() {
-		$searchEngine = $this->createNoOpMock( \SearchEngine::class );
+		$searchEngine = $this->createNoOpMock( SearchEngine::class );
 		$indexAnalyzer = 'indexAnalyzer';
 		$searchAnalyzer = 'searchAnalyzer';
 		$similarity = 'sim';

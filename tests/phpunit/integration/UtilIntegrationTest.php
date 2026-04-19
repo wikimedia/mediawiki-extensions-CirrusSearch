@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use MediaWiki\Config\Config;
 use MediaWiki\Language\Language;
+use MediaWiki\Language\MessageCache;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\WikiMap\WikiMap;
@@ -136,10 +137,10 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * Produces mock message cache for injecting messages
-	 * @return \MessageCache
+	 * @return MessageCache
 	 */
 	private function getMockCache() {
-		$mock = $this->createMock( \MessageCache::class );
+		$mock = $this->createMock( MessageCache::class );
 		$mock->method( 'get' )->willReturnCallback( static function ( $key, $useDB, $lang ) {
 			$langCode = $lang instanceof Language ? $lang->getCode() : $lang;
 			return "This is $key in $langCode|100%";

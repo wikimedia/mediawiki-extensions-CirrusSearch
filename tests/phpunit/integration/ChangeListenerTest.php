@@ -16,6 +16,7 @@ use MediaWiki\Revision\MutableRevisionRecord;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
 use MediaWiki\Title\Title;
+use MediaWiki\Upload\UploadBase;
 use MediaWiki\User\UserIdentityValue;
 use MediaWiki\Utils\MWTimestamp;
 use Wikimedia\Rdbms\IConnectionProvider;
@@ -200,7 +201,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		$title->method( 'getPrefixedDBkey' )->willReturn( 'My_Title' );
 		$title->method( 'exists' )->willReturn( true );
 
-		$uploadBase = $this->createMock( \UploadBase::class );
+		$uploadBase = $this->createMock( UploadBase::class );
 		$uploadBase->method( 'getTitle' )->willReturn( $title );
 
 		$jobqueue = $this->createMock( JobQueueGroup::class );

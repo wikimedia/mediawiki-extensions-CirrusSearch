@@ -6,6 +6,7 @@ use CirrusSearch\SecondTry\SecondTryRunnerFactory;
 use CirrusSearch\SecondTry\SecondTrySearchFactory;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Language\LanguageConverterFactory;
+use MediaWiki\Search\SearchEngine;
 use MediaWiki\Status\Status;
 use Wikimedia\UUID\GlobalIdGenerator;
 
@@ -17,12 +18,12 @@ class CirrusSearchTest extends CirrusTestCase {
 	public static function provideProfiles() {
 		return [
 			'completion' => [
-				\SearchEngine::COMPLETION_PROFILE_TYPE,
+				SearchEngine::COMPLETION_PROFILE_TYPE,
 				CirrusSearch::AUTOSELECT_PROFILE,
 				[ CirrusSearch::AUTOSELECT_PROFILE, CirrusSearch::COMPLETION_PREFIX_FALLBACK_PROFILE ],
 			],
 			'fulltext query independent' => [
-				\SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE,
+				SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE,
 				CirrusSearch::AUTOSELECT_PROFILE,
 				[ CirrusSearch::AUTOSELECT_PROFILE, 'classic' ],
 			],
@@ -62,22 +63,22 @@ class CirrusSearchTest extends CirrusTestCase {
 	public static function provideExtractProfileFromFeatureData() {
 		return [
 			'engine defaults (completion)' => [
-				\SearchEngine::COMPLETION_PROFILE_TYPE,
+				SearchEngine::COMPLETION_PROFILE_TYPE,
 				CirrusSearch::AUTOSELECT_PROFILE,
 				null,
 			],
 			'engine defaults (fulltext qi)' => [
-				\SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE,
+				SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE,
 				CirrusSearch::AUTOSELECT_PROFILE,
 				null,
 			],
 			'profile set (completion)' => [
-				\SearchEngine::COMPLETION_PROFILE_TYPE,
+				SearchEngine::COMPLETION_PROFILE_TYPE,
 				'foobar',
 				'foobar',
 			],
 			'profile set (fulltext qi)' => [
-				\SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE,
+				SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE,
 				'foobar',
 				'foobar',
 			]
@@ -168,7 +169,7 @@ class CirrusSearchTest extends CirrusTestCase {
 		$engine = $this->getSearchEngine();
 		$this->assertFalse( $engine->supports( 'search-update' ) );
 		$this->assertFalse( $engine->supports( 'list-redirects' ) );
-		$this->assertTrue( $engine->supports( \SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE ) );
+		$this->assertTrue( $engine->supports( SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE ) );
 		$this->assertTrue( $engine->supports( CirrusSearch::EXTRA_FIELDS_TO_EXTRACT ) );
 	}
 }

@@ -5,7 +5,8 @@ namespace CirrusSearch\Search;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\SearchConfig;
-use SearchIndexField;
+use MediaWiki\Search\NullIndexField;
+use MediaWiki\Search\SearchIndexField;
 
 /**
  * @group CirrusSearch
@@ -15,16 +16,16 @@ class CirrusSearchIndexFieldFactoryTest extends CirrusTestCase {
 
 	public static function provideTestFactory() {
 		return [
-			'bool' => [ 'foo', \SearchIndexField::INDEX_TYPE_BOOL, BooleanIndexField::class ],
-			'datetime' => [ 'foo', \SearchIndexField::INDEX_TYPE_DATETIME, DatetimeIndexField::class ],
-			'integer' => [ 'foo', \SearchIndexField::INDEX_TYPE_INTEGER, IntegerIndexField::class ],
-			'keyword' => [ 'foo', \SearchIndexField::INDEX_TYPE_KEYWORD, KeywordIndexField::class ],
-			'nested' => [ 'foo', \SearchIndexField::INDEX_TYPE_NESTED, NestedIndexField::class ],
-			'number' => [ 'foo', \SearchIndexField::INDEX_TYPE_NUMBER, NumberIndexField::class ],
-			'short_text' => [ 'foo', \SearchIndexField::INDEX_TYPE_SHORT_TEXT, ShortTextIndexField::class ],
-			'text' => [ 'foo', \SearchIndexField::INDEX_TYPE_TEXT, TextIndexField::class ],
-			'opening_text' => [ 'opening_text', \SearchIndexField::INDEX_TYPE_TEXT, OpeningTextIndexField::class ],
-			'unknown' => [ 'foo', 'unknown_type', \NullIndexField::class ],
+			'bool' => [ 'foo', SearchIndexField::INDEX_TYPE_BOOL, BooleanIndexField::class ],
+			'datetime' => [ 'foo', SearchIndexField::INDEX_TYPE_DATETIME, DatetimeIndexField::class ],
+			'integer' => [ 'foo', SearchIndexField::INDEX_TYPE_INTEGER, IntegerIndexField::class ],
+			'keyword' => [ 'foo', SearchIndexField::INDEX_TYPE_KEYWORD, KeywordIndexField::class ],
+			'nested' => [ 'foo', SearchIndexField::INDEX_TYPE_NESTED, NestedIndexField::class ],
+			'number' => [ 'foo', SearchIndexField::INDEX_TYPE_NUMBER, NumberIndexField::class ],
+			'short_text' => [ 'foo', SearchIndexField::INDEX_TYPE_SHORT_TEXT, ShortTextIndexField::class ],
+			'text' => [ 'foo', SearchIndexField::INDEX_TYPE_TEXT, TextIndexField::class ],
+			'opening_text' => [ 'opening_text', SearchIndexField::INDEX_TYPE_TEXT, OpeningTextIndexField::class ],
+			'unknown' => [ 'foo', 'unknown_type', NullIndexField::class ],
 		];
 	}
 

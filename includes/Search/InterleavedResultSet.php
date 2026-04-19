@@ -2,12 +2,12 @@
 
 namespace CirrusSearch\Search;
 
-use BaseSearchResultSet;
 use Elastica\Response;
-use HtmlArmor;
-use ISearchResultSet;
+use MediaWiki\Search\BaseSearchResultSet;
+use MediaWiki\Search\ISearchResultSet;
+use MediaWiki\Search\SearchResultSetTrait;
 use MediaWiki\Title\Title;
-use SearchResultSetTrait;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 class InterleavedResultSet extends BaseSearchResultSet implements CirrusSearchResultSet, SearchMetricsProvider {
 	use SearchResultSetTrait;

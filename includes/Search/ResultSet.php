@@ -2,14 +2,14 @@
 
 namespace CirrusSearch\Search;
 
-use BaseSearchResultSet;
-use HtmlArmor;
-use ISearchResultSet;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Search\BaseSearchResultSet;
+use MediaWiki\Search\ISearchResultSet;
+use MediaWiki\Search\SearchResult;
+use MediaWiki\Search\SearchResultSetTrait;
 use MediaWiki\Title\Title;
-use SearchResult;
-use SearchResultSetTrait;
 use Wikimedia\Assert\Assert;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * A set of results from Elasticsearch.

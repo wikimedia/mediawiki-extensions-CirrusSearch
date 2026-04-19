@@ -3,7 +3,8 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
-use SearchIndexField;
+use MediaWiki\Search\NullIndexField;
+use MediaWiki\Search\SearchIndexField;
 
 /**
  * @group CirrusSearch
@@ -43,7 +44,7 @@ class SearchFieldsTest extends CirrusTestCase {
 	public function testBadField() {
 		$engine = $this->newEngine();
 		$field = $engine->makeSearchFieldMapping( 'testBadField', 42 );
-		$this->assertInstanceOf( \NullIndexField::class, $field );
+		$this->assertInstanceOf( NullIndexField::class, $field );
 		$this->assertNull( $field->getMapping( $engine ) );
 	}
 

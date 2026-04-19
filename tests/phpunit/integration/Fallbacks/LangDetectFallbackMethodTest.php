@@ -14,7 +14,7 @@ use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use CirrusSearch\Test\DummySearchResultSet;
-use ISearchResultSet;
+use MediaWiki\Search\ISearchResultSet;
 use MediaWiki\Status\Status;
 
 /**

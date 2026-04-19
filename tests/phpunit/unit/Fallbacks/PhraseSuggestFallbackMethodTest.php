@@ -7,7 +7,7 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummySearchResultSet;
-use HtmlArmor;
+use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * @covers \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod

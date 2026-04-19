@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-use SearchEngine;
+use MediaWiki\Search\SearchEngine;
 
 /**
  * Index field representing datetime field.

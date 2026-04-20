@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\SecondTry\SecondTrySearchFactory;
 use MediaWiki\Config\Config;
 use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Language\Language;
@@ -11,14 +12,21 @@ use MediaWiki\Search\Hook\PrefixSearchExtractNamespaceHook;
 class PrefixSearchExtractNamespace implements PrefixSearchExtractNamespaceHook {
 	private SearchConfig $config;
 	private Language $language;
+	private SecondTrySearchFactory $secondTrySearchFactory;
 
 	/**
 	 * @param Config $mainConfig
 	 * @param ConfigFactory $configFactory
 	 * @param Language $language
+	 * @param SecondTrySearchFactory $secondTrySearchFactory
 	 * @return PrefixSearchExtractNamespaceHook
 	 */
-	public static function create( Config $mainConfig, ConfigFactory $configFactory, Language $language ) {
+	public static function create(
+		Config $mainConfig,
+		ConfigFactory $configFactory,
+		Language $language,
+		SecondTrySearchFactory $secondTrySearchFactory
+	) {
 		if ( $mainConfig->get( MainConfigNames::SearchType ) !== 'CirrusSearch' ) {
 			return new class() implements PrefixSearchExtractNamespaceHook {
 				/**
@@ -30,12 +38,13 @@ class PrefixSearchExtractNamespace implements PrefixSearchExtractNamespaceHook {
 			};
 		}
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType CirrusSearch returns SearchConfig */
-		return new self( $configFactory->makeConfig( 'CirrusSearch' ), $language );
+		return new self( $configFactory->makeConfig( 'CirrusSearch' ), $language, $secondTrySearchFactory );
 	}
 
-	public function __construct( SearchConfig $config, Language $language ) {
+	public function __construct( SearchConfig $config, Language $language, SecondTrySearchFactory $secondTrySearchFactory ) {
 		$this->config = $config;
 		$this->language = $language;
+		$this->secondTrySearchFactory = $secondTrySearchFactory;
 	}
 
 	/**
@@ -48,7 +57,7 @@ class PrefixSearchExtractNamespace implements PrefixSearchExtractNamespaceHook {
 			return false;
 		}
 		$namespaceName = substr( $search, 0, $colon );
-		$ns = Util::identifyNamespace( $namespaceName, $method, $this->language );
+		$ns = Util::identifyNamespace( $namespaceName, $method, $this->language, $this->secondTrySearchFactory );
 		if ( $ns !== false ) {
 			$namespaces = [ $ns ];
 			$search = substr( $search, $colon + 1 );

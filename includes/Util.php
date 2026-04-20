@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\SecondTry\SecondTrySearchFactory;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Exception\MWException;
 use MediaWiki\Language\Language;
@@ -13,7 +14,6 @@ use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
 use MediaWiki\WikiMap\WikiMap;
-use Wikimedia\Assert\Assert;
 use Wikimedia\IPUtils;
 use Wikimedia\Stats\StatsFactory;
 use Wikimedia\UUID\GlobalIdGenerator;
@@ -406,37 +406,43 @@ class Util {
 	 * @param string $namespace name of the namespace to identify
 	 * @param string $method either naive or utr30
 	 * @param Language|null $language
+	 * @param SecondTrySearchFactory|null $factory
 	 * @return bool|int
 	 */
-	public static function identifyNamespace( $namespace, $method = 'naive', ?Language $language = null ) {
-		static $naive = null;
-		static $utr30 = null;
-
-		$normalizer = null;
-		if ( $method === 'naive' ) {
-			$naive ??= \Transliterator::createFromRules(
-				'::NFD;::Upper;::Lower;::[:Nonspacing Mark:] Remove;::NFC;[\_\-\'\u2019\u02BC]>\u0020;'
-			);
-			$normalizer = $naive;
-		} elseif ( $method === 'utr30' ) {
-			$utr30 ??= \Transliterator::createFromRules( file_get_contents( __DIR__ . '/../data/utr30.txt' ) );
-			$normalizer = $utr30;
+	public static function identifyNamespace(
+		$namespace,
+		$method = 'naive',
+		?Language $language = null,
+		?SecondTrySearchFactory $factory = null
+	) {
+		if ( $factory === null ) {
+			$factory = MediaWikiServices::getInstance()->getService( SecondTrySearchFactory::class );
 		}
-
-		Assert::postcondition( $normalizer !== null,
-			'Failed to load Transliterator with method ' . $method );
-		$namespace = $normalizer->transliterate( $namespace );
-		if ( $namespace === '' ) {
-			return false;
+		$normalizer = $factory->build( 'icu_folding', [ 'method' => $method ] );
+		$candidateNamespaces = $normalizer->candidates( $namespace );
+		if ( $candidateNamespaces === [] ) {
+			$candidateNamespaces = [ $namespace ];
 		}
 		$language ??= MediaWikiServices::getInstance()->getContentLanguage();
+		$indexedNs = [];
 		foreach ( $language->getNamespaceIds() as $candidate => $nsId ) {
-			if ( $normalizer->transliterate( $candidate ) === $namespace ) {
-				return $nsId;
+			$normalizedCandidates = $normalizer->candidates( $candidate );
+			if ( $normalizedCandidates === [] ) {
+				$normalizedCandidates = [ $candidate ];
+			}
+			foreach ( $normalizedCandidates as $normalizedCandidate ) {
+				$indexedNs[$normalizedCandidate] = $nsId;
+			}
+		}
+		$foundNs = false;
+		foreach ( $candidateNamespaces as $candidateNamespace ) {
+			$foundNs = $indexedNs[$candidateNamespace] ?? false;
+			if ( $foundNs !== false ) {
+				break;
 			}
 		}
 
-		return false;
+		return $foundNs;
 	}
 
 	/**

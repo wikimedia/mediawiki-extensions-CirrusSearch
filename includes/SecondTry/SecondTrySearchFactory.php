@@ -54,6 +54,10 @@ class SecondTrySearchFactory {
 				}
 				throw new \InvalidArgumentException(
 					"Strategy {$strategy} requires languageConverterFactory initialization" );
+			case 'icu_folding':
+				return $this->getSecondTrySearch( SecondTryICUFolding::getCacheKey( $config ),
+					static fn (): SecondTrySearch => SecondTryICUFolding::build( $config )
+				);
 			default:
 				throw new \InvalidArgumentException( "Unknown search strategy {$strategy}" );
 		}

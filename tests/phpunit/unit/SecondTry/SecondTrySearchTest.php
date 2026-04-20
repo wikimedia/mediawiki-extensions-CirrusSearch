@@ -102,14 +102,18 @@ class SecondTrySearchTest extends CirrusTestCase {
 		yield 'hin_tr unmappable latin 1' => [ 'hindi_transliteration', 'été', [] ];
 		yield 'hin_tr unmappable latin 2' => [ 'hindi_transliteration', 'ʃəzæm', [] ];
 		yield 'hin_tr nothing relevant' => [ 'hindi_transliteration', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', [] ]; // Japanese, Inuktitut
+
+		yield 'icu naive' => [ 'icu_folding', 'Foô', [ 'foo' ] ];
+		yield 'icu naive unchanged' => [ 'icu_folding', 'foo', [], [ 'method' => 'naive' ] ];
+		yield 'icu naive utr30' => [ 'icu_folding', 'Æpyornis', [ 'aepyornis' ], [ 'method' => 'utr30' ] ];
 	}
 
 	/**
 	 * @dataProvider provideTestSecondTry
 	 */
-	public function testSecondTry( string $strategy, string $input, array $expected ): void {
+	public function testSecondTry( string $strategy, string $input, array $expected, array $config = [] ): void {
 		$secondTryFactory = new SecondTrySearchFactory( $this->createMock( LanguageConverterFactory::class ) );
-		$transformer = $secondTryFactory->build( $strategy, [] );
+		$transformer = $secondTryFactory->build( $strategy, $config );
 		$this->assertEquals( $expected, $transformer->candidates( $input ) );
 	}
 
@@ -159,6 +163,9 @@ class SecondTrySearchTest extends CirrusTestCase {
 		yield 'geo_tr' => [ 'georgian_transliteration', SecondTryGeorgianTransliteration::class, [] ];
 		yield 'hin_tr' => [ 'hindi_transliteration', SecondTryHindiTransliteration::class, [] ];
 		yield 'lang_converter' => [ 'language_converter', SecondTryLanguageConverter::class, [] ];
+		yield 'icu_folding' => [ 'icu_folding', SecondTryICUFolding::class, [], [ 'method' => 'utr30' ] ];
+		yield 'icu_folding-naive' => [ 'icu_folding', SecondTryICUFolding::class, [ 'method' => 'naive' ] ];
+		yield 'icu_folding-utr30' => [ 'icu_folding', SecondTryICUFolding::class, [ 'method' => 'utr30' ] ];
 		yield 'invalid' => [ 'foo', null, [] ];
 	}
 

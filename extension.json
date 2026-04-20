@@ -186,7 +186,8 @@
 			"services": [
 				"MainConfig",
 				"ConfigFactory",
-				"ContentLanguage"
+				"ContentLanguage",
+				"CirrusSearch\\SecondTry\\SecondTrySearchFactory"
 			]
 		}
 	},

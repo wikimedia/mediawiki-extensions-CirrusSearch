@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\SecondTry\SecondTrySearchFactory;
 use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Language\Language;
 
@@ -15,7 +16,7 @@ class PrefixSearchExtractNamespaceTest extends CirrusTestCase {
 
 		$configFactory->expects( $this->never() )->method( 'makeConfig' );
 		$language = $this->createMock( Language::class );
-		$hookHandler = PrefixSearchExtractNamespace::create( $config, $configFactory, $language );
+		$hookHandler = PrefixSearchExtractNamespace::create( $config, $configFactory, $language, new SecondTrySearchFactory( null ) );
 		$search = 'foo';
 		$ns = [ 0, 1 ];
 		$this->assertFalse( $hookHandler->onPrefixSearchExtractNamespace( $ns, $search ) );
@@ -54,7 +55,7 @@ class PrefixSearchExtractNamespaceTest extends CirrusTestCase {
 			->method( 'getNamespaceIds' )
 			->willReturn( [ 'foo' => 1, 'Lætitia' => 4 ] );
 
-		$hookHandler = PrefixSearchExtractNamespace::create( $config, $configFactory, $language );
+		$hookHandler = PrefixSearchExtractNamespace::create( $config, $configFactory, $language, new SecondTrySearchFactory( null ) );
 		$hookHandler->onPrefixSearchExtractNamespace( $namespaces, $search );
 		$this->assertArrayEquals( $expectedNamespace, $namespaces );
 		$this->assertEquals( $expectedSearch, $search );

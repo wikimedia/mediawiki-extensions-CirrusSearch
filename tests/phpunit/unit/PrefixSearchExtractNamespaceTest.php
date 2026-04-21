@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use CirrusSearch\SecondTry\SecondTrySearchFactory;
-use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Language\Language;
 
 /**
@@ -12,11 +11,9 @@ use MediaWiki\Language\Language;
 class PrefixSearchExtractNamespaceTest extends CirrusTestCase {
 	public function testFactoryWithCirrusDisabled(): void {
 		$config = new \HashConfig( [ 'SearchType' => 'unrelated' ] );
-		$configFactory = $this->createMock( ConfigFactory::class );
-
-		$configFactory->expects( $this->never() )->method( 'makeConfig' );
 		$language = $this->createMock( Language::class );
-		$hookHandler = PrefixSearchExtractNamespace::create( $config, $configFactory, $language, new SecondTrySearchFactory( null ) );
+		$namespaceMatcher = NamespaceMatcher::create( $language, new SecondTrySearchFactory( null ), $this->newHashSearchConfig( [] ) );
+		$hookHandler = PrefixSearchExtractNamespace::create( $config, $namespaceMatcher );
 		$search = 'foo';
 		$ns = [ 0, 1 ];
 		$this->assertFalse( $hookHandler->onPrefixSearchExtractNamespace( $ns, $search ) );
@@ -46,16 +43,17 @@ class PrefixSearchExtractNamespaceTest extends CirrusTestCase {
 		array $expectedNamespace
 	): void {
 		$config = new \HashConfig( [ 'SearchType' => 'CirrusSearch' ] );
-		$configFactory = $this->createMock( ConfigFactory::class );
-		$configFactory->expects( $this->once() )
-			->method( 'makeConfig' )
-			->willReturn( $this->newHashSearchConfig( [ 'CirrusSearchNamespaceResolutionMethod' => $method ] ) );
+		$searchConfig = $this->newHashSearchConfig( [ 'CirrusSearchNamespaceResolutionMethod' => $method ] );
 		$language = $this->createMock( Language::class );
 		$language->expects( $this->atMost( 1 ) )
 			->method( 'getNamespaceIds' )
 			->willReturn( [ 'foo' => 1, 'Lætitia' => 4 ] );
+		$language->expects( $this->atMost( 1 ) )
+			->method( 'lc' )
+			->willReturnCallback( static fn ( string $text ) => mb_strtolower( $text ) );
 
-		$hookHandler = PrefixSearchExtractNamespace::create( $config, $configFactory, $language, new SecondTrySearchFactory( null ) );
+		$namespaceMatcher = NamespaceMatcher::create( $language, new SecondTrySearchFactory( null ), $searchConfig );
+		$hookHandler = PrefixSearchExtractNamespace::create( $config, $namespaceMatcher );
 		$hookHandler->onPrefixSearchExtractNamespace( $namespaces, $search );
 		$this->assertArrayEquals( $expectedNamespace, $namespaces );
 		$this->assertEquals( $expectedSearch, $search );

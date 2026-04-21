@@ -6,7 +6,6 @@ use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use MediaWiki\Config\Config;
 use MediaWiki\Language\Language;
 use MediaWiki\Language\MessageCache;
-use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\ObjectCache\WANObjectCache;
@@ -151,49 +150,6 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	protected function tearDown(): void {
 		TestingAccessWrapper::newFromClass( Util::class )->defaultBoostTemplates = null;
 		parent::tearDown();
-	}
-
-	/**
-	 * @dataProvider provideTestIdentifyNamespace
-	 * @param string $namespace
-	 * @param int|bool $expected
-	 * @param string $method
-	 */
-	public function testIdentifyNamespace( $namespace, $expected, $method ) {
-		$this->overrideConfigValues( [
-			MainConfigNames::ExtraNamespaces => [
-				100 => 'Maçon',
-				101 => 'Cédille',
-				102 => 'Groß',
-				103 => 'Norræn goðafræði',
-				104 => 'لَحَم', // لحم
-				105 => 'Thảo_luận',
-			],
-			MainConfigNames::NamespaceAliases => [
-				'Mañsoner' => 100,
-			],
-		] );
-		$language = $this->getServiceContainer()->getContentLanguage();
-		$this->assertEquals( $expected, Util::identifyNamespace( $namespace, $method, $language ) );
-	}
-
-	public static function provideTestIdentifyNamespace() {
-		return [
-			'simple' => [ 'macon', 100, 'naive' ],
-			'simple utr30' => [ 'macon', 100, 'utr30' ],
-			'both sides' => [ 'mäcon', 100, 'naive' ],
-			'both sides utr30' => [ 'mäcon', 100, 'utr30' ],
-			'simple alias' => [ 'mansoner', 100, 'naive' ],
-			'simple alias utr30' => [ 'mansoner', 100, 'utr30' ],
-			'no match' => [ 'maçons', false, 'naive' ],
-			'no match utr30' => [ 'maçons', false, 'utr30' ],
-			'arabic' => [ 'لحم', 104, 'naive' ],
-			'arabic utr30' => [ 'لحم', 104, 'utr30' ],
-			'gods are not naive' => [ 'norræn godafræði', false, 'naive' ],
-			'gods are weak with utr30' => [ 'norraen godafraeði', 103, 'utr30' ],
-			'case folding can be gross' => [ 'gross', 102, 'naive' ],
-			'case folding can be gross even with utr30' => [ 'gross', 102, 'utr30' ]
-		];
 	}
 
 	/**

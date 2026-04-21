@@ -185,9 +185,7 @@
 			"factory": "CirrusSearch\\PrefixSearchExtractNamespace::create",
 			"services": [
 				"MainConfig",
-				"ConfigFactory",
-				"ContentLanguage",
-				"CirrusSearch\\SecondTry\\SecondTrySearchFactory"
+				"CirrusSearch\\NamespaceMatcher"
 			]
 		}
 	},
@@ -711,6 +709,9 @@
 		},
 		"CirrusSearchNamespaceResolutionMethod": {
 			"value": "utr30"
+		},
+		"CirrusSearchNamespaceMatcherProfiles": {
+			"value": []
 		},
 		"CirrusSearchWeightedTags": {
 			"description": "Configuration for features using weighted tags.",

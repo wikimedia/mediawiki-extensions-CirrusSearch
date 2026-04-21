@@ -45,6 +45,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			'fallback' => [ SearchProfileService::FALLBACKS, SearchProfileService::CONTEXT_DEFAULT ],
 			'fulltext query builder' => [ SearchProfileService::FT_QUERY_BUILDER, SearchProfileService::CONTEXT_DEFAULT ],
 			'document size limiter' => [ SearchProfileService::DOCUMENT_SIZE_LIMITER, SearchProfileService::CONTEXT_DEFAULT ],
+			'namespace matcher' => [ SearchProfileService::NAMESPACE_MATCHER, SearchProfileService::CONTEXT_DEFAULT ],
 		];
 	}
 
@@ -147,6 +148,14 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			'second try prefix search by uri' => [
 				SearchProfileService::SECOND_TRY, SearchProfileService::CONTEXT_COMPLETION,
 				'uri', 'cirrusUseSecondTryProfile', [ 'unittest' => [] ],
+			],
+			'namespace matcher by config' => [
+				SearchProfileService::NAMESPACE_MATCHER, SearchProfileService::CONTEXT_DEFAULT,
+				'config', 'CirrusSearchNamespaceResolutionMethod', [ 'unittest' => [] ],
+			],
+			'namespace matcher by uri' => [
+				SearchProfileService::NAMESPACE_MATCHER, SearchProfileService::CONTEXT_DEFAULT,
+				'uri', 'cirrusUseNamespaceMatcherProfile', [ 'unittest' => [] ],
 			],
 		];
 	}

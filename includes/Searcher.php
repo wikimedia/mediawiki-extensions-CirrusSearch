@@ -142,6 +142,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 */
 	protected $cirrusSearchHookRunner;
 
+	private NamespaceMatcher $namespaceMatcher;
+
 	/**
 	 * @param Connection $conn
 	 * @param int $offset Offset the results by this much
@@ -155,6 +157,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @param InterwikiResolver|null $interwikiResolver
 	 * @param TitleHelper|null $titleHelper
 	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
+	 * @param NamespaceMatcher|null $namespaceMatcher
 	 * @see CirrusDebugOptions::defaultOptions()
 	 */
 	public function __construct(
@@ -168,7 +171,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		?NamespacePrefixParser $namespacePrefixParser = null,
 		?InterwikiResolver $interwikiResolver = null,
 		?TitleHelper $titleHelper = null,
-		?CirrusSearchHookRunner $cirrusSearchHookRunner = null
+		?CirrusSearchHookRunner $cirrusSearchHookRunner = null,
+		?NamespaceMatcher $namespaceMatcher = null,
 	) {
 		parent::__construct(
 			$conn,
@@ -185,6 +189,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$this->titleHelper = $titleHelper ?? new TitleHelper( WikiMap::getCurrentWikiId(), $this->interwikiResolver );
 		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner ?? new CirrusSearchHookRunner(
 			MediaWikiServices::getInstance()->getHookContainer() );
+		$this->namespaceMatcher = $namespaceMatcher ?? MediaWikiServices::getInstance()->getService( NamespaceMatcher::SERVICE );
 		$this->searchContext = new SearchContext( $this->config, $namespaces, $options, null, null, $this->cirrusSearchHookRunner );
 	}
 
@@ -748,8 +753,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			return;
 		}
 		$namespaceName = substr( $query, 0, $colon );
-		$namespaceId = Util::identifyNamespace( $namespaceName, $this->config->get( 'CirrusSearchNamespaceResolutionMethod' ) );
-		if ( $namespaceId === false ) {
+		$namespaceId = $this->namespaceMatcher->identifyNamespace( $namespaceName );
+		if ( $namespaceId === null ) {
 			return;
 		}
 		$query = substr( $query, $colon + 1 );

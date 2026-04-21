@@ -126,6 +126,12 @@ class SearchProfileService {
 	public const SECOND_TRY = 'second_try';
 
 	/**
+	 * Profile type used to build second try searches.
+	 * @see \CirrusSearch\NamespaceMatcher
+	 */
+	public const NAMESPACE_MATCHER = 'namespace_matcher';
+
+	/**
 	 * Profile context used for prefix search queries
 	 */
 	public const CONTEXT_PREFIXSEARCH = 'prefixsearch';

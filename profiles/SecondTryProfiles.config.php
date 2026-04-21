@@ -49,5 +49,25 @@ return [
 			'language_converter' => 1.0,
 			'hindi_transliteration' => 0.5
 		],
+	],
+	'icu_folding_utr30' => [
+		'strategies' => [
+			'icu_folding' => [
+				'weight' => 1.0,
+				'settings' => [
+					'method' => 'utr30'
+				]
+			]
+		]
+	],
+	'icu_folding_naive' => [
+		'strategies' => [
+			'icu_folding' => [
+				'weight' => 1.0,
+				'settings' => [
+					'method' => 'naive'
+				]
+			]
+		]
 	]
 ];

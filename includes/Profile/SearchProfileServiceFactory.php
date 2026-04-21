@@ -149,6 +149,7 @@ class SearchProfileServiceFactory {
 		$this->loadSimilarityProfiles( $service, $config );
 		$this->loadRescoreProfiles( $service, $config );
 		$this->loadSecondTryProfiles( $service, $config );
+		$this->loadNamespaceMatcherProfile( $service, $config );
 		$this->loadCompletionProfiles( $service, $config );
 		$this->loadPhraseSuggesterProfiles( $service, $config );
 		$this->loadIndexLookupFallbackProfiles( $service, $config );
@@ -254,6 +255,22 @@ class SearchProfileServiceFactory {
 			SearchProfileService::CONTEXT_COMPLETION, $config, 'CirrusSearchCompletionUseSecondTryProfile' );
 		$service->registerUriParamOverride( SearchProfileService::SECOND_TRY,
 			SearchProfileService::CONTEXT_COMPLETION, 'cirrusUseSecondTryProfile' );
+	}
+
+	private function loadNamespaceMatcherProfile( SearchProfileService $service, SearchConfig $config ): void {
+		$service->registerFileRepository( SearchProfileService::NAMESPACE_MATCHER,
+			self::CIRRUS_BASE, __DIR__ . '/../../profiles/NamespaceMatcherProfiles.config.php' );
+		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::NAMESPACE_MATCHER,
+			self::CIRRUS_CONFIG, 'CirrusSearchNamespaceMatcherProfiles', $config ) );
+
+		$service->registerDefaultProfile( SearchProfileService::NAMESPACE_MATCHER,
+			SearchProfileService::CONTEXT_DEFAULT, 'naive' );
+
+		$service->registerConfigOverride( SearchProfileService::NAMESPACE_MATCHER,
+			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchNamespaceResolutionMethod' );
+
+		$service->registerUriParamOverride( SearchProfileService::NAMESPACE_MATCHER,
+			SearchProfileService::CONTEXT_DEFAULT, 'cirrusUseNamespaceMatcherProfile' );
 	}
 
 	private function loadCompletionProfiles( SearchProfileService $service, SearchConfig $config ) {

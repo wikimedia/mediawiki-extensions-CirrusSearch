@@ -11,6 +11,7 @@ use CirrusSearch\EventBusWeightedTagSerializer;
 use CirrusSearch\EventBusWeightedTagsUpdater;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\InterwikiResolverFactory;
+use CirrusSearch\NamespaceMatcher;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Query\DeepcatFeature;
 use CirrusSearch\SearchConfig;
@@ -98,6 +99,15 @@ return [
 	},
 	SecondTrySearchFactory::SERVICE => static function ( MediaWikiServices $services ): SecondTrySearchFactory {
 		return new SecondTrySearchFactory( $services->getLanguageConverterFactory() );
+	},
+	NamespaceMatcher::SERVICE => static function ( MediaWikiServices $services ): NamespaceMatcher {
+		$searchConfig = $services->getConfigFactory()->makeConfig( 'CirrusSearch' );
+		return NamespaceMatcher::create(
+			$services->getContentLanguage(),
+			$services->get( SecondTrySearchFactory::SERVICE ),
+			/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
+			$searchConfig
+		);
 	},
 ];
 

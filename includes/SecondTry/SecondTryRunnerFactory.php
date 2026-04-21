@@ -22,7 +22,16 @@ class SecondTryRunnerFactory {
 	 * @return SecondTryRunner
 	 */
 	public function create( string $context ): SecondTryRunner {
-		$profile = $this->config->getProfileService()->loadProfile( SearchProfileService::SECOND_TRY, $context );
+		return self::buildFromProfile( $this->config->getProfileService()->loadProfile( SearchProfileService::SECOND_TRY, $context ) );
+	}
+
+	/**
+	 * Create the SecondTryRunner configured against the given profile data.
+	 *
+	 * @param array $profile the profile to use
+	 * @return SecondTryRunner
+	 */
+	public function buildFromProfile( array $profile ): SecondTryRunner {
 		$methods = [];
 		$weights = [];
 		foreach ( $profile['strategies'] as $name => $config ) {

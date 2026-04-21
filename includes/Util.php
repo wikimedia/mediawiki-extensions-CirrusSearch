@@ -2,10 +2,8 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\SecondTry\SecondTrySearchFactory;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Exception\MWException;
-use MediaWiki\Language\Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
@@ -395,54 +393,6 @@ class Util {
 		} else {
 			return 'misc';
 		}
-	}
-
-	/**
-	 * Identify a namespace by attempting some unicode folding techniques.
-	 * 2 methods supported:
-	 * - naive: case folding + naive accents removal (only some combined accents are removed)
-	 * - utr30: (slow to load) case folding + strong accent squashing based on the withdrawn UTR30 specs
-	 * all methods will apply something similar to near space flattener.
-	 * @param string $namespace name of the namespace to identify
-	 * @param string $method either naive or utr30
-	 * @param Language|null $language
-	 * @param SecondTrySearchFactory|null $factory
-	 * @return bool|int
-	 */
-	public static function identifyNamespace(
-		$namespace,
-		$method = 'naive',
-		?Language $language = null,
-		?SecondTrySearchFactory $factory = null
-	) {
-		if ( $factory === null ) {
-			$factory = MediaWikiServices::getInstance()->getService( SecondTrySearchFactory::class );
-		}
-		$normalizer = $factory->build( 'icu_folding', [ 'method' => $method ] );
-		$candidateNamespaces = $normalizer->candidates( $namespace );
-		if ( $candidateNamespaces === [] ) {
-			$candidateNamespaces = [ $namespace ];
-		}
-		$language ??= MediaWikiServices::getInstance()->getContentLanguage();
-		$indexedNs = [];
-		foreach ( $language->getNamespaceIds() as $candidate => $nsId ) {
-			$normalizedCandidates = $normalizer->candidates( $candidate );
-			if ( $normalizedCandidates === [] ) {
-				$normalizedCandidates = [ $candidate ];
-			}
-			foreach ( $normalizedCandidates as $normalizedCandidate ) {
-				$indexedNs[$normalizedCandidate] = $nsId;
-			}
-		}
-		$foundNs = false;
-		foreach ( $candidateNamespaces as $candidateNamespace ) {
-			$foundNs = $indexedNs[$candidateNamespace] ?? false;
-			if ( $foundNs !== false ) {
-				break;
-			}
-		}
-
-		return $foundNs;
 	}
 
 	/**

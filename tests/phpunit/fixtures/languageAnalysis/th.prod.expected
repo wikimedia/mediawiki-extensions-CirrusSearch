@@ -433,7 +433,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\\u0E47-\\u0E4E]"
+            "unicode_set_filter": "[^\\u0E47-\\u0E4E]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

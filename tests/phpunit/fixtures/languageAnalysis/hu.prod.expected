@@ -398,7 +398,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00c1\u00e1\u00c9\u00e9\u00cd\u00ed\u00d3\u00f3\u00d6\u00f6\u0150\u0151\u00da\u00fa\u00dc\u00fc\u0170\u0171]"
+            "unicode_set_filter": "[^\u00c1\u00e1\u00c9\u00e9\u00cd\u00ed\u00d3\u00f3\u00d6\u00f6\u0150\u0151\u00da\u00fa\u00dc\u00fc\u0170\u0171]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

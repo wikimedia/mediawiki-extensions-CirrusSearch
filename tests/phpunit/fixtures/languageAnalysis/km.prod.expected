@@ -405,7 +405,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u1780-\u17dd]"
+            "unicode_set_filter": "[^\u1780-\u17dd]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

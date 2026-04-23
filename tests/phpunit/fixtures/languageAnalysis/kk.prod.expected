@@ -417,7 +417,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u0492\u0493\u0401\u0451\u0419\u0439\u049a\u049b\u04a2\u04a3\u04b0\u04b1\u00c4\u00e4\u011e\u011fI\u0131\u0130i\u00d1\u00f1\u00d6\u00f6\u015e\u015f\u016a\u016b\u00dc\u00fc]"
+            "unicode_set_filter": "[^\u0492\u0493\u0401\u0451\u0419\u0439\u049a\u049b\u04a2\u04a3\u04b0\u04b1\u00c4\u00e4\u011e\u011fI\u0131\u0130i\u00d1\u00f1\u00d6\u00f6\u015e\u015f\u016a\u016b\u00dc\u00fc]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

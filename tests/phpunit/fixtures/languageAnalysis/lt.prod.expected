@@ -390,7 +390,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u0104\u0105\u010c\u010d\u0118\u0119\u0116\u0117\u012e\u012f\u0160\u0161\u0172\u0173\u016a\u016b\u017d\u017e]"
+            "unicode_set_filter": "[^\u0104\u0105\u010c\u010d\u0118\u0119\u0116\u0117\u012e\u012f\u0160\u0161\u0172\u0173\u016a\u016b\u017d\u017e]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

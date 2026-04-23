@@ -1388,20 +1388,20 @@
         },
         "de_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00c4\u00e4\u00d6\u00f6\u00dc\u00fc\u1e9e\u00df]"
+            "unicode_set_filter": "[^\u00c4\u00e4\u00d6\u00f6\u00dc\u00fc\u1e9e\u00df]"
         },
         "de_icu_normalizer": {
             "name": "nfkc_cf",
             "type": "icu_normalizer",
-            "unicodeSetFilter": "[^\u1e9e\u00df]"
+            "unicode_set_filter": "[^\u1e9e\u00df]"
         },
         "eo_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u0108\u0109\u011c\u011d\u0124\u0125\u0134\u0135\u015c\u015d\u016c\u016d]"
+            "unicode_set_filter": "[^\u0108\u0109\u011c\u011d\u0124\u0125\u0134\u0135\u015c\u015d\u016c\u016d]"
         },
         "es_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00d1\u00f1]"
+            "unicode_set_filter": "[^\u00d1\u00f1]"
         },
         "german_stemmer": {
             "language": "light_german",
@@ -1420,7 +1420,7 @@
         },
         "km_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u1780-\u17dd]"
+            "unicode_set_filter": "[^\u1780-\u17dd]"
         },
         "lowercase": {
             "language": "turkish",
@@ -1454,7 +1454,7 @@
         },
         "pl_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u0104\u0105\u0106\u0107\u0118\u0119\u0141\u0142\u0143\u0144\u00d3\u00f3\u015a\u015b\u0179\u017a\u017b\u017c]"
+            "unicode_set_filter": "[^\u0104\u0105\u0106\u0107\u0118\u0119\u0141\u0142\u0143\u0144\u00d3\u00f3\u015a\u015b\u0179\u017a\u017b\u017c]"
         },
         "polish_stop": {
             "stopwords": [
@@ -1654,7 +1654,7 @@
         },
         "ru_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u0419\u0439]"
+            "unicode_set_filter": "[^\u0419\u0439]"
         },
         "russian_stemmer": {
             "language": "russian",
@@ -1680,7 +1680,7 @@
         },
         "sr_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u0110\u0111\u017d\u017e\u0106\u0107\u0160\u0161\u010c\u010d]"
+            "unicode_set_filter": "[^\u0110\u0111\u017d\u017e\u0106\u0107\u0160\u0161\u010c\u010d]"
         },
         "stempel_pattern_filter": {
             "pattern": "^([a-z\u0105\u0142]?[a-z\u0107\u0144]|..\u0107|\\d.*\u0107)$",
@@ -1702,7 +1702,7 @@
         },
         "tr_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00c7\u00e7\u011e\u011fI\u0131\u0130i\u00d6\u00f6\u015e\u015f\u00dc\u00fc]"
+            "unicode_set_filter": "[^\u00c7\u00e7\u011e\u011fI\u0131\u0130i\u00d6\u00f6\u015e\u015f\u00dc\u00fc]"
         },
         "turkish_stemmer": {
             "language": "turkish",

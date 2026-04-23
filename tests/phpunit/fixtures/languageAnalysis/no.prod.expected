@@ -390,7 +390,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00c6\u00e6\u00d8\u00f8\u00c5\u00e5]"
+            "unicode_set_filter": "[^\u00c6\u00e6\u00d8\u00f8\u00c5\u00e5]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

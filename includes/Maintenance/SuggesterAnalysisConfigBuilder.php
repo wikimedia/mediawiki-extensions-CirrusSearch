@@ -34,7 +34,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 			$folding_type = [ 'type' => 'icu_folding' ];
 			$unicodeSetFilter = $this->getICUSetFilter( $language );
 			if ( $unicodeSetFilter !== null ) {
-				$folding_type['unicodeSetFilter'] = $unicodeSetFilter;
+				$folding_type['unicode_set_filter'] = $unicodeSetFilter;
 			}
 		}
 		$textTokenizer = 'standard';

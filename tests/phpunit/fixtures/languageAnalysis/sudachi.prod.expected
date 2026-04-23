@@ -702,7 +702,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u304c-\u30fe]"
+            "unicode_set_filter": "[^\u304c-\u30fe]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

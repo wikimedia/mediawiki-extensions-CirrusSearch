@@ -401,7 +401,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u0d4d\u0d3f\u0d41\u0d43\u0d62\u0d46\u0d4a\u0d3e\u0d40\u0d42\u0d44\u0d63\u0d47\u0d4b\u0d48]"
+            "unicode_set_filter": "[^\u0d4d\u0d3f\u0d41\u0d43\u0d62\u0d46\u0d4a\u0d3e\u0d40\u0d42\u0d44\u0d63\u0d47\u0d4b\u0d48]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

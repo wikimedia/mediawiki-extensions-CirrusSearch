@@ -1372,7 +1372,7 @@
     "filter": {
         "bg_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u0419\u0439]"
+            "unicode_set_filter": "[^\u0419\u0439]"
         },
         "bulgarian_stemmer": {
             "language": "bulgarian",
@@ -1400,12 +1400,12 @@
         },
         "de_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00c4\u00e4\u00d6\u00f6\u00dc\u00fc\u1e9e\u00df]"
+            "unicode_set_filter": "[^\u00c4\u00e4\u00d6\u00f6\u00dc\u00fc\u1e9e\u00df]"
         },
         "de_icu_normalizer": {
             "name": "nfkc_cf",
             "type": "icu_normalizer",
-            "unicodeSetFilter": "[^\u1e9e\u00df]"
+            "unicode_set_filter": "[^\u1e9e\u00df]"
         },
         "french_elision": {
             "articles": [
@@ -1451,7 +1451,7 @@
         },
         "ja_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u304c-\u30fe]"
+            "unicode_set_filter": "[^\u304c-\u30fe]"
         },
         "possessive_english": {
             "language": "possessive_english",
@@ -1469,7 +1469,7 @@
         },
         "sv_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00c5\u00e5\u00c4\u00e4\u00d6\u00f6]"
+            "unicode_set_filter": "[^\u00c5\u00e5\u00c4\u00e4\u00d6\u00f6]"
         },
         "swedish_stemmer": {
             "language": "swedish",
@@ -1481,7 +1481,7 @@
         },
         "th_icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\\u0E47-\\u0E4E]"
+            "unicode_set_filter": "[^\\u0E47-\\u0E4E]"
         },
         "thai_stop": {
             "stopwords": "_thai_",

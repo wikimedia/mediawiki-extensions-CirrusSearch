@@ -286,7 +286,7 @@ class AnalysisConfigBuilder {
 			'type' => 'icu_folding',
 		];
 		if ( $unicodeSetFilter !== null ) {
-			$filter[ 'unicodeSetFilter' ] = $unicodeSetFilter;
+			$filter[ 'unicode_set_filter' ] = $unicodeSetFilter;
 		}
 		$config[ 'filter' ][ 'icu_folding' ] = $filter;
 
@@ -829,7 +829,7 @@ class AnalysisConfigBuilder {
 			];
 			$unicodeSetFilter = $this->getICUNormSetFilter( $language );
 			if ( $unicodeSetFilter !== null ) {
-				$defaults[ 'filter' ][ 'icu_normalizer' ][ 'unicodeSetFilter' ] = $unicodeSetFilter;
+				$defaults[ 'filter' ][ 'icu_normalizer' ][ 'unicode_set_filter' ] = $unicodeSetFilter;
 			}
 			$defaults[ 'char_filter' ][ 'icu_normalizer' ] = $defaults[ 'filter' ][ 'icu_normalizer' ];
 		}

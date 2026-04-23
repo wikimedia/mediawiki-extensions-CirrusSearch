@@ -390,7 +390,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00c7\u00e7]"
+            "unicode_set_filter": "[^\u00c7\u00e7]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

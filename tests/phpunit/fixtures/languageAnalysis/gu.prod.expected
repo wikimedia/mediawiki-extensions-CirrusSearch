@@ -388,7 +388,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u0acd]"
+            "unicode_set_filter": "[^\u0acd]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

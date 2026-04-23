@@ -314,7 +314,7 @@
         "icu_normalizer": {
             "type": "icu_normalizer",
             "name": "nfkc_cf",
-            "unicodeSetFilter": "[^\u1e9e\u00df]"
+            "unicode_set_filter": "[^\u1e9e\u00df]"
         },
         "near_space_flattener": {
             "type": "limited_mapping",
@@ -392,7 +392,7 @@
         "icu_normalizer": {
             "type": "icu_normalizer",
             "name": "nfkc_cf",
-            "unicodeSetFilter": "[^\u1e9e\u00df]"
+            "unicode_set_filter": "[^\u1e9e\u00df]"
         },
         "lowercase": {
             "type": "lowercase"

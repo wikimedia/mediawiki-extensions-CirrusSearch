@@ -393,7 +393,7 @@
         },
         "icu_folding": {
             "type": "icu_folding",
-            "unicodeSetFilter": "[^\u00c7\u00e7\u018f\u0259\u011e\u011fI\u0131\u0130i\u00d6\u00f6\u015e\u015f\u00dc\u00fc]"
+            "unicode_set_filter": "[^\u00c7\u00e7\u018f\u0259\u011e\u011fI\u0131\u0130i\u00d6\u00f6\u015e\u015f\u00dc\u00fc]"
         },
         "icu_nfkc_normalization": {
             "type": "icu_normalizer",

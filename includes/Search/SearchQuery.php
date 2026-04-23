@@ -354,14 +354,26 @@ class SearchQuery {
 	}
 
 	/**
+	 * Identify if this query targets the default set of namespaces
+	 * @return bool true if the target namespaces are equals to the default searched namespaces
+	 */
+	public function isTargetingDefaultSearchedNamespaces(): bool {
+		return $this->matchDefaultNamespaces( $this->getNamespaces() );
+	}
+
+	/**
 	 * Identify if this query initially targets the default set of namespaces
 	 * @return bool true if the initial namespaces are equals to the default searched namespaces
 	 */
 	public function isUsingDefaultSearchedNamespaces(): bool {
+		return $this->matchDefaultNamespaces( $this->initialNamespaces );
+	}
+
+	private function matchDefaultNamespaces( array $namespaces ): bool {
 		$defaultSearchedNamespaces = $this->getSearchConfig()->get( MainConfigNames::NamespacesToBeSearchedDefault );
 		if ( is_array( $defaultSearchedNamespaces ) ) {
 			$defaultSearchedNamespaces = array_map( static fn ( $n ) => intval( $n ), array_keys( $defaultSearchedNamespaces, true ) );
-			return $this->initialNamespaces == $defaultSearchedNamespaces;
+			return $namespaces == $defaultSearchedNamespaces;
 		}
 		return false;
 	}

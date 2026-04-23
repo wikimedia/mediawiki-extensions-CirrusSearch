@@ -22,6 +22,7 @@ use Elastica\ResultSet;
 use Elastica\ResultSet\DefaultBuilder;
 use Elastica\Search;
 use LogicException;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Search\ISearchResultSet;
 use MediaWiki\Status\Status;
 use PHPUnit\Framework\Assert;
@@ -512,5 +513,48 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 				return FallbackStatus::replaceLocalResults( $this->rewritten, 'phpunit rewritten' );
 			}
 		};
+	}
+
+	public function provideDefaultNsFilter(): \Generator {
+		yield 'default ns used not: a noop' => [ [ 0, 10 ], 'foo', false ];
+		yield 'non-default ns used: a noop' => [ [ 0 ], 'foo', true ];
+		yield 'default ns used but ns prefix: a noop' => [ [ 0 ], 'category:foo', true ];
+	}
+
+	/**
+	 * @dataProvider provideDefaultNsFilter
+	 */
+	public function testDefaultNsFilter( array $initialNamespaces, string $search, bool $expectNoop ): void {
+		$config = $this->newHashSearchConfig( [
+			MainConfigNames::NamespacesToBeSearchedDefault => [
+				0 => true,
+				10 => true
+			],
+			'CirrusSearchFallbackProfile' => 'my_test_profile',
+			'CirrusSearchEnablePhraseSuggest' => true,
+			'CirrusSearchFallbackProfiles' => [
+				'my_test_profile' => [
+					'methods' => [
+						'one' => [
+							'default_ns_only' => true,
+							'class' => \CirrusSearch\Fallbacks\PhraseSuggestFallbackMethod::class,
+							'params' => [
+								'profile' => 'default'
+							]
+						]
+					]
+				]
+			],
+		] );
+		$query = $this->getNewFTSearchQueryBuilder( $config, $search )
+			->setInitialNamespaces( $initialNamespaces )
+			->setWithDYMSuggestion( true )
+			->build();
+		$runner = FallbackRunner::create( $query, $this->getInterWikiResolver( $config ) );
+		if ( $expectNoop ) {
+			$this->assertSame( FallbackRunner::noopRunner(), $runner );
+		} else {
+			$this->assertNotSame( FallbackRunner::noopRunner(), $runner );
+		}
 	}
 }

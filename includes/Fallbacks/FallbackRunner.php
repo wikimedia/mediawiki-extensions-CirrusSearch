@@ -99,12 +99,22 @@ class FallbackRunner implements SearchMetricsProvider {
 			if ( !is_subclass_of( $clazz, FallbackMethod::class ) ) {
 				throw new SearchProfileException( "Invalid FallbackMethod: $clazz must implement " . FallbackMethod::class );
 			}
+			if ( !self::acceptQuery( $methodDef, $query ) ) {
+				continue;
+			}
 			$method = $clazz::build( $query, $params, $interwikiResolver );
 			if ( $method !== null ) {
 				$fallbackMethods[$name] = $method;
 			}
 		}
-		return new self( $fallbackMethods );
+		return $fallbackMethods === [] ? self::noopRunner() : new self( $fallbackMethods );
+	}
+
+	private static function acceptQuery( array $methodDef, SearchQuery $query ): bool {
+		if ( $methodDef['default_ns_only'] ?? false ) {
+			return $query->isTargetingDefaultSearchedNamespaces();
+		}
+		return true;
 	}
 
 	/**

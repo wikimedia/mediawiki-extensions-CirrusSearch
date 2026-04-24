@@ -208,6 +208,14 @@ class IndexLookupFallbackMethodTest extends FallbackMethodTestBase {
 			->setOffset( 10 )
 			->build();
 		$this->assertNull( IndexLookupFallbackMethod::build( $query, $params ) );
+
+		$query = $this->getNewFTSearchQueryBuilder(
+			$this->newHashSearchConfig( $config ),
+			'intitle:foo'
+		)
+			->setWithDYMSuggestion( true )
+			->build();
+		$this->assertNull( IndexLookupFallbackMethod::build( $query, $params ) );
 	}
 
 	public static function provideInvalidProfileParams() {

@@ -4,6 +4,7 @@ namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\Parser\AST\Visitor\QueryFixer;
+use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Profile\ArrayPathSetter;
 use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Profile\SearchProfileService;
@@ -175,6 +176,11 @@ class IndexLookupFallbackMethod implements FallbackMethod, ElasticSearchRequestF
 		}
 		// TODO: Should this be tested at an upper level?
 		if ( $query->getOffset() !== 0 ) {
+			return null;
+		}
+		if ( !$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ) ) {
+			// This method does not highlight the problem and thus is not able to use QueryFixer to fix parts of the query.
+			// Ignore complex queries to avoid destructing them.
 			return null;
 		}
 		if ( !isset( $params['profile'] ) ) {

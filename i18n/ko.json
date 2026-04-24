@@ -62,7 +62,7 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "'$1' 검색 단어는 여러개의 인수 및 '$2' 부호 지정을 허용하지 않습니다.",
 	"cirrussearch-feature-not-available": "'$1' 검색 키워드는 이 위키에서 사용하고 있지 않습니다.",
 	"cirrussearch-feature-too-many-conditions": "'$1'에 지정한 조건이 너무 많습니다. $2으(로) 줄입니다.",
-	"cirrussearch-feature-deepcat-endpoint": "심층 분류 검색을 사용하기 위해서는 $wgCirrusSearchCategoryEndpoint가 유효한 SPARQL 엔드포인트로 설정되어야 합니다.",
+	"cirrussearch-feature-deepcat-endpoint": "심층 분류 검색을 사용하기 위해서는 $wgCirrusSearchCategoryEndpoint가 유효한 SPARQL 종단점으로 설정되어야 합니다.",
 	"cirrussearch-feature-deepcat-exception": "심층 분류 검색 SPARQL 쿼리가 실패했습니다",
 	"cirrussearch-feature-deepcat-timeout": "심층 분류 검색 시간이 초과되었습니다. 해당 분류가 가진 하위 분류의 수가 너무 많을 가능성이 높습니다",
 	"cirrussearch-feature-deepcat-toomany": "심층 분류 쿼리가 너무 많은 분류를 반환했습니다. 분류의 하위 집합만 적용되었습니다.",

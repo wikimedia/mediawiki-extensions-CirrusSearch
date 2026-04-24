@@ -9,7 +9,7 @@ use MediaWiki\Language\Language;
  * @covers \CirrusSearch\NamespaceMatcher
  */
 class NamespaceMatcherTest extends CirrusTestCase {
-	public function provideCustomProfile(): \Generator {
+	public static function provideCustomProfile(): \Generator {
 		yield 'no profiles' => [
 			[
 				'CirrusSearchNamespaceResolutionMethod' => 'naive',

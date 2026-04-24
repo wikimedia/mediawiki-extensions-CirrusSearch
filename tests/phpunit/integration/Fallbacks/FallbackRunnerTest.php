@@ -515,7 +515,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 		};
 	}
 
-	public function provideDefaultNsFilter(): \Generator {
+	public static function provideDefaultNsFilter(): \Generator {
 		yield 'default ns used not: a noop' => [ [ 0, 10 ], 'foo', false ];
 		yield 'non-default ns used: a noop' => [ [ 0 ], 'foo', true ];
 		yield 'default ns used but ns prefix: a noop' => [ [ 0 ], 'category:foo', true ];

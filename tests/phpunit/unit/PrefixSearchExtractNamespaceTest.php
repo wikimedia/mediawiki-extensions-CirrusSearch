@@ -21,7 +21,7 @@ class PrefixSearchExtractNamespaceTest extends CirrusTestCase {
 		$this->assertEquals( 'foo', $search );
 	}
 
-	public function provideTestExtraction(): \Generator {
+	public static function provideTestExtraction(): \Generator {
 		yield 'simple with utr30' => [ 'utr30', 'foô:my search', [ 2, 3 ], 'my search', [ 1 ] ];
 		yield 'simple with naive' => [ 'naive', 'foô:my search', [ 2, 3 ], 'my search', [ 1 ] ];
 		yield 'extracted with utr30' => [ 'utr30', 'laetitia:my search', [ 2, 3 ], 'my search', [ 4 ] ];

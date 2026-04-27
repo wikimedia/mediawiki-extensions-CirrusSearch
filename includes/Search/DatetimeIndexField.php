@@ -16,7 +16,7 @@ class DatetimeIndexField extends CirrusIndexField {
 	/** @inheritDoc */
 	public function getMapping( SearchEngine $engine ) {
 		$config = parent::getMapping( $engine );
-		$config['format'] = 'dateOptionalTime';
+		$config['format'] = 'date_optional_time';
 		return $config;
 	}
 }

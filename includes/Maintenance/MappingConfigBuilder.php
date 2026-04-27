@@ -183,11 +183,11 @@ class MappingConfigBuilder {
 			'properties' => [
 				'timestamp' => [
 					'type' => 'date',
-					'format' => 'dateOptionalTime',
+					'format' => 'date_optional_time',
 				],
 				'create_timestamp' => [
 					'type' => 'date',
-					'format' => 'dateOptionalTime',
+					'format' => 'date_optional_time',
 				],
 				'page_id' => [
 					'type' => 'long',

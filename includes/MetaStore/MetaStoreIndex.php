@@ -1,5 +1,4 @@
 <?php
-
 namespace CirrusSearch\MetaStore;
 
 use CirrusSearch\Connection;
@@ -90,19 +89,11 @@ class MetaStoreIndex {
 	}
 
 	/**
-	 * @return MetaSaneitizeJobStore
-	 */
-	public function saneitizeJobStore() {
-		return new MetaSaneitizeJobStore( $this->elasticaIndex() );
-	}
-
-	/**
 	 * @return MetaStore[]
 	 */
 	public function stores() {
 		return [
 			'version' => $this->versionStore(),
-			'saneitize' => $this->saneitizeJobStore(),
 		];
 	}
 

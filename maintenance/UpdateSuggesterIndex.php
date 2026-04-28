@@ -317,15 +317,12 @@ class UpdateSuggesterIndex extends Maintenance {
 			$builder,
 			$this,
 			$utils,
-			$this->getMetaStore( $connection )->versionStore(),
 			$analysisConfigBuilder,
 			$indexerConfig
 		);
 	}
 
 	protected function requireCirrusReady() {
-		parent::requireCirrusReady();
-
 		foreach ( $this->getSourceIndexes() as $suffix => $index ) {
 			if ( !$index->exists() ) {
 				throw new RuntimeException( "Missing source index: {$index->getName()}" );
@@ -373,7 +370,6 @@ class UpdateSuggesterIndex extends Maintenance {
 		);
 		$altIndices = AlternativeIndices::build( $this->getSearchConfig() )->getAlternativeIndices( AlternativeIndices::COMPLETION );
 		$mainAliasName = $this->getConnection()->getIndexName( $this->indexBaseName, self::SUFFIX );
-		$versionStore = $this->getMetaStore( $this->getConnection() )->versionStore();
 		foreach ( $indices as $indexName ) {
 			// $indexName is the full index name mywiki_titlesuggest_alt_ID_TIMESTAMP
 			if ( !str_starts_with( $indexName, "{$this->indexBaseName}_titlesuggest_alt_" ) ) {
@@ -386,13 +382,6 @@ class UpdateSuggesterIndex extends Maintenance {
 			);
 			if ( $legitimate === [] ) {
 				$this->log( "Deleting stale alternative index $indexName\n" );
-				$matches = [];
-				$regex = "/^" . preg_quote( $mainAliasName, '/' ) . "_" . preg_quote( Connection::ALT_SUFFIX, '/' ) . "_(\d+)_(\d+)$/";
-				$ret = preg_match( $regex, $indexName, $matches );
-				if ( $ret ) {
-					$altId = (int)( $matches[0][2] );
-					$versionStore->delete( $this->indexBaseName, self::SUFFIX, true, $altId );
-				}
 				$this->deleteIndex( $this->getConnection()->getIndex( $indexName ) );
 			}
 		}
@@ -437,28 +426,6 @@ class UpdateSuggesterIndex extends Maintenance {
 		// We check only the number of shards since it cannot be updated.
 		if ( $shards != $connection->getSettings()->getShardCount( self::SUFFIX ) ) {
 			$this->error( "{$oldIndex->getName()} number of shards mismatch cannot recycle." );
-			return false;
-		}
-
-		$mMaj = explode( '.', SuggesterMappingConfigBuilder::VERSION, 2 )[0];
-		$aMaj = explode( '.', SuggesterAnalysisConfigBuilder::VERSION, 2 )[0];
-
-		try {
-			$versionDoc = $this->getMetaStore( $connection )
-				->versionStore()
-				->find( $this->indexBaseName, self::SUFFIX, $altIndex, $altIndexId );
-		} catch ( \Elastica\Exception\NotFoundException ) {
-			$this->error( "Index $indexAliasName missing in mw_cirrus_metastore::version, cannot recycle." );
-			return false;
-		}
-
-		if ( $versionDoc->analysis_maj != $aMaj ) {
-			$this->error( 'Analysis config version mismatch, cannot recycle.' );
-			return false;
-		}
-
-		if ( $versionDoc->mapping_maj != $mMaj ) {
-			$this->error( 'Mapping config version mismatch, cannot recycle.' );
 			return false;
 		}
 

@@ -275,8 +275,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			// reindex into the new index if necessary, promote the new index,
 			// and delete the old index.
 			$this->validateAlias();
-			// Flag the index version information in metadata
-			$this->updateVersions();
 		} catch ( \Elastica\Exception\Connection\HttpException $e ) {
 			$message = $e->getMessage();
 			$this->output( "\nUnexpected Elasticsearch failure.\n" );
@@ -295,27 +293,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 
 		return true;
-	}
-
-	/**
-	 * @suppress PhanUndeclaredMethod createChild technically returns a
-	 *  \Maintenance instance but only \CirrusSearch\Maintenance\Maintenance
-	 *  classes have the done method. Just allow it since we know what type of
-	 *  maint class is being created
-	 */
-	private function updateVersions() {
-		$child = $this->createChild( Metastore::class );
-		$child->done();
-		$child->loadParamsAndArgs(
-			null,
-			array_merge( $this->parameters->getOptions(), [
-				'index-version-basename' => $this->indexBaseName,
-				'update-index-version' => true,
-			] ),
-			$this->parameters->getArgs()
-		);
-		$child->execute();
-		$child->done();
 	}
 
 	private function validateIndex() {

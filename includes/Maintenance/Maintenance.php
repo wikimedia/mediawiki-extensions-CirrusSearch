@@ -3,7 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
-use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\UserTestingEngine;
 use Elastica\Index;
@@ -118,15 +117,11 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 			if ( !$this->searchConfig instanceof SearchConfig ) {
 				// We shouldn't ever get here ... but the makeConfig type signature returns the parent
 				// class of SearchConfig so just being extra careful...
-				throw new \RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' .
+				throw new RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' .
 					get_class( $this->searchConfig ) );
 			}
 		}
 		return $this->searchConfig;
-	}
-
-	public function getMetaStore( ?Connection $conn = null ): MetaStoreIndex {
-		return new MetaStoreIndex( $conn ?? $this->getConnection(), $this, $this->getSearchConfig() );
 	}
 
 	/**
@@ -212,29 +207,6 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 		// Don't skew the dashboards by logging these requests to
 		// the global request log.
 		$wgCirrusSearchLogElasticRequests = false;
-	}
-
-	/**
-	 * Create metastore only if the alias does not already exist
-	 * @return MetaStoreIndex
-	 */
-	protected function maybeCreateMetastore() {
-		$metastore = new MetaStoreIndex(
-			$this->getConnection(),
-			$this,
-			$this->getSearchConfig() );
-		$status = $metastore->createIfNecessary();
-		$this->unwrap( $status );
-		return $metastore;
-	}
-
-	protected function requireCirrusReady() {
-		// If the version does not exist it's certainly because nothing has been indexed.
-		if ( !$this->getMetaStore()->cirrusReady() ) {
-			throw new RuntimeException(
-				"Cirrus meta store does not exist, you must index your data first"
-			);
-		}
 	}
 
 	/**

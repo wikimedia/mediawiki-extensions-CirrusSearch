@@ -15,17 +15,6 @@ use MediaWiki\MediaWikiServices;
  */
 class AnalysisConfigBuilder {
 	/**
-	 * Version number for the core analysis. Increment the major
-	 * version when the analysis changes in an incompatible way,
-	 * and change the minor version when it changes but isn't
-	 * incompatible.
-	 *
-	 * You may also need to increment MetaStoreIndex::METASTORE_VERSION
-	 * manually as well.
-	 */
-	public const VERSION = '0.12';
-
-	/**
 	 * Maximum number of characters allowed in keyword terms.
 	 */
 	public const KEYWORD_IGNORE_ABOVE = 5000;

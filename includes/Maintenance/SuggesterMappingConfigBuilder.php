@@ -11,14 +11,6 @@ use MediaWiki\MediaWikiServices;
  * @license GPL-2.0-or-later
  */
 class SuggesterMappingConfigBuilder {
-	/**
-	 * Version number for the core analysis. Increment the major
-	 * version when the analysis changes in an incompatible way,
-	 * and change the minor version when it changes but isn't
-	 * incompatible
-	 */
-	public const VERSION = '3.0';
-
 	/** @var SearchConfig */
 	private $config;
 

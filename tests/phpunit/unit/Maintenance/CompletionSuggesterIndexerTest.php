@@ -5,7 +5,6 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Connection;
-use CirrusSearch\MetaStore\MetaVersionStore;
 use Elastica\Client;
 use Elastica\Document;
 use Elastica\Exception\ResponseException;
@@ -36,10 +35,6 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 	 */
 	private $connection;
 	private ConfigUtils $utils;
-	/**
-	 * @var MetaVersionStore|\PHPUnit\Framework\MockObject\MockObject
-	 */
-	private $versionStore;
 	/**
 	 * @var SuggesterAnalysisConfigBuilder|\PHPUnit\Framework\MockObject\MockObject
 	 */
@@ -133,7 +128,6 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 		$this->connection->method( 'getClient' )->willReturn( $this->client );
 		$this->printer = $this->createMock( Printer::class );
 		$this->utils = new ConfigUtils( $this->client, $this->printer );
-		$this->versionStore = $this->createMock( MetaVersionStore::class );
 		$this->analysisConfigBuilder = $this->createMock( SuggesterAnalysisConfigBuilder::class );
 		$this->analysisConfigBuilder->method( 'buildConfig' )->willReturn( self::FAKE_ANALYSIS_CONFIG );
 		$this->builder = $this->createMock( SuggestBuilder::class );
@@ -142,7 +136,6 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 	}
 
 	public function testPrepareRecycle(): void {
-		$this->versionStore->expects( $this->never() )->method( $this->anything() );
 		$this->client->expects( $this->never() )->method( 'request' );
 		$config = $this->indexerConfig( true, 1, false, false, 0 );
 		$indexer = new CompletionSuggesterIndexer(
@@ -152,7 +145,6 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 			$this->builder,
 			$this->printer,
 			$this->utils,
-			$this->versionStore,
 			$this->analysisConfigBuilder,
 			$config
 		);
@@ -173,12 +165,10 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 			$this->builder,
 			$this->printer,
 			$this->utils,
-			$this->versionStore,
 			$this->analysisConfigBuilder,
 			$config
 		);
 
-		$this->versionStore->expects( $this->never() )->method( $this->anything() );
 		$this->client
 			->method( 'request' )
 			->willReturnCallback(
@@ -233,11 +223,9 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 			$this->builder,
 			$this->printer,
 			$this->utils,
-			$this->versionStore,
 			$this->analysisConfigBuilder,
 			$config
 		);
-		$this->versionStore->expects( $this->never() )->method( $this->anything() );
 		$this->client
 			->expects( $this->atLeast( 10 ) )
 			->method( 'request' )
@@ -347,7 +335,6 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 			$this->builder,
 			$this->printer,
 			$this->utils,
-			$this->versionStore,
 			$this->analysisConfigBuilder,
 			$config
 		);
@@ -438,7 +425,7 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 								]
 							], $body );
 							$this->assertEquals( [ 'master_timeout' => self::MASTER_TIMEOUT ], $param );
-							$state = "update_version_index";
+							$state = "check_old_index_existence_before_deletion";
 							return new Response( [
 								$oldIndexName => []
 							], 200 );
@@ -459,16 +446,6 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 					}
 				}
 			);
-		$this->versionStore->expects( $this->once() )->method( 'update' )->willReturnCallback(
-			function ( string $baseName, string $typeName, bool $altIndex = false, int $altIndexId = 0 ) use ( &$state, $config ) {
-				$this->assertEquals( "update_version_index", $state );
-				$this->assertEquals( self::BASE_NAME, $baseName );
-				$this->assertEquals( Connection::TITLE_SUGGEST_INDEX_SUFFIX, $typeName );
-				$this->assertEquals( $config->isAltIndex(), $altIndex );
-				$this->assertEquals( $config->getAltIndexId(), $altIndexId );
-				$state = "check_old_index_existence_before_deletion";
-			}
-		);
 		$indexer->finish();
 	}
 
@@ -492,7 +469,6 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 			$this->builder,
 			$this->printer,
 			$this->utils,
-			$this->versionStore,
 			$this->analysisConfigBuilder,
 			$indexerConfig
 		);

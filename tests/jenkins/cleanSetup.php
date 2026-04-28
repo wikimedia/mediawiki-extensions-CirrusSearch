@@ -20,9 +20,6 @@ require_once __DIR__ . "/../../includes/Maintenance/Maintenance.php";
 
 class CleanSetup extends Maintenance {
 	public function execute() {
-		$child = $this->createChild( \CirrusSearch\Maintenance\Metastore::class );
-		$child->loadParamsAndArgs( null, [ 'upgrade' => true ] );
-		$child->execute();
 		$child = $this->createChild( \CirrusSearch\Maintenance\UpdateSearchIndexConfig::class );
 		$child->loadParamsAndArgs( null, [ 'startOver' => true ] );
 		$child->execute();

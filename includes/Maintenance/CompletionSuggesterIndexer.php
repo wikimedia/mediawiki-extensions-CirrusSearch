@@ -5,7 +5,6 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\Connection;
 use CirrusSearch\Elastica\SearchAfter;
-use CirrusSearch\MetaStore\MetaVersionStore;
 use DateTime;
 use Elastica\Client;
 use Elastica\Document;
@@ -58,7 +57,6 @@ class CompletionSuggesterIndexer {
 	private SuggestBuilder $suggestBuilder;
 	private Printer $output;
 	private ConfigUtils $utils;
-	private MetaVersionStore $versionStore;
 	private SuggesterAnalysisConfigBuilder $analysisConfigBuilder;
 	private CompletionSuggesterIndexerConfig $indexerConfig;
 
@@ -92,7 +90,6 @@ class CompletionSuggesterIndexer {
 	 * @param SuggestBuilder $suggestBuilder the SuggestBuilder to build suggest docs
 	 * @param Printer $output the output to print message and errors
 	 * @param ConfigUtils $utils the config utils
-	 * @param MetaVersionStore $versionStore the version store attached to the right cluster
 	 * @param SuggesterAnalysisConfigBuilder $analysisConfigBuilder the builder to create the analysis settings
 	 * @param CompletionSuggesterIndexerConfig $indexerConfig the various settings used by this indexer
 	 */
@@ -102,7 +99,6 @@ class CompletionSuggesterIndexer {
 		SuggestBuilder $suggestBuilder,
 		Printer $output,
 		ConfigUtils $utils,
-		MetaVersionStore $versionStore,
 		SuggesterAnalysisConfigBuilder $analysisConfigBuilder,
 		CompletionSuggesterIndexerConfig $indexerConfig
 	) {
@@ -112,7 +108,6 @@ class CompletionSuggesterIndexer {
 		$this->suggestBuilder = $suggestBuilder;
 		$this->output = $output;
 		$this->utils = $utils;
-		$this->versionStore = $versionStore;
 		$this->analysisConfigBuilder = $analysisConfigBuilder;
 		$this->indexerConfig = $indexerConfig;
 	}
@@ -223,7 +218,6 @@ class CompletionSuggesterIndexer {
 		}
 		$this->enableReplicas();
 		$this->validateAlias();
-		$this->updateVersions();
 		$this->deleteOldIndex();
 		$this->log( "Done.\n" );
 	}
@@ -461,18 +455,6 @@ class CompletionSuggesterIndexer {
 
 		// Index will be yellow while replica shards are being allocated.
 		$this->waitForGreen( $this->indexerConfig->getReplicationTimeout() );
-	}
-
-	private function updateVersions(): void {
-		$this->log( "Updating tracking indexes..." );
-		$this->versionStore
-			->update(
-				$this->indexerConfig->getIndexBaseName(),
-				Connection::TITLE_SUGGEST_INDEX_SUFFIX,
-				$this->indexerConfig->isAltIndex(),
-				$this->indexerConfig->getAltIndexId()
-			);
-		$this->output->output( "ok.\n" );
 	}
 
 	private function waitForGreen( int $timeout = 600 ): void {

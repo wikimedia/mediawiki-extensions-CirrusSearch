@@ -25,14 +25,6 @@ class MappingConfigBuilder {
 	public const OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER = 4;
 
 	/**
-	 * Version number for the core analysis. Increment the major
-	 * version when the analysis changes in an incompatible way,
-	 * and change the minor version when it changes but isn't
-	 * incompatible
-	 */
-	public const VERSION = '1.10';
-
-	/**
 	 * @var bool should the index be optimized for the experimental highlighter?
 	 */
 	private $optimizeForExperimentalHighlighter;

@@ -430,7 +430,6 @@ class DataSender extends ElasticsearchIntermediary {
 					'super_detect_noop'
 				);
 				$script->setId( $update['docId'] );
-				$script->setParam( '_type', '_doc' );
 				$script->setParam( '_index', $indexName );
 				$bulk->addScript( $script, 'update' );
 				$titles[] = $title;

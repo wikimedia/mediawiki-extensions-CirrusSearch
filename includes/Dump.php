@@ -41,7 +41,6 @@ class Dump extends FormlessAction {
 		foreach ( $esSources->getValue() as $esResult ) {
 			$result[] = [
 				'_index' => $esResult->getIndex(),
-				'_type' => $esResult->getType(),
 				'_id' => $esResult->getId(),
 				'_version' => $esResult->getVersion(),
 				'_source' => $esResult->getData(),

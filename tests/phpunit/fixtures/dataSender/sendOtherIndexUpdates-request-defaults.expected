@@ -22,7 +22,6 @@
                             "local_sites_with_dupe": "set"
                         },
                         "_id": "1",
-                        "_type": "_doc",
                         "_index": "myfixturetargetindex"
                     },
                     "lang": "super_detect_noop"
@@ -47,7 +46,6 @@
                             "local_sites_with_dupe": "set"
                         },
                         "_id": "2",
-                        "_type": "_doc",
                         "_index": "myfixturetargetindex"
                     },
                     "lang": "super_detect_noop"
@@ -74,7 +72,6 @@
                             "local_sites_with_dupe": "set"
                         },
                         "_id": "3",
-                        "_type": "_doc",
                         "_index": "myfixturetargetindex"
                     },
                     "lang": "super_detect_noop"

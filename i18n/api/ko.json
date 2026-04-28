@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ykhwong"
+			"Ykhwong",
+			"Tensama0415"
 		]
 	},
 	"apihelp-cirrus-config-dump-summary": "CirrusSearch 구성의 덤프입니다.",
@@ -16,8 +17,23 @@
 	"apihelp-cirrus-profiles-dump-param-verbose": "프로파일 내용을 덤프합니다",
 	"apihelp-query+cirrusdoc-summary": "검색 서버에서 가져온 CirrusSearch 문서 덤프",
 	"apihelp-query+cirrusdoc-example": "현재 검색에 색인으로 있는 단일 CirrusSearch 문서의 덤프를 가져옵니다.",
+	"apihelp-query+cirrusdoc-example-2": "'includes' 매개변수를 사용하여 선택된 Categories만 포함하는 이 위키의 CirrusSearch 설정 덤프를 가져옵니다.",
+	"apihelp-query+cirrusdoc-param-includes": "검색 결과로 어떤 필드가 반환되어야 하는지를 정의합니다.",
 	"apihelp-query+cirrusbuilddoc-summary": "데이터베이스 서버에서 가져온 CirrusSearch 문서 덤프",
 	"apihelp-query+cirrusbuilddoc-example": "데이터베이스에서 생성한 단일 CirrusSearch 문서 덤프를 가져옵니다.",
+	"apihelp-query+cirrusbuilddoc-param-builders": "추출할 데이터 유형",
+	"apihelp-query+cirrusbuilddoc-param-limiterprofile": "문서 크기를 제한할 때 사용할 프로필",
 	"apierror-cirrus-requesttoolong": "접두어 검색 요청이 최대 허용 길이보다 더 깁니다. ($1 &gt; $2)",
-	"apihelp-cirrus-check-sanity-summary": "검색 색인의 다양한 페이지 ID의 정확성에 대한 보고서입니다"
+	"apihelp-query+compsuggestbuilddoc-param-method": "사용할 채점 방법",
+	"apierror-compsuggestbuilddoc-bad-method": "알 수 없는 채점 방법",
+	"apihelp-query+cirruscompsuggestbuilddoc-summary": "완성 제안 기능이 사용한 문서의 덤프",
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "완성 제안 기안이 사용한 문서의 덤프를 가져옵니다.",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "완성 제안 기능에서 사용할 채점 방법 이름을 제공합니다.",
+	"apihelp-cirrus-check-sanity-summary": "검색 색인의 다양한 페이지 ID의 정확성에 대한 보고서입니다",
+	"apihelp-cirrus-check-sanity-param-cluster": "인덱스를 확인하기 위한 검색 클러스터",
+	"apihelp-cirrus-check-sanity-param-from": "확인을 시작할 문서 id",
+	"apihelp-cirrus-check-sanity-param-limit": "확인할 페이지 id의 개수",
+	"apihelp-cirrus-check-sanity-param-sequenceid": "이 문서 ID 집합이 확인된 횟수",
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "문서가 다시 렌더링되어야 하는 검사 횟수입니다. 제공된 sequenceid를 기준으로 합니다.",
+	"apiwarn-cirrus-ignore-revisions": "한 페이지에 대해 여러 개의 판이 제공었습니다. 가장 최근 판만 반환됩니다."
 }

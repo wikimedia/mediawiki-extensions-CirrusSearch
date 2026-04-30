@@ -30,5 +30,6 @@
 	"apihelp-query+compsuggestbuilddoc-param-method": "Методи підрахунку для використання",
 	"apierror-compsuggestbuilddoc-bad-method": "Невідомий метод підрахунку",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Дамп документа, використовуваний підказувачем завершення",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "Отримати дамп документа, використовуваного підказувачем завершення"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Отримати дамп документа, використовуваного підказувачем завершення",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Вказати назву методу оцінювання, використовуваного підказувачем завершення"
 }

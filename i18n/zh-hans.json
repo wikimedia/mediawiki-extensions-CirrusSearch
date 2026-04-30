@@ -27,7 +27,8 @@
 			"星海",
 			"沈澄心",
 			"Peterxy12",
-			"Kelly Hsueh"
+			"Kelly Hsueh",
+			"Func"
 		]
 	},
 	"cirrussearch-desc": "由OpenSearch提供支持的MediaWiki搜索工具",
@@ -35,7 +36,7 @@
 	"cirrussearch-parse-error": "此查询无法理解。请将其简化。查询已被记录以改进搜索系统。",
 	"cirrussearch-too-busy-error": "搜索目前过于忙碌。请稍后重试。",
 	"cirrussearch-regex-empty-expression": "$1需要一个非空的正则表达式。",
-	"cirrussearch-regex-syntax-error": "$2的正则表达式语法错误：$1",
+	"cirrussearch-regex-syntax-error": "正则表达式语法错误，位于第$2字符处：$1",
 	"cirrussearch-regex-too-busy-error": "当前有太多的正则表达式搜索正在运行。请稍后重试。",
 	"cirrussearch-regex-too-complex-error": "正则表达式过于复杂。在[https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch/RegexTooComplex 此处]了解关于简化正则表达式的相关内容。",
 	"cirrussearch-now-using": "本wiki正在使用新搜索引擎。（[https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch 了解更多]）",

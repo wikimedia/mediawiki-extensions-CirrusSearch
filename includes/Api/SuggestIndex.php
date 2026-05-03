@@ -3,6 +3,7 @@
 namespace CirrusSearch\Api;
 
 use MediaWiki\Api\ApiBase;
+use MediaWiki\Shell\Shell;
 use MediaWiki\WikiMap\WikiMap;
 
 /**
@@ -23,7 +24,8 @@ class SuggestIndex extends ApiBase {
 			$php = '/usr/bin/php';
 		}
 		$this->getResult()->addValue( null, 'result',
-			wfShellExecWithStderr( "unset REQUEST_METHOD; $php $updaterScript --wiki " . WikiMap::getCurrentWikiId() )
+			Shell::command()->unsafeCommand( "unset REQUEST_METHOD; $php $updaterScript --wiki " .
+				WikiMap::getCurrentWikiId() )->execute()
 		);
 	}
 

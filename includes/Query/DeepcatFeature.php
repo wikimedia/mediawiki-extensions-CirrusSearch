@@ -205,15 +205,13 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 		}
 		$fullName = $title->getFullURL( '', false, PROTO_CANONICAL );
 		$limit1 = $this->limit + 1;
+		$propertyPathClauses = $this->buildPropertyPathClauses( $this->depth );
 		$query = <<<SPARQL
-SELECT ?out WHERE {
-      SERVICE mediawiki:categoryTree {
-          bd:serviceParam mediawiki:start <$fullName> .
-          bd:serviceParam mediawiki:direction "Reverse" .
-          bd:serviceParam mediawiki:depth {$this->depth} .
-      }
-} ORDER BY ASC(?depth)
-LIMIT $limit1
+SELECT ?out (MIN(?d) AS ?depth) WHERE {
+ BIND (<$fullName> AS ?in)
+ { BIND (<$fullName> AS ?out) . BIND(0 AS ?d) }
+$propertyPathClauses
+} GROUP BY ?out ORDER BY ASC(?depth) LIMIT $limit1
 SPARQL;
 		$result = $this->sparql->query( $query );
 
@@ -232,6 +230,28 @@ SPARQL;
 			// It should be but who knows...
 			return rawurldecode( substr( $row['out'], $prefixLen ) );
 		}, $result );
+	}
+
+	/**
+	 * Builds a set of UNION clauses relying on explicit property paths to traverse each depth
+	 * independently. The output form is:
+	 * <pre>
+	 * UNION { ?out mediawiki:isInCategory ?in . BIND(1 AS ?d) }
+	 * UNION { ?out mediawiki:isInCategory/mediawiki:isInCategory ?in . BIND(2 AS ?d) }
+	 * ...
+	 * </pre>
+	 * @param int $depth max depth to traverse
+	 * @return string
+	 */
+	private function buildPropertyPathClauses( int $depth ): string {
+		$clauses = "";
+		for ( $i = 1; $i <= $depth; $i++ ) {
+			$path = implode( "/", array_fill( 0, $i, "mediawiki:isInCategory" ) );
+			// expected line is (for a depth of 2):
+			// UNION { ?out mediawiki:isInCategory/mediawiki:isInCategory ?in . BIND(2 AS ?d) }
+			$clauses .= " UNION { ?out $path ?in . BIND($i AS ?d) }\n";
+		}
+		return $clauses;
 	}
 
 	/**

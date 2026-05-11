@@ -17,20 +17,20 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 	use SimpleKeywordFeatureTestTrait;
 
 	/**
-	 * @param array $expectInQuery
+	 * @param string $expectedQuery
 	 * @param array $result
 	 * @return CachedSparqlClient
 	 */
-	private function getSparqlClient( array $expectInQuery, array $result ) {
+	private function getSparqlClient( ?string $expectedQuery, array $result ) {
 		/**
 		 * @var CachedSparqlClient $client
 		 */
 		$client = $this->createMock( CachedSparqlClient::class );
 		// 2 calls we still test old and new parsing behaviors
 		$client->expects( $this->atMost( 2 ) )->method( 'query' )->willReturnCallback(
-			function ( $sparql ) use ( $expectInQuery, $result ) {
-				foreach ( $expectInQuery as $expect ) {
-					$this->assertStringContainsString( $expect, $sparql );
+			function ( $sparql ) use ( $expectedQuery, $result ) {
+				if ( $expectedQuery ) {
+					$this->assertEquals( $expectedQuery, $sparql );
 				}
 				foreach ( $result as &$row ) {
 					$row['out'] = $this->categoryToUrl( $row['out'] );
@@ -124,11 +124,18 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 			'CirrusSearchCategoryMax' => $maxRes,
 			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'
 		] );
-		$sparqlQuery = [
-			'bd:serviceParam mediawiki:start <' . $this->categoryToUrl( trim( $term, '"' ) ) . '>',
-			'bd:serviceParam mediawiki:depth 3 ',
-			'LIMIT 4'
-		];
+		$category = $this->categoryToUrl( trim( $term, '"' ) );
+		$expectedSparqlQuery = <<<SPARQL
+SELECT ?out (MIN(?d) AS ?depth) WHERE {
+ BIND (<$category> AS ?in)
+ { BIND (<$category> AS ?out) . BIND(0 AS ?d) }
+ UNION { ?out mediawiki:isInCategory ?in . BIND(1 AS ?d) }
+ UNION { ?out mediawiki:isInCategory/mediawiki:isInCategory ?in . BIND(2 AS ?d) }
+ UNION { ?out mediawiki:isInCategory/mediawiki:isInCategory/mediawiki:isInCategory ?in . BIND(3 AS ?d) }
+
+} GROUP BY ?out ORDER BY ASC(?depth) LIMIT 4
+SPARQL;
+
 		$query = "deepcat:$term";
 
 		$expectedData = array_column( $result, 'out' );
@@ -137,14 +144,14 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 			$warnings = [ [ 'cirrussearch-feature-deepcat-toomany' ] ];
 			$expectedData = array_slice( $expectedData, 0, $maxRes );
 		}
-		$client = $this->getSparqlClient( $sparqlQuery, $result );
+		$client = $this->getSparqlClient( $expectedSparqlQuery, $result );
 		$feature = new DeepcatFeature( $config, $client );
 		$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
 		$this->assertParsedValue( $feature, $query, null, [] );
 		$this->assertExpandedData( $feature, $query, $expectedData, $warnings );
 
 		// Rebuild the client to comply atMost assertion on the query method
-		$client = $this->getSparqlClient( $sparqlQuery, $result );
+		$client = $this->getSparqlClient( $expectedSparqlQuery, $result );
 		$feature = new DeepcatFeature( $config, $client );
 		$this->assertFilter( $feature, $query, $filters, $warnings );
 	}
@@ -159,11 +166,11 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 			'CirrusSearchCategoryEndpoint' => null
 		] );
 
-		$client = $this->getSparqlClient( [], $result );
+		$client = $this->getSparqlClient( null, $result );
 		$feature = new DeepcatFeature( $config, $client );
 		$query = "deepcat:$term";
 		$this->assertFilter( $feature, $query, null, [ [ 'cirrussearch-feature-deepcat-endpoint' ] ] );
-		$client = $this->getSparqlClient( [], $result );
+		$client = $this->getSparqlClient( null, $result );
 		$feature = new DeepcatFeature( $config, $client );
 		$this->assertExpandedData( $feature, $query, [], [ [ 'cirrussearch-feature-deepcat-endpoint' ] ] );
 	}

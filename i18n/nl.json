@@ -78,7 +78,7 @@
 	"cirrussearch-feature-deepcat-exception": "Diepgaande categoriezoekopdracht SPARQL-query is mislukt",
 	"cirrussearch-feature-deepcat-timeout": "Er is een time-out opgetreden voor het diepgaand zoeken naar categorieën. Hoogstwaarschijnlijk heeft de categorie te veel subcategorieën",
 	"cirrussearch-feature-deepcat-toomany": "Diepgaande categoriezoekopdracht heeft te veel categorieën geretourneerd",
-	"cirrussearch-feature-deepcat-invalid-title": "De opgegeven categorie is ongeldig.",
+	"cirrussearch-feature-deepcat-invalid-title": "De opgegeven categorie is onjuist.",
 	"cirrussearch-feature-pageid-invalid-id": "Ongelidge pagina-{{PLURAL:$2|ID|IDs}}: $1",
 	"cirrussearch-incategory-feature-no-valid-categories": "Geen geldige categorieën opgegeven voor '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Geen geldige titels verstrekt aan '$1'.",

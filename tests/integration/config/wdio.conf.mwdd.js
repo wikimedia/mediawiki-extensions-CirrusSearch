@@ -28,20 +28,20 @@ exports.config = merge( wdioConf.config, {
 	appOptions: {
 		wikis: {
 			cirrustest: {
-				apiUrl: 'http://cirrustestwiki.mediawiki.mwdd:8080/w/api.php',
-				baseUrl: 'http://cirrustestwiki.mediawiki.mwdd:8080'
+				apiUrl: 'http://cirrustestwiki.mediawiki.local.wmftest.net:8080/w/api.php',
+				baseUrl: 'http://cirrustestwiki.mediawiki.local.wmftest.net:8080'
 			},
 			commons: {
-				apiUrl: 'http://commonswiki.mediawiki.mwdd:8080/w/api.php',
-				baseUrl: 'http://commonswiki.mediawiki.mwdd:8080'
+				apiUrl: 'http://commonswiki.mediawiki.local.wmftest.net:8080/w/api.php',
+				baseUrl: 'http://commonswiki.mediawiki.local.wmftest.net:8080'
 			},
 			ru: {
-				apiUrl: 'http://ruwiki.mediawiki.mwdd:8080/w/api.php',
-				baseUrl: 'http://ruwiki.mediawiki.mwdd:8080'
+				apiUrl: 'http://ruwiki.mediawiki.local.wmftest.net:8080/w/api.php',
+				baseUrl: 'http://ruwiki.mediawiki.local.wmftest.net:8080'
 			},
 			wikidata: {
-				apiUrl: 'http://wikidatawiki.mediawiki.mwdd:8080/w/api.php',
-				baseUrl: 'http://wikidatawiki.mediawiki.mwdd:8080'
+				apiUrl: 'http://wikidatawiki.mediawiki.local.wmftest.net:8080/w/api.php',
+				baseUrl: 'http://wikidatawiki.mediawiki.local.wmftest.net:8080'
 			}
 		}
 	}

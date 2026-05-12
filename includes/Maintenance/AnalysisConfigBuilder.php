@@ -693,11 +693,20 @@ class AnalysisConfigBuilder {
 						// more consistent number parsing
 						"٬=>,", // Arabic thousands separator
 						"،=>,", // Arabic comma
+						// more Arabic conversions for Opensearch 2.19
+						"؀=>", // Arabic Number Sign
+						"؁=>", // Arabic Sign Sanah
+						"؂=>", // Arabic Footnote Marker
+						"۝=>", // Arabic End of Ayah
+						"\ufdf2=>الله", // Arabic Ligature Allah Isolated Form
 						// delete Armenian emphasis marks, exclamation marks, and question
 						// marks, since they modify words rather than follow them.
 						"՛=>", // Armenian emphasis mark
 						"՜=>", // Armenian exclamation mark
 						"՞=>", // Armenian question mark
+						// Opensearch 2.19 ICU tokenizer doesn't treat these as punctuation
+						"֊=>-", // Armenian hyphen
+						"։=>:", // Armenian full stops
 						// micro sign to mu, to prevent some unneeded ICU tokenizer splits
 						// icu_normalize does this, too.. just later
 						"µ=>μ",
@@ -1419,12 +1428,13 @@ class AnalysisConfigBuilder {
 				$plStopwords = require __DIR__ . '/AnalysisLanguageData/polishStopwords.php';
 
 				// Stempel-specific stop words--additional unreliable stems
-				$stempelStopwords = [ 'ować', 'iwać', 'obić', 'snąć', 'ywać', 'ium', 'my', 'um' ];
+				$stempelStopwords = [ 'ować', 'iwać', 'obić', 'snąć', 'ywać', 'iec',
+					'ium', 'my', 'um' ];
 
 				// Stempel is statistical, and certain stems are really terrible, so we filter them
 				// after stemming. See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T186046
 				$config[ 'filter' ][ 'stempel_pattern_filter' ] =
-					AnalyzerBuilder::patternFilter( '^([a-zął]?[a-zćń]|..ć|\d.*ć)$' );
+					AnalyzerBuilder::patternFilter( '^([a-ząłśź]?[a-zćń]|..ć|\d.*ć)$' );
 
 				$config = $myAnalyzerBuilder->
 					withUnpackedAnalyzer()->
@@ -1649,6 +1659,13 @@ class AnalysisConfigBuilder {
 					withLimitedCharMap( [ 'Ð=>Đ', 'ð=>đ' ] )->
 					withCharFilters( [ 'vietnamese_charfilter' ] )->
 					withFilters( [ 'lowercase', 'icu_folding' ] )->
+					build( $config );
+				break;
+			case 'yiddish':
+				$config = $myAnalyzerBuilder->
+					withInvisCharMap()->
+					withCharFilters( [ 'invis_cleanup' ] )->
+					withFilters( [ 'lowercase' ] )->
 					build( $config );
 				break;
 			default:
@@ -2000,6 +2017,7 @@ class AnalysisConfigBuilder {
 		'th' => 'thai',
 		'uz' => 'uzbek',
 		'vi' => 'vietnamese',
+		'yi' => 'yiddish',
 	];
 
 	/**

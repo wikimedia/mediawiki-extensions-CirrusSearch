@@ -169,10 +169,12 @@
                                 ],
                                 "like": [
                                     {
-                                        "_id": "12345"
+                                        "_id": "12345",
+                                        "_index": "wiki_content"
                                     },
                                     {
-                                        "_id": "23456"
+                                        "_id": "23456",
+                                        "_index": "wiki_content"
                                     }
                                 ],
                                 "max_doc_freq": null,

@@ -63,13 +63,13 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 					] )
 					->setFields( [ 'text' ] )
 					->setLike( [
-						[ '_id' => '12345' ],
+						[ '_id' => '12345', '_index' => 'mywiki_content' ],
 					] ),
 				true,
 				MoreLikeFeature::class,
 			],
 			'morelike: multi page' => [
-				'morelike:Some page|Other page',
+				'morelike:Some page|Category:Other page',
 				( new \Elastica\Query\MoreLikeThis() )
 					->setParams( [
 						'min_doc_freq' => 2,
@@ -82,8 +82,8 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 					] )
 					->setFields( [ 'text' ] )
 					->setLike( [
-						[ '_id' => '23456' ],
-						[ '_id' => '12345' ],
+						[ '_id' => '23456', '_index' => 'mywiki_general' ],
+						[ '_id' => '12345', '_index' => 'mywiki_content' ],
 					] ),
 				true,
 				MoreLikeFeature::class
@@ -102,7 +102,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 					] )
 					->setFields( [ 'text' ] )
 					->setLike( [
-						[ '_id' => '12345' ],
+						[ '_id' => '12345', '_index' => 'mywiki_content' ],
 					] ),
 				true,
 				MoreLikeFeature::class
@@ -127,7 +127,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 					] )
 					->setFields( [ 'text' ] )
 					->setLike( [
-						[ '_id' => '12345' ],
+						[ '_id' => '12345', '_index' => 'mywiki_content' ],
 					] ) ),
 				true,
 				MoreLikeThisFeature::class,
@@ -153,13 +153,13 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 					] )
 					->setFields( [ 'text' ] )
 					->setLike( [
-						[ '_id' => '12345' ],
+						[ '_id' => '12345', '_index' => 'mywiki_content' ],
 					] ) ),
 				true,
 				MoreLikeThisFeature::class,
 			],
 			'morelikethis: multi page' => [
-				'morelikethis:"Some page|Other page"',
+				'morelikethis:"Some page|Category:Other page"',
 				self::wrapInMust( ( new \Elastica\Query\MoreLikeThis() )
 					->setParams( [
 						'min_doc_freq' => 2,
@@ -172,8 +172,8 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 					] )
 					->setFields( [ 'text' ] )
 					->setLike( [
-						[ '_id' => '23456' ],
-						[ '_id' => '12345' ],
+						[ '_id' => '23456', '_index' => 'mywiki_general' ],
+						[ '_id' => '12345', '_index' => 'mywiki_content' ],
 					] ) ),
 				true,
 				MoreLikeThisFeature::class,
@@ -192,7 +192,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 					] )
 					->setFields( [ 'text' ] )
 					->setLike( [
-						[ '_id' => '12345' ],
+						[ '_id' => '12345', '_index' => 'mywiki_content' ],
 					] ) ),
 				true,
 				MoreLikeThisFeature::class,
@@ -207,7 +207,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 		// Inject fake pages for MoreLikeTrait::collectTitles() to find
 		$fakeTitleIDs = [
 			'Some page' => 12345,
-			'Other page' => 23456
+			'Category:Other page' => 23456
 		];
 		$titleFactory = $this->getMockBuilder( TitleFactory::class )
 			->onlyMethods( [ 'newFromText' ] )
@@ -227,7 +227,10 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 		}
 
 		// @todo Use a HashConfig with explicit values?
-		$config = new HashSearchConfig( [ 'CirrusSearchMoreLikeThisTTL' => 600 ], [ HashSearchConfig::FLAG_INHERIT ] );
+		$config = new HashSearchConfig(
+			[ 'CirrusSearchMoreLikeThisTTL' => 600, 'CirrusSearchIndexBaseName' => 'mywiki' ],
+			[ HashSearchConfig::FLAG_INHERIT ]
+		);
 
 		$context = new SearchContext( $config );
 

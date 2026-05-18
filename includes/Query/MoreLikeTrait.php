@@ -2,19 +2,20 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\Connection;
 use CirrusSearch\Hooks;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\MoreLikeThis;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Title\Title;
+use MediaWiki\Page\PageIdentity;
 
 trait MoreLikeTrait {
 	/**
 	 * @param string $key
 	 * @param string $term
 	 * @param WarningCollector $warningCollector
-	 * @return Title[]
+	 * @return PageIdentity[]
 	 */
 	protected function doExpand( $key, $term, WarningCollector $warningCollector ) {
 		// If no fields have been set we return no results. This can happen if
@@ -34,7 +35,7 @@ trait MoreLikeTrait {
 
 	/**
 	 * @param string $term
-	 * @return Title[]
+	 * @return PageIdentity[]
 	 */
 	private function collectTitles( $term ) {
 		if ( $this->getConfig()->getElement( 'CirrusSearchDevelOptions',
@@ -49,7 +50,7 @@ trait MoreLikeTrait {
 	/**
 	 * Use for devel purpose only
 	 * @param string $terms
-	 * @return Title[]
+	 * @return PageIdentity[]
 	 */
 	private function collectTitlesFromElastic( $terms ) {
 		$titles = [];
@@ -65,7 +66,7 @@ trait MoreLikeTrait {
 
 	/**
 	 * @param string $term
-	 * @return Title[]
+	 * @return PageIdentity[]
 	 */
 	private function collectTitlesFromDB( $term ) {
 		$titles = [];
@@ -109,17 +110,24 @@ trait MoreLikeTrait {
 	 * application side cache key. If the result is unstable we will see a
 	 * reduced hit rate, and waste cache storage space.
 	 *
-	 * @param Title[] $titles
+	 * @param PageIdentity[] $titles
 	 * @return MoreLikeThis
 	 */
 	protected function buildMoreLikeQuery( array $titles ) {
 		sort( $titles, SORT_STRING );
-		$docIds = [];
 		$likeDocs = [];
+		// We pull a connection object to access index names, ideally we should not require this
+		// since we actually don't make any connection but these methods have been available there
+		// for historical reasons.
+		$connection = new Connection( $this->getConfig() );
+		$indexBaseName = $this->getConfig()->get( 'CirrusSearchIndexBaseName' );
 		foreach ( $titles as $title ) {
-			$docId = $this->getConfig()->makeId( $title->getArticleID() );
-			$docIds[] = $docId;
-			$likeDocs[] = [ '_id' => $docId ];
+			$docId = $this->getConfig()->makeId( $title->getId() );
+
+			$likeDocs[] = [
+				'_id' => $docId,
+				'_index' => $connection->getIndexName( $indexBaseName, $connection->getIndexSuffixForNamespace( $title->getNamespace() ) )
+			];
 		}
 
 		$moreLikeThisFields = $this->getConfig()->get( 'CirrusSearchMoreLikeThisFields' );

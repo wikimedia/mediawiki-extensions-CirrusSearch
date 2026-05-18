@@ -12,6 +12,7 @@
 	"cirrussearch-pref-label": "Raadin cusub",
 	"cirrussearch-pref-desc": "Tijaabi habka baarista cusub taasoo taageera u ah luqado farabadan kuna deeqaysa natiijooyin ka wanaagsan marka la eego dhanka dib u habaynta, waxaa sidoo kale usuurtoowda baarista weedh ku jirta tusmo (template)",
 	"cirrussearch-article-words": "Erayada ee ku jira dhamaan nuxurka bogagga",
+	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|qiime|qiimayaal}} aan la aqoonsan oo loogu talagalay erayga <kbd>$3:</kbd>: $1",
 	"cirrussearch-semantic-empty-query": "Raadinta semantic-ka waxay u baahan tahay eray raadis ah oo aan madhnayn.",
 	"cirrussearch-semantic-too-many-results": "Natiijooyin aad u badan ayaa laga codsaday raadinta semantic-ka. Keliya $1 ka ugu sarreeya ayaa si sax ah loo kala hormarin doonaa."
 }

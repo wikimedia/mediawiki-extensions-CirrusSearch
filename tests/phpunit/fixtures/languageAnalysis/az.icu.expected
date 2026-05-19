@@ -445,7 +445,8 @@
             "filter": [
                 "truncate_keyword",
                 "lowercase",
-                "icu_normalizer"
+                "icu_normalizer",
+                "icu_folding"
             ]
         }
     },

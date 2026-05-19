@@ -321,6 +321,9 @@ class AnalysisConfigBuilder {
 		if ( isset( $config[ 'analyzer' ][ 'lowercase_keyword' ] ) ) {
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'icu_folding';
 		}
+		if ( isset( $config[ 'normalizer' ][ 'lowercase_keyword' ] ) ) {
+			$config[ 'normalizer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'icu_folding';
+		}
 
 		// add remove_empty everywhere icu_folding happens, not just the ones we added here
 		$config = $this->addRemoveEmpty( $config );

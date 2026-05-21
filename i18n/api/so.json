@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"AhmedG612"
+		]
+	},
+	"apihelp-cirrus-config-dump-summary": "Tuurista qaabeynta Raadinta Cirrus.",
+	"apihelp-cirrus-config-dump-param-prop": "Nooca doorsoomayaasha qaabeynta ee la soo tuurayo",
+	"apihelp-cirrus-config-dump-example": "Hel tuurista qaabeynta Raadinta Cirrus.",
+	"apihelp-cirrus-mapping-dump-summary": "Tuurista khariidaynta Raadinta Cirrus ee wiki-kan.",
+	"apihelp-cirrus-mapping-dump-example": "Hel tuurista khariidaynta Raadinta Cirrus ee wiki-kan.",
+	"apihelp-cirrus-settings-dump-summary": "Tuurista dejimaha Raadinta Cirrus ee wiki-kan.",
+	"apihelp-cirrus-settings-dump-example": "Hel tuurista dejimaha Raadinta Cirrus ee wiki-kan."
+}

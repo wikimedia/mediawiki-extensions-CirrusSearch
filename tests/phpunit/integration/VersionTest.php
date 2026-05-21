@@ -41,11 +41,11 @@ class VersionTest extends CirrusIntegrationTestCase {
 	 * @dataProvider happyPathProvider
 	 */
 	public function testHappyPath( $versionResponse, $expected ) {
-		$response = $this->returnValue( new \Elastica\Response( json_encode( [
+		$response = new \Elastica\Response( json_encode( [
 			'name' => 'testhost',
 			'cluster_name' => 'phpunit-search',
 			'version' => $versionResponse,
-		] ), 200 ) );
+		] ), 200 );
 		$conn = $this->mockConnection( $response );
 		$version = new Version( $conn );
 		$status = $version->get();
@@ -54,13 +54,13 @@ class VersionTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testFailure() {
-		$this->expectResponseFailure( $this->throwException(
+		$this->expectResponseFailure(
 			new \Elastica\Exception\Connection\HttpException( CURLE_COULDNT_CONNECT )
-		) );
+		);
 	}
 
 	public function testHttpFailure() {
-		$this->expectResponseFailure( $this->returnValue( new Response( '', 500 ) ) );
+		$this->expectResponseFailure( new Response( '', 500 ) );
 	}
 
 	private function expectResponseFailure( $responseAction ) {
@@ -72,8 +72,13 @@ class VersionTest extends CirrusIntegrationTestCase {
 
 	public function mockConnection( $responseAction ) {
 		$client = $this->createMock( \Elastica\Client::class );
-		$client->method( 'request' )
-			->will( $responseAction );
+		if ( $responseAction instanceof \Elastica\Exception\Connection\HttpException ) {
+			$client->method( 'request' )
+				->willThrowException( $responseAction );
+		} else {
+			$client->method( 'request' )
+				->willReturn( $responseAction );
+		}
 
 		$config = $this->newHashSearchConfig(
 			[ 'CirrusSearchClientSideSearchTimeout' => [

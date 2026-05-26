@@ -361,6 +361,42 @@ class Util {
 	}
 
 	/**
+	 * Strips private ip ranges from an x-forwarded-for header
+	 *
+	 * Private IP ranges (like 10.*) are typically added server
+	 * side routing. Strip them to only see the external side
+	 * of xff. Otherwise we would see variance due to internal
+	 * routing changes.
+	 * As a side effect it also normalizes away whitespace from
+	 * the list.
+	 *
+	 * @param string|false $xff x-forwarded-for header
+	 * @return string
+	 */
+	private static function stripPrivateIps( $xff ): string {
+		if ( $xff === false ) {
+			return '';
+		}
+
+		$publicIPs = array_filter(
+			array_map( 'trim', explode( ',', $xff ) ),
+			static function ( string $ip ): bool {
+				if ( !filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+					return false;
+				}
+
+				return (bool)filter_var(
+					$ip,
+					FILTER_VALIDATE_IP,
+					FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+				);
+			}
+		);
+
+		return implode( ', ', $publicIPs );
+	}
+
+	/**
 	 * @param string $extraData Extra information to mix into the hash
 	 * @return string A token that identifies the source of the request
 	 */
@@ -375,7 +411,7 @@ class Util {
 		return md5( implode( ':', [
 			$extraData,
 			$ip,
-			$request->getHeader( 'X-Forwarded-For' ),
+			self::stripPrivateIps( $request->getHeader( 'X-Forwarded-For' ) ),
 			$request->getHeader( 'User-Agent' ),
 		] ) );
 	}

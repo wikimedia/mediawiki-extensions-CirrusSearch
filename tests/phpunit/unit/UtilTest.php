@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use Wikimedia\TestingAccessWrapper;
+
 /**
  * Test Util functions.
  *
@@ -172,5 +174,66 @@ class UtilTest extends CirrusTestCase {
 			'CirrusSearchAutomationCIDRs' => $ranges,
 		] );
 		$this->assertSame( $expect, Util::looksLikeAutomation( $config, $ip, $headers ) );
+	}
+
+	/**
+	 * @dataProvider stripPrivateIpsProvider
+	 */
+	public function testStripPrivateIps( string $input, string $expected ): void {
+		$wrapper = TestingAccessWrapper::newFromClass( Util::class );
+		$this->assertSame( $expected, $wrapper->stripPrivateIps( $input ) );
+	}
+
+	public static function stripPrivateIpsProvider(): array {
+		return [
+			'single public IP' => [
+				'203.0.113.5',
+				'203.0.113.5',
+			],
+			'single private IP is removed' => [
+				'192.168.1.1',
+				'',
+			],
+			'mixed public and private IPs' => [
+				'203.0.113.5, 10.0.0.1, 192.168.1.100, 198.51.100.42',
+				'203.0.113.5, 198.51.100.42',
+			],
+			'all private IPs returns empty string' => [
+				'10.0.0.1, 172.16.0.1, 192.168.0.1',
+				'',
+			],
+			'loopback address is removed' => [
+				'127.0.0.1, 203.0.113.5',
+				'203.0.113.5',
+			],
+			'link-local address is removed' => [
+				'169.254.0.1, 203.0.113.5',
+				'203.0.113.5',
+			],
+			'172.16-31.x.x range is removed' => [
+				'172.16.0.1, 172.31.255.255, 203.0.113.5',
+				'203.0.113.5',
+			],
+			'malformed IP is removed' => [
+				'not-an-ip, 203.0.113.5',
+				'203.0.113.5',
+			],
+			'extra whitespace is handled' => [
+				'  203.0.113.5  ,  10.0.0.1  ',
+				'203.0.113.5',
+			],
+			'empty string returns empty string' => [
+				'',
+				'',
+			],
+			'public IPv6 address is kept' => [
+				'2600:db8::1, 203.0.113.5',
+				'2600:db8::1, 203.0.113.5',
+			],
+			'private IPv6 address is removed' => [
+				'fc00::1, 203.0.113.5',
+				'203.0.113.5',
+			],
+		];
 	}
 }

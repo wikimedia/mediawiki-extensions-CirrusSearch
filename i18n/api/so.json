@@ -1,0 +1,38 @@
+{
+	"@metadata": {
+		"authors": [
+			"AhmedG612"
+		]
+	},
+	"apihelp-cirrus-config-dump-summary": "Tuurista qaabeynta Raadinta Cirrus.",
+	"apihelp-cirrus-config-dump-param-prop": "Nooca doorsoomayaasha qaabeynta ee la soo tuurayo",
+	"apihelp-cirrus-config-dump-example": "Hel tuurista qaabeynta Raadinta Cirrus.",
+	"apihelp-cirrus-mapping-dump-summary": "Tuurista khariidaynta Raadinta Cirrus ee wiki-kan.",
+	"apihelp-cirrus-mapping-dump-example": "Hel tuurista khariidaynta Raadinta Cirrus ee wiki-kan.",
+	"apihelp-cirrus-settings-dump-summary": "Tuurista dejimaha Raadinta Cirrus ee wiki-kan.",
+	"apihelp-cirrus-settings-dump-example": "Hel tuurista dejimaha Raadinta Cirrus ee wiki-kan.",
+	"apihelp-cirrus-profiles-dump-summary": "Tuurista profiles-ka Raadinta Cirrus ee wiki-kan.",
+	"apihelp-cirrus-profiles-dump-example": "Hel tuurista profiles-ka Raadinta Cirrus ee wiki-kan.",
+	"apihelp-cirrus-profiles-dump-param-verbose": "Tuur nuxurka profiles-ka",
+	"apihelp-query+cirrusdoc-summary": "Tuurista dukumeentiga maqaalka Raadinta Cirrus ee adeega raadinta.",
+	"apihelp-query+cirrusdoc-example": "Hel tuurista hal maqaal oo Raadinta Cirrus ah sida uu hadda ugu kaydsan yahay raadinta.",
+	"apihelp-query+cirrusdoc-example-2": "Hel tuurista dejimaha Raadinta Cirrus ee wiki-kan, iyadoo la soo saarayo kaliya qaybaha lagu xushay cabbirka 'includes'.",
+	"apihelp-query+cirrusdoc-param-includes": "Qeex meelaha la rabo in lagu soo celiyo natiijada raadinta.",
+	"apihelp-query+cirrusbuilddoc-summary": "Tuurista dukumeentiga maqaalka Raadinta Cirrus ee laga soo qaado serverrada keydka xogta.",
+	"apihelp-query+cirrusbuilddoc-example": "Hel tuurista hal maqaal oo Raadinta Cirrus ah oo laga soo sameeyay keydka xogta.",
+	"apihelp-query+cirrusbuilddoc-param-builders": "Nooca xogta la soo saarayo.",
+	"apihelp-query+cirrusbuilddoc-param-limiterprofile": "Profile-ka la adeegsanayo marka la xaddidayo cabbirka dukumeentiga.",
+	"apierror-cirrus-requesttoolong": "Codsiga raadinta hordhaca wuxuu ka dheeraaday dhererka ugu badan ee la oggol yahay. ($1 &gt; $2)",
+	"apihelp-query+compsuggestbuilddoc-param-method": "Habka qiimeynta ee la adeegsanayo",
+	"apierror-compsuggestbuilddoc-bad-method": "Habka qiimeynta lama yaqaan",
+	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Tuurista dukumeentiga uu adeegsado soo jeediyeha dhamaystirka.",
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Hel tuurista dukumeentiga uu adeegsado soo-jeediyeha dhamaystirka",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Bixi magaca habka qiimeynta ee uu adeegsanayo soo jeediyeha dhamaystirka",
+	"apihelp-cirrus-check-sanity-summary": "Warbixin ku saabsan saxnaanta tiro aqoonsi bogag ah oo ku jira tusmada raadinta",
+	"apihelp-cirrus-check-sanity-param-cluster": "Kooxda raadinta ee lagu hubinayo tusmooyinka",
+	"apihelp-cirrus-check-sanity-param-from": "Aqoonsiga bogga laga bilaabayo hubinta",
+	"apihelp-cirrus-check-sanity-param-limit": "Tirada aqoonsiyada bogagga ee la hubinayo",
+	"apihelp-cirrus-check-sanity-param-sequenceid": "Tirada jeer ee kooxdan aqoonsiyada bogagga la hubiyay.",
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Tirada jeer ee hubin ka dib bogga ay tahay in dib loo sameeyo. Waxay ku salaysan tahay aqoonsiga taxanaha la bixiyay.",
+	"apiwarn-cirrus-ignore-revisions": "Wax ka badan hal dib-u eegis ayaa loo bixiyay bogga. Kaliya dib u eegista ugu dambeysa ayaa la soo celin doonaa."
+}

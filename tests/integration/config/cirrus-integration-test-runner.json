@@ -1,5 +1,8 @@
 {
 	"fresh": {
 		"image": "docker-registry.wikimedia.org/releng/node24-test-browser:latest"
+	},
+	"opensearch": {
+		"versions": [ "v1.3.20-12", "v2.19.5-3" ]
 	}
 }

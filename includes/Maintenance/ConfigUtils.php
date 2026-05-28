@@ -47,11 +47,15 @@ class ConfigUtils {
 		$version = $banner['version']['number'];
 		$this->output( "$distribution $version..." );
 
-		$required = $distribution === 'opensearch' ? '1.3' : '7.10';
-		if ( strpos( $version, $required ) !== 0 ) {
+		$required = $distribution === 'opensearch' ? [ '1.3', '2.' ] : [ '7.10' ];
+		$versionMatch = array_find(
+			$required,
+			static fn ( string $acceptVersion ): bool => str_starts_with( $version, $acceptVersion )
+		);
+		if ( $versionMatch === null ) {
 			$this->output( "Not supported!\n" );
 			return Status::newFatal(
-				"Only OpenSearch 1.3.x is supported; Elasticsearch 7.10.x is now deprecated "
+				"Only OpenSearch 1.3.x and 2.x is supported; Elasticsearch 7.10.x is now deprecated "
 				. " and support will be removed soon.\n  Your version: $distribution $version." );
 		}
 		if ( $distribution === 'elasticsearch' ) {

@@ -68,7 +68,7 @@ class ConfigUtilsTest extends CirrusTestCase {
 			]
 		];
 		yield 'opensearch 2.19.5' => [
-			false,
+			true,
 			[
 				"version" => [
 					"distribution" => "opensearch",

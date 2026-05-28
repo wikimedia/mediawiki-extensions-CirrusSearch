@@ -182,7 +182,7 @@ Then( /^I get api near matches for (.+)$/, function ( search ) {
 function checkApiSearchResultStep( title, in_ok, indexes ) {
 	indexes = indexes.split( ' or ' ).map( ( index ) => namedPositions.indexOf( index ) );
 	if ( title === 'none' ) {
-		expect( this.apiResponse.query.search ).to.have.lengthOf.below( 1 + Math.min.apply( null, indexes ) );
+		expect( this.apiResponse.query.search, `Expected no results but got  ${ JSON.stringify( this.apiResponse ) }` ).to.have.lengthOf.below( 1 + Math.min.apply( null, indexes ) );
 	} else {
 		const found = indexes.map( ( pos ) => {
 			if ( this.apiResponse.query.search[ pos ] ) {
@@ -229,7 +229,9 @@ When( /^I api search( for entities)?( with rewrites enabled)?(?: with query inde
 	const prefix = forEntities ? 'gsr' : 'sr';
 	const options = {};
 	options[ prefix + 'namespace' ] = ( namespaces || '0' ).split( ' ' ).join( ',' );
-	options[ prefix + 'enablerewrites' ] = enableRewrites ? 1 : 0;
+	if ( enableRewrites ) {
+		options[ prefix + 'enablerewrites' ] = 1;
+	}
 	if ( offset ) {
 		options[ prefix + 'offset' ] = offset;
 	}

@@ -58,13 +58,18 @@ class ArticlePredictionKeywordTest extends CirrusTestCase {
 				$term( $topic, "classification.prediction.$prefix", $boost )
 			];
 		};
-		$match = static function ( array $query ) {
-			return [ 'bool' => [ 'must' => [ $query ] ] ];
+		// Every assembled query also excludes redirect documents via a must_not page_type filter.
+		$pageTypeMustNot = [ 'term' => [ 'page_type' => 'redirect' ] ];
+		$match = static function ( array $query ) use ( $pageTypeMustNot ) {
+			return [ 'bool' => [
+				'must' => [ $query ],
+				'filter' => [ [ 'bool' => [ 'must_not' => [ $pageTypeMustNot ] ] ] ],
+			] ];
 		};
-		$filter = static function ( array $query ) {
+		$filter = static function ( array $query ) use ( $pageTypeMustNot ) {
 			return [ 'bool' => [
 				'must' => [ [ 'match_all' => [] ] ],
-				'filter' => [ [ 'bool' => [ 'must_not' => [ $query ] ] ] ],
+				'filter' => [ [ 'bool' => [ 'must_not' => [ $query, $pageTypeMustNot ] ] ] ],
 			] ];
 		};
 

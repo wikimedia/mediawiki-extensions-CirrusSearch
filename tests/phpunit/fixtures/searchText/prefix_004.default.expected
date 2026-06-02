@@ -193,6 +193,13 @@
                                             ]
                                         }
                                     }
+                                ],
+                                "must_not": [
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
+                                    }
                                 ]
                             }
                         }

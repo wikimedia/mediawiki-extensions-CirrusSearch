@@ -195,6 +195,11 @@
                                                 "query": "LinksToTest_Target"
                                             }
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }

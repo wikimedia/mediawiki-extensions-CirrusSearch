@@ -195,6 +195,11 @@
                                                 "query": "Template:Prize"
                                             }
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }

@@ -7,7 +7,6 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
-use Elastica\Query\Nested;
 use Wikimedia\TestingAccessWrapper;
 
 /**
@@ -92,10 +91,12 @@ class SemanticSearchQueryBuilderTest extends CirrusTestCase {
 		);
 		$this->assertSame( 'search term', $context->getCleanedSearchTerm() );
 
-		// Verify the query structure
+		// Verify the query structure. The nested query is wrapped by the assembled query, which
+		// also excludes redirect documents.
 		$query = $context->getQuery();
-		$this->assertInstanceOf( Nested::class, $query );
-		$queryArray = $query->toArray();
+		$this->assertExcludesRedirectDocuments( $query );
+		$queryArray = $query->toArray()['bool']['must'][0];
+		$this->assertArrayHasKey( 'nested', $queryArray );
 
 		$this->assertSame( 'my_nested_field', $queryArray['nested']['path'] );
 		$this->assertSame( 'min', $queryArray['nested']['score_mode'] );
@@ -123,8 +124,7 @@ class SemanticSearchQueryBuilderTest extends CirrusTestCase {
 
 		$this->assertTrue( $context->areResultsPossible() );
 
-		$query = $context->getQuery();
-		$queryArray = $query->toArray();
+		$queryArray = $context->getQuery()->toArray()['bool']['must'][0];
 		$this->assertArrayHasKey( 'passage_chunk_embedding.knn', $queryArray['nested']['query']['neural'] );
 		$this->assertSame( 21, $queryArray['nested']['query']['neural']['passage_chunk_embedding.knn']['k'] );
 	}
@@ -138,8 +138,7 @@ class SemanticSearchQueryBuilderTest extends CirrusTestCase {
 		$this->assertTrue( $context->areResultsPossible() );
 		$this->assertSame( 'search with spaces', $context->getCleanedSearchTerm() );
 
-		$query = $context->getQuery();
-		$queryArray = $query->toArray();
+		$queryArray = $context->getQuery()->toArray()['bool']['must'][0];
 		$this->assertSame( 'search with spaces', $queryArray['nested']['query']['neural']['passage_chunk_embedding.knn']['query_text'] );
 	}
 
@@ -154,7 +153,7 @@ class SemanticSearchQueryBuilderTest extends CirrusTestCase {
 		$this->assertTrue( $context->areResultsPossible() );
 		$this->assertSame( 'search term', $context->getCleanedSearchTerm() );
 
-		$queryArray = $context->getQuery()->toArray();
+		$queryArray = $context->getQuery()->toArray()['bool']['must'][0];
 		$this->assertSame(
 			'Represent this query: search term',
 			$queryArray['nested']['query']['neural']['passage_chunk_embedding.knn']['query_text']
@@ -169,7 +168,7 @@ class SemanticSearchQueryBuilderTest extends CirrusTestCase {
 
 		$builder->build( $context, 'search term' );
 
-		$queryArray = $context->getQuery()->toArray();
+		$queryArray = $context->getQuery()->toArray()['bool']['must'][0];
 		$this->assertSame(
 			'search term',
 			$queryArray['nested']['query']['neural']['passage_chunk_embedding.knn']['query_text']

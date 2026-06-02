@@ -195,6 +195,11 @@
                                                 "query": "Template:Prize"
                                             }
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }
@@ -665,6 +670,11 @@
                                                 "query": "Template:Prize"
                                             }
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }
@@ -1094,6 +1104,11 @@
                                                 "query": "Template:Prize"
                                             }
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }
@@ -1522,6 +1537,11 @@
                                             "template": {
                                                 "query": "Template:Prize"
                                             }
+                                        }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
                                         }
                                     }
                                 ]

@@ -62,4 +62,15 @@ class SearchContextTest extends CirrusTestCase {
 		}
 	}
 
+	public function testDefaultScopeExcludesRedirectDocuments() {
+		// Default scope hides redirect documents.
+		$this->assertExcludesRedirectDocuments( $this->context->getQuery() );
+	}
+
+	public function testRedirectScopeOmitsRedirectExclusion() {
+		// Redirect scope makes redirect documents searchable.
+		$this->context->setRedirectScope( true );
+		$this->assertDoesNotExcludeRedirectDocuments( $this->context->getQuery() );
+	}
+
 }

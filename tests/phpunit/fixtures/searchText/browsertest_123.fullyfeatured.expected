@@ -195,6 +195,11 @@
                                                 "query": "Template:Template Test"
                                             }
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }

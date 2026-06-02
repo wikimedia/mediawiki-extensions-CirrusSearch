@@ -175,12 +175,25 @@
                 "bool": {
                     "filter": [
                         {
-                            "terms": {
-                                "namespace": [
-                                    0,
-                                    1,
-                                    2,
-                                    3
+                            "bool": {
+                                "must": [
+                                    {
+                                        "terms": {
+                                            "namespace": [
+                                                0,
+                                                1,
+                                                2,
+                                                3
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "must_not": [
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -645,12 +658,25 @@
                 "bool": {
                     "filter": [
                         {
-                            "terms": {
-                                "namespace": [
-                                    0,
-                                    1,
-                                    2,
-                                    3
+                            "bool": {
+                                "must": [
+                                    {
+                                        "terms": {
+                                            "namespace": [
+                                                0,
+                                                1,
+                                                2,
+                                                3
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "must_not": [
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -1074,12 +1100,25 @@
                 "bool": {
                     "filter": [
                         {
-                            "terms": {
-                                "namespace": [
-                                    0,
-                                    1,
-                                    2,
-                                    3
+                            "bool": {
+                                "must": [
+                                    {
+                                        "terms": {
+                                            "namespace": [
+                                                0,
+                                                1,
+                                                2,
+                                                3
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "must_not": [
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -1503,12 +1542,25 @@
                 "bool": {
                     "filter": [
                         {
-                            "terms": {
-                                "namespace": [
-                                    0,
-                                    1,
-                                    2,
-                                    3
+                            "bool": {
+                                "must": [
+                                    {
+                                        "terms": {
+                                            "namespace": [
+                                                0,
+                                                1,
+                                                2,
+                                                3
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "must_not": [
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
+                                    }
                                 ]
                             }
                         }

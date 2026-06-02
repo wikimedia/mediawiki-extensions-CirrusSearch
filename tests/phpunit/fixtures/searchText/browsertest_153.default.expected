@@ -190,6 +190,11 @@
                                                 }
                                             ]
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }

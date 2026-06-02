@@ -84,6 +84,23 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $notFilters = [];
 
 	/**
+	 * @var bool True when the query is scoped to include redirect documents.
+	 *  When false (the default value) redirect documents are excluded from
+	 *  search and use the embedded redirects array. When true it flips and the
+	 *  redirects array is excluded from queries, instead querying the redirect
+	 *  docs directly.
+	 */
+	private $redirectScope = false;
+
+	/**
+	 * @var bool True when the target index represents redirects as first-class,
+	 *  page_type-tagged documents (the page index). When false the target index has
+	 *  no page_type field and the redirect-exclusion filter does not apply (the archive
+	 *  index, where deleted redirects exist only as untyped title stubs). Defaults to true.
+	 */
+	private $supportsFirstClassRedirects = true;
+
+	/**
 	 * @var AbstractQuery|null Query that should be used for highlighting if different
 	 *  from the query used for selecting.
 	 */
@@ -364,6 +381,40 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
+	 * @param bool $redirectScope Whether the query is in redirect scope (redirect mode), in
+	 *  which redirect documents become searchable alongside primary documents and the default
+	 *  must_not page_type:redirect filter is omitted. Defaults to false.
+	 */
+	public function setRedirectScope( bool $redirectScope ): void {
+		$this->isDirty = true;
+		$this->redirectScope = $redirectScope;
+	}
+
+	/**
+	 * @return bool Whether the query is in redirect scope (redirect mode). False by default.
+	 */
+	public function isRedirectScope(): bool {
+		return $this->redirectScope;
+	}
+
+	/**
+	 * @param bool $supportsFirstClassRedirects Whether the target index represents redirects as
+	 *  first-class, page_type-tagged documents. When false the redirect-exclusion filter is
+	 *  omitted because the index has no page_type field (e.g. the archive index). Defaults to true.
+	 */
+	public function setSupportsFirstClassRedirects( bool $supportsFirstClassRedirects ): void {
+		$this->isDirty = true;
+		$this->supportsFirstClassRedirects = $supportsFirstClassRedirects;
+	}
+
+	/**
+	 * @return bool Whether the target index represents redirects as first-class documents. True by default.
+	 */
+	public function supportsFirstClassRedirects(): bool {
+		return $this->supportsFirstClassRedirects;
+	}
+
+	/**
 	 * @param string|null $type type of syntax to check, null for any type
 	 * @return bool True when the query uses $type kind of syntax
 	 */
@@ -549,8 +600,17 @@ class SearchContext implements WarningCollector, FilterBuilder {
 			$filters[] = new \Elastica\Query\Terms( 'namespace', array_values( $this->getNamespaces() ) );
 		}
 
+		// Hide redirect documents from standard search. All page index queries should flow through
+		// here, providing a single location to apply the limitation. Indexes without first-class
+		// redirects (e.g. the archive index) have no page_type field, so the filter is skipped.
+		// Copy notFilters rather than mutating it, getQuery() might be called more than once.
+		$notFilters = $this->notFilters;
+		if ( $this->supportsFirstClassRedirects() && !$this->isRedirectScope() ) {
+			$notFilters[] = new \Elastica\Query\Term( [ 'page_type' => 'redirect' ] );
+		}
+
 		// Wrap $mainQuery in a filtered query if there are any filters
-		$unifiedFilter = Filters::unify( $filters, $this->notFilters );
+		$unifiedFilter = Filters::unify( $filters, $notFilters );
 		if ( $unifiedFilter !== null ) {
 			if ( !( $mainQuery instanceof \Elastica\Query\BoolQuery ) ) {
 				$bool = new \Elastica\Query\BoolQuery();

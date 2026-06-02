@@ -203,6 +203,11 @@
                                             "query": "catapult",
                                             "rewrite": "top_terms_boost_1024"
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }

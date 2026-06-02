@@ -203,6 +203,71 @@ trait CirrusTestCaseTrait {
 	}
 
 	/**
+	 * Assert that an assembled query excludes redirect documents via the default
+	 * must_not page_type:redirect filter applied by SearchContext::getQuery().
+	 *
+	 * Inspects the assembled query (not any single builder's filter), so it is robust
+	 * to how deeply the chokepoint nests the filter.
+	 *
+	 * @param \Elastica\Query\AbstractQuery $query
+	 */
+	public function assertExcludesRedirectDocuments( \Elastica\Query\AbstractQuery $query ): void {
+		$this->assertTrue(
+			self::hasPageTypeRedirectMustNot( $query->toArray() ),
+			'Assembled query must exclude redirect documents (must_not term page_type:redirect). Got: '
+				. json_encode( $query->toArray() )
+		);
+	}
+
+	/**
+	 * Inverse of assertExcludesRedirectDocuments(): assert the redirect-exclusion filter
+	 * is absent, as is the case when the query is in redirect scope.
+	 *
+	 * @param \Elastica\Query\AbstractQuery $query
+	 */
+	public function assertDoesNotExcludeRedirectDocuments( \Elastica\Query\AbstractQuery $query ): void {
+		$this->assertFalse(
+			self::hasPageTypeRedirectMustNot( $query->toArray() ),
+			'Assembled query must not exclude redirect documents in redirect scope. Got: '
+				. json_encode( $query->toArray() )
+		);
+	}
+
+	/**
+	 * Recursively search a serialized query for a bool/must_not clause containing the
+	 * term page_type:redirect.
+	 *
+	 * @param mixed $node
+	 * @return bool
+	 */
+	private static function hasPageTypeRedirectMustNot( $node ): bool {
+		if ( $node instanceof \stdClass ) {
+			// e.g. an empty match_all serializes as a stdClass.
+			$node = (array)$node;
+		}
+		if ( !is_array( $node ) ) {
+			return false;
+		}
+		if ( isset( $node['must_not'] ) ) {
+			$mustNot = $node['must_not'];
+			// Elastica may emit a single clause as an assoc array rather than a list.
+			$clauses = ( is_array( $mustNot ) && array_is_list( $mustNot ) ) ? $mustNot : [ $mustNot ];
+			foreach ( $clauses as $clause ) {
+				$term = is_array( $clause ) ? ( $clause['term'] ?? null ) : null;
+				if ( is_array( $term ) && ( $term['page_type'] ?? null ) === 'redirect' ) {
+					return true;
+				}
+			}
+		}
+		foreach ( $node as $child ) {
+			if ( self::hasPageTypeRedirectMustNot( $child ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * @param \Elastica\Response ...$responses
 	 * @return \Elastica\Transport\AbstractTransport
 	 */

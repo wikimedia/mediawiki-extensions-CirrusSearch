@@ -252,8 +252,9 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 		if ( $expectedQuery === null ) {
 			$this->assertFalse( $context->areResultsPossible() );
 		} else {
-			$this->assertEquals( $expectedQuery, $context->getQuery() );
-			if ( $expectedQuery instanceof \Elastica\Query\MatchAll ) {
+			$isNoOp = $expectedQuery instanceof \Elastica\Query\MatchAll;
+			$this->assertEquals( self::withRedirectExclusion( $expectedQuery ), $context->getQuery() );
+			if ( $isNoOp ) {
 				$this->assertSame( $term, $result, 'Term must be unchanged' );
 			} else {
 				$this->assertSame( $remainingText, $result, 'Term must be empty string' );
@@ -315,5 +316,22 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 		$boolQuery = new BoolQuery();
 		$boolQuery->addMust( $query );
 		return $boolQuery;
+	}
+
+	/**
+	 * Mirror the default redirect-exclusion filter the assembled query applies: wrap a non-bool
+	 * query in a must, then attach a must_not page_type:redirect filter.
+	 */
+	private static function withRedirectExclusion( AbstractQuery $query ): BoolQuery {
+		if ( $query instanceof BoolQuery ) {
+			$bool = $query;
+		} else {
+			$bool = new BoolQuery();
+			$bool->addMust( $query );
+		}
+		$filter = new BoolQuery();
+		$filter->addMustNot( new \Elastica\Query\Term( [ 'page_type' => 'redirect' ] ) );
+		$bool->addFilter( $filter );
+		return $bool;
 	}
 }

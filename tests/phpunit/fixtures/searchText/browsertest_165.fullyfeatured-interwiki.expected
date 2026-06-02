@@ -200,6 +200,11 @@
                                             "query": "pickles",
                                             "rewrite": "top_terms_boost_1024"
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }
@@ -675,6 +680,11 @@
                                             "query": "pickles",
                                             "rewrite": "top_terms_boost_1024"
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }
@@ -1109,6 +1119,11 @@
                                             "query": "pickles",
                                             "rewrite": "top_terms_boost_1024"
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }
@@ -1542,6 +1557,11 @@
                                             "fuzzy_prefix_length": 2,
                                             "query": "pickles",
                                             "rewrite": "top_terms_boost_1024"
+                                        }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
                                         }
                                     }
                                 ]

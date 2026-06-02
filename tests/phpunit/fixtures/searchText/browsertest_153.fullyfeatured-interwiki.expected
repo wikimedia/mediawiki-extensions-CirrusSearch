@@ -190,6 +190,11 @@
                                                 }
                                             ]
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }
@@ -455,6 +460,11 @@
                                                     }
                                                 }
                                             ]
+                                        }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
                                         }
                                     }
                                 ]
@@ -722,6 +732,11 @@
                                                 }
                                             ]
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }
@@ -987,6 +1002,11 @@
                                                     }
                                                 }
                                             ]
+                                        }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
                                         }
                                     }
                                 ]

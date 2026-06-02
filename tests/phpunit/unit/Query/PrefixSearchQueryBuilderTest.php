@@ -33,10 +33,11 @@ class PrefixSearchQueryBuilderTest extends CirrusTestCase {
 			'CirrusSearchPrefixWeights' => self::$WEIGHTS,
 		] );
 		$context = $this->getSearchContext( $config );
-		// Not sure what we could reliably assert here. The code ran at least?
 		$this->assertFalse( $context->isDirty() );
 		$qb->build( $context, 'full keyword prefix' );
 		$this->assertTrue( $context->isDirty() );
+		// Prefix search inherits the redirect-exclusion filter from the assembled query.
+		$this->assertExcludesRedirectDocuments( $context->getQuery() );
 	}
 
 	public function testRejectsOversizeQueries() {

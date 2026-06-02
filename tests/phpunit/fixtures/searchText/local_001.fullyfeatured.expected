@@ -193,6 +193,11 @@
                                         "term": {
                                             "local_sites_with_dupe": "wiki"
                                         }
+                                    },
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
                                     }
                                 ]
                             }

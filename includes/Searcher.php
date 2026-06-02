@@ -917,6 +917,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		// This does not support cross-cluster search, but there is also no use case
 		// for cross-wiki archive search.
 		$this->index = $this->getOverriddenConnection()->getArchiveIndex( $this->indexBaseName );
+		// The archive index has no page_type field; deleted redirects exist only as untyped
+		// title stubs, so the redirect-exclusion filter must not be applied.
+		$this->searchContext->setSupportsFirstClassRedirects( false );
 
 		// Setup the search query
 		$query = new BoolQuery();

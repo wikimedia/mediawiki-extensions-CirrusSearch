@@ -206,6 +206,13 @@
                                             ]
                                         }
                                     }
+                                ],
+                                "must_not": [
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -687,6 +694,13 @@
                                             ]
                                         }
                                     }
+                                ],
+                                "must_not": [
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -1127,6 +1141,13 @@
                                             ]
                                         }
                                     }
+                                ],
+                                "must_not": [
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -1565,6 +1586,13 @@
                                                 3,
                                                 8
                                             ]
+                                        }
+                                    }
+                                ],
+                                "must_not": [
+                                    {
+                                        "term": {
+                                            "page_type": "redirect"
                                         }
                                     }
                                 ]

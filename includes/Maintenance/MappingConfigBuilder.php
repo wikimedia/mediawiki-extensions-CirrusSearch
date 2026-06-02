@@ -228,6 +228,53 @@ class MappingConfigBuilder {
 							->getMapping( $this->engine ),
 					]
 				],
+				'page_type' => $this->searchIndexFieldFactory
+					->newKeywordField( 'page_type' )
+					->getMapping( $this->engine ),
+				'redirect_target' => [
+					'dynamic' => false,
+					'properties' => [
+						'namespace' => $this->searchIndexFieldFactory
+							->newLongField( 'redirect_target.namespace' )
+							->getMapping( $this->engine ),
+						'title' => [
+							'index' => false,
+							'type' => 'text',
+							'fields' => [
+								'keyword' => $this->searchIndexFieldFactory
+									->newKeywordField( 'redirect_target.title.keyword' )
+									->getMapping( $this->engine ),
+							],
+						],
+						'fragment' => [
+							'index' => false,
+							'type' => 'text',
+							'fields' => [
+								'keyword' => $this->searchIndexFieldFactory
+									->newKeywordField( 'redirect_target.fragment.keyword' )
+									->getMapping( $this->engine ),
+							],
+						],
+						'interwiki' => [
+							'index' => false,
+							'type' => 'text',
+							'fields' => [
+								'keyword' => $this->searchIndexFieldFactory
+									->newKeywordField( 'redirect_target.interwiki.keyword' )
+									->getMapping( $this->engine ),
+							],
+						],
+						'link' => [
+							'index' => false,
+							'type' => 'text',
+							'fields' => [
+								'keyword' => $this->searchIndexFieldFactory
+									->newKeywordField( 'redirect_target.link.keyword' )
+									->getMapping( $this->engine ),
+							],
+						],
+					]
+				],
 				'incoming_links' => $this->searchIndexFieldFactory
 					->newLongField( 'incoming_links' )
 					->getMapping( $this->engine ),

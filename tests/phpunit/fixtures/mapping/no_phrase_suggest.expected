@@ -277,6 +277,63 @@
                 }
             }
         },
+        "page_type": {
+            "type": "keyword",
+            "doc_values": false,
+            "normalizer": "keyword"
+        },
+        "redirect_target": {
+            "dynamic": false,
+            "properties": {
+                "namespace": {
+                    "type": "long"
+                },
+                "title": {
+                    "index": false,
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "doc_values": false,
+                            "normalizer": "keyword"
+                        }
+                    }
+                },
+                "fragment": {
+                    "index": false,
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "doc_values": false,
+                            "normalizer": "keyword"
+                        }
+                    }
+                },
+                "interwiki": {
+                    "index": false,
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "doc_values": false,
+                            "normalizer": "keyword"
+                        }
+                    }
+                },
+                "link": {
+                    "index": false,
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "doc_values": false,
+                            "normalizer": "keyword"
+                        }
+                    }
+                }
+            }
+        },
         "incoming_links": {
             "type": "long"
         },

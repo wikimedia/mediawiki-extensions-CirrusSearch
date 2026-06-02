@@ -547,7 +547,11 @@ Then( /^A valid mapping dump is produced$/, function () {
 		expect( this.apiResponse.archive.mappings ).to.have.all.keys(
 			'dynamic', 'properties' );
 		expect( this.apiResponse.content.mappings.properties ).to.include.keys(
-			'all', 'all_near_match', 'title', 'category', 'redirect' );
+			'all', 'all_near_match', 'title', 'category', 'redirect',
+			'page_type', 'redirect_target' );
+		expect( this.apiResponse.content.mappings.properties.page_type.type ).to.equal( 'keyword' );
+		expect( this.apiResponse.content.mappings.properties.redirect_target.properties ).to.include.keys(
+			'namespace', 'title', 'interwiki', 'link' );
 	} );
 } );
 

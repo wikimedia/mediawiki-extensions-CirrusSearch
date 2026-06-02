@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"EdoAug",
 			"Jon Harald Søby"
 		]
 	},
@@ -14,6 +15,7 @@
 	"apihelp-cirrus-profiles-dump-summary": "Dump av CirrusSearch-profiler for denne wikien.",
 	"apihelp-cirrus-profiles-dump-example": "Hent en dump av CirrusSearch-profiler for denne wikien.",
 	"apihelp-cirrus-profiles-dump-param-verbose": "Dump av profilinnholdet",
+	"apihelp-cirrus-schema-dump-summary": "Dump av CirrusSearch-skjemaer (instillinger og kartlegginger) for denne wikien.",
 	"apihelp-query+cirrusdoc-summary": "Kopi av et CirrusSearch-artikkeldokument fra søketjenerne",
 	"apihelp-query+cirrusdoc-example": "Hent en kopi av én CirrusSearch-artikkel som den for tiden er indeksert til søk.",
 	"apihelp-query+cirrusdoc-example-2": "Hent en dump over CirrusSearch-innstillinger for denne wikien med kun kategoriene som er valgt med «includes»-parameteren",

@@ -10,6 +10,7 @@ use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Parser\AST\ParsedBooleanNode;
 use CirrusSearch\Parser\AST\PhraseQueryNode;
 use CirrusSearch\Parser\AST\WordsQueryNode;
+use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Parser\KeywordRegistry;
 use CirrusSearch\Parser\ParsedQueryClassifiersRepository;
 use CirrusSearch\Parser\QueryParser;
@@ -89,15 +90,15 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 		return [
 			'escaped space does not disable keyword' => [
 				'foo\ filew:100 fileh:200',
-				[ WordsQueryNode::class, KeywordFeatureNode::class, KeywordFeatureNode::class ]
+				[ WordsQueryNode::class, KeywordFeatureNode::class, KeywordFeatureNode::class ],
 			],
 			'this space is not escaped' => [
 				'foo\\ filew:100 fileh:200',
-				[ WordsQueryNode::class, KeywordFeatureNode::class, KeywordFeatureNode::class ]
+				[ WordsQueryNode::class, KeywordFeatureNode::class, KeywordFeatureNode::class ],
 			],
 			'not a keyword because of the missing space' => [
 				'foo\filew:100 fileh:200',
-				[ WordsQueryNode::class, KeywordFeatureNode::class ]
+				[ WordsQueryNode::class, KeywordFeatureNode::class ],
 			],
 		];
 	}
@@ -112,4 +113,60 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 		return $parser;
 	}
 
+	public function providesSpecialSyntax() {
+		yield 'broken phrase' => [ '"ffnonsesnseword catapult"~anotherword', true ];
+		yield 'broken boolean' => [ "|| catapult", false ];
+		yield 'leading * not allowed are not considered special syntax' => [ "*ickle", false ];
+		yield 'incategory' => [ "incategory:weaponry", true ];
+		yield 'qmark in the middle' => [ "catapul\\?t", true ];
+		yield 'qmark at the end' => [ "catapul\\?", true ];
+		yield 'catapult +' => [ 'catapult +', false ];
+		yield 'catapult -' => [ 'catapult -', false ];
+		yield 'catapult !' => [ 'catapult !', false ];
+		yield '+ catapult' => [ '+ catapult', false ];
+		yield '- catapult' => [ '- catapult', false ];
+		yield '! catapult' => [ '! catapult', false ];
+		yield 'catapult + amazing' => [ 'catapult + amazing', false ];
+		yield 'catapult - amazing' => [ 'catapult - amazing', false ];
+		yield 'catapult ! amazing' => [ 'catapult ! amazing', false ];
+		yield 'amazing+catapult' => [ 'amazing+catapult', false ];
+
+		yield 'catapult-amazing      ' => [ 'catapult-amazing      ', false ];
+		yield 'amazing!catapult      ' => [ 'amazing!catapult      ', false ];
+		yield 'catapult!!!!!!!       ' => [ 'catapult!!!!!!!       ', false ];
+		yield 'catapult !!!!!!!!     ' => [ 'catapult !!!!!!!!     ', false ];
+		yield '!!!! catapult         ' => [ '!!!! catapult         ', false ];
+		yield '------- catapult      ' => [ '------- catapult      ', false ];
+		yield '++ catapult ++++    ' => [ '++ catapult ++++    ', false ];
+		yield 'amazing++++catapult ' => [ 'amazing++++catapult ', false ];
+		yield 'catapult ~/           ' => [ 'catapult ~/           ', false ];
+		yield 'amazing~◆~catapult    ' => [ 'amazing~◆~catapult    ', false ];
+		yield '******* catapult      ' => [ '******* catapult      ', false ];
+
+		yield 'catapult AND amazing' => [ 'catapult AND amazing', true ];
+		yield 'catapult AND - amazing' => [ 'catapult AND - amazing', true ];
+		yield 'catapult AND ! amazing' => [ 'catapult AND ! amazing', true ];
+		yield 'catapult || ---      ' => [ 'catapult || ---      ', true ];
+		yield 'T:8~=~¥9:77:7:57;7;76;6346- OR catapult' => [ 'T:8~=~¥9:77:7:57;7;76;6346- OR catapult', true ];
+		yield 'catapult OR T:8~=~¥9:77:7:57;7;76;6346-' => [ 'catapult OR T:8~=~¥9:77:7:57;7;76;6346-', true ];
+		yield '--- AND catapult      ' => [ '--- AND catapult      ', true ];
+		yield '*catapult* catapult~  ' => [ '*catapult* catapult~  ', true ];
+		yield '****** catapult*      ' => [ '****** catapult*      ', true ];
+	}
+
+	/**
+	 * The class COMPLEX_QUERY is used to determine if a "create new page" is appropriate or not.
+	 * @param string $query
+	 * @param bool $containsSepcialSyntax
+	 * @return void
+	 * @dataProvider providesSpecialSyntax
+	 */
+	public function testSpecialSyntax( string $query, bool $containsSepcialSyntax ): void {
+		$parser = $this->buildParser( $this->newHashSearchConfig( [
+			'CirrusSearchAllowLeadingWildcard' => false,
+			'CirrusSearchStripQuestionMarks' => 'all',
+		] ) );
+		$query = $parser->parse( $query );
+		$this->assertEquals( $containsSepcialSyntax, $query->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ) );
+	}
 }

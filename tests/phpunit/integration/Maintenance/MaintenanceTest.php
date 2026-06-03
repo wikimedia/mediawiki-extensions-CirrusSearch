@@ -4,7 +4,6 @@ namespace CirrusSearch\Tests\Maintenance;
 
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Maintenance\Maintenance;
-use MediaWiki\Maintenance\MaintenanceFatalError;
 use MediaWiki\Tests\Maintenance\MaintenanceBaseTestCase;
 use Wikimedia\TestingAccessWrapper;
 
@@ -112,7 +111,7 @@ class MaintenanceTest extends MaintenanceBaseTestCase {
 		$this->maintenance->setSearchConfig( $config );
 		$this->maintenance->loadWithArgv( [ '--cluster', $requested ] );
 		if ( $expected === null ) {
-			$this->expectException( MaintenanceFatalError::class );
+			$this->expectCallToFatalError();
 			$this->expectOutputRegex(
 				"/not configured for (cluster|maintenance) operations/i"
 			);

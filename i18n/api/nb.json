@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Jon Harald Søby"
+			"Jon Harald Søby",
+			"EdoAug"
 		]
 	},
 	"apihelp-cirrus-config-dump-summary": "Dump av CirrusSearch-konfigurasjon.",

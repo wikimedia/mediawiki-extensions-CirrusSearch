@@ -57,7 +57,7 @@ class ConfigUtilsTest extends CirrusTestCase {
 		$this->assertEquals( $expectedPlugins, $availablePlugins->getValue() );
 	}
 
-	public function provideTestCheckElasticVersion(): \Generator {
+	public static function provideTestCheckElasticVersion(): \Generator {
 		yield 'opensearch 1.3.20' => [
 			true,
 			[

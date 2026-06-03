@@ -113,7 +113,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 		return $parser;
 	}
 
-	public function providesSpecialSyntax() {
+	public static function providesSpecialSyntax() {
 		yield 'broken phrase' => [ '"ffnonsesnseword catapult"~anotherword', true ];
 		yield 'broken boolean' => [ "|| catapult", false ];
 		yield 'leading * not allowed are not considered special syntax' => [ "*ickle", false ];

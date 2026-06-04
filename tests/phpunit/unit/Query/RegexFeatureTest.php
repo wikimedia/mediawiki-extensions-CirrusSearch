@@ -22,4 +22,17 @@ class RegexFeatureTest extends CirrusTestCase {
 			'insource:/abc/i'
 		);
 	}
+
+	public function testGivesWarningIfPluginNotAvailable() {
+		// Regex requires the wikimedia-extra plugin; without it the feature is unavailable.
+		$config = new HashSearchConfig( [
+			'CirrusSearchEnableRegex' => true,
+			'CirrusSearchWikimediaExtraPlugin' => [],
+		], [ HashSearchConfig::FLAG_INHERIT ] );
+		$this->assertWarnings(
+			new InSourceFeature( $config ),
+			[ [ 'cirrussearch-feature-not-available', 'insource regex' ] ],
+			'insource:/abc/i'
+		);
+	}
 }

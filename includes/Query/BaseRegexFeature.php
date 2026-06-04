@@ -18,10 +18,9 @@ use MediaWiki\MainConfigNames;
 use Wikimedia\Assert\Assert;
 
 /**
- * Base class supporting regex searches. Works best when combined with the
- * wikimedia-extra plugin for elasticsearch, but can also fallback to a groovy
- * based implementation. Can be really expensive, but mostly ok if you have the
- * extra plugin enabled.
+ * Base class supporting regex searches. Requires the wikimedia-extra plugin for
+ * elasticsearch. Can be really expensive, but mostly ok with the extra plugin
+ * enabled.
  *
  * Examples:
  *   insource:/abc?/
@@ -35,7 +34,8 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	private $fields;
 
 	/**
-	 * @var bool Is this feature enabled?
+	 * @var bool Is this feature enabled? Requires both CirrusSearchEnableRegex
+	 *  and the wikimedia-extra plugin's regex support to be enabled.
 	 */
 	private $enabled;
 
@@ -53,8 +53,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	/**
 	 * @var int The maximum number of automaton states that Lucene's regex
 	 * compilation can expand to (even temporarily). Provides protection
-	 * against overloading the search cluster. Only works when using the
-	 * extra plugin, groovy based execution is unbounded.
+	 * against overloading the search cluster.
 	 */
 	private $maxDeterminizedStates;
 
@@ -69,9 +68,11 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	 * @param string[] $fields
 	 */
 	public function __construct( SearchConfig $config, array $fields ) {
-		$this->enabled = $config->get( 'CirrusSearchEnableRegex' );
 		$this->languageCode = $config->get( MainConfigNames::LanguageCode );
 		$this->regexPlugin = $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' );
+		// Regex is only usable when the wikimedia-extra plugin is available to serve it.
+		$this->enabled = $config->get( 'CirrusSearchEnableRegex' )
+			&& $this->regexPlugin && in_array( 'use', $this->regexPlugin );
 		$this->maxDeterminizedStates = $config->get( 'CirrusSearchRegexMaxDeterminizedStates' );
 		Assert::precondition( $fields !== [], 'must have at least one field' );
 		$this->fields = $fields;
@@ -242,9 +243,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	 * @return AbstractQuery
 	 */
 	private function buildRegexQuery( $pattern, $insensitive ) {
-		return $this->regexPlugin && in_array( 'use', $this->regexPlugin )
-			? $this->buildRegexWithPlugin( $pattern, $insensitive )
-			: $this->buildRegexWithGroovy( $pattern, $insensitive );
+		return $this->buildRegexWithPlugin( $pattern, $insensitive );
 	}
 
 	/**
@@ -304,57 +303,6 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			$filter->setLocale( $this->languageCode );
 
 			$filters[] = $filter;
-		}
-
-		return Filters::booleanOr( $filters );
-	}
-
-	/**
-	 * Builds a regular expression query using groovy. It's significantly less
-	 * good than the wikimedia-extra plugin, but it's something.
-	 *
-	 * @param string $pattern The regular expression to match
-	 * @param bool $insensitive Should the match be case insensitive?
-	 * @return AbstractQuery Regular expression query
-	 */
-	private function buildRegexWithGroovy( $pattern, $insensitive ) {
-		$filters = [];
-		foreach ( $this->fields as $field ) {
-			$script = <<<GROOVY
-import org.apache.lucene.util.automaton.*;
-sourceText = _source.get("{$field}");
-if (sourceText == null) {
-    false;
-} else {
-    if (automaton == null) {
-        if (insensitive) {
-            locale = new Locale(language);
-            pattern = pattern.toLowerCase(locale);
-        }
-        regexp = new RegExp(pattern, RegExp.ALL ^ RegExp.AUTOMATON);
-        automaton = new CharacterRunAutomaton(regexp.toAutomaton());
-    }
-    if (insensitive) {
-        sourceText = sourceText.toLowerCase(locale);
-    }
-    automaton.run(sourceText);
-}
-
-GROOVY;
-
-			$filters[] = new \Elastica\Query\Script( new \Elastica\Script\Script(
-				$script,
-				[
-					'pattern' => '.*(' . $pattern . ').*',
-					'insensitive' => $insensitive,
-					'language' => $this->languageCode,
-					// The null here creates a slot in which the script will shove
-					// an automaton while executing.
-					'automaton' => null,
-					'locale' => null,
-				],
-				'groovy'
-			) );
 		}
 
 		return Filters::booleanOr( $filters );

@@ -295,10 +295,9 @@ class ElasticaErrorHandler {
 			$syntaxError = $cause['reason'];
 			$errorMessage = 'unknown';
 			$position = 'unknown';
-			// Note: we support only error coming from the extra plugin
-			// In the case Cirrus is installed without the plugin and
-			// is using the Groovy script to do regex then a generic backend error
-			// will be displayed.
+			// Note: we support only errors coming from the extra plugin.
+			// Without the plugin regex is unavailable, so there is no other
+			// source of regex errors to handle here.
 
 			$matches = [];
 			// In some cases elastic will serialize the exception by adding

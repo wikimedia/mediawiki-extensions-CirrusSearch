@@ -2222,6 +2222,10 @@
 	},
 	"keyword : regex is triggered with a \/ and accepts an optional suffix ": {
 		"query": "intitle:\/[a-z]\/ insource:\/<\\\/a>[^ ]\/i",
+		"config": {
+			"CirrusSearchEnableRegex": true,
+			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+		},
 		"expected": {
 			"query": "intitle:\/[a-z]\/ insource:\/<\\\/a>[^ ]\/i",
 			"rawQuery": "intitle:\/[a-z]\/ insource:\/<\\\/a>[^ ]\/i",
@@ -2283,6 +2287,10 @@
 	},
 	"keyword : normal keyword can not appear anywhere": {
 		"query": "\"intitle:bar\"",
+		"config": {
+			"CirrusSearchEnableRegex": true,
+			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+		},
 		"expected": {
 			"query": "\"intitle:bar\"",
 			"rawQuery": "\"intitle:bar\"",
@@ -2303,6 +2311,10 @@
 	},
 	"keyword : normal keyword can not appear anywhere unlike normal words": {
 		"query": "\"foo bar\"intitle:bar",
+		"config": {
+			"CirrusSearchEnableRegex": true,
+			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+		},
 		"expected": {
 			"query": "\"foo bar\"intitle:bar",
 			"rawQuery": "\"foo bar\"intitle:bar",
@@ -2344,6 +2356,10 @@
 	},
 	"keyword & negation prefix: normal keyword can be negated with - but not with ! (debatable)": {
 		"query": "-intitle:bar !intitle:bar",
+		"config": {
+			"CirrusSearchEnableRegex": true,
+			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+		},
 		"expected": {
 			"query": "-intitle:bar !intitle:bar",
 			"rawQuery": "-intitle:bar !intitle:bar",
@@ -2390,6 +2406,10 @@
 	},
 	"keywords & bool: follows normal boolean logic": {
 		"query": "intitle:foo AND intitle:bar OR intitle:baz OR NOT intitle:buz",
+		"config": {
+			"CirrusSearchEnableRegex": true,
+			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+		},
 		"expected": {
 			"query": "intitle:foo AND intitle:bar OR intitle:baz OR NOT intitle:buz",
 			"rawQuery": "intitle:foo AND intitle:bar OR intitle:baz OR NOT intitle:buz",
@@ -2471,6 +2491,10 @@
 	},
 	"keywords precedence: keywords take precedence over everything else": {
 		"query": "\" intitle:test \"",
+		"config": {
+			"CirrusSearchEnableRegex": true,
+			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+		},
 		"expected": {
 			"query": "\" intitle:test \"",
 			"rawQuery": "\" intitle:test \"",
@@ -2605,6 +2629,10 @@
 	},
 	"keyword: intitle": {
 		"query": "intitle:test intitle:\"foo bar\" intitle:\/201[0-9]\/i",
+		"config": {
+			"CirrusSearchEnableRegex": true,
+			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+		},
 		"expected": {
 			"query": "intitle:test intitle:\"foo bar\" intitle:\/201[0-9]\/i",
 			"rawQuery": "intitle:test intitle:\"foo bar\" intitle:\/201[0-9]\/i",
@@ -2677,6 +2705,10 @@
 	},
 	"keyword: intitle regex": {
 		"query": "intitle:test intitle:\"foo bar\"",
+		"config": {
+			"CirrusSearchEnableRegex": true,
+			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+		},
 		"expected": {
 			"query": "intitle:test intitle:\"foo bar\"",
 			"rawQuery": "intitle:test intitle:\"foo bar\"",
@@ -2996,6 +3028,10 @@
 	},
 	"keyword: insource": {
 		"query": "insource:test insource:\"foo bar\" insource:\/201[0-0]\/i",
+		"config": {
+			"CirrusSearchEnableRegex": true,
+			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+		},
 		"expected": {
 			"query": "insource:test insource:\"foo bar\" insource:\/201[0-0]\/i",
 			"rawQuery": "insource:test insource:\"foo bar\" insource:\/201[0-0]\/i",

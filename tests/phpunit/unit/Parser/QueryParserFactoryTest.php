@@ -29,7 +29,10 @@ class QueryParserFactoryTest extends CirrusTestCase {
 				false
 			],
 			'CirrusSearchEnableRegex changes parsing behaviors' => [
-				[ 'CirrusSearchEnableRegex' => true ],
+				[
+					'CirrusSearchEnableRegex' => true,
+					'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ],
+				],
 				'intitle:/findit/',
 				false
 			],

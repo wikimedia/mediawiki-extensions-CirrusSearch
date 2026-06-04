@@ -33,6 +33,13 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 	private $provideAllSnippets;
 
 	/**
+	 * @var bool whether to drop the redirect.title highlight from the default
+	 *  full text fields. Set by the query side when the search is in redirect
+	 *  scope, where the matching redirect is its own result.
+	 */
+	private bool $suppressRedirectTitleHighlight = false;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param string|null $factoryGroup
 	 * @param bool $provideAllSnippets
@@ -183,13 +190,26 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 		);
 	}
 
+	/**
+	 * Drop the redirect.title highlight from the default full text fields.
+	 *
+	 * Used when the search is in redirect scope: the matching redirect is its
+	 * own result, so highlighting redirect.title would produce a redundant and
+	 * misleading "redirected from" snippet.
+	 */
+	public function suppressRedirectTitleHighlight(): void {
+		$this->suppressRedirectTitleHighlight = true;
+	}
+
 	public function configureDefaultFullTextFields() {
 		// TODO: find a better place for this
 		// Title/redir/category/template
 		$field = $this->newHighlightField( 'title', HighlightedField::TARGET_TITLE_SNIPPET );
 		$this->addHLField( $field );
-		$field = $this->newHighlightField( 'redirect.title', HighlightedField::TARGET_REDIRECT_SNIPPET );
-		$this->addHLField( $field->skipIfLastMatched() );
+		if ( !$this->suppressRedirectTitleHighlight ) {
+			$field = $this->newHighlightField( 'redirect.title', HighlightedField::TARGET_REDIRECT_SNIPPET );
+			$this->addHLField( $field->skipIfLastMatched() );
+		}
 		$field = $this->newHighlightField( 'category', HighlightedField::TARGET_CATEGORY_SNIPPET );
 		$this->addHLField( $field->skipIfLastMatched() );
 

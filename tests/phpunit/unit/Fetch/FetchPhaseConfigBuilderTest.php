@@ -534,4 +534,34 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 			"All the expected targets must be set"
 		);
 	}
+
+	public function testDefaultFullTextFieldsIncludesRedirectTitleByDefault() {
+		$fetchPhaseConfig = new FetchPhaseConfigBuilder( $this->newHashSearchConfig( [] ) );
+		$fetchPhaseConfig->configureDefaultFullTextFields();
+		$this->assertNotNull( $fetchPhaseConfig->getHLField( 'redirect.title' ) );
+	}
+
+	public function testRedirectScopeDropsRedirectTitleHighlight() {
+		$fetchPhaseConfig = new FetchPhaseConfigBuilder( $this->newHashSearchConfig( [] ) );
+		$fetchPhaseConfig->suppressRedirectTitleHighlight();
+		$fetchPhaseConfig->configureDefaultFullTextFields();
+		$this->assertNull( $fetchPhaseConfig->getHLField( 'redirect.title' ) );
+		// Other default fields remain present.
+		$this->assertNotNull( $fetchPhaseConfig->getHLField( 'title' ) );
+		$this->assertNotNull( $fetchPhaseConfig->getHLField( 'category' ) );
+	}
+
+	public function testRedirectScopeGateReadAtHighlightTimeNotConstruction() {
+		$config = $this->newHashSearchConfig( [] );
+		$fetchPhaseBuilder = new FetchPhaseConfigBuilder( $config, SearchQuery::SEARCH_TEXT );
+		$type = new FullTextResultsType( $fetchPhaseBuilder, false, self::newTitleHelper() );
+		$context = new SearchContext(
+			$config, [], null, null, $fetchPhaseBuilder,
+			$this->createNoOpMock( CirrusSearchHookRunner::class )
+		);
+		// Scope is flipped after the results type/builder already exist.
+		$context->setRedirectScope( true );
+		$context->getHighlight( $type, new MatchAll() );
+		$this->assertNull( $fetchPhaseBuilder->getHLField( 'redirect.title' ) );
+	}
 }

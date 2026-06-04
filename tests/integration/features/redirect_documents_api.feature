@@ -27,4 +27,43 @@ Feature: First-class redirect documents on the edit path
      When a page named RedirDocGamma%{epoch} exists
       And I wait for RedirDocGamma%{epoch} to have page_type of primary
       And I wait for RedirDocGamma%{epoch} to not have a redirect_target
-	  And I wait for RedirDocTarget to not have RedirDocGamma%{epoch} in redirect
+      And I wait for RedirDocTarget to not have RedirDocGamma%{epoch} in redirect
+
+  # These scenarios target Two Words and its Rdir, Crazy Rdir and Insane Rdir
+  # redirects. Crazy and Insane are single title tokens unique to one redirect
+  # each, so requiring both matches neither redirect document (and, in redirect
+  # mode, not the target either).
+  Scenario: intitle: does not cross-match across distinct redirects in redirect mode
+     When I api search for withredirects: intitle:Crazy
+     Then Crazy Rdir is in the api search results
+     When I api search for withredirects: intitle:Crazy intitle:Insane
+     Then Two Words is not in the api search results
+      And Crazy Rdir is not in the api search results
+      And Insane Rdir is not in the api search results
+
+  @regex
+  Scenario: intitle:// regex does not cross-match across distinct redirects in redirect mode
+     When I api search for withredirects: intitle:/Crazy/
+     Then Crazy Rdir is in the api search results
+     When I api search for withredirects: intitle:/Crazy/ intitle:/Insane/
+     Then Two Words is not in the api search results
+      And Crazy Rdir is not in the api search results
+      And Insane Rdir is not in the api search results
+
+  # Rdir shares no title tokens with its target Two Words, so the redirect match produces a
+  # redirectsnippet (not pre-empted by a title snippet), making suppression observable.
+  Scenario: standard search shows the redirectTitle on a primary result
+     When I api search for Rdir
+     Then Two Words is in the api search results
+      And Two Words has redirectsnippet in the api search results
+
+  Scenario: withredirects: suppresses the redirectTitle on a primary result
+     When I api search for withredirects: Rdir
+     Then Two Words is in the api search results
+      And Two Words has no redirectsnippet in the api search results
+
+  @regex
+  Scenario: withredirects: suppresses the redirectTitle on a primary result in the regex environment
+     When I api search for withredirects: Rdir
+     Then Two Words is in the api search results
+      And Two Words has no redirectsnippet in the api search results

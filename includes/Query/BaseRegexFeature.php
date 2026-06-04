@@ -81,6 +81,28 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	}
 
 	/**
+	 * The field set to query/highlight for this request.
+	 *
+	 * In redirect scope the fields under the `redirect.` prefix are dropped,
+	 * otherwise the full set is used. This has to be part of parsing, rather
+	 * than having appropriate fields provided in the constructor, because at
+	 * construction time we don't know if redirect scope is enabled.
+	 *
+	 * @param bool $isRedirectScope
+	 * @return string[]
+	 */
+	private function effectiveFields( bool $isRedirectScope ): array {
+		if ( !$isRedirectScope ) {
+			return $this->fields;
+		}
+		return array_filter(
+			$this->fields,
+			static fn ( $field ) => Filters::allowFieldInRedirectScope( $field ),
+			ARRAY_FILTER_USE_KEY
+		);
+	}
+
+	/**
 	 * @return string[][]
 	 */
 	public function getValueDelimiters() {
@@ -178,9 +200,10 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 				return [ null, false ];
 			}
 
-			$filter = $this->buildRegexQuery( $pattern, $insensitive );
+			$fields = $this->effectiveFields( $context->isRedirectScope() );
+			$filter = $this->buildRegexQuery( $fields, $pattern, $insensitive );
 			if ( !$negated ) {
-				$this->configureHighlighting( $pattern, $insensitive, $context->getFetchPhaseBuilder() );
+				$this->configureHighlighting( $fields, $pattern, $insensitive, $context->getFetchPhaseBuilder() );
 			}
 			return [ $filter, false ];
 		} else {
@@ -200,7 +223,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			'@phan-var array $parsedValue';
 			$pattern = $parsedValue['pattern'];
 			$insensitive = $parsedValue['insensitive'];
-			return $this->buildRegexQuery( $pattern, $insensitive );
+			return $this->buildRegexQuery( $this->effectiveFields( $context->isRedirectScope() ), $pattern, $insensitive );
 		} else {
 			return $this->getNonRegexFilterQuery( $node, $context );
 		}
@@ -218,7 +241,8 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			'@phan-var array $parsedValue';
 			$pattern = $parsedValue['pattern'];
 			$insensitive = $parsedValue['insensitive'];
-			return $this->doGetRegexHLFields( $context->getHighlightFieldGenerator(), $pattern, $insensitive );
+			return $this->doGetRegexHLFields( $context->getHighlightFieldGenerator(),
+				$this->effectiveFields( $context->isRedirectScope() ), $pattern, $insensitive );
 		}
 		return $this->buildNonRegexHLFields( $node, $context );
 	}
@@ -239,58 +263,52 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	abstract protected function getRegexHLFlavor(): string;
 
 	/**
-	 * @param string $pattern
-	 * @param bool $insensitive
-	 * @return AbstractQuery
-	 */
-	private function buildRegexQuery( $pattern, $insensitive ) {
-		return $this->buildRegexWithPlugin( $pattern, $insensitive );
-	}
-
-	/**
+	 * @param string[] $fields
 	 * @param string $pattern
 	 * @param bool $insensitive
 	 * @param FetchPhaseConfigBuilder $fetchPhaseConfigBuilder
 	 */
-	private function configureHighlighting( $pattern, $insensitive, FetchPhaseConfigBuilder $fetchPhaseConfigBuilder ) {
-		foreach ( $this->doGetRegexHLFields( $fetchPhaseConfigBuilder, $pattern, $insensitive ) as $f ) {
+	private function configureHighlighting( array $fields, $pattern, $insensitive, FetchPhaseConfigBuilder $fetchPhaseConfigBuilder ) {
+		foreach ( $this->doGetRegexHLFields( $fetchPhaseConfigBuilder, $fields, $pattern, $insensitive ) as $f ) {
 			$fetchPhaseConfigBuilder->addHLField( $f );
 		}
 	}
 
 	/**
 	 * @param HighlightFieldGenerator $generator
+	 * @param string[] $fields
 	 * @param string $pattern
 	 * @param bool $insensitive
 	 * @return HighlightedField[]
 	 */
-	private function doGetRegexHLFields( HighlightFieldGenerator $generator, $pattern, $insensitive ) {
-		$fields = [];
+	private function doGetRegexHLFields( HighlightFieldGenerator $generator, array $fields, $pattern, $insensitive ) {
+		$hlFields = [];
 		if ( !$generator->supportsRegexFields() ) {
-			return $fields;
+			return $hlFields;
 		}
 		$regexFlavor = $this->getRegexHLFlavor();
-		foreach ( $this->fields as $field => $hlTarget ) {
-			$fields[] = $generator->newRegexField( "$field.plain", $hlTarget,
+		foreach ( $fields as $field => $hlTarget ) {
+			$hlFields[] = $generator->newRegexField( "$field.plain", $hlTarget,
 				$pattern, $insensitive, HighlightedField::COSTLY_EXPERT_SYNTAX_PRIORITY,
 				$regexFlavor );
 		}
-		return $fields;
+		return $hlFields;
 	}
 
 	/**
 	 * Builds a regular expression query using the wikimedia-extra plugin.
 	 *
+	 * @param string[] $fields
 	 * @param string $pattern The regular expression to match
 	 * @param bool $insensitive Should the match be case insensitive?
 	 * @return AbstractQuery Regular expression query
 	 */
-	private function buildRegexWithPlugin( $pattern, $insensitive ) {
+	private function buildRegexQuery( array $fields, $pattern, $insensitive ) {
 		$filters = [];
 		// TODO: Update plugin to accept multiple values for the field property
 		// so that at index time we can create a single trigram index with
 		// copy_to instead of creating multiple queries.
-		foreach ( $this->fields as $field => $hlTarget ) {
+		foreach ( $fields as $field => $hlTarget ) {
 			$filter = new SourceRegex( $pattern, $field, $field . '.trigram' );
 			// set some defaults
 			$filter->setMaxDeterminizedStates( $this->maxDeterminizedStates );

@@ -26,6 +26,7 @@ use CirrusSearch\Query\PrefixFeature;
 use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Query\SubPageOfFeature;
 use CirrusSearch\Query\TextFieldFilterFeature;
+use CirrusSearch\Query\WithRedirectsFeature;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -52,6 +53,9 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 		?CachedSparqlClient $sparql = null
 	) {
 		$this->features = [
+			// Handle withredirects keyword. MUST stay first: it enters redirect mode, which
+			// later keywords (e.g. intitle) read while the apply-loop is still running.
+			new WithRedirectsFeature( $config ),
 			// Handle morelike keyword (greedy). Kept for BC reasons with existing clients.
 			// The morelikethis keyword should be preferred.
 			new MoreLikeFeature( $config ),

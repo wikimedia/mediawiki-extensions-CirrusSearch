@@ -524,6 +524,13 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @return array|null Fetch portion of query to be sent to elasticsearch
 	 */
 	public function getHighlight( ResultsType $resultsType, AbstractQuery $mainQuery ) {
+		if ( $this->isRedirectScope() ) {
+			// In redirect scope the matching redirect is its own result; drop the
+			// redirect.title highlight so we don't emit a misleading snippet. The
+			// builder is shared with the results type, so it picks this up when it
+			// assembles the default full text fields.
+			$this->fetchPhaseBuilder->suppressRedirectTitleHighlight();
+		}
 		$highlight = $resultsType->getHighlightingConfiguration( [] );
 		if ( !$highlight ) {
 			return null;

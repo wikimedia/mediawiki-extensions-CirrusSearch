@@ -45,6 +45,8 @@ class InTitleFeature extends BaseRegexFeature {
 			$config,
 			[
 				'title' => HighlightedField::TARGET_TITLE_SNIPPET,
+				// note the redirect. prefix is excluded when in redirect scope, in that
+				// case redirects are independent documents.
 				'redirect.title' => HighlightedField::TARGET_REDIRECT_SNIPPET
 			]
 		);
@@ -77,7 +79,8 @@ class InTitleFeature extends BaseRegexFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$filter = Filters::intitle( $context->escaper(), $quotedValue, $value !== $quotedValue );
+		$filter = Filters::intitle( $context->escaper(), $quotedValue, $value !== $quotedValue,
+			$context->isRedirectScope() );
 
 		return [ $filter, !$negated ];
 	}
@@ -88,7 +91,8 @@ class InTitleFeature extends BaseRegexFeature {
 	 * @return AbstractQuery|null
 	 */
 	protected function getNonRegexFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
-		return Filters::intitle( $this->escaper, $node->getQuotedValue(), $node->getValue() !== $node->getQuotedValue() );
+		return Filters::intitle( $this->escaper, $node->getQuotedValue(),
+			$node->getValue() !== $node->getQuotedValue(), $context->isRedirectScope() );
 	}
 
 	/** @inheritDoc */

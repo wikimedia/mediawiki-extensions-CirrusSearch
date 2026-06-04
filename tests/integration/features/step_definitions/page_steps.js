@@ -289,6 +289,19 @@ Then( /^(.+) is( not)? in the api search results$/, function ( title, not ) {
 	} );
 } );
 
+// redirectsnippet is the API field carrying the result's redirectTitle ("redirected from X").
+Then( /^(.+) has( no)? redirectsnippet in the api search results$/, function ( title, no ) {
+	return withApi( this, () => {
+		const result = this.apiResponse.query.search.find( ( res ) => res.title === title );
+		expect( result, `Expected ${ title } in the api search results` ).to.not.equal( undefined );
+		if ( no ) {
+			expect( result ).to.not.have.property( 'redirectsnippet' );
+		} else {
+			expect( result ).to.have.property( 'redirectsnippet' );
+		}
+	} );
+} );
+
 Then( /^this error is reported by api: (.+)$/, function ( expected_error ) {
 	return withApi( this, () => {
 		expect( this.apiError.info ).to.equal( expected_error.trim() );

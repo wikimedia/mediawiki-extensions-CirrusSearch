@@ -12,6 +12,22 @@ use Elastica\Query\MatchAll;
  * @license GPL-2.0-or-later
  */
 class Filters {
+	/** Index-field prefix marking redirect-scoped title fields. */
+	private const REDIRECT_FIELD_PREFIX = 'redirect.';
+
+	/**
+	 * Filters fields to be allowed in a redirect-scoped query
+	 *
+	 * This is basically just the redirects array. That field is dropped in
+	 * redirect scope, where each redirect is indexed as its own document.
+	 *
+	 * @param string $field
+	 * @return bool
+	 */
+	public static function allowFieldInRedirectScope( string $field ): bool {
+		return !str_starts_with( $field, self::REDIRECT_FIELD_PREFIX );
+	}
+
 	/**
 	 * Turns a list of queries into a boolean OR, requiring only one
 	 * of the provided queries to match.
@@ -140,16 +156,26 @@ class Filters {
 	 * @param Escaper $escaper
 	 * @param string $value
 	 * @param bool $plain Only search plain fields
+	 * @param bool $excludeRedirectFields Drop the redirect-scoped title fields
+	 *  (redirect.title, redirect.title.plain). Set in redirect mode so intitle:
+	 *  queries only the primary/redirect document's own title, not the capped
+	 *  redirect[] array folded onto target documents.
 	 * @return AbstractQuery
 	 */
-	public static function intitle( Escaper $escaper, $value, $plain = false ) {
-		return self::insourceOrIntitle( $escaper, $value, static function ( $queryString ) use ( $plain ) {
-			if ( $plain || preg_match( '/[?*]/u', $queryString ) ) {
-				return [ 'title.plain', 'redirect.title.plain' ];
-			} else {
-				return [ 'title', 'title.plain', 'redirect.title', 'redirect.title.plain' ];
-			}
-		} );
+	public static function intitle( Escaper $escaper, $value, $plain = false, $excludeRedirectFields = false ) {
+		return self::insourceOrIntitle( $escaper, $value,
+			static function ( $queryString ) use ( $plain, $excludeRedirectFields ) {
+				if ( $plain || preg_match( '/[?*]/u', $queryString ) ) {
+					$fields = [ 'title.plain', 'redirect.title.plain' ];
+				} else {
+					$fields = [ 'title', 'title.plain', 'redirect.title', 'redirect.title.plain' ];
+				}
+				if ( $excludeRedirectFields ) {
+					$fields = array_values( array_filter( $fields,
+						static fn ( $field ) => self::allowFieldInRedirectScope( $field ) ) );
+				}
+				return $fields;
+			} );
 	}
 
 	/**

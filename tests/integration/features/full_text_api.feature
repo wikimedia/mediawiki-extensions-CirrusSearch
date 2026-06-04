@@ -144,3 +144,55 @@ Feature: Full text search
   Scenario: Zero result queries are rewritten with suggestions
     When I api search with rewrites enabled for mani page
     Then Main Page is the first api search result
+
+  @setup_main
+  Scenario Outline: Text separated by a <br> tag is not jammed together
+	When I api search for <term>
+	Then <page> is the first api search result
+	Examples:
+		|       term      |       page      |
+		|  Waffle Squash  |  Waffle Squash  |
+		| Waffle Squash 2 | Waffle Squash 2 |
+		|  wafflesquash   |       none      |
+
+  @setup_main @setup_namespaces
+  Scenario Outline: Query string search
+    When I api search for <term>
+    And <first_result> is the first api search result
+    But Two Words is <two_words_is_in> the api search results
+    Examples:
+      | term                                 | first_result             | two_words_is_in |
+      | catapult                             | Catapult                 | in              |
+      | pickles                              | Two Words                | in              |
+      | rdir                                 | Two Words                | in              |
+      | talk:catapult                        | Talk:Two Words           | not in          |
+      | talk:intitle:words                   | Talk:Two Words           | not in          |
+      | template:pickles                     | Template:Template Test   | not in          |
+      | pickles/                             | Two Words                | in              |
+      | catapult/pickles                     | Two Words                | in              |
+      | File:"Screenshot, for test purposes" | File:Savepage-greyed.png | not in          |
+    # You can't search for text inside a <video> or <audio> tag
+      | "JavaScript disabled"                | none                     | not in          |
+    # You can't search for text inside the table of contants
+      | "3.1 Conquest of Persian empire"     | none                     | not in          |
+    # You can't search for the [edit] tokens that users can click to edit sections
+      | "Succession of Umar edit"            | none                     | not in          |
+    # Not a particularly strong test, only verifies the english analysis chain.
+      | ♙                                    | Catapult                 | not in          |
+
+  @setup_main @filenames
+  Scenario Outline: Portions of file names
+    When I api search for <term>
+    And <first_result> is the first api search result
+    Examples:
+      |            term            |          first_result          |
+      | File:Savepage-greyed.png   | File:Savepage-greyed.png       |
+      | File:Savepage              | File:Savepage-greyed.png       |
+      | File:greyed.png            | File:Savepage-greyed.png       |
+      | File:greyed                | File:Savepage-greyed.png       |
+      | File:Savepage png          | File:Savepage-greyed.png       |
+      | File:No_SVG.svg            | File:No SVG.svg                |
+      | File:No SVG.svg            | File:No SVG.svg                |
+      | File:No svg                | File:No SVG.svg                |
+      | File:svg.svg               | File:Somethingelse svg SVG.svg |
+

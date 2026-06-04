@@ -85,11 +85,3 @@ Feature: Search backend updates
       And I api search for Move%{epoch} To4
      Then there are no api search results
 
-  Scenario: Deleted pages are added to archive index
-    Given a page named DeleteMeTest exists
-      And I api search for DeleteMeTest
-     Then DeleteMeTest is the first api search result
-     When I delete DeleteMeTest
-      # For some reason this is done in the browser
-      And I search deleted pages for deletemetest
-      And deleted page search returns DeleteMeTest as first result

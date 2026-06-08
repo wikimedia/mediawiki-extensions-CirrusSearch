@@ -1,4 +1,4 @@
-@boost_template @clean @api
+@boost_template @api
 Feature: Searches with the boost-template operator
   Scenario: Searching for a page without template boosts doesn't use them
     When I api search for BoostTemplateTest

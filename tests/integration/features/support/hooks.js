@@ -8,6 +8,9 @@ const articlePath = path.dirname( path.dirname( path.dirname( __dirname ) ) ) + 
 
 const BeforeOnce = function ( options, fn ) {
 	Before( options, async function () {
+		if ( this.config.preloaded === 'yes' ) {
+			return;
+		}
 		const response = await this.tags.check( options.tags );
 		if ( response === 'complete' ) {
 			return;
@@ -505,13 +508,6 @@ BeforeOnce( { tags: '@file_text or @filesearch', timeout: 60000 }, async functio
 	// TODO: this one is really unclear to me, figure out why we need such hack
 	// This file is available on commons.wikimedia.org and because $wgUseInstantCommons is set to true
 	// mwbot may think it's a dup and won't upload it. Use uploadOverwrite to avoid that.
-	// But to use uploadOverwrite we first make sure that the file is not here otherwise mwbot
-	// will complain about perfect duplicate...
-	await runBatch( this, false, {
-		delete: [
-			'File:Linux_Distribution_Timeline_text_version.pdf'
-		]
-	} );
 	await runBatch( this, false, [
 		job.uploadOverwrite( 'Linux_Distribution_Timeline_text_version.pdf', 'Linux distribution timeline.' )
 	] );

@@ -1,4 +1,4 @@
-@clean @api @relevancy
+@api @relevancy
 Feature: Results are ordered from most relevant to least.
   Scenario: Words in order are worth more then words out of order
     When I api search for Relevancytwo Wordtest

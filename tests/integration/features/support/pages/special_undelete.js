@@ -11,7 +11,7 @@ class SpecialUndelete extends TitlePage {
 	async set_search_input( search ) {
 		const elt = await browser.$( '#prefix' );
 		await elt.waitForExist( {
-			timeout: 2000,
+			timeout: 3000,
 			timeoutMsg: 'Did not find undelete input'
 		} );
 		return elt.setValue( search );
@@ -20,7 +20,7 @@ class SpecialUndelete extends TitlePage {
 	async get_search_input() {
 		const elt = await browser.$( '#prefix' );
 		await elt.waitForExist( {
-			timeout: 2000,
+			timeout: 3000,
 			timeoutMsg: 'Did not find undelete input'
 		} );
 		return elt.getValue();

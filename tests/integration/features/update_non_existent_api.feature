@@ -1,4 +1,4 @@
-@clean @non_existent @api @update
+@non_existent @api @update
 Feature: Search backend updates that reference nonexistent pages
   Scenario: Pages that link to nonexistent pages still get their search index updated
     Given I delete IDontExist

@@ -1,4 +1,4 @@
-@clean @api @did_you_mean
+@api @did_you_mean
 Feature: Did you mean
   Scenario: Uncommon phrases spelled correctly don't get suggestions even if one of the words is very uncommon
     When I api search for nobel prize

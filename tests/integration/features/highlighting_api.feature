@@ -1,4 +1,4 @@
-@clean @highlighting @api
+@highlighting @api
 Feature: Highlighting
   @setup_main
   Scenario Outline: Found words are highlighted

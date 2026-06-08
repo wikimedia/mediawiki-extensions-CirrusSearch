@@ -1,4 +1,4 @@
-@clean @filters @api
+@filters @api
 Feature: Searches with combined filters
   Scenario Outline: Filters can be combined
     When I api search for <term>

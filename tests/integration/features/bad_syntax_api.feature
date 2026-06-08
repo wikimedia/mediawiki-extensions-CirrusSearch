@@ -1,4 +1,4 @@
-@bad_syntax @clean @api
+@bad_syntax @api
 Feature: Searches with syntax errors
   @setup_main
   Scenario: Searching for <text>~<text> treats the tilde like a space except that the whole "word" (including tilde) makes a phrase search

@@ -1,4 +1,4 @@
-@clean @api @wildcard
+@api @wildcard
 Feature: Searches that contain wildcard matches
   Scenario Outline: Wildcards match plain matches
     When I api search for pi<wildcard>les

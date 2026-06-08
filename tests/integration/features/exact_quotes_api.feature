@@ -1,4 +1,4 @@
-@clean @exact_quotes @api
+@exact_quotes @api
 Feature: Searches that contain quotes
   Scenario: Searching for a word in quotes disbles stemming (can still find plural with exact match)
     When I api search for "pickles"

@@ -1,4 +1,4 @@
-@boolean_operators @clean @api @setup_main
+@boolean_operators @api @setup_main
 Feature: Searches with boolean operators
   Scenario Outline: -, !, and NOT prohibit words in search results
     When I api search for <query>

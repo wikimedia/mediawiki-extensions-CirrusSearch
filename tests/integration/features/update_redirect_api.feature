@@ -1,4 +1,4 @@
-@clean @api @redirect @update
+@api @redirect @update
 Feature: Updating a page from or to a redirect
   Scenario: Turning a page into a redirect removes it from the search index
     Given a page named RedirectTarget exists

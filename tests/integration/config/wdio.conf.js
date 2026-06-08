@@ -35,6 +35,7 @@ exports.config = {
 		baseUrl: 'http://cirrustest.wiki.local.wmftest.net:8080',
 		// unix socket path for tag tracker
 		trackerPath: '/tmp/cirrussearch-integration-tagtracker',
+		preloaded: fallback( process.env.CIRRUS_PRELOADED_TEST_DATA, 'no' ),
 		wikis: {
 			default: 'cirrustest',
 			cirrustest: {
@@ -125,7 +126,7 @@ exports.config = {
 	// and 30 processes will get spawned. The property handles how many capabilities
 	// from the same test should run tests.
 	//
-	maxInstances: 1,
+	maxInstances: parseInt( fallback( process.env.CIRRUS_INTEGRATION_TEST_CONCURRENCY, '1' ) ),
 	// Disable xvfb, full headless
 	autoXvfb: false,
 	//

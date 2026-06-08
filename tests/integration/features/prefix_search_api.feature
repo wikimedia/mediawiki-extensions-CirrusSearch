@@ -1,4 +1,4 @@
-@clean @api @prefix @redirect @accent_squashing @accented_namespace @suggest
+@api @prefix @redirect @accent_squashing @accented_namespace @suggest
 Feature: Prefix search via api
 # @suggest needs to be at the end because it will update the completion suggester index
   Scenario: An over length title correctly returns zero results

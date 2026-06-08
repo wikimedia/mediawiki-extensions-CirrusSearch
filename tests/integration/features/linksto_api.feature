@@ -1,4 +1,4 @@
-@clean @filters @linksto @api
+@filters @linksto @api
 Feature: Searches with the linksto filter
   Scenario: linksto only includes pages with the links
     When I api search for linksto:"LinksToTest Target"

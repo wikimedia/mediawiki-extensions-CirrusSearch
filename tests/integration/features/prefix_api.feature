@@ -1,4 +1,4 @@
-@clean @api @prefix_filter
+@api @prefix_filter
 Feature: Searches with a prefix filter
   Scenario: The prefix: filter interprets spaces literally
     When I api search for prefix prefix:prefix tes

@@ -1,4 +1,4 @@
-@clean @phantomjs @file_text
+@phantomjs @file_text
 Feature: Full text search
   Background:
     Given I am at the search results page

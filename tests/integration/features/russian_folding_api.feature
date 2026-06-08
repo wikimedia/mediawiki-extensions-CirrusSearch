@@ -1,4 +1,4 @@
-@clean @api @ru
+@api @ru
 Feature: Searches with Russian accents
   Scenario: Searching for ё when text has е
     When I api search on ru for чёрная дыра

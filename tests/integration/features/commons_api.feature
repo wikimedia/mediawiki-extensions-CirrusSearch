@@ -1,4 +1,4 @@
-@clean @api @commons
+@api @commons
 Feature: Searching for files on local wiki stored on commons
   Scenario: A file that exists only on commons can be found on the local wiki
     When I api search in namespace 6 for oncommons

@@ -1,4 +1,4 @@
-@clean @filters @incategory @api
+@filters @incategory @api
 Feature: Searches with the incategory filter
 
   Scenario: incategory: only includes pages with the category

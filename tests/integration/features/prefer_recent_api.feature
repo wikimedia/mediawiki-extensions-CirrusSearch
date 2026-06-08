@@ -1,4 +1,4 @@
-@clean @api @prefer_recent
+@api @prefer_recent
 Feature: Searches with prefer-recent
   Scenario Outline: Simple smoke test for prefer-recent (make sure it returns results)
     When I api search for prefer-recent:<options> PreferRecent First OR Second OR Third

@@ -3,6 +3,14 @@
 		"image": "docker-registry.wikimedia.org/releng/node24-test-browser:latest"
 	},
 	"opensearch": {
-		"versions": [ "v1.3.20-12", "v2.19.5-3" ]
+		"versions": {
+			"v1.3.20-12": {
+				"concurrency": 1
+			},
+			"v2.19.5-3": {
+				"concurrency": 2,
+				"reuse_mediawiki_state": true
+			}
+		}
 	}
 }

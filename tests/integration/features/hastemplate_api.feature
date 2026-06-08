@@ -1,4 +1,4 @@
-@clean @filters @hastemplate @api
+@filters @hastemplate @api
 Feature: Searches with the hastemplate filter
   Scenario: hastemplate: finds pages with matching templates with namespace specified
     When I api search for hastemplate:"Template:Template Test"

@@ -277,7 +277,7 @@ class StepHelpers {
 
 			if ( Date.now() - start >= timeoutMs ) {
 				const failed_ops = failedOps( operations, done );
-				throw new Error( `Timed out waiting for ${ failed_ops }` );
+				throw new Error( `Timed out waiting for ${ failed_ops }, timeout: ${ timeoutMs }` );
 			}
 			await this.waitForMs( 50 );
 		}

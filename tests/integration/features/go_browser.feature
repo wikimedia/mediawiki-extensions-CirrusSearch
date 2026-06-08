@@ -1,4 +1,4 @@
-@clean @go @phantomjs
+@go @phantomjs
 Feature: Go Search
   @from_core
   Scenario: I can "go" to a user's page whether it is there or not

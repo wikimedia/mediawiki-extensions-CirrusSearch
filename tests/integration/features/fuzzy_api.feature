@@ -1,4 +1,4 @@
-@clean @api @setup_main
+@api @setup_main
 Feature: Searches that contain fuzzy matches
   Scenario: Searching for <text>~0 activates fuzzy search but with 0 fuzziness (finding a result if the term is corret)
     When I api search for ffnonesenseword~0

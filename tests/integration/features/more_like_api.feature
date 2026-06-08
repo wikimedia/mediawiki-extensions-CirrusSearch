@@ -1,4 +1,4 @@
-@clean @more_like_this @api
+@more_like_this @api
 Feature: More like an article
   Scenario: Searching for morelike:<page that doesn't exist> returns no results
     When I api search for morelike:IDontExist

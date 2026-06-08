@@ -1,4 +1,4 @@
-@clean @dump_action @phantomjs
+@dump_action @phantomjs
 Feature: Cirrus dump
   Scenario: Can dump pages
     When I dump the cirrus data for Main Page

@@ -1,4 +1,4 @@
-@clean @api
+@api
 Feature: Full text search
   @headings
   Scenario: Pages can be found by their headings

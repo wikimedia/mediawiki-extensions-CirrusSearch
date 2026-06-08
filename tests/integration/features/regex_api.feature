@@ -1,4 +1,4 @@
-@clean @filters @insource @api
+@filters @insource @api
 Feature: Searches with the insource filter
   Scenario: insource: only includes pages with the source
     When I api search for all:insource:pickles

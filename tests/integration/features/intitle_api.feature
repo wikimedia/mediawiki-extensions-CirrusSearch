@@ -1,4 +1,4 @@
-@clean @filters @intitle @api
+@filters @intitle @api
 Feature: Searches with the intitle filter
   Scenario: intitle: can be combined with other text
     When I api search for intitle:catapult amazing

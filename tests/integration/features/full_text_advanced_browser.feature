@@ -1,4 +1,4 @@
-@clean @phantomjs @setup_main @setup_namespaces
+@phantomjs @setup_main @setup_namespaces
 Feature: Full text search advanced features
   Background:
     Given I am at the search results page

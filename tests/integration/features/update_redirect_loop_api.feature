@@ -1,4 +1,4 @@
-@clean @phantomjs @update @redirect_loop
+@phantomjs @update @redirect_loop
 Feature: Search backend updates containing redirect loops
   Scenario: Pages that redirect to themself don't throw errors
     Then I don't wait for a page named IAmABad RedirectSelf%{epoch} to exist with contents #REDIRECT [[IAmABad RedirectSelf%{epoch}]]

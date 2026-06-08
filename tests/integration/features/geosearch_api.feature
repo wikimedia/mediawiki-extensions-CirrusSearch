@@ -7,7 +7,7 @@
 #*  boost-nearcoord:-12.345,87.654
 #*  boost-nearcoord:77km,34.567,76.543
 
-@clean @api @geo
+@api @geo
 Feature: Geographical searches
   Scenario: neartitle: with title
     When I api search for neartitle:10km,San_Jose

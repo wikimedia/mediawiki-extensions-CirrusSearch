@@ -1,4 +1,4 @@
-@clean @acronym_fixer @api
+@acronym_fixer @api
 Feature: Searches that involve acronyms
   Scenario Outline: Pages with acronyms are found by whole words
     When I api search for <term>

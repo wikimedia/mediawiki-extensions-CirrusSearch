@@ -10,6 +10,7 @@
 			"Kly",
 			"LNDDYL",
 			"Liuxinyu970226",
+			"LowensteinYang",
 			"Waihorace",
 			"Xiplus",
 			"Zhxy 519",
@@ -87,5 +88,7 @@
 	"cirrussearch-articleprediction-invalid-keyword": "無法辨識 <kbd>$3：</kbd> 關鍵字的{{PLURAL:$2|值}}：$1",
 	"cirrussearch-inlanguage-deprecate-comma": "使用逗號作為 inlanguage 關鍵字的分隔字元已棄用。請改用 |（豎線）來分隔語言。",
 	"cirrussearch-invalid-keyword-boost": "提供的增值「$1」無效。應為正十進制數。",
-	"cirrussearch-invalid-keyword-threshold": "提供的閾值「$1」無效。應為介於 0 和 1 之間的十進制數。"
+	"cirrussearch-invalid-keyword-threshold": "提供的閾值「$1」無效。應為介於 0 和 1 之間的十進制數。",
+	"cirrussearch-semantic-empty-query": "語義搜尋需要一個非空的搜尋詞。",
+	"cirrussearch-semantic-too-many-results": "語義搜尋的結果過多。僅前 $1 項會被正確排序。"
 }

@@ -4,10 +4,12 @@
 			"Arystanbek",
 			"BaRaN6161 TURK",
 			"JackUKElliott",
-			"MuratTheTurkish"
+			"MuratTheTurkish",
+			"HakanIST"
 		]
 	},
 	"apihelp-cirrus-config-dump-summary": "CirrusSearch yapılandırmasının dökümü.",
+	"apihelp-cirrus-config-dump-param-prop": "Dökülecek yapılandırma değişkenlerinin türü",
 	"apihelp-cirrus-config-dump-example": "CirrusSearch yapılandırma dökümünü alın.",
 	"apihelp-cirrus-mapping-dump-summary": "Bu viki için CirrusSearch dökümü eşlemesi.",
 	"apihelp-cirrus-mapping-dump-example": "Bu viki için CirrusSearch haritalama dökümünü alın.",
@@ -18,11 +20,22 @@
 	"apihelp-cirrus-profiles-dump-param-verbose": "Profil içeriğini dökümü",
 	"apihelp-query+cirrusdoc-summary": "Arama sunucularından bir CirrusSearch madde belgesinin dökümü",
 	"apihelp-query+cirrusdoc-example": "Şu anda aramada dizine eklenmiş tek bir CirrusSearch maddesinin dökümünü alın.",
+	"apihelp-query+cirrusdoc-example-2": "'includes' parametresi kullanılarak seçilen kategorilerle bu viki için CirrusSearch ayarlarının dökümünü al",
+	"apihelp-query+cirrusdoc-param-includes": "Arama tarafından hangi alanların döndürüleceğini tanımla.",
 	"apihelp-query+cirrusbuilddoc-summary": "Veritabanı sunucularından bir CirrusSearch madde belgesinin dökümü",
 	"apihelp-query+cirrusbuilddoc-example": "Veritabanından oluşturulan tek bir CirrusSearch maddesinin dökümünü alın.",
+	"apihelp-query+cirrusbuilddoc-param-builders": "Çıkarılacak veri türü",
+	"apihelp-query+cirrusbuilddoc-param-limiterprofile": "Belge boyutunu sınırlarken kullanılacak profil",
 	"apierror-cirrus-requesttoolong": "Önek arama isteği, izin verilen maksimum uzunluktan daha uzundu. ($1 &gt; $2)",
 	"apihelp-query+compsuggestbuilddoc-param-method": "Kullanılacak puanlama yöntemi",
 	"apierror-compsuggestbuilddoc-bad-method": "Bilinmeyen puanlama yöntemi",
 	"apihelp-query+cirruscompsuggestbuilddoc-summary": "Tamamlayıcı önerici tarafından kullanılan belgenin dökümü",
-	"apihelp-query+cirruscompsuggestbuilddoc-example": "Tamamlayıcı önerici tarafından kullanılan belgenin dökümünü alın"
+	"apihelp-query+cirruscompsuggestbuilddoc-example": "Tamamlayıcı önerici tarafından kullanılan belgenin dökümünü alın",
+	"apihelp-query+cirruscompsuggestbuilddoc-param-method": "Tamamlama önerici tarafından kullanılacak bir puanlama yöntemi adı sağla",
+	"apihelp-cirrus-check-sanity-summary": "Arama dizinindeki bir dizi sayfa kimliğinin doğruluğunu raporlar",
+	"apihelp-cirrus-check-sanity-param-cluster": "Dizinlerin kontrol edileceği arama kümesi",
+	"apihelp-cirrus-check-sanity-param-from": "Kontrolün başlatılacağı sayfa kimliği",
+	"apihelp-cirrus-check-sanity-param-limit": "Kontrol edilecek sayfa kimliği sayısı",
+	"apihelp-cirrus-check-sanity-param-sequenceid": "Bu sayfa kimliği setinin kontrol edilme sayısı",
+	"apihelp-cirrus-check-sanity-param-rerenderfrequency": "Bir sayfanın yeniden işlenmesi gereken kontrol sayısı. Sağlanan sequenceid'ye dayalıdır."
 }

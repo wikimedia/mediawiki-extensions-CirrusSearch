@@ -8,6 +8,7 @@ use CirrusSearch\Maintenance\Validators\MappingValidator;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use MediaWiki\Config\ConfigException;
+use MediaWiki\User\User;
 
 /**
  * Update the search configuration on the search backend.
@@ -242,6 +243,16 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 
 			$this->unwrap( $utils->checkElasticsearchVersion() );
+
+			$streamingUsername = $this->getSearchConfig()->get( 'CirrusSearchStreamingUpdaterUsername' );
+			if ( $streamingUsername !== null ) {
+				// Explicitly steal the system user to make sure it's marked correctly
+				User::newSystemUser(
+					$streamingUsername,
+					[ 'steal' => true ]
+				);
+			}
+
 			$this->availablePlugins = $this->unwrap( $utils->scanAvailablePlugins( $this->bannedPlugins ) );
 
 			if ( $this->getOption( 'justAllocation', false ) ) {

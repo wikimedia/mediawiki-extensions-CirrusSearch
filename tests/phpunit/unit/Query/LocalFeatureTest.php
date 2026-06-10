@@ -57,4 +57,11 @@ class LocalFeatureTest extends CirrusTestCase {
 		$feature->apply( $context, $term );
 		$this->assertEquals( $isLocal, $context->getLimitSearchToLocalWiki() );
 	}
+
+	/** Negation has no meaning for a boolean flag: warn and return no results. */
+	public function testNegationRejected() {
+		$feature = new LocalFeature();
+		$this->kwAssertions->assertNoResultsPossible(
+			$feature, '-local: foo', [ [ 'cirrussearch-feature-not-negatable', 'local' ] ] );
+	}
 }

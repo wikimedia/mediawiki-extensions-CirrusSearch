@@ -200,6 +200,32 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	abstract protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated );
 
 	/**
+	 * Reject a negated use of a value-less boolean flag keyword.
+	 *
+	 * Header flags such as `local` and `withredirects` toggle a search mode on; negating
+	 * them ("-local") has no defined meaning. Warn and fail closed rather than silently
+	 * ignoring the negation. Intended to guard the head of a doApply() implementation:
+	 *
+	 *     if ( $this->rejectNegation( $context, $key, $negated ) ) {
+	 *         return [ null, false ];
+	 *     }
+	 *
+	 * @param SearchContext $context
+	 * @param string $key The keyword as matched, used in the warning message
+	 * @param bool $negated Whether the keyword was negated
+	 * @return bool True when the keyword was negated and rejected, signalling the caller
+	 *  to skip its normal handling
+	 */
+	protected function rejectNegation( SearchContext $context, string $key, bool $negated ): bool {
+		if ( !$negated ) {
+			return false;
+		}
+		$context->addWarning( 'cirrussearch-feature-not-negatable', $key );
+		$context->setResultsPossible( false );
+		return true;
+	}
+
+	/**
 	 * Fully featured apply method which delegates to doApply by default.
 	 *
 	 * @param SearchContext $context

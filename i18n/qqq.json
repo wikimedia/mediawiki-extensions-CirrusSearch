@@ -89,5 +89,6 @@
 	"cirrussearch-invalid-keyword-boost": "Warning shown when using a search keyword able to boost terms: <kbd>somekeyword:term^boost</kbd> where <kbd>boost</kbd> must be a positive float number.",
 	"cirrussearch-invalid-keyword-threshold": "Warning shown when using a search keyword able to filter by threshold terms: <kbd>somekeyword:term>threshold</kbd> where <kbd>threshold</kbd> must be a float number between 0 and 1.",
 	"cirrussearch-semantic-empty-query": "Warning shown when a semantic search is attempted with an empty search term.",
-	"cirrussearch-semantic-too-many-results": "Warning shown when a semantic search matches too many results to rank effectively. The user is asked to refine their search.\n\nParameters:\n* $1 - maximum number of search results semantic search will provide."
+	"cirrussearch-semantic-too-many-results": "Warning shown when a semantic search matches too many results to rank effectively. The user is asked to refine their search.\n\nParameters:\n* $1 - maximum number of search results semantic search will provide.",
+	"cirrussearch-feature-not-negatable": "Warning shown when a search query negates a keyword that does not support negation."
 }

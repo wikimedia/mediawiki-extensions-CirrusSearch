@@ -67,7 +67,6 @@ class CheckSanity extends ApiBase {
 			$searcher,
 			Util::getStatsFactory(),
 			false, // logSane
-			false, // fastRedirectCheck
 			null, // pageCache
 			$this->makeIsOldClosure()
 		);

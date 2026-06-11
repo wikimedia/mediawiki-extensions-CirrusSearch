@@ -37,11 +37,6 @@ class Saneitize extends Maintenance {
 	private $toPageId;
 
 	/**
-	 * @var bool true to enable fast but inconsistent redirect checks
-	 */
-	private $fastCheck;
-
-	/**
 	 * @var Checker Checks is the index is insane, and calls on a Remediator
 	 *  instance to do something about it. The remediator may fix the issue,
 	 *  log about it, or do a combination.
@@ -56,7 +51,6 @@ class Saneitize extends Maintenance {
 		$this->addOption( 'toId', 'Stop sanitizing at a specific page_id.  Default to the maximum id in the db + 100.', false, true );
 		$this->addOption( 'noop', 'Rather then queue remediation actions do nothing.' );
 		$this->addOption( 'logSane', 'Print all sane pages.' );
-		$this->addOption( 'fastCheck', 'Do not load page content to check if a page is a redirect, faster but inconsistent.' );
 		$this->addOption( 'buildChunks', 'Instead of running the script spit out commands that can be farmed out to ' .
 			'different processes or machines to check the index.  If specified as a number then chunks no larger than ' .
 			'that size are spat out.  If specified as a number followed by the word "total" without a space between them ' .
@@ -75,8 +69,6 @@ class Saneitize extends Maintenance {
 				$this->fatalError( "--batch-size must be > 0!" );
 			}
 		}
-
-		$this->fastCheck = $this->getOption( 'fastCheck', false );
 
 		$this->setFromAndTo();
 		$buildChunks = $this->getOption( 'buildChunks' );
@@ -160,8 +152,7 @@ class Saneitize extends Maintenance {
 			$remediator,
 			$searcher,
 			Util::getStatsFactory(),
-			$this->getOption( 'logSane' ),
-			$this->fastCheck
+			$this->getOption( 'logSane' )
 		);
 	}
 }

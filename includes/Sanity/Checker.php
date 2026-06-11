@@ -51,12 +51,6 @@ class Checker {
 	private $logSane;
 
 	/**
-	 * @var bool inspect WikiPage::isRedirect() instead of WikiPage::getContent()->isRedirect()
-	 * Faster since it does not need to fetch the content but inconsistent in some cases.
-	 */
-	private $fastRedirectCheck;
-
-	/**
 	 * A cache for pages loaded with loadPagesFromDB( $pageIds ). This is only
 	 * useful when multiple Checker are run to check different elastic clusters.
 	 * @var ArrayObject|null
@@ -78,7 +72,6 @@ class Checker {
 	 * @param Searcher $searcher searcher to use for fetches
 	 * @param StatsFactory $statsFactory to use for recording metrics
 	 * @param bool $logSane should we log sane ids
-	 * @param bool $fastRedirectCheck fast but inconsistent redirect check
 	 * @param ArrayObject|null $pageCache cache for WikiPage loaded from db
 	 * @param callable|null $isOldFn Accepts a WikiPage argument and returns boolean true if the page
 	 *  should be reindexed based on time since last reindex.
@@ -90,7 +83,6 @@ class Checker {
 		Searcher $searcher,
 		StatsFactory $statsFactory,
 		$logSane,
-		$fastRedirectCheck,
 		?ArrayObject $pageCache = null,
 		?callable $isOldFn = null
 	) {
@@ -105,7 +97,6 @@ class Checker {
 		);
 		$this->searcher = $searcher;
 		$this->logSane = $logSane;
-		$this->fastRedirectCheck = $fastRedirectCheck;
 		$this->pageCache = $pageCache;
 		$this->isOldFn = $isOldFn ?? static function ( WikiPage $page ) {
 			return false;
@@ -227,10 +218,6 @@ class Checker {
 	 * @return bool true if $page is a redirect
 	 */
 	private function checkIfRedirect( $page ) {
-		if ( $this->fastRedirectCheck ) {
-			return $page->isRedirect();
-		}
-
 		$content = $page->getContent();
 		if ( $content == null ) {
 			return false;

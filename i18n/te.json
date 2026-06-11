@@ -18,7 +18,7 @@
 	"cirrussearch-pref-label": "కొత్తగా వెతుకు",
 	"prefs-completion": "వెతుకులాట పూరణ",
 	"cirrussearch-pref-completion-section-desc": "పూరణ సూచిక",
-	"cirrussearch-pref-completion-profile-help": "అప్రమేయపదపూర్తి లక్షణ పనితీరు సలహాలు(టైపు చేసేటప్పుడే వెతకటం) నిర్ణయం.\n\nఅచ్చుతప్పుల దిద్దడం మెరుగుగా, వెతుకుటకు మెరుగైన సంబంధం కల [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester పదపూర్తి సలహా]  వెతుకు సలహల అల్గారిథమ్. Prefix search అనేది గతంలో వాడిన టైపుచేసేటప్పుడే  వెతికే అల్గారిథం.",
+	"cirrussearch-pref-completion-profile-help": "ఆటోకంప్లీట్ (టైపు చేస్తూండగానే వెతకడం) సూచనల అంశపు ప్రవర్తనను సెట్ చెయ్యండి\n\nThe [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester పూరణ సలహాదారు] అనేది, మెరుగైన టైపాట్ల సవరణలతో, మరింత అర్థవంతమైన ఫలితాల కోసం, వెతుకులాటలో సలహాలు ఇచ్చే అల్గారిథం. ప్రీఫిక్స్ వెతుకులాట అనేది సాంప్రదాయికంగా వస్తున్న టైపు చేస్తూండగానే వెతికే సూచనల అల్గారిథం.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "అప్రమేయం (ఉత్తమమైనది)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "రెండు టైపాట్ల వరకూ సవరిస్తుంది. లక్ష్యిత పేజీని బాగా పోలి ఉన్నదారిమార్పులను తీసేస్తుంది.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "రెండు టైపాట్ల వరకూ సవరిస్తుంది. దగ్గారి దారిమార్పులను పరిష్కరిస్తుంది. శీర్షికల్లోని ఉప పదబంధాలను సరిచూస్తుంది.",

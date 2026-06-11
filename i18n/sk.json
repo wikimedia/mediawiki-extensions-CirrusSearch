@@ -4,10 +4,11 @@
 			"Luky001",
 			"Sudo77(new)",
 			"Teslaton",
-			"TomášPolonec"
+			"TomášPolonec",
+			"Wizzard"
 		]
 	},
-	"cirrussearch-desc": "Vyhľadávanie v MediaWiki bežiace na OpenSearch",
+	"cirrussearch-desc": "Vyhľadávanie pre MediaWiki založené na OpenSearch",
 	"cirrussearch-backend-error": "Kvôli dočasnému problému sme nemohli dokončiť požadované vyhľadávanie. Skúste to znovu neskôr.",
 	"cirrussearch-pref-label": "Nové vyhľadávanie",
 	"cirrussearch-pref-desc": "Vyskúšajte nový vyhľadávač, ktorý podporuje viac jazykov, zobrazuje novšie výsledky a dokonca hľadá text vo vnútri šablón.",

@@ -105,7 +105,7 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 	 * @dataProvider provideSetEventData
 	 */
 	public function testSetEvent( array $eventAttrs ) {
-		$wikiPage0 = $this->getExistingTestPage( Title::newFromText( 'MyPageToEdit', $this->getDefaultWikitextNS() ) );
+		$wikiPage0 = $this->getExistingTestPage( Title::makeTitle( $this->getDefaultWikitextNS(), 'MyPageToEdit' ) );
 
 		$dt = EventSerializer::timestampToDt();
 
@@ -143,7 +143,7 @@ class EventBusWeightedTagSerializerTest extends MediaWikiIntegrationTestCase {
 	 * @dataProvider provideClearEventData
 	 */
 	public function testClearEvent( array $eventAttrs ) {
-		$wikiPage0 = $this->getExistingTestPage( Title::newFromText( 'MyPageToEdit', $this->getDefaultWikitextNS() ) );
+		$wikiPage0 = $this->getExistingTestPage( Title::makeTitle( $this->getDefaultWikitextNS(), 'MyPageToEdit' ) );
 
 		$dt = EventSerializer::timestampToDt();
 

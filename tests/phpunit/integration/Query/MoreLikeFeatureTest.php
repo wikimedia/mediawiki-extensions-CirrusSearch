@@ -264,7 +264,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 
 	public function testExpandedData() {
 		$config = new SearchConfig();
-		$title = Title::newFromText( 'Some page' );
+		$title = Title::makeTitle( NS_MAIN, 'Some page' );
 
 		// Force the article ID and the redirect flag to avoid DB queries.
 		$title->resetArticleID( 12345 );

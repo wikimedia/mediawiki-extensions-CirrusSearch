@@ -113,8 +113,8 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		);
 
 		// Set a couple pre-defined pages for anything (morelike) that needs valid pages
-		$this->addGoodLinkObject( 12345, Title::newFromText( 'Some page' ) );
-		$this->addGoodLinkObject( 23456, Title::newFromText( 'Other page' ) );
+		$this->addGoodLinkObject( 12345, Title::makeTitle( NS_MAIN, 'Some page' ) );
+		$this->addGoodLinkObject( 23456, Title::makeTitle( NS_MAIN, 'Other page' ) );
 
 		$engine = new CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		// Set some default namespaces, otherwise installed extensions will change

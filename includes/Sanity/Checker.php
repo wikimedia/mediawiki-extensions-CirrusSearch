@@ -149,7 +149,11 @@ class Checker {
 			if ( isset( $pagesFromDb[$pageId] ) ) {
 				$page = $pagesFromDb[$pageId];
 				$updated = $this->checkExisitingPage( $docId, $pageId, $page, $fromIndex );
-				if ( !$updated && ( $this->isOldFn )( $page ) && !$page->isRedirect() ) {
+				// Redirects only carry a first-class document (and thus participate in the
+				// periodic time-based rerender) when redirect documents are built.
+				if ( !$updated && ( $this->isOldFn )( $page )
+					&& ( $this->searchConfig->buildRedirectDocuments() || !$page->isRedirect() )
+				) {
 					$this->remediator->oldDocument( $page );
 					$nbPagesOld++;
 				}
@@ -181,10 +185,7 @@ class Checker {
 	}
 
 	/**
-	 * Check that an existing page is properly indexed:
-	 * - index it if missing in the index
-	 * - delete it if it's a redirect
-	 * - verify it if found in the index
+	 * Check that a page that exists in the db is properly indexed
 	 *
 	 * @param string $docId
 	 * @param int $pageId
@@ -193,38 +194,39 @@ class Checker {
 	 * @return bool true if a modification was needed
 	 */
 	private function checkExisitingPage( $docId, $pageId, $page, array $fromIndex ) {
-		$inIndex = $fromIndex !== [];
-		if ( $this->checkIfRedirect( $page ) ) {
-			if ( $inIndex ) {
-				foreach ( $fromIndex as $indexInfo ) {
-					$indexSuffix = $this->connection->extractIndexSuffix( $indexInfo->getIndex() );
-					$this->remediator->redirectInIndex( $docId, $page, $indexSuffix );
-				}
-				return true;
-			}
-			$this->sane( $pageId, 'Redirect not in index' );
-			return false;
-		}
-		if ( $inIndex ) {
+		if ( $page->isRedirect() && !$this->searchConfig->buildRedirectDocuments() ) {
+			// redirects should not exist without build enabled
+			return $this->checkInexistentRedirect( $docId, $pageId, $page, $fromIndex );
+		} elseif ( $fromIndex !== [] ) {
+			// page exists and doc exists, verify it's recent enough
 			return $this->checkPageInIndex( $docId, $pageId, $page, $fromIndex );
+		} else {
+			// page should have matching doc but does not
+			$this->remediator->pageNotInIndex( $page );
+			return true;
 		}
-		$this->remediator->pageNotInIndex( $page );
-		return true;
 	}
 
 	/**
-	 * Check if the page is a redirect
+	 * Check that a redirect that exists in the db is not directly represented in the index
+	 *
+	 * Only invoked when CirrusSearchRedirectDocuments['build'] is false (the default).
+	 *
+	 * @param string $docId
+	 * @param int $pageId
 	 * @param WikiPage $page
-	 * @return bool true if $page is a redirect
+	 * @param \Elastica\Result[] $fromIndex
+	 * @return bool true if a modification was needed
 	 */
-	private function checkIfRedirect( $page ) {
-		$content = $page->getContent();
-		if ( $content == null ) {
-			return false;
+	private function checkInexistentRedirect( $docId, $pageId, WikiPage $page, array $fromIndex ) {
+		if ( $fromIndex !== [] ) {
+			foreach ( $fromIndex as $indexInfo ) {
+				$indexSuffix = $this->connection->extractIndexSuffix( $indexInfo->getIndex() );
+				$this->remediator->redirectInIndex( $docId, $page, $indexSuffix );
+			}
+			return true;
 		}
-		if ( is_object( $content ) ) {
-			return $content->isRedirect();
-		}
+		$this->sane( $pageId, 'Redirect not in index' );
 		return false;
 	}
 
@@ -238,8 +240,7 @@ class Checker {
 	 * @return bool true if a modification was needed
 	 */
 	private function checkInexistentPage( $docId, $pageId, array $fromIndex ) {
-		$inIndex = $fromIndex !== [];
-		if ( $inIndex ) {
+		if ( $fromIndex !== [] ) {
 			foreach ( $fromIndex as $r ) {
 				$title = Title::makeTitleSafe( $r->namespace, $r->title ) ??
 					Title::makeTitle( NS_SPECIAL, 'Badtitle/InvalidInDBOrElastic' );
@@ -382,7 +383,7 @@ class Checker {
 	 * @throws CheckerException if an error occurred
 	 */
 	private function loadPagesFromIndex( array $docIds ) {
-		$status = $this->searcher->get( $docIds, [ 'namespace', 'title', 'version' ], false );
+		$status = $this->searcher->get( $docIds, [ 'namespace', 'title', 'version', 'page_type' ], false );
 		if ( !$status->isOK() ) {
 			throw new CheckerException( 'Cannot fetch ids from index' );
 		}

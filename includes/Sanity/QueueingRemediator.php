@@ -7,6 +7,7 @@ namespace CirrusSearch\Sanity;
 
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
+use CirrusSearch\Job\UpdateRedirectDocument;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPage;
@@ -27,13 +28,27 @@ class QueueingRemediator implements Remediator {
 	private $jobQueue;
 
 	/**
+	 * @var bool Whether redirect pages have their own first-class documents
+	 *  (CirrusSearchRedirectDocuments['build']).
+	 */
+	private $buildRedirectDocuments;
+
+	/**
 	 * @param string|null $cluster The name of the cluster to update,
 	 *  or null to update all clusters.
 	 * @param JobQueueGroup|null $jobQueueGroup
+	 * @param bool $buildRedirectDocuments Whether redirect pages have their own
+	 *  first-class documents. When true, redirect remediation writes the redirect's
+	 *  own document instead of tracing to the target.
 	 */
-	public function __construct( $cluster, ?JobQueueGroup $jobQueueGroup = null ) {
+	public function __construct(
+		$cluster,
+		?JobQueueGroup $jobQueueGroup = null,
+		bool $buildRedirectDocuments = false
+	) {
 		$this->cluster = $cluster;
 		$this->jobQueue = $jobQueueGroup ?? MediaWikiServices::getInstance()->getJobQueueGroup();
+		$this->buildRedirectDocuments = $buildRedirectDocuments;
 	}
 
 	/**
@@ -49,6 +64,8 @@ class QueueingRemediator implements Remediator {
 				'cluster' => $this->cluster,
 			] )
 		);
+		// Only reached when redirect documents are not built, so the routing below
+		// traces this redirect to its target via a links update.
 		$this->pushLinksUpdateJob( $page );
 	}
 
@@ -100,6 +117,15 @@ class QueueingRemediator implements Remediator {
 	}
 
 	private function pushLinksUpdateJob( WikiPage $page ) {
-		$this->jobQueue->push( LinksUpdate::newSaneitizerUpdate( $page->getTitle(), $this->cluster ) );
+		// When redirect documents are built, route remediation through UpdateRedirectDocument so
+		// the redirect's document is (re)written as necessary.
+		if ( $this->buildRedirectDocuments && $page->isRedirect() ) {
+			$this->jobQueue->push(
+				UpdateRedirectDocument::newSaneitizerUpdate( $page->getTitle(), $this->cluster )
+			);
+		// Otherwise a LinksUpdate on a redirect traces to its target and updates the target
+		} else {
+			$this->jobQueue->push( LinksUpdate::newSaneitizerUpdate( $page->getTitle(), $this->cluster ) );
+		}
 	}
 }

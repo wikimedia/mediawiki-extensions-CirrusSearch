@@ -5,6 +5,7 @@ namespace CirrusSearch\Sanity;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
+use CirrusSearch\Job\UpdateRedirectDocument;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
@@ -72,6 +73,19 @@ class QueueingRemediatorTest extends CirrusTestCase {
 		}
 
 		MWTimestamp::setFakeTime( self::NOW );
+		$jobQueueGroup = $this->newJobQueueGroupExpecting( $jobs );
+		$remediator = new QueueingRemediator( $cluster, $jobQueueGroup );
+		$remediator->$methodCall( ...$methodParams );
+	}
+
+	/**
+	 * Builds a JobQueueGroup mock that expects exactly the given jobs to be
+	 * pushed, in order, comparing each push against the next expected job by
+	 * deduplication info.
+	 *
+	 * @param \CirrusSearch\Job\CirrusTitleJob[] $jobs
+	 */
+	private function newJobQueueGroupExpecting( array $jobs ): JobQueueGroup {
 		$jobQueueGroup = $this->createMock( JobQueueGroup::class );
 		$jobQueueGroup->expects( $this->exactly( count( $jobs ) ) )
 			->method( 'push' )
@@ -86,7 +100,65 @@ class QueueingRemediatorTest extends CirrusTestCase {
 					$j->getDeduplicationInfo()
 				);
 			} );
-		$remediator = new QueueingRemediator( $cluster, $jobQueueGroup );
+		return $jobQueueGroup;
+	}
+
+	public static function provideRedirectHandling() {
+		$title = Title::makeTitle( NS_MAIN, 'Test' );
+		$docId = '123';
+		$indexSuffix = 'content';
+
+		foreach ( [ null, 'c1' ] as $cluster ) {
+			$linksUpdate = new LinksUpdate( $title, [
+				'cluster' => $cluster,
+				'update_kind' => 'saneitizer',
+				'root_event_time' => self::NOW,
+				'prioritize' => false,
+			] );
+			$redirectUpdate = new UpdateRedirectDocument( $title, [
+				'cluster' => $cluster,
+				'update_kind' => 'saneitizer',
+				'root_event_time' => self::NOW,
+			] );
+
+			$suffix = $cluster === null ? 'all clusters' : "cluster $cluster";
+			// Every remediation that traces through pushLinksUpdateJob must route to
+			// UpdateRedirectDocument when the Checker classified the page as a redirect and
+			// redirect documents are built (with the cluster threaded through), and stay on
+			// LinksUpdate otherwise.
+			yield "pageNotInIndex, build -> UpdateRedirectDocument ($suffix)" =>
+				[ true, $cluster, 'pageNotInIndex', [ 'redirectPage' ], $redirectUpdate ];
+			yield "pageNotInIndex, no build -> LinksUpdate ($suffix)" =>
+				[ false, $cluster, 'pageNotInIndex', [ 'redirectPage' ], $linksUpdate ];
+			yield "oldVersionInIndex, build -> UpdateRedirectDocument ($suffix)" =>
+				[ true, $cluster, 'oldVersionInIndex', [ $docId, 'redirectPage', $indexSuffix ], $redirectUpdate ];
+			yield "oldVersionInIndex, no build -> LinksUpdate ($suffix)" =>
+				[ false, $cluster, 'oldVersionInIndex', [ $docId, 'redirectPage', $indexSuffix ], $linksUpdate ];
+		}
+	}
+
+	/**
+	 * @dataProvider provideRedirectHandling
+	 * @param bool $build
+	 * @param string|null $cluster
+	 * @param string $methodCall
+	 * @param array $methodParams
+	 * @param \CirrusSearch\Job\CirrusTitleJob $expectedJob
+	 */
+	public function testRedirectHandling( bool $build, $cluster, string $methodCall, array $methodParams, $expectedJob ) {
+		foreach ( $methodParams as &$param ) {
+			if ( $param === 'redirectPage' ) {
+				$wp = $this->createMock( WikiPage::class );
+				$wp->method( 'getTitle' )->willReturn( Title::makeTitle( NS_MAIN, 'Test' ) );
+				$wp->method( 'isRedirect' )->willReturn( true );
+				$param = $wp;
+			}
+		}
+		unset( $param );
+
+		MWTimestamp::setFakeTime( self::NOW );
+		$jobQueueGroup = $this->newJobQueueGroupExpecting( [ $expectedJob ] );
+		$remediator = new QueueingRemediator( $cluster, $jobQueueGroup, $build );
 		$remediator->$methodCall( ...$methodParams );
 	}
 }

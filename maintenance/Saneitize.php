@@ -139,7 +139,11 @@ class Saneitize extends Maintenance {
 		if ( $this->getOption( 'noop' ) ) {
 			$remediator = new NoopRemediator();
 		} else {
-			$remediator = new QueueingRemediator( $this->getConnection()->getClusterName() );
+			$remediator = new QueueingRemediator(
+				$this->getConnection()->getClusterName(),
+				null,
+				$this->getSearchConfig()->buildRedirectDocuments()
+			);
 		}
 		if ( !$this->isQuiet() ) {
 			$remediator = new PrintingRemediator( $remediator );

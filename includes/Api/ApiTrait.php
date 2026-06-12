@@ -45,10 +45,13 @@ trait ApiTrait {
 	/**
 	 * @param PageIdentity $title
 	 * @param string[]|bool $sourceFiltering source filtering to apply
+	 * @param bool $followRedirects When false, return the requested page's own indexed
+	 *  document instead of tracing redirects to the target (redirect scope). Lets callers
+	 *  inspect a redirect's first-class document.
 	 * @return array
 	 */
-	public function loadDocuments( PageIdentity $title, $sourceFiltering = true ) {
-		[ $docId, $hasRedirects ] = $this->determineCirrusDocId( $title );
+	public function loadDocuments( PageIdentity $title, $sourceFiltering = true, bool $followRedirects = true ) {
+		[ $docId, $hasRedirects ] = $this->determineCirrusDocId( $title, $followRedirects );
 		if ( $docId === null ) {
 			return [];
 		}
@@ -103,19 +106,38 @@ trait ApiTrait {
 	 * is worth the complication.
 	 *
 	 * @param PageIdentity $title
+	 * @param bool $followRedirects When false, stop at the requested page and return its
+	 *  own doc id even if it is a redirect (redirect scope), rather than tracing through to
+	 *  the redirect target.
 	 * @return array Two element array containing first the cirrus doc id
 	 *  the title should have been indexed into elasticsearch and second a
 	 *  boolean indicating if redirects were followed. If the page would
 	 *  not be indexed (for example a redirect loop, or redirect to
 	 *  invalid page) the first array element will be null.
 	 */
-	private function determineCirrusDocId( PageIdentity $title ) {
-		$hasRedirects = false;
-		$seen = [];
+	private function determineCirrusDocId( PageIdentity $title, bool $followRedirects = true ) {
 		$now = wfTimestamp( TS_MW );
 		$services = MediaWikiServices::getInstance();
 		$contentHandlerFactory = $services->getContentHandlerFactory();
 		$archivedRevisionLookup = $services->getArchivedRevisionLookup();
+		if ( !$followRedirects ) {
+			$pageId = $title->getId();
+			if ( $pageId === 0 ) {
+				// The page is missing from SQL (e.g. recently deleted). Mirror the
+				// redirect-following path below and recover its id from the archive so
+				// redirect-scope queries can still locate the page's indexed document.
+				$revRecord = $archivedRevisionLookup
+					->getPreviousRevisionRecord( $title, $now );
+				if ( $revRecord === null ) {
+					return [ null, false ];
+				}
+				$pageId = $revRecord->getPageId();
+			}
+			return [ $this->getSearchConfig()->makeId( $pageId ), false ];
+		}
+
+		$hasRedirects = false;
+		$seen = [];
 		while ( true ) {
 			$keySeen = $title->getNamespace() . '|' . $title->getDBkey();
 			if ( isset( $seen[$keySeen] ) || count( $seen ) > 10 ) {
@@ -136,7 +158,7 @@ trait ApiTrait {
 			$mainSlot = $revRecord->getSlot( SlotRecord::MAIN, RevisionRecord::RAW );
 			$handler = $contentHandlerFactory->getContentHandler( $mainSlot->getModel() );
 			if ( !$handler->supportsRedirects() ) {
-				return [ $pageId, $hasRedirects ];
+				return [ $this->getSearchConfig()->makeId( $pageId ), $hasRedirects ];
 			}
 			$content = $mainSlot->getContent();
 			// getUltimateRedirectTarget() would be prefered, but it wont find
@@ -147,7 +169,7 @@ trait ApiTrait {
 			$redirect = $content->getRedirectTarget();
 			if ( !$redirect ) {
 				// TODO: Can this happen?
-				return [ $pageId, $hasRedirects ];
+				return [ $this->getSearchConfig()->makeId( $pageId ), $hasRedirects ];
 			}
 
 			$hasRedirects = true;

@@ -63,6 +63,7 @@ class QueryBuildDocumentTest extends ApiTestCase {
 			'cluster_group' => 'my_group',
 			'noop_hints' => [
 				'version' => 'documentVersion',
+				'redirect_target' => 'equals',
 			],
 		];
 
@@ -148,6 +149,69 @@ class QueryBuildDocumentTest extends ApiTestCase {
 		$this->assertCount( 1, $warnings );
 		$revId = $data[0]['query']['pages'][$pageId]['cirrusbuilddoc']['version'];
 		$this->assertEquals( $secondRevision->getId(), $revId );
+	}
+
+	/**
+	 * @covers \CirrusSearch\Api\QueryBuildDocument
+	 */
+	public function test_redirect_marked_unrenderable_when_build_disabled() {
+		$this->overrideConfigValues( [
+			'CirrusSearchRedirectDocuments' => [ 'build' => false, 'use' => false ],
+		] );
+		[ , $redirectId ] = $this->createRedirect();
+
+		$data = $this->doApiRequest( [
+			"action" => "query",
+			"pageids" => $redirectId,
+			"prop" => "cirrusbuilddoc",
+			"cbbuilders" => "content",
+		] );
+		$page = $data[0]["query"]["pages"][$redirectId];
+		$this->assertTrue( $page["unrenderable"] ?? false );
+		$this->assertArrayNotHasKey( "cirrusbuilddoc", $page );
+	}
+
+	/**
+	 * @covers \CirrusSearch\Api\QueryBuildDocument
+	 */
+	public function test_redirect_document_built_when_build_enabled() {
+		$this->overrideConfigValues( [
+			'CirrusSearchRedirectDocuments' => [ 'build' => true, 'use' => false ],
+		] );
+		[ $targetTitle, $redirectId ] = $this->createRedirect();
+
+		$data = $this->doApiRequest( [
+			"action" => "query",
+			"pageids" => $redirectId,
+			"prop" => "cirrusbuilddoc",
+			"cbbuilders" => "content",
+		] );
+		$page = $data[0]["query"]["pages"][$redirectId];
+		$this->assertArrayNotHasKey( "unrenderable", $page );
+		$doc = $page["cirrusbuilddoc"];
+		$this->assertSame( 'redirect', $doc['page_type'] );
+		$this->assertSame( $targetTitle->getText(), $doc['redirect_target']['title'] );
+
+		$noopHints = $data[0]["query"]["pages"][$redirectId]["cirrusbuilddoc_metadata"]["noop_hints"];
+		$this->assertSame( 'equals', $noopHints['redirect_target'] ?? null );
+	}
+
+	/**
+	 * Create a target page and a redirect pointing at it.
+	 * @return array{0:Title,1:int} the target title and the redirect's page id
+	 */
+	private function createRedirect(): array {
+		$target = $this->getNonexistingTestPage( Title::makeTitle( NS_MAIN, 'RedirDocTarget' ) );
+		$this->editPage( $target, 'Target content' );
+
+		$redirect = $this->getNonexistingTestPage( Title::makeTitle( NS_MAIN, 'RedirDocAlpha' ) );
+		$status = $this->editPage( $redirect, '#REDIRECT [[RedirDocTarget]]' );
+		$redirectId = $status->getNewRevision()->getPage()->getId();
+
+		// See parser-cache note in test_content_extraction().
+		$this->getServiceContainer()->resetServiceForTesting( 'ParserOutputAccess' );
+
+		return [ $target->getTitle(), $redirectId ];
 	}
 
 	/**

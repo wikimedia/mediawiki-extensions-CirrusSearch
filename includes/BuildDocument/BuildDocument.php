@@ -106,11 +106,15 @@ class BuildDocument {
 	public function initialize( array $pagesOrRevs, int $flags ): array {
 		$documents = [];
 		$builders = $this->createBuilders( $flags );
+		$buildRedirectDocs = $this->config->buildRedirectDocuments();
 		foreach ( $pagesOrRevs as $pageOrRev ) {
 			if ( $pageOrRev instanceof RevisionRecord ) {
 				$revision = $pageOrRev;
 				$page = $this->wikiPageFactory->newFromTitle( $revision->getPage() );
-				$isRedirect = $revision->getContent( SlotRecord::MAIN )->isRedirect();
+				// getContent() returns null for suppressed/corrupt content; treat an
+				// inaccessible main slot as not-a-redirect.
+				$content = $revision->getContent( SlotRecord::MAIN );
+				$isRedirect = $content && $content->isRedirect();
 			} else {
 				$revision = $pageOrRev->getRevisionRecord();
 				$page = $pageOrRev;
@@ -125,7 +129,7 @@ class BuildDocument {
 				continue;
 			}
 
-			if ( $isRedirect ) {
+			if ( $isRedirect && !$buildRedirectDocs ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					'Attempted to build a document for a redirect.  This should be caught ' .
 					"earlier but wasn't.  Page: {title}",
@@ -146,7 +150,7 @@ class BuildDocument {
 				continue;
 			}
 
-			$documents[$page->getId()] = $this->initializeDoc( $page, $builders, $flags, $revision );
+			$documents[$page->getId()] = $this->initializeDoc( $page, $builders, $flags, $revision, $isRedirect );
 		}
 
 		foreach ( $builders as $builder ) {
@@ -218,7 +222,7 @@ class BuildDocument {
 	protected function createBuilders( int $flags ): array {
 		$skipLinks = $flags & self::SKIP_LINKS;
 		$skipParse = $flags & self::SKIP_PARSE;
-		$builders = [ new DefaultPageProperties( $this->db ) ];
+		$builders = [ new DefaultPageProperties( $this->db, $this->titleFormatter ) ];
 		if ( !$skipParse ) {
 			$builders[] = new ParserOutputPageProperties( $this->config );
 		}
@@ -264,9 +268,12 @@ class BuildDocument {
 	 * @param PagePropertyBuilder[] $builders
 	 * @param int $flags
 	 * @param RevisionRecord $revision
+	 * @param bool $isRedirect
 	 * @return Document
 	 */
-	private function initializeDoc( WikiPage $page, array $builders, int $flags, RevisionRecord $revision ): Document {
+	private function initializeDoc(
+		WikiPage $page, array $builders, int $flags, RevisionRecord $revision, bool $isRedirect
+	): Document {
 		$docId = $this->config->makeId( $page->getId() );
 		$doc = new \Elastica\Document( $docId, [] );
 		// allow self::finalize to recreate the same set of builders
@@ -277,7 +284,7 @@ class BuildDocument {
 			$doc, 'version', 'documentVersion' );
 
 		foreach ( $builders as $builder ) {
-			$builder->initialize( $doc, $page, $revision );
+			$builder->initialize( $doc, $page, $revision, $isRedirect );
 		}
 
 		return $doc;

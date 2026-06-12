@@ -2,8 +2,11 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Job\CirrusTitleJob;
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate as CirrusLinksUpdate;
+use CirrusSearch\Job\UpdateRedirectDocument;
+use MediaWiki\Content\Content;
 use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Deferred\LinksUpdate\LinksUpdate;
 use MediaWiki\JobQueue\JobQueueGroup;
@@ -14,9 +17,12 @@ use MediaWiki\Page\WikiPage;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\MutableRevisionRecord;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Status\Status;
 use MediaWiki\Storage\EditResult;
 use MediaWiki\Title\Title;
 use MediaWiki\Upload\UploadBase;
+use MediaWiki\User\User;
 use MediaWiki\User\UserIdentityValue;
 use MediaWiki\Utils\MWTimestamp;
 use Wikimedia\Rdbms\IConnectionProvider;
@@ -188,6 +194,150 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 			];
 		}
 		return $cases;
+	}
+
+	private function redirectDocConfig( bool $build ): array {
+		return [
+			'CirrusSearchLinkedArticlesToUpdate' => 10,
+			'CirrusSearchUnlinkedArticlesToUpdate' => 10,
+			'CirrusSearchEnableIncomingLinkCounting' => false,
+			'CirrusSearchUpdateDelay' => [ 'prioritized' => 0, 'default' => 0 ],
+			'CirrusSearchRedirectDocuments' => [ 'build' => $build, 'use' => false ],
+			'CirrusSearchClusters' => [ 'mycluster' => [ '127.0.0.1' ] ],
+			'CirrusSearchDefaultCluster' => 'mycluster',
+			'CirrusSearchWriteClusters' => null,
+			'CirrusSearchReplicaGroup' => 'default',
+		];
+	}
+
+	private function mockRedirectLinksUpdate( Title $title, bool $isRedirect ): LinksUpdate {
+		$content = $this->createMock( Content::class );
+		$content->method( 'isRedirect' )->willReturn( $isRedirect );
+		$revision = $this->createMock( RevisionRecord::class );
+		$revision->method( 'getTimestamp' )->willReturn( MWTimestamp::convert( TS_MW, 124 ) );
+		$revision->method( 'getContent' )->with( SlotRecord::MAIN )->willReturn( $content );
+
+		$linksUpdate = $this->createMock( LinksUpdate::class );
+		$linksUpdate->method( 'getTitle' )->willReturn( $title );
+		$linksUpdate->method( 'getRevisionRecord' )->willReturn( $revision );
+		$linksUpdate->method( 'getPageId' )->willReturn( 1 );
+		return $linksUpdate;
+	}
+
+	public static function provideRedirectDocumentCases(): array {
+		return [
+			'page change, redirect, build on -> both jobs' => [
+				true, true, true,
+				[ 'cirrusSearchLinksUpdatePrioritized', 'cirrusSearchUpdateRedirectDocument' ],
+			],
+			'page refresh, redirect, build on -> both jobs' => [
+				true, true, false,
+				[ 'cirrusSearchLinksUpdate', 'cirrusSearchUpdateRedirectDocument' ],
+			],
+			'page change, redirect, build off -> only LinksUpdate' => [
+				false, true, true,
+				[ 'cirrusSearchLinksUpdatePrioritized' ],
+			],
+			'page change, not a redirect, build on -> only LinksUpdate' => [
+				true, false, true,
+				[ 'cirrusSearchLinksUpdatePrioritized' ],
+			],
+		];
+	}
+
+	/**
+	 * @covers \CirrusSearch\ChangeListener::onLinksUpdateComplete
+	 * @dataProvider provideRedirectDocumentCases
+	 */
+	public function testOnLinksUpdateCompleteRedirectDocument(
+		bool $build, bool $isRedirect, bool $pageChange, array $expectedTypes
+	) {
+		$cleanup = DeferredUpdates::preventOpportunisticUpdates();
+		MWTimestamp::setFakeTime( 123 );
+
+		$title = $this->createMock( Title::class );
+		$title->method( 'getPrefixedDBkey' )->willReturn( 'My_Title' );
+
+		$pushed = [];
+		$jobqueue = $this->createMock( JobQueueGroup::class );
+		$jobqueue->method( 'lazyPush' )->willReturnCallback(
+			static function ( $job ) use ( &$pushed ) {
+				$pushed[] = $job;
+			} );
+
+		$linksUpdate = $this->mockRedirectLinksUpdate( $title, $isRedirect );
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $this->redirectDocConfig( $build ) ),
+			$this->createNoOpMock( IConnectionProvider::class ),
+			$this->createNoOpMock( RedirectLookup::class )
+		);
+
+		if ( $pageChange ) {
+			$page = $this->createMock( WikiPage::class );
+			$page->method( 'getId' )->willReturn( 1 );
+			$editResult = new EditResult( false, 1, null, null, null, false, false, [] );
+			$listener->onPageSaveComplete( $page, new UserIdentityValue( 1, '' ),
+				'', 0, new MutableRevisionRecord( $page ), $editResult );
+		}
+		$listener->onLinksUpdateComplete( $linksUpdate, null );
+		DeferredUpdates::doUpdates();
+
+		$this->assertSame( $expectedTypes, array_map( static fn ( $job ) => $job->getType(), $pushed ) );
+		foreach ( $pushed as $job ) {
+			if ( $job instanceof UpdateRedirectDocument ) {
+				$expectedKind = $pageChange ? CirrusTitleJob::PAGE_CHANGE : CirrusTitleJob::PAGE_REFRESH;
+				$this->assertSame( $expectedKind, $job->getParams()[CirrusTitleJob::UPDATE_KIND] );
+			}
+		}
+	}
+
+	public static function provideMovingRedirectCases(): array {
+		return [
+			'moved-from title is a redirect -> only redirect job' => [
+				true, [ 'cirrusSearchUpdateRedirectDocument' ],
+			],
+			'moved-from title is not a redirect -> no jobs' => [
+				false, [],
+			],
+		];
+	}
+
+	/**
+	 * @covers \CirrusSearch\ChangeListener::onLinksUpdateComplete
+	 * @dataProvider provideMovingRedirectCases
+	 */
+	public function testOnLinksUpdateCompleteMovingRedirect( bool $isRedirect, array $expectedTypes ) {
+		$cleanup = DeferredUpdates::preventOpportunisticUpdates();
+		MWTimestamp::setFakeTime( 123 );
+
+		$title = $this->createMock( Title::class );
+		$title->method( 'getPrefixedDBkey' )->willReturn( 'My_Title' );
+
+		$pushed = [];
+		$jobqueue = $this->createMock( JobQueueGroup::class );
+		$jobqueue->method( 'lazyPush' )->willReturnCallback(
+			static function ( $job ) use ( &$pushed ) {
+				$pushed[] = $job;
+			} );
+
+		$linksUpdate = $this->mockRedirectLinksUpdate( $title, $isRedirect );
+		$listener = new ChangeListener( $jobqueue, $this->newHashSearchConfig( $this->redirectDocConfig( true ) ),
+			$this->createNoOpMock( IConnectionProvider::class ),
+			$this->createNoOpMock( RedirectLookup::class )
+		);
+
+		// Record the title as moving so the LinksUpdate for it would normally be skipped.
+		$status = Status::newGood();
+		$listener->onTitleMove( $title, $this->createMock( Title::class ),
+			$this->createMock( User::class ), '', $status );
+		$listener->onLinksUpdateComplete( $linksUpdate, null );
+		DeferredUpdates::doUpdates();
+
+		$this->assertSame( $expectedTypes, array_map( static fn ( $job ) => $job->getType(), $pushed ) );
+		foreach ( $pushed as $job ) {
+			if ( $job instanceof UpdateRedirectDocument ) {
+				$this->assertSame( CirrusTitleJob::PAGE_CHANGE, $job->getParams()[CirrusTitleJob::UPDATE_KIND] );
+			}
+		}
 	}
 
 	/**

@@ -23,6 +23,7 @@ class SearchConfig implements Config {
 	// Constants for referring to various config values. Helps prevent fat-fingers
 	public const INDEX_BASE_NAME = 'CirrusSearchIndexBaseName';
 	private const PREFIX_IDS = 'CirrusSearchPrefixIds';
+	private const REDIRECT_DOCUMENTS = 'CirrusSearchRedirectDocuments';
 	private const CIRRUS_VAR_PREFIX = 'wgCirrus';
 
 	// Magic word to tell the SearchConfig to translate INDEX_BASE_NAME into WikiMap::getCurrentWikiId()
@@ -335,5 +336,21 @@ class SearchConfig implements Config {
 			return wfStringToBool( $useCompletion );
 		}
 		return $useCompletion === true;
+	}
+
+	/**
+	 * @return bool true if redirect pages have their own documents built and indexed
+	 *  (CirrusSearchRedirectDocuments['build'])
+	 */
+	public function buildRedirectDocuments(): bool {
+		return (bool)$this->getElement( self::REDIRECT_DOCUMENTS, 'build' );
+	}
+
+	/**
+	 * @return bool true if redirect documents are consulted when querying
+	 *  (CirrusSearchRedirectDocuments['use'])
+	 */
+	public function useRedirectDocuments(): bool {
+		return (bool)$this->getElement( self::REDIRECT_DOCUMENTS, 'use' );
 	}
 }

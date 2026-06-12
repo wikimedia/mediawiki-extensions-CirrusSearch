@@ -6,6 +6,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Search\CirrusIndexField;
+use CirrusSearch\Search\Filters;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\SearchRequestLog;
 use Elastica\Document;
@@ -13,6 +14,7 @@ use Elastica\Exception\ResponseException;
 use Elastica\Multi\ResultSet;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query\BoolQuery;
+use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use Elastica\Search;
 use MediaWiki\Cache\BacklinkCacheFactory;
@@ -82,7 +84,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 	/**
 	 * {@inheritDoc}
 	 */
-	public function initialize( Document $doc, WikiPage $page, RevisionRecord $revision ): void {
+	public function initialize( Document $doc, WikiPage $page, RevisionRecord $revision, bool $isRedirect ): void {
 		$title = $page->getTitle();
 		$this->pageIds[] = $page->getId();
 		$outgoingLinksToCount = [ $title->getPrefixedDBkey() ];
@@ -210,7 +212,12 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 	 */
 	private function buildCount( array $titles ): Search {
 		$bool = new BoolQuery();
-		$bool->addFilter( new Terms( 'outgoing_link', $titles ) );
+		$bool->addFilter( Filters::unify(
+			// must
+			[ new Terms( 'outgoing_link', $titles ) ],
+			// must_not
+			[ new Term( [ 'page_type' => 'redirect' ] ) ]
+		) );
 
 		$indexPrefix = $this->config->get( SearchConfig::INDEX_BASE_NAME );
 		$index = $this->connection->getIndex( $indexPrefix );

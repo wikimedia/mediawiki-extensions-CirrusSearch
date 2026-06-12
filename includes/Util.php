@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use InvalidArgumentException;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Exception\MWException;
 use MediaWiki\Logger\LoggerFactory;
@@ -10,6 +11,7 @@ use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use MediaWiki\Request\WebRequest;
 use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFormatter;
 use MediaWiki\User\UserIdentity;
 use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\IPUtils;
@@ -36,13 +38,25 @@ class Util {
 
 	/**
 	 * Get the textual representation of a namespace with underscores stripped, varying
-	 * by gender if need be (using Title::getNsText()).
+	 * by gender if need be.
 	 *
 	 * @param Title $title The page title to use
+	 * @param TitleFormatter|null $formatter When provided, resolve the namespace text via
+	 *  the injected formatter instead of Title::getNsText(); preferred in contexts where
+	 *  global state should be avoided.
 	 * @return string|false
 	 */
-	public static function getNamespaceText( Title $title ) {
-		$ret = $title->getNsText();
+	public static function getNamespaceText( Title $title, ?TitleFormatter $formatter = null ) {
+		if ( $formatter === null ) {
+			$ret = $title->getNsText();
+		} else {
+			try {
+				$ret = $formatter->getNamespaceName( $title->getNamespace(), $title->getDBkey() );
+			} catch ( InvalidArgumentException $ex ) {
+				wfDebug( __METHOD__ . ': ' . $ex->getMessage() );
+				$ret = false;
+			}
+		}
 		return is_string( $ret ) ? strtr( $ret, '_', ' ' ) : $ret;
 	}
 

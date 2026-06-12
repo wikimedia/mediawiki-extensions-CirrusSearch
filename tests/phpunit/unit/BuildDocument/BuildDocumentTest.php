@@ -38,9 +38,9 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 			->willReturn( $this->revision );
 	}
 
-	private function mockBuilder( Title $title ) {
+	private function mockBuilder( Title $title, ?SearchConfig $config = null ) {
 		// Would be nice if we could pass the makeId function instead of a whole SearchConfig
-		$config = new SearchConfig;
+		$config ??= new SearchConfig;
 		$connection = $this->createMock( Connection::class );
 		$connection->method( 'getConfig' )
 			->willReturn( $config );
@@ -67,9 +67,12 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 				return [ new class() implements PagePropertyBuilder {
 					private ?Document $doc = null;
 
-					public function initialize( Document $doc, WikiPage $page, ?RevisionRecord $revision ): void {
+					public function initialize(
+						Document $doc, WikiPage $page, ?RevisionRecord $revision, bool $isRedirect
+					): void {
 						$this->doc = $doc;
 						$doc->set( 'phpunit_page_id', $page->getId() );
+						$doc->set( 'phpunit_is_redirect', $isRedirect );
 					}
 
 					public function finishInitializeBatch(): void {
@@ -107,6 +110,31 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 		$this->assertCount( 0, $docs );
 	}
 
+	public function testBuildsRedirectWhenEnabled() {
+		$title = $this->createMock( Title::class );
+		$title->method( 'getLatestRevID' )->willReturn( 42 );
+
+		$page = $this->createMock( WikiPage::class );
+		$page->method( 'getId' )->willReturn( 1 );
+		$page->method( 'getTitle' )->willReturn( $title );
+		$page->method( 'getLatest' )->willReturn( 42 );
+		$page->method( 'getRevisionRecord' )->willReturn( $this->revStore->getRevisionById( 42 ) );
+		$page->method( 'exists' )->willReturn( true );
+		$page->method( 'isRedirect' )->willReturn( true );
+		$pages = [ $page ];
+
+		$config = $this->newHashSearchConfig( [ 'CirrusSearchRedirectDocuments' => [ 'build' => true ] ] );
+		$builder = $this->mockBuilder( $title, $config );
+		$docs = $builder->initialize(
+			$pages, BuildDocument::INDEX_EVERYTHING
+		);
+
+		// With build enabled the redirect is no longer skipped and the resolved
+		// redirect flag is threaded to the property builders.
+		$this->assertCount( 1, $docs );
+		$this->assertTrue( $docs[1]->get( 'phpunit_is_redirect' ) );
+	}
+
 	public function testHappyPath() {
 		$title = $this->createMock( Title::class );
 		$title->method( 'getLatestRevID' )->willReturn( 42 );
@@ -122,6 +150,7 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 			$page->method( 'getRevisionRecord' )->willReturn( $this->revStore->getRevisionById( 42 ) );
 			// $pageId == 0 does not exist
 			$page->method( 'exists' )->willReturn( (bool)$pageId );
+			$page->method( 'isRedirect' )->willReturn( false );
 			$pages[] = $page;
 		}
 

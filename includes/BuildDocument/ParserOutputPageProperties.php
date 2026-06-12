@@ -30,7 +30,7 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function initialize( Document $doc, WikiPage $page, RevisionRecord $revision ): void {
+	public function initialize( Document $doc, WikiPage $page, RevisionRecord $revision, bool $isRedirect ): void {
 		// NOOP
 	}
 

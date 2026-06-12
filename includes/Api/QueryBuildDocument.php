@@ -70,6 +70,12 @@ class QueryBuildDocument extends ApiQueryBase {
 			$flags |= BuildDocument::SKIP_LINKS;
 		}
 
+		$searchConfig = $engine->getConfig();
+		// When building redirect documents is enabled redirects flow through the normal
+		// builder pipeline and are returned as ordinary documents rather than being marked
+		// unrenderable.
+		$buildRedirects = $searchConfig->buildRedirectDocuments();
+
 		$pages = [];
 		$wikiPageFactory = $services->getWikiPageFactory();
 		$revisionStore = $services->getRevisionStore();
@@ -85,9 +91,10 @@ class QueryBuildDocument extends ApiQueryBase {
 						$revId => [ 'revid' => $revId, 'missing' => true ]
 					] );
 				} elseif ( $rev->audienceCan( $rev::DELETED_TEXT, $rev::FOR_PUBLIC ) ) {
-					// Redirects are not directly represented as searchable documents.
-					// They are unrenderable.
-					if ( $rev->getContent( SlotRecord::MAIN )->isRedirect() ) {
+					// redirects should only exist if enabled; treat an
+					// inaccessible main slot as not-a-redirect.
+					$content = $rev->getContent( SlotRecord::MAIN );
+					if ( $content && $content->isRedirect() && !$buildRedirects ) {
 						$this->markUnrenderable( $result, $pageId );
 					} else {
 						$pages[$pageId] = $rev;
@@ -107,7 +114,7 @@ class QueryBuildDocument extends ApiQueryBase {
 		} else {
 			foreach ( $this->getPageSet()->getGoodPages() as $pageId => $title ) {
 				$page = $wikiPageFactory->newFromTitle( $title );
-				if ( $page->isRedirect() ) {
+				if ( $page->isRedirect() && !$buildRedirects ) {
 					$this->markUnrenderable( $result, $pageId );
 				} else {
 					$pages[$pageId] = $page;
@@ -115,7 +122,6 @@ class QueryBuildDocument extends ApiQueryBase {
 			}
 		}
 
-		$searchConfig = $engine->getConfig();
 		$builder = new BuildDocument(
 			$this->getCirrusConnection(),
 			$this->getDB(),

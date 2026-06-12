@@ -18,9 +18,10 @@ class DefaultPagePropertiesIntegrationTest extends \MediaWikiIntegrationTestCase
 		// Using the real database here to test integration from
 		// editing real pages.
 		$props = new DefaultPageProperties(
-			$this->getServiceContainer()->getConnectionProvider()->getReplicaDatabase()
+			$this->getServiceContainer()->getConnectionProvider()->getReplicaDatabase(),
+			$this->getServiceContainer()->getTitleFormatter()
 		);
-		$props->initialize( $doc, $page, $revision );
+		$props->initialize( $doc, $page, $revision, false );
 		$props->finishInitializeBatch();
 		$props->finalize( $doc, $page->getTitle(), $revision );
 		return $doc;

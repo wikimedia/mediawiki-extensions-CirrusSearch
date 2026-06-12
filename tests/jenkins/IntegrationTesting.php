@@ -55,6 +55,11 @@ $wgAPIModules['cirrus-suggest-index'] = 'CirrusSearch\Api\SuggestIndex';
 $wgCirrusSearchWriteBackoffExponent = -1;
 $wgCirrusSearchUseCompletionSuggester = "yes";
 
+// First-class redirect documents: build the redirect's own document and use the
+// page_type:redirect filter so redirects are hidden from normal search results
+// (exercised by redirect_documents_api.feature).
+$wgCirrusSearchRedirectDocuments = [ 'build' => true, 'use' => true ];
+
 class IntegrationTesting {
 	/**
 	 * Installs maintenance scripts that provide a clean Elasticsearch index for testing.

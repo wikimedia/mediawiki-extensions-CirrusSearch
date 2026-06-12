@@ -38,6 +38,7 @@
 		"cirrusSearchIncomingLinkCount": "CirrusSearch\\Job\\IncomingLinkCount",
 		"cirrusSearchLinksUpdate": "CirrusSearch\\Job\\LinksUpdate",
 		"cirrusSearchLinksUpdatePrioritized": "CirrusSearch\\Job\\LinksUpdate",
+		"cirrusSearchUpdateRedirectDocument": "CirrusSearch\\Job\\UpdateRedirectDocument",
 		"cirrusSearchMassIndex": "CirrusSearch\\Job\\MassIndex",
 		"cirrusSearchOtherIndex": "CirrusSearch\\Job\\OtherIndex",
 		"cirrusSearchElasticaWrite": "CirrusSearch\\Job\\ElasticaWrite",
@@ -335,6 +336,12 @@
 			"value": []
 		},
 		"CirrusSearchPhraseSuggestReverseField": {
+			"value": {
+				"build": false,
+				"use": false
+			}
+		},
+		"CirrusSearchRedirectDocuments": {
 			"value": {
 				"build": false,
 				"use": false

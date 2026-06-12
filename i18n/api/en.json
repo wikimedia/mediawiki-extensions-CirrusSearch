@@ -22,6 +22,7 @@
 	"apihelp-query+cirrusdoc-example": "Get a dump of a single CirrusSearch article as currently indexed into search.",
 	"apihelp-query+cirrusdoc-example-2": "Get a dump of CirrusSearch settings for this wiki with just the Categories that have been selected using the 'includes' parameter",
 	"apihelp-query+cirrusdoc-param-includes": "Define which fields should be returned by the search.",
+	"apihelp-query+cirrusdoc-param-redirectscope": "Return a redirect page's own indexed document instead of tracing through to its target.",
 	"apihelp-query+cirrusbuilddoc-summary": "Dump of a CirrusSearch article document from the database servers",
 	"apihelp-query+cirrusbuilddoc-example": "Get a dump of a single CirrusSearch article generated from the database.",
 	"apihelp-query+cirrusbuilddoc-param-builders": "Type of data to extract",

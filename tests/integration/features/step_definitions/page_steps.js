@@ -498,6 +498,29 @@ Then( /^I wait for (.+) to have (.+) of (.+)$/, function ( title, field, value )
 	} ) );
 } );
 
+// Redirect-scope variants: assert against a redirect page's own first-class document
+// (cdredirectscope) rather than the target the redirect resolves to. Phrased without the
+// "to have X of Y" template so they don't collide with the generic field-assertion step.
+Then( /^I wait for the redirect document (.+) to have page_type (.+)$/, function ( title, value ) {
+	return withApi( this, () => this.stepHelpers.waitForDocument( title, ( doc ) => {
+		expect( String( doc.source.page_type ) ).to.equal( value );
+	}, true ) );
+} );
+
+Then( /^I wait for the redirect document (.+) to have redirect_target title (.+)$/, function ( title, value ) {
+	return withApi( this, () => this.stepHelpers.waitForDocument( title, ( doc ) => {
+		expect( doc.source.redirect_target?.title ).to.equal( value );
+	}, true ) );
+} );
+
+// Asserts the primary document has no redirect_target, e.g. after a redirect->primary
+// conversion clears it (super_detect_noop removes the field from _source).
+Then( /^I wait for (.+) to not have a redirect_target$/, function ( title ) {
+	return withApi( this, () => this.stepHelpers.waitForDocument( title, ( doc ) => {
+		expect( doc.source ).to.not.include.keys( 'redirect_target' );
+	} ) );
+} );
+
 When( /^I dump the cirrus config$/, async function () {
 	const client = await this.onWiki();
 	try {

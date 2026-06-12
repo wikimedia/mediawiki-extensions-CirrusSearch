@@ -187,12 +187,12 @@ class StepHelpers {
 		}
 	}
 
-	async waitForDocument( title, check ) {
+	async waitForDocument( title, check, redirectScope = false ) {
 		const timeoutMs = 20000;
 		const start = new Date();
 		let lastError;
 		while ( true ) {
-			const doc = await this.getCirrusIndexedContent( title );
+			const doc = await this.getCirrusIndexedContent( title, redirectScope );
 			if ( doc.cirrusdoc && doc.cirrusdoc.length > 0 ) {
 				try {
 					check( doc.cirrusdoc[ 0 ] );
@@ -293,15 +293,20 @@ class StepHelpers {
 	 * @param {string} title page title
 	 * @return {Promise} resolves to an array of indexed docs or null if title not indexed
 	 */
-	async getCirrusIndexedContent( title ) {
+	async getCirrusIndexedContent( title, redirectScope = false ) {
 		const client = await this.apiPromise;
-		const response = await client.request( {
+		const params = {
 			action: 'query',
 			prop: 'cirrusdoc',
 			titles: title,
 			format: 'json',
 			formatversion: 2
-		} );
+		};
+		if ( redirectScope ) {
+			// Return the redirect page's own document rather than tracing to its target.
+			params.cdredirectscope = 1;
+		}
+		const response = await client.request( params );
 		if ( response.query.normalized ) {
 			for ( const norm of response.query.normalized ) {
 				if ( norm.from === title ) {

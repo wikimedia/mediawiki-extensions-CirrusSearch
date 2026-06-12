@@ -76,11 +76,38 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 		if ( $redirects === [] ) {
 			return;
 		}
+		if ( $this->connection->getConfig()->buildRedirectDocuments() ) {
+			// the redirect pages have their own documents, don't delete them
+			return;
+		}
 		$redirectDocIds = [];
 		foreach ( $redirects as $redirect ) {
 			$redirectDocIds[] = $this->connection->getConfig()->makeId( $redirect->getId() );
 		}
 		$this->deletePages( [], $redirectDocIds );
+	}
+
+	/**
+	 * Index a redirect page's own document directly, without tracing to its target. The
+	 * write is guarded against the edit-then-delete race: a stale job writes nothing.
+	 *
+	 * Only meaningful when redirect-document building is enabled; the caller is
+	 * responsible for that gating.
+	 *
+	 * @param Title $title the redirect page to index
+	 * @param string|null $updateKind kind of update to perform (used for monitoring)
+	 * @param int|null $rootEventTime the time of the MW event that caused this update (monitoring)
+	 */
+	public function updateRedirectDocument( $title, ?string $updateKind, ?int $rootEventTime ): void {
+		if ( !$this->connection->getConfig()->buildRedirectDocuments() ) {
+			// Was enabled when building, but not anymore.
+			return;
+		}
+		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
+		if ( !$page->exists() ) {
+			return;
+		}
+		$this->updatePages( [ $page ], BuildDocument::INDEX_EVERYTHING, $updateKind, $rootEventTime );
 	}
 
 	/**

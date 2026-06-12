@@ -33,6 +33,7 @@
 	"apihelp-query+cirrusdoc-example": "{{doc-apihelp-example|query+cirrusdoc}}",
 	"apihelp-query+cirrusdoc-example-2": "{{doc-apihelp-example|query+cirrusdoc}}",
 	"apihelp-query+cirrusdoc-param-includes": "{{doc-apihelp-example|query+cirrusdoc|includes}}",
+	"apihelp-query+cirrusdoc-param-redirectscope": "{{doc-apihelp-param|query+cirrusdoc|redirectscope}}",
 	"apihelp-query+cirrusbuilddoc-summary": "{{doc-apihelp-summary|query+cirrusbuilddoc}}",
 	"apihelp-query+cirrusbuilddoc-example": "{{doc-apihelp-example|query+cirrusbuilddoc}}",
 	"apihelp-query+cirrusbuilddoc-param-builders": "{{doc-apihelp-param|query+cirrusbuilddoc|builders}}",

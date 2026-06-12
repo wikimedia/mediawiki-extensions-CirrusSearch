@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use CirrusSearch\Job\CirrusTitleJob;
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
+use CirrusSearch\Job\UpdateRedirectDocument;
 use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Deferred\Hook\LinksUpdateCompleteHook;
@@ -21,6 +22,7 @@ use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Revision\SlotRecord;
 use MediaWiki\RevisionDelete\Hook\ArticleRevisionVisibilitySetHook;
 use MediaWiki\Status\Status;
 use MediaWiki\Title\Title;
@@ -129,8 +131,28 @@ class ChangeListener extends PageChangeTracker implements
 			$unLinkedArticlesToUpdate = $this->searchConfig->get( 'CirrusSearchUnlinkedArticlesToUpdate' );
 			$updateDelay = $this->searchConfig->get( 'CirrusSearchUpdateDelay' );
 
-			// Titles that are created by a move don't need their own job.
+			// Page changes are prioritized over plain refreshes; the main job and the
+			// redirect-document job share the same delay tier.
+			$isPageChange = $this->isPageChange( $linksUpdate->getPageId() );
+			$delay = $updateDelay[ $isPageChange ? 'prioritized' : 'default' ];
+
+			// Titles created by a move should always be redirects. Push a redirect job if needed and
+			// skip the links update as we will separately be refreshing the target page.
 			if ( in_array( $linksUpdate->getTitle()->getPrefixedDBkey(), $this->movingTitles ) ) {
+				if ( $this->searchConfig->buildRedirectDocuments()
+					&& $this->isRedirectRevision( $linksUpdate->getRevisionRecord() )
+				) {
+					$this->pushRedirectDocumentJob(
+						true,
+						$linksUpdate->getTitle(),
+						$linksUpdate->getRevisionRecord(),
+						LinksUpdate::buildJobDelayOptions(
+							UpdateRedirectDocument::class,
+							$delay,
+							$this->jobQueue
+						)
+					);
+				}
 				return;
 			}
 
@@ -150,9 +172,9 @@ class ChangeListener extends PageChangeTracker implements
 				);
 			}
 
-			if ( $this->isPageChange( $linksUpdate->getPageId() ) ) {
+			if ( $isPageChange ) {
 				$jobParams = $params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class,
-						$updateDelay['prioritized'], $this->jobQueue );
+						$delay, $this->jobQueue );
 				$job = LinksUpdate::newPageChangeUpdate( $linksUpdate->getTitle(),
 					$linksUpdate->getRevisionRecord(), $jobParams );
 				if ( ( MWTimestamp::time() - $job->params[CirrusTitleJob::ROOT_EVENT_TIME] ) > ( 3600 * 24 ) ) {
@@ -166,11 +188,48 @@ class ChangeListener extends PageChangeTracker implements
 				}
 			} else {
 				$job = LinksUpdate::newPageRefreshUpdate( $linksUpdate->getTitle(),
-					$params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class, $updateDelay['default'], $this->jobQueue ) );
+					$params + LinksUpdate::buildJobDelayOptions( LinksUpdate::class,
+						$delay, $this->jobQueue ) );
 			}
-
 			$this->jobQueue->lazyPush( $job );
+
+			// A redirect page needs its own document indexed alongside the target refresh.
+			if (
+				$this->searchConfig->buildRedirectDocuments()
+				&& $this->isRedirectRevision( $linksUpdate->getRevisionRecord() )
+			) {
+				$this->pushRedirectDocumentJob( $isPageChange, $linksUpdate->getTitle(),
+					$linksUpdate->getRevisionRecord(),
+					LinksUpdate::buildJobDelayOptions( UpdateRedirectDocument::class,
+						$delay, $this->jobQueue ) );
+			}
 		} );
+	}
+
+	/**
+	 * Push the job that writes a redirect page's own document. A page-change update
+	 * carries the triggering revision record; a page-refresh update does not.
+	 *
+	 * @param bool $isPageChange whether this is a page-change (vs page-refresh) update
+	 * @param Title $title the redirect page
+	 * @param ?RevisionRecord $revisionRecord the redirect revision (page-change only)
+	 * @param array $params job params, e.g. job delay options
+	 */
+	private function pushRedirectDocumentJob(
+		bool $isPageChange, Title $title, ?RevisionRecord $revisionRecord, array $params
+	): void {
+		$job = $isPageChange
+			? UpdateRedirectDocument::newPageChangeUpdate( $title, $revisionRecord, $params )
+			: UpdateRedirectDocument::newPageRefreshUpdate( $title, $params );
+		$this->jobQueue->lazyPush( $job );
+	}
+
+	/**
+	 * @param RevisionRecord|null $revision
+	 * @return bool whether the revision's main slot content is a redirect
+	 */
+	private function isRedirectRevision( ?RevisionRecord $revision ): bool {
+		return (bool)$revision?->getContent( SlotRecord::MAIN )?->isRedirect();
 	}
 
 	/**

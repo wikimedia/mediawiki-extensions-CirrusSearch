@@ -5,7 +5,9 @@ namespace CirrusSearch\Job;
 use CirrusSearch\SearchConfig;
 use MediaWiki\JobQueue\Job;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
+use MediaWiki\Utils\MWTimestamp;
 
 /**
  * CirrusSearch Job that is bound to a Title
@@ -70,5 +72,29 @@ abstract class CirrusTitleJob extends Job {
 				->makeConfig( 'CirrusSearch' );
 		}
 		return $this->searchConfig;
+	}
+
+	/**
+	 * Assemble the UPDATE_KIND + ROOT_EVENT_TIME params shared by the page-update
+	 * factory methods of the concrete jobs (e.g. LinksUpdate, UpdateRedirectDocument).
+	 *
+	 * ROOT_EVENT_TIME is seeded from the driving revision's timestamp when one is
+	 * available, falling back to the current time (e.g. for deletes or for refreshes
+	 * not tied to a specific revision).
+	 *
+	 * @param string $updateKind one of the *_CHANGE / *_REFRESH / SANEITIZER constants
+	 * @param RevisionRecord|null $revisionRecord revision driving the update, if any
+	 * @return array params to merge into the job's param array
+	 */
+	protected static function buildRootEventParams( string $updateKind, ?RevisionRecord $revisionRecord = null ): array {
+		if ( $revisionRecord !== null && $revisionRecord->getTimestamp() !== null ) {
+			$ts = (int)MWTimestamp::convert( TS_UNIX, $revisionRecord->getTimestamp() );
+		} else {
+			$ts = MWTimestamp::time();
+		}
+		return [
+			self::UPDATE_KIND => $updateKind,
+			self::ROOT_EVENT_TIME => $ts,
+		];
 	}
 }

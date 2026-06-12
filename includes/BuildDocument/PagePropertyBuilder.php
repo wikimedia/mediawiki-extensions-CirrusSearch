@@ -22,8 +22,11 @@ interface PagePropertyBuilder {
 	 * @param Document $doc The document to be populated
 	 * @param WikiPage $page The page to scope operation to
 	 * @param RevisionRecord $revision The page revision to use
+	 * @param bool $isRedirect Whether $page is a redirect, as already resolved by the
+	 *  orchestrator from the same source as the rest of the build (avoids re-deriving it,
+	 *  so page_type and redirect_target cannot disagree on the revision path)
 	 */
-	public function initialize( Document $doc, WikiPage $page, RevisionRecord $revision ): void;
+	public function initialize( Document $doc, WikiPage $page, RevisionRecord $revision, bool $isRedirect ): void;
 
 	/**
 	 * Called after a batch of pages have been passed to self::initialize.

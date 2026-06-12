@@ -87,6 +87,17 @@ class SearchConfigTest extends CirrusTestCase {
 		$this->assertTrue( $config->isCrossProjectSearchEnabled() );
 	}
 
+	public function testRedirectDocumentAccessors() {
+		$config = new HashSearchConfig( [] );
+		$this->assertFalse( $config->buildRedirectDocuments() );
+		$this->assertFalse( $config->useRedirectDocuments() );
+		$config = new HashSearchConfig( [
+			'CirrusSearchRedirectDocuments' => [ 'build' => true, 'use' => true ],
+		] );
+		$this->assertTrue( $config->buildRedirectDocuments() );
+		$this->assertTrue( $config->useRedirectDocuments() );
+	}
+
 	public function testLocalWiki() {
 		$this->assertTrue( ( new SearchConfig() )->isLocalWiki() );
 		$this->assertFalse( ( new HashSearchConfig( [] ) )->isLocalWiki() );

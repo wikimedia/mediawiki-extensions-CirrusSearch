@@ -6,7 +6,6 @@ use CirrusSearch\Updater;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
-use MediaWiki\Utils\MWTimestamp;
 
 /**
  * Performs the appropriate updates to Elasticsearch after a LinksUpdate is
@@ -46,16 +45,9 @@ class LinksUpdate extends CirrusTitleJob {
 	 * @return self
 	 */
 	public static function newPageChangeUpdate( Title $title, ?RevisionRecord $revisionRecord, array $params ): self {
-		if ( $revisionRecord !== null && $revisionRecord->getTimestamp() !== null ) {
-			$ts = (int)MWTimestamp::convert( TS_UNIX, $revisionRecord->getTimestamp() );
-		} else {
-			$ts = MWTimestamp::time();
-		}
 		$params += [
 			self::PRIORITIZE => true,
-			self::UPDATE_KIND => self::PAGE_CHANGE,
-			self::ROOT_EVENT_TIME => $ts,
-		];
+		] + self::buildRootEventParams( self::PAGE_CHANGE, $revisionRecord );
 
 		return new self( $title, $params );
 	}
@@ -67,9 +59,7 @@ class LinksUpdate extends CirrusTitleJob {
 	public static function newPastRevisionVisibilityChange( Title $title ): self {
 		$params = [
 			self::PRIORITIZE => true,
-			self::UPDATE_KIND => self::VISIBILITY_CHANGE,
-			self::ROOT_EVENT_TIME => MWTimestamp::time(),
-		];
+		] + self::buildRootEventParams( self::VISIBILITY_CHANGE );
 
 		return new self( $title, $params );
 	}
@@ -81,9 +71,7 @@ class LinksUpdate extends CirrusTitleJob {
 	public static function newPageRefreshUpdate( Title $title, array $params ): self {
 		$params += [
 			self::PRIORITIZE => false,
-			self::UPDATE_KIND => self::PAGE_REFRESH,
-			self::ROOT_EVENT_TIME => MWTimestamp::time(),
-		];
+		] + self::buildRootEventParams( self::PAGE_REFRESH );
 		return new self( $title, $params );
 	}
 
@@ -96,10 +84,8 @@ class LinksUpdate extends CirrusTitleJob {
 	public static function newSaneitizerUpdate( Title $title, ?string $cluster ): self {
 		$params = [
 			self::PRIORITIZE => false,
-			self::UPDATE_KIND => self::SANEITIZER,
-			self::ROOT_EVENT_TIME => MWTimestamp::time(),
-			self::CLUSTER => $cluster
-		];
+			self::CLUSTER => $cluster,
+		] + self::buildRootEventParams( self::SANEITIZER );
 		return new self( $title, $params );
 	}
 

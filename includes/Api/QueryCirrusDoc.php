@@ -31,14 +31,16 @@ class QueryCirrusDoc extends ApiQueryBase {
 
 	public function execute() {
 		$sourceFiltering = $this->generateSourceFiltering();
+		$params = $this->extractRequestParams();
+		$followRedirects = !( $params['redirectscope'] ?? false );
 		foreach ( $this->getPageSet()->getGoodPages() as $origPageId => $title ) {
-			$this->addByPageId( $origPageId, $title, $sourceFiltering );
+			$this->addByPageId( $origPageId, $title, $sourceFiltering, $followRedirects );
 		}
 
 		// Not 100% sure we need deletedhistory, but better safe than sorry
 		if ( $this->getUser()->isAllowed( 'deletedhistory' ) ) {
 			foreach ( $this->getPageSet()->getMissingPages() as $resultPageId => $title ) {
-				$this->addByPageId( $resultPageId, $title, $sourceFiltering );
+				$this->addByPageId( $resultPageId, $title, $sourceFiltering, $followRedirects );
 			}
 		}
 	}
@@ -49,11 +51,13 @@ class QueryCirrusDoc extends ApiQueryBase {
 	 *  deleted they could still be in the elastic index.
 	 * @param PageIdentity $title The requested title
 	 * @param string[]|bool $sourceFiltering source filtering to apply
+	 * @param bool $followRedirects When false, return the redirect's own document instead
+	 *  of tracing through to its target (redirect scope).
 	 */
-	private function addByPageId( $resultPageId, PageIdentity $title, $sourceFiltering ) {
+	private function addByPageId( $resultPageId, PageIdentity $title, $sourceFiltering, bool $followRedirects = true ) {
 		$this->getResult()->addValue(
 			[ 'query', 'pages', $resultPageId ],
-			'cirrusdoc', $this->loadDocuments( $title, $sourceFiltering )
+			'cirrusdoc', $this->loadDocuments( $title, $sourceFiltering, $followRedirects )
 		);
 		$this->getResult()->addValue(
 			[ 'query', 'pages', $resultPageId ],
@@ -80,13 +84,21 @@ class QueryCirrusDoc extends ApiQueryBase {
 
 	/** @inheritDoc */
 	public function getAllowedParams() {
-		return [
+		$params = [
 			'includes' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_DEFAULT => 'all',
 				ParamValidator::PARAM_ISMULTI => true,
 			],
 		];
+		// Only expose redirect scope when redirect documents are available to query.
+		if ( $this->getSearchConfig()->useRedirectDocuments() ) {
+			$params['redirectscope'] = [
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ParamValidator::PARAM_DEFAULT => false,
+			];
+		}
+		return $params;
 	}
 
 	/**

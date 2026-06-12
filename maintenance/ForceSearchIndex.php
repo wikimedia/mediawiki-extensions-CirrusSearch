@@ -14,7 +14,6 @@ use MediaWiki\Title\Title;
 use MediaWiki\Utils\BatchRowIterator;
 use MediaWiki\Utils\MWTimestamp;
 use MediaWiki\WikiMap\WikiMap;
-use Throwable;
 use UnexpectedValueException;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\IDBAccessObject;
@@ -221,17 +220,17 @@ class ForceSearchIndex extends Maintenance {
 
 		foreach ( $it as $batch ) {
 			if ( $this->indexUpdates ) {
-				$size = count( $batch['updates'] );
-				$updates = array_filter( $batch['updates'] );
+				// Count source rows, not emitted documents, so --limit and progress track rows
+				// even when a redirect row emits two documents.
+				$size = $batch['rows'];
 				if ( $this->queue ) {
 					$this->waitForQueueToShrink( $wiki );
 					$jobQueueGroup->push( Job\MassIndex::build(
-						$updates, $updateFlags, $this->getOption( 'cluster' )
+						$batch['updates'], $updateFlags, $this->getOption( 'cluster' )
 					) );
 				} else {
-					// Update size with the actual number of updated documents.
 					$updater = $this->createUpdater();
-					$size = $updater->updatePages( $updates, $updateFlags );
+					$updater->updatePages( $batch['updates'], $updateFlags );
 				}
 			} else {
 				$size = count( $batch['titlesToDelete'] );
@@ -555,17 +554,28 @@ class ForceSearchIndex extends Maintenance {
 			// Build the updater outside the loop because it stores the redirects it hits.
 			// Don't build it at the top level so those are stored when it is freed.
 			$updater = $this->createUpdater();
+			$resolver = new IndexablePageResolver(
+				// traceRedirects is "very complete": null on self redirect, loop, special page,
+				// or a target already updated this run. We keep only the resolved target ([0]).
+				static fn ( Title $title ) => $updater->traceRedirects( $title )[0],
+				// makeTitleSafe returns null for a title that can't be rebuilt from its ns + text.
+				static fn ( Title $title ) => Title::makeTitleSafe(
+					$title->getNamespace(), $title->getText()
+				) !== null,
+				$this->toDate !== null,
+				$this->getSearchConfig()->buildRedirectDocuments(),
+				$this,
+				LoggerFactory::getInstance( 'CirrusSearch' )
+			);
 
 			$pages = [];
 			$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();
 			foreach ( $batch as $row ) {
-				// No need to call Updater::traceRedirects here because we know this is a valid page
-				// because it is in the database.
 				$page = $wikiPageFactory->newFromRow( $row, IDBAccessObject::READ_LATEST );
 
-				// null pages still get attached to keep the counts the same. They will be filtered
-				// later on.
-				$pages[] = $this->decidePage( $updater, $page );
+				// A row may resolve to 0, 1, or 2 pages: a redirect on the date-based path
+				// yields both its traced target and itself. Spread them into the batch.
+				array_push( $pages, ...$resolver->resolve( $page ) );
 			}
 
 			if ( isset( $row ) ) {
@@ -583,67 +593,11 @@ class ForceSearchIndex extends Maintenance {
 
 			return [
 				'updates' => $pages,
+				// Source-row count for --limit/progress accounting; emitted documents can outnumber rows.
+				'rows' => count( $batch ),
 				'endingAt' => $endingAt,
 			];
 		} );
-	}
-
-	/**
-	 * Determine the actual page in the index that needs to be updated, based on a
-	 * source page.
-	 *
-	 * @param Updater $updater
-	 * @param WikiPage $page
-	 * @return WikiPage|null WikiPage to be updated, or null if none.
-	 */
-	private function decidePage( Updater $updater, WikiPage $page ) {
-		try {
-			$content = $page->getContent();
-		} catch ( Throwable ) {
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Error deserializing content, skipping page: {pageId}",
-				[ 'pageId' => $page->getTitle()->getArticleID() ]
-			);
-			return null;
-		}
-
-		if ( $content === null ) {
-			// Skip pages without content.  Pages have no content because their latest revision
-			// as loaded by the query above doesn't exist.
-			$this->output(
-				'Skipping page with no content: ' . $page->getTitle()->getArticleID() . "\n"
-			);
-			return null;
-		}
-
-		if ( !$content->isRedirect() ) {
-			return $page;
-		}
-
-		if ( $this->toDate === null ) {
-			// Looks like we accidentally picked up a redirect when we were indexing by id and thus
-			// trying to ignore redirects!  Just ignore it!  We would filter them out at the db
-			// level but that is slow for large wikis.
-			return null;
-		}
-
-		// We found a redirect.  Great.  Since we can't index special pages and redirects to special
-		// pages are totally possible, as well as fun stuff like redirect loops, we need to use
-		// Updater's redirect tracing logic which is very complete.  Also, it returns null on
-		// self redirects.  Great!
-		[ $page, ] = $updater->traceRedirects( $page->getTitle() );
-
-		if ( $page != null &&
-			Title::makeTitleSafe( $page->getTitle()->getNamespace(), $page->getTitle()->getText() ) === null
-		) {
-			// The title cannot be rebuilt from its ns_prefix + text.
-			// It happens if an invalid title is present in the DB
-			// We may prefer to not index them as they are hardly viewable
-			$this->output( 'Skipping page with invalid title: ' . $page->getTitle()->getPrefixedText() );
-			return null;
-		}
-
-		return $page;
 	}
 
 	/**

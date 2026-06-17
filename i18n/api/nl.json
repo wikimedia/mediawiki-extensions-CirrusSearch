@@ -28,6 +28,7 @@
 	"apihelp-query+cirrusdoc-example": "Een dump opvragen van een enkel CirrusSearch-artikel zoals dat momenteel in de index van de zoekmachine staat.",
 	"apihelp-query+cirrusdoc-example-2": "Een dump van CirrusSearch-instellingen voor deze wiki verkrijgen met daarin alleen de categorieën die zijn geselecteerd met behulp van de parameter 'includes'",
 	"apihelp-query+cirrusdoc-param-includes": "Definiëren welke velden moeten worden geretourneerd door de zoekopdracht.",
+	"apihelp-query+cirrusdoc-param-redirectscope": "Geef een doorverwijzingspagina terug in plaats van door te navigeren naar de bestemming.",
 	"apihelp-query+cirrusbuilddoc-summary": "Dump van een CirrusSearch-artikeldocument van de databaseservers",
 	"apihelp-query+cirrusbuilddoc-example": "Een dump verkrijgen van een enkel CirrusSearch-artikel dat is gegenereerd op basis van de database.",
 	"apihelp-query+cirrusbuilddoc-param-builders": "Type van de te onttrekken gegevens",

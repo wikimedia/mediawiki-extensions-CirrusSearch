@@ -27,6 +27,7 @@
 	"apihelp-query+cirrusdoc-example": "Ruft einen Auszug eines einzelnen CirrusSearch-Artikels ab, wie er derzeit in der Suche indexiert ist.",
 	"apihelp-query+cirrusdoc-example-2": "Abrufen eines Dumps der CirrusSearch-Einstellungen für dieses Wiki, nur mit den Kategorien, die mit dem Parameter „includes“ ausgewählt wurden",
 	"apihelp-query+cirrusdoc-param-includes": "Festlegung der Felder, die von der Suche zurückgegeben werden sollen.",
+	"apihelp-query+cirrusdoc-param-redirectscope": "Gibt das eigene indizierte Dokument einer Weiterleitungsseite zurück, anstatt die Weiterleitung bis zum Ziel fortzusetzen.",
 	"apihelp-query+cirrusbuilddoc-summary": "Auszug eines CirrusSearch-Artikeldokuments von den Datenbankservern",
 	"apihelp-query+cirrusbuilddoc-example": "Ruft einen Auszug eines einzelnen CirrusSearch-Artikels ab, der von der Datenbank erzeugt wurde.",
 	"apihelp-query+cirrusbuilddoc-param-builders": "Art der zu extrahierenden Daten",

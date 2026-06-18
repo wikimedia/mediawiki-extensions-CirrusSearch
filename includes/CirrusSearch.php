@@ -322,6 +322,7 @@ class CirrusSearch extends SearchEngine {
 		// there are no reasons we can't do this in a single msearch request.
 		if ( $query->getCrossSearchStrategy()->isCrossProjectSearchSupported() &&
 			$searcher->getSearchContext()->areResultsPossible() &&
+			$this->debugOptions->getCirrusExplainPage() === null &&
 			( $this->debugOptions->isReturnRaw() || method_exists( $result, 'addInterwikiResults' ) )
 		) {
 			$iwSearch = new InterwikiSearcher( $this->connection, $query->getSearchConfig(), $this->namespaces, null,

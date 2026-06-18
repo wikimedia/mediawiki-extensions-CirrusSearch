@@ -351,6 +351,32 @@ class StepHelpers {
 		const response = await client.request( { action: 'query', titles: title, formatversion: 2 } );
 		return response.query.pages[ 0 ].pageid;
 	}
+
+	/**
+	 * Invoke the cirrusExplainPage debug option: run the production query for
+	 * `query` but, instead of executing the search, return the single-document
+	 * _explain blob for `pageId`. The dump-and-die response is the blob itself.
+	 *
+	 * @param {number|string} pageId local page id to explain
+	 * @param {string} query srsearch string
+	 * @param {Object} options extra request params (e.g. srnamespace)
+	 * @return {Promise}
+	 */
+	async explainPage( pageId, query, options = {} ) {
+		const client = await this.apiPromise;
+		try {
+			const response = await client.request( Object.assign( {
+				action: 'query',
+				list: 'search',
+				srsearch: query,
+				cirrusExplainPage: pageId,
+				formatversion: 2
+			}, options ) );
+			this.world.setApiResponse( response );
+		} catch ( err ) {
+			this.world.setApiError( err );
+		}
+	}
 }
 
 module.exports = StepHelpers;

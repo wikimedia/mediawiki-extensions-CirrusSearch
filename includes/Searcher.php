@@ -358,6 +358,12 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 
 		$qb = $this->buildFullTextSearch( $term );
 		$mainSearch = $this->buildSearch();
+
+		$explainPage = $this->searchContext->getDebugOptions()->getCirrusExplainPage();
+		if ( $explainPage !== null ) {
+			return $this->explainPage( $explainPage, $mainSearch );
+		}
+
 		$searches = MSearchRequests::build( self::MAINSEARCH_MSEARCH_KEY, $mainSearch );
 		$description = "{$this->searchContext->getSearchType()} search for '{$this->searchContext->getOriginalSearchTerm()}'";
 
@@ -434,6 +440,33 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			$status->warning( ...$warning );
 		}
 		return $status;
+	}
+
+	/**
+	 * Run an OpenSearch single-document explain
+	 *
+	 * Distinguished from query-level explain by the ability to explain
+	 * why a page did not match the query.
+	 *
+	 * @param string $pageId raw, unvalidated local mediawiki page id from the request
+	 * @param Search $search the built search request to explain
+	 * @return Status<array> the explain blob: { found, matched, explanation, query, index, docId }
+	 */
+	private function explainPage( string $pageId, Search $search ): Status {
+		$explainer = new PageExplainer(
+			$this->getOverriddenConnection(),
+			$this->config,
+			MediaWikiServices::getInstance()->getTitleFactory(),
+			$this->indexBaseName
+		);
+		// The query clause only; _explain accepts nothing else (no rescore,
+		// highlight or aggs), and this mirrors what cirrusDumpQuery returns.
+		$queryClause = $search->getQuery()->toArray()['query'] ?? [];
+
+		$work = static function () use ( $explainer, $pageId, $queryClause ) {
+			return Status::newGood( $explainer->explain( (int)$pageId, $queryClause ) );
+		};
+		return Util::doPoolCounterWork( $this->getPoolCounterType(), $this->user, $work );
 	}
 
 	/**

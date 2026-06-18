@@ -32,6 +32,8 @@ class CirrusDebugOptions {
 	 */
 	private $cirrusExplain;
 
+	private ?string $cirrusExplainPage = null;
+
 	/**
 	 * @var string|null
 	 */
@@ -56,8 +58,10 @@ class CirrusDebugOptions {
 		$options->cirrusDumpResult = $request->getCheck( 'cirrusDumpResult' );
 		$options->cirrusSemanticSearch = $request->getCheck( 'cirrusSemanticSearch' );
 		$options->cirrusExplain = self::debugOption( $request, 'cirrusExplain', [ 'verbose', 'pretty', 'hot', 'raw' ] );
+		$options->cirrusExplainPage = $request->getVal( 'cirrusExplainPage' ) ?: null;
 		$options->cirrusMLRModel = $request->getVal( 'cirrusMLRModel' );
-		$options->dumpAndDie = $options->cirrusDumpQuery || $options->cirrusDumpQueryAST || $options->cirrusDumpResult;
+		$options->dumpAndDie = $options->cirrusDumpQuery || $options->cirrusDumpQueryAST
+			|| $options->cirrusDumpResult || $options->cirrusExplainPage !== null;
 		return $options;
 	}
 
@@ -140,10 +144,20 @@ class CirrusDebugOptions {
 	}
 
 	/**
+	 * @return string|null The local mediawiki page id to explain, or null when
+	 *  this is not an explain-page request.
+	 */
+	public function getCirrusExplainPage() {
+		return $this->cirrusExplainPage;
+	}
+
+	/**
 	 * @return string|null The formatting to apply, or null to return raw explains
 	 */
 	public function getCirrusExplainFormat() {
-		if ( $this->cirrusExplain === 'raw' || $this->cirrusDumpQuery || $this->cirrusDumpQueryAST ) {
+		if ( $this->cirrusExplain === 'raw' || $this->cirrusDumpQuery || $this->cirrusDumpQueryAST
+			|| $this->cirrusExplainPage !== null
+		) {
 			return null;
 		}
 		return $this->cirrusExplain;
@@ -167,7 +181,8 @@ class CirrusDebugOptions {
 	 * @return bool true if raw data (query or results) needs to be returned
 	 */
 	public function isReturnRaw() {
-		return $this->cirrusDumpQuery || $this->cirrusDumpQueryAST || $this->cirrusDumpResult;
+		return $this->cirrusDumpQuery || $this->cirrusDumpQueryAST || $this->cirrusDumpResult
+			|| $this->cirrusExplainPage !== null;
 	}
 
 	/**

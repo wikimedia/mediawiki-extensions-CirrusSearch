@@ -633,6 +633,60 @@ Then( /^A valid query dump for (.+) is produced$/, function ( query ) {
 	} );
 } );
 
+When( /^I request an explain for page (.+) with query (.+?)(?: in namespace (\d+))?$/, async function ( title, query, namespace ) {
+	const pageId = await this.stepHelpers.pageIdOf( title );
+	const options = namespace !== undefined ? { srnamespace: namespace } : {};
+	return this.stepHelpers.explainPage( pageId, query, options );
+} );
+
+When( /^I request an explain for the unknown page id (.+) with query (.+?)$/, function ( pageId, query ) {
+	return this.stepHelpers.explainPage( pageId, query );
+} );
+
+Then( /^the explain result reports the page as found$/, function () {
+	return withApi( this, () => expect( this.apiResponse.found ).to.equal( true ) );
+} );
+
+Then( /^the explain result reports the page as not found$/, function () {
+	return withApi( this, () => expect( this.apiResponse.found ).to.equal( false ) );
+} );
+
+Then( /^the explain result reports the page as matched$/, function () {
+	return withApi( this, () => expect( this.apiResponse.matched ).to.equal( true ) );
+} );
+
+Then( /^the explain result reports the page as not matched$/, function () {
+	return withApi( this, () => expect( this.apiResponse.matched ).to.equal( false ) );
+} );
+
+Then( /^the explain result includes a raw explanation$/, function () {
+	return withApi( this, () => {
+		expect( this.apiResponse.explanation ).to.be.an( 'object' );
+		// The raw Lucene tree, passed through verbatim (no server-side formatting).
+		expect( this.apiResponse.explanation ).to.include.keys( 'value', 'description' );
+	} );
+} );
+
+Then( /^the explain result includes the rendered query$/, function () {
+	return withApi( this, () => {
+		expect( this.apiResponse.query ).to.be.an( 'object' );
+		expect( Object.keys( this.apiResponse.query ) ).to.have.length.above( 0 );
+	} );
+} );
+
+Then( /^the explain result explanation references the (.+) field$/, function ( field ) {
+	return withApi( this, () => expect( JSON.stringify( this.apiResponse.explanation ) ).to.include( field ) );
+} );
+
+Then( /^the explain result echoes the index and doc id of (.+)$/, async function ( title ) {
+	const pageId = await this.stepHelpers.pageIdOf( title );
+	return withApi( this, () => {
+		expect( this.apiResponse.index ).to.be.a( 'string' );
+		expect( this.apiResponse.index ).to.have.length.above( 0 );
+		expect( String( this.apiResponse.docId ) ).to.include( String( pageId ) );
+	} );
+} );
+
 When( /^I wbsearchentities on (.+) for (.+)/, async function ( wiki, query ) {
 	const client = await this.onWiki( wiki );
 	try {

@@ -66,6 +66,7 @@ class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 
 	private function assertNone( CirrusDebugOptions $debugOptions ): void {
 		$this->assertNull( $debugOptions->getCirrusMLRModel() );
+		$this->assertNull( $debugOptions->getCirrusExplainPage() );
 		$this->assertNull( $debugOptions->getCirrusExplainFormat() );
 		$this->assertFalse( $debugOptions->isCirrusDumpQuery() );
 		$this->assertFalse( $debugOptions->isCirrusDumpQueryAST() );

@@ -24,6 +24,7 @@
 	"apihelp-query+cirrusdoc-example": "Hel tuurista hal maqaal oo Raadinta Cirrus ah sida uu hadda ugu kaydsan yahay raadinta.",
 	"apihelp-query+cirrusdoc-example-2": "Hel tuurista dejimaha Raadinta Cirrus ee wiki-kan, iyadoo la soo saarayo kaliya qaybaha lagu xushay cabbirka 'includes'.",
 	"apihelp-query+cirrusdoc-param-includes": "Qeex meelaha la rabo in lagu soo celiyo natiijada raadinta.",
+	"apihelp-query+cirrusdoc-param-redirectscope": "Soo celi dukumeentiga la tilmaamay ee bogga dib u jeedinta laftiisa halkii laga raaci lahaa bartilmaameed kiisa.",
 	"apihelp-query+cirrusbuilddoc-summary": "Tuurista dukumeentiga maqaalka Raadinta Cirrus ee laga soo qaado serverrada keydka xogta.",
 	"apihelp-query+cirrusbuilddoc-example": "Hel tuurista hal maqaal oo Raadinta Cirrus ah oo laga soo sameeyay keydka xogta.",
 	"apihelp-query+cirrusbuilddoc-param-builders": "Nooca xogta la soo saarayo.",

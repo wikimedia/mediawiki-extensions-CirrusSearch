@@ -71,16 +71,16 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		// local config changes break the tests.
 		$this->overrideConfigValues( $config + [
 			// We want to override the wikiid for consistent output, but this might break everything else...
-			'CirrusSearchExtraIndexes' => [],
-			'CirrusSearchExtraIndexBoostTemplates' => [],
-			'CirrusSearchIndexBaseName' => 'wiki',
-			'CirrusSearchUseExperimentalHighlighter' => true,
-			'CirrusSearchWikimediaExtraPlugin' => [
+			CirrusConfigNames::ExtraIndexes => [],
+			CirrusConfigNames::ExtraIndexBoostTemplates => [],
+			CirrusConfigNames::IndexBaseName => 'wiki',
+			CirrusConfigNames::UseExperimentalHighlighter => true,
+			CirrusConfigNames::WikimediaExtraPlugin => [
 				'regex' => [ 'build', 'use' ],
 			],
-			'CirrusSearchQueryStringMaxDeterminizedStates' => 500,
-			'CirrusSearchLanguageWeight' => [],
-			'CirrusSearchAllowLeadingWildcard' => true,
+			CirrusConfigNames::QueryStringMaxDeterminizedStates => 500,
+			CirrusConfigNames::LanguageWeight => [],
+			CirrusConfigNames::AllowLeadingWildcard => true,
 			MainConfigNames::CapitalLinks => true,
 			MainConfigNames::ContentNamespaces => [ NS_MAIN ],
 		] );
@@ -152,13 +152,13 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	 * that it won't be needed to build query on a target wiki.
 	 */
 	private static $CONFIG_VARS_FALSE_POSITIVES = [
-		'CirrusSearchFetchConfigFromApi', // Should not be needed to build a crosswiki search
+		CirrusConfigNames::FetchConfigFromApi, // Should not be needed to build a crosswiki search
 		MainConfigNames::DBname,
 		'SiteMatrixSites',
-		'CirrusSearchInterwikiPrefixOverrides',
-		'CirrusSearchCrossClusterSearch', // We explicitly want this to fall through to local wiki conf
-		'CirrusSearchInterwikiHTTPConnectTimeout', // Needed to fetch crosswiki config
-		'CirrusSearchInterwikiHTTPTimeout' // Needed to fetch crosswiki config
+		CirrusConfigNames::InterwikiPrefixOverrides,
+		CirrusConfigNames::CrossClusterSearch, // We explicitly want this to fall through to local wiki conf
+		CirrusConfigNames::InterwikiHTTPConnectTimeout, // Needed to fetch crosswiki config
+		CirrusConfigNames::InterwikiHTTPTimeout // Needed to fetch crosswiki config
 	];
 
 	/**
@@ -254,11 +254,11 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	 */
 	public function testArchiveQuery( $expectedFile, $query ) {
 		$this->overrideConfigValues( [
-			'CirrusSearchIndexBaseName' => 'wiki',
-			'CirrusSearchQueryStringMaxDeterminizedStates' => 500,
+			CirrusConfigNames::IndexBaseName => 'wiki',
+			CirrusConfigNames::QueryStringMaxDeterminizedStates => 500,
 			MainConfigNames::ContentNamespaces => [ NS_MAIN ],
 			MainConfigNames::CapitalLinks => true,
-			'CirrusSearchEnableArchive' => true,
+			CirrusConfigNames::EnableArchive => true,
 		] );
 
 		$title = Title::newFromText( $query );
@@ -366,7 +366,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	 */
 	public function testPhraseSuggest( $expectedFile, $query, $namespaces, $offset, $withDym, $config ) {
 		$engine = new CirrusSearch( new HashSearchConfig( $config + [
-					'CirrusSearchPhraseSuggestReverseField' => [ 'use' => false ],
+					CirrusConfigNames::PhraseSuggestReverseField => [ 'use' => false ],
 				], [ HashSearchConfig::FLAG_INHERIT ] ),
 				CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		$engine->setShowSuggestion( $withDym );
@@ -403,7 +403,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	 * @dataProvider providePhraseSuggestResponse
 	 */
 	public function testPhraseSuggestResponse( $query, $response, $approxScore, $suggestion, $suggestionSnippet ) {
-		$this->overrideConfigValue( 'CirrusSearchLogElasticRequests', false );
+		$this->overrideConfigValue( CirrusConfigNames::LogElasticRequests, false );
 		$rewrittenResponse = new \Elastica\Response( json_encode(
 			[
 				'status' => 200,
@@ -422,15 +422,15 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			$rewrittenResponse
 		);
 		$config = new HashSearchConfig( [
-			'CirrusSearchLogElasticRequests' => false,
-			'CirrusSearchDefaultCluster' => 'default',
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::LogElasticRequests => false,
+			CirrusConfigNames::DefaultCluster => 'default',
+			CirrusConfigNames::Clusters => [
 				'default' => [
 					[ 'transport' => $transport ]
 				]
 			],
-			'CirrusSearchEnablePhraseSuggest' => true,
-			'CirrusSearchPhraseSuggestReverseField' => [ 'use' => false ],
+			CirrusConfigNames::EnablePhraseSuggest => true,
+			CirrusConfigNames::PhraseSuggestReverseField => [ 'use' => false ],
 		], [ HashSearchConfig::FLAG_INHERIT ] );
 		$engine = new CirrusSearch( $config );
 		$engine->setFeatureData( 'rewrite', true );

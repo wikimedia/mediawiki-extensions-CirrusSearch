@@ -32,7 +32,7 @@ class NamespaceMatcherIntegrationTest extends CirrusIntegrationTestCase {
 			MainConfigNames::NamespaceAliases => [
 				'Mañsoner' => 100,
 			],
-			'CirrusSearchNamespaceResolutionMethod' => $method
+			CirrusConfigNames::NamespaceResolutionMethod => $method
 		] );
 		$namespaceMatcher = $this->getServiceContainer()->get( NamespaceMatcher::SERVICE );
 		$this->assertEquals( $expected, $namespaceMatcher->identifyNamespace( $namespace ) );

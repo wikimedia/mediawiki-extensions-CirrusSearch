@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Api;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Connection;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Maintenance\ArchiveMappingConfigBuilder;
@@ -130,7 +131,7 @@ class SchemaDump extends ApiBase {
 		$pluginsParam = $this->getParameter( 'plugins' );
 
 		$utils = new ConfigUtils( $conn->getClient(), new NullPrinter() );
-		$bannedPlugins = $config->get( 'CirrusSearchBannedPlugins' );
+		$bannedPlugins = $config->get( CirrusConfigNames::BannedPlugins );
 		if ( $pluginsParam !== null ) {
 			$plugins = $utils->removeBannedPlugins( $pluginsParam, $bannedPlugins );
 		} else {
@@ -144,18 +145,18 @@ class SchemaDump extends ApiBase {
 
 		// Get config flags
 		$flags = 0;
-		if ( $config->get( 'CirrusSearchPrefixSearchStartsWithAnyWord' ) ) {
+		if ( $config->get( CirrusConfigNames::PrefixSearchStartsWithAnyWord ) ) {
 			$flags |= MappingConfigBuilder::PREFIX_START_WITH_ANY;
 		}
-		if ( $config->get( 'CirrusSearchPhraseSuggestUseText' ) ) {
+		if ( $config->get( CirrusConfigNames::PhraseSuggestUseText ) ) {
 			$flags |= MappingConfigBuilder::PHRASE_SUGGEST_USE_TEXT;
 		}
 
-		$optimizeForHighlighter = $config->get( 'CirrusSearchOptimizeIndexForExperimentalHighlighter' );
+		$optimizeForHighlighter = $config->get( CirrusConfigNames::OptimizeIndexForExperimentalHighlighter );
 
 		// Get replica and refresh settings
-		$replicas = $config->get( 'CirrusSearchReplicas' );
-		$refreshInterval = $config->get( 'CirrusSearchRefreshInterval' );
+		$replicas = $config->get( CirrusConfigNames::Replicas );
+		$refreshInterval = $config->get( CirrusConfigNames::RefreshInterval );
 
 		return [
 			'langCode' => $langCode,
@@ -273,7 +274,7 @@ class SchemaDump extends ApiBase {
 		}
 
 		// Add merge settings if configured
-		$mergeSettings = $config->get( 'CirrusSearchMergeSettings' );
+		$mergeSettings = $config->get( CirrusConfigNames::MergeSettings );
 		if ( is_array( $mergeSettings ) && isset( $mergeSettings[$indexSuffix] ) ) {
 			$indexSettings['merge'] = [ 'policy' => $mergeSettings[$indexSuffix] ];
 		}
@@ -282,7 +283,7 @@ class SchemaDump extends ApiBase {
 		$settings = [ 'index' => $indexSettings ];
 
 		// Add extra settings if configured
-		$extraSettings = $config->get( 'CirrusSearchExtraIndexSettings' );
+		$extraSettings = $config->get( CirrusConfigNames::ExtraIndexSettings );
 		if ( is_array( $extraSettings ) ) {
 			$settings = array_merge( $settings, $extraSettings );
 		}

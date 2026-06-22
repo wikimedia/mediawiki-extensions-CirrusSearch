@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
@@ -228,7 +229,7 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 
 		// @todo Use a HashConfig with explicit values?
 		$config = new HashSearchConfig(
-			[ 'CirrusSearchMoreLikeThisTTL' => 600, 'CirrusSearchIndexBaseName' => 'mywiki' ],
+			[ CirrusConfigNames::MoreLikeThisTTL => 600, CirrusConfigNames::IndexBaseName => 'mywiki' ],
 			[ HashSearchConfig::FLAG_INHERIT ]
 		);
 

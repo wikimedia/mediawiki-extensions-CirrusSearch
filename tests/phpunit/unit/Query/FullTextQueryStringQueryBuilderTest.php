@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
@@ -136,7 +137,7 @@ class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 
 		$config = new HashSearchConfig( [
 			'wgLanguageCode' => 'en',
-			'CirrusSearchWeights' => [
+			CirrusConfigNames::Weights => [
 				'title' => 20,
 				'redirect' => 15,
 				'category' => 8,
@@ -146,7 +147,7 @@ class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 				'auxiliary_text' => 0.5,
 				'file_text' => 0.5
 			],
-			'CirrusSearchPhraseSlop' => [
+			CirrusConfigNames::PhraseSlop => [
 				'precise' => 0,
 				'default' => 0,
 				'boost' => 1

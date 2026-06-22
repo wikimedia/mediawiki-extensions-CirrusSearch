@@ -4,6 +4,7 @@
  */
 
 use CirrusSearch\CachedSparqlClient;
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Connection;
@@ -35,7 +36,7 @@ return [
 	// SPARQL client for deep category search
 	'CirrusCategoriesClient' => static function ( MediaWikiServices $services ): CachedSparqlClient {
 		$config = $services->getMainConfig();
-		$endpoint = $config->get( 'CirrusSearchCategoryEndpoint' );
+		$endpoint = $config->get( CirrusConfigNames::CategoryEndpoint );
 		$client = new SparqlClient( $endpoint, $services->getHttpRequestFactory() );
 		$client->setTimeout( DeepcatFeature::TIMEOUT );
 		$client->setClientOptions( [
@@ -44,7 +45,7 @@ return [
 		return new CachedSparqlClient(
 			$client,
 			$services->getMainWANObjectCache(),
-			$config->get( 'CirrusSearchCategoriesClientCacheTTL' ),
+			$config->get( CirrusConfigNames::CategoriesClientCacheTTL ),
 			$endpoint
 		);
 	},
@@ -52,8 +53,8 @@ return [
 		$config = $services->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
 		$client = $services->getHttpRequestFactory()->createMultiClient( [
-			'connTimeout' => $config->get( 'CirrusSearchInterwikiHTTPConnectTimeout' ),
-			'reqTimeout' => $config->get( 'CirrusSearchInterwikiHTTPTimeout' )
+			'connTimeout' => $config->get( CirrusConfigNames::InterwikiHTTPConnectTimeout ),
+			'reqTimeout' => $config->get( CirrusConfigNames::InterwikiHTTPTimeout )
 		] );
 		return InterwikiResolverFactory::build(
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
@@ -82,7 +83,7 @@ return [
 		 */
 		$searchConfig = $services->getConfigFactory()->makeConfig( 'CirrusSearch' );
 
-		if ( $searchConfig->get( 'CirrusSearchEnableEventBusWeightedTags' ) ) {
+		if ( $searchConfig->get( CirrusConfigNames::EnableEventBusWeightedTags ) ) {
 			$eventBusFactory = $services->getService( 'EventBus.EventBusFactory' );
 
 			$weightedTagSerializer = new EventBusWeightedTagSerializer(

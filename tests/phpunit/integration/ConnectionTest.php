@@ -37,7 +37,7 @@ class ConnectionTest extends CirrusIntegrationTestCase {
 	 */
 	public function testExtractIndexSuffixFromIndexName( $expected, $name ) {
 		$config = new HashSearchConfig( [
-			'CirrusSearchNamespaceMappings' => [
+			CirrusConfigNames::NamespaceMappings => [
 				NS_FILE => 'file',
 			],
 			// Needed for constructor to not blow up
@@ -49,7 +49,7 @@ class ConnectionTest extends CirrusIntegrationTestCase {
 
 	public function testExtractIndexSuffixThrowsExceptionOnUnknown() {
 		$config = new HashSearchConfig( [
-			'CirrusSearchNamespaceMappings' => [],
+			CirrusConfigNames::NamespaceMappings => [],
 			// Needed for constructor to not blow up
 			'CirrusSearchServers' => [ 'localhost' ],
 		] );
@@ -61,9 +61,9 @@ class ConnectionTest extends CirrusIntegrationTestCase {
 	public function testCanRemoveArchiveFromAllIndexSuffixes() {
 		$con = new Connection( new HashSearchConfig( [
 			'CirrusSearchServers' => [ 'localhost' ],
-			'CirrusSearchNamespaceMappings' => [],
-			'CirrusSearchEnableArchive' => false,
-			'CirrusSearchPrivateClusters' => null,
+			CirrusConfigNames::NamespaceMappings => [],
+			CirrusConfigNames::EnableArchive => false,
+			CirrusConfigNames::PrivateClusters => null,
 		] ) );
 		$this->assertNotContains( Connection::ARCHIVE_INDEX_SUFFIX, $con->getAllIndexSuffixes( null ) );
 		$this->assertArrayEquals( [], $con->getAllIndexSuffixes( Connection::ARCHIVE_DOC_TYPE ) );
@@ -72,9 +72,9 @@ class ConnectionTest extends CirrusIntegrationTestCase {
 	public function testGetAllIndexSuffixes() {
 		$con = new Connection( new HashSearchConfig( [
 			'CirrusSearchServers' => [ 'localhost' ],
-			'CirrusSearchNamespaceMappings' => [],
-			'CirrusSearchEnableArchive' => true,
-			'CirrusSearchPrivateClusters' => null,
+			CirrusConfigNames::NamespaceMappings => [],
+			CirrusConfigNames::EnableArchive => true,
+			CirrusConfigNames::PrivateClusters => null,
 		] ) );
 		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_SUFFIX, Connection::GENERAL_INDEX_SUFFIX ],
 			$con->getAllIndexSuffixes() );
@@ -87,9 +87,9 @@ class ConnectionTest extends CirrusIntegrationTestCase {
 
 		$con = new Connection( new HashSearchConfig( [
 			'CirrusSearchServers' => [ 'localhost' ],
-			'CirrusSearchNamespaceMappings' => [ NS_FILE => 'file' ],
-			'CirrusSearchEnableArchive' => true,
-			'CirrusSearchPrivateClusters' => null,
+			CirrusConfigNames::NamespaceMappings => [ NS_FILE => 'file' ],
+			CirrusConfigNames::EnableArchive => true,
+			CirrusConfigNames::PrivateClusters => null,
 		] ) );
 
 		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_SUFFIX, Connection::GENERAL_INDEX_SUFFIX, 'file' ],
@@ -119,28 +119,28 @@ class ConnectionTest extends CirrusIntegrationTestCase {
 			],
 			'separate clusters' => [
 				'config' => [
-					'CirrusSearchDefaultCluster' => 'a',
-					'CirrusSearchReplicaGroup' => 'default',
-					'CirrusSearchClusters' => [
+					CirrusConfigNames::DefaultCluster => 'a',
+					CirrusConfigNames::ReplicaGroup => 'default',
+					CirrusConfigNames::Clusters => [
 						'a' => [ 'localhost:9092', 'replica' => 'a' ],
 						'b' => [ 'localhost:9192', 'replica' => 'b' ],
 					],
 				],
 				'update' => [
-					'CirrusSearchDefaultCluster' => 'b',
+					CirrusConfigNames::DefaultCluster => 'b',
 				],
 			],
 			'separate replica groups' => [
 				'config' => [
-					'CirrusSearchDefaultCluster' => 'ut',
-					'CirrusSearchReplicaGroup' => 'a',
-					'CirrusSearchClusters' => [
+					CirrusConfigNames::DefaultCluster => 'ut',
+					CirrusConfigNames::ReplicaGroup => 'a',
+					CirrusConfigNames::Clusters => [
 						'a' => [ 'localhost:9092', 'replica' => 'ut', 'group' => 'a' ],
 						'b' => [ 'localhost:9192', 'replica' => 'ut', 'group' => 'b' ],
 					],
 				],
 				'update' => [
-					'CirrusSearchReplicaGroup' => 'b',
+					CirrusConfigNames::ReplicaGroup => 'b',
 				],
 			],
 		];

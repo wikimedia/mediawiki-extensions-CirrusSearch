@@ -33,7 +33,7 @@ class ClusterSettings {
 	 * @return bool True when the cluster is allowed to contain private indices
 	 */
 	public function isPrivateCluster() {
-		$privateClusters = $this->config->get( 'CirrusSearchPrivateClusters' );
+		$privateClusters = $this->config->get( CirrusConfigNames::PrivateClusters );
 		if ( $privateClusters === null ) {
 			return true;
 		} else {
@@ -46,7 +46,7 @@ class ClusterSettings {
 	 * @return int Number of shards the index should have
 	 */
 	public function getShardCount( $indexSuffix ): int {
-		$settings = $this->config->get( 'CirrusSearchShardCount' );
+		$settings = $this->config->get( CirrusConfigNames::ShardCount );
 		if ( isset( $settings[$this->cluster][$indexSuffix] ) ) {
 			return $settings[$this->cluster][$indexSuffix];
 		} elseif ( isset( $settings[$indexSuffix] ) ) {
@@ -65,7 +65,7 @@ class ClusterSettings {
 	 *  also be the string 'false' when replicas are disabled.
 	 */
 	public function getReplicaCount( $indexSuffix ) {
-		$settings = $this->config->get( 'CirrusSearchReplicas' );
+		$settings = $this->config->get( CirrusConfigNames::Replicas );
 		if ( !is_array( $settings ) ) {
 			return $settings;
 		} elseif ( isset( $settings[$this->cluster][$indexSuffix] ) ) {
@@ -82,7 +82,7 @@ class ClusterSettings {
 	 * @return int Number of shards per node, or 'unlimited'.
 	 */
 	public function getMaxShardsPerNode( $indexSuffix ) {
-		$settings = $this->config->get( 'CirrusSearchMaxShardsPerNode' );
+		$settings = $this->config->get( CirrusConfigNames::MaxShardsPerNode );
 		$max = $settings[$this->cluster][$indexSuffix] ?? $settings[$indexSuffix] ?? -1;
 		// Allow convenience setting of 'unlimited' which translates to elasticsearch -1 (unbounded).
 		return $max === 'unlimited' ? -1 : $max;
@@ -93,7 +93,7 @@ class ClusterSettings {
 	 * Fallback to 0 (300 sec) if not specified in cirrus config.
 	 */
 	public function getConnectTimeout() {
-		$timeout = $this->config->get( 'CirrusSearchClientSideConnectTimeout' );
+		$timeout = $this->config->get( CirrusConfigNames::ClientSideConnectTimeout );
 		if ( is_int( $timeout ) ) {
 			return $timeout;
 		}

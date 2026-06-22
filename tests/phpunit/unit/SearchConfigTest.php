@@ -29,7 +29,7 @@ class SearchConfigTest extends CirrusTestCase {
 
 	public function testMakeId() {
 		$config = new HashSearchConfig( [
-			'CirrusSearchPrefixIds' => true,
+			CirrusConfigNames::PrefixIds => true,
 			'_wikiID' => 'mywiki',
 		] );
 
@@ -44,7 +44,7 @@ class SearchConfigTest extends CirrusTestCase {
 		}
 
 		$config = new HashSearchConfig( [
-			'CirrusSearchPrefixIds' => false,
+			CirrusConfigNames::PrefixIds => false,
 			'_wikiID' => 'mywiki',
 		] );
 
@@ -80,8 +80,8 @@ class SearchConfigTest extends CirrusTestCase {
 		$this->assertFalse( $config->isCrossLanguageSearchEnabled() );
 		$this->assertFalse( $config->isCrossProjectSearchEnabled() );
 		$config = new HashSearchConfig( [
-			'CirrusSearchEnableCrossProjectSearch' => true,
-			'CirrusSearchEnableAltLanguage' => true,
+			CirrusConfigNames::EnableCrossProjectSearch => true,
+			CirrusConfigNames::EnableAltLanguage => true,
 		] );
 		$this->assertTrue( $config->isCrossLanguageSearchEnabled() );
 		$this->assertTrue( $config->isCrossProjectSearchEnabled() );
@@ -92,7 +92,7 @@ class SearchConfigTest extends CirrusTestCase {
 		$this->assertFalse( $config->buildRedirectDocuments() );
 		$this->assertFalse( $config->useRedirectDocuments() );
 		$config = new HashSearchConfig( [
-			'CirrusSearchRedirectDocuments' => [ 'build' => true, 'use' => true ],
+			CirrusConfigNames::RedirectDocuments => [ 'build' => true, 'use' => true ],
 		] );
 		$this->assertTrue( $config->buildRedirectDocuments() );
 		$this->assertTrue( $config->useRedirectDocuments() );
@@ -111,7 +111,7 @@ class SearchConfigTest extends CirrusTestCase {
 	}
 
 	public function testProfileService() {
-		$config = $this->newHashSearchConfig( [ 'CirrusSearchRescoreProfiles' => [ 'foo' => [] ] ] );
+		$config = $this->newHashSearchConfig( [ CirrusConfigNames::RescoreProfiles => [ 'foo' => [] ] ] );
 		$service = $config->getProfileService();
 		$this->assertSame( $service, $config->getProfileService() );
 
@@ -125,22 +125,22 @@ class SearchConfigTest extends CirrusTestCase {
 
 	public function testIndexBaseName() {
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchIndexBaseName' => SearchConfig::WIKI_ID_MAGIC_WORD,
+			CirrusConfigNames::IndexBaseName => SearchConfig::WIKI_ID_MAGIC_WORD,
 			'_wikiID' => 'mywiki'
 		] );
-		$this->assertSame( 'mywiki', $config->get( 'CirrusSearchIndexBaseName' ) );
-		$config = new HashSearchConfig( [ 'CirrusSearchIndexBaseName' => 'foobar' ] );
-		$this->assertSame( 'foobar', $config->get( 'CirrusSearchIndexBaseName' ) );
+		$this->assertSame( 'mywiki', $config->get( CirrusConfigNames::IndexBaseName ) );
+		$config = new HashSearchConfig( [ CirrusConfigNames::IndexBaseName => 'foobar' ] );
+		$this->assertSame( 'foobar', $config->get( CirrusConfigNames::IndexBaseName ) );
 	}
 
 	public static function getHostWikiConfigProvider() {
 		return [
 			'default' => [ 'same', new SearchConfig() ],
 			'override with inherit and same wikiid is same' => [ 'same', new HashSearchConfig( [
-				'CirrusSearchIndexBaseName' => 'phpunit',
+				CirrusConfigNames::IndexBaseName => 'phpunit',
 			], [ HashSearchConfig::FLAG_INHERIT ] ) ],
 			'override without inherit and same wikiid is not same' => [ 'not', new HashSearchConfig( [
-				'CirrusSearchIndexBaseName' => 'phpunit',
+				CirrusConfigNames::IndexBaseName => 'phpunit',
 			] ) ],
 			'override with inherit and different wikiid is not same' => [ 'not', new HashSearchConfig( [
 				'_wikiID' => 'zomgwtfbbqwiki',
@@ -166,9 +166,9 @@ class SearchConfigTest extends CirrusTestCase {
 
 	public function testCirrusSearchServersOverride() {
 		$common = [
-			'CirrusSearchDefaultCluster' => 'primary',
-			'CirrusSearchReplicaGroup' => 'default',
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::DefaultCluster => 'primary',
+			CirrusConfigNames::ReplicaGroup => 'default',
+			CirrusConfigNames::Clusters => [
 				'primary' => [ '127.0.0.1:9200' ],
 			],
 		];
@@ -205,7 +205,7 @@ class SearchConfigTest extends CirrusTestCase {
 	 * @dataProvider provideCompletionSuggesterEnabled
 	 */
 	public function testIsUseCompletionSuggester( $confValue, $expected ) {
-		$conf = [ 'CirrusSearchUseCompletionSuggester' => $confValue ];
+		$conf = [ CirrusConfigNames::UseCompletionSuggester => $confValue ];
 		$this->assertSame( $expected, ( new HashSearchConfig( $conf ) )->isCompletionSuggesterEnabled() );
 	}
 }

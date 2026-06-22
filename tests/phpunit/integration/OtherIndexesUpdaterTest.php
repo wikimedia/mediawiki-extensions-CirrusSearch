@@ -32,8 +32,8 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 	 */
 	public function testGetExternalIndexes( $assertions, $extraIndexes ) {
 		$config = new HashSearchConfig( [
-			'CirrusSearchExtraIndexes' => $extraIndexes,
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::ExtraIndexes => $extraIndexes,
+			CirrusConfigNames::ReplicaGroup => 'default',
 		] );
 
 		foreach ( $assertions as $title => $expectedIndices ) {
@@ -75,8 +75,8 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 	 */
 	public function testGetExtraIndexesForNamespace( $assertions, $extraIndexes ) {
 		$config = new HashSearchConfig( [
-			'CirrusSearchExtraIndexes' => $extraIndexes,
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::ExtraIndexes => $extraIndexes,
+			CirrusConfigNames::ReplicaGroup => 'default',
 		] );
 
 		foreach ( $assertions as [ $namespaces, $indices ] ) {
@@ -111,15 +111,15 @@ class OtherIndexesUpdaterTest extends CirrusIntegrationTestCase {
 			->willReturn( $response );
 
 		$config = new HashSearchConfig( [
-			'CirrusSearchWikimediaExtraPlugin' => [
+			CirrusConfigNames::WikimediaExtraPlugin => [
 				'super_detect_noop' => true,
 			],
-			'CirrusSearchReplicaGroup' => 'a',
-			'CirrusSearchExtraIndexes' => [
+			CirrusConfigNames::ReplicaGroup => 'a',
+			CirrusConfigNames::ExtraIndexes => [
 				NS_MAIN => [ 'otherplace:phpunit_other_index' ],
 			],
-			'CirrusSearchDefaultCluster' => 'default',
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::DefaultCluster => 'default',
+			CirrusConfigNames::Clusters => [
 				'default' => [
 					[ 'transport' => $transport ],
 				]

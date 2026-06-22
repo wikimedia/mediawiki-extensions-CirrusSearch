@@ -52,7 +52,7 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 			// and have set this to "fuzzy"
 			$config->getProfileService()
 				->loadProfileByName( SearchProfileService::COMPLETION,
-					$config->get( 'CirrusSearchCompletionSettings' ) ),
+					$config->get( CirrusConfigNames::CompletionSettings ) ),
 			$secondTryRunner,
 			$limit
 		);
@@ -99,8 +99,8 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 		return [
 			"simple" => [
 				[
-					'CirrusSearchCompletionSettings' => 'test-simple',
-					'CirrusSearchCompletionProfiles' => $profile,
+					CirrusConfigNames::CompletionSettings => 'test-simple',
+					CirrusConfigNames::CompletionProfiles => $profile,
 				],
 				10,
 				' complete me ',
@@ -118,8 +118,8 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 			],
 			"simple with fuzzy" => [
 				[
-					'CirrusSearchCompletionSettings' => 'test-fuzzy',
-					'CirrusSearchCompletionProfiles' => $profile,
+					CirrusConfigNames::CompletionSettings => 'test-fuzzy',
+					CirrusConfigNames::CompletionProfiles => $profile,
 				],
 				10,
 				' complete me ',
@@ -150,8 +150,8 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 			],
 			"simple with variants" => [
 				[
-					'CirrusSearchCompletionSettings' => 'test-simple',
-					'CirrusSearchCompletionProfiles' => $profile,
+					CirrusConfigNames::CompletionSettings => 'test-simple',
+					CirrusConfigNames::CompletionProfiles => $profile,
 				],
 				10,
 				' complete me ',
@@ -207,7 +207,7 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 	 */
 	public function testMinMaxDefaultProfile( int $len, string $query ) {
 		$config = new HashSearchConfig( [
-			'CirrusSearchCompletionSettings' => 'fuzzy',
+			CirrusConfigNames::CompletionSettings => 'fuzzy',
 		], [ HashSearchConfig::FLAG_INHERIT ] );
 		// Test that we generate at most 4 profiles
 		$secondTry = new SecondTryRunner( [], [] );
@@ -257,8 +257,8 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 	 */
 	public function testOffsets( ResultSet $results, $limit, $offset, $first, $last, $size, $hardLimit ) {
 		$config = new HashSearchConfig( [
-			'CirrusSearchCompletionSuggesterHardLimit' => $hardLimit,
-			'CirrusSearchCompletionSettings' => 'fuzzy',
+			CirrusConfigNames::CompletionSuggesterHardLimit => $hardLimit,
+			CirrusConfigNames::CompletionSettings => 'fuzzy',
 		] );
 		$secondTryRunner = new SecondTryRunner( [], [] );
 		$builder = new CompSuggestQueryBuilder(
@@ -373,7 +373,7 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 		$resp = new ResultSet( new Response( $data ), new Query(), [] );
 
 		$config = new HashSearchConfig( [
-			'CirrusSearchCompletionSettings' => 'fuzzy',
+			CirrusConfigNames::CompletionSettings => 'fuzzy',
 		] );
 		$secondTryRunner = new SecondTryRunner( [], [] );
 		$builder =

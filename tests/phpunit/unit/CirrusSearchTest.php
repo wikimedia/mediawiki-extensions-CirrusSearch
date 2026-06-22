@@ -40,7 +40,7 @@ class CirrusSearchTest extends CirrusTestCase {
 	 * @covers       \CirrusSearch\CirrusSearch::getProfiles()
 	 */
 	public function testGetProfiles( $profileType, $default, array $expectedProfiles ) {
-		$profiles = $this->getSearchEngine( [ 'CirrusSearchUseCompletionSuggester' => 'yes' ] )
+		$profiles = $this->getSearchEngine( [ CirrusConfigNames::UseCompletionSuggester => 'yes' ] )
 			->getProfiles( $profileType );
 		if ( $default === null ) {
 			$this->assertNull( $profiles );
@@ -91,7 +91,7 @@ class CirrusSearchTest extends CirrusTestCase {
 	 * @throws \MediaWiki\Config\ConfigException
 	 */
 	public function testExtractProfileFromFeatureData( $type, $setValue, $expected ) {
-		$engine = $this->getSearchEngine( [ 'CirrusSearchUseCompletionSuggester' => 'yes' ] );
+		$engine = $this->getSearchEngine( [ CirrusConfigNames::UseCompletionSuggester => 'yes' ] );
 		$engine->setFeatureData( $type, $setValue );
 		$this->assertEquals( $expected, $engine->extractProfileFromFeatureData( $type ) );
 	}
@@ -120,7 +120,7 @@ class CirrusSearchTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\CirrusSearch::doSearchText
 	 */
 	public function testFailureOnQueryLength() {
-		$engine = $this->getSearchEngine( [ 'CirrusSearchMaxFullTextQueryLength' => 10 ] );
+		$engine = $this->getSearchEngine( [ CirrusConfigNames::MaxFullTextQueryLength => 10 ] );
 		$engine->setHookContainer( $this->createMock( HookContainer::class ) );
 		$status = $engine->searchText( str_repeat( "a", 11 ) );
 		$this->assertEquals( $status,
@@ -140,7 +140,9 @@ class CirrusSearchTest extends CirrusTestCase {
 		$secondTryFactory = new SecondTrySearchFactory( $languageConverterFactory );
 		$generator = new GlobalIdGenerator(
 			true,
-			fn ( string $cmd ): never => $this->fail( 'should not be called' )
+			static function ( string $cmd ): never {
+				throw new \Exception( 'should not be called' );
+			}
 		);
 		return new CirrusSearch( $config, CirrusDebugOptions::defaultOptions(),
 			$this->namespacePrefixParser(), $this->getInterWikiResolver( $config ), self::newTitleHelper(),
@@ -154,11 +156,11 @@ class CirrusSearchTest extends CirrusTestCase {
 	 */
 	private function getMinimalConfig() {
 		return [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'default' => [ 'localhost' ],
 			],
-			'CirrusSearchDefaultCluster' => 'default',
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::DefaultCluster => 'default',
+			CirrusConfigNames::ReplicaGroup => 'default',
 		];
 	}
 

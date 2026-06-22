@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\SecondTry;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Profile\SearchProfileService;
 use MediaWiki\Language\ILanguageConverter;
@@ -60,8 +61,8 @@ class SecondTryRunnerTest extends CirrusTestCase {
 		$languageConverterFactory->method( 'getLanguageConverter' )
 			->willReturn( $languageConverter );
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchCompletionUseSecondTryProfile' => 'my_profile',
-			'CirrusSearchSecondTryProfiles' => [
+			CirrusConfigNames::CompletionUseSecondTryProfile => 'my_profile',
+			CirrusConfigNames::SecondTryProfiles => [
 				'my_profile' => [
 					'strategies' => [
 						'russian_keyboard' => 1.0,
@@ -92,8 +93,8 @@ class SecondTryRunnerTest extends CirrusTestCase {
 
 	public function testOneWayDwimProfile() {
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchCompletionUseSecondTryProfile' => 'my_profile',
-			'CirrusSearchSecondTryProfiles' => [
+			CirrusConfigNames::CompletionUseSecondTryProfile => 'my_profile',
+			CirrusConfigNames::SecondTryProfiles => [
 				'my_profile' => [
 					'strategies' => [
 						'russian_keyboard' => [

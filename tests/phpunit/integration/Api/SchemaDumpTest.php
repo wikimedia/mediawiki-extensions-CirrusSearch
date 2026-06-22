@@ -3,6 +3,7 @@
 namespace CirrusSearch\Test\Integration\Api;
 
 use CirrusSearch\Api\SchemaDump;
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Context\RequestContext;
@@ -82,7 +83,7 @@ class SchemaDumpTest extends CirrusIntegrationTestCase {
 	 */
 	public function testBuildWithEmptyPlugins() {
 		$this->overrideConfigValue(
-			'CirrusSearchNaturalTitleSort',
+			CirrusConfigNames::NaturalTitleSort,
 			[ 'build' => false, 'use' => false ],
 		);
 		$request = new FauxRequest( [
@@ -157,7 +158,7 @@ class SchemaDumpTest extends CirrusIntegrationTestCase {
 	 */
 	public function testAllIndicesReturned() {
 		$this->overrideConfigValue(
-			'CirrusSearchNaturalTitleSort',
+			CirrusConfigNames::NaturalTitleSort,
 			[ 'build' => false, 'use' => false ],
 		);
 		$request = new FauxRequest( [

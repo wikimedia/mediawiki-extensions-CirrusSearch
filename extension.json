@@ -727,6 +727,10 @@
 			"description": "List of CIDR strings used to identify automated requests",
 			"value": []
 		},
+		"CirrusSearchAutomationHeaderRegexes": {
+			"description": "Map from http header name to a regex used to identify automated requests. A request matching any pattern is flagged as automation.",
+			"value": []
+		},
 		"CirrusSearchCustomPageFields": {
 			"description": "Defines additional custom fields for page indexes",
 			"value": []

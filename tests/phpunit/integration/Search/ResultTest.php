@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Searcher;
@@ -48,7 +49,7 @@ class ResultTest extends CirrusIntegrationTestCase {
 		parent::setUp();
 
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchWikiToNameMap' => [ 'es' => 'eswiki', ]
+			CirrusConfigNames::WikiToNameMap => [ 'es' => 'eswiki', ]
 		] );
 		$fetchPhaseBuilder = new FetchPhaseConfigBuilder( $config, SearchQuery::SEARCH_TEXT );
 		$fetchPhaseBuilder->configureDefaultFullTextFields();

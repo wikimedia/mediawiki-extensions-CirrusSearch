@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
@@ -37,8 +38,8 @@ class PreferRecentFeature extends SimpleKeywordFeature implements BoostFunctionF
 	private $unspecifiedDecay;
 
 	public function __construct( Config $config ) {
-		$this->halfLife = $config->get( 'CirrusSearchPreferRecentDefaultHalfLife' );
-		$this->unspecifiedDecay = $config->get( 'CirrusSearchPreferRecentUnspecifiedDecayPortion' );
+		$this->halfLife = $config->get( CirrusConfigNames::PreferRecentDefaultHalfLife );
+		$this->unspecifiedDecay = $config->get( CirrusConfigNames::PreferRecentUnspecifiedDecayPortion );
 	}
 
 	/**

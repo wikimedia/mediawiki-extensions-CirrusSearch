@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchContext;
@@ -29,8 +30,8 @@ class PrefixSearchQueryBuilderTest extends CirrusTestCase {
 	public function testBuildsQuery() {
 		$qb = new PrefixSearchQueryBuilder( $this->secondTryRunner );
 		$config = new HashSearchConfig( [
-			'CirrusSearchPrefixSearchStartsWithAnyWord' => false,
-			'CirrusSearchPrefixWeights' => self::$WEIGHTS,
+			CirrusConfigNames::PrefixSearchStartsWithAnyWord => false,
+			CirrusConfigNames::PrefixWeights => self::$WEIGHTS,
 		] );
 		$context = $this->getSearchContext( $config );
 		$this->assertFalse( $context->isDirty() );
@@ -43,8 +44,8 @@ class PrefixSearchQueryBuilderTest extends CirrusTestCase {
 	public function testRejectsOversizeQueries() {
 		$qb = new PrefixSearchQueryBuilder( $this->secondTryRunner );
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchPrefixSearchStartsWithAnyWord' => false,
-			'CirrusSearchPrefixWeights' => [],
+			CirrusConfigNames::PrefixSearchStartsWithAnyWord => false,
+			CirrusConfigNames::PrefixWeights => [],
 		] );
 		$context = $this->getSearchContext( $config );
 		$qb->build( $context, str_repeat( 'a', 4096 ) );

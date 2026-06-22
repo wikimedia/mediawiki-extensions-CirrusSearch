@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\CirrusSearchResultSet;
@@ -42,7 +43,7 @@ class PhraseSuggestFallbackMethodTest extends FallbackMethodTestBase {
 		$suggestionSnippet,
 		$rewritten
 	) {
-		$config = $this->newHashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] );
+		$config = $this->newHashSearchConfig( [ CirrusConfigNames::EnablePhraseSuggest => true ] );
 		$query = $this->getNewFTSearchQueryBuilder( $config, $queryString )
 			->setAllowRewrite( true )
 			->build();
@@ -146,7 +147,7 @@ class PhraseSuggestFallbackMethodTest extends FallbackMethodTestBase {
 		$this->assertNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );
 
 		$query = $this->getNewFTSearchQueryBuilder(
-				new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => false ] ),
+				new HashSearchConfig( [ CirrusConfigNames::EnablePhraseSuggest => false ] ),
 				'foo bar'
 			)
 			->setWithDYMSuggestion( true )
@@ -154,7 +155,7 @@ class PhraseSuggestFallbackMethodTest extends FallbackMethodTestBase {
 		$this->assertNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );
 
 		$query = $this->getNewFTSearchQueryBuilder(
-				new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ),
+				new HashSearchConfig( [ CirrusConfigNames::EnablePhraseSuggest => true ] ),
 				'foo bar'
 			)
 			->setWithDYMSuggestion( true )
@@ -162,7 +163,7 @@ class PhraseSuggestFallbackMethodTest extends FallbackMethodTestBase {
 		$this->assertNotNull( PhraseSuggestFallbackMethod::build( $query, [ 'profile' => 'default' ] ) );
 
 		$query = $this->getNewFTSearchQueryBuilder(
-				new HashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ),
+				new HashSearchConfig( [ CirrusConfigNames::EnablePhraseSuggest => true ] ),
 				'foo bar'
 			)
 			->setWithDYMSuggestion( false )
@@ -175,7 +176,7 @@ class PhraseSuggestFallbackMethodTest extends FallbackMethodTestBase {
 	 */
 	public function testDisabledIfHasASuggestionOrWasRewritten() {
 		$query = $this->getNewFTSearchQueryBuilder(
-				$this->newHashSearchConfig( [ 'CirrusSearchEnablePhraseSuggest' => true ] ), "foo bar" )
+				$this->newHashSearchConfig( [ CirrusConfigNames::EnablePhraseSuggest => true ] ), "foo bar" )
 			->setWithDYMSuggestion( true )
 			->build();
 		/**

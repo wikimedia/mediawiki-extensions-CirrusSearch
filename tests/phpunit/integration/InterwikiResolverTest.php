@@ -3,6 +3,7 @@
 namespace CirrusSearch\Test;
 
 use CirrusSearch\CirrusConfigInterwikiResolver;
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\EmptyInterwikiResolver;
 use CirrusSearch\HashSearchConfig;
@@ -248,7 +249,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testLoadConfigForCrossProject() {
-		$this->overrideConfigValue( 'CirrusSearchRescoreProfile', 'test_inheritance' );
+		$this->overrideConfigValue( CirrusConfigNames::RescoreProfile, 'test_inheritance' );
 		$this->markTestSkippedIfExtensionNotLoaded( 'SiteMatrix' );
 		$fixtureFile = 'configDump/enwiki_sisterproject_configs.json';
 		if ( !CirrusIntegrationTestCase::hasFixture( $fixtureFile ) ) {
@@ -284,10 +285,10 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 				"config for $wikiId is available" );
 			$this->assertEquals( $configs[$prefix]->getWikiId(), $wikiId,
 				"config $wikiId has valid wikiId" );
-			$this->assertEquals( $wikiId, $configs[$prefix]->get( 'CirrusSearchIndexBaseName' ),
+			$this->assertEquals( $wikiId, $configs[$prefix]->get( CirrusConfigNames::IndexBaseName ),
 				"config for $wikiId has valid CirrusSearchIndexBaseName" );
 			$this->assertEquals( !$validConfig,
-				$configs[$prefix]->get( 'CirrusSearchRescoreProfile' ) === 'test_inheritance',
+				$configs[$prefix]->get( CirrusConfigNames::RescoreProfile ) === 'test_inheritance',
 				"config for $wikiId is" . ( !$validConfig ? " not" : "" ) .
 				" rescued using a fallback config" );
 		}
@@ -306,7 +307,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	 */
 	public function testLoadConfigForCrossLang( $valid ) {
 		$this->markTestSkippedIfExtensionNotLoaded( 'SiteMatrix' );
-		$this->overrideConfigValue( 'CirrusSearchRescoreProfile', 'test_inheritance' );
+		$this->overrideConfigValue( CirrusConfigNames::RescoreProfile, 'test_inheritance' );
 		$fixtureFile = 'configDump/enwiki_crosslang_frwiki' . ( !$valid ? '_invalid' : '' ) . '_config.json';
 		if ( !CirrusIntegrationTestCase::hasFixture( $fixtureFile ) ) {
 			if ( self::canRebuildFixture() ) {
@@ -332,15 +333,15 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			"config for $wikiId is available" );
 		$this->assertEquals( $configs[$prefix]->getWikiId(), $wikiId,
 			"config $wikiId has valid wikiId" );
-		$this->assertEquals( $wikiId, $configs[$prefix]->get( 'CirrusSearchIndexBaseName' ),
+		$this->assertEquals( $wikiId, $configs[$prefix]->get( CirrusConfigNames::IndexBaseName ),
 			"config for $wikiId has valid CirrusSearchIndexBaseName" );
 		if ( $valid ) {
 			$this->assertNotEquals( 'test_inheritance',
-				$configs[$prefix]->get( 'CirrusSearchRescoreProfile' ),
+				$configs[$prefix]->get( CirrusConfigNames::RescoreProfile ),
 				"config for $wikiId is not rescued using a fallback config" );
 		} else {
 			$this->assertEquals( 'test_inheritance',
-				$configs[$prefix]->get( 'CirrusSearchRescoreProfile' ),
+				$configs[$prefix]->get( CirrusConfigNames::RescoreProfile ),
 				"config for $wikiId is rescued using a fallback config" );
 		}
 	}

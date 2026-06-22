@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Extra\Query\SourceRegex;
@@ -34,7 +35,7 @@ class InSourceTest extends CirrusTestCase {
 
 		$config = new HashSearchConfig( [
 			'LanguageCode' => 'en',
-			'CirrusSearchAllowLeadingWildcard' => true,
+			CirrusConfigNames::AllowLeadingWildcard => true,
 		] );
 		$feature = new InSourceFeature( $config );
 		if ( $filterValue !== null ) {
@@ -125,8 +126,8 @@ class InSourceTest extends CirrusTestCase {
 		$feature = new InSourceFeature( new HashSearchConfig( [] ) );
 		$this->assertNotConsumed( $feature, 'foo bar' );
 		$config = new HashSearchConfig( [
-			'CirrusSearchEnableRegex' => true,
-			'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ]
+			CirrusConfigNames::EnableRegex => true,
+			CirrusConfigNames::WikimediaExtraPlugin => [ 'regex' => [ 'use' => true ] ]
 		], [ HashSearchConfig::FLAG_INHERIT ] );
 		$feature = new InSourceFeature( $config );
 		$this->assertNotConsumed( $feature, 'foo bar' );
@@ -147,8 +148,8 @@ class InSourceTest extends CirrusTestCase {
 				   !$insensitive === $x->getParam( 'case_sensitive' );
 		};
 		$config = new HashSearchConfig( [
-				'CirrusSearchEnableRegex' => true,
-				'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ]
+				CirrusConfigNames::EnableRegex => true,
+				CirrusConfigNames::WikimediaExtraPlugin => [ 'regex' => [ 'use' => true ] ]
 			], [ HashSearchConfig::FLAG_INHERIT ] );
 		$feature = new InSourceFeature( $config );
 
@@ -232,8 +233,8 @@ class InSourceTest extends CirrusTestCase {
 
 	public function testEmptyRegex() {
 		$config = new HashSearchConfig( [
-			'CirrusSearchEnableRegex' => true,
-			'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ]
+			CirrusConfigNames::EnableRegex => true,
+			CirrusConfigNames::WikimediaExtraPlugin => [ 'regex' => [ 'use' => true ] ]
 		], [ HashSearchConfig::FLAG_INHERIT ] );
 		$feature = new InSourceFeature( $config );
 		$term = 'insource://';

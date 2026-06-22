@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search\Fetch;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use Elastica\Query\AbstractQuery;
@@ -54,7 +55,7 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 		$target,
 		$priority = HighlightedField::DEFAULT_TARGET_PRIORITY
 	): BaseHighlightedField {
-		$useExp = $this->config->get( 'CirrusSearchUseExperimentalHighlighter' );
+		$useExp = $this->config->get( CirrusConfigNames::UseExperimentalHighlighter );
 		if ( $useExp ) {
 			$factories = ExperimentalHighlightedFieldBuilder::getFactories();
 		} else {
@@ -95,7 +96,7 @@ class FetchPhaseConfigBuilder implements HighlightFieldGenerator {
 	 * @return bool
 	 */
 	public function supportsRegexFields() {
-		return (bool)$this->config->get( 'CirrusSearchUseExperimentalHighlighter' );
+		return (bool)$this->config->get( CirrusConfigNames::UseExperimentalHighlighter );
 	}
 
 	/**

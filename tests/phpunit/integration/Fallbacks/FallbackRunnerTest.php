@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\Search\BaseCirrusSearchResultSet;
@@ -289,21 +290,21 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 	public function testDefaultSetup() {
 		$config = $this->newHashSearchConfig( [
 			'LanguageCode' => 'en',
-			'CirrusSearchEnableAltLanguage' => true,
-			'CirrusSearchInterwikiThreshold' => 3,
-			'CirrusSearchLanguageToWikiMap' => [
+			CirrusConfigNames::EnableAltLanguage => true,
+			CirrusConfigNames::InterwikiThreshold => 3,
+			CirrusConfigNames::LanguageToWikiMap => [
 				'fr' => 'fr',
 			],
-			'CirrusSearchWikiToNameMap' => [
+			CirrusConfigNames::WikiToNameMap => [
 				'fr' => 'frwiki',
 			],
-			'CirrusSearchLanguageDetectors' => [
+			CirrusConfigNames::LanguageDetectors => [
 				'language' => MockLanguageDetector::class
 			],
 			'CirrusSearchMockLanguage' => 'fr',
-			'CirrusSearchFetchConfigFromApi' => false,
-			'CirrusSearchEnablePhraseSuggest' => true,
-			'CirrusSearchFallbackProfile' => 'phrase_suggest_and_language_detection',
+			CirrusConfigNames::FetchConfigFromApi => false,
+			CirrusConfigNames::EnablePhraseSuggest => true,
+			CirrusConfigNames::FallbackProfile => 'phrase_suggest_and_language_detection',
 		] );
 
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, 'foobars',
@@ -530,9 +531,9 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 				0 => true,
 				10 => true
 			],
-			'CirrusSearchFallbackProfile' => 'my_test_profile',
-			'CirrusSearchEnablePhraseSuggest' => true,
-			'CirrusSearchFallbackProfiles' => [
+			CirrusConfigNames::FallbackProfile => 'my_test_profile',
+			CirrusConfigNames::EnablePhraseSuggest => true,
+			CirrusConfigNames::FallbackProfiles => [
 				'my_test_profile' => [
 					'methods' => [
 						'one' => [

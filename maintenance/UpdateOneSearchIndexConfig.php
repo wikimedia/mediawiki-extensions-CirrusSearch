@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\Maintenance\Validators\MappingValidator;
@@ -208,16 +209,16 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
 		$this->printDebugCheckConfig = $this->getOption( 'debugCheckConfig', false );
 		$this->langCode = $this->getSearchConfig()->get( "LanguageCode" );
-		$this->prefixSearchStartsWithAny = $this->getSearchConfig()->get( "CirrusSearchPrefixSearchStartsWithAnyWord" );
-		$this->phraseSuggestUseText = $this->getSearchConfig()->get( "CirrusSearchPhraseSuggestUseText" );
-		$this->bannedPlugins = $this->getSearchConfig()->get( "CirrusSearchBannedPlugins" );
+		$this->prefixSearchStartsWithAny = $this->getSearchConfig()->get( CirrusConfigNames::PrefixSearchStartsWithAnyWord );
+		$this->phraseSuggestUseText = $this->getSearchConfig()->get( CirrusConfigNames::PhraseSuggestUseText );
+		$this->bannedPlugins = $this->getSearchConfig()->get( CirrusConfigNames::BannedPlugins );
 		$this->optimizeIndexForExperimentalHighlighter = $this->getSearchConfig()
-			->get( "CirrusSearchOptimizeIndexForExperimentalHighlighter" );
-		$this->masterTimeout = $this->getSearchConfig()->get( "CirrusSearchMasterTimeout" );
-		$this->refreshInterval = $this->getSearchConfig()->get( "CirrusSearchRefreshInterval" );
+			->get( CirrusConfigNames::OptimizeIndexForExperimentalHighlighter );
+		$this->masterTimeout = $this->getSearchConfig()->get( CirrusConfigNames::MasterTimeout );
+		$this->refreshInterval = $this->getSearchConfig()->get( CirrusConfigNames::RefreshInterval );
 
 		if ( $this->indexSuffix === Connection::ARCHIVE_INDEX_SUFFIX ) {
-			if ( !$this->getSearchConfig()->get( 'CirrusSearchEnableArchive' ) ) {
+			if ( !$this->getSearchConfig()->get( CirrusConfigNames::EnableArchive ) ) {
 				$this->output( "Warning: Not allowing {$this->indexSuffix}, archives are disabled\n" );
 				return true;
 			}
@@ -329,7 +330,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getReplicaCount(),
 			$this->refreshInterval,
 			$this->getMergeSettings(),
-			$this->getSearchConfig()->get( "CirrusSearchExtraIndexSettings" )
+			$this->getSearchConfig()->get( CirrusConfigNames::ExtraIndexSettings )
 		) );
 
 		$this->outputIndented( "Index created.\n" );
@@ -396,11 +397,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$connection = $this->getConnection();
 
 		$fieldsToCleanup = array_filter( explode( ',', $this->getOption( 'fieldsToDelete', '' ) ) );
-		$fieldsToCleanup = array_merge( $fieldsToCleanup, $this->getSearchConfig()->get( "CirrusSearchIndexFieldsToCleanup" ) );
+		$fieldsToCleanup = array_merge(
+			$fieldsToCleanup, $this->getSearchConfig()->get( CirrusConfigNames::IndexFieldsToCleanup ) );
 		$weightedTagsPrefixMap = $this->parsePrefixMap( $this->getOption( 'weightedTagsPrefixMap', '' ) );
 		$weightedTagsPrefixMap = array_merge(
 			$weightedTagsPrefixMap,
-			$this->getSearchConfig()->get( "CirrusSearchIndexWeightedTagsPrefixMap" )
+			$this->getSearchConfig()->get( CirrusConfigNames::IndexWeightedTagsPrefixMap )
 		);
 		$reindexer = new Reindexer(
 			$this->getSearchConfig(),
@@ -461,7 +463,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private function getShardAllocationValidator() {
 		return new \CirrusSearch\Maintenance\Validators\ShardAllocationValidator(
-			$this->getIndex(), $this->getSearchConfig()->get( "CirrusSearchIndexAllocation" ), $this );
+			$this->getIndex(), $this->getSearchConfig()->get( CirrusConfigNames::IndexAllocation ), $this );
 	}
 
 	protected function validateShardAllocation() {
@@ -548,7 +550,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return array
 	 */
 	private function getMergeSettings() {
-		$mergeSettings = $this->getSearchConfig()->get( "CirrusSearchMergeSettings" );
+		$mergeSettings = $this->getSearchConfig()->get( CirrusConfigNames::MergeSettings );
 
 		return $mergeSettings[$this->indexSuffix]
 			// If there aren't configured merge settings for this index type
@@ -586,7 +588,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->analysisConfig = $analysisConfigBuilder->buildConfig();
 		if ( $this->safeToOptimizeAnalysisConfig ) {
 			$filter = new AnalysisFilter();
-			$deduplicate = $this->getSearchConfig()->get( 'CirrusSearchDeduplicateAnalysis' );
+			$deduplicate = $this->getSearchConfig()->get( CirrusConfigNames::DeduplicateAnalysis );
 			// A bit adhoc, this is the list of analyzers that should not be renamed, because
 			// they are referenced at query time.
 			$protected = [ 'token_reverse' ];

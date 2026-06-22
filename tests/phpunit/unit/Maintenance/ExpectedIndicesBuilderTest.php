@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Tests\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Maintenance\ExpectedIndicesBuilder;
 
@@ -9,8 +10,8 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 	public static function provideTestBuild(): \Generator {
 		$config = [
 			'_wikiID' => 'mywiki_id',
-			'CirrusSearchIndexBaseName' => '__wikiid__',
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::IndexBaseName => '__wikiid__',
+			CirrusConfigNames::Clusters => [
 				'one' => [
 					'host' => '127.0.0.1',
 					'secret' => 'somesecret',
@@ -20,10 +21,10 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 					'secret' => 'somesecret'
 				],
 			],
-			'CirrusSearchDefaultCluster' => 'one',
-			'CirrusSearchWriteClusters' => null,
-			'CirrusSearchReplicaGroup' => 'mygroup',
-			'CirrusSearchShardCount' => [
+			CirrusConfigNames::DefaultCluster => 'one',
+			CirrusConfigNames::WriteClusters => null,
+			CirrusConfigNames::ReplicaGroup => 'mygroup',
+			CirrusConfigNames::ShardCount => [
 				'two' => [
 					'content' => 2,
 					'general' => 2,
@@ -37,19 +38,19 @@ class ExpectedIndicesBuilderTest extends CirrusTestCase {
 				'titlesuggest' => 1,
 				'archive' => 1,
 			],
-			'CirrusSearchNamespaceMappings' => [
+			CirrusConfigNames::NamespaceMappings => [
 				NS_FILE => 'extraindex'
 			],
-			'CirrusSearchEnableArchive' => true
+			CirrusConfigNames::EnableArchive => true
 		];
 		$withAlternativeIndex = $config + [
-			'CirrusSearchUseCompletionSuggester' => true,
-			'CirrusSearchAlternativeIndices' => [
+			CirrusConfigNames::UseCompletionSuggester => true,
+			CirrusConfigNames::AlternativeIndices => [
 				"completion" => [
 						[
 								"index_id" => 0,
 								"config_overrides" => [
-										'CirrusSearchShardCount' => [ 'titlesuggest' => 3 ],
+										CirrusConfigNames::ShardCount => [ 'titlesuggest' => 3 ],
 								],
 								"use" => true
 						]

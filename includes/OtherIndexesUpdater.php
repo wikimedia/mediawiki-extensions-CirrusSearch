@@ -47,7 +47,7 @@ class OtherIndexesUpdater extends Updater {
 	public static function getExternalIndexes( SearchConfig $config, Title $title, $cluster = null ) {
 		$namespace = $title->getNamespace();
 		$indices = [];
-		foreach ( $config->get( 'CirrusSearchExtraIndexes' )[$namespace] ?? [] as $indexName ) {
+		foreach ( $config->get( CirrusConfigNames::ExtraIndexes )[$namespace] ?? [] as $indexName ) {
 			$indices[] = new ExternalIndex( $config, $indexName );
 		}
 		return $indices;
@@ -61,7 +61,7 @@ class OtherIndexesUpdater extends Updater {
 	 */
 	public static function getExtraIndexesForNamespaces( SearchConfig $config, array $namespaces ) {
 		$extraIndexes = [];
-		foreach ( $config->get( 'CirrusSearchExtraIndexes' ) ?: [] as $namespace => $indexes ) {
+		foreach ( $config->get( CirrusConfigNames::ExtraIndexes ) ?: [] as $namespace => $indexes ) {
 			if ( !in_array( $namespace, $namespaces ) ) {
 				continue;
 			}
@@ -77,7 +77,7 @@ class OtherIndexesUpdater extends Updater {
 	 * @param Title[] $titles array of titles in other indexes to update
 	 */
 	public function updateOtherIndex( $titles ) {
-		if ( !$this->connection->getConfig()->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop' ) ) {
+		if ( !$this->connection->getConfig()->getElement( CirrusConfigNames::WikimediaExtraPlugin, 'super_detect_noop' ) ) {
 			$this->logFailure( $titles, 'super_detect_noop plugin not enabled' );
 			return;
 		}

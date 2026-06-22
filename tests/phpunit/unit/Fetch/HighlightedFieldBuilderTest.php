@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search\Fetch;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CirrusTestCaseTrait;
@@ -21,7 +22,7 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 
 	public static function provideTestFactories() {
 		$config = new HashSearchConfig( [
-			'CirrusSearchFragmentSize' => 350,
+			CirrusConfigNames::FragmentSize => 350,
 		] );
 		$baseFactories = BaseHighlightedField::getFactories();
 		$expFactories = ExperimentalHighlightedFieldBuilder::getFactories();
@@ -131,9 +132,9 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 
 	public function testRegex() {
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchRegexMaxDeterminizedStates' => 233,
+			CirrusConfigNames::RegexMaxDeterminizedStates => 233,
 			'LanguageCode' => 'testLangCode',
-			'CirrusSearchFragmentSize' => 345,
+			CirrusConfigNames::FragmentSize => 345,
 		] );
 		$field = ExperimentalHighlightedFieldBuilder::newRegexField(
 			$config,

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\LanguageDetector\Detector;
 use CirrusSearch\LanguageDetector\LanguageDetectorFactory;
@@ -68,7 +69,7 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 		$this->query = $query;
 		$this->detectors = $detectors;
 		$this->interwikiResolver = $interwikiResolver;
-		$this->threshold = $query->getSearchConfig()->get( 'CirrusSearchInterwikiThreshold' );
+		$this->threshold = $query->getSearchConfig()->get( CirrusConfigNames::InterwikiThreshold );
 	}
 
 	/**

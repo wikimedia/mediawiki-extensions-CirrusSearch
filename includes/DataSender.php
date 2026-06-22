@@ -204,7 +204,7 @@ class DataSender extends ElasticsearchIntermediary {
 		 * Transform the finalized documents into noop scripts if possible
 		 * to reduce update load.
 		 */
-		if ( $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop' ) ) {
+		if ( $this->searchConfig->getElement( CirrusConfigNames::WikimediaExtraPlugin, 'super_detect_noop' ) ) {
 			foreach ( $documents as $i => $doc ) {
 				// BC Check for jobs that used to contain Document|Script
 				if ( $doc instanceof \Elastica\Document ) {
@@ -233,9 +233,9 @@ class DataSender extends ElasticsearchIntermediary {
 				[ 'numBulk' => count( $documents ), 'index' => $pageIndex->getName() ]
 			) );
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
-			$bulk->setShardTimeout( $this->searchConfig->get( 'CirrusSearchUpdateShardTimeout' ) );
+			$bulk->setShardTimeout( $this->searchConfig->get( CirrusConfigNames::UpdateShardTimeout ) );
 			$bulk->setIndex( $pageIndex );
-			if ( $this->searchConfig->getElement( 'CirrusSearchElasticQuirks', 'retry_on_conflict' ) ) {
+			if ( $this->searchConfig->getElement( CirrusConfigNames::ElasticQuirks, 'retry_on_conflict' ) ) {
 				$actions = [];
 				foreach ( $documents as $doc ) {
 					$action = AbstractDocument::create( $doc, 'update' );
@@ -566,7 +566,8 @@ class DataSender extends ElasticsearchIntermediary {
 		} else {
 			$params['handlers'] = [];
 		}
-		$extraHandlers = $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop_handlers' );
+		$extraHandlers = $this->searchConfig->getElement(
+			CirrusConfigNames::WikimediaExtraPlugin, 'super_detect_noop_handlers' );
 		if ( is_array( $extraHandlers ) ) {
 			$params['handlers'] += $extraHandlers;
 		}
@@ -592,7 +593,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	private function retryOnConflict(): int {
 		return $this->searchConfig->get(
-			'CirrusSearchUpdateConflictRetryCount' );
+			CirrusConfigNames::UpdateConflictRetryCount );
 	}
 
 	private function reportDocSize( Document $doc ): void {

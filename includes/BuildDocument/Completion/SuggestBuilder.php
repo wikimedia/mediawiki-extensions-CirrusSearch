@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\BuildDocument\Completion;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Connection;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Search;
@@ -100,14 +101,14 @@ class SuggestBuilder {
 	 */
 	public static function create( Connection $connection, $scoreMethodName = null, $indexBaseName = null ): self {
 		$config  = $connection->getConfig();
-		$scoreMethodName = $scoreMethodName ?: $config->get( 'CirrusSearchCompletionDefaultScore' );
+		$scoreMethodName = $scoreMethodName ?: $config->get( CirrusConfigNames::CompletionDefaultScore );
 		$scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName );
 
 		$extraBuilders = [];
-		if ( $config->get( 'CirrusSearchCompletionSuggesterUseDefaultSort' ) ) {
+		if ( $config->get( CirrusConfigNames::CompletionSuggesterUseDefaultSort ) ) {
 			$extraBuilders[] = new DefaultSortSuggestionsBuilder();
 		}
-		$subPhrasesConfig = $config->get( 'CirrusSearchCompletionSuggesterSubphrases' );
+		$subPhrasesConfig = $config->get( CirrusConfigNames::CompletionSuggesterSubphrases );
 		if ( $subPhrasesConfig['build'] ) {
 			$extraBuilders[] = NaiveSubphrasesSuggestionsBuilder::create( $subPhrasesConfig );
 		}
@@ -511,7 +512,7 @@ class SuggestBuilder {
 		// only docs in the CONTENT index.
 		$countIndices = [ Connection::CONTENT_INDEX_SUFFIX ];
 
-		$indexBaseName = $indexBaseName ?: $connection->getConfig()->get( 'CirrusSearchIndexBaseName' );
+		$indexBaseName = $indexBaseName ?: $connection->getConfig()->get( CirrusConfigNames::IndexBaseName );
 
 		// Run a first query to count the number of docs.
 		// This is needed for the scoring methods that need

@@ -185,12 +185,13 @@ class CirrusSearch extends SearchEngine {
 
 		// enable interwiki by default
 		$this->features['interwiki'] = true;
-		$this->features['show-multimedia-search-results'] = $this->config->get( 'CirrusSearchCrossProjectShowMultimedia' ) == true;
+		$this->features['show-multimedia-search-results'] =
+			$this->config->get( CirrusConfigNames::CrossProjectShowMultimedia ) == true;
 		$this->debugOptions = $debugOptions ?? CirrusDebugOptions::fromRequest( $this->request );
 		$this->titleHelper = $titleHelper ?? new TitleHelper( WikiMap::getCurrentWikiId(), $interwikiResolver,
 			Sanitizer::escapeIdForLink( ... )
 		);
-		$extraFieldsInSearchResults = $this->config->get( 'CirrusSearchExtraFieldsInSearchResults' );
+		$extraFieldsInSearchResults = $this->config->get( CirrusConfigNames::ExtraFieldsInSearchResults );
 		if ( $extraFieldsInSearchResults ) {
 			$this->features[ self::EXTRA_FIELDS_TO_EXTRACT ] = $extraFieldsInSearchResults;
 		}
@@ -358,7 +359,7 @@ class CirrusSearch extends SearchEngine {
 		// Inspect features to check if the user selected a specific profile
 		$profile = $this->extractProfileFromFeatureData( SearchEngine::COMPLETION_PROFILE_TYPE );
 
-		$clusterOverride = $config->getElement( 'CirrusSearchClusterOverrides', 'completion' );
+		$clusterOverride = $config->getElement( CirrusConfigNames::ClusterOverrides, 'completion' );
 		if ( $clusterOverride !== null ) {
 			$connection = Connection::getPool( $config, $clusterOverride );
 		} else {
@@ -397,7 +398,7 @@ class CirrusSearch extends SearchEngine {
 			'random', 'user_random',
 		];
 
-		if ( $this->config->getElement( 'CirrusSearchNaturalTitleSort', 'use' ) ) {
+		if ( $this->config->getElement( CirrusConfigNames::NaturalTitleSort, 'use' ) ) {
 			$sorts[] = 'title_natural_asc';
 			$sorts[] = 'title_natural_desc';
 		}
@@ -587,7 +588,7 @@ class CirrusSearch extends SearchEngine {
 	 * @return Status<Title[]>
 	 */
 	public function searchArchiveTitle( $term ) {
-		if ( !$this->config->get( 'CirrusSearchEnableArchive' ) ) {
+		if ( !$this->config->get( CirrusConfigNames::EnableArchive ) ) {
 			return Status::newGood( [] );
 		}
 

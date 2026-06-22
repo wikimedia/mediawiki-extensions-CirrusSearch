@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Hooks;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
 use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
@@ -14,7 +15,7 @@ use MediaWiki\Search\SearchIndexField;
  * Hooks to allow custom fields to be added to the search index for pages
  */
 class CustomPageFields implements SearchIndexFieldsHook {
-	public const CONFIG_OPTION = 'CirrusSearchCustomPageFields';
+	public const CONFIG_OPTION = CirrusConfigNames::CustomPageFields;
 
 	/**
 	 * Add configured fields to mapping

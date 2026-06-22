@@ -17,15 +17,15 @@ class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 		return [
 			'simple' => [
 				[
-					'CirrusSearchClientSideSearchTimeout' => [ 'test' => 1 ],
-					'CirrusSearchSearchShardTimeout' => [ 'test' => '2s' ],
+					CirrusConfigNames::ClientSideSearchTimeout => [ 'test' => 1 ],
+					CirrusConfigNames::SearchShardTimeout => [ 'test' => '2s' ],
 				],
 				'test', 1, '2s',
 			],
 			'fallback to defaults' => [
 				[
-					'CirrusSearchClientSideSearchTimeout' => [ 'default' => 1 ],
-					'CirrusSearchSearchShardTimeout' => [ 'default' => '2s' ],
+					CirrusConfigNames::ClientSideSearchTimeout => [ 'default' => 1 ],
+					CirrusConfigNames::SearchShardTimeout => [ 'default' => '2s' ],
 				],
 				'test', 1, '2s',
 			],

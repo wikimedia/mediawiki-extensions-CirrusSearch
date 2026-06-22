@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 
@@ -79,7 +80,7 @@ class LanguageFeatureTest extends CirrusTestCase {
 
 	public function testExtraFields() {
 		$feature = new LanguageFeature( $this->newHashSearchConfig( [
-			"CirrusSearchLanguageKeywordExtraFields" => [ "lang.field.1", "lang.field.2" ]
+			CirrusConfigNames::LanguageKeywordExtraFields => [ "lang.field.1", "lang.field.2" ]
 		] ) );
 		$expectedFilter = [ 'multi_match' => [ 'fields' => [ 'language', "lang.field.1", "lang.field.2" ], 'query' => "somelang" ] ];
 		$this->assertFilter( $feature, 'inlanguage:somelang', $expectedFilter, [] );

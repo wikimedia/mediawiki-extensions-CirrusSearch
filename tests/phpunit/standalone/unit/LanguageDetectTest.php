@@ -26,10 +26,10 @@ class LanguageDetectTest extends CirrusTestCase {
 
 	public static function provideTestFactory() {
 		return [
-			'empty' => [ [ 'CirrusSearchLanguageDetectors' => [] ], [] ],
+			'empty' => [ [ CirrusConfigNames::LanguageDetectors => [] ], [] ],
 			'textcat only' => [
 				[
-					'CirrusSearchLanguageDetectors' => [
+					CirrusConfigNames::LanguageDetectors => [
 						'textcat' => TextCat::class
 					]
 				],
@@ -37,7 +37,7 @@ class LanguageDetectTest extends CirrusTestCase {
 			],
 			'textcat first' => [
 				[
-					'CirrusSearchLanguageDetectors' => [
+					CirrusConfigNames::LanguageDetectors => [
 						'textcat' => TextCat::class,
 						'mock-lang' => MockLanguageDetector::class,
 					]
@@ -49,7 +49,7 @@ class LanguageDetectTest extends CirrusTestCase {
 			],
 			'mock-lang first' => [
 				[
-					'CirrusSearchLanguageDetectors' => [
+					CirrusConfigNames::LanguageDetectors => [
 						'mock-lang' => MockLanguageDetector::class,
 						'textcat' => TextCat::class,
 					]
@@ -61,7 +61,7 @@ class LanguageDetectTest extends CirrusTestCase {
 			],
 			'bad setup does not blow-up' => [
 				[
-					'CirrusSearchLanguageDetectors' => [
+					CirrusConfigNames::LanguageDetectors => [
 						'meh' => 'this.class.does.not.exist.Detector',
 						'Title can do many things' => Title::class,
 					],
@@ -130,12 +130,12 @@ class LanguageDetectTest extends CirrusTestCase {
 	 */
 	public function testTextCatDetector( $text, $language, $ignore ) {
 		$config = new HashSearchConfig( [
-			'CirrusSearchTextcatModel' => [
+			CirrusConfigNames::TextcatModel => [
 				$this->textCatModelBaseDir . "/LM-query/",
 				$this->textCatModelBaseDir . "/LM/"
 			],
 			'CirrusSearchTextcatLanguages' => null,
-			'CirrusSearchTextcatConfig' => null,
+			CirrusConfigNames::TextcatConfig => null,
 		] );
 		$textcat = new TextCat( $config );
 		$detect = $textcat->detect( $text );
@@ -151,9 +151,9 @@ class LanguageDetectTest extends CirrusTestCase {
 	public function testTextCatDetectorWithParams( $text, $ignore, $language ) {
 		$config = new HashSearchConfig( [
 			// only use one language model directory in old non-array format
-			'CirrusSearchTextcatModel' => $this->textCatModelBaseDir . "/LM-query/",
+			CirrusConfigNames::TextcatModel => $this->textCatModelBaseDir . "/LM-query/",
 			'CirrusSearchTextcatLanguages' => [ 'en', 'es', 'de', 'he', 'uk' ],
-			'CirrusSearchTextcatConfig' => [
+			CirrusConfigNames::TextcatConfig => [
 				'maxNgrams' => 9000,
 				'maxReturnedLanguages' => 1,
 				'resultsRatio' => 1.06,
@@ -170,12 +170,12 @@ class LanguageDetectTest extends CirrusTestCase {
 
 	public function testTextCatDetectorLimited() {
 		$config = new HashSearchConfig( [
-			'CirrusSearchTextcatModel' => [
+			CirrusConfigNames::TextcatModel => [
 				$this->textCatModelBaseDir . "/LM-query/",
 				$this->textCatModelBaseDir . "/LM/"
 			],
 			'CirrusSearchTextcatLanguages' => [ "en", "ru" ],
-			'CirrusSearchTextcatConfig' => null,
+			CirrusConfigNames::TextcatConfig => null,
 		] );
 		$textcat = new TextCat( $config );
 		$detect = $textcat->detect( "volviendose malo" );

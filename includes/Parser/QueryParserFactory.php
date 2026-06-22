@@ -3,6 +3,7 @@
 namespace CirrusSearch\Parser;
 
 use CirrusSearch\CachedSparqlClient;
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser;
 use CirrusSearch\Search\Escaper;
@@ -32,12 +33,12 @@ class QueryParserFactory {
 	) {
 		$escaper = new Escaper(
 			$config->get( MainConfigNames::LanguageCode ),
-			$config->get( 'CirrusSearchAllowLeadingWildcard' )
+			$config->get( CirrusConfigNames::AllowLeadingWildcard )
 		);
 		$repository = new FTQueryClassifiersRepository( $config, $cirrusSearchHookRunner );
 		return new QueryStringRegexParser( new FullTextKeywordRegistry( $config, $cirrusSearchHookRunner, $namespacePrefix, $sparql ),
-			$escaper, $config->get( 'CirrusSearchStripQuestionMarks' ), $repository, $namespacePrefix,
-			$config->get( "CirrusSearchMaxFullTextQueryLength" ) );
+			$escaper, $config->get( CirrusConfigNames::StripQuestionMarks ), $repository, $namespacePrefix,
+			$config->get( CirrusConfigNames::MaxFullTextQueryLength ) );
 	}
 
 }

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Job;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\ClusterSettings;
 use CirrusSearch\Connection;
 use CirrusSearch\ExternalIndex;
@@ -46,7 +47,7 @@ trait JobTraits {
 	 *  maximum delay of 17 minutes.
 	 */
 	public function backoffDelay( $retryCount ) {
-		$exponent = $this->getSearchConfig()->get( 'CirrusSearchWriteBackoffExponent' );
+		$exponent = $this->getSearchConfig()->get( CirrusConfigNames::WriteBackoffExponent );
 		$minIncrease = 0;
 		if ( $retryCount > 1 ) {
 			// Delay at least 2 minutes for everything that fails more than once
@@ -96,7 +97,7 @@ trait JobTraits {
 				// e.g. this group config is available in CirrusSearchClusters
 				// So that changing the CirrusSearchReplicaGroup to the CrossClusterName of the external
 				// index we build the correct config to write to desired replica group.
-				$config = new HashSearchConfig( [ 'CirrusSearchReplicaGroup' => $otherIndex->getCrossClusterName() ],
+				$config = new HashSearchConfig( [ CirrusConfigNames::ReplicaGroup => $otherIndex->getCrossClusterName() ],
 					[ HashSearchConfig::FLAG_INHERIT ], $config );
 			}
 		}
@@ -116,7 +117,7 @@ trait JobTraits {
 
 		$conns = Connection::getClusterConnections( $clusterNames, $config );
 
-		$timeout = $config->get( 'CirrusSearchClientSideUpdateTimeout' );
+		$timeout = $config->get( CirrusConfigNames::ClientSideUpdateTimeout );
 		foreach ( $conns as $connection ) {
 			$connection->setTimeout( $timeout );
 		}
@@ -131,7 +132,7 @@ trait JobTraits {
 	 */
 	public function run() {
 		if ( $this->getSearchConfig()->get( MainConfigNames::DisableSearchUpdate ) ||
-			$this->getSearchConfig()->get( 'CirrusSearchDisableUpdate' )
+			$this->getSearchConfig()->get( CirrusConfigNames::DisableUpdate )
 		) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->debug( "Skipping job: search updates disabled by config" );
 			return true;

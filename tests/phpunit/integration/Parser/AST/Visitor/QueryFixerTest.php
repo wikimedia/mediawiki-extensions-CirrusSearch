@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Parser\AST\Visitor;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use Wikimedia\HtmlArmor\HtmlArmor;
@@ -104,7 +105,8 @@ class QueryFixerTest extends CirrusIntegrationTestCase {
 	 * @dataProvider provideTest
 	 */
 	public function test( $input, $extracted, $fixedString, $expectedFixedQuery ) {
-		$parser = $this->createNewFullTextQueryParser( new HashSearchConfig( [ 'CirrusSearchStripQuestionMarks' => 'all' ] ) );
+		$parser = $this->createNewFullTextQueryParser(
+			new HashSearchConfig( [ CirrusConfigNames::StripQuestionMarks => 'all' ] ) );
 		$parsed = $parser->parse( $input );
 		$fixer = new QueryFixer( $parsed );
 		$this->assertEquals( $extracted, $fixer->getFixablePart() );
@@ -112,7 +114,8 @@ class QueryFixerTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testEscape() {
-		$parser = $this->createNewFullTextQueryParser( new HashSearchConfig( [ 'CirrusSearchStripQuestionMarks' => 'all' ] ) );
+		$parser = $this->createNewFullTextQueryParser(
+			new HashSearchConfig( [ CirrusConfigNames::StripQuestionMarks => 'all' ] ) );
 		$parsed = $parser->parse( 'intitle:< hello world intitle:>' );
 		$fixer = new QueryFixer( $parsed );
 		$this->assertNotNull( $fixer->getFixablePart() );
@@ -121,7 +124,8 @@ class QueryFixerTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testBuild() {
-		$parser = $this->createNewFullTextQueryParser( new HashSearchConfig( [ 'CirrusSearchStripQuestionMarks' => 'all' ] ) );
+		$parser = $this->createNewFullTextQueryParser(
+			new HashSearchConfig( [ CirrusConfigNames::StripQuestionMarks => 'all' ] ) );
 		$parsed = $parser->parse( 'foo bar' );
 		$fixer = QueryFixer::build( $parsed );
 		$this->assertSame( $fixer, QueryFixer::build( $parsed ) );

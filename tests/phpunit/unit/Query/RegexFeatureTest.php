@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 
@@ -14,7 +15,7 @@ class RegexFeatureTest extends CirrusTestCase {
 
 	public function testGivesWarningIfNotEnabled() {
 		$config = new HashSearchConfig( [
-			'CirrusSearchEnableRegex' => false,
+			CirrusConfigNames::EnableRegex => false,
 		], [ HashSearchConfig::FLAG_INHERIT ] );
 		$this->assertWarnings(
 			new InSourceFeature( $config ),
@@ -26,8 +27,8 @@ class RegexFeatureTest extends CirrusTestCase {
 	public function testGivesWarningIfPluginNotAvailable() {
 		// Regex requires the wikimedia-extra plugin; without it the feature is unavailable.
 		$config = new HashSearchConfig( [
-			'CirrusSearchEnableRegex' => true,
-			'CirrusSearchWikimediaExtraPlugin' => [],
+			CirrusConfigNames::EnableRegex => true,
+			CirrusConfigNames::WikimediaExtraPlugin => [],
 		], [ HashSearchConfig::FLAG_INHERIT ] );
 		$this->assertWarnings(
 			new InSourceFeature( $config ),

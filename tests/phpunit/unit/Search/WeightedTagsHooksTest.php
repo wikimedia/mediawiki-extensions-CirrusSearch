@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
@@ -33,7 +34,7 @@ class WeightedTagsHooksTest extends CirrusTestCase {
 		$sim = [];
 		$maxScore = 17389;
 		$handler = $this->newHookHandler( [
-			"CirrusSearchWeightedTags" => [
+			CirrusConfigNames::WeightedTags => [
 				'build' => true,
 				'max_score' => $maxScore,
 			],
@@ -44,7 +45,7 @@ class WeightedTagsHooksTest extends CirrusTestCase {
 
 	public function testConfigureWeightedTagsSimilarityDisabled() {
 		$handler = $this->newHookHandler( [
-			"CirrusSearchWeightedTags" => [
+			CirrusConfigNames::WeightedTags => [
 				'build' => false,
 			],
 		] );
@@ -55,7 +56,7 @@ class WeightedTagsHooksTest extends CirrusTestCase {
 
 	public function testConfigureWeightedTagsFieldMapping() {
 		$handler = $this->newHookHandler( [
-			"CirrusSearchWeightedTags" => [
+			CirrusConfigNames::WeightedTags => [
 				'build' => true,
 			],
 		] );
@@ -70,7 +71,7 @@ class WeightedTagsHooksTest extends CirrusTestCase {
 
 	public function testConfigureWeightedTagsFieldMappingDisabled() {
 		$handler = $this->newHookHandler( [
-			"CirrusSearchWeightedTags" => [
+			CirrusConfigNames::WeightedTags => [
 				'build' => false,
 			],
 		] );
@@ -83,7 +84,7 @@ class WeightedTagsHooksTest extends CirrusTestCase {
 	public function testConfigureWeightedTagsFieldAnalysis() {
 		$maxScore = 41755;
 		$handler = $this->newHookHandler( [
-			"CirrusSearchWeightedTags" => [
+			CirrusConfigNames::WeightedTags => [
 				'build' => true,
 				'max_score' => $maxScore,
 			],
@@ -97,7 +98,7 @@ class WeightedTagsHooksTest extends CirrusTestCase {
 
 	public function testConfigureWeightedTagsFieldAnalysisDisabled() {
 		$handler = $this->newHookHandler( [
-			"CirrusSearchWeightedTags" => [
+			CirrusConfigNames::WeightedTags => [
 				'build' => false,
 			],
 		] );
@@ -109,7 +110,7 @@ class WeightedTagsHooksTest extends CirrusTestCase {
 
 	public function testOnCirrusSearchAddQueryFeatures() {
 		$config = new HashSearchConfig( [
-			"CirrusSearchWeightedTags" => [
+			CirrusConfigNames::WeightedTags => [
 				'use' => false,
 			],
 		] );
@@ -119,7 +120,7 @@ class WeightedTagsHooksTest extends CirrusTestCase {
 		$this->assertSame( [], $extraFeatures );
 
 		$config = new HashSearchConfig( [
-			"CirrusSearchWeightedTags" => [
+			CirrusConfigNames::WeightedTags => [
 				'use' => true,
 			],
 		] );

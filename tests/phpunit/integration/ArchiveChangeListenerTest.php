@@ -19,53 +19,53 @@ class ArchiveChangeListenerTest extends CirrusIntegrationTestCase {
 			'with index deletes enabled a default cluster setup' => [
 				true,
 				[
-					'CirrusSearchClusters' => [
+					CirrusConfigNames::Clusters => [
 						'mycluster' => [ '127.0.0.1' ],
 					],
-					'CirrusSearchDefaultCluster' => 'mycluster',
-					'CirrusSearchWriteClusters' => null,
-					'CirrusSearchReplicaGroup' => 'default',
+					CirrusConfigNames::DefaultCluster => 'mycluster',
+					CirrusConfigNames::WriteClusters => null,
+					CirrusConfigNames::ReplicaGroup => 'default',
 				],
 				true
 			],
 			'with index deletes disabled and default cluster setup' => [
 				false,
 				[
-					'CirrusSearchClusters' => [
+					CirrusConfigNames::Clusters => [
 						'mycluster' => [ '127.0.0.1' ],
 					],
-					'CirrusSearchDefaultCluster' => 'mycluster',
-					'CirrusSearchWriteClusters' => null,
-					'CirrusSearchReplicaGroup' => 'default',
+					CirrusConfigNames::DefaultCluster => 'mycluster',
+					CirrusConfigNames::WriteClusters => null,
+					CirrusConfigNames::ReplicaGroup => 'default',
 				],
 				false
 			],
 			'with index deletes enabled and a writeable cluster for archive' => [
 				true,
 				[
-					'CirrusSearchClusters' => [
+					CirrusConfigNames::Clusters => [
 						'mycluster' => [ '127.0.0.1' ],
 					],
-					'CirrusSearchDefaultCluster' => 'mycluster',
-					'CirrusSearchWriteClusters' => [
+					CirrusConfigNames::DefaultCluster => 'mycluster',
+					CirrusConfigNames::WriteClusters => [
 						'default' => [],
 						UpdateGroup::ARCHIVE => [ 'mycluster' ]
 					],
-					'CirrusSearchReplicaGroup' => 'default',
+					CirrusConfigNames::ReplicaGroup => 'default',
 				],
 				true
 			],
 			'with index deletes enabled and a no writeable cluster for archive' => [
 				true,
 				[
-					'CirrusSearchClusters' => [
+					CirrusConfigNames::Clusters => [
 						'mycluster' => [ '127.0.0.1' ],
 					],
-					'CirrusSearchDefaultCluster' => 'mycluster',
-					'CirrusSearchWriteClusters' => [
+					CirrusConfigNames::DefaultCluster => 'mycluster',
+					CirrusConfigNames::WriteClusters => [
 						'default' => [],
 					],
-					'CirrusSearchReplicaGroup' => 'default',
+					CirrusConfigNames::ReplicaGroup => 'default',
 				],
 				false
 			],
@@ -96,7 +96,7 @@ class ArchiveChangeListenerTest extends CirrusIntegrationTestCase {
 			->method( 'lazyPush' )
 			->with( new IndexArchive( $title, $expectedJobParam ) );
 		$listener = new ArchiveChangeListener( $jobqueue,
-			$this->newHashSearchConfig( [ 'CirrusSearchIndexDeletes' => $withDeletesEnabled ] + $config ) );
+			$this->newHashSearchConfig( [ CirrusConfigNames::IndexDeletes => $withDeletesEnabled ] + $config ) );
 		$listener->onPageDeleteComplete( $page,
 			$this->createNoOpMock( Authority::class ),
 			"a reason", $pageId,
@@ -113,7 +113,7 @@ class ArchiveChangeListenerTest extends CirrusIntegrationTestCase {
 		$title = Title::castFromPageIdentity( $page );
 		$restoredPageIds = [ 123, 124 ];
 		$listener = new ArchiveChangeListener( $jobqueue,
-			$this->newHashSearchConfig( [ 'CirrusSearchIndexDeletes' => $withDeletesEnabled ] + $config ) );
+			$this->newHashSearchConfig( [ CirrusConfigNames::IndexDeletes => $withDeletesEnabled ] + $config ) );
 		$jobqueue->expects( $this->exactly( $expectedJob ? 1 : 0 ) )
 			->method( 'lazyPush' )
 			->with( new Job\DeleteArchive( $title, [ 'docIds' => $restoredPageIds, 'private_data' => true ] ) );

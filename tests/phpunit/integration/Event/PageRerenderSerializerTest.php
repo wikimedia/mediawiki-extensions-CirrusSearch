@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Event;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use MediaWiki\Config\HashConfig;
 use MediaWiki\Extension\EventBus\StreamNameMapper;
@@ -38,13 +39,13 @@ class PageRerenderSerializerTest extends CirrusIntegrationTestCase {
 			MainConfigNames::ArticlePath => '/wiki/$1',
 		] );
 		$searchConfig = $this->newHashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'site1-mygroup' => [ [], 'group' => 'my_group', 'replica' => 'site1' ]
 			],
-			'CirrusSearchReplicaGroup' => 'my_group',
-			'CirrusSearchIndexBaseName' => '__wikiid__',
-			'CirrusSearchDefaultCluster' => 'site1',
-			'CirrusSearchNamespaceMappings' => [ 0 => 'content' ],
+			CirrusConfigNames::ReplicaGroup => 'my_group',
+			CirrusConfigNames::IndexBaseName => '__wikiid__',
+			CirrusConfigNames::DefaultCluster => 'site1',
+			CirrusConfigNames::NamespaceMappings => [ 0 => 'content' ],
 			// use HashSearchConfig ability to override the wiki rather than messing with the
 			// global state to control how WikiMap behaves in unit test.
 			'_wikiID' => 'mywiki'

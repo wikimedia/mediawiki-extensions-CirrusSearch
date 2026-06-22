@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Job;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Updater;
 use MediaWiki\Title\Title;
 
@@ -28,7 +29,7 @@ class IndexArchive extends CirrusTitleJob {
 	 */
 	protected function doJob() {
 		$updater = Updater::build( $this->getSearchConfig(), $this->params['cluster'] ?? null );
-		if ( $this->getSearchConfig()->get( 'CirrusSearchIndexDeletes' ) ) {
+		if ( $this->getSearchConfig()->get( CirrusConfigNames::IndexDeletes ) ) {
 			$updater->archivePages( [
 				[
 					'title' => $this->title,

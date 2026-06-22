@@ -22,142 +22,142 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 	public static function provideOverrides() {
 		return [
 			'wgCirrusSearchPhraseRescoreWindowSize normal' => [
-				'CirrusSearchPhraseRescoreWindowSize',
+				CirrusConfigNames::PhraseRescoreWindowSize,
 				1000,
 				'cirrusPhraseWindow',
 				"50",
 				50,
 			],
 			'wgCirrusSearchPhraseRescoreWindowSize too high' => [
-				'CirrusSearchPhraseRescoreWindowSize',
+				CirrusConfigNames::PhraseRescoreWindowSize,
 				1000,
 				'cirrusPhraseWindow',
 				"200000",
 				1000,
 			],
 			'wgCirrusSearchPhraseRescoreWindowSize invalid' => [
-				'CirrusSearchPhraseRescoreWindowSize',
+				CirrusConfigNames::PhraseRescoreWindowSize,
 				1000,
 				'cirrusPhraseWindow',
 				"blah",
 				1000,
 			],
 			'wgCirrusSearchFunctionRescoreWindowSize normal' => [
-				'CirrusSearchFunctionRescoreWindowSize',
+				CirrusConfigNames::FunctionRescoreWindowSize,
 				1000,
 				'cirrusFunctionWindow',
 				"50",
 				50,
 			],
 			'wgCirrusSearchFunctionRescoreWindowSize too high' => [
-				'CirrusSearchFunctionRescoreWindowSize',
+				CirrusConfigNames::FunctionRescoreWindowSize,
 				1000,
 				'cirrusFunctionWindow',
 				"20000",
 				1000,
 			],
 			'wgCirrusSearchFunctionRescoreWindowSize invalid' => [
-				'CirrusSearchFunctionRescoreWindowSize',
+				CirrusConfigNames::FunctionRescoreWindowSize,
 				1000,
 				'cirrusFunctionWindow',
 				"blah",
 				1000,
 			],
 			'wgCirrusSearchFragmentSize normal' => [
-				'CirrusSearchFragmentSize',
+				CirrusConfigNames::FragmentSize,
 				10,
 				'cirrusFragmentSize',
 				100,
 				100
 			],
 			'wgCirrusSearchFragmentSize too high' => [
-				'CirrusSearchFragmentSize',
+				CirrusConfigNames::FragmentSize,
 				10,
 				'cirrusFragmentSize',
 				100000,
 				10
 			],
 			'wgCirrusSearchFragmentSize invalid' => [
-				'CirrusSearchFragmentSize',
+				CirrusConfigNames::FragmentSize,
 				10,
 				'cirrusFragmentSize',
 				'blah',
 				10
 			],
 			'wgCirrusSearchPhraseRescoreBoost' => [
-				'CirrusSearchPhraseRescoreBoost',
+				CirrusConfigNames::PhraseRescoreBoost,
 				10,
 				'cirrusPhraseBoost',
 				'1',
 				1
 			],
 			'wgCirrusSearchPhraseRescoreBoost invalid' => [
-				'CirrusSearchPhraseRescoreBoost',
+				CirrusConfigNames::PhraseRescoreBoost,
 				10,
 				'cirrusPhraseBoost',
 				'blah',
 				10,
 			],
 			'wgCirrusSearchPhraseSlop normal' => [
-				'CirrusSearchPhraseSlop',
+				CirrusConfigNames::PhraseSlop,
 				[ 'boost' => 1 ],
 				'cirrusPhraseSlop',
 				'10',
 				[ 'boost' => 10 ],
 			],
 			'wgCirrusSearchPhraseSlop too high' => [
-				'CirrusSearchPhraseSlop',
+				CirrusConfigNames::PhraseSlop,
 				[ 'boost' => 1 ],
 				'cirrusPhraseSlop',
 				'11',
 				[ 'boost' => 1 ],
 			],
 			'wgCirrusSearchPhraseSlop invalid' => [
-				'CirrusSearchPhraseSlop',
+				CirrusConfigNames::PhraseSlop,
 				[ 'boost' => 1 ],
 				'cirrusPhraseSlop',
 				'blah',
 				[ 'boost' => 1 ]
 			],
 			'wgCirrusSearchLogElasticRequests normal' => [
-				'CirrusSearchLogElasticRequests',
+				CirrusConfigNames::LogElasticRequests,
 				true,
 				'cirrusLogElasticRequests',
 				'secret',
 				false,
-				[ 'CirrusSearchLogElasticRequestsSecret' => 'secret' ]
+				[ CirrusConfigNames::LogElasticRequestsSecret => 'secret' ]
 			],
 			'wgCirrusSearchLogElasticRequests bad secret' => [
-				'CirrusSearchLogElasticRequests',
+				CirrusConfigNames::LogElasticRequests,
 				true,
 				'cirrusLogElasticRequests',
 				'blah',
 				true,
-				[ 'CirrusSearchLogElasticRequestsSecret' => 'secret' ]
+				[ CirrusConfigNames::LogElasticRequestsSecret => 'secret' ]
 			],
 			'wgCirrusSearchEnableAltLanguage activate' => [
-				'CirrusSearchEnableAltLanguage',
+				CirrusConfigNames::EnableAltLanguage,
 				false,
 				'cirrusAltLanguage',
 				'yes',
 				true,
 			],
 			'wgCirrusSearchEnableAltLanguage disable' => [
-				'CirrusSearchEnableAltLanguage',
+				CirrusConfigNames::EnableAltLanguage,
 				true,
 				'cirrusAltLanguage',
 				'no',
 				false,
 			],
 			'wgCirrusSearchUseCompletionSuggester disable' => [
-				'CirrusSearchUseCompletionSuggester',
+				CirrusConfigNames::UseCompletionSuggester,
 				'yes',
 				'cirrusUseCompletionSuggester',
 				'no',
 				false
 			],
 			'wgCirrusSearchUseCompletionSuggester cannot be activated' => [
-				'CirrusSearchUseCompletionSuggester',
+				CirrusConfigNames::UseCompletionSuggester,
 				'no',
 				'cirrusUseCompletionSuggester',
 				'yes',
@@ -195,85 +195,85 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 	public static function provideMltOverrides() {
 		return [
 			'wgCirrusSearchMoreLikeThisConfig min_doc_freq' => [
-				'CirrusSearchMoreLikeThisConfig',
+				CirrusConfigNames::MoreLikeThisConfig,
 				[ 'min_doc_freq' => 3 ],
 				'cirrusMltMinDocFreq',
 				5,
 				[ 'min_doc_freq' => 5 ],
 			],
 			'wgCirrusSearchMoreLikeThisConfig max_doc_freq' => [
-				'CirrusSearchMoreLikeThisConfig',
+				CirrusConfigNames::MoreLikeThisConfig,
 				[ 'max_doc_freq' => 3 ],
 				'cirrusMltMaxDocFreq',
 				5,
 				[ 'max_doc_freq' => 5 ],
 			],
 			'wgCirrusSearchMoreLikeThisConfig max_query_terms' => [
-				'CirrusSearchMoreLikeThisConfig',
+				CirrusConfigNames::MoreLikeThisConfig,
 				[ 'max_query_terms' => 3 ],
 				'cirrusMltMaxQueryTerms',
 				5,
 				[ 'max_query_terms' => 5 ],
-				[ 'CirrusSearchMoreLikeThisMaxQueryTermsLimit' => 6 ]
+				[ CirrusConfigNames::MoreLikeThisMaxQueryTermsLimit => 6 ]
 			],
 			'wgCirrusSearchMoreLikeThisConfig max_query_terms too high' => [
-				'CirrusSearchMoreLikeThisConfig',
+				CirrusConfigNames::MoreLikeThisConfig,
 				[ 'max_query_terms' => 3 ],
 				'cirrusMltMaxQueryTerms',
 				5,
 				[ 'max_query_terms' => 3 ],
-				[ 'CirrusSearchMoreLikeThisMaxQueryTermsLimit' => 4 ]
+				[ CirrusConfigNames::MoreLikeThisMaxQueryTermsLimit => 4 ]
 			],
 			'wgCirrusSearchMoreLikeThisConfig min_term_freq' => [
-				'CirrusSearchMoreLikeThisConfig',
+				CirrusConfigNames::MoreLikeThisConfig,
 				[ 'min_term_freq' => 3 ],
 				'cirrusMltMinTermFreq',
 				5,
 				[ 'min_term_freq' => 5 ],
 			],
 			'wgCirrusSearchMoreLikeThisConfig minimum_should_match' => [
-				'CirrusSearchMoreLikeThisConfig',
+				CirrusConfigNames::MoreLikeThisConfig,
 				[ 'minimum_should_match' => '30%' ],
 				'cirrusMltMinimumShouldMatch',
 				'50%',
 				[ 'minimum_should_match' => '50%' ],
 			],
 			'wgCirrusSearchMoreLikeThisConfig minimum_should_match invalid' => [
-				'CirrusSearchMoreLikeThisConfig',
+				CirrusConfigNames::MoreLikeThisConfig,
 				[ 'minimum_should_match' => '30%' ],
 				'cirrusMltMinimumShouldMatch',
 				'50A%',
 				[ 'minimum_should_match' => '30%' ],
 			],
 			'wgCirrusSearchMoreLikeThisConfig min_word_length' => [
-				'CirrusSearchMoreLikeThisConfig',
+				CirrusConfigNames::MoreLikeThisConfig,
 				[ 'min_word_length' => 3 ],
 				'cirrusMltMinWordLength',
 				5,
 				[ 'min_word_length' => 5 ],
 			],
 			'wgCirrusSearchMoreLikeThisConfig max_word_length' => [
-				'CirrusSearchMoreLikeThisConfig',
+				CirrusConfigNames::MoreLikeThisConfig,
 				[ 'max_word_length' => 3 ],
 				'cirrusMltMaxWordLength',
 				5,
 				[ 'max_word_length' => 5 ],
 			],
 			'wgCirrusSearchMoreLikeThisFields allowed' => [
-				'CirrusSearchMoreLikeThisFields',
+				CirrusConfigNames::MoreLikeThisFields,
 				[ 'title', 'text' ],
 				'cirrusMltFields',
 				'text,opening_text',
 				[ 'text', 'opening_text' ],
-				[ 'CirrusSearchMoreLikeThisAllowedFields' => [ 'text', 'opening_text' ] ]
+				[ CirrusConfigNames::MoreLikeThisAllowedFields => [ 'text', 'opening_text' ] ]
 			],
 			'wgCirrusSearchMoreLikeThisFields disallowed' => [
-				'CirrusSearchMoreLikeThisFields',
+				CirrusConfigNames::MoreLikeThisFields,
 				[ 'title', 'text' ],
 				'cirrusMltFields',
 				'text,opening_text,unknown',
 				[ 'text', 'opening_text' ],
-				[ 'CirrusSearchMoreLikeThisAllowedFields' => [ 'text', 'opening_text' ] ]
+				[ CirrusConfigNames::MoreLikeThisAllowedFields => [ 'text', 'opening_text' ] ]
 			],
 		];
 	}
@@ -293,7 +293,7 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 		$expectedValue, $additionalConfig = []
 	) {
 		$this->assertArrayHasKey( "wg$option", $GLOBALS );
-		$nullOptions = $option === 'CirrusSearchMoreLikeThisConfig' ? [
+		$nullOptions = $option === CirrusConfigNames::MoreLikeThisConfig ? [
 			'min_doc_freq' => null,
 			'max_doc_freq' => null,
 			'max_query_terms' => null,
@@ -321,7 +321,7 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 	private function preferencesForCompletionProfiles( array $profiles ) {
 		OutputPage::setupOOUI();
 		$this->overrideConfigValues( [
-			'CirrusSearchUseCompletionSuggester' => true,
+			CirrusConfigNames::UseCompletionSuggester => true,
 		] );
 		$service = new SearchProfileService( $this->getServiceContainer()->getUserOptionsLookup() );
 		$service->registerDefaultProfile( SearchProfileService::COMPLETION,

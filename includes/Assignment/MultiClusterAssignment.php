@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Assignment;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\SearchConfig;
 use Wikimedia\Assert\Assert;
 
@@ -15,7 +16,7 @@ class MultiClusterAssignment implements ClusterAssignment {
 
 	public function __construct( SearchConfig $config ) {
 		$this->config = $config;
-		$groupConfig = $config->get( 'CirrusSearchReplicaGroup' );
+		$groupConfig = $config->get( CirrusConfigNames::ReplicaGroup );
 		if ( $groupConfig === null ) {
 			throw new \RuntimeException( 'CirrusSearchReplicaGroup is null' );
 		}
@@ -52,7 +53,7 @@ class MultiClusterAssignment implements ClusterAssignment {
 		$clusters = [];
 		// We could require the input come in this shape, instead of reshaping
 		// it when we start, but it seemed awkward to work with.
-		foreach ( $this->config->get( 'CirrusSearchClusters' ) as $name => $config ) {
+		foreach ( $this->config->get( CirrusConfigNames::Clusters ) as $name => $config ) {
 			$replica = $config['replica'] ?? $name;
 			// Tempting to skip everything that doesn't match $this->group, but we have
 			// to also track single group replicas with arbitrary group names.
@@ -78,7 +79,7 @@ class MultiClusterAssignment implements ClusterAssignment {
 	 * @return string[] List of the cluster groups to manage indexes on.
 	 */
 	public function getManagedClusters(): array {
-		$clusters = $this->config->get( 'CirrusSearchManagedClusters' );
+		$clusters = $this->config->get( CirrusConfigNames::ManagedClusters );
 		return $clusters ?? $this->getAllKnownClusters();
 	}
 
@@ -87,7 +88,7 @@ class MultiClusterAssignment implements ClusterAssignment {
 	 * @return string[] List of CirrusSearch cluster names to write to.
 	 */
 	public function getWritableClusters( string $updateGroup ): array {
-		$clusters = $this->config->get( 'CirrusSearchWriteClusters' );
+		$clusters = $this->config->get( CirrusConfigNames::WriteClusters );
 		if ( $clusters === null ) {
 			// No explicitly configured set of write clusters. Write to all known replicas.
 			return $this->getAllKnownClusters();
@@ -143,7 +144,7 @@ class MultiClusterAssignment implements ClusterAssignment {
 	 * @return string Name of the default search cluster.
 	 */
 	public function getSearchCluster() {
-		return $this->config->get( 'CirrusSearchDefaultCluster' );
+		return $this->config->get( CirrusConfigNames::DefaultCluster );
 	}
 
 	/**
@@ -162,7 +163,7 @@ class MultiClusterAssignment implements ClusterAssignment {
 		if ( $this->clusters === null ) {
 			$this->clusters = $this->initClusters();
 		}
-		$replica ??= $this->config->get( 'CirrusSearchDefaultCluster' ) ?? '';
+		$replica ??= $this->config->get( CirrusConfigNames::DefaultCluster ) ?? '';
 		if ( !isset( $this->clusters[$replica] ) ) {
 			$available = implode( ',', array_keys( $this->clusters ) );
 			throw new \RuntimeException( "Missing replica <$replica>, have <$available>" );

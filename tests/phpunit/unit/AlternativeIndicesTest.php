@@ -11,16 +11,16 @@ use MediaWiki\Config\ConfigException;
 class AlternativeIndicesTest extends CirrusTestCase {
 	public function testHappyPath() {
 		$hostConfig = $this->newHashSearchConfig( [
-			'CirrusSearchIndexBaseName' => 'mywiki',
+			CirrusConfigNames::IndexBaseName => 'mywiki',
 			'CirrusSearchOverriddenConfig' => 'host',
 			'CirrusSearchHostConfig' => 'host',
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'mycluster' => [],
 			],
-			'CirrusSearchDefaultCluster' => 'mycluster',
-			'CirrusSearchWriteClusters' => null,
-			'CirrusSearchReplicaGroup' => 'default',
-			'CirrusSearchAlternativeIndices' => [
+			CirrusConfigNames::DefaultCluster => 'mycluster',
+			CirrusConfigNames::WriteClusters => null,
+			CirrusConfigNames::ReplicaGroup => 'default',
+			CirrusConfigNames::AlternativeIndices => [
 				'completion' => [
 					[
 						'index_id' => 1,
@@ -53,14 +53,14 @@ class AlternativeIndicesTest extends CirrusTestCase {
 	public static function providesBadConfig(): \Generator {
 		yield 'missing index_id' => [
 			[
-				'CirrusSearchAlternativeIndices' => [
+				CirrusConfigNames::AlternativeIndices => [
 					'completion' => [ [] ]
 				],
 			]
 		];
 		yield 'invalid index_id' => [
 			[
-				'CirrusSearchAlternativeIndices' => [
+				CirrusConfigNames::AlternativeIndices => [
 					'completion' => [
 						[ 'index_id' => 'foo' ]
 					]
@@ -69,7 +69,7 @@ class AlternativeIndicesTest extends CirrusTestCase {
 		];
 		yield 'duplicated index_id' => [
 			[
-				'CirrusSearchAlternativeIndices' => [
+				CirrusConfigNames::AlternativeIndices => [
 					'completion' => [
 						[ 'index_id' => 0 ],
 						[ 'index_id' => 0 ],
@@ -79,7 +79,7 @@ class AlternativeIndicesTest extends CirrusTestCase {
 		];
 		yield 'use is boolean index_id' => [
 			[
-				'CirrusSearchAlternativeIndices' => [
+				CirrusConfigNames::AlternativeIndices => [
 					'completion' => [
 						[ 'index_id' => 0, 'use' => 'yes' ],
 					]
@@ -88,7 +88,7 @@ class AlternativeIndicesTest extends CirrusTestCase {
 		];
 		yield 'config overrides is an array' => [
 			[
-				'CirrusSearchAlternativeIndices' => [
+				CirrusConfigNames::AlternativeIndices => [
 					'completion' => [
 						[ 'index_id' => 0, 'config_overrides' => 'yes' ],
 					]
@@ -107,16 +107,16 @@ class AlternativeIndicesTest extends CirrusTestCase {
 
 	public function testIsInstance() {
 		$hostConfig = $this->newHashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'mycluster' => [],
 			],
-			'CirrusSearchDefaultCluster' => 'mycluster',
-			'CirrusSearchWriteClusters' => null,
-			'CirrusSearchReplicaGroup' => 'default'
+			CirrusConfigNames::DefaultCluster => 'mycluster',
+			CirrusConfigNames::WriteClusters => null,
+			CirrusConfigNames::ReplicaGroup => 'default'
 		] );
 		$connection = new Connection( $hostConfig );
 		$altIndex = new AlternativeIndex( 1, AlternativeIndices::COMPLETION, false,
-			$this->newHashSearchConfig( [ 'CirrusSearchIndexBaseName' => 'mywiki' ] ), [] );
+			$this->newHashSearchConfig( [ CirrusConfigNames::IndexBaseName => 'mywiki' ] ), [] );
 		$this->assertTrue( $altIndex->isInstanceIndex( "mywiki_titlesuggest_alt_1_123", $connection ) );
 		$this->assertTrue( $altIndex->isInstanceIndex( "mywiki_titlesuggest_alt_1_2348", $connection ) );
 		$this->assertFalse( $altIndex->isInstanceIndex( "mywiki_titlesuggest_alt_2_2348", $connection ) );

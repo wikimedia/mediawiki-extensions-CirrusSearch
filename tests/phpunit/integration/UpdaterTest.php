@@ -32,7 +32,7 @@ class UpdaterTest extends CirrusIntegrationTestCase {
 	 */
 	public function testUpdateFromTitleGatesRedirectDeletionOnBuild( bool $build, bool $expectDelete ) {
 		$config = $this->newHashSearchConfig(
-			[ 'CirrusSearchRedirectDocuments' => [ 'build' => $build, 'use' => false ] ] );
+			[ CirrusConfigNames::RedirectDocuments => [ 'build' => $build, 'use' => false ] ] );
 
 		$redirect = $this->createMock( WikiPage::class );
 		$redirect->method( 'getId' )->willReturn( 42 );
@@ -55,7 +55,7 @@ class UpdaterTest extends CirrusIntegrationTestCase {
 
 	public function testUpdateRedirectDocumentIndexesExistingPageDirectly() {
 		$config = $this->newHashSearchConfig(
-			[ 'CirrusSearchRedirectDocuments' => [ 'build' => true, 'use' => false ] ] );
+			[ CirrusConfigNames::RedirectDocuments => [ 'build' => true, 'use' => false ] ] );
 		$page = $this->getExistingTestPage();
 
 		$updater = $this->newUpdater( $config, [ 'updatePages' ] );
@@ -76,7 +76,7 @@ class UpdaterTest extends CirrusIntegrationTestCase {
 
 	public function testUpdateRedirectDocumentSkipsMissingPage() {
 		$config = $this->newHashSearchConfig(
-			[ 'CirrusSearchRedirectDocuments' => [ 'build' => true, 'use' => false ] ] );
+			[ CirrusConfigNames::RedirectDocuments => [ 'build' => true, 'use' => false ] ] );
 
 		$updater = $this->newUpdater( $config, [ 'updatePages' ] );
 		$updater->expects( $this->never() )->method( 'updatePages' );

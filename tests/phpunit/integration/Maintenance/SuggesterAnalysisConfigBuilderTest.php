@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Tests\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
@@ -37,8 +38,8 @@ class SuggesterAnalysisConfigBuilderTest extends CirrusIntegrationTestCase {
 			}
 		);
 		$baseConfig = [
-			'CirrusSearchSimilarityProfile' => 'default',
-			'CirrusSearchCompletionPlainTokenizer' => 'whitespace'
+			CirrusConfigNames::SimilarityProfile => 'default',
+			CirrusConfigNames::CompletionPlainTokenizer => 'whitespace'
 		];
 		$config = new HashSearchConfig( $extraConfig + $baseConfig );
 		$plugins = [

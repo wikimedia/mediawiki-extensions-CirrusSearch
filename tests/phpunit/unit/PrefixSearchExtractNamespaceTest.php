@@ -43,7 +43,7 @@ class PrefixSearchExtractNamespaceTest extends CirrusTestCase {
 		array $expectedNamespace
 	): void {
 		$config = new \HashConfig( [ 'SearchType' => 'CirrusSearch' ] );
-		$searchConfig = $this->newHashSearchConfig( [ 'CirrusSearchNamespaceResolutionMethod' => $method ] );
+		$searchConfig = $this->newHashSearchConfig( [ CirrusConfigNames::NamespaceResolutionMethod => $method ] );
 		$language = $this->createMock( Language::class );
 		$language->expects( $this->atMost( 1 ) )
 			->method( 'getNamespaceIds' )

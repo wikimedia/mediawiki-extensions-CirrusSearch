@@ -228,8 +228,8 @@ class Util {
 	public static function getDefaultBoostTemplates( ?SearchConfig $config = null ) {
 		$config ??= MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
 
-		$fromConfig = $config->get( 'CirrusSearchBoostTemplates' );
-		if ( $config->get( 'CirrusSearchIgnoreOnWikiBoostTemplates' ) ) {
+		$fromConfig = $config->get( CirrusConfigNames::BoostTemplates );
+		if ( $config->get( CirrusConfigNames::IgnoreOnWikiBoostTemplates ) ) {
 			// on wiki messages disabled, we can return this config
 			// directly
 			return $fromConfig;
@@ -529,7 +529,7 @@ class Util {
 	public static function looksLikeAutomation( SearchConfig $config, string $ip, array $headers ): bool {
 		// Is there an http header that can be matched with regex to flag automation,
 		// such as the user-agent or a flag applied by some infrastructure?
-		$automationHeaders = $config->get( 'CirrusSearchAutomationHeaderRegexes' ) ?? [];
+		$automationHeaders = $config->get( CirrusConfigNames::AutomationHeaderRegexes ) ?? [];
 		foreach ( $automationHeaders as $name => $pattern ) {
 			$name = strtoupper( $name );
 			if ( !isset( $headers[$name] ) ) {
@@ -545,7 +545,7 @@ class Util {
 		}
 
 		// Does the ip address fall into a subnet known for automation?
-		$ranges = $config->get( 'CirrusSearchAutomationCIDRs' );
+		$ranges = $config->get( CirrusConfigNames::AutomationCIDRs );
 		if ( IPUtils::isInRanges( $ip, $ranges ) ) {
 			return true;
 		}

@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
+
 /**
  * Simple TextIndexField subclass useful to customize COPY_TO_SUGGEST_VARIANT
  * @package CirrusSearch
@@ -15,8 +17,8 @@ class OpeningTextIndexField extends TextIndexField {
 	 */
 	protected function getTextOptions( $mappingFlags ) {
 		$options = parent::getTextOptions( $mappingFlags );
-		if ( $this->config->get( 'CirrusSearchEnablePhraseSuggest' ) &&
-			 $this->config->get( 'CirrusSearchPhraseSuggestUseOpeningText' )
+		if ( $this->config->get( CirrusConfigNames::EnablePhraseSuggest ) &&
+			 $this->config->get( CirrusConfigNames::PhraseSuggestUseOpeningText )
 		) {
 			$options |= self::COPY_TO_SUGGEST_VARIANT;
 		}

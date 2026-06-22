@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\UserTestingEngine;
@@ -103,7 +104,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 			$connection = $this->connection;
 		}
 
-		$connection->setTimeout( $this->getSearchConfig()->get( 'CirrusSearchMaintenanceTimeout' ) );
+		$connection->setTimeout( $this->getSearchConfig()->get( CirrusConfigNames::MaintenanceTimeout ) );
 
 		return $connection;
 	}
@@ -132,7 +133,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 		$assignment = $config->getClusterAssignment();
 
 		$cluster = $this->getOption( 'cluster', null );
-		if ( $cluster !== null && $config->has( 'CirrusSearchServers' ) ) {
+		if ( $cluster !== null && $config->has( CirrusConfigNames::Servers ) ) {
 			$this->fatalError( 'Not configured for cluster operations.' );
 		}
 		if ( $cluster === null ) {

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search\Fetch;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
@@ -21,8 +22,8 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 	use CirrusTestCaseTrait;
 
 	public function testNewHighlightField() {
-		$configDef = $this->newHashSearchConfig( [ 'CirrusSearchUseExperimentalHighlighter' => false ] );
-		$configExp = $this->newHashSearchConfig( [ 'CirrusSearchUseExperimentalHighlighter' => true ] );
+		$configDef = $this->newHashSearchConfig( [ CirrusConfigNames::UseExperimentalHighlighter => false ] );
+		$configExp = $this->newHashSearchConfig( [ CirrusConfigNames::UseExperimentalHighlighter => true ] );
 		$builders = [ new FetchPhaseConfigBuilder( $configDef ), new FetchPhaseConfigBuilder( $configExp ) ];
 		foreach ( $builders as $builder ) {
 			/** @var BaseHighlightedField $field */
@@ -35,12 +36,12 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 
 	public static function provideNewHighlightFieldWithFactory() {
 		$configBase = new HashSearchConfig( [
-			'CirrusSearchFragmentSize' => 350,
-			'CirrusSearchUseExperimentalHighlighter' => false
+			CirrusConfigNames::FragmentSize => 350,
+			CirrusConfigNames::UseExperimentalHighlighter => false
 		] );
 		$configExp = new HashSearchConfig( [
-			'CirrusSearchFragmentSize' => 350,
-			'CirrusSearchUseExperimentalHighlighter' => true
+			CirrusConfigNames::FragmentSize => 350,
+			CirrusConfigNames::UseExperimentalHighlighter => true
 		] );
 		$factoryGroups = [
 			SearchQuery::SEARCH_TEXT => [
@@ -95,13 +96,13 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 	}
 
 	public function testNewRegexField() {
-		$configDef = $this->newHashSearchConfig( [ 'CirrusSearchUseExperimentalHighlighter' => false ] );
+		$configDef = $this->newHashSearchConfig( [ CirrusConfigNames::UseExperimentalHighlighter => false ] );
 		$builder = new FetchPhaseConfigBuilder( $configDef );
 		$builder->addNewRegexHLField( 'test', 'target', '(foo|bar)', false, 123 );
 		$f = $builder->getHLField( 'test' );
 		$this->assertNull( $f );
 
-		$configExp = $this->newHashSearchConfig( [ 'CirrusSearchUseExperimentalHighlighter' => true ] );
+		$configExp = $this->newHashSearchConfig( [ CirrusConfigNames::UseExperimentalHighlighter => true ] );
 		$builder = new FetchPhaseConfigBuilder( $configExp );
 		$builder->addNewRegexHLField( 'test', 'target', '(foo|bar)', false, 123 );
 		$f = $builder->getHLField( 'test' );
@@ -113,7 +114,7 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 	}
 
 	public function testGetHighlightConfig() {
-		$config = $this->newHashSearchConfig( [ 'CirrusSearchFragmentSize' => 123 ] );
+		$config = $this->newHashSearchConfig( [ CirrusConfigNames::FragmentSize => 123 ] );
 		$builder = new FetchPhaseConfigBuilder( $config, SearchQuery::SEARCH_TEXT );
 		$f1 = $builder->newHighlightField( 'text', HighlightedField::TARGET_MAIN_SNIPPET, 123 );
 		$f2 = $builder->newHighlightField( 'auxiliary_text', HighlightedField::TARGET_MAIN_SNIPPET, 123 );
@@ -149,12 +150,12 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		array $expected
 	) {
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchUseExperimentalHighlighter' => in_array( 'experimental-highlighter', $options ),
-			'CirrusSearchFragmentSize' => 150,
+			CirrusConfigNames::UseExperimentalHighlighter => in_array( 'experimental-highlighter', $options ),
+			CirrusConfigNames::FragmentSize => 150,
 			'LanguageCode' => 'testlocale',
-			'CirrusSearchEnableRegex' => true,
-			'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ],
-			'CirrusSearchRegexMaxDeterminizedStates' => 20000,
+			CirrusConfigNames::EnableRegex => true,
+			CirrusConfigNames::WikimediaExtraPlugin => [ 'regex' => [ 'use' => true ] ],
+			CirrusConfigNames::RegexMaxDeterminizedStates => 20000,
 		] );
 		$fetchPhaseBuilder = new FetchPhaseConfigBuilder(
 			$config, SearchQuery::SEARCH_TEXT, in_array( 'provide-all-snippets', $options ) );

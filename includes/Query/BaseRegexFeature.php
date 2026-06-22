@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Extra\Query\SourceRegex;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
@@ -69,14 +70,14 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	 */
 	public function __construct( SearchConfig $config, array $fields ) {
 		$this->languageCode = $config->get( MainConfigNames::LanguageCode );
-		$this->regexPlugin = $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' );
+		$this->regexPlugin = $config->getElement( CirrusConfigNames::WikimediaExtraPlugin, 'regex' );
 		// Regex is only usable when the wikimedia-extra plugin is available to serve it.
-		$this->enabled = $config->get( 'CirrusSearchEnableRegex' )
+		$this->enabled = $config->get( CirrusConfigNames::EnableRegex )
 			&& $this->regexPlugin && in_array( 'use', $this->regexPlugin );
-		$this->maxDeterminizedStates = $config->get( 'CirrusSearchRegexMaxDeterminizedStates' );
+		$this->maxDeterminizedStates = $config->get( CirrusConfigNames::RegexMaxDeterminizedStates );
 		Assert::precondition( $fields !== [], 'must have at least one field' );
 		$this->fields = $fields;
-		$this->shardTimeout = $config->getElement( 'CirrusSearchSearchShardTimeout', 'regex' );
+		$this->shardTimeout = $config->getElement( CirrusConfigNames::SearchShardTimeout, 'regex' );
 	}
 
 	/**

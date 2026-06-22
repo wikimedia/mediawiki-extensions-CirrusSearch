@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SecondTry\SecondTryRunner;
@@ -36,11 +37,11 @@ class PrefixSearchQueryBuilder {
 		$searchContext->addSyntaxUsed( 'prefix' );
 		if ( strlen( $term ) > 0 ) {
 			$secondTries = $precomputedSecondTryCandidates ?: $this->secondTryRunner->candidates( $term );
-			if ( $searchContext->getConfig()->get( 'CirrusSearchPrefixSearchStartsWithAnyWord' ) ) {
+			if ( $searchContext->getConfig()->get( CirrusConfigNames::PrefixSearchStartsWithAnyWord ) ) {
 				$searchContext->addFilter( $this->wordPrefixQuery( $term, $secondTries ) );
 			} else {
 				// TODO: weights should be a profile?
-				$weights = $searchContext->getConfig()->get( 'CirrusSearchPrefixWeights' );
+				$weights = $searchContext->getConfig()->get( CirrusConfigNames::PrefixWeights );
 				$searchContext->setMainQuery( $this->keywordPrefixQuery( $term, $secondTries, $weights ) );
 			}
 		}

@@ -164,7 +164,7 @@ class Connection extends ElasticaConnection {
 	 * @return int
 	 */
 	public function getMaxConnectionAttempts() {
-		return $this->config->get( 'CirrusSearchConnectionAttempts' );
+		return $this->config->get( CirrusConfigNames::ConnectionAttempts );
 	}
 
 	/**
@@ -196,19 +196,19 @@ class Connection extends ElasticaConnection {
 			}
 			$indexSuffixes = array_merge(
 				$indexSuffixes,
-				array_values( $this->config->get( 'CirrusSearchNamespaceMappings' ) )
+				array_values( $this->config->get( CirrusConfigNames::NamespaceMappings ) )
 			);
 		} else {
 			$indexSuffixes = array_merge(
 				$indexSuffixes,
 				self::SUFFIX_MAPPING[$documentType],
 				$documentType === self::PAGE_DOC_TYPE ?
-					array_values( $this->config->get( 'CirrusSearchNamespaceMappings' ) ) : []
+					array_values( $this->config->get( CirrusConfigNames::NamespaceMappings ) ) : []
 			);
 		}
 
 		if ( !$this->getSettings()->isPrivateCluster()
-			|| !$this->config->get( 'CirrusSearchEnableArchive' )
+			|| !$this->config->get( CirrusConfigNames::EnableArchive )
 		) {
 			$indexSuffixes = array_filter( $indexSuffixes, static function ( $type ) {
 				return $type !== self::ARCHIVE_INDEX_SUFFIX;
@@ -239,7 +239,7 @@ class Connection extends ElasticaConnection {
 	 * @return string
 	 */
 	public function getIndexSuffixForNamespace( $namespace ) {
-		$mappings = $this->config->get( 'CirrusSearchNamespaceMappings' );
+		$mappings = $this->config->get( CirrusConfigNames::NamespaceMappings );
 		if ( isset( $mappings[$namespace] ) ) {
 			return $mappings[$namespace];
 		}
@@ -285,7 +285,7 @@ class Connection extends ElasticaConnection {
 			return array_unique( $indexSuffixes );
 		}
 		// If no namespaces provided all indices are needed
-		$mappings = $this->config->get( 'CirrusSearchNamespaceMappings' );
+		$mappings = $this->config->get( CirrusConfigNames::NamespaceMappings );
 		return array_merge( self::SUFFIX_MAPPING[self::PAGE_DOC_TYPE],
 			array_values( $mappings ) );
 	}

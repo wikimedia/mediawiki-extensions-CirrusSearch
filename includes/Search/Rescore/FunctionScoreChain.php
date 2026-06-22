@@ -5,6 +5,7 @@
 
 namespace CirrusSearch\Search\Rescore;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Profile\ArrayPathSetter;
 use CirrusSearch\Profile\SearchProfileService;
@@ -127,10 +128,10 @@ class FunctionScoreChain {
 					}
 				}
 
-				$preferRecentDecayPortion = $config->get( 'CirrusSearchPreferRecentDefaultDecayPortion' );
+				$preferRecentDecayPortion = $config->get( CirrusConfigNames::PreferRecentDefaultDecayPortion );
 				$preferRecentHalfLife = 0;
 				if ( $preferRecentDecayPortion > 0 ) {
-					$preferRecentHalfLife = $config->get( 'CirrusSearchPreferRecentDefaultHalfLife' );
+					$preferRecentHalfLife = $config->get( CirrusConfigNames::PreferRecentDefaultHalfLife );
 				}
 				return new PreferRecentFunctionScoreBuilder( $config, $weight,
 					$preferRecentHalfLife, $preferRecentDecayPortion );

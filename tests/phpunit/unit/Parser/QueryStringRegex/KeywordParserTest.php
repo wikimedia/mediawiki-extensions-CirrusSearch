@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Parser\QueryStringRegex;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
@@ -163,7 +164,7 @@ class KeywordParserTest extends CirrusTestCase {
 		// .      01234567890123456789012345 67890123456789
 		$query = ' unrelated insource:/test\\/"/i ';
 		$config = new HashSearchConfig( [
-			'CirrusSearchEnableRegex' => false,
+			CirrusConfigNames::EnableRegex => false,
 		], [ HashSearchConfig::FLAG_INHERIT ] );
 
 		$nodes = $parser->parse( $query, new InSourceFeature( $config ), new OffsetTracker() );

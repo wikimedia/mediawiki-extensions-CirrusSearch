@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Escaper;
@@ -49,7 +50,7 @@ class InTitleFeature extends BaseRegexFeature {
 		);
 		$this->escaper = new Escaper(
 			$config->get( MainConfigNames::LanguageCode ),
-			$config->get( 'CirrusSearchAllowLeadingWildcard' )
+			$config->get( CirrusConfigNames::AllowLeadingWildcard )
 		);
 	}
 

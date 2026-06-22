@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Extra\Query\TokenCountRouter;
 use CirrusSearch\Query\Builder\NearMatchFieldQueryBuilder;
 use CirrusSearch\Search\SearchContext;
@@ -47,7 +48,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$this->config = $config;
 		$this->features = $features;
 		$this->useTokenCountRouter = $this->config->getElement(
-			'CirrusSearchWikimediaExtraPlugin', 'token_count_router' ) === true;
+			CirrusConfigNames::WikimediaExtraPlugin, 'token_count_router' ) === true;
 		$this->nearMatchFieldQueryBuilder = NearMatchFieldQueryBuilder::defaultFromSearchConfig( $config );
 	}
 
@@ -79,7 +80,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// matches stemmed words in phrases). The following all match:
 		// "a", "a boat", "a\"boat", "a boat"~, "a boat"~9,
 		// "a boat"~9~, -"a boat", -"a boat"~9~
-		$slop = $this->config->get( 'CirrusSearchPhraseSlop' );
+		$slop = $this->config->get( CirrusConfigNames::PhraseSlop );
 		$matchQuotesRegex = '(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?<=\\\)")+)"(?<slop>~\d+)?)(?<fuzzy>~)?';
 		$query = self::replacePartsOfQuery(
 			$term,
@@ -121,7 +122,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// Find prefix matches and force them to only match against the plain analyzed fields.  This
 		// prevents prefix matches from getting confused by stemming.  Users really don't expect stemming
 		// in prefix queries.
-		$maxWildcards = $this->config->get( 'CirrusSearchQueryStringMaxWildcards' );
+		$maxWildcards = $this->config->get( CirrusConfigNames::QueryStringMaxWildcards );
 		$query = self::replaceAllPartsOfQuery( $query, '/\w+\*(?:\w*\*?)*/u',
 			function ( $matches ) use ( $searchContext, $maxWildcards ) {
 				// hack to detect pathological wildcard
@@ -209,7 +210,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$fields = array_merge(
 			self::buildFullTextSearchFields( $searchContext, 1, '.plain', true ),
 			self::buildFullTextSearchFields( $searchContext,
-				$this->config->get( 'CirrusSearchStemmedWeight' ), '', true ) );
+				$this->config->get( CirrusConfigNames::StemmedWeight ), '', true ) );
 
 		$searchContext->setMainQuery(
 			$this->buildSearchTextQuery(
@@ -225,7 +226,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$nonAllFields = array_merge(
 			self::buildFullTextSearchFields( $searchContext, 1, '.plain', false ),
 			self::buildFullTextSearchFields( $searchContext,
-				$this->config->get( 'CirrusSearchStemmedWeight' ), '', false ) );
+				$this->config->get( CirrusConfigNames::StemmedWeight ), '', false ) );
 		$nonAllQueryString = $searchContext->escaper()
 			->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
 		$searchContext->setHighlightQuery(
@@ -239,7 +240,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 						$searchContext,
 						$rescoreFields,
 						$this->queryStringQueryString,
-						$this->config->getElement( 'CirrusSearchPhraseSlop', 'boost' )
+						$this->config->getElement( CirrusConfigNames::PhraseSlop, 'boost' )
 					) );
 		}
 	}
@@ -268,7 +269,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$fields = array_merge(
 			self::buildFullTextSearchFields( $searchContext, 1, '.plain', true ),
 			self::buildFullTextSearchFields( $searchContext,
-				$this->config->get( 'CirrusSearchStemmedWeight' ), '', true )
+				$this->config->get( CirrusConfigNames::StemmedWeight ), '', true )
 		);
 
 		$searchContext->addSyntaxUsed( 'degraded_full_text' );
@@ -302,7 +303,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		AbstractQuery $nearMatchQuery,
 		$queryString
 	) {
-		$slop = $this->config->getElement( 'CirrusSearchPhraseSlop', 'default' );
+		$slop = $this->config->getElement( CirrusConfigNames::PhraseSlop, 'default' );
 		$queryForMostFields = $this->buildQueryString( $fields, $queryString, $slop );
 		$searchContext->addSyntaxUsed( 'full_text_querystring', 5 );
 		if ( $nearMatchQuery instanceof MatchNone ) {
@@ -335,10 +336,10 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$query->setFields( $fields );
 		$query->setPhraseSlop( $phraseSlop );
 		$query->setDefaultOperator( 'AND' );
-		$query->setAllowLeadingWildcard( (bool)$this->config->get( 'CirrusSearchAllowLeadingWildcard' ) );
+		$query->setAllowLeadingWildcard( (bool)$this->config->get( CirrusConfigNames::AllowLeadingWildcard ) );
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( $this->getMultiTermRewriteMethod() );
-		$states = $this->config->get( 'CirrusSearchQueryStringMaxDeterminizedStates' );
+		$states = $this->config->get( CirrusConfigNames::QueryStringMaxDeterminizedStates );
 		if ( $states !== null ) {
 			$query->setParam( 'max_determinized_states', $states );
 		}
@@ -365,7 +366,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// Try to limit the expansion of wildcards to all the subfields
 		// We still need to add title.plain with a high boost otherwise
 		// match in titles be poorly scored (actually it breaks some tests).
-		$titleWeight = $context->getConfig()->getElement( 'CirrusSearchWeights', 'title' );
+		$titleWeight = $context->getConfig()->getElement( CirrusConfigNames::Weights, 'title' );
 		return "(title.plain:$term^$titleWeight OR all.plain:$term)";
 	}
 
@@ -402,7 +403,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$fieldSuffix,
 		$allFieldAllowed
 	) {
-		$searchWeights = $context->getConfig()->get( 'CirrusSearchWeights' );
+		$searchWeights = $context->getConfig()->get( CirrusConfigNames::Weights );
 
 		if ( $allFieldAllowed ) {
 			return [ "all{$fieldSuffix}^{$weight}" ];
@@ -572,7 +573,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				// field
 				'text'
 			);
-			$maxTokens = $this->config->get( 'CirrusSearchMaxPhraseTokens' );
+			$maxTokens = $this->config->get( CirrusConfigNames::MaxPhraseTokens );
 			if ( $maxTokens ) {
 				$tokCount->addCondition(
 					TokenCountRouter::GT,

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Profile;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use MediaWiki\Registration\ExtensionRegistry;
@@ -40,7 +41,7 @@ class CompletionSearchProfileRepositoryTest extends CirrusTestCase {
 			],
 		];
 		$configArray = [
-			'CirrusSearchCompletionSuggesterSubphrases' => [
+			CirrusConfigNames::CompletionSuggesterSubphrases => [
 				'use' => false,
 			],
 			'profiles' => $profiles,
@@ -58,7 +59,7 @@ class CompletionSearchProfileRepositoryTest extends CirrusTestCase {
 		], $repo->listExposedProfiles(), false, true );
 
 		$configArray = [
-			'CirrusSearchCompletionSuggesterSubphrases' => [
+			CirrusConfigNames::CompletionSuggesterSubphrases => [
 				'use' => true,
 			],
 			'profiles' => $profiles,
@@ -84,7 +85,7 @@ class CompletionSearchProfileRepositoryTest extends CirrusTestCase {
 
 	public function testFromFile() {
 		$configArray = [
-			'CirrusSearchCompletionSuggesterSubphrases' => [
+			CirrusConfigNames::CompletionSuggesterSubphrases => [
 				'use' => false,
 			],
 		];

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Tests\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Maintenance\Maintenance;
 use MediaWiki\Tests\Maintenance\MaintenanceBaseTestCase;
@@ -14,7 +15,7 @@ class MaintenanceTest extends MaintenanceBaseTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->overrideConfigValue( 'CirrusSearchWeightedTags', [
+		$this->overrideConfigValue( CirrusConfigNames::WeightedTags, [
 			'build' => false,
 			'use' => false
 		] );
@@ -47,14 +48,14 @@ class MaintenanceTest extends MaintenanceBaseTestCase {
 		];
 		// Multiple managed clusters and an unmanaged discovery cluster
 		$complexConfig = [
-			'CirrusSearchDefaultCluster' => 'discovery',
-			'CirrusSearchReplicaGroup' => 'default',
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::DefaultCluster => 'discovery',
+			CirrusConfigNames::ReplicaGroup => 'default',
+			CirrusConfigNames::Clusters => [
 				'discovery' => [ 'search.discovery:9200' ],
 				'dc1' => [ 'search.dc1:9200' ],
 				'dc2' => [ 'search.dc2:9200' ],
 			],
-			'CirrusSearchManagedClusters' => [ 'dc1', 'dc2' ],
+			CirrusConfigNames::ManagedClusters => [ 'dc1', 'dc2' ],
 		];
 
 		return [
@@ -82,7 +83,7 @@ class MaintenanceTest extends MaintenanceBaseTestCase {
 				'dc1', // works as the default cluster is managed
 				null,
 				[
-					'CirrusSearchDefaultCluster' => 'dc1',
+					CirrusConfigNames::DefaultCluster => 'dc1',
 				] + $complexConfig,
 			],
 			'complex server request unmanaged cluster' => [

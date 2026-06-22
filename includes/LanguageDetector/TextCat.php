@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\LanguageDetector;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
 
@@ -26,7 +27,7 @@ class TextCat implements Detector {
 	 * @return string|null Preferred language, or null if none found
 	 */
 	public function detect( $text ) {
-		$dirs = $this->config->getElement( 'CirrusSearchTextcatModel' );
+		$dirs = $this->config->getElement( CirrusConfigNames::TextcatModel );
 		if ( !$dirs ) {
 			return null;
 		}
@@ -44,7 +45,7 @@ class TextCat implements Detector {
 
 		$textcat = new \TextCat( $dirs );
 
-		$textcatConfig = $this->config->getElement( 'CirrusSearchTextcatConfig' );
+		$textcatConfig = $this->config->getElement( CirrusConfigNames::TextcatConfig );
 		if ( $textcatConfig ) {
 			if ( isset( $textcatConfig['maxNgrams'] ) ) {
 				$textcat->setMaxNgrams( intval( $textcatConfig['maxNgrams'] ) );
@@ -66,14 +67,14 @@ class TextCat implements Detector {
 			}
 
 			if ( isset( $textcatConfig['numBoostedLangs'] ) &&
-				$this->config->getElement( 'CirrusSearchTextcatLanguages' )
+				$this->config->getElement( CirrusConfigNames::TextcatLanguages )
 			) {
 				$textcat->setBoostedLangs( array_slice(
-					$this->config->getElement( 'CirrusSearchTextcatLanguages' ),
+					$this->config->getElement( CirrusConfigNames::TextcatLanguages ),
 					0, $textcatConfig['numBoostedLangs'] ) );
 			}
 		}
-		$languages = $textcat->classify( $text, $this->config->getElement( 'CirrusSearchTextcatLanguages' ) );
+		$languages = $textcat->classify( $text, $this->config->getElement( CirrusConfigNames::TextcatLanguages ) );
 		if ( $languages ) {
 			// For now, just return the best option
 			// TODO: think what else we could do

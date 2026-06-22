@@ -1,5 +1,7 @@
 <?php
 
+use CirrusSearch\CirrusConfigNames;
+
 /**
  * List of function score chains
  */
@@ -60,19 +62,19 @@ return [
 				'type' => 'satu',
 				'weight' => [
 					'value' => 13,
-					'config_override' => 'CirrusSearchIncLinksAloneW',
+					'config_override' => CirrusConfigNames::IncLinksAloneW,
 					'uri_param_override' => 'cirrusIncLinksAloneW',
 				],
 				'params' => [
 					'field' => 'incoming_links',
 					'k' => [
 						'value' => 30,
-						'config_override' => 'CirrusSearchIncLinksAloneK',
+						'config_override' => CirrusConfigNames::IncLinksAloneK,
 						'uri_param_override' => 'cirrusIncLinksAloneK',
 					],
 					'a' => [
 						'value' => 0.7,
-						'config_override' => 'CirrusSearchIncLinksAloneA',
+						'config_override' => CirrusConfigNames::IncLinksAloneA,
 						'uri_param_override' => 'cirrusIncLinksAloneA',
 					]
 				],
@@ -89,19 +91,19 @@ return [
 				'type' => 'satu',
 				'weight' => [
 					'value' => 3,
-					'config_override' => 'CirrusSearchPageViewsW',
+					'config_override' => CirrusConfigNames::PageViewsW,
 					'uri_param_override' => 'cirrusPageViewsW',
 				],
 				'params' => [
 					'field' => 'popularity_score',
 					'k' => [
 						'value' => 8E-6,
-						'config_override' => 'CirrusSearchPageViewsK',
+						'config_override' => CirrusConfigNames::PageViewsK,
 						'uri_param_override' => 'cirrusPageViewsK',
 					],
 					'a' => [
 						'value' => 0.8,
-						'config_override' => 'CirrusSearchPageViewsA',
+						'config_override' => CirrusConfigNames::PageViewsA,
 						'uri_param_override' => 'cirrusPageViewsA',
 					],
 				],
@@ -110,19 +112,19 @@ return [
 				'type' => 'satu',
 				'weight' => [
 					'value' => 10,
-					'config_override' => 'CirrusSearchIncLinksW',
+					'config_override' => CirrusConfigNames::IncLinksW,
 					'uri_param_override' => 'cirrusIncLinksW',
 				],
 				'params' => [
 					'field' => 'incoming_links',
 					'k' => [
 						'value' => 30,
-						'config_override' => 'CirrusSearchIncLinksK',
+						'config_override' => CirrusConfigNames::IncLinksK,
 						'uri_param_override' => 'cirrusIncLinksK',
 					],
 					'a' => [
 						'value' => 0.7,
-						'config_override' => 'CirrusSearchIncLinksA',
+						'config_override' => CirrusConfigNames::IncLinksA,
 						'uri_param_override' => 'cirrusIncLinksA',
 					],
 				],
@@ -139,19 +141,19 @@ return [
 				'type' => 'satu',
 				'weight' => [
 					'value' => 1000,
-					'config_override' => 'CirrusSearchPageViewsW',
+					'config_override' => CirrusConfigNames::PageViewsW,
 					'uri_param_override' => 'cirrusPageViewsW',
 				],
 				'params' => [
 					'field' => 'popularity_score',
 					'k' => [
 						'value' => 8E-6,
-						'config_override' => 'CirrusSearchPageViewsK',
+						'config_override' => CirrusConfigNames::PageViewsK,
 						'uri_param_override' => 'cirrusPageViewsK',
 					],
 					'a' => [
 						'value' => 0.8,
-						'config_override' => 'CirrusSearchPageViewsA',
+						'config_override' => CirrusConfigNames::PageViewsA,
 						'uri_param_override' => 'cirrusPageViewsA',
 					],
 				],
@@ -160,19 +162,19 @@ return [
 				'type' => 'satu',
 				'weight' => [
 					'value' => 10,
-					'config_override' => 'CirrusSearchIncLinksW',
+					'config_override' => CirrusConfigNames::IncLinksW,
 					'uri_param_override' => 'cirrusIncLinksW',
 				],
 				'params' => [
 					'field' => 'incoming_links',
 					'k' => [
 						'value' => 30,
-						'config_override' => 'CirrusSearchIncLinksK',
+						'config_override' => CirrusConfigNames::IncLinksK,
 						'uri_param_override' => 'cirrusIncLinksK',
 					],
 					'a' => [
 						'value' => 0.7,
-						'config_override' => 'CirrusSearchIncLinksA',
+						'config_override' => CirrusConfigNames::IncLinksA,
 						'uri_param_override' => 'cirrusIncLinksA',
 					],
 				],

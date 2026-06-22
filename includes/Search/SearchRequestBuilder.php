@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
@@ -66,7 +67,9 @@ class SearchRequestBuilder {
 
 		$extraIndexes = $this->searchContext->getExtraIndices();
 
-		if ( $extraIndexes && $this->searchContext->getConfig()->getElement( 'CirrusSearchDeduplicateInQuery' ) !== false ) {
+		if ( $extraIndexes &&
+			$this->searchContext->getConfig()->getElement( CirrusConfigNames::DeduplicateInQuery ) !== false
+		) {
 			$this->searchContext->addNotFilter( new \Elastica\Query\Term(
 				[ 'local_sites_with_dupe' => $this->indexBaseName ]
 			) );
@@ -172,7 +175,7 @@ class SearchRequestBuilder {
 
 			case 'title_natural_asc':
 			case 'title_natural_desc':
-				if ( $this->searchContext->getConfig()->getElement( 'CirrusSearchNaturalTitleSort', 'use' ) ) {
+				if ( $this->searchContext->getConfig()->getElement( CirrusConfigNames::NaturalTitleSort, 'use' ) ) {
 					$dir = explode( '_', $this->sort, 3 )[2];
 					$query->setSort( [
 						'namespace_text' => $dir,
@@ -205,7 +208,7 @@ class SearchRequestBuilder {
 			$queryOptions[\Elastica\Search::OPTION_TIMEOUT] = $this->timeout;
 		}
 		// @todo when switching to multi-search this has to be provided at the top level
-		if ( $this->searchContext->getConfig()->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
+		if ( $this->searchContext->getConfig()->get( CirrusConfigNames::MoreAccurateScoringMode ) ) {
 			$queryOptions[\Elastica\Search::OPTION_SEARCH_TYPE] = \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH;
 		}
 
@@ -289,7 +292,7 @@ class SearchRequestBuilder {
 				$indexName = $this->connection->getIndexName( $indexBaseName, $indexSuffix );
 			}
 
-			if ( $hostConfig->get( 'CirrusSearchCrossClusterSearch' ) ) {
+			if ( $hostConfig->get( CirrusConfigNames::CrossClusterSearch ) ) {
 				$local = $hostConfig->getClusterAssignment()->getCrossClusterName();
 				$current = $config->getClusterAssignment()->getCrossClusterName();
 				if ( $local !== $current ) {
@@ -315,12 +318,12 @@ class SearchRequestBuilder {
 	 * @return string|null
 	 */
 	private function inferIndexFromConcreteNamespaceMap( SearchConfig $config ): ?string {
-		if ( $this->searchContext->getNamespaces() && $config->has( 'CirrusSearchConcreteNamespaceMap' ) ) {
+		if ( $this->searchContext->getNamespaces() && $config->has( CirrusConfigNames::ConcreteNamespaceMap ) ) {
 			// Attempt to skip Connection::pickIndexSuffixForNamespaces() and use the
 			// concrete namespace map.
 			// Reason is that the connection is built against the host wiki config but
 			// the concrete namespace map is likely obtained for the target wiki.
-			$concreteNamespaceMap = $config->get( 'CirrusSearchConcreteNamespaceMap' );
+			$concreteNamespaceMap = $config->get( CirrusConfigNames::ConcreteNamespaceMap );
 			$indices = [];
 			$inconsistentNamespaces = false;
 			foreach ( $this->searchContext->getNamespaces() as $ns ) {

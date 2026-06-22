@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Profile\SearchProfileService;
@@ -128,7 +129,7 @@ class AnalysisConfigBuilder {
 			// ICU folding requires the icu plugin and the extra plugin
 			return false;
 		}
-		$in_config = $this->config->get( 'CirrusSearchUseIcuFolding' );
+		$in_config = $this->config->get( CirrusConfigNames::UseIcuFolding );
 		// BC code, this config var was originally a simple boolean
 		if ( $in_config === true ) {
 			$in_config = 'yes';
@@ -158,7 +159,7 @@ class AnalysisConfigBuilder {
 			// requires the icu or textify plugin
 			return false;
 		}
-		$in_config = $this->config->get( 'CirrusSearchUseIcuTokenizer' );
+		$in_config = $this->config->get( CirrusConfigNames::UseIcuTokenizer );
 		switch ( $in_config ) {
 			case 'yes':
 				return true;
@@ -422,8 +423,8 @@ class AnalysisConfigBuilder {
 	 * @return null|string
 	 */
 	protected function getICUSetFilter( $language ) {
-		if ( $this->config->get( 'CirrusSearchICUFoldingUnicodeSetFilter' ) !== null ) {
-			return $this->config->get( 'CirrusSearchICUFoldingUnicodeSetFilter' );
+		if ( $this->config->get( CirrusConfigNames::ICUFoldingUnicodeSetFilter ) !== null ) {
+			return $this->config->get( CirrusConfigNames::ICUFoldingUnicodeSetFilter );
 		}
 		return $this->icuSetFilters[ $language ] ?? null;
 	}
@@ -434,8 +435,8 @@ class AnalysisConfigBuilder {
 	 * @return null|string
 	 */
 	protected function getICUNormSetFilter( $language ) {
-		if ( $this->config->get( 'CirrusSearchICUNormalizationUnicodeSetFilter' ) !== null ) {
-			return $this->config->get( 'CirrusSearchICUNormalizationUnicodeSetFilter' );
+		if ( $this->config->get( CirrusConfigNames::ICUNormalizationUnicodeSetFilter ) !== null ) {
+			return $this->config->get( CirrusConfigNames::ICUNormalizationUnicodeSetFilter );
 		}
 		switch ( $language ) {
 			case 'de':

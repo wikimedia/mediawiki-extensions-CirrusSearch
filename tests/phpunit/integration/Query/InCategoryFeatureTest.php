@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use ArrayIterator;
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
@@ -135,7 +136,7 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 	 */
 	public function testParse( ?array $expected, array $warnings, $term ) {
 		$feature = new InCategoryFeature( new HashConfig( [
-			'CirrusSearchMaxIncategoryOptions' => 2,
+			CirrusConfigNames::MaxIncategoryOptions => 2,
 		] ), $this->mockPageStore() );
 		$this->assertFilter( $feature, $term, $expected, $warnings );
 		if ( $expected === null ) {
@@ -218,7 +219,7 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 	public function testTooManyCategoriesWarning() {
 		$this->assertParsedValue(
 			new InCategoryFeature( new HashConfig( [
-				'CirrusSearchMaxIncategoryOptions' => 2,
+				CirrusConfigNames::MaxIncategoryOptions => 2,
 			] ), $this->mockPageStore() ),
 			'incategory:a|b|c',
 			[ 'names' => [ 'a', 'b' ], 'pageIds' => [] ],
@@ -229,7 +230,7 @@ class InCategoryFeatureTest extends CirrusIntegrationTestCase {
 	public function testCategoriesMustExistWarning() {
 		$this->assertExpandedData(
 			new InCategoryFeature( new HashConfig( [
-				'CirrusSearchMaxIncategoryOptions' => 2,
+				CirrusConfigNames::MaxIncategoryOptions => 2,
 			] ), $this->mockPageStore() ),
 			'incategory:id:23892835|id:23892834',
 			[],

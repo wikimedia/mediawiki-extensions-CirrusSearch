@@ -88,7 +88,7 @@ class ExternalIndex {
 	 *  from template name to weight for that template.
 	 */
 	public function getBoosts() {
-		$boosts = $this->config->getElement( 'CirrusSearchExtraIndexBoostTemplates', $this->indexName );
+		$boosts = $this->config->getElement( CirrusConfigNames::ExtraIndexBoostTemplates, $this->indexName );
 		if ( isset( $boosts['wiki'] ) ) {
 			return [ $boosts['wiki'], $boosts['boosts'] ?? [] ];
 		} else {

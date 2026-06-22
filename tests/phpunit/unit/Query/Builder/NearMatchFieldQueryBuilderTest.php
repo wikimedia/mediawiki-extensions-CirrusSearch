@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query\Builder;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use Elastica\Query\MatchNone;
@@ -72,7 +73,7 @@ class NearMatchFieldQueryBuilderTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Query\Builder\NearMatchFieldQueryBuilder::defaultFromWeight
 	 */
 	public function testDefaultFactory() {
-		$conf = $this->newHashSearchConfig( [ 'CirrusSearchNearMatchWeight' => 3 ] );
+		$conf = $this->newHashSearchConfig( [ CirrusConfigNames::NearMatchWeight => 3 ] );
 		$nearMatchFieldQueryBuilder = NearMatchFieldQueryBuilder::defaultFromSearchConfig( $conf );
 		$actualQuery = $nearMatchFieldQueryBuilder->buildFromQueryString( "my text" );
 		$expectedQuery = [ 'multi_match' => [

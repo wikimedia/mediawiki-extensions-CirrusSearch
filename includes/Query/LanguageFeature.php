@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
@@ -33,7 +34,7 @@ class LanguageFeature extends SimpleKeywordFeature implements FilterQueryFeature
 	private $fields = [ "language" ];
 
 	public function __construct( SearchConfig $config ) {
-		$extraFields = $config->get( "CirrusSearchLanguageKeywordExtraFields" );
+		$extraFields = $config->get( CirrusConfigNames::LanguageKeywordExtraFields );
 		if ( is_array( $extraFields ) && $extraFields !== [] ) {
 			$this->fields = array_merge( $this->fields, $extraFields );
 		}

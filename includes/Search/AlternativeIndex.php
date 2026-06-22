@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\AlternativeIndices;
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Connection;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\SearchConfig;
@@ -47,7 +48,8 @@ class AlternativeIndex {
 			default:
 				throw new \LogicException( "Unknown alternative index type {$this->type}" );
 		}
-		return $connection->getIndex( $this->getConfig()->get( 'CirrusSearchIndexBaseName' ), $type, false, true, $this->id );
+		return $connection->getIndex(
+			$this->getConfig()->get( CirrusConfigNames::IndexBaseName ), $type, false, true, $this->id );
 	}
 
 	/**

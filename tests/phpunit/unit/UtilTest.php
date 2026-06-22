@@ -57,11 +57,11 @@ class UtilTest extends CirrusTestCase {
 	 * @return SearchConfig
 	 */
 	private function getHashConfig( string $wiki, array $moreData = [] ): SearchConfig {
-		if ( !isset( $moreData['CirrusSearchBoostTemplates'] ) ) {
-			$moreData['CirrusSearchBoostTemplates'] = [];
+		if ( !isset( $moreData[CirrusConfigNames::BoostTemplates] ) ) {
+			$moreData[CirrusConfigNames::BoostTemplates] = [];
 		}
-		if ( !isset( $moreData['CirrusSearchIgnoreOnWikiBoostTemplates'] ) ) {
-			$moreData['CirrusSearchIgnoreOnWikiBoostTemplates'] = false;
+		if ( !isset( $moreData[CirrusConfigNames::IgnoreOnWikiBoostTemplates] ) ) {
+			$moreData[CirrusConfigNames::IgnoreOnWikiBoostTemplates] = false;
 		}
 		$moreData[ '_wikiID' ] = $wiki;
 		return $this->newHashSearchConfig( $moreData );
@@ -72,14 +72,14 @@ class UtilTest extends CirrusTestCase {
 	 */
 	public function testCustomizeBoostTemplatesByConfig() {
 		$configValues = [
-			'CirrusSearchBoostTemplates' => [
+			CirrusConfigNames::BoostTemplates => [
 				'Featured' => 2,
 			],
-			'CirrusSearchIgnoreOnWikiBoostTemplates' => true,
+			CirrusConfigNames::IgnoreOnWikiBoostTemplates => true,
 		];
 		$config = $this->getHashConfig( 'ruwiki', $configValues );
 		$ru = Util::getDefaultBoostTemplates( $config );
-		$this->assertSame( $configValues['CirrusSearchBoostTemplates'], $ru );
+		$this->assertSame( $configValues[CirrusConfigNames::BoostTemplates], $ru );
 	}
 
 	public static function provideEmptyValues() {
@@ -171,7 +171,7 @@ class UtilTest extends CirrusTestCase {
 	) {
 		$config = new HashSearchConfig( [
 			'CirrusSearchAutomationHeaderRegexes' => $headerRegexes,
-			'CirrusSearchAutomationCIDRs' => $ranges,
+			CirrusConfigNames::AutomationCIDRs => $ranges,
 		] );
 		$this->assertSame( $expect, Util::looksLikeAutomation( $config, $ip, $headers ) );
 	}

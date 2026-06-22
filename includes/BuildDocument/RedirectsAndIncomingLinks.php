@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\BuildDocument;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\ElasticsearchIntermediary;
@@ -91,7 +92,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 
 		// Gather redirects to this page
 		$redirectPageIdentities = $this->backlinkCacheFactory->getBacklinkCache( $title )
-			->getLinkPages( 'redirect', false, false, $this->config->get( 'CirrusSearchIndexedRedirects' ) );
+			->getLinkPages( 'redirect', false, false, $this->config->get( CirrusConfigNames::IndexedRedirects ) );
 		$redirects = [];
 		/** @var PageIdentity $redirect */
 		foreach ( $redirectPageIdentities as $redirect ) {
@@ -106,7 +107,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 		}
 		$doc->set( 'redirect', $redirects );
 
-		if ( !$this->config->get( 'CirrusSearchEnableIncomingLinkCounting' ) ) {
+		if ( !$this->config->get( CirrusConfigNames::EnableIncomingLinkCounting ) ) {
 			return;
 		}
 

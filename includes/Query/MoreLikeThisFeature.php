@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 
@@ -39,7 +40,7 @@ class MoreLikeThisFeature extends SimpleKeywordFeature {
 	 * @inheritDoc
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$context->setCacheTtl( $this->config->get( 'CirrusSearchMoreLikeThisTTL' ) );
+		$context->setCacheTtl( $this->config->get( CirrusConfigNames::MoreLikeThisTTL ) );
 		$titles = $this->doExpand( $key, $value, $context );
 		if ( $titles === [] ) {
 			$context->setResultsPossible( false );

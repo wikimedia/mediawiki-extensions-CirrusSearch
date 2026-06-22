@@ -81,7 +81,7 @@ class VersionTest extends CirrusIntegrationTestCase {
 		}
 
 		$config = $this->newHashSearchConfig(
-			[ 'CirrusSearchClientSideSearchTimeout' => [
+			[ CirrusConfigNames::ClientSideSearchTimeout => [
 				'default' => 5
 			] ]
 		);

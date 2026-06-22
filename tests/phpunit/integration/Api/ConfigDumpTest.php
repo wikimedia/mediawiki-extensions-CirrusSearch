@@ -1,6 +1,7 @@
 <?php
 
 use CirrusSearch\Api\ConfigDump;
+use CirrusSearch\CirrusConfigNames;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Request\FauxRequest;
@@ -15,8 +16,8 @@ class ConfigDumpTest extends \CirrusSearch\CirrusIntegrationTestCase {
 		$context->setRequest( $request );
 		$main = new ApiMain( $context );
 		$this->overrideConfigValues( [
-			"CirrusSearchDefaultCluster" => "my_replica",
-			"CirrusSearchClusters" => [
+			CirrusConfigNames::DefaultCluster => "my_replica",
+			CirrusConfigNames::Clusters => [
 				"my_replica-cluster_group1" => [
 					"group" => "cluster_group1",
 					"replica" => "my_replica",
@@ -26,7 +27,7 @@ class ConfigDumpTest extends \CirrusSearch\CirrusIntegrationTestCase {
 					"replica" => "my_replica",
 				],
 			],
-			"CirrusSearchReplicaGroup" => [
+			CirrusConfigNames::ReplicaGroup => [
 				"type" => "roundrobin",
 				"groups" => [
 					"cluster_group1",
@@ -41,7 +42,7 @@ class ConfigDumpTest extends \CirrusSearch\CirrusIntegrationTestCase {
 		$result = $api->getResult();
 		$this->assertNull( $result->getResultData( [ 'wgSecretKey' ] ),
 			"MW Core config should not be exported" );
-		$this->assertNotNull( $result->getResultData( [ 'CirrusSearchConnectionAttempts' ] ),
+		$this->assertNotNull( $result->getResultData( [ CirrusConfigNames::ConnectionAttempts ] ),
 			"CirrusSearch config should be exported" );
 
 		$namespaceMap = $result->getResultData( [ 'CirrusSearchConcreteNamespaceMap' ] );

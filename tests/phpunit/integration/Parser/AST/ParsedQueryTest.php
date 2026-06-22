@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Parser\AST;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
@@ -74,7 +75,7 @@ class ParsedQueryTest extends CirrusIntegrationTestCase {
 	 * @param string[] $features
 	 */
 	public function testFeaturesUsed( $query, array $features ) {
-		$config = new HashSearchConfig( [ 'CirrusSearchEnableRegex' => true ] );
+		$config = new HashSearchConfig( [ CirrusConfigNames::EnableRegex => true ] );
 		$parser = $this->createNewFullTextQueryParser( $config );
 		$parsedQuery = $parser->parse( $query );
 		$this->assertArrayEquals( $features, $parsedQuery->getFeaturesUsed() );

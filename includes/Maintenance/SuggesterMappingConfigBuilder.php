@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\SearchConfig;
 use MediaWiki\MediaWikiServices;
 
@@ -52,7 +53,7 @@ class SuggesterMappingConfigBuilder {
 				],
 			]
 		];
-		if ( $this->config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'build' ) ) {
+		if ( $this->config->getElement( CirrusConfigNames::CompletionSuggesterSubphrases, 'build' ) ) {
 			$suggest['properties']['suggest-subphrases'] = [
 				'type' => 'completion',
 				'analyzer' => 'subphrases',

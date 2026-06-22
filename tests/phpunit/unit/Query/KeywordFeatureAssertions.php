@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
@@ -382,8 +383,8 @@ class KeywordFeatureAssertions {
 		// Legacy parsing
 		foreach ( [ true, false ] as $useExp ) {
 			$searchConfig = new HashSearchConfig( [
-				'CirrusSearchUseExperimentalHighlighter' => $useExp,
-				'CirrusSearchFragmentSize' => 100
+				CirrusConfigNames::UseExperimentalHighlighter => $useExp,
+				CirrusConfigNames::FragmentSize => 100
 			] );
 			$fetchPhaseConfig =
 				new FetchPhaseConfigBuilder( $searchConfig, SearchQuery::SEARCH_TEXT );
@@ -419,8 +420,8 @@ class KeywordFeatureAssertions {
 		}
 		foreach ( [ true, false ] as $useExp ) {
 			$searchConfig = new HashSearchConfig( [
-				'CirrusSearchUseExperimentalHighlighter' => $useExp,
-				'CirrusSearchFragmentSize' => 100
+				CirrusConfigNames::UseExperimentalHighlighter => $useExp,
+				CirrusConfigNames::FragmentSize => 100
 			] );
 			$fetchPhaseConfig = new FetchPhaseConfigBuilder( $searchConfig, SearchQuery::SEARCH_TEXT );
 			$context = $this->mockBuilderContext( $feature->expand( $node, $expandConfig ?: $searchConfig, $parser ),

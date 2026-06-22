@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
 use CirrusSearch\Test\DummySearchResultSet;
@@ -138,7 +139,7 @@ class FallbackMethodTraitTest extends FallbackMethodTestBase {
 				[], 0, "foo", true, "bar", true, false
 			],
 			'not rewritten if rewritten query is too long' => [
-				[ 'CirrusSearchMaxFullTextQueryLength' => 3 ], 2, "foo", true, "foobar", true, false
+				[ CirrusConfigNames::MaxFullTextQueryLength => 3 ], 2, "foo", true, "foobar", true, false
 			],
 			'not rewritten if costly call not allowed' => [
 				[], 2, "foo", true, "bar", false, false

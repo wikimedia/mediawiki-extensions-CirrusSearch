@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Tests\Api;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCaseTrait;
 use CirrusSearch\CirrusSearch;
 use MediaWiki\MainConfigNames;
@@ -41,10 +42,10 @@ class QueryBuildDocumentTest extends ApiTestCase {
 		$this->overrideConfigValues( [
 			MainConfigNames::SearchType => CirrusSearch::class,
 			MainConfigNames::RestrictDisplayTitle => false,
-			'CirrusSearchWikimediaExtraPlugin' => [ 'documentVersion' ],
-			'CirrusSearchDefaultCluster' => 'my_replica',
-			'CirrusSearchReplicaGroup' => 'my_group',
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::WikimediaExtraPlugin => [ 'documentVersion' ],
+			CirrusConfigNames::DefaultCluster => 'my_replica',
+			CirrusConfigNames::ReplicaGroup => 'my_group',
+			CirrusConfigNames::Clusters => [
 				[
 					[ "connection info" ],
 					'group' => 'my_group',
@@ -156,7 +157,7 @@ class QueryBuildDocumentTest extends ApiTestCase {
 	 */
 	public function test_redirect_marked_unrenderable_when_build_disabled() {
 		$this->overrideConfigValues( [
-			'CirrusSearchRedirectDocuments' => [ 'build' => false, 'use' => false ],
+			CirrusConfigNames::RedirectDocuments => [ 'build' => false, 'use' => false ],
 		] );
 		[ , $redirectId ] = $this->createRedirect();
 
@@ -176,7 +177,7 @@ class QueryBuildDocumentTest extends ApiTestCase {
 	 */
 	public function test_redirect_document_built_when_build_enabled() {
 		$this->overrideConfigValues( [
-			'CirrusSearchRedirectDocuments' => [ 'build' => true, 'use' => false ],
+			CirrusConfigNames::RedirectDocuments => [ 'build' => true, 'use' => false ],
 		] );
 		[ $targetTitle, $redirectId ] = $this->createRedirect();
 

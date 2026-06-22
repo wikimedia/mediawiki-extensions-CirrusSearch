@@ -163,8 +163,8 @@ class UserTestingEngineTest extends CirrusIntegrationTestCase {
 
 	public function testFromProvidedConfig() {
 		$engine = UserTestingEngine::fromConfig( new HashSearchConfig( [
-			'CirrusSearchUserTesting' => self::CONFIG,
-			'CirrusSearchActiveTest' => 'some_test',
+			CirrusConfigNames::UserTesting => self::CONFIG,
+			CirrusConfigNames::ActiveTest => 'some_test',
 		] ) );
 		// Mostly asserting it didn't blow up
 		$status = $engine->decideTestByAutoenroll();

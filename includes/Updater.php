@@ -341,7 +341,7 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 	 * @return bool
 	 */
 	public function archivePages( $archived ) {
-		if ( !$this->connection->getConfig()->getElement( 'CirrusSearchIndexDeletes' ) ) {
+		if ( !$this->connection->getConfig()->getElement( CirrusConfigNames::IndexDeletes ) ) {
 			// Disabled by config - don't do anything
 			return true;
 		}
@@ -383,7 +383,8 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 				'wiki' => WikiMap::getCurrentWikiId(),
 			] );
 			$doc->setDocAsUpsert( true );
-			$doc->setRetryOnConflict( $this->connection->getConfig()->getElement( 'CirrusSearchUpdateConflictRetryCount' ) );
+			$doc->setRetryOnConflict(
+				$this->connection->getConfig()->getElement( CirrusConfigNames::UpdateConflictRetryCount ) );
 
 			$docs[] = $doc;
 		}

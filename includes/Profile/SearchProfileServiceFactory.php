@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Profile;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\SearchConfig;
@@ -173,7 +174,7 @@ class SearchProfileServiceFactory {
 	}
 
 	private function loadSemanticSearch( SearchProfileService $service, SearchConfig $config ) {
-		$defaultProfile = $config->get( 'CirrusSearchDefaultSemanticProfile' );
+		$defaultProfile = $config->get( CirrusConfigNames::DefaultSemanticProfile );
 		if ( !$defaultProfile ) {
 			return;
 		}
@@ -190,45 +191,45 @@ class SearchProfileServiceFactory {
 		$service->registerFileRepository( SearchProfileService::CROSS_PROJECT_BLOCK_SCORER,
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/CrossProjectBlockScorerProfiles.config.php' );
 		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::CROSS_PROJECT_BLOCK_SCORER,
-			self::CIRRUS_CONFIG, 'CirrusSearchCrossProjectBlockScorerProfiles', $config ) );
+			self::CIRRUS_CONFIG, CirrusConfigNames::CrossProjectBlockScorerProfiles, $config ) );
 		$service->registerRepository( new ExtensionRegistryProfileRepository( SearchProfileService::CROSS_PROJECT_BLOCK_SCORER,
-			self::EXTENSION_REGISTRY, 'CirrusSearchCrossProjectBlockScorerProfiles', $this->extensionRegistry ) );
+			self::EXTENSION_REGISTRY, CirrusConfigNames::CrossProjectBlockScorerProfiles, $this->extensionRegistry ) );
 		$service->registerDefaultProfile( SearchProfileService::CROSS_PROJECT_BLOCK_SCORER,
 			SearchProfileService::CONTEXT_DEFAULT, 'static' );
 		$service->registerConfigOverride( SearchProfileService::CROSS_PROJECT_BLOCK_SCORER,
-			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchCrossProjectOrder' );
+			SearchProfileService::CONTEXT_DEFAULT, $config, CirrusConfigNames::CrossProjectOrder );
 	}
 
 	private function loadSimilarityProfiles( SearchProfileService $service, SearchConfig $config ) {
 		$service->registerFileRepository( SearchProfileService::SIMILARITY, self::CIRRUS_BASE,
 			__DIR__ . '/../../profiles/SimilarityProfiles.config.php' );
 		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::SIMILARITY,
-			self::CIRRUS_CONFIG, 'CirrusSearchSimilarityProfiles', $config ) );
+			self::CIRRUS_CONFIG, CirrusConfigNames::SimilarityProfiles, $config ) );
 		$service->registerRepository( new ExtensionRegistryProfileRepository( SearchProfileService::SIMILARITY,
-			self::EXTENSION_REGISTRY, 'CirrusSearchSimilarityProfiles', $this->extensionRegistry ) );
+			self::EXTENSION_REGISTRY, CirrusConfigNames::SimilarityProfiles, $this->extensionRegistry ) );
 
 		$service->registerDefaultProfile( SearchProfileService::SIMILARITY,
 			SearchProfileService::CONTEXT_DEFAULT, 'bm25_with_defaults' );
 		$service->registerConfigOverride( SearchProfileService::SIMILARITY,
-			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchSimilarityProfile' );
+			SearchProfileService::CONTEXT_DEFAULT, $config, CirrusConfigNames::SimilarityProfile );
 	}
 
 	private function loadRescoreProfiles( SearchProfileService $service, SearchConfig $config ) {
 		$service->registerFileRepository( SearchProfileService::RESCORE,
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/RescoreProfiles.config.php' );
 		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::RESCORE,
-			self::CIRRUS_CONFIG, 'CirrusSearchRescoreProfiles', $config ) );
+			self::CIRRUS_CONFIG, CirrusConfigNames::RescoreProfiles, $config ) );
 		$service->registerRepository( new ExtensionRegistryProfileRepository( SearchProfileService::RESCORE,
-			self::EXTENSION_REGISTRY, 'CirrusSearchRescoreProfiles', $this->extensionRegistry ) );
+			self::EXTENSION_REGISTRY, CirrusConfigNames::RescoreProfiles, $this->extensionRegistry ) );
 		$service->registerDefaultProfile( SearchProfileService::RESCORE,
 			SearchProfileService::CONTEXT_DEFAULT, 'classic' );
 		$service->registerDefaultProfile( SearchProfileService::RESCORE,
 			SearchProfileService::CONTEXT_PREFIXSEARCH, 'classic' );
 
 		$service->registerConfigOverride( SearchProfileService::RESCORE,
-			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchRescoreProfile' );
+			SearchProfileService::CONTEXT_DEFAULT, $config, CirrusConfigNames::RescoreProfile );
 		$service->registerConfigOverride( SearchProfileService::RESCORE,
-			SearchProfileService::CONTEXT_PREFIXSEARCH, $config, 'CirrusSearchPrefixSearchRescoreProfile' );
+			SearchProfileService::CONTEXT_PREFIXSEARCH, $config, CirrusConfigNames::PrefixSearchRescoreProfile );
 
 		$service->registerUriParamOverride( SearchProfileService::RESCORE,
 			[ SearchProfileService::CONTEXT_DEFAULT, SearchProfileService::CONTEXT_PREFIXSEARCH ],
@@ -238,9 +239,9 @@ class SearchProfileServiceFactory {
 		$service->registerFileRepository( SearchProfileService::RESCORE_FUNCTION_CHAINS,
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/RescoreFunctionChains.config.php' );
 		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::RESCORE_FUNCTION_CHAINS,
-			self::CIRRUS_CONFIG, 'CirrusSearchRescoreFunctionScoreChains', $config ) );
+			self::CIRRUS_CONFIG, CirrusConfigNames::RescoreFunctionScoreChains, $config ) );
 		$service->registerRepository( new ExtensionRegistryProfileRepository( SearchProfileService::RESCORE_FUNCTION_CHAINS,
-			self::EXTENSION_REGISTRY, 'CirrusSearchRescoreFunctionScoreChains', $this->extensionRegistry ) );
+			self::EXTENSION_REGISTRY, CirrusConfigNames::RescoreFunctionScoreChains, $this->extensionRegistry ) );
 		// No default profiles for function chains, these profiles are always accessed explicitly
 	}
 
@@ -248,11 +249,11 @@ class SearchProfileServiceFactory {
 		$service->registerFileRepository( SearchProfileService::SECOND_TRY,
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/SecondTryProfiles.config.php' );
 		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::SECOND_TRY,
-			self::CIRRUS_CONFIG, 'CirrusSearchSecondTryProfiles', $config ) );
+			self::CIRRUS_CONFIG, CirrusConfigNames::SecondTryProfiles, $config ) );
 		$service->registerDefaultProfile( SearchProfileService::SECOND_TRY,
 			SearchProfileService::CONTEXT_COMPLETION, 'default' );
 		$service->registerConfigOverride( SearchProfileService::SECOND_TRY,
-			SearchProfileService::CONTEXT_COMPLETION, $config, 'CirrusSearchCompletionUseSecondTryProfile' );
+			SearchProfileService::CONTEXT_COMPLETION, $config, CirrusConfigNames::CompletionUseSecondTryProfile );
 		$service->registerUriParamOverride( SearchProfileService::SECOND_TRY,
 			SearchProfileService::CONTEXT_COMPLETION, 'cirrusUseSecondTryProfile' );
 	}
@@ -261,13 +262,13 @@ class SearchProfileServiceFactory {
 		$service->registerFileRepository( SearchProfileService::NAMESPACE_MATCHER,
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/NamespaceMatcherProfiles.config.php' );
 		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::NAMESPACE_MATCHER,
-			self::CIRRUS_CONFIG, 'CirrusSearchNamespaceMatcherProfiles', $config ) );
+			self::CIRRUS_CONFIG, CirrusConfigNames::NamespaceMatcherProfiles, $config ) );
 
 		$service->registerDefaultProfile( SearchProfileService::NAMESPACE_MATCHER,
 			SearchProfileService::CONTEXT_DEFAULT, 'naive' );
 
 		$service->registerConfigOverride( SearchProfileService::NAMESPACE_MATCHER,
-			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchNamespaceResolutionMethod' );
+			SearchProfileService::CONTEXT_DEFAULT, $config, CirrusConfigNames::NamespaceResolutionMethod );
 
 		$service->registerUriParamOverride( SearchProfileService::NAMESPACE_MATCHER,
 			SearchProfileService::CONTEXT_DEFAULT, 'cirrusUseNamespaceMatcherProfile' );
@@ -277,10 +278,10 @@ class SearchProfileServiceFactory {
 		$service->registerRepository( CompletionSearchProfileRepository::fromFile( SearchProfileService::COMPLETION,
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/SuggestProfiles.config.php', $config ) );
 		$service->registerRepository( CompletionSearchProfileRepository::fromConfig( SearchProfileService::COMPLETION,
-			self::CIRRUS_CONFIG, 'CirrusSearchCompletionProfiles', $config ) );
+			self::CIRRUS_CONFIG, CirrusConfigNames::CompletionProfiles, $config ) );
 		$service->registerRepository( CompletionSearchProfileRepository::fromRepo(
 			new ExtensionRegistryProfileRepository( SearchProfileService::COMPLETION,
-			self::EXTENSION_REGISTRY, 'CirrusSearchCompletionProfiles', $this->extensionRegistry ), $config ) );
+			self::EXTENSION_REGISTRY, CirrusConfigNames::CompletionProfiles, $this->extensionRegistry ), $config ) );
 		$service->registerDefaultProfile( SearchProfileService::COMPLETION,
 			SearchProfileService::CONTEXT_COMPLETION, 'fuzzy' );
 		// XXX: We don't really override the default here
@@ -288,7 +289,7 @@ class SearchProfileServiceFactory {
 		// the user pref overrides because we initialize default user pref
 		// in Hooks::onUserGetDefaultOptions
 		$service->registerConfigOverride( SearchProfileService::COMPLETION,
-			SearchProfileService::CONTEXT_COMPLETION, $config, 'CirrusSearchCompletionSettings' );
+			SearchProfileService::CONTEXT_COMPLETION, $config, CirrusConfigNames::CompletionSettings );
 		$service->registerUserPrefOverride( SearchProfileService::COMPLETION,
 			SearchProfileService::CONTEXT_COMPLETION, 'cirrussearch-pref-completion-profile' );
 	}
@@ -298,11 +299,11 @@ class SearchProfileServiceFactory {
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/PhraseSuggesterProfiles.config.php', $this->localServerCache ) );
 
 		$service->registerRepository( PhraseSuggesterProfileRepoWrapper::fromConfig( SearchProfileService::PHRASE_SUGGESTER,
-			self::CIRRUS_CONFIG, 'CirrusSearchPhraseSuggestProfiles', $config, $this->localServerCache ) );
+			self::CIRRUS_CONFIG, CirrusConfigNames::PhraseSuggestProfiles, $config, $this->localServerCache ) );
 
 		$service->registerRepository( new PhraseSuggesterProfileRepoWrapper(
 			new ExtensionRegistryProfileRepository( SearchProfileService::PHRASE_SUGGESTER, self::EXTENSION_REGISTRY,
-				'CirrusSearchPhraseSuggestProfiles', $this->extensionRegistry ), $this->localServerCache ) );
+				CirrusConfigNames::PhraseSuggestProfiles, $this->extensionRegistry ), $this->localServerCache ) );
 	}
 
 	private function loadIndexLookupFallbackProfiles( SearchProfileService $service, SearchConfig $config ) {
@@ -310,10 +311,10 @@ class SearchProfileServiceFactory {
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/IndexLookupFallbackProfiles.config.php' );
 
 		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::INDEX_LOOKUP_FALLBACK,
-			self::CIRRUS_CONFIG, 'CirrusSearchIndexLookupFallbackProfiles', $config ) );
+			self::CIRRUS_CONFIG, CirrusConfigNames::IndexLookupFallbackProfiles, $config ) );
 
 		$service->registerRepository( new ExtensionRegistryProfileRepository( SearchProfileService::INDEX_LOOKUP_FALLBACK,
-			self::EXTENSION_REGISTRY, 'CirrusSearchIndexLookupFallbackProfiles', $this->extensionRegistry ) );
+			self::EXTENSION_REGISTRY, CirrusConfigNames::IndexLookupFallbackProfiles, $this->extensionRegistry ) );
 	}
 
 	private function loadSaneitizerProfiles( SearchProfileService $service ) {
@@ -326,13 +327,13 @@ class SearchProfileServiceFactory {
 		$service->registerFileRepository( SearchProfileService::DOCUMENT_SIZE_LIMITER, self::CIRRUS_BASE,
 			__DIR__ . '/../../profiles/DocumentSizeLimiterProfiles.config.php' );
 		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::DOCUMENT_SIZE_LIMITER,
-			self::CIRRUS_CONFIG, 'CirrusSearchDocumentSizeLimiterProfiles', $config ) );
+			self::CIRRUS_CONFIG, CirrusConfigNames::DocumentSizeLimiterProfiles, $config ) );
 		$service->registerRepository( new ExtensionRegistryProfileRepository( SearchProfileService::DOCUMENT_SIZE_LIMITER,
-			self::EXTENSION_REGISTRY, 'CirrusSearchDocumentSizeLimiterProfiles', $this->extensionRegistry ) );
+			self::EXTENSION_REGISTRY, CirrusConfigNames::DocumentSizeLimiterProfiles, $this->extensionRegistry ) );
 		$service->registerDefaultProfile( SearchProfileService::DOCUMENT_SIZE_LIMITER,
 			SearchProfileService::CONTEXT_DEFAULT, "default" );
 		$service->registerConfigOverride( SearchProfileService::DOCUMENT_SIZE_LIMITER,
-			SearchProfileService::CONTEXT_DEFAULT, $config, "CirrusSearchDocumentSizeLimiterProfile" );
+			SearchProfileService::CONTEXT_DEFAULT, $config, CirrusConfigNames::DocumentSizeLimiterProfile );
 	}
 
 	private function loadFullTextQueryProfiles( SearchProfileService $service, SearchConfig $config ) {
@@ -340,14 +341,14 @@ class SearchProfileServiceFactory {
 			__DIR__ . '/../../profiles/FullTextQueryBuilderProfiles.config.php' );
 
 		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::FT_QUERY_BUILDER, self::CIRRUS_CONFIG,
-			'CirrusSearchFullTextQueryBuilderProfiles', $config ) );
+			CirrusConfigNames::FullTextQueryBuilderProfiles, $config ) );
 		$service->registerRepository( new ExtensionRegistryProfileRepository( SearchProfileService::FT_QUERY_BUILDER,
-			self::EXTENSION_REGISTRY, 'CirrusSearchFullTextQueryBuilderProfiles', $this->extensionRegistry ) );
+			self::EXTENSION_REGISTRY, CirrusConfigNames::FullTextQueryBuilderProfiles, $this->extensionRegistry ) );
 
 		$service->registerDefaultProfile( SearchProfileService::FT_QUERY_BUILDER,
 			SearchProfileService::CONTEXT_DEFAULT, 'default' );
 		$service->registerConfigOverride( SearchProfileService::FT_QUERY_BUILDER,
-			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchFullTextQueryBuilderProfile' );
+			SearchProfileService::CONTEXT_DEFAULT, $config, CirrusConfigNames::FullTextQueryBuilderProfile );
 		$service->registerUriParamOverride( SearchProfileService::FT_QUERY_BUILDER,
 			SearchProfileService::CONTEXT_DEFAULT, 'cirrusFTQBProfile' );
 	}
@@ -370,7 +371,7 @@ class SearchProfileServiceFactory {
 		if ( $iwPrefix === null ) {
 			return;
 		}
-		$profiles = $this->hostWikiConfig->getElement( 'CirrusSearchCrossProjectProfiles', $iwPrefix );
+		$profiles = $this->hostWikiConfig->getElement( CirrusConfigNames::CrossProjectProfiles, $iwPrefix );
 		if ( $profiles === null || !is_array( $profiles ) || $profiles === [] ) {
 			return;
 		}
@@ -391,14 +392,14 @@ class SearchProfileServiceFactory {
 		$service->registerFileRepository( SearchProfileService::FALLBACKS, self::CIRRUS_BASE,
 			__DIR__ . '/../../profiles/FallbackProfiles.config.php' );
 		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::FALLBACKS, self::CIRRUS_CONFIG,
-			'CirrusSearchFallbackProfiles', $config ) );
+			CirrusConfigNames::FallbackProfiles, $config ) );
 		$service->registerRepository( new ExtensionRegistryProfileRepository( SearchProfileService::FALLBACKS, self::EXTENSION_REGISTRY,
-			'CirrusSearchFallbackProfiles', $this->extensionRegistry ) );
+			CirrusConfigNames::FallbackProfiles, $this->extensionRegistry ) );
 
 		$service->registerDefaultProfile( SearchProfileService::FALLBACKS,
 			SearchProfileService::CONTEXT_DEFAULT, 'none' );
 		$service->registerConfigOverride( SearchProfileService::FALLBACKS,
-			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchFallbackProfile' );
+			SearchProfileService::CONTEXT_DEFAULT, $config, CirrusConfigNames::FallbackProfile );
 		$service->registerUriParamOverride( SearchProfileService::FALLBACKS,
 			SearchProfileService::CONTEXT_DEFAULT, 'cirrusFallbackProfile' );
 	}

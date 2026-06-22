@@ -157,7 +157,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );
 		}
-		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ) );
+		parent::__construct( $conn, $user, $config->get( CirrusConfigNames::SlowSearch ) );
 		if ( $secondTryRunnerFactory === null ) {
 			$secondTryRunnerFactory = new SecondTryRunnerFactory(
 				new SecondTrySearchFactory(
@@ -172,7 +172,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$this->limit = $limit;
 		$this->offset = $offset;
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
-		$altIndexId = $config->get( 'CirrusSearchCompletionSuggesterUseAltIndexId' );
+		$altIndexId = $config->get( CirrusConfigNames::CompletionSuggesterUseAltIndexId );
 		// Check if the alternate index id is actually setup
 		$altIndex = null;
 		if ( $altIndexId !== null && AlternativeIndices::isValidAltIndexId( $altIndexId ) ) {
@@ -270,7 +270,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 */
 	private function processMSearchResponse( array $results, CompletionRequestLog $log ) {
 		$collector = new CompletionResultsCollector(
-			$this->limit, $this->offset, $this->config->get( 'CirrusSearchCompletionBannedPageIds' ) );
+			$this->limit, $this->offset, $this->config->get( CirrusConfigNames::CompletionBannedPageIds ) );
 		$totalHits = $this->collectCompSuggestResults( $collector, $results, $log );
 		$totalHits += $this->collectPrefixSearchResults( $collector, $results, $log );
 		$log->setTotalHits( $totalHits );

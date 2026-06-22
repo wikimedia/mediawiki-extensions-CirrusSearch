@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
@@ -97,8 +98,8 @@ class SearchQueryTest extends CirrusTestCase {
 			'simple' => [
 				'test',
 				[
-					'CirrusSearchEnableCrossProjectSearch' => true,
-					'CirrusSearchEnableAltLanguage' => true,
+					CirrusConfigNames::EnableCrossProjectSearch => true,
+					CirrusConfigNames::EnableAltLanguage => true,
 				],
 				CrossSearchStrategy::allWikisStrategy(),
 				CrossSearchStrategy::allWikisStrategy(),
@@ -107,8 +108,8 @@ class SearchQueryTest extends CirrusTestCase {
 			'simple but crossproject disabled by config' => [
 				'test',
 				[
-					'CirrusSearchEnableCrossProjectSearch' => false,
-					'CirrusSearchEnableAltLanguage' => true,
+					CirrusConfigNames::EnableCrossProjectSearch => false,
+					CirrusConfigNames::EnableAltLanguage => true,
 				],
 				CrossSearchStrategy::allWikisStrategy(),
 				new CrossSearchStrategy( false, true, true ),
@@ -117,8 +118,8 @@ class SearchQueryTest extends CirrusTestCase {
 			'simple but crosslanguage disabled by config' => [
 				'test',
 				[
-					'CirrusSearchEnableCrossProjectSearch' => true,
-					'CirrusSearchEnableAltLanguage' => false,
+					CirrusConfigNames::EnableCrossProjectSearch => true,
+					CirrusConfigNames::EnableAltLanguage => false,
 				],
 				CrossSearchStrategy::allWikisStrategy(),
 				new CrossSearchStrategy( true, false, true ),
@@ -127,8 +128,8 @@ class SearchQueryTest extends CirrusTestCase {
 			'simple but crossproject & crosslanguage disabled by config' => [
 				'test',
 				[
-					'CirrusSearchEnableAltLanguage' => false,
-					'CirrusSearchEnableCrossProjectSearch' => false,
+					CirrusConfigNames::EnableAltLanguage => false,
+					CirrusConfigNames::EnableCrossProjectSearch => false,
 				],
 				CrossSearchStrategy::allWikisStrategy(),
 				new CrossSearchStrategy( false, false, true ),
@@ -137,8 +138,8 @@ class SearchQueryTest extends CirrusTestCase {
 			'reduce to hostwiki' => [
 				'test',
 				[
-					'CirrusSearchEnableCrossProjectSearch' => true,
-					'CirrusSearchEnableAltLanguage' => true,
+					CirrusConfigNames::EnableCrossProjectSearch => true,
+					CirrusConfigNames::EnableAltLanguage => true,
 				],
 				CrossSearchStrategy::hostWikiOnlyStrategy(),
 				CrossSearchStrategy::hostWikiOnlyStrategy(),
@@ -147,8 +148,8 @@ class SearchQueryTest extends CirrusTestCase {
 			'reduced by query' => [
 				'local:test',
 				[
-					'CirrusSearchEnableCrossProjectSearch' => true,
-					'CirrusSearchEnableAltLanguage' => true,
+					CirrusConfigNames::EnableCrossProjectSearch => true,
+					CirrusConfigNames::EnableAltLanguage => true,
 				],
 				CrossSearchStrategy::allWikisStrategy(),
 				CrossSearchStrategy::allWikisStrategy(),
@@ -157,8 +158,8 @@ class SearchQueryTest extends CirrusTestCase {
 			'fine tuned' => [
 				'test',
 				[
-					'CirrusSearchEnableCrossProjectSearch' => true,
-					'CirrusSearchEnableAltLanguage' => true,
+					CirrusConfigNames::EnableCrossProjectSearch => true,
+					CirrusConfigNames::EnableAltLanguage => true,
 				],
 				new CrossSearchStrategy( false, true, true ),
 				new CrossSearchStrategy( false, true, true ),
@@ -219,8 +220,8 @@ class SearchQueryTest extends CirrusTestCase {
 
 	public function testBuilderWithDefaults() {
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchEnableCrossProjectSearch' => true,
-			'CirrusSearchEnableAltLanguage' => true,
+			CirrusConfigNames::EnableCrossProjectSearch => true,
+			CirrusConfigNames::EnableAltLanguage => true,
 		] );
 		$defaults = $this->getNewFTSearchQueryBuilder( $config, 'test' )->build();
 		$expectedParsedQuery = $this->createNewFullTextQueryParser( $config )->parse( 'test' );
@@ -246,8 +247,8 @@ class SearchQueryTest extends CirrusTestCase {
 
 	public function testBuilder() {
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchEnableCrossProjectSearch' => true,
-			'CirrusSearchEnableAltLanguage' => true,
+			CirrusConfigNames::EnableCrossProjectSearch => true,
+			CirrusConfigNames::EnableAltLanguage => true,
 		] );
 		$builder = $this->getNewFTSearchQueryBuilder( $config, 'test' )
 			->setExtraIndicesSearch( false )
@@ -300,8 +301,8 @@ class SearchQueryTest extends CirrusTestCase {
 
 	public function testSearchContextFromDefaults() {
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchEnableCrossProjectSearch' => true,
-			'CirrusSearchEnableAltLanguage' => true,
+			CirrusConfigNames::EnableCrossProjectSearch => true,
+			CirrusConfigNames::EnableAltLanguage => true,
 		] );
 		$context = SearchContext::fromSearchQuery(
 			$this->getNewFTSearchQueryBuilder( $config, 'test' )->build(),
@@ -325,8 +326,8 @@ class SearchQueryTest extends CirrusTestCase {
 
 	public function testSearchContextFromBuilder() {
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchEnableCrossProjectSearch' => true,
-			'CirrusSearchEnableAltLanguage' => true,
+			CirrusConfigNames::EnableCrossProjectSearch => true,
+			CirrusConfigNames::EnableAltLanguage => true,
 		] );
 		$query = $this->getNewFTSearchQueryBuilder( $config, '~help:test prefix:help_talk:test' )
 			->setInitialNamespaces( [ NS_MAIN ] )
@@ -364,16 +365,16 @@ class SearchQueryTest extends CirrusTestCase {
 	public function testForCrossProjectSearch() {
 		$nbRes = rand( 1, 10 );
 		$hostWikiConfig = $this->newHashSearchConfig( [
-			'CirrusSearchNumCrossProjectSearchResults' => $nbRes,
-			'CirrusSearchEnableCrossProjectSearch' => true,
-			'CirrusSearchRescoreProfiles' => [
+			CirrusConfigNames::NumCrossProjectSearchResults => $nbRes,
+			CirrusConfigNames::EnableCrossProjectSearch => true,
+			CirrusConfigNames::RescoreProfiles => [
 				'foo' => [],
 				'common' => []
 			]
 		] );
 		$targetWikiConfig = $this->newHashSearchConfig( [
 			'_wikiID' => 'target',
-			'CirrusSearchRescoreProfiles' => [
+			CirrusConfigNames::RescoreProfiles => [
 				'common' => []
 			]
 		] );
@@ -416,10 +417,10 @@ class SearchQueryTest extends CirrusTestCase {
 
 	public function testForCrossProjectSearchWithDefaultNsToBeSearched() {
 		$hostWikiConfig = $this->newHashSearchConfig( [
-			'CirrusSearchNumCrossProjectSearchResults' => 1,
-			'CirrusSearchEnableCrossProjectSearch' => true,
+			CirrusConfigNames::NumCrossProjectSearchResults => 1,
+			CirrusConfigNames::EnableCrossProjectSearch => true,
 			'NamespacesToBeSearchedDefault' => [ NS_MAIN => 1, "1" /* NS_TALK */ => 0, "14" /* NS_CATEGORY */ => 1 ],
-			'CirrusSearchRescoreProfiles' => [
+			CirrusConfigNames::RescoreProfiles => [
 				'foo' => [],
 				'common' => []
 			]
@@ -427,7 +428,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$targetWikiConfig = $this->newHashSearchConfig( [
 			'_wikiID' => 'target',
 			'NamespacesToBeSearchedDefault' => [ "12" /* NS_HELP */ => 1, NS_MAIN => 1, NS_FILE_TALK => 0 ],
-			'CirrusSearchRescoreProfiles' => [
+			CirrusConfigNames::RescoreProfiles => [
 				'common' => []
 			]
 		] );
@@ -450,7 +451,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$targetWikiConfig = $this->newHashSearchConfig( [
 			'_wikiID' => 'target',
 			'NamespacesToBeSearchedDefault' => [ 1 ], // cryptic version of NS_MAIN => 1 as returned by the cirrus config dump API
-			'CirrusSearchRescoreProfiles' => [
+			CirrusConfigNames::RescoreProfiles => [
 				'common' => []
 			]
 		] );
@@ -465,15 +466,15 @@ class SearchQueryTest extends CirrusTestCase {
 
 	public function testForCrossLanguageSearch() {
 		$hostWikiConfig = $this->newHashSearchConfig( [
-			'CirrusSearchEnableAltLanguage' => true,
-			'CirrusSearchRescoreProfiles' => [
+			CirrusConfigNames::EnableAltLanguage => true,
+			CirrusConfigNames::RescoreProfiles => [
 				'foo' => [],
 				'common' => []
 			]
 		] );
 		$targetWikiConfig = $this->newHashSearchConfig( [
 			'_wikiID' => 'target',
-			'CirrusSearchRescoreProfiles' => [
+			CirrusConfigNames::RescoreProfiles => [
 				'common' => []
 			]
 		] );
@@ -549,8 +550,8 @@ class SearchQueryTest extends CirrusTestCase {
 
 	public function testforRewrittenQuery() {
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchEnableAltLanguage' => true,
-			'CirrusSearchEnableCrossProjectSearch' => true,
+			CirrusConfigNames::EnableAltLanguage => true,
+			CirrusConfigNames::EnableCrossProjectSearch => true,
 		] );
 		$builder = $this->getNewFTSearchQueryBuilder( $config, 'fooba\\?' )
 			->addForcedProfile( SearchProfileService::RESCORE, 'foobar' )
@@ -601,16 +602,16 @@ class SearchQueryTest extends CirrusTestCase {
 	}
 
 	public static function provideMustTrackTotalHits(): Generator {
-		yield 'always true' => [ 'foo', [ 'CirrusSearchMustTrackTotalHits' => [ 'default' => true ] ], true ];
-		yield 'always false' => [ 'foo', [ 'CirrusSearchMustTrackTotalHits' => [ 'default' => false ] ], false ];
+		yield 'always true' => [ 'foo', [ CirrusConfigNames::MustTrackTotalHits => [ 'default' => true ] ], true ];
+		yield 'always false' => [ 'foo', [ CirrusConfigNames::MustTrackTotalHits => [ 'default' => false ] ], false ];
 		yield 'true on simple bag of words with a bag of words' => [
 			'foo',
-			[ 'CirrusSearchMustTrackTotalHits' => [ 'default' => false, 'simple_bag_of_words' => true ] ],
+			[ CirrusConfigNames::MustTrackTotalHits => [ 'default' => false, 'simple_bag_of_words' => true ] ],
 			true
 		];
 		yield 'true on simple bag of words without a bag of words' => [
 			'foo OR bar',
-			[ 'CirrusSearchMustTrackTotalHits' => [ 'default' => false, 'simple_bag_of_words' => true ] ],
+			[ CirrusConfigNames::MustTrackTotalHits => [ 'default' => false, 'simple_bag_of_words' => true ] ],
 			false
 		];
 	}

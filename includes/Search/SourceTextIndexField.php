@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Search\SearchEngine;
@@ -22,8 +23,8 @@ class SourceTextIndexField extends TextIndexField {
 	public function __construct( $name, $type, SearchConfig $config ) {
 		parent::__construct( $name, $type, $config );
 
-		if ( $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' ) &&
-			in_array( 'build', $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' ) )
+		if ( $config->getElement( CirrusConfigNames::WikimediaExtraPlugin, 'regex' ) &&
+			in_array( 'build', $config->getElement( CirrusConfigNames::WikimediaExtraPlugin, 'regex' ) )
 		) {
 			$this->withTrigrams = true;
 		}

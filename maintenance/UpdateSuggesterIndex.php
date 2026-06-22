@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\AlternativeIndices;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Connection;
 use CirrusSearch\Elastica\SearchAfter;
 use CirrusSearch\ElasticaErrorHandler;
@@ -139,7 +140,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->workAroundBrokenMessageCache();
 		$this->masterTimeout = $this->getOption( 'masterTimeout', $wgCirrusSearchMasterTimeout );
 
-		$useCompletion = $this->getSearchConfig()->get( 'CirrusSearchUseCompletionSuggester' );
+		$useCompletion = $this->getSearchConfig()->get( CirrusConfigNames::UseCompletionSuggester );
 
 		if ( $useCompletion !== 'build' && $useCompletion !== 'yes' && $useCompletion !== true ) {
 			$this->fatalError( "Completion suggester disabled, quitting..." );
@@ -259,7 +260,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->unwrap( $this->utils->checkElasticsearchVersion() );
 
 		$indexAliasName = $connection->getIndexName( $indexBaseName, self::SUFFIX, false, $altIndex, $altIndexId );
-		$bannedPlugins = $config->get( 'CirrusSearchBannedPlugins' );
+		$bannedPlugins = $config->get( CirrusConfigNames::BannedPlugins );
 
 		$availablePlugins = $this->unwrap( $utils->scanAvailablePlugins( $bannedPlugins ) );
 		$analysisConfigBuilder = new SuggesterAnalysisConfigBuilder( $connection->getConfig()->get( 'LanguageCode' ),

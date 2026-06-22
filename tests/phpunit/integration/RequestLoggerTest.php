@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Test;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\CompletionSuggester;
@@ -103,7 +104,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			// Default config of SiteMatrix in vagrant is broken
 			'SiteMatrixSites' => [],
 			// Make sure OtherIndex is configured for use as well
-			'CirrusSearchExtraIndexes' => [ NS_FILE => [ 'commonswiki_file' ] ],
+			CirrusConfigNames::ExtraIndexes => [ NS_FILE => [ 'commonswiki_file' ] ],
 		] );
 
 		// Disable opportunistic execution of deferred updates
@@ -138,12 +139,12 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 	 */
 	public function testRequestLogging( array $query, $responses, $expectedLogs ) {
 		$configs = [
-			'CirrusSearchFullTextQueryBuilderProfile' => 'default',
-			'CirrusSearchInterwikiSources' => [],
+			CirrusConfigNames::FullTextQueryBuilderProfile => 'default',
+			CirrusConfigNames::InterwikiSources => [],
 		];
 		if ( isset( $query['interwiki'] ) ) {
-			$configs['CirrusSearchInterwikiSources'] = $query['interwiki'];
-			$configs['CirrusSearchEnableCrossProjectSearch'] = true;
+			$configs[CirrusConfigNames::InterwikiSources] = $query['interwiki'];
+			$configs[CirrusConfigNames::EnableCrossProjectSearch] = true;
 		}
 		$this->overrideConfigValues( $configs );
 		$this->setService( 'LinkBatchFactory', $this->createMock( LinkBatchFactory::class ) );
@@ -261,7 +262,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		}
 
 		$this->overrideConfigValues( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'default' => [
 					[ 'transport' => $transport ],
 				]

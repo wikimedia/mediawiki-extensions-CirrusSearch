@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\CachedSparqlClient;
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use MediaWiki\Config\HashConfig;
@@ -120,9 +121,9 @@ class DeepcatFeatureTest extends CirrusIntegrationTestCase {
 	public function testFilter( $term, $result, $filters ) {
 		$maxRes = 3;
 		$config = new HashConfig( [
-			'CirrusSearchCategoryDepth' => '3',
-			'CirrusSearchCategoryMax' => $maxRes,
-			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'
+			CirrusConfigNames::CategoryDepth => '3',
+			CirrusConfigNames::CategoryMax => $maxRes,
+			CirrusConfigNames::CategoryEndpoint => 'http://acme.test/sparql'
 		] );
 		$category = $this->categoryToUrl( trim( $term, '"' ) );
 		$expectedSparqlQuery = <<<SPARQL
@@ -161,9 +162,9 @@ SPARQL;
 	 */
 	public function testFilterNoEndpoint( $term, $result, $filters ) {
 		$config = new HashConfig( [
-			'CirrusSearchCategoryDepth' => '3',
-			'CirrusSearchCategoryMax' => 100,
-			'CirrusSearchCategoryEndpoint' => null
+			CirrusConfigNames::CategoryDepth => '3',
+			CirrusConfigNames::CategoryMax => 100,
+			CirrusConfigNames::CategoryEndpoint => null
 		] );
 
 		$client = $this->getSparqlClient( null, $result );
@@ -177,9 +178,9 @@ SPARQL;
 
 	public function testSparqlError() {
 		$config = new HashConfig( [
-			'CirrusSearchCategoryDepth' => '3',
-			'CirrusSearchCategoryMax' => 100,
-			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'
+			CirrusConfigNames::CategoryDepth => '3',
+			CirrusConfigNames::CategoryMax => 100,
+			CirrusConfigNames::CategoryEndpoint => 'http://acme.test/sparql'
 		] );
 		$client = $this->createMock( CachedSparqlClient::class );
 		// 3 runs:

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Search\Fetch\HighlightedField;
@@ -39,11 +40,11 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchWikiToNameMap' => [
+			CirrusConfigNames::WikiToNameMap => [
 				'cs' => 'cswiki',
 			],
 			// We test regex behavior
-			'CirrusSearchUseExperimentalHighlighter' => true,
+			CirrusConfigNames::UseExperimentalHighlighter => true,
 			'_wikiID' => 'mywiki'
 		] );
 		$resolver = $this->newManualInterwikiResolver( $config );

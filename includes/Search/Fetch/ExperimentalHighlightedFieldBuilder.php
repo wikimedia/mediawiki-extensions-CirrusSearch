@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search\Fetch;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\SearchConfig;
 use MediaWiki\MainConfigNames;
@@ -47,7 +48,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 			$self->addOption( 'skip_if_last_matched', true );
 			$self->setFragmenter( 'scan' );
 			$self->setNumberOfFragments( 1 );
-			$self->setFragmentSize( $config->get( 'CirrusSearchFragmentSize' ) );
+			$self->setFragmentSize( $config->get( CirrusConfigNames::FragmentSize ) );
 			$self->setOptions( [
 				'top_scoring' => true,
 				'boost_before' => [
@@ -72,7 +73,7 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 		return function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = ( self::text() )( $config, $fieldName, $target, $priority );
 			/** @var BaseHighlightedField $self */
-			$self->setNoMatchSize( $config->get( 'CirrusSearchFragmentSize' ) );
+			$self->setNoMatchSize( $config->get( CirrusConfigNames::FragmentSize ) );
 			return $self;
 		};
 	}
@@ -104,10 +105,10 @@ class ExperimentalHighlightedFieldBuilder extends BaseHighlightedField {
 		$self->addOption( 'regex_flavor', $regexFlavor );
 		$self->addOption( 'skip_query', true );
 		$self->addOption( 'regex_case_insensitive', $caseInsensitive );
-		$self->addOption( 'max_determinized_states', $config->get( 'CirrusSearchRegexMaxDeterminizedStates' ) );
+		$self->addOption( 'max_determinized_states', $config->get( CirrusConfigNames::RegexMaxDeterminizedStates ) );
 
 		if ( $name == 'source_text.plain' ) {
-			$self->setNoMatchSize( $config->get( 'CirrusSearchFragmentSize' ) );
+			$self->setNoMatchSize( $config->get( CirrusConfigNames::FragmentSize ) );
 		}
 		return $self;
 	}

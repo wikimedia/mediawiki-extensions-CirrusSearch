@@ -21,9 +21,9 @@ use Wikimedia\Assert\Assert;
  */
 class SearchConfig implements Config {
 	// Constants for referring to various config values. Helps prevent fat-fingers
-	public const INDEX_BASE_NAME = 'CirrusSearchIndexBaseName';
-	private const PREFIX_IDS = 'CirrusSearchPrefixIds';
-	private const REDIRECT_DOCUMENTS = 'CirrusSearchRedirectDocuments';
+	public const INDEX_BASE_NAME = CirrusConfigNames::IndexBaseName;
+	private const PREFIX_IDS = CirrusConfigNames::PrefixIds;
+	private const REDIRECT_DOCUMENTS = CirrusConfigNames::RedirectDocuments;
 	private const CIRRUS_VAR_PREFIX = 'wgCirrus';
 
 	// Magic word to tell the SearchConfig to translate INDEX_BASE_NAME into WikiMap::getCurrentWikiId()
@@ -88,9 +88,9 @@ class SearchConfig implements Config {
 	private function createClusterAssignment(): Assignment\ClusterAssignment {
 		// Configuring CirrusSearchServers enables "easy mode" which assumes
 		// everything happens inside a single elasticsearch cluster.
-		if ( $this->has( 'CirrusSearchServers' ) ) {
+		if ( $this->has( CirrusConfigNames::Servers ) ) {
 			return new Assignment\ConstantAssignment(
-				$this->get( 'CirrusSearchServers' ) );
+				$this->get( CirrusConfigNames::Servers ) );
 		} else {
 			return new Assignment\MultiClusterAssignment( $this );
 		}
@@ -284,7 +284,7 @@ class SearchConfig implements Config {
 	 * @return bool if cross project (same language) is enabled
 	 */
 	public function isCrossProjectSearchEnabled() {
-		if ( $this->get( 'CirrusSearchEnableCrossProjectSearch' ) ) {
+		if ( $this->get( CirrusConfigNames::EnableCrossProjectSearch ) ) {
 			return true;
 		}
 		return false;
@@ -294,7 +294,7 @@ class SearchConfig implements Config {
 	 * @return bool if cross language (same project) is enabled
 	 */
 	public function isCrossLanguageSearchEnabled() {
-		if ( $this->get( 'CirrusSearchEnableAltLanguage' ) ) {
+		if ( $this->get( CirrusConfigNames::EnableAltLanguage ) ) {
 			return true;
 		}
 		return false;
@@ -331,7 +331,7 @@ class SearchConfig implements Config {
 	 * @return bool true if the completion suggester is enabled
 	 */
 	public function isCompletionSuggesterEnabled() {
-		$useCompletion = $this->getElement( 'CirrusSearchUseCompletionSuggester' );
+		$useCompletion = $this->getElement( CirrusConfigNames::UseCompletionSuggester );
 		if ( is_string( $useCompletion ) ) {
 			return wfStringToBool( $useCompletion );
 		}

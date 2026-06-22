@@ -47,7 +47,7 @@ class InterwikiSearcher extends Searcher {
 		?TitleHelper $titleHelper = null,
 		?CirrusSearchHookRunner $cirrusSearchHookRunner = null
 	) {
-		$maxResults = $config->get( 'CirrusSearchNumCrossProjectSearchResults' );
+		$maxResults = $config->get( CirrusConfigNames::NumCrossProjectSearchResults );
 		parent::__construct( $connection, 0, $maxResults, $config, $namespaces, $user, false,
 			$debugOptions, $namespacePrefixParser, $interwikiResolver, $titleHelper, $cirrusSearchHookRunner );
 	}
@@ -85,12 +85,13 @@ class InterwikiSearcher extends Searcher {
 			$this->setResultsType( new FullTextResultsType(
 				$this->searchContext->getFetchPhaseBuilder(),
 				$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ),
-				$this->titleHelper, [], $this->searchContext->getConfig()->getElement( 'CirrusSearchDeduplicateInMemory' ) === true ) );
+				$this->titleHelper, [],
+					$this->searchContext->getConfig()->getElement( CirrusConfigNames::DeduplicateInMemory ) === true ) );
 			$this->config = $context->getConfig();
 			$this->limit = $iwQuery->getLimit();
 			$this->offset = $iwQuery->getOffset();
 			$this->buildFullTextSearch( $query->getParsedQuery()->getQueryWithoutNsHeader() );
-			$this->indexBaseName = $context->getConfig()->get( 'CirrusSearchIndexBaseName' );
+			$this->indexBaseName = $context->getConfig()->get( CirrusConfigNames::IndexBaseName );
 			$search = $this->buildSearch();
 			if ( $this->searchContext->areResultsPossible() ) {
 				$msearches->addRequest( $interwiki, $search );

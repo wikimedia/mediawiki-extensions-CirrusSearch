@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Connection;
 use CirrusSearch\Hooks;
 use CirrusSearch\SearchConfig;
@@ -22,7 +23,7 @@ trait MoreLikeTrait {
 		// the user override this setting with field names that are not allowed
 		// in $this->getConfig()->get( 'CirrusSearchMoreLikeThisAllowedFields' )
 		// (see Hooks.php)
-		if ( !$this->getConfig()->get( 'CirrusSearchMoreLikeThisFields' ) ) {
+		if ( !$this->getConfig()->get( CirrusConfigNames::MoreLikeThisFields ) ) {
 			$warningCollector->addWarning( "cirrussearch-mlt-not-configured", $key );
 			return [];
 		}
@@ -38,7 +39,7 @@ trait MoreLikeTrait {
 	 * @return PageIdentity[]
 	 */
 	private function collectTitles( $term ) {
-		if ( $this->getConfig()->getElement( 'CirrusSearchDevelOptions',
+		if ( $this->getConfig()->getElement( CirrusConfigNames::DevelOptions,
 			'morelike_collect_titles_from_elastic' )
 		) {
 			return $this->collectTitlesFromElastic( $term );
@@ -120,7 +121,7 @@ trait MoreLikeTrait {
 		// since we actually don't make any connection but these methods have been available there
 		// for historical reasons.
 		$connection = new Connection( $this->getConfig() );
-		$indexBaseName = $this->getConfig()->get( 'CirrusSearchIndexBaseName' );
+		$indexBaseName = $this->getConfig()->get( CirrusConfigNames::IndexBaseName );
 		foreach ( $titles as $title ) {
 			$docId = $this->getConfig()->makeId( $title->getId() );
 
@@ -130,10 +131,10 @@ trait MoreLikeTrait {
 			];
 		}
 
-		$moreLikeThisFields = $this->getConfig()->get( 'CirrusSearchMoreLikeThisFields' );
+		$moreLikeThisFields = $this->getConfig()->get( CirrusConfigNames::MoreLikeThisFields );
 		sort( $moreLikeThisFields );
 		$query = new MoreLikeThis();
-		$query->setParams( $this->getConfig()->get( 'CirrusSearchMoreLikeThisConfig' ) );
+		$query->setParams( $this->getConfig()->get( CirrusConfigNames::MoreLikeThisConfig ) );
 		$query->setFields( $moreLikeThisFields );
 
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal library is mis-annotated */

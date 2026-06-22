@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CrossSearchStrategy;
@@ -174,7 +175,7 @@ final class SearchQueryBuilder {
 
 		$builder = self::copyQueryForCrossSearch( $config, $query );
 		$builder->offset = 0;
-		$builder->limit = $query->getSearchConfig()->get( 'CirrusSearchNumCrossProjectSearchResults' );
+		$builder->limit = $query->getSearchConfig()->get( CirrusConfigNames::NumCrossProjectSearchResults );
 		return $builder;
 	}
 
@@ -267,7 +268,7 @@ final class SearchQueryBuilder {
 	): SearchQueryBuilder {
 		Assert::precondition( $original->isAllowRewrite(), 'The original query must allow rewrites' );
 		// Hack to prevent a second pass on this cleaning algo because its destructive
-		$config = new HashSearchConfig( [ 'CirrusSearchStripQuestionMarks' => 'no' ],
+		$config = new HashSearchConfig( [ CirrusConfigNames::StripQuestionMarks => 'no' ],
 			[ HashSearchConfig::FLAG_INHERIT ], $original->getSearchConfig() );
 
 		$builder = self::newFTSearchQueryBuilder( $config, $term, $namespacePrefixParser, $cirrusSearchHookRunner );

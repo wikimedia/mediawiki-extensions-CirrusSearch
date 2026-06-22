@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\BasicQueryClassifier;
@@ -74,7 +75,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 	public function testLangWeight() {
 		// Test that we generate 2 filters
 		$config = new HashSearchConfig( [
-			'CirrusSearchLanguageWeight' => [
+			CirrusConfigNames::LanguageWeight => [
 				'user' => 2,
 				'wiki' => 3,
 			],
@@ -89,7 +90,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 
 		// Set cont lang as en to we generate only 1 filter
 		$config = new HashSearchConfig( [
-			'CirrusSearchLanguageWeight' => [
+			CirrusConfigNames::LanguageWeight => [
 				'user' => 2,
 				'wiki' => 3,
 			],
@@ -105,7 +106,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 
 		// Test that we do not generate any filter is weight are not set.
 		$config = new HashSearchConfig( [
-			'CirrusSearchLanguageWeight' => [],
+			CirrusConfigNames::LanguageWeight => [],
 			'LanguageCode' => 'de'
 		] );
 		$builder = new LangWeightFunctionScoreBuilder( $config, 1, 'en' );
@@ -119,15 +120,15 @@ class RescoreBuilderTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Search\Rescore\BoostedQueriesFunction
 	 */
 	public function testBoostTemplates() {
-		$config = new HashSearchConfig( [ 'CirrusSearchIgnoreOnWikiBoostTemplates' => true ] );
+		$config = new HashSearchConfig( [ CirrusConfigNames::IgnoreOnWikiBoostTemplates => true ] );
 		$builder = new BoostTemplatesFunctionScoreBuilder( $config, [], false, true, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
 
 		$config = new HashSearchConfig( [
-			'CirrusSearchIgnoreOnWikiBoostTemplates' => true,
-			'CirrusSearchBoostTemplates' => [ 'test' => 3.2 ]
+			CirrusConfigNames::IgnoreOnWikiBoostTemplates => true,
+			CirrusConfigNames::BoostTemplates => [ 'test' => 3.2 ]
 		] );
 		$builder = new BoostTemplatesFunctionScoreBuilder( $config, [], false, true, 1 );
 		$builder->append( $fScore );
@@ -139,9 +140,9 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$this->assertTrue( $fScore->isEmptyFunction() );
 
 		$config = new HashSearchConfig( [
-			'CirrusSearchIgnoreOnWikiBoostTemplates' => true,
-			'CirrusSearchExtraIndexes' => [ NS_MAIN => [ 'extramain' ] ],
-			'CirrusSearchExtraIndexBoostTemplates' => [
+			CirrusConfigNames::IgnoreOnWikiBoostTemplates => true,
+			CirrusConfigNames::ExtraIndexes => [ NS_MAIN => [ 'extramain' ] ],
+			CirrusConfigNames::ExtraIndexBoostTemplates => [
 				'extramain' => [
 					'wiki' => 'phpunitwiki',
 					'boosts' => [ 'foo' => 0.44 ]
@@ -219,13 +220,13 @@ class RescoreBuilderTest extends CirrusTestCase {
 	 */
 	public function testNamespacesBoost() {
 		$settings = [
-			'CirrusSearchNamespaceWeights' => [
+			CirrusConfigNames::NamespaceWeights => [
 				NS_MAIN => 2.5,
 				NS_PROJECT => 1.3,
 				NS_HELP => 3,
 			],
-			'CirrusSearchDefaultNamespaceWeight' => 0.2,
-			'CirrusSearchTalkNamespaceWeight' => 0.25,
+			CirrusConfigNames::DefaultNamespaceWeight => 0.2,
+			CirrusConfigNames::TalkNamespaceWeight => 0.25,
 		];
 		$config = new HashSearchConfig( $settings );
 
@@ -259,7 +260,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 
 		// Test that 2 similar boosts are flattened into the same filter
 		$settings = [
-			'CirrusSearchNamespaceWeights' => [
+			CirrusConfigNames::NamespaceWeights => [
 				NS_MAIN => 2,
 				NS_PROJECT => 2,
 				NS_HELP => 3,
@@ -275,7 +276,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 
 		// Test that a weigth to 1 is ignored
 		$settings = [
-			'CirrusSearchNamespaceWeights' => [
+			CirrusConfigNames::NamespaceWeights => [
 				NS_MAIN => 2,
 				NS_PROJECT => 2,
 				NS_HELP => 1,
@@ -296,12 +297,13 @@ class RescoreBuilderTest extends CirrusTestCase {
 	 */
 	public function testFallbackProfile( $settings, $namespaces, $expectedFunctionCount ) {
 		$config = $this->newHashSearchConfig( $settings + [
-			'CirrusSearchIgnoreOnWikiBoostTemplates' => true,
-			'CirrusSearchBoostTemplates' => [ 'Good' => 1.3 ]
+			CirrusConfigNames::IgnoreOnWikiBoostTemplates => true,
+			CirrusConfigNames::BoostTemplates => [ 'Good' => 1.3 ]
 		] );
 
 		$context = new SearchContext( $config, $namespaces, null, null, null, $this->createCirrusSearchHookRunner() );
-		$builder = new RescoreBuilder( $context, $this->createCirrusSearchHookRunner(), $config->get( 'CirrusSearchRescoreProfile' ) );
+		$builder = new RescoreBuilder(
+			$context, $this->createCirrusSearchHookRunner(), $config->get( CirrusConfigNames::RescoreProfile ) );
 		$rescore = $builder->build();
 		$array = $rescore[0]['query']['rescore_query'];
 		$array = $array->toArray();
@@ -323,7 +325,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$profile = [
 			'ContentNamespaces' => [ 1, 2 ],
 			'NamespacesToBeSearchedDefault' => [ 1 => true ],
-			'CirrusSearchRescoreProfiles' => [
+			CirrusConfigNames::RescoreProfiles => [
 				'full' => [
 					'supported_namespaces' => [ 0, 1 ],
 					'fallback_profile' => 'default',
@@ -364,32 +366,32 @@ class RescoreBuilderTest extends CirrusTestCase {
 		];
 		return [
 			'No fallback' => [
-				$profile + [ 'CirrusSearchRescoreProfile' => 'full' ],
+				$profile + [ CirrusConfigNames::RescoreProfile => 'full' ],
 				[ 0 ],
 				2
 			],
 			'No fallback multi namespace' => [
-				$profile + [ 'CirrusSearchRescoreProfile' => 'full' ],
+				$profile + [ CirrusConfigNames::RescoreProfile => 'full' ],
 				[ 0, 1 ],
 				2
 			],
 			'No fallback content ns' => [
-				$profile + [ 'CirrusSearchRescoreProfile' => 'content' ],
+				$profile + [ CirrusConfigNames::RescoreProfile => 'content' ],
 				[ 1, 2 ],
 				2
 			],
 			'Fallback content ns' => [
-				$profile + [ 'CirrusSearchRescoreProfile' => 'content' ],
+				$profile + [ CirrusConfigNames::RescoreProfile => 'content' ],
 				[ 0, 2 ],
 				1
 			],
 			'Fallback with multiple namespace' => [
-				$profile + [ 'CirrusSearchRescoreProfile' => 'full' ],
+				$profile + [ CirrusConfigNames::RescoreProfile => 'full' ],
 				[ 0, 2 ],
 				1
 			],
 			'Fallback null ns' => [
-				$profile + [ 'CirrusSearchRescoreProfile' => 'full' ],
+				$profile + [ CirrusConfigNames::RescoreProfile => 'full' ],
 				null,
 				1
 			],
@@ -401,7 +403,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
 	public function testWindowSizeOverride( $settings, $expected ) {
-		$config = $this->newHashSearchConfig( $settings + [ 'CirrusSearchRescoreProfile' => 'default' ] );
+		$config = $this->newHashSearchConfig( $settings + [ CirrusConfigNames::RescoreProfile => 'default' ] );
 
 		$context = new SearchContext( $config, null, null, null, null, $this->createCirrusSearchHookRunner() );
 		$builder = new RescoreBuilder( $context, $this->createCirrusSearchHookRunner(), 'default' );
@@ -416,7 +418,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 		return [
 			'Overridden' => [
 				[
-					'CirrusSearchRescoreProfiles' => [
+					CirrusConfigNames::RescoreProfiles => [
 						'default' => [
 							'supported_namespaces' => 'all',
 							'rescore' => [
@@ -438,7 +440,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 			'Overridden with missing config' => [
 				[
-					'CirrusSearchRescoreProfiles' => [
+					CirrusConfigNames::RescoreProfiles => [
 						'default' => [
 							'supported_namespaces' => 'all',
 							'rescore' => [
@@ -459,7 +461,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 			'Not overridden' => [
 				[
-					'CirrusSearchRescoreProfiles' => [
+					CirrusConfigNames::RescoreProfiles => [
 						'default' => [
 							'supported_namespaces' => 'all',
 							'rescore' => [
@@ -557,7 +559,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
 	public function testBadRescoreProfile( $settings, $expectedException ) {
-		$config = $this->newHashSearchConfig( $settings + [ 'CirrusSearchRescoreProfile' => 'default' ] );
+		$config = $this->newHashSearchConfig( $settings + [ CirrusConfigNames::RescoreProfile => 'default' ] );
 
 		$context = new SearchContext( $config, null, null, null, null, $this->createCirrusSearchHookRunner() );
 		try {
@@ -573,7 +575,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 		return [
 			'Unsupported rescore query type' => [
 				[
-					'CirrusSearchRescoreProfiles' => [
+					CirrusConfigNames::RescoreProfiles => [
 						'default' => [
 							'supported_namespaces' => 'all',
 							'rescore' => [
@@ -589,7 +591,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 			"Invalid rescore profile: supported_namespaces should be 'all' or an array of namespaces" => [
 				[
-					'CirrusSearchRescoreProfiles' => [
+					CirrusConfigNames::RescoreProfiles => [
 						'default' => [
 							'supported_namespaces' => 1,
 						]
@@ -599,7 +601,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 			"Invalid rescore profile: fallback_profile is mandatory" => [
 				[
-					'CirrusSearchRescoreProfiles' => [
+					CirrusConfigNames::RescoreProfiles => [
 						'default' => [
 							'supported_namespaces' => [ 0 ],
 						]
@@ -609,7 +611,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 			"Unknown fallback profile" => [
 				[
-					'CirrusSearchRescoreProfiles' => [
+					CirrusConfigNames::RescoreProfiles => [
 						'default' => [
 							'supported_namespaces' => [ 0 ],
 							'fallback_profile' => 'missing',
@@ -620,7 +622,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 			"Fallback profile must support all namespaces" => [
 				[
-					'CirrusSearchRescoreProfiles' => [
+					CirrusConfigNames::RescoreProfiles => [
 						'default' => [
 							'supported_namespaces' => [ 0 ],
 							'fallback_profile' => 'fallback',
@@ -634,7 +636,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 			"Unknown rescore function chain" => [
 				[
-					'CirrusSearchRescoreProfiles' => [
+					CirrusConfigNames::RescoreProfiles => [
 						'default' => [
 							'supported_namespaces' => 'all',
 							'rescore' => [
@@ -654,7 +656,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 			"Invalid function chain (none defined)" => [
 				[
-					'CirrusSearchRescoreProfiles' => [
+					CirrusConfigNames::RescoreProfiles => [
 						'default' => [
 							'supported_namespaces' => 'all',
 							'rescore' => [
@@ -674,7 +676,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 			"Invalid function score type" => [
 				[
-					'CirrusSearchRescoreProfiles' => [
+					CirrusConfigNames::RescoreProfiles => [
 						'default' => [
 							'supported_namespaces' => 'all',
 							'rescore' => [
@@ -714,7 +716,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 					],
 				],
 			],
-			'CirrusSearchRescoreProfiles' => [
+			CirrusConfigNames::RescoreProfiles => [
 				'default' => [
 					'supported_namespaces' => 'all',
 					'rescore' => [
@@ -732,7 +734,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 		];
 
 		$config = $this->newHashSearchConfig( $settings + [
-			'CirrusSearchRescoreProfile' => 'default',
+			CirrusConfigNames::RescoreProfile => 'default',
 		] );
 
 		$context = new SearchContext( $config, [ NS_MAIN, NS_USER ], null, null, null, $this->createCirrusSearchHookRunner() );
@@ -750,14 +752,15 @@ class RescoreBuilderTest extends CirrusTestCase {
 	 */
 	public function testSyntaxBasedFallbackProfile( $settings, $query, $expectedFunctionCount ) {
 		$config = $this->newHashSearchConfig( $settings + [
-				'CirrusSearchIgnoreOnWikiBoostTemplates' => true,
-				'CirrusSearchBoostTemplates' => [ 'Good' => 1.3 ]
+				CirrusConfigNames::IgnoreOnWikiBoostTemplates => true,
+				CirrusConfigNames::BoostTemplates => [ 'Good' => 1.3 ]
 			] );
 
 		$searchQuery = SearchQueryBuilder::newFTSearchQueryBuilder( $config, $query,
 			$this->namespacePrefixParser(), $this->createCirrusSearchHookRunner() )->build();
 		$context = SearchContext::fromSearchQuery( $searchQuery, null, $this->createCirrusSearchHookRunner() );
-		$builder = new RescoreBuilder( $context, $this->createCirrusSearchHookRunner(), $config->get( 'CirrusSearchRescoreProfile' ) );
+		$builder = new RescoreBuilder(
+			$context, $this->createCirrusSearchHookRunner(), $config->get( CirrusConfigNames::RescoreProfile ) );
 		$rescore = $builder->build();
 		$array = $rescore[0]['query']['rescore_query'];
 		$array = $array->toArray();
@@ -779,8 +782,8 @@ class RescoreBuilderTest extends CirrusTestCase {
 
 		$buildConfig = static function ( array $supportedSyntax, array $unsupportedSyntax ) use ( $defaultChain, $fullChain ) {
 			return [
-				'CirrusSearchRescoreProfile' => 'full',
-				'CirrusSearchRescoreProfiles' => [
+				CirrusConfigNames::RescoreProfile => 'full',
+				CirrusConfigNames::RescoreProfiles => [
 					'full' => [
 						'supported_namespaces' => 'all',
 						'unsupported_syntax' => $unsupportedSyntax,

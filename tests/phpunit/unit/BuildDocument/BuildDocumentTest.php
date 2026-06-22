@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\BuildDocument;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCaseTrait;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
@@ -123,7 +124,7 @@ class BuildDocumentTest extends \MediaWikiUnitTestCase {
 		$page->method( 'isRedirect' )->willReturn( true );
 		$pages = [ $page ];
 
-		$config = $this->newHashSearchConfig( [ 'CirrusSearchRedirectDocuments' => [ 'build' => true ] ] );
+		$config = $this->newHashSearchConfig( [ CirrusConfigNames::RedirectDocuments => [ 'build' => true ] ] );
 		$builder = $this->mockBuilder( $title, $config );
 		$docs = $builder->initialize(
 			$pages, BuildDocument::INDEX_EVERYTHING

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Connection;
@@ -19,9 +20,9 @@ class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
 		$indexBaseName = 'trebuchet'
 	): SearchRequestBuilder {
 		$defaults = [
-			'CirrusSearchDefaultCluster' => 'dc1',
-			'CirrusSearchReplicaGroup' => 'a',
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::DefaultCluster => 'dc1',
+			CirrusConfigNames::ReplicaGroup => 'a',
+			CirrusConfigNames::Clusters => [
 				'a' => [ 'replica' => 'dc1', 'group' => 'a', '10.1.2.3:9200' ],
 				'b' => [ 'replica' => 'dc1', 'group' => 'b', '10.3.2.1:9201' ],
 			],
@@ -46,21 +47,21 @@ class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
 	public function testGetPageTypeWithCrossClusterSearch() {
 		// Disabled: no prefix
 		$builder = $this->searchRequestBuilder( [
-			'CirrusSearchCrossClusterSearch' => false,
+			CirrusConfigNames::CrossClusterSearch => false,
 		] );
 		$this->assertEquals( 'trebuchet', $builder->getIndex()->getName() );
 
 		// Cross cluster assigned to same replica group: no prefix
 		$builder = $this->searchRequestBuilder( [
-			'CirrusSearchCrossClusterSearch' => true,
+			CirrusConfigNames::CrossClusterSearch => true,
 		] );
 		$this->assertEquals( 'trebuchet', $builder->getIndex()->getName() );
 
 		// Cross cluster assigned to different replica group: apply prefix
 		$builder = $this->searchRequestBuilder( [
-			'CirrusSearchCrossClusterSearch' => true,
+			CirrusConfigNames::CrossClusterSearch => true,
 		], [
-			'CirrusSearchReplicaGroup' => 'b',
+			CirrusConfigNames::ReplicaGroup => 'b',
 		] );
 		$this->assertEquals( 'b:trebuchet', $builder->getIndex()->getName() );
 	}
@@ -99,9 +100,9 @@ class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
 		$expectedIndexName
 	) {
 		$builder = $this->searchRequestBuilder(
-			[ 'CirrusSearchCrossClusterSearch' => true ],
+			[ CirrusConfigNames::CrossClusterSearch => true ],
 			[
-				'CirrusSearchReplicaGroup' => $targetGroup,
+				CirrusConfigNames::ReplicaGroup => $targetGroup,
 				'CirrusSearchConcreteNamespaceMap' => $concreteNamespaceMap,
 			],
 			$searchNamespace,

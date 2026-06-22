@@ -4,6 +4,7 @@ namespace CirrusSearch\Api;
 
 use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\BuildDocument\DocumentSizeLimiter;
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusIndexField;
@@ -35,7 +36,7 @@ class QueryBuildDocument extends ApiQueryBase {
 			throw new \RuntimeException( 'Could not create cirrus engine' );
 		}
 
-		if ( $this->getUser()->getName() === $engine->getConfig()->get( "CirrusSearchStreamingUpdaterUsername" ) ) {
+		if ( $this->getUser()->getName() === $engine->getConfig()->get( CirrusConfigNames::StreamingUpdaterUsername ) ) {
 			// Bypass poolcounter protection for the internal cirrus user
 			$this->doExecute( $engine );
 		} else {

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Connection;
 use CirrusSearch\HashSearchConfig;
@@ -52,9 +53,9 @@ class ReindexerTest extends CirrusTestCase {
 	 */
 	public function testDetectRemoteSourceParams( $expected, $clustersConfig, $sourceCluster = 'dc-foo', $destCluster = 'dc-bar' ) {
 		$config = new HashSearchConfig( [
-			'CirrusSearchDefaultCluster' => 'dc-foo',
-			'CirrusSearchClusters' => $clustersConfig,
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::DefaultCluster => 'dc-foo',
+			CirrusConfigNames::Clusters => $clustersConfig,
+			CirrusConfigNames::ReplicaGroup => 'default',
 		] );
 		$source = new Connection( $config, $sourceCluster );
 		$dest = new Connection( $config, $destCluster );

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use MediaWiki\Json\FormatJson;
@@ -45,15 +46,15 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 
 		$plugins = $extraConfig[ '__plugins' ] ?? [];
 		$defaultConfig = [
-			'CirrusSearchSimilarityProfile' => 'bm25_with_defaults',
-			'CirrusSearchWikimediaExtraPlugin' => [
+			CirrusConfigNames::SimilarityProfile => 'bm25_with_defaults',
+			CirrusConfigNames::WikimediaExtraPlugin => [
 				'regex' => [ 'build' ],
 			],
-			'CirrusSearchPhraseSuggestReverseField' => [
+			CirrusConfigNames::PhraseSuggestReverseField => [
 				'build' => true,
 			],
-			'CirrusSearchNaturalTitleSort' => [ 'build' => false ],
-			'CirrusSearchOptimizeIndexForExperimentalHighlighter' => false,
+			CirrusConfigNames::NaturalTitleSort => [ 'build' => false ],
+			CirrusConfigNames::OptimizeIndexForExperimentalHighlighter => false,
 		];
 		$config = new HashSearchConfig( $extraConfig + $defaultConfig, [ HashSearchConfig::FLAG_INHERIT ] );
 		$language = $this->createMock( Language::class );

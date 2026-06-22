@@ -129,8 +129,8 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 
 	private function buildConfig( array $extraHandlers ) {
 		return new HashSearchConfig( [
-			'CirrusSearchDefaultCluster' => 'default',
-			'CirrusSearchWikimediaExtraPlugin' => [
+			CirrusConfigNames::DefaultCluster => 'default',
+			CirrusConfigNames::WikimediaExtraPlugin => [
 				'super_detect_noop' => true,
 				'super_detect_noop_handlers' => $extraHandlers,
 			],
@@ -164,11 +164,11 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	 */
 	public function testSendDataRequest( array $config, $indexSuffix, array $documents, $expectedFile ) {
 		$minimalSetup = [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'default' => [ 'localhost' ]
 			],
-			'CirrusSearchReplicaGroup' => 'default',
-			'CirrusSearchUpdateConflictRetryCount' => 5,
+			CirrusConfigNames::ReplicaGroup => 'default',
+			CirrusConfigNames::UpdateConflictRetryCount => 5,
 		];
 		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
 		$serde = new ElasticaDocumentsJsonSerde();
@@ -238,10 +238,10 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	 */
 	public function testSendDeletesRequest( array $config, $indexSuffix, array $ids, $expectedFile ) {
 		$minimalSetup = [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'default' => [ 'localhost' ]
 			],
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::ReplicaGroup => 'default',
 		];
 		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
 		$mockClient = $this->getMockBuilder( Client::class )
@@ -311,10 +311,10 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 	 */
 	public function testSendOtherIndexUpdatesRequest( array $config, $localSite, $indexName, $batchSize, array $actions, $expectedFile ) {
 		$minimalSetup = [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'default' => [ 'localhost' ]
 			],
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::ReplicaGroup => 'default',
 		];
 		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
 		$mockClient = $this->prepareClientMock( count( array_chunk( $actions, $batchSize ) ) );
@@ -367,10 +367,10 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 		?int $expectedRequestCount = null
 	): void {
 		$minimalSetup = [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'default' => [ 'localhost' ]
 			],
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::ReplicaGroup => 'default',
 		];
 		$searchConfig = new HashSearchConfig( $config + $minimalSetup );
 		$count = count( array_chunk( $tagWeights, $batchSize ) );

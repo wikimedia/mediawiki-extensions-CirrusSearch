@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 
@@ -88,7 +89,7 @@ class CrossProjectBlockScorerTest extends CirrusIntegrationTestCase {
 			's' => $this->mockRS( 1020450 ),
 		];
 		$hashConfig = new HashSearchConfig(
-			[ 'CirrusSearchCrossProjectOrder' => 'wmf_enwiki' ],
+			[ CirrusConfigNames::CrossProjectOrder => 'wmf_enwiki' ],
 			[ HashSearchConfig::FLAG_INHERIT ]
 		);
 		$scorer = CrossProjectBlockScorerFactory::load( $hashConfig );

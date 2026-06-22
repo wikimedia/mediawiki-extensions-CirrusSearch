@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\Maintenance\MappingConfigBuilder;
 use CirrusSearch\Profile\SearchProfileService;
@@ -74,8 +75,8 @@ class TextIndexField extends CirrusIndexField {
 
 		$this->extra = $extra;
 
-		if ( $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' ) &&
-			in_array( 'build', $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' ) )
+		if ( $config->getElement( CirrusConfigNames::WikimediaExtraPlugin, 'regex' ) &&
+			in_array( 'build', $config->getElement( CirrusConfigNames::WikimediaExtraPlugin, 'regex' ) )
 		) {
 			$this->allowTrigrams = true;
 		}
@@ -101,7 +102,7 @@ class TextIndexField extends CirrusIndexField {
 			return $this->textOptions;
 		}
 		$options = self::ENABLE_NORMS | self::SPEED_UP_HIGHLIGHTING;
-		if ( $this->config->get( 'CirrusSearchEnablePhraseSuggest' ) &&
+		if ( $this->config->get( CirrusConfigNames::EnablePhraseSuggest ) &&
 			$mappingFlags & MappingConfigBuilder::PHRASE_SUGGEST_USE_TEXT &&
 			!$this->checkFlag( SearchIndexField::FLAG_SCORING )
 		) {
@@ -130,13 +131,13 @@ class TextIndexField extends CirrusIndexField {
 		 */
 		$field = parent::getMapping( $engine );
 
-		if ( $this->config->get( 'CirrusSearchEnablePhraseSuggest' ) &&
+		if ( $this->config->get( CirrusConfigNames::EnablePhraseSuggest ) &&
 			 $this->checkFlag( self::COPY_TO_SUGGEST )
 		) {
 			$field[ 'copy_to' ][] = 'suggest';
 		}
-		if ( $this->config->get( 'CirrusSearchEnablePhraseSuggest' ) &&
-			 $this->config->get( 'CirrusSearchPhraseSuggestBuildVariant' ) &&
+		if ( $this->config->get( CirrusConfigNames::EnablePhraseSuggest ) &&
+			 $this->config->get( CirrusConfigNames::PhraseSuggestBuildVariant ) &&
 			 $this->checkFlag( self::COPY_TO_SUGGEST_VARIANT )
 		) {
 			$field[ 'copy_to' ][] = 'suggest_variant';

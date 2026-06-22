@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Search\CirrusIndexField;
@@ -93,7 +94,7 @@ class MappingConfigBuilder {
 	}
 
 	private function validatePlugins( array $plugins ) {
-		if ( $this->config->get( 'CirrusSearchOptimizeForExperimentalHighlighter' ) &&
+		if ( $this->config->get( CirrusConfigNames::OptimizeForExperimentalHighlighter ) &&
 			!Plugins::contains( 'experimental-highlighter', $plugins )
 		) {
 			throw new \InvalidArgumentException(
@@ -102,7 +103,7 @@ class MappingConfigBuilder {
 			);
 		}
 
-		if ( $this->config->getElement( 'CirrusSearchNaturalTitleSort', 'build' ) && !$this->icu ) {
+		if ( $this->config->getElement( CirrusConfigNames::NaturalTitleSort, 'build' ) && !$this->icu ) {
 			throw new \InvalidArgumentException(
 				"wgCirrusSearchNaturalTitleSort is set to build but the 'analysis-icu' plugin " .
 				"is not available."
@@ -137,7 +138,7 @@ class MappingConfigBuilder {
 				'index_options' => 'docs'
 			];
 		}
-		if ( $this->icu && $this->config->getElement( 'CirrusSearchNaturalTitleSort', 'build' ) ) {
+		if ( $this->icu && $this->config->getElement( CirrusConfigNames::NaturalTitleSort, 'build' ) ) {
 			$titleExtraAnalyzers[] = [
 				'fieldName' => 'natural_sort',
 				'type' => 'icu_collation_keyword',
@@ -159,7 +160,7 @@ class MappingConfigBuilder {
 			'analyzer' => 'suggest',
 		];
 
-		if ( $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'build' ) ) {
+		if ( $this->config->getElement( CirrusConfigNames::PhraseSuggestReverseField, 'build' ) ) {
 			$suggestField['fields'] = [
 				'reverse' => [
 					'type' => 'text',
@@ -286,7 +287,7 @@ class MappingConfigBuilder {
 			]
 		];
 
-		if ( $this->config->get( 'CirrusSearchPhraseSuggestBuildVariant' ) ) {
+		if ( $this->config->get( CirrusConfigNames::PhraseSuggestBuildVariant ) ) {
 			$page['properties']['suggest_variant'] = $suggestField;
 		}
 

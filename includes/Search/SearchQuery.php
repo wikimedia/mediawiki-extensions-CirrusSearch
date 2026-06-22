@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\ParsedQuery;
@@ -341,7 +342,7 @@ class SearchQuery {
 	}
 
 	public function mustTrackTotalHits(): bool {
-		$queryClasses = $this->getSearchConfig()->get( 'CirrusSearchMustTrackTotalHits' ) ?: [];
+		$queryClasses = $this->getSearchConfig()->get( CirrusConfigNames::MustTrackTotalHits ) ?: [];
 		foreach ( $queryClasses as $queryClass => $track ) {
 			if ( $queryClass === "default" ) {
 				continue;

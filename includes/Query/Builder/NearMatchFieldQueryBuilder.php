@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query\Builder;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Parser\AST\EmptyQueryNode;
 use CirrusSearch\Parser\AST\FuzzyNode;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
@@ -32,7 +33,7 @@ class NearMatchFieldQueryBuilder {
 	private array $profile;
 
 	public static function defaultFromSearchConfig( SearchConfig $config ): self {
-		return self::defaultFromWeight( $config->get( 'CirrusSearchNearMatchWeight' ) ?: 2 );
+		return self::defaultFromWeight( $config->get( CirrusConfigNames::NearMatchWeight ) ?: 2 );
 	}
 
 	public static function defaultFromWeight( float $weight ): self {

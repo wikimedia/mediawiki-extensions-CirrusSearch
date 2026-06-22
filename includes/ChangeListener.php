@@ -127,9 +127,9 @@ class ChangeListener extends PageChangeTracker implements
 		// by a "page change". The definition of a "page change" we use is the one used by EventBus
 		// PageChangeHooks.
 		DeferredUpdates::addCallableUpdate( function () use ( $linksUpdate ) {
-			$linkedArticlesToUpdate = $this->searchConfig->get( 'CirrusSearchLinkedArticlesToUpdate' );
-			$unLinkedArticlesToUpdate = $this->searchConfig->get( 'CirrusSearchUnlinkedArticlesToUpdate' );
-			$updateDelay = $this->searchConfig->get( 'CirrusSearchUpdateDelay' );
+			$linkedArticlesToUpdate = $this->searchConfig->get( CirrusConfigNames::LinkedArticlesToUpdate );
+			$unLinkedArticlesToUpdate = $this->searchConfig->get( CirrusConfigNames::UnlinkedArticlesToUpdate );
+			$updateDelay = $this->searchConfig->get( CirrusConfigNames::UpdateDelay );
 
 			// Page changes are prioritized over plain refreshes; the main job and the
 			// redirect-document job share the same delay tier.
@@ -157,7 +157,7 @@ class ChangeListener extends PageChangeTracker implements
 			}
 
 			$params = [];
-			if ( $this->searchConfig->get( 'CirrusSearchEnableIncomingLinkCounting' ) ) {
+			if ( $this->searchConfig->get( CirrusConfigNames::EnableIncomingLinkCounting ) ) {
 				$params['addedLinks'] = self::preparePageReferencesForLinksUpdate(
 					$linksUpdate->getPageReferenceArray( 'pagelinks', LinksTable::INSERTED ),
 					$linkedArticlesToUpdate

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 
@@ -14,7 +15,8 @@ class AnalysisConfigBuilderIntegrationTest extends CirrusIntegrationTestCase {
 		$this->setTemporaryHook( 'CirrusSearchSimilarityConfig', static function ( &$config ) {
 			$config['custom'] = [ 'custom' => [] ];
 		} );
-		$builder = new AnalysisConfigBuilder( 'en', [], new HashSearchConfig( [ 'CirrusSearchSimilarityProfile' => 'default' ] ) );
+		$builder = new AnalysisConfigBuilder(
+			'en', [], new HashSearchConfig( [ CirrusConfigNames::SimilarityProfile => 'default' ] ) );
 		$sim = $builder->buildSimilarityConfig();
 		$this->assertSame( [ 'custom' => [] ], $sim['custom'] );
 	}

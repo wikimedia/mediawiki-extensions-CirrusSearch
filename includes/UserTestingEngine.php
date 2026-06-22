@@ -46,8 +46,8 @@ class UserTestingEngine {
 			// initialization of user testing is a bit sloppy and this gets
 			// invoked during ElasticsearchIntermediary unit testing, and unit
 			// testing doesn't have any globally accessible config.
-			$config->get( 'CirrusSearchUserTesting' ) ?? [],
-			$config->get( 'CirrusSearchActiveTest' ),
+			$config->get( CirrusConfigNames::UserTesting ) ?? [],
+			$config->get( CirrusConfigNames::ActiveTest ),
 			self::stableUserProbability( ... )
 		);
 	}

@@ -8,7 +8,7 @@ namespace CirrusSearch;
 class ExternalIndexTest extends CirrusTestCase {
 
 	public function testGetSearchIndex() {
-		$config = new HashSearchConfig( [ 'CirrusSearchReplicaGroup' => 'default' ] );
+		$config = new HashSearchConfig( [ CirrusConfigNames::ReplicaGroup => 'default' ] );
 		$idx = new ExternalIndex( $config, 'foo' );
 		$this->assertEquals( 'foo', $idx->getSearchIndex( $config->getClusterAssignment()->getCrossClusterName() ) );
 		$this->assertEquals( 'default:foo', $idx->getSearchIndex( 'custom' ) );
@@ -25,7 +25,7 @@ class ExternalIndexTest extends CirrusTestCase {
 	public static function getWriteClustersProvider() {
 		// Current wiki writes to cluster `1` in datacenters `a` and `b`
 		$config = [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'DCA-group1' => [
 					'replica' => 'DCA',
 					'group' => 'group1',
@@ -47,8 +47,8 @@ class ExternalIndexTest extends CirrusTestCase {
 					[]
 				],
 			],
-			'CirrusSearchReplicaGroup' => 'group1',
-			'CirrusSearchWriteClusters' => [ 'DCA', 'DCB' ],
+			CirrusConfigNames::ReplicaGroup => 'group1',
+			CirrusConfigNames::WriteClusters => [ 'DCA', 'DCB' ],
 			'CirrusSearchExtraIndex' => [
 				NS_FILE => "group2:unittest"
 			],
@@ -68,7 +68,7 @@ class ExternalIndexTest extends CirrusTestCase {
 	 * @dataProvider getWriteClustersProvider
 	 */
 	public function testGetWriteClusters( $config, $sourceCluster, $targetCluster ) {
-		$config = new HashSearchConfig( [ 'CirrusSearchReplicaGroup' => $sourceCluster ],
+		$config = new HashSearchConfig( [ CirrusConfigNames::ReplicaGroup => $sourceCluster ],
 			[ HashSearchConfig::FLAG_INHERIT ], new HashSearchConfig( $config ) );
 		$idx = new ExternalIndex( $config, $config->getElement( 'CirrusSearchExtraIndex', NS_FILE ) );
 		$this->assertEquals( $targetCluster, $idx->getCrossClusterName() );
@@ -91,8 +91,8 @@ class ExternalIndexTest extends CirrusTestCase {
 	 */
 	public function testGetBoosts( $expectedWiki, $expectedBoosts, $boostConfig ) {
 		$config = new HashSearchConfig( [
-			'CirrusSearchExtraIndexBoostTemplates' => $boostConfig,
-			'CirrusSearchReplicaGroup' => 'default'
+			CirrusConfigNames::ExtraIndexBoostTemplates => $boostConfig,
+			CirrusConfigNames::ReplicaGroup => 'default'
 		] );
 		$idx = new ExternalIndex( $config, 'testindex' );
 		[ $wiki, $boosts ] = $idx->getBoosts();

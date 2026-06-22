@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Parser\QueryStringRegex;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\QueryParser;
@@ -54,7 +55,7 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 	public function assertQuery( array $expected, $queryString, array $config = [] ) {
 		$this->overrideConfigValues( [ 'CapitalLinks' => true ] );
 		$config = new HashSearchConfig(
-			$config + [ 'CirrusSearchStripQuestionMarks' => 'all' ],
+			$config + [ CirrusConfigNames::StripQuestionMarks => 'all' ],
 			[ HashSearchConfig::FLAG_INHERIT ]
 		);
 		$parser = $this->buildParser( $config );
@@ -119,7 +120,7 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 
 	private function parse( $query, $config ) {
 		$config = new HashSearchConfig(
-			$config + [ 'CirrusSearchStripQuestionMarks' => 'all' ],
+			$config + [ CirrusConfigNames::StripQuestionMarks => 'all' ],
 			[ HashSearchConfig::FLAG_INHERIT ]
 		);
 

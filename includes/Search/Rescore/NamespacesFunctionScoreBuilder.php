@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search\Rescore;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
 use MediaWiki\Logger\LoggerFactory;
@@ -47,7 +48,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 			return;
 		}
 		$this->normalizedNamespaceWeights = [];
-		foreach ( $config->get( 'CirrusSearchNamespaceWeights' ) as $ns =>
+		foreach ( $config->get( CirrusConfigNames::NamespaceWeights ) as $ns =>
 				  $weight
 		) {
 			if ( !is_int( $ns ) && !ctype_digit( $ns ) ) {
@@ -79,19 +80,19 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 				return 1;
 			}
 
-			return $this->config->get( 'CirrusSearchDefaultNamespaceWeight' );
+			return $this->config->get( CirrusConfigNames::DefaultNamespaceWeight );
 		}
 		$subjectNs = $this->namespaceInfo->getSubject( $namespace );
 		if ( isset( $this->normalizedNamespaceWeights[$subjectNs] ) ) {
-			return $this->config->get( 'CirrusSearchTalkNamespaceWeight' ) *
+			return $this->config->get( CirrusConfigNames::TalkNamespaceWeight ) *
 				   $this->normalizedNamespaceWeights[$subjectNs];
 		}
 		if ( $namespace === NS_TALK ) {
-			return $this->config->get( 'CirrusSearchTalkNamespaceWeight' );
+			return $this->config->get( CirrusConfigNames::TalkNamespaceWeight );
 		}
 
-		return $this->config->get( 'CirrusSearchDefaultNamespaceWeight' ) *
-			   $this->config->get( 'CirrusSearchTalkNamespaceWeight' );
+		return $this->config->get( CirrusConfigNames::DefaultNamespaceWeight ) *
+			   $this->config->get( CirrusConfigNames::TalkNamespaceWeight );
 	}
 
 	public function append( FunctionScore $functionScore ) {

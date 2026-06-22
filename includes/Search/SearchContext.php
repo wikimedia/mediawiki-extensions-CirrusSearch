@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\ExternalIndex;
@@ -272,7 +273,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private function loadConfig(): void {
 		$this->escaper = new Escaper(
 			$this->config->get( MainConfigNames::LanguageCode ),
-			$this->config->get( 'CirrusSearchAllowLeadingWildcard' )
+			$this->config->get( CirrusConfigNames::AllowLeadingWildcard )
 		);
 	}
 

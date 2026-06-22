@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Profile\SearchProfileService;
 
 /**
@@ -46,7 +47,7 @@ class UpdateDYMIndexTemplates extends Maintenance {
 		$templateBuilders = [];
 		$configUtils = new ConfigUtils( $this->getConnection()->getClient(), $this );
 		$availablePlugins = $this->unwrap(
-			$configUtils->scanAvailablePlugins( $this->getConfig()->get( 'CirrusSearchBannedPlugins' ) ) );
+			$configUtils->scanAvailablePlugins( $this->getConfig()->get( CirrusConfigNames::BannedPlugins ) ) );
 		foreach ( $profiles as $profileName => $profile ) {
 			if ( !isset( $profile['index_template'] ) ) {
 				$this->output( "Skipping template for [$profileName], no template definition found." );

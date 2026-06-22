@@ -5,6 +5,8 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
+
 /**
  * Builds search analysis config arrays for the completion suggester
  * index.
@@ -36,7 +38,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 			}
 		}
 		$textTokenizer = 'standard';
-		$plainTokenizer = $this->config->get( 'CirrusSearchCompletionPlainTokenizer' );
+		$plainTokenizer = $this->config->get( CirrusConfigNames::CompletionPlainTokenizer );
 		if ( $this->shouldActivateIcuTokenization( $language ) ) {
 			$textTokenizer = 'icu_tokenizer';
 			// We cannot use the icu_tokenizer for plain here
@@ -176,7 +178,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				],
 			],
 		];
-		if ( $this->config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'build' ) ) {
+		if ( $this->config->getElement( CirrusConfigNames::CompletionSuggesterSubphrases, 'build' ) ) {
 			$defaults['analyzer']['subphrases'] = [
 				"type" => "custom",
 				"filter" => [

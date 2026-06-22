@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\EmptyInterwikiResolver;
@@ -111,8 +112,8 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 		$secondTryNumResults
 	) {
 		$config = $this->newHashSearchConfig( [
-			'CirrusSearchInterwikiThreshold' => $threshold,
-			'CirrusSearchEnableAltLanguage' => true,
+			CirrusConfigNames::InterwikiThreshold => $threshold,
+			CirrusConfigNames::EnableAltLanguage => true,
 			'LanguageCode' => 'en',
 		] );
 		$targetWikiConfig = new HashSearchConfig( [
@@ -174,8 +175,8 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 	 */
 	public function testNotRunWhenRewriteDisabled( $allowRewrite, $expectedScore ) {
 		$config = new HashSearchConfig( [
-			'CirrusSearchInterwikiThreshold' => 2,
-			'CirrusSearchEnableAltLanguage' => true,
+			CirrusConfigNames::InterwikiThreshold => 2,
+			CirrusConfigNames::EnableAltLanguage => true,
 			'LanguageCode' => 'en',
 		] );
 		$targetWikiConfig = new HashSearchConfig( [
@@ -221,7 +222,7 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 		$this->assertNull( LangDetectFallbackMethod::build( $query, [], new EmptyInterwikiResolver() ) );
 
 		$query = $this->getNewFTSearchQueryBuilder(
-				new HashSearchConfig( [ 'CirrusSearchEnableAltLanguage' => false ] ),
+				new HashSearchConfig( [ CirrusConfigNames::EnableAltLanguage => false ] ),
 				'foo bar'
 			)
 			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )
@@ -229,7 +230,7 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 		$this->assertNull( LangDetectFallbackMethod::build( $query, [], new EmptyInterwikiResolver() ) );
 
 		$query = $this->getNewFTSearchQueryBuilder(
-				new HashSearchConfig( [ 'CirrusSearchEnableAltLanguage' => false ] ),
+				new HashSearchConfig( [ CirrusConfigNames::EnableAltLanguage => false ] ),
 				'foo bar'
 			)
 			->setCrossLanguageSearch( CrossSearchStrategy::hostWikiOnlyStrategy() )

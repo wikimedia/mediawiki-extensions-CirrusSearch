@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Profile;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -67,7 +68,7 @@ class CompletionSearchProfileRepository implements SearchProfileRepository {
 
 			$allowedFields = [ 'suggest' => true, 'suggest-stop' => true ];
 			// Check that we can use the subphrases FST
-			if ( $config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'use' ) ) {
+			if ( $config->getElement( CirrusConfigNames::CompletionSuggesterSubphrases, 'use' ) ) {
 				$allowedFields['suggest-subphrases'] = true;
 			}
 			$originalProfiles = $arrayLoader();

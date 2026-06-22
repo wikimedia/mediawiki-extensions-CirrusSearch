@@ -76,7 +76,7 @@ abstract class ElasticsearchIntermediary {
 	protected function __construct( Connection $connection, ?UserIdentity $user = null, $slowSeconds = null, $extraBackendLatency = 0 ) {
 		$this->connection = $connection;
 		$this->user = $user ?? RequestContext::getMain()->getUser();
-		$this->slowMillis = (int)( 1000 * ( $slowSeconds ?? $connection->getConfig()->get( 'CirrusSearchSlowSearch' ) ) );
+		$this->slowMillis = (int)( 1000 * ( $slowSeconds ?? $connection->getConfig()->get( CirrusConfigNames::SlowSearch ) ) );
 		$this->extraBackendLatency = $extraBackendLatency;
 		if ( self::$requestLogger === null ) {
 			self::$requestLogger = new RequestLogger;
@@ -311,11 +311,11 @@ abstract class ElasticsearchIntermediary {
 	 * @return string search retrieval timeout
 	 */
 	protected function getTimeout( $searchType = 'default' ) {
-		$timeout = $this->connection->getConfig()->getElement( 'CirrusSearchSearchShardTimeout', $searchType );
+		$timeout = $this->connection->getConfig()->getElement( CirrusConfigNames::SearchShardTimeout, $searchType );
 		if ( $timeout !== null ) {
 			return $timeout;
 		}
-		$timeout = $this->connection->getConfig()->getElement( 'CirrusSearchSearchShardTimeout', 'default' );
+		$timeout = $this->connection->getConfig()->getElement( CirrusConfigNames::SearchShardTimeout, 'default' );
 		if ( $timeout !== null ) {
 			return $timeout;
 		}
@@ -327,11 +327,11 @@ abstract class ElasticsearchIntermediary {
 	 * @return int the client side timeout
 	 */
 	protected function getClientTimeout( $searchType = 'default' ) {
-		$timeout = $this->connection->getConfig()->getElement( 'CirrusSearchClientSideSearchTimeout', $searchType );
+		$timeout = $this->connection->getConfig()->getElement( CirrusConfigNames::ClientSideSearchTimeout, $searchType );
 		if ( $timeout !== null ) {
 			return $timeout;
 		}
-		$timeout = $this->connection->getConfig()->getElement( 'CirrusSearchClientSideSearchTimeout', 'default' );
+		$timeout = $this->connection->getConfig()->getElement( CirrusConfigNames::ClientSideSearchTimeout, 'default' );
 		if ( $timeout !== null ) {
 			return $timeout;
 		}

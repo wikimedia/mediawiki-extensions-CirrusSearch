@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Job;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Updater;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
@@ -100,7 +101,7 @@ class LinksUpdate extends CirrusTitleJob {
 			$this->update( $updater );
 		}
 
-		if ( $this->getSearchConfig()->get( 'CirrusSearchEnableIncomingLinkCounting' ) ) {
+		if ( $this->getSearchConfig()->get( CirrusConfigNames::EnableIncomingLinkCounting ) ) {
 			$this->queueIncomingLinksJobs();
 		}
 
@@ -126,7 +127,7 @@ class LinksUpdate extends CirrusTitleJob {
 	private function queueIncomingLinksJobs() {
 		$titleKeys = array_merge( $this->params[ 'addedLinks' ] ?? [],
 			$this->params[ 'removedLinks' ] ?? [] );
-		$refreshInterval = $this->getSearchConfig()->get( 'CirrusSearchRefreshInterval' );
+		$refreshInterval = $this->getSearchConfig()->get( CirrusConfigNames::RefreshInterval );
 		$jobs = [];
 		$jobQueue = MediaWikiServices::getInstance()->getJobQueueGroup();
 		foreach ( $titleKeys as $titleKey ) {

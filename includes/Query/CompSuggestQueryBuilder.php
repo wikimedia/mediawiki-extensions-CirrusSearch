@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Search\CompletionResultsCollector;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
@@ -319,7 +320,7 @@ class CompSuggestQueryBuilder {
 	 */
 	public static function computeHardLimit( $limit, $offset, SearchConfig $config ) {
 		$limit += $offset;
-		$hardLimit = $config->get( 'CirrusSearchCompletionSuggesterHardLimit' ) ?? 50;
+		$hardLimit = $config->get( CirrusConfigNames::CompletionSuggesterHardLimit ) ?? 50;
 		if ( $limit > $hardLimit ) {
 			return $hardLimit;
 		}

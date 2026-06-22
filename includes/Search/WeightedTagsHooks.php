@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\Hooks\CirrusSearchAddQueryFeaturesHook;
 use CirrusSearch\Hooks\CirrusSearchAnalysisConfigHook;
@@ -128,7 +129,7 @@ class WeightedTagsHooks implements
 	 * @return bool
 	 */
 	private function canBuild(): bool {
-		return (bool)( $this->config->get( 'CirrusSearchWeightedTags' )['build'] ?? false );
+		return (bool)( $this->config->get( CirrusConfigNames::WeightedTags )['build'] ?? false );
 	}
 
 	/**
@@ -136,10 +137,10 @@ class WeightedTagsHooks implements
 	 * @return bool
 	 */
 	private function canUse(): bool {
-		return (bool)( $this->config->get( 'CirrusSearchWeightedTags' )['use'] ?? false );
+		return (bool)( $this->config->get( CirrusConfigNames::WeightedTags )['use'] ?? false );
 	}
 
 	private function maxScore(): int {
-		return (int)( $this->config->get( 'CirrusSearchWeightedTags' )['max_score'] ?? 1000 );
+		return (int)( $this->config->get( CirrusConfigNames::WeightedTags )['max_score'] ?? 1000 );
 	}
 }

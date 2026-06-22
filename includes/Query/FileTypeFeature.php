@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
@@ -26,7 +27,7 @@ class FileTypeFeature extends SimpleKeywordFeature implements FilterQueryFeature
 	private $aliases;
 
 	public function __construct( Config $config ) {
-		$this->aliases = $config->get( 'CirrusSearchFiletypeAliases' );
+		$this->aliases = $config->get( CirrusConfigNames::FiletypeAliases );
 	}
 
 	/**

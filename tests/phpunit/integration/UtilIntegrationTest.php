@@ -52,7 +52,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	 */
 	public function testOverrideBoostTemplatesWithOnWikiConfig() {
 		$configValues = [
-			'CirrusSearchBoostTemplates' => [
+			CirrusConfigNames::BoostTemplates => [
 				'Featured' => 2,
 			],
 		];
@@ -62,7 +62,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		$cache = $this->getWanCache();
 		$this->putDataIntoCache( $cache, 'ruwiki' );
 		$ru = Util::getDefaultBoostTemplates( $config );
-		$this->assertNotEquals( $configValues['CirrusSearchBoostTemplates'], $ru );
+		$this->assertNotEquals( $configValues[CirrusConfigNames::BoostTemplates], $ru );
 	}
 
 	/**
@@ -70,7 +70,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	 */
 	public function testOverrideBoostTemplatesWithOnCurrentWikiConfig() {
 		$configValues = [
-			'CirrusSearchBoostTemplates' => [
+			CirrusConfigNames::BoostTemplates => [
 				'Featured' => 2,
 			],
 		];
@@ -81,7 +81,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		$this->putDataIntoCache( $cache, WikiMap::getCurrentWikiId() );
 
 		$ru = Util::getDefaultBoostTemplates( $config );
-		$this->assertNotEquals( $configValues['CirrusSearchBoostTemplates'], $ru );
+		$this->assertNotEquals( $configValues[CirrusConfigNames::BoostTemplates], $ru );
 	}
 
 	/**
@@ -89,11 +89,11 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	 */
 	public function testDisableOverrideBoostTemplatesWithOnWikiConfig() {
 		$configValues = [
-			'CirrusSearchBoostTemplates' => [
+			CirrusConfigNames::BoostTemplates => [
 				'Featured' => 3,
 			],
 			// we can disable on wiki customization
-			'CirrusSearchIgnoreOnWikiBoostTemplates' => true,
+			CirrusConfigNames::IgnoreOnWikiBoostTemplates => true,
 		];
 		$config = $this->getHashConfig( 'ruwiki', $configValues );
 
@@ -101,7 +101,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 		$this->putDataIntoCache( $cache, 'ruwiki' );
 
 		$ru = Util::getDefaultBoostTemplates( $config );
-		$this->assertArrayEquals( $configValues['CirrusSearchBoostTemplates'], $ru );
+		$this->assertArrayEquals( $configValues[CirrusConfigNames::BoostTemplates], $ru );
 	}
 
 	public function testgetDefaultBoostTemplatesLocal() {
@@ -159,11 +159,11 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	 * @return HashSearchConfig
 	 */
 	private function getHashConfig( $wiki, array $moreData = [] ) {
-		if ( !isset( $moreData['CirrusSearchBoostTemplates'] ) ) {
-			$moreData['CirrusSearchBoostTemplates'] = [];
+		if ( !isset( $moreData[CirrusConfigNames::BoostTemplates] ) ) {
+			$moreData[CirrusConfigNames::BoostTemplates] = [];
 		}
-		if ( !isset( $moreData['CirrusSearchIgnoreOnWikiBoostTemplates'] ) ) {
-			$moreData['CirrusSearchIgnoreOnWikiBoostTemplates'] = false;
+		if ( !isset( $moreData[CirrusConfigNames::IgnoreOnWikiBoostTemplates] ) ) {
+			$moreData[CirrusConfigNames::IgnoreOnWikiBoostTemplates] = false;
 		}
 		$moreData[ '_wikiID' ] = $wiki;
 		return $this->newHashSearchConfig( $moreData );

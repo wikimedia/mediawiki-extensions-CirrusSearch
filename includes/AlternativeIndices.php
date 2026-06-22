@@ -25,7 +25,7 @@ class AlternativeIndices {
 	 */
 	public function getAlternativeIndices( string $type ): array {
 		Assert::parameter( in_array( $type, self::ALLOWED_TYPES, true ), '$type', "$type is not allowed" );
-		$indices = $this->config->get( 'CirrusSearchAlternativeIndices' )[$type] ?? [];
+		$indices = $this->config->get( CirrusConfigNames::AlternativeIndices )[$type] ?? [];
 		$altIndices = [];
 		foreach ( $indices as $index ) {
 			$id = $index["index_id"] ?? null;

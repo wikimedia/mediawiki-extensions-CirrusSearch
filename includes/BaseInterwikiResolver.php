@@ -47,7 +47,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 		InterwikiLookup $iwLookup
 	) {
 		$this->config = $config;
-		$this->useConfigDumpApi = $this->config->get( 'CirrusSearchFetchConfigFromApi' );
+		$this->useConfigDumpApi = $this->config->get( CirrusConfigNames::FetchConfigFromApi );
 		$this->httpClient = $client;
 		$this->interwikiLookup = $iwLookup;
 		$this->wanCache = $wanCache;
@@ -275,7 +275,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 		return new HashSearchConfig(
 			[
 				'_wikiID' => $wiki,
-				'CirrusSearchIndexBaseName' => $wiki,
+				CirrusConfigNames::IndexBaseName => $wiki,
 			],
 			array_merge( [ HashSearchConfig::FLAG_INHERIT ], $hashConfigFlags )
 		);

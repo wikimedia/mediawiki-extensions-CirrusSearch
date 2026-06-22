@@ -177,8 +177,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		parent::__construct(
 			$conn,
 			$user,
-			$config->get( 'CirrusSearchSlowSearch' ),
-			$config->get( 'CirrusSearchExtraBackendLatency' )
+			$config->get( CirrusConfigNames::SlowSearch ),
+			$config->get( CirrusConfigNames::ExtraBackendLatency )
 		);
 		$this->config = $config;
 		$this->setOffsetLimit( $offset, $limit );
@@ -232,7 +232,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 							$query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ),
 							$this->titleHelper,
 							$query->getExtraFieldsToExtract(),
-							$this->searchContext->getConfig()->getElement( 'CirrusSearchDeduplicateInMemory' ) === true
+							$this->searchContext->getConfig()->getElement( CirrusConfigNames::DeduplicateInMemory ) === true
 						)
 					);
 			}
@@ -616,7 +616,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 
 		$connection->setTimeout( $this->getClientTimeout( $this->searchContext->getSearchType() ) );
 
-		if ( $this->config->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
+		if ( $this->config->get( CirrusConfigNames::MoreAccurateScoringMode ) ) {
 			$search->setSearchType( \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH );
 		}
 
@@ -858,7 +858,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @return Connection
 	 */
 	private function getOverriddenConnection() {
-		$overrides = $this->config->get( 'CirrusSearchClusterOverrides' );
+		$overrides = $this->config->get( CirrusConfigNames::ClusterOverrides );
 		foreach ( $overrides as $feature => $cluster ) {
 			if ( $this->searchContext->isSyntaxUsed( $feature ) ) {
 				return Connection::getPool( $this->config, $cluster );
@@ -1005,7 +1005,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		}
 
 		// Is interleaving configured?
-		$overrides = $this->config->get( 'CirrusSearchInterleaveConfig' );
+		$overrides = $this->config->get( CirrusConfigNames::InterleaveConfig );
 		if ( $overrides === null ) {
 			return null;
 		}

@@ -12,23 +12,23 @@ class NamespaceMatcherTest extends CirrusTestCase {
 	public static function provideCustomProfile(): \Generator {
 		yield 'no profiles' => [
 			[
-				'CirrusSearchNamespaceResolutionMethod' => 'naive',
-				'CirrusSearchNamespaceMatcherProfiles' => [],
-				'CirrusSearchSecondTryProfiles' => [],
+				CirrusConfigNames::NamespaceResolutionMethod => 'naive',
+				CirrusConfigNames::NamespaceMatcherProfiles => [],
+				CirrusConfigNames::SecondTryProfiles => [],
 			],
 			'laetitia',
 			null
 		];
 		yield 'hebrew wrong keyboard' => [
 			[
-				'CirrusSearchNamespaceResolutionMethod' => 'utr30_with_hebrew_wrong_keyboard',
+				CirrusConfigNames::NamespaceResolutionMethod => 'utr30_with_hebrew_wrong_keyboard',
 			],
 			'uhehpshv', // wrong keyboard for ויקיפדיה
 			4
 		];
 		yield 'hebrew wrong keyboard reverse' => [
 			[
-				'CirrusSearchNamespaceResolutionMethod' => 'utr30_with_hebrew_wrong_keyboard',
+				CirrusConfigNames::NamespaceResolutionMethod => 'utr30_with_hebrew_wrong_keyboard',
 			],
 			'ויקיפדיה', // correct Hebrew
 			4

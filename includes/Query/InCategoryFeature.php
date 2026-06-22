@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
@@ -46,7 +47,7 @@ class InCategoryFeature extends SimpleKeywordFeature implements FilterQueryFeatu
 	 * @param PageStore|null $pageStore
 	 */
 	public function __construct( Config $config, ?PageStore $pageStore = null ) {
-		$this->maxConditions = $config->get( 'CirrusSearchMaxIncategoryOptions' );
+		$this->maxConditions = $config->get( CirrusConfigNames::MaxIncategoryOptions );
 		$this->pageStore = $pageStore;
 	}
 

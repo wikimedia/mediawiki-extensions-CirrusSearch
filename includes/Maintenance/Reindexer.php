@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Connection;
 use CirrusSearch\Elastica\ReindexRequest;
 use CirrusSearch\Elastica\ReindexResponse;
@@ -271,7 +272,7 @@ class Reindexer {
 	 * to, so that it does not timeout while the reindex is running.
 	 */
 	private function setConnectionTimeout() {
-		$timeout = $this->searchConfig->get( 'CirrusSearchMaintenanceTimeout' );
+		$timeout = $this->searchConfig->get( CirrusConfigNames::MaintenanceTimeout );
 		$this->connection->setTimeout( $timeout );
 	}
 

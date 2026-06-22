@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Profile;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
@@ -99,7 +100,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			],
 			'rescore fulltext by config' => [
 				SearchProfileService::RESCORE, SearchProfileService::CONTEXT_DEFAULT,
-				'config', 'CirrusSearchRescoreProfile', [ 'unittest' => [] ]
+				'config', CirrusConfigNames::RescoreProfile, [ 'unittest' => [] ]
 			],
 			'rescore prefix by uri' => [
 				SearchProfileService::RESCORE, SearchProfileService::CONTEXT_PREFIXSEARCH,
@@ -107,15 +108,15 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			],
 			'rescore prefix by config' => [
 				SearchProfileService::RESCORE, SearchProfileService::CONTEXT_PREFIXSEARCH,
-				'config', 'CirrusSearchPrefixSearchRescoreProfile', [ 'unittest' => [] ]
+				'config', CirrusConfigNames::PrefixSearchRescoreProfile, [ 'unittest' => [] ]
 			],
 			'similarity by config' => [
 				SearchProfileService::SIMILARITY, SearchProfileService::CONTEXT_DEFAULT,
-				'config', 'CirrusSearchSimilarityProfile', [ 'unittest' => [] ]
+				'config', CirrusConfigNames::SimilarityProfile, [ 'unittest' => [] ]
 			],
 			'crossproject block scorer by config' => [
 				SearchProfileService::CROSS_PROJECT_BLOCK_SCORER, SearchProfileService::CONTEXT_DEFAULT,
-				'config', 'CirrusSearchCrossProjectOrder', [ 'unittest' => [] ]
+				'config', CirrusConfigNames::CrossProjectOrder, [ 'unittest' => [] ]
 			],
 			'completion by user pref' => [
 				SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_COMPLETION,
@@ -123,11 +124,11 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			],
 			'completion by config' => [
 				SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_COMPLETION,
-				'config', 'CirrusSearchCompletionSettings', [ 'unittest' => [] ],
+				'config', CirrusConfigNames::CompletionSettings, [ 'unittest' => [] ],
 			],
 			'fallbacks by config' => [
 				SearchProfileService::FALLBACKS, SearchProfileService::CONTEXT_DEFAULT,
-				'config', 'CirrusSearchFallbackProfile', [ 'unittest' => [] ],
+				'config', CirrusConfigNames::FallbackProfile, [ 'unittest' => [] ],
 			],
 			'fallbacks by uri' => [
 				SearchProfileService::FALLBACKS, SearchProfileService::CONTEXT_DEFAULT,
@@ -139,11 +140,11 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			],
 			'fulltext query builder by config' => [
 				SearchProfileService::FT_QUERY_BUILDER, SearchProfileService::CONTEXT_DEFAULT,
-				'config', 'CirrusSearchFullTextQueryBuilderProfile', [ 'unittest' => [] ],
+				'config', CirrusConfigNames::FullTextQueryBuilderProfile, [ 'unittest' => [] ],
 			],
 			'second try prefix search by config' => [
 				SearchProfileService::SECOND_TRY, SearchProfileService::CONTEXT_COMPLETION,
-				'config', 'CirrusSearchCompletionUseSecondTryProfile', [ 'unittest' => [] ],
+				'config', CirrusConfigNames::CompletionUseSecondTryProfile, [ 'unittest' => [] ],
 			],
 			'second try prefix search by uri' => [
 				SearchProfileService::SECOND_TRY, SearchProfileService::CONTEXT_COMPLETION,
@@ -151,7 +152,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			],
 			'namespace matcher by config' => [
 				SearchProfileService::NAMESPACE_MATCHER, SearchProfileService::CONTEXT_DEFAULT,
-				'config', 'CirrusSearchNamespaceResolutionMethod', [ 'unittest' => [] ],
+				'config', CirrusConfigNames::NamespaceResolutionMethod, [ 'unittest' => [] ],
 			],
 			'namespace matcher by uri' => [
 				SearchProfileService::NAMESPACE_MATCHER, SearchProfileService::CONTEXT_DEFAULT,
@@ -162,14 +163,14 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 
 	public static function provideTestInterwikiOverrides() {
 		$baseConfig = [
-			'CirrusSearchInterwikiSources' => [
+			CirrusConfigNames::InterwikiSources => [
 				'my' => 'mywiki',
 			],
 		];
 		return [
 			'rescore' => [
 				$baseConfig + [
-					'CirrusSearchCrossProjectProfiles' => [
+					CirrusConfigNames::CrossProjectProfiles => [
 						'my' => [
 							'rescore' => 'overridden'
 						]
@@ -177,18 +178,18 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 				],
 				[
 					'_wikiID' => 'mywiki',
-					'CirrusSearchRescoreProfiles' => [
+					CirrusConfigNames::RescoreProfiles => [
 						'default' => [],
 						'overridden' => [ 'INTERWIKI' ]
 					],
-					'CirrusSearchRescoreProfile' => 'default',
+					CirrusConfigNames::RescoreProfile => 'default',
 				],
 				SearchProfileService::RESCORE,
 				'overridden'
 			],
 			'ftbuilder' => [
 				$baseConfig + [
-					'CirrusSearchCrossProjectProfiles' => [
+					CirrusConfigNames::CrossProjectProfiles => [
 						'my' => [
 							'ftbuilder' => 'overridden'
 						]
@@ -196,11 +197,11 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 				],
 				[
 					'_wikiID' => 'mywiki',
-					'CirrusSearchFullTextQueryBuilderProfiles' => [
+					CirrusConfigNames::FullTextQueryBuilderProfiles => [
 						'default' => [],
 						'overridden' => [ 'INTERWIKI' ]
 					],
-					'CirrusSearchFullTextQueryBuilderProfile' => 'test',
+					CirrusConfigNames::FullTextQueryBuilderProfile => 'test',
 				],
 				SearchProfileService::FT_QUERY_BUILDER,
 				'overridden'
@@ -234,7 +235,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			}
 		] );
 		$factory = $this->getFactory( [], $cirrusSearchHookRunner, [] );
-		$config = new HashSearchConfig( [ 'CirrusSearchDefaultSemanticProfile' => 'default_semantic' ] );
+		$config = new HashSearchConfig( [ CirrusConfigNames::DefaultSemanticProfile => 'default_semantic' ] );
 		$service = $factory->loadService( $config, null, null, true );
 		$this->assertEquals( 'default_semantic',
 			$service->getProfileName( SearchProfileService::FT_QUERY_BUILDER, SearchProfileService::CONTEXT_SEMANTIC ) );
@@ -250,7 +251,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			}
 		] );
 		$factory = $this->getFactory( [], $cirrusSearchHookRunner, [] );
-		$config = new HashSearchConfig( [ 'CirrusSearchDefaultSemanticProfile' => 'default_semantic' ] );
+		$config = new HashSearchConfig( [ CirrusConfigNames::DefaultSemanticProfile => 'default_semantic' ] );
 		$request = new FauxRequest( [ 'cirrusSemanticSearch' => '1' ] );
 		$service = $factory->loadService( $config, $request, null, true );
 

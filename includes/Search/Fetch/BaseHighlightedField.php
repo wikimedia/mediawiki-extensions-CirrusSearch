@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search\Fetch;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\AbstractQuery;
@@ -319,7 +320,7 @@ class BaseHighlightedField extends HighlightedField {
 			$self->setNumberOfFragments( 1 );
 			$self->matchPlainFields();
 			$self->setOrder( 'score' );
-			$self->setFragmentSize( $config->get( 'CirrusSearchFragmentSize' ) );
+			$self->setFragmentSize( $config->get( CirrusConfigNames::FragmentSize ) );
 			return $self;
 		};
 	}
@@ -328,7 +329,7 @@ class BaseHighlightedField extends HighlightedField {
 		return function ( SearchConfig $config, $fieldName, $target, $priority ) {
 			$self = ( self::text() )( $config, $fieldName, $target, $priority );
 			/** @var BaseHighlightedField $self */
-			$self->setNoMatchSize( $config->get( 'CirrusSearchFragmentSize' ) );
+			$self->setNoMatchSize( $config->get( CirrusConfigNames::FragmentSize ) );
 			return $self;
 		};
 	}

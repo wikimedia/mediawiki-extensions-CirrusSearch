@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Parser;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser;
 use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
@@ -14,7 +15,7 @@ class QueryParserFactoryTest extends CirrusTestCase {
 	public static function provideConfig() {
 		return [
 			'CirrusSearchAllowLeadingWildcard changes parsing behaviors' => [
-				[ 'CirrusSearchAllowLeadingWildcard' => true ],
+				[ CirrusConfigNames::AllowLeadingWildcard => true ],
 				'*help',
 				false
 			],
@@ -24,25 +25,25 @@ class QueryParserFactoryTest extends CirrusTestCase {
 				false
 			],
 			'CirrusSearchStripQuestionMarks changes parsing behaviors' => [
-				[ 'CirrusSearchStripQuestionMarks' => 'all' ],
+				[ CirrusConfigNames::StripQuestionMarks => 'all' ],
 				'Will this pass?',
 				false
 			],
 			'CirrusSearchEnableRegex changes parsing behaviors' => [
 				[
-					'CirrusSearchEnableRegex' => true,
-					'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ],
+					CirrusConfigNames::EnableRegex => true,
+					CirrusConfigNames::WikimediaExtraPlugin => [ 'regex' => [ 'use' => true ] ],
 				],
 				'intitle:/findit/',
 				false
 			],
 			'CirrusSearchUpdateShardTimeout does not change parsing behaviors' => [
-				[ 'CirrusSearchUpdateShardTimeout' => '20h' ],
+				[ CirrusConfigNames::UpdateShardTimeout => '20h' ],
 				"not sure what I'm looking for",
 				true
 			],
 			'CirrusSearchMaxFullTextQueryLength changes parsing behaviors' => [
-				[ 'CirrusSearchMaxFullTextQueryLength' => 10 ],
+				[ CirrusConfigNames::MaxFullTextQueryLength => 10 ],
 				"not sure what I'm looking for",
 				false
 			],

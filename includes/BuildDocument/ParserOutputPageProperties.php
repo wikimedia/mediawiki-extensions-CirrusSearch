@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\BuildDocument;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
@@ -234,6 +235,6 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 	}
 
 	private function truncateFileContent( array $fieldContent ): array {
-		return self::truncateFileTextContent( $this->config->get( 'CirrusSearchMaxFileTextLength' ) ?: -1, $fieldContent );
+		return self::truncateFileTextContent( $this->config->get( CirrusConfigNames::MaxFileTextLength ) ?: -1, $fieldContent );
 	}
 }

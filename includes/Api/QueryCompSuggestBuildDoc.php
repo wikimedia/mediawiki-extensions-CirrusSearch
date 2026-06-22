@@ -3,6 +3,7 @@
 namespace CirrusSearch\Api;
 
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
+use CirrusSearch\CirrusConfigNames;
 use InvalidArgumentException;
 use MediaWiki\Api\ApiQuery;
 use MediaWiki\Api\ApiQueryBase;
@@ -38,7 +39,7 @@ class QueryCompSuggestBuildDoc extends ApiQueryBase {
 		return [
 			'method' => [
 				ParamValidator::PARAM_TYPE => 'string',
-				ParamValidator::PARAM_DEFAULT => $this->getSearchConfig()->get( 'CirrusSearchCompletionDefaultScore' ),
+				ParamValidator::PARAM_DEFAULT => $this->getSearchConfig()->get( CirrusConfigNames::CompletionDefaultScore ),
 			],
 		];
 	}

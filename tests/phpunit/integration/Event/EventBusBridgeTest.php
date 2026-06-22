@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Event;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use MediaWiki\Config\ConfigFactory;
@@ -38,7 +39,7 @@ class EventBusBridgeTest extends CirrusIntegrationTestCase {
 		$globalIdGenerator = $this->createNoOpMock( GlobalIdGenerator::class );
 		$configFactory->register( 'CirrusSearch',
 			static function () use ( $enabled ) {
-				return new HashSearchConfig( [ 'CirrusSearchUseEventBusBridge' => $enabled ] );
+				return new HashSearchConfig( [ CirrusConfigNames::UseEventBusBridge => $enabled ] );
 			} );
 
 		if ( class_exists( EventBusFactory::class ) ) {

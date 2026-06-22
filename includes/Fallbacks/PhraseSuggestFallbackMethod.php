@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\OtherIndexesUpdater;
 use CirrusSearch\Parser\AST\Visitor\QueryFixer;
@@ -45,7 +46,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	 */
 	private function __construct( SearchQuery $query, $profileName ) {
 		Assert::precondition( $query->isWithDYMSuggestion() &&
-							  $query->getSearchConfig()->get( 'CirrusSearchEnablePhraseSuggest' ) &&
+							  $query->getSearchConfig()->get( CirrusConfigNames::EnablePhraseSuggest ) &&
 							  $query->getOffset() == 0, "Unsupported query" );
 		$this->query = $query;
 		$this->queryFixer = QueryFixer::build( $query->getParsedQuery() );
@@ -62,7 +63,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		if ( !$query->isWithDYMSuggestion() ) {
 			return null;
 		}
-		if ( !$query->getSearchConfig()->get( 'CirrusSearchEnablePhraseSuggest' ) ) {
+		if ( !$query->getSearchConfig()->get( CirrusConfigNames::EnablePhraseSuggest ) ) {
 			return null;
 		}
 		// TODO: Should this be tested at an upper level?
@@ -232,7 +233,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		// Add a second generator with the reverse field
 		// Only do this for local queries, we don't know if it's activated
 		// on other wikis.
-		if ( $config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'use' )
+		if ( $config->getElement( CirrusConfigNames::PhraseSuggestReverseField, 'use' )
 			&& ( !$this->query->getCrossSearchStrategy()->isExtraIndicesSearchSupported()
 				|| !OtherIndexesUpdater::getExtraIndexesForNamespaces(
 					$config,
@@ -252,7 +253,7 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 		}
 		if ( !empty( $suggestSettings['collate'] ) ) {
 			$collateFields = [ 'title.plain', 'redirect.title.plain' ];
-			if ( $config->get( 'CirrusSearchPhraseSuggestUseText' ) ) {
+			if ( $config->get( CirrusConfigNames::PhraseSuggestUseText ) ) {
 				$collateFields[] = 'text.plain';
 			}
 			$settings['phrase']['collate'] = [

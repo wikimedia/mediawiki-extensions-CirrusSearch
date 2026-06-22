@@ -48,8 +48,8 @@ class UserTestingStatus {
 			// ElasticsearchIntermediary would fail unit testing.
 			if ( defined( 'MW_PHPUNIT_TEST' ) ) {
 				$config = new HashConfig( [
-					'CirrusSearchUserTesting' => [],
-					'CirrusSearchActiveTest' => false,
+					CirrusConfigNames::UserTesting => [],
+					CirrusConfigNames::ActiveTest => false,
 				] );
 			} else {
 				$config = $context->getConfig();

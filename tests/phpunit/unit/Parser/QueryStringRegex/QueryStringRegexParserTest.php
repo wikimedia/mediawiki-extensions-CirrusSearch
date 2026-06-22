@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Parser\QueryStringRegex;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\AST\BooleanClause;
@@ -48,7 +49,8 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 
 	public function testHardLimitOnQueryLength() {
 		// Test that even if we allow more than the hard limit, the hard limit is always applied because evaluated prior any parsing steps
-		$config = new HashSearchConfig( [ 'CirrusSearchMaxFullTextQueryLength' => QueryStringRegexParser::QUERY_LEN_HARD_LIMIT * 2 ] );
+		$config = new HashSearchConfig(
+			[ CirrusConfigNames::MaxFullTextQueryLength => QueryStringRegexParser::QUERY_LEN_HARD_LIMIT * 2 ] );
 
 		$parser = $this->buildParser( $config );
 		try {
@@ -163,8 +165,8 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 	 */
 	public function testSpecialSyntax( string $query, bool $containsSepcialSyntax ): void {
 		$parser = $this->buildParser( $this->newHashSearchConfig( [
-			'CirrusSearchAllowLeadingWildcard' => false,
-			'CirrusSearchStripQuestionMarks' => 'all',
+			CirrusConfigNames::AllowLeadingWildcard => false,
+			CirrusConfigNames::StripQuestionMarks => 'all',
 		] ) );
 		$query = $parser->parse( $query );
 		$this->assertEquals( $containsSepcialSyntax, $query->isQueryOfClass( BasicQueryClassifier::COMPLEX_QUERY ) );

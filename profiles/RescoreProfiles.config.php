@@ -22,9 +22,9 @@ namespace CirrusSearch;
  */
 $phraseRescorePlaceHolder = [
 	'window' => 512,
-	'window_size_override' => 'CirrusSearchPhraseRescoreWindowSize',
+	'window_size_override' => CirrusConfigNames::PhraseRescoreWindowSize,
 	'rescore_query_weight' => 10,
-	'rescore_query_weight_override' => 'CirrusSearchPhraseRescoreBoost',
+	'rescore_query_weight_override' => CirrusConfigNames::PhraseRescoreBoost,
 	'query_weight' => 1.0,
 	'type' => 'phrase',
 	// defaults: 'score_mode' => 'total'
@@ -54,7 +54,7 @@ return [
 				'window' => 8192,
 
 				// The window size can be overridden by a config a value if set
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'window_size_override' => CirrusConfigNames::FunctionRescoreWindowSize,
 
 				// relative importance of the original query
 				'query_weight' => 1.0,
@@ -85,7 +85,7 @@ return [
 			$phraseRescorePlaceHolder,
 			[
 				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'window_size_override' => CirrusConfigNames::FunctionRescoreWindowSize,
 				'query_weight' => 1.0,
 				'rescore_query_weight' => 1.0,
 				'score_mode' => 'multiply',
@@ -110,7 +110,7 @@ return [
 			$phraseRescorePlaceHolder,
 			[
 				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'window_size_override' => CirrusConfigNames::FunctionRescoreWindowSize,
 				'query_weight' => 1.0,
 				'rescore_query_weight' => 1.0,
 				'score_mode' => 'total',
@@ -119,7 +119,7 @@ return [
 			],
 			[
 				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'window_size_override' => CirrusConfigNames::FunctionRescoreWindowSize,
 				'query_weight' => 1.0,
 				'rescore_query_weight' => 1.0,
 				'score_mode' => 'multiply',
@@ -139,7 +139,7 @@ return [
 			$phraseRescorePlaceHolder,
 			[
 				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'window_size_override' => CirrusConfigNames::FunctionRescoreWindowSize,
 				'query_weight' => 1.0,
 				'rescore_query_weight' => 1.0,
 				'score_mode' => 'total',
@@ -148,7 +148,7 @@ return [
 			],
 			[
 				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'window_size_override' => CirrusConfigNames::FunctionRescoreWindowSize,
 				'query_weight' => 1.0,
 				'rescore_query_weight' => 1.0,
 				'score_mode' => 'multiply',
@@ -169,7 +169,7 @@ return [
 			$phraseRescorePlaceHolder,
 			[
 				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'window_size_override' => CirrusConfigNames::FunctionRescoreWindowSize,
 				'query_weight' => 1.0,
 				'rescore_query_weight' => 1.0,
 				'score_mode' => 'total',
@@ -178,7 +178,7 @@ return [
 			],
 			[
 				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'window_size_override' => CirrusConfigNames::FunctionRescoreWindowSize,
 				'query_weight' => 1.0,
 				'rescore_query_weight' => 1.0,
 				'score_mode' => 'multiply',
@@ -195,7 +195,7 @@ return [
 			$phraseRescorePlaceHolder,
 			[
 				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'window_size_override' => CirrusConfigNames::FunctionRescoreWindowSize,
 				'query_weight' => 1.0,
 				'rescore_query_weight' => 100.0,
 				'score_mode' => 'total',
@@ -204,7 +204,7 @@ return [
 			],
 			[
 				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'window_size_override' => CirrusConfigNames::FunctionRescoreWindowSize,
 				'query_weight' => 1.0,
 				'rescore_query_weight' => 1.0,
 				'score_mode' => 'multiply',

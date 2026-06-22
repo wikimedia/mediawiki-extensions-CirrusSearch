@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\Rescore\PreferRecentFunctionScoreBuilder;
@@ -58,8 +59,8 @@ class PreferRecentFeatureTest extends CirrusTestCase {
 		$defaultDecay = 0.6;
 
 		$config = new HashSearchConfig( [
-			'CirrusSearchPreferRecentDefaultHalfLife' => $defaultHalfLife,
-			'CirrusSearchPreferRecentUnspecifiedDecayPortion' => $defaultDecay,
+			CirrusConfigNames::PreferRecentDefaultHalfLife => $defaultHalfLife,
+			CirrusConfigNames::PreferRecentUnspecifiedDecayPortion => $defaultDecay,
 		] );
 		$feature = new PreferRecentFeature( $config );
 		$this->assertRemaining( $feature, $term, $expectedRemaining );
@@ -81,8 +82,8 @@ class PreferRecentFeatureTest extends CirrusTestCase {
 		$defaultDecay = 0.6;
 
 		$config = new HashSearchConfig( [
-			'CirrusSearchPreferRecentDefaultHalfLife' => $defaultHalfLife,
-			'CirrusSearchPreferRecentUnspecifiedDecayPortion' => $defaultDecay,
+			CirrusConfigNames::PreferRecentDefaultHalfLife => $defaultHalfLife,
+			CirrusConfigNames::PreferRecentUnspecifiedDecayPortion => $defaultDecay,
 		] );
 		$feature = new PreferRecentFeature( $config );
 		$builder = new PreferRecentFunctionScoreBuilder(

@@ -32,7 +32,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	public function testShardCount( $shardCounts, $cluster, $indexSuffix, $expect ) {
 		$config = $this->createMock( SearchConfig::class );
 		$config->method( 'get' )
-			->with( 'CirrusSearchShardCount' )
+			->with( CirrusConfigNames::ShardCount )
 			->willReturn( $shardCounts );
 
 		$settings = new ClusterSettings( $config, $cluster );
@@ -70,7 +70,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	public function testReplicaCount( $replicas, $cluster, $indexSuffix, $expect ) {
 		$config = $this->createMock( SearchConfig::class );
 		$config->method( 'get' )
-			->with( 'CirrusSearchReplicas' )
+			->with( CirrusConfigNames::Replicas )
 			->willReturn( $replicas );
 
 		$settings = new ClusterSettings( $config, $cluster );
@@ -150,7 +150,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	public function testGetMaxShardsPerNode( $maxShardsPerNode, $cluster, $indexSuffix, $expect ) {
 		$config = $this->createMock( SearchConfig::class );
 		$config->method( 'get' )
-			->with( 'CirrusSearchMaxShardsPerNode' )
+			->with( CirrusConfigNames::MaxShardsPerNode )
 			->willReturn( $maxShardsPerNode );
 
 		$settings = new ClusterSettings( $config, $cluster );
@@ -182,7 +182,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	 */
 	public function testIsPrivate( $expected, $cluster, $privateClusters ) {
 		$config = new HashSearchConfig( [
-			'CirrusSearchPrivateClusters' => $privateClusters,
+			CirrusConfigNames::PrivateClusters => $privateClusters,
 		] );
 		$settings = new ClusterSettings( $config, $cluster );
 		$this->assertEquals( $expected, $settings->isPrivateCluster() );

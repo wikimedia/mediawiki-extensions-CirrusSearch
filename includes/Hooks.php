@@ -357,7 +357,7 @@ class Hooks implements
 	 * @param string $term
 	 */
 	public function onSpecialSearchResultsAppend( $specialSearch, $out, $term ) {
-		$feedbackLink = $out->getConfig()->get( 'CirrusSearchFeedbackLink' );
+		$feedbackLink = $out->getConfig()->get( CirrusConfigNames::FeedbackLink );
 
 		if ( $feedbackLink ) {
 			self::addSearchFeedbackLink( $feedbackLink, $specialSearch, $out );
@@ -448,7 +448,7 @@ class Hooks implements
 	 */
 	public function onResourceLoaderGetConfigVars( array &$vars, $skin, Config $config ): void {
 		$vars += [
-			'wgCirrusSearchFeedbackLink' => $config->get( 'CirrusSearchFeedbackLink' ),
+			'wgCirrusSearchFeedbackLink' => $config->get( CirrusConfigNames::FeedbackLink ),
 		];
 	}
 
@@ -604,7 +604,7 @@ class Hooks implements
 	/** @inheritDoc */
 	public function onUserGetDefaultOptions( &$defaultOptions ) {
 		$defaultOptions['cirrussearch-pref-completion-profile'] =
-			$this->configFactory->makeConfig( 'CirrusSearch' )->get( 'CirrusSearchCompletionSettings' );
+			$this->configFactory->makeConfig( 'CirrusSearch' )->get( CirrusConfigNames::CompletionSettings );
 	}
 
 	/** @inheritDoc */

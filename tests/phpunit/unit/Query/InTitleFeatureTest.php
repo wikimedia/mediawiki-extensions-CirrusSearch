@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Extra\Query\SourceRegex;
@@ -72,7 +73,7 @@ class InTitleFeatureTest extends CirrusTestCase {
 	public function testParse( array $expectedQuery, $expectedTerm, $term ) {
 		$config = new HashSearchConfig( [
 			'LanguageCode' => 'en',
-			'CirrusSearchAllowLeadingWildcard' => true,
+			CirrusConfigNames::AllowLeadingWildcard => true,
 		] );
 		$feature = new InTitleFeature( $config );
 		$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
@@ -114,8 +115,8 @@ class InTitleFeatureTest extends CirrusTestCase {
 
 		$feature = new InTitleFeature( new HashSearchConfig(
 			[
-				'CirrusSearchEnableRegex' => true,
-				'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ]
+				CirrusConfigNames::EnableRegex => true,
+				CirrusConfigNames::WikimediaExtraPlugin => [ 'regex' => [ 'use' => true ] ]
 			],
 			[ HashSearchConfig::FLAG_INHERIT ]
 		) );

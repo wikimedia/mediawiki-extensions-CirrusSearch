@@ -37,7 +37,7 @@ class ArchiveChangeListener implements PageDeleteCompleteHook, PageUndeleteCompl
 	}
 
 	private function isEnabled(): bool {
-		if ( !$this->searchConfig->get( 'CirrusSearchIndexDeletes' ) ) {
+		if ( !$this->searchConfig->get( CirrusConfigNames::IndexDeletes ) ) {
 			return false;
 		}
 		return $this->searchConfig

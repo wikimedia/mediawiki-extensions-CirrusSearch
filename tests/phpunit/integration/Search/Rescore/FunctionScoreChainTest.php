@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search\Rescore;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Profile\SearchProfileService;
@@ -89,13 +90,13 @@ class FunctionScoreChainTest extends CirrusIntegrationTestCase {
 
 		$config = $this->newHashSearchConfig(
 			[
-				'CirrusSearchPreferRecentDefaultDecayPortion' => 77,
-				'CirrusSearchPreferRecentDefaultHalfLife' => 66,
-				'CirrusSearchLanguageWeight' => [ 'user' => 5 ],
-				'CirrusSearchBoostTemplates' => [
+				CirrusConfigNames::PreferRecentDefaultDecayPortion => 77,
+				CirrusConfigNames::PreferRecentDefaultHalfLife => 66,
+				CirrusConfigNames::LanguageWeight => [ 'user' => 5 ],
+				CirrusConfigNames::BoostTemplates => [
 					'Some Page' => 1.23,
 				],
-			'CirrusSearchNamespaceWeights' => [],
+				CirrusConfigNames::NamespaceWeights => [],
 			],
 			[ HashSearchConfig::FLAG_INHERIT ],
 			new HashSearchConfig( [] ),

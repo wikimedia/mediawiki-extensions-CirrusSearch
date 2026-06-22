@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\CachedSparqlClient;
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
@@ -61,9 +62,9 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	 * @param ?CachedSparqlClient $sparql
 	 */
 	public function __construct( Config $config, ?CachedSparqlClient $sparql = null ) {
-		$this->depth = (int)$config->get( 'CirrusSearchCategoryDepth' );
-		$this->limit = (int)$config->get( 'CirrusSearchCategoryMax' );
-		$endpoint = $config->get( 'CirrusSearchCategoryEndpoint' );
+		$this->depth = (int)$config->get( CirrusConfigNames::CategoryDepth );
+		$this->limit = (int)$config->get( CirrusConfigNames::CategoryMax );
+		$endpoint = $config->get( CirrusConfigNames::CategoryEndpoint );
 		if ( $endpoint !== null && $endpoint !== '' ) {
 			$this->sparql = $sparql ?? MediaWikiServices::getInstance()->getService( 'CirrusCategoriesClient' );
 		}

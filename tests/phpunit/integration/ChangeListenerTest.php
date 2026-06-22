@@ -33,39 +33,39 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		return [
 			'default cluster setup' => [
 				[
-					'CirrusSearchClusters' => [
+					CirrusConfigNames::Clusters => [
 						'mycluster' => [ '127.0.0.1' ],
 					],
-					'CirrusSearchDefaultCluster' => 'mycluster',
-					'CirrusSearchWriteClusters' => null,
-					'CirrusSearchReplicaGroup' => 'default',
+					CirrusConfigNames::DefaultCluster => 'mycluster',
+					CirrusConfigNames::WriteClusters => null,
+					CirrusConfigNames::ReplicaGroup => 'default',
 				],
 				true
 			],
 			'writable cluster set' => [
 				[
-					'CirrusSearchClusters' => [
+					CirrusConfigNames::Clusters => [
 						'mycluster' => [ '127.0.0.1' ],
 					],
-					'CirrusSearchDefaultCluster' => 'mycluster',
-					'CirrusSearchWriteClusters' => [
+					CirrusConfigNames::DefaultCluster => 'mycluster',
+					CirrusConfigNames::WriteClusters => [
 						'default' => [],
 						UpdateGroup::PAGE => [ 'mycluster' ]
 					],
-					'CirrusSearchReplicaGroup' => 'default',
+					CirrusConfigNames::ReplicaGroup => 'default',
 				],
 				true
 			],
 			'no writable cluster set' => [
 				[
-					'CirrusSearchClusters' => [
+					CirrusConfigNames::Clusters => [
 						'mycluster' => [ '127.0.0.1' ],
 					],
-					'CirrusSearchDefaultCluster' => 'mycluster',
-					'CirrusSearchWriteClusters' => [
+					CirrusConfigNames::DefaultCluster => 'mycluster',
+					CirrusConfigNames::WriteClusters => [
 						'default' => [],
 					],
-					'CirrusSearchReplicaGroup' => 'default',
+					CirrusConfigNames::ReplicaGroup => 'default',
 				],
 				false
 			],
@@ -117,10 +117,10 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 		bool $withJob
 	) {
 		$config = [
-			'CirrusSearchLinkedArticlesToUpdate' => 10,
-			'CirrusSearchUnlinkedArticlesToUpdate' => 10,
-			'CirrusSearchEnableIncomingLinkCounting' => false,
-			'CirrusSearchUpdateDelay' => [
+			CirrusConfigNames::LinkedArticlesToUpdate => 10,
+			CirrusConfigNames::UnlinkedArticlesToUpdate => 10,
+			CirrusConfigNames::EnableIncomingLinkCounting => false,
+			CirrusConfigNames::UpdateDelay => [
 				'prioritized' => 0,
 				'default' => 0,
 			]
@@ -198,15 +198,15 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 
 	private function redirectDocConfig( bool $build ): array {
 		return [
-			'CirrusSearchLinkedArticlesToUpdate' => 10,
-			'CirrusSearchUnlinkedArticlesToUpdate' => 10,
-			'CirrusSearchEnableIncomingLinkCounting' => false,
-			'CirrusSearchUpdateDelay' => [ 'prioritized' => 0, 'default' => 0 ],
-			'CirrusSearchRedirectDocuments' => [ 'build' => $build, 'use' => false ],
-			'CirrusSearchClusters' => [ 'mycluster' => [ '127.0.0.1' ] ],
-			'CirrusSearchDefaultCluster' => 'mycluster',
-			'CirrusSearchWriteClusters' => null,
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::LinkedArticlesToUpdate => 10,
+			CirrusConfigNames::UnlinkedArticlesToUpdate => 10,
+			CirrusConfigNames::EnableIncomingLinkCounting => false,
+			CirrusConfigNames::UpdateDelay => [ 'prioritized' => 0, 'default' => 0 ],
+			CirrusConfigNames::RedirectDocuments => [ 'build' => $build, 'use' => false ],
+			CirrusConfigNames::Clusters => [ 'mycluster' => [ '127.0.0.1' ] ],
+			CirrusConfigNames::DefaultCluster => 'mycluster',
+			CirrusConfigNames::WriteClusters => null,
+			CirrusConfigNames::ReplicaGroup => 'default',
 		];
 	}
 

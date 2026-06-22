@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Assignment;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\UpdateGroup;
@@ -13,12 +14,12 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 
 	public function testSimpleConfig() {
 		$clusters = new MultiClusterAssignment( new HashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'mycluster' => [ '127.0.0.1' ],
 			],
-			'CirrusSearchDefaultCluster' => 'mycluster',
-			'CirrusSearchWriteClusters' => null,
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::DefaultCluster => 'mycluster',
+			CirrusConfigNames::WriteClusters => null,
+			CirrusConfigNames::ReplicaGroup => 'default',
 		] ) );
 		$this->assertEquals( 'mycluster', $clusters->getSearchCluster() );
 		$this->assertEquals( [ 'mycluster' ], $clusters->getManagedClusters() );
@@ -32,12 +33,12 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 
 	public function testGetServerListUnknownReplica() {
 		$clusters = new MultiClusterAssignment( new HashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'mycluster' => [ '127.0.0.1' ],
 			],
-			'CirrusSearchDefaultCluster' => 'mycluster',
-			'CirrusSearchWriteClusters' => null,
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::DefaultCluster => 'mycluster',
+			CirrusConfigNames::WriteClusters => null,
+			CirrusConfigNames::ReplicaGroup => 'default',
 		] ) );
 		$this->expectException( \RuntimeException::class );
 		$clusters->getServerList( 'catapult' );
@@ -45,14 +46,14 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 
 	public function testGetServerListSingleGroupReplica() {
 		$clusters = new MultiClusterAssignment( new HashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'cluster_1.a' => [ 'replica' => 'cluster_1', 'group' => 'a', '127.0.0.1:9200' ],
 				'cluster_1.b' => [ 'replica' => 'cluster_1', 'group' => 'b', '127.0.0.1:9201' ],
 				'cluster_2' => [ '127.0.0.1:9202' ],
 			],
-			'CirrusSearchDefaultCluster' => 'mycluster',
-			'CirrusSearchWriteClusters' => null,
-			'CirrusSearchReplicaGroup' => 'a',
+			CirrusConfigNames::DefaultCluster => 'mycluster',
+			CirrusConfigNames::WriteClusters => null,
+			CirrusConfigNames::ReplicaGroup => 'a',
 		] ) );
 		$this->assertEquals( [ '127.0.0.1:9202' ], $clusters->getServerList( 'cluster_2' ) );
 	}
@@ -79,13 +80,13 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 	 */
 	public function testGroupAssignment( $name, $search, $writable, $replicaGroup ) {
 		$clusters = new MultiClusterAssignment( new HashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'x.dc1' => [ 'replica' => 'dc1', 'group' => 'x', 'x.dc1:9200' ],
 				'y.dc1' => [ 'replica' => 'dc1', 'group' => 'y', 'y.dc1:9201' ],
 			],
-			'CirrusSearchDefaultCluster' => 'dc1',
-			'CirrusSearchWriteClusters' => null,
-			'CirrusSearchReplicaGroup' => $replicaGroup,
+			CirrusConfigNames::DefaultCluster => 'dc1',
+			CirrusConfigNames::WriteClusters => null,
+			CirrusConfigNames::ReplicaGroup => $replicaGroup,
 		] ) );
 
 		$this->assertEquals( $name, $clusters->getCrossClusterName() );
@@ -96,21 +97,21 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 	public function testMultipleGroupsRequiresReplicaGroupConfiguration() {
 		$this->expectException( \RuntimeException::class );
 		$clusters = new MultiClusterAssignment( new HashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'x.a' => [ 'replica' => 'a', 'group' => 'x', 'x.a:9200' ],
 				'y.a' => [ 'replica' => 'a', 'group' => 'x', 'x.a:9201' ],
 			],
-			'CirrusSearchReplicaGroup' => null,
+			CirrusConfigNames::ReplicaGroup => null,
 		] ) );
 	}
 
 	public function testNoDuplicateConfigs() {
 		$clusters = new MultiClusterAssignment( new HashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'x.a' => [ 'replica' => 'a', 'group' => 'x', 'x.a:9200' ],
 				'y.a' => [ 'replica' => 'a', 'group' => 'x', 'x.a:9201' ],
 			],
-			'CirrusSearchReplicaGroup' => 'x',
+			CirrusConfigNames::ReplicaGroup => 'x',
 		] ) );
 		// This isn't detected until we initialize the cluster config
 		$this->expectException( \RuntimeException::class );
@@ -120,11 +121,11 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 	public function testReplicaGroupTypeMustExist() {
 		$this->expectException( \RuntimeException::class );
 		new MultiClusterAssignment( new HashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'x.a' => [ 'replica' => 'a', 'group' => 'x', 'x.a:9200' ],
 				'y.a' => [ 'replica' => 'a', 'group' => 'x', 'x.a:9201' ],
 			],
-			'CirrusSearchReplicaGroup' => [
+			CirrusConfigNames::ReplicaGroup => [
 				'type' => 'garbage',
 				'groups' => [ 'x', 'y' ],
 			],
@@ -133,13 +134,13 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 
 	public function testRoundRobin() {
 		$defaults = [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'x.a' => [ 'replica' => 'a', 'group' => 'x', 'x.a:9200' ],
 				'y.a' => [ 'replica' => 'a', 'group' => 'y', 'y.a:9201' ],
 			],
-			'CirrusSearchDefaultCluster' => 'a',
-			'CirrusSearchWriteClusters' => [ 'a' ],
-			'CirrusSearchReplicaGroup' => [
+			CirrusConfigNames::DefaultCluster => 'a',
+			CirrusConfigNames::WriteClusters => [ 'a' ],
+			CirrusConfigNames::ReplicaGroup => [
 				'type' => 'roundrobin',
 				'groups' => [ 'x', 'y' ],
 			],
@@ -162,7 +163,7 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 
 	public function testMultiDcMultiCluster() {
 		$defaults = [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'eqiad-a' => [ 'replica' => 'eqiad', 'group' => 'a', 'search.svc.eqiad.wmnet:9200' ],
 				'eqiad-b' => [ 'replica' => 'eqiad', 'group' => 'b', 'search-b.svc.eqiad.wmnet:9201' ],
 				'eqiad-c' => [ 'replica' => 'eqiad', 'group' => 'c', 'search-c.svc.eqiad.wmnet:9202' ],
@@ -171,11 +172,11 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 				'codfw-c' => [ 'replica' => 'codfw', 'group' => 'c', 'search-c.svc.codfw.wmnet:9202' ],
 				'cloud' => [ 'cloudsearch.svc.eqiad.wmnet:9200' ],
 			],
-			'CirrusSearchDefaultCluster' => 'eqiad',
-			'CirrusSearchWriteClusters' => [ 'eqiad', 'codfw', 'cloud' ],
+			CirrusConfigNames::DefaultCluster => 'eqiad',
+			CirrusConfigNames::WriteClusters => [ 'eqiad', 'codfw', 'cloud' ],
 			// While prod use is likely round robin, it's much easier to test constants and roundrobin
 			// is tested elsewhere.
-			'CirrusSearchReplicaGroup' => 'b',
+			CirrusConfigNames::ReplicaGroup => 'b',
 		];
 		$clusters = new MultiClusterAssignment( new HashSearchConfig( [
 			'_wikiID' => 'aawiki',
@@ -193,13 +194,13 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 
 	public function testGenericManagedClusters() {
 		$config = new HashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'one' => [],
 				'two' => [],
 				'unmanaged' => [],
 			],
-			'CirrusSearchManagedClusters' => [ 'one', 'two', 'unknown' ],
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::ManagedClusters => [ 'one', 'two', 'unknown' ],
+			CirrusConfigNames::ReplicaGroup => 'default',
 		] );
 		$assignment = $config->getClusterAssignment();
 		$this->assertEquals( [ 'one', 'two', 'unknown' ], $assignment->getManagedClusters() );
@@ -211,13 +212,13 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 
 	public function testGenericWritableClusters() {
 		$config = new HashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'one' => [],
 				'two' => [],
 				'readonly' => [],
 			],
-			'CirrusSearchWriteClusters' => [ 'one', 'two', 'unknown' ],
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::WriteClusters => [ 'one', 'two', 'unknown' ],
+			CirrusConfigNames::ReplicaGroup => 'default',
 		] );
 		// Unclear if it's right to not filter out with available cluster
 		// ElasticaWrite should error out if the cluster is unknown tho.
@@ -230,13 +231,13 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 
 	public function testUseCaseWritableClusters() {
 		$config = new HashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 			],
-			'CirrusSearchWriteClusters' => [
+			CirrusConfigNames::WriteClusters => [
 				'default' => [ 'one', 'two', 'unknown' ],
 				'archive' => [ 'one' ],
 			],
-			'CirrusSearchReplicaGroup' => 'default',
+			CirrusConfigNames::ReplicaGroup => 'default',
 		] );
 		$assignment = $config->getClusterAssignment();
 		$this->assertEquals( [ 'one', 'two', 'unknown' ], $assignment->getWritableClusters( UpdateGroup::PAGE ) );
@@ -248,10 +249,10 @@ class MultiClusterAssignmentTest extends CirrusTestCase {
 
 	public function testReplicasMustExist() {
 		$clusters = new MultiClusterAssignment( new HashSearchConfig( [
-			'CirrusSearchClusters' => [
+			CirrusConfigNames::Clusters => [
 				'phpunit' => [ 'group' => 'a' ]
 			],
-			'CirrusSearchReplicaGroup' => 'b',
+			CirrusConfigNames::ReplicaGroup => 'b',
 		] ) );
 		$this->expectException( \RuntimeException::class );
 		$clusters->getServerList();

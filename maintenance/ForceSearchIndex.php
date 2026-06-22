@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\BuildDocument\BuildDocument;
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Iterator\CallbackIterator;
 use CirrusSearch\Job;
 use CirrusSearch\SearchConfig;
@@ -135,7 +136,7 @@ class ForceSearchIndex extends Maintenance {
 
 	/** @inheritDoc */
 	public function execute() {
-		if ( $this->getConfig()->get( 'CirrusSearchDisableUpdate' ) ) {
+		if ( $this->getConfig()->get( CirrusConfigNames::DisableUpdate ) ) {
 			$this->fatalError(
 				'Updates are currenly disabled. ' .
 				'Set $wgCirrusSearchDisableUpdate to false to re-enable.'

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\CirrusConfigNames;
 use MediaWikiIntegrationTestCase;
 use Wikimedia\TestingAccessWrapper;
 
@@ -12,7 +13,7 @@ class RunSearchTest extends MediaWikiIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->overrideConfigValue( 'CirrusSearchWeightedTags', [
+		$this->overrideConfigValue( CirrusConfigNames::WeightedTags, [
 			'build' => false,
 			'use' => false
 		] );

@@ -656,15 +656,6 @@ Default:
 
 Weight of fields in prefix search.  It is safe to change these at any time.
 
-; $wgCirrusSearchBoostOpening
-
-Default:
-    $wgCirrusSearchBoostOpening = 'first_heading';
-
-The method Cirrus will use to extract the opening section of the text.  Valid values are:
-* first_heading - Wikipedia style.  Grab the text before the first heading (h1-h6) tag.
-* none - Do not extract opening text and do not search it.
-
 ; $wgCirrusSearchNearMatchWeight
 
 Default:
@@ -823,20 +814,6 @@ Default:
 
 List of fields allowed for the more like this queries.
 
-; $wgCirrusSearchMoreLikeThisUseFields
-
-Default:
-    $wgCirrusSearchMoreLikeThisUseFields = false;
-
-When set to false cirrus will use the text content to build the query
-and search on the field listed in $wgCirrusSearchMoreLikeThisFields.
-Set to true if you want to use field data as input text to build the initial
-query.
-
-Note that if the all field is used then this setting will be forced to true.
-This is because the all field is not part of the _source and its content cannot
-be retrieved by elasticsearch.
-
 ; $wgCirrusSearchClusterOverrides
 
 Default:
@@ -860,13 +837,6 @@ Default:
 More like this queries can be quite expensive. Set this to > 0 to cache the
 results for the specified # of seconds into ObjectCache (memcache, redis, or
 whatever is configured).
-
-; $wgCirrusSearchShowNowUsing
-
-Default:
-    $wgCirrusSearchShowNowUsing = false;
-
-Show the notification about this wiki using CirrusSearch on the search page.
 
 ; $wgCirrusSearchFetchConfigFromApi
 
@@ -895,20 +865,6 @@ Set the order of crossproject side boxes. Possible values:
 - static: output crossproject results in the order provided by the interwiki
   resolver (order set in wgCirrusSearchInterwikiSources or SiteMatrix)
 - recall: based on total hits
-
-; $wgCirrusSearchInterwikiLoadTest
-
-Default:
-    $wgCirrusSearchInterwikiLoadTest = null;
-
-Temporary special configuration for load testing the addition of interwiki
-search results to a wiki. If this value is null then nothing special
-happens, and wgCirrusSearchInterwikiSources is treated as usual. If this is
-set to a value between 0 and 1 that is treated as the % of requests to
-Special:Search that should use wgCirrusSearchInterwikiSources to make a
-query. The results of this query will not be attached to the
-SearchResultSet, and will not be displayed to the user. This is to estimate
-the effect of adding this additional load onto a search cluster.
 
 ; $wgCirrusSearchRefreshInterval
 
@@ -1336,27 +1292,6 @@ Default:
 Overrides the master timeout on cluster wide actions, such as mapping updates.
 It may be necessary to increase this on clusters that support a large number
 of wikis.
-
-; $wgCirrusSearchSanityCheck
-
-Default:
-    $wgCirrusSearchSanityCheck = true;
-
-Activate/Deactivate continuous sanity check.
-The process will scan and check discrepancies between mysql and
-elasticsearch for all possible ids in the database.
-
-Settings will be automatically chosen according to wiki size (see
-profiles/SaneitizeProfiles.php).
-
-The script responsible for pushing sanitization jobs is saneitizeJobs.php.
-It needs to be scheduled by cron, default settings provided are suited
-for a bi-hourly schedule (--refresh-freq=7200).
-
-Setting $wgCirrusSearchSanityCheck to false will prevent the script from
-pushing new jobs even if it's still scheduled by cron.
-
-All writable clusters are checked.
 
 ; $wgCirrusSearchIndexBaseName
 

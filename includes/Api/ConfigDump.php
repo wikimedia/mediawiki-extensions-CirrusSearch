@@ -47,7 +47,6 @@ class ConfigDump extends ApiBase {
 		'CirrusSearchLinkedArticlesToUpdate',
 		'CirrusSearchUnlikedArticlesToUpdate',
 		'CirrusSearchWeights',
-		'CirrusSearchBoostOpening',
 		'CirrusSearchNearMatchWeight',
 		'CirrusSearchStemmedWeight',
 		'CirrusSearchNamespaceWeights',

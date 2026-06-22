@@ -13,6 +13,7 @@ use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
+use MediaWiki\MainConfigNames;
 use Wikimedia\Assert\Assert;
 
 class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider {
@@ -106,7 +107,7 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 			if ( $lang === null ) {
 				continue;
 			}
-			if ( $lang === $this->query->getSearchConfig()->get( 'LanguageCode' ) ) {
+			if ( $lang === $this->query->getSearchConfig()->get( MainConfigNames::LanguageCode ) ) {
 				// The query is in the wiki language so we
 				// don't need to actually try another wiki.
 				// Note that this may not be very accurate for

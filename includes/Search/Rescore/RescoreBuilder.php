@@ -7,6 +7,7 @@ use CirrusSearch\Elastica\LtrQuery;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\AbstractQuery;
+use MediaWiki\MainConfigNames;
 
 /**
  * Set of rescore builders
@@ -249,9 +250,9 @@ class RescoreBuilder {
 				case 'all':
 					return true;
 				case 'content':
-					$profileNs = $this->context->getConfig()->get( 'ContentNamespaces' );
+					$profileNs = $this->context->getConfig()->get( MainConfigNames::ContentNamespaces );
 					// Default search namespaces are also considered content
-					$defaultSearch = $this->context->getConfig()->get( 'NamespacesToBeSearchedDefault' );
+					$defaultSearch = $this->context->getConfig()->get( MainConfigNames::NamespacesToBeSearchedDefault );
 					foreach ( $defaultSearch as $ns => $isDefault ) {
 						if ( $isDefault ) {
 							$profileNs[] = $ns;

@@ -12,6 +12,7 @@ use CirrusSearch\Maintenance\Validators\ReplicaRangeValidator;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use MediaWiki\Config\ConfigException;
+use MediaWiki\MainConfigNames;
 
 /**
  * Update the search configuration on the search backend.
@@ -208,7 +209,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getOption( 'reindexAcceptableCountDeviation', '5%' ) );
 		$this->reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
 		$this->printDebugCheckConfig = $this->getOption( 'debugCheckConfig', false );
-		$this->langCode = $this->getSearchConfig()->get( "LanguageCode" );
+		$this->langCode = $this->getSearchConfig()->get( MainConfigNames::LanguageCode );
 		$this->prefixSearchStartsWithAny = $this->getSearchConfig()->get( CirrusConfigNames::PrefixSearchStartsWithAnyWord );
 		$this->phraseSuggestUseText = $this->getSearchConfig()->get( CirrusConfigNames::PhraseSuggestUseText );
 		$this->bannedPlugins = $this->getSearchConfig()->get( CirrusConfigNames::BannedPlugins );

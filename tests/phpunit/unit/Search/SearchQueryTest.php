@@ -17,6 +17,7 @@ use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Query\PrefixFeature;
 use CirrusSearch\SearchConfig;
 use Generator;
+use MediaWiki\MainConfigNames;
 use PHPUnit\Framework\Assert;
 
 /**
@@ -419,7 +420,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$hostWikiConfig = $this->newHashSearchConfig( [
 			CirrusConfigNames::NumCrossProjectSearchResults => 1,
 			CirrusConfigNames::EnableCrossProjectSearch => true,
-			'NamespacesToBeSearchedDefault' => [ NS_MAIN => 1, "1" /* NS_TALK */ => 0, "14" /* NS_CATEGORY */ => 1 ],
+			MainConfigNames::NamespacesToBeSearchedDefault => [ NS_MAIN => 1, "1" /* NS_TALK */ => 0, "14" /* NS_CATEGORY */ => 1 ],
 			CirrusConfigNames::RescoreProfiles => [
 				'foo' => [],
 				'common' => []
@@ -427,7 +428,7 @@ class SearchQueryTest extends CirrusTestCase {
 		] );
 		$targetWikiConfig = $this->newHashSearchConfig( [
 			'_wikiID' => 'target',
-			'NamespacesToBeSearchedDefault' => [ "12" /* NS_HELP */ => 1, NS_MAIN => 1, NS_FILE_TALK => 0 ],
+			MainConfigNames::NamespacesToBeSearchedDefault => [ "12" /* NS_HELP */ => 1, NS_MAIN => 1, NS_FILE_TALK => 0 ],
 			CirrusConfigNames::RescoreProfiles => [
 				'common' => []
 			]
@@ -450,7 +451,8 @@ class SearchQueryTest extends CirrusTestCase {
 
 		$targetWikiConfig = $this->newHashSearchConfig( [
 			'_wikiID' => 'target',
-			'NamespacesToBeSearchedDefault' => [ 1 ], // cryptic version of NS_MAIN => 1 as returned by the cirrus config dump API
+			// cryptic version of NS_MAIN => 1 as returned by the cirrus config dump API
+			MainConfigNames::NamespacesToBeSearchedDefault => [ 1 ],
 			CirrusConfigNames::RescoreProfiles => [
 				'common' => []
 			]

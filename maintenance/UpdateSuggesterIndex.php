@@ -13,6 +13,7 @@ use CirrusSearch\SearchConfig;
 use Elastica;
 use Elastica\Query;
 use Elastica\Request;
+use MediaWiki\MainConfigNames;
 use RuntimeException;
 
 /**
@@ -263,7 +264,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$bannedPlugins = $config->get( CirrusConfigNames::BannedPlugins );
 
 		$availablePlugins = $this->unwrap( $utils->scanAvailablePlugins( $bannedPlugins ) );
-		$analysisConfigBuilder = new SuggesterAnalysisConfigBuilder( $connection->getConfig()->get( 'LanguageCode' ),
+		$analysisConfigBuilder = new SuggesterAnalysisConfigBuilder( $connection->getConfig()->get( MainConfigNames::LanguageCode ),
 			$availablePlugins, $config );
 		$analysisConfig = $analysisConfigBuilder->buildConfig();
 		$recycle = $this->canRecycle( $connection, $analysisConfig, $altIndex, $altIndexId );

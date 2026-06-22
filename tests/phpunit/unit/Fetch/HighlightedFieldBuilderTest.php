@@ -11,6 +11,7 @@ use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MatchAll;
+use MediaWiki\MainConfigNames;
 
 /**
  * @covers \CirrusSearch\Search\Fetch\HighlightedField
@@ -133,7 +134,7 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 	public function testRegex() {
 		$config = $this->newHashSearchConfig( [
 			CirrusConfigNames::RegexMaxDeterminizedStates => 233,
-			'LanguageCode' => 'testLangCode',
+			MainConfigNames::LanguageCode => 'testLangCode',
 			CirrusConfigNames::FragmentSize => 345,
 		] );
 		$field = ExperimentalHighlightedFieldBuilder::newRegexField(

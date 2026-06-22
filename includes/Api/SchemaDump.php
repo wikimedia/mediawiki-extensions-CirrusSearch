@@ -13,6 +13,7 @@ use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
 use CirrusSearch\Maintenance\SuggesterMappingConfigBuilder;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Api\ApiBase;
+use MediaWiki\MainConfigNames;
 use Wikimedia\ParamValidator\ParamValidator;
 
 /**
@@ -125,7 +126,7 @@ class SchemaDump extends ApiBase {
 		$config = $this->getSearchConfig();
 
 		// Get language code
-		$langCode = $config->get( 'LanguageCode' );
+		$langCode = $config->get( MainConfigNames::LanguageCode );
 
 		// Check if plugins were provided via API parameter
 		$pluginsParam = $this->getParameter( 'plugins' );

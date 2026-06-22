@@ -14,6 +14,7 @@ use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Searcher;
 use Elastica\Query\MatchAll;
+use MediaWiki\MainConfigNames;
 
 /**
  * @covers \CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder
@@ -152,7 +153,7 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		$config = $this->newHashSearchConfig( [
 			CirrusConfigNames::UseExperimentalHighlighter => in_array( 'experimental-highlighter', $options ),
 			CirrusConfigNames::FragmentSize => 150,
-			'LanguageCode' => 'testlocale',
+			MainConfigNames::LanguageCode => 'testlocale',
 			CirrusConfigNames::EnableRegex => true,
 			CirrusConfigNames::WikimediaExtraPlugin => [ 'regex' => [ 'use' => true ] ],
 			CirrusConfigNames::RegexMaxDeterminizedStates => 20000,

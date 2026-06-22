@@ -9,6 +9,7 @@ use CirrusSearch\Extra\Query\SourceRegex;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\Filters;
+use MediaWiki\MainConfigNames;
 
 /**
  * @covers \CirrusSearch\Query\BaseRegexFeature
@@ -34,7 +35,7 @@ class InSourceTest extends CirrusTestCase {
 		}
 
 		$config = new HashSearchConfig( [
-			'LanguageCode' => 'en',
+			MainConfigNames::LanguageCode => 'en',
 			CirrusConfigNames::AllowLeadingWildcard => true,
 		] );
 		$feature = new InSourceFeature( $config );

@@ -7,6 +7,7 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\QueryParser;
 use CirrusSearch\SearchConfig;
+use MediaWiki\MainConfigNames;
 
 /**
  * @covers \CirrusSearch\Parser\AST\BooleanClause
@@ -53,7 +54,7 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
 	 */
 	public function assertQuery( array $expected, $queryString, array $config = [] ) {
-		$this->overrideConfigValues( [ 'CapitalLinks' => true ] );
+		$this->overrideConfigValues( [ MainConfigNames::CapitalLinks => true ] );
 		$config = new HashSearchConfig(
 			$config + [ CirrusConfigNames::StripQuestionMarks => 'all' ],
 			[ HashSearchConfig::FLAG_INHERIT ]

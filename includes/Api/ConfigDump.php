@@ -9,6 +9,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\UserTestingEngine;
 use MediaWiki\Api\ApiBase;
 use MediaWiki\Api\ApiResult;
+use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -115,9 +116,9 @@ class ConfigDump extends ApiBase {
 		CirrusConfigNames::IndexBaseName,
 		CirrusConfigNames::InterleaveConfig,
 		CirrusConfigNames::MaxPhraseTokens,
-		'LanguageCode',
-		'ContentNamespaces',
-		'NamespacesToBeSearchedDefault',
+		MainConfigNames::LanguageCode,
+		MainConfigNames::ContentNamespaces,
+		MainConfigNames::NamespacesToBeSearchedDefault,
 		CirrusConfigNames::CategoryDepth,
 		CirrusConfigNames::CategoryMax,
 		CirrusConfigNames::CategoryEndpoint,

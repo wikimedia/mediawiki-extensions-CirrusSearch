@@ -8,6 +8,7 @@ use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Extra\Query\SourceRegex;
 use CirrusSearch\HashSearchConfig;
 use Elastica\Query\BoolQuery;
+use MediaWiki\MainConfigNames;
 
 /**
  * @covers \CirrusSearch\Query\InTitleFeature
@@ -72,7 +73,7 @@ class InTitleFeatureTest extends CirrusTestCase {
 	 */
 	public function testParse( array $expectedQuery, $expectedTerm, $term ) {
 		$config = new HashSearchConfig( [
-			'LanguageCode' => 'en',
+			MainConfigNames::LanguageCode => 'en',
 			CirrusConfigNames::AllowLeadingWildcard => true,
 		] );
 		$feature = new InTitleFeature( $config );

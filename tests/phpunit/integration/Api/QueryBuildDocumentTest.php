@@ -59,7 +59,7 @@ class QueryBuildDocumentTest extends ApiTestCase {
 	 * @covers \CirrusSearch\Api\QueryBuildDocument
 	 */
 	public function test_content_extraction() {
-		$this->overrideConfigValues( [ 'CapitalLinks' => true ] );
+		$this->overrideConfigValues( [ MainConfigNames::CapitalLinks => true ] );
 		$expectedMetadata = [
 			'cluster_group' => 'my_group',
 			'noop_hints' => [

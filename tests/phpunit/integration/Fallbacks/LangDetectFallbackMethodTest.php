@@ -15,6 +15,7 @@ use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use CirrusSearch\Test\DummySearchResultSet;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Search\ISearchResultSet;
 use MediaWiki\Status\Status;
 
@@ -114,11 +115,11 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 		$config = $this->newHashSearchConfig( [
 			CirrusConfigNames::InterwikiThreshold => $threshold,
 			CirrusConfigNames::EnableAltLanguage => true,
-			'LanguageCode' => 'en',
+			MainConfigNames::LanguageCode => 'en',
 		] );
 		$targetWikiConfig = new HashSearchConfig( [
 			'_wikiID' => 'targetwiki',
-			'LanguageCode' => 'fr',
+			MainConfigNames::LanguageCode => 'fr',
 		] );
 		$query = $this->getNewFTSearchQueryBuilder( $config, $query )
 			->setAllowRewrite( true )
@@ -177,11 +178,11 @@ class LangDetectFallbackMethodTest extends CirrusIntegrationTestCase {
 		$config = new HashSearchConfig( [
 			CirrusConfigNames::InterwikiThreshold => 2,
 			CirrusConfigNames::EnableAltLanguage => true,
-			'LanguageCode' => 'en',
+			MainConfigNames::LanguageCode => 'en',
 		] );
 		$targetWikiConfig = new HashSearchConfig( [
 			'_wikiID' => 'targetwiki',
-			'LanguageCode' => 'fr',
+			MainConfigNames::LanguageCode => 'fr',
 		] );
 
 		$query = $this->getNewFTSearchQueryBuilder( $config, 'foo' )

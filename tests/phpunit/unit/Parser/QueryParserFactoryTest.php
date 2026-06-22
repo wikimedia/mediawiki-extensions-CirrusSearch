@@ -6,6 +6,7 @@ use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser;
 use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
+use MediaWiki\MainConfigNames;
 
 /**
  * @covers \CirrusSearch\Parser\QueryParserFactory
@@ -20,7 +21,7 @@ class QueryParserFactoryTest extends CirrusTestCase {
 				false
 			],
 			'LanguageCode changes parsing behaviors' => [
-				[ 'LanguageCode' => 'he' ],
+				[ MainConfigNames::LanguageCode => 'he' ],
 				'gershayi"m',
 				false
 			],

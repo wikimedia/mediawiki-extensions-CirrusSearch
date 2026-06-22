@@ -289,7 +289,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 
 	public function testDefaultSetup() {
 		$config = $this->newHashSearchConfig( [
-			'LanguageCode' => 'en',
+			MainConfigNames::LanguageCode => 'en',
 			CirrusConfigNames::EnableAltLanguage => true,
 			CirrusConfigNames::InterwikiThreshold => 3,
 			CirrusConfigNames::LanguageToWikiMap => [

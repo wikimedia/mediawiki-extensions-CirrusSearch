@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CirrusIntegrationTestCase;
 use Elastica\Query\MatchQuery;
+use MediaWiki\MainConfigNames;
 
 /**
  * @group CirrusSearch
@@ -31,7 +32,7 @@ class QueryHelperTest extends CirrusIntegrationTestCase {
 	 * @param string $underscores
 	 */
 	public function testMatchPage( $expected, $field, $title, $underscores ) {
-		$this->overrideConfigValues( [ 'CapitalLinks' => true ] );
+		$this->overrideConfigValues( [ MainConfigNames::CapitalLinks => true ] );
 		$match = QueryHelper::matchPage( $field, $title, $underscores );
 
 		$this->matchQueryAssertions( $match, $field, $expected );

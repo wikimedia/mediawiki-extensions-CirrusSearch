@@ -17,6 +17,7 @@ use CirrusSearch\Search\Rescore\NamespacesFunctionScoreBuilder;
 use CirrusSearch\Search\Rescore\PreferRecentFunctionScoreBuilder;
 use CirrusSearch\Search\Rescore\RescoreBuilder;
 use CirrusSearch\Search\Rescore\ScriptScoreFunctionScoreBuilder;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Title\NamespaceInfo;
 
 /**
@@ -79,7 +80,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 				'user' => 2,
 				'wiki' => 3,
 			],
-			'LanguageCode' => 'de'
+			MainConfigNames::LanguageCode => 'de'
 		] );
 		$builder = new LangWeightFunctionScoreBuilder( $config, 1, 'en' );
 		$fScore = new FunctionScoreDecorator();
@@ -94,7 +95,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 				'user' => 2,
 				'wiki' => 3,
 			],
-			'LanguageCode' => 'en'
+			MainConfigNames::LanguageCode => 'en'
 		] );
 
 		$builder = new LangWeightFunctionScoreBuilder( $config, 1, 'en' );
@@ -107,7 +108,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 		// Test that we do not generate any filter is weight are not set.
 		$config = new HashSearchConfig( [
 			CirrusConfigNames::LanguageWeight => [],
-			'LanguageCode' => 'de'
+			MainConfigNames::LanguageCode => 'de'
 		] );
 		$builder = new LangWeightFunctionScoreBuilder( $config, 1, 'en' );
 		$fScore = new FunctionScoreDecorator();
@@ -323,8 +324,8 @@ class RescoreBuilderTest extends CirrusTestCase {
 			]
 		];
 		$profile = [
-			'ContentNamespaces' => [ 1, 2 ],
-			'NamespacesToBeSearchedDefault' => [ 1 => true ],
+			MainConfigNames::ContentNamespaces => [ 1, 2 ],
+			MainConfigNames::NamespacesToBeSearchedDefault => [ 1 => true ],
 			CirrusConfigNames::RescoreProfiles => [
 				'full' => [
 					'supported_namespaces' => [ 0, 1 ],

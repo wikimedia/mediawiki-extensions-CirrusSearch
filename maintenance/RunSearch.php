@@ -8,6 +8,7 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\CirrusSearchResult;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\SearchConfig;
+use MediaWiki\MainConfigNames;
 use MediaWiki\Maintenance\OrderedStreamingForkController;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\PageArchive;
@@ -321,7 +322,7 @@ class RunSearch extends Maintenance {
 		$config = new HashSearchConfig( [ SearchConfig::INDEX_BASE_NAME => $this->indexBaseName ],
 			[ HashSearchConfig::FLAG_INHERIT ] );
 		$engine = new CirrusSearch( $config, $options );
-		$namespaces = array_keys( $engine->getConfig()->get( 'NamespacesToBeSearchedDefault' ), true );
+		$namespaces = array_keys( $engine->getConfig()->get( MainConfigNames::NamespacesToBeSearchedDefault ), true );
 		$engine->setNamespaces( $namespaces );
 
 		$engine->setConnection( $this->getConnection() );

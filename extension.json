@@ -775,7 +775,7 @@
 				"default": true
 			}
 		},
-		"CirrusLanguageLanguageKeywordExtraFields": {
+		"CirrusSearchLanguageKeywordExtraFields": {
 			"description": "List of fields to query when search using the inlanguage keyword",
 			"value": []
 		},
@@ -784,10 +784,10 @@
 			"value": null
 		},
 		"CirrusSearchCompletionSuggesterUseAltIndexId": {
-			"description": "If set the completion suggester will this alternative index id (must be present in CirrusSearchAlternateIndices).",
+			"description": "If set the completion suggester will this alternative index id (must be present in CirrusSearchAlternativeIndices).",
 			"value": null
 		},
-		"CirrusSearchAlternateIndices": {
+		"CirrusSearchAlternativeIndices": {
 			"description": "List of alternate indices to build.",
 			"value": {
 				"completion": []

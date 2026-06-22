@@ -1686,10 +1686,10 @@ When enabled, adds a secondary phrase suggester field to page documents. This is
 facilitate AB testing and should not be enabled in most circumstances. By default nothing is copied
 into this field. Custom code is typically needed to support individual AB tests.
 
-; $wgCirrusSearchAlternateIndices
+; $wgCirrusSearchAlternativeIndices
 
 Default:
-  $wgCirrusSearchAlternateIndices = [
+  $wgCirrusSearchAlternativeIndices = [
     "completion" []
   ];
 
@@ -1697,7 +1697,7 @@ Allows to set alternative indices to be built and used. Only completion suggeste
 Useful to A/B test different setups of the completion suggester.
 
 Examples:
-  $wgCirrusSearchAlternateIndices = [
+  $wgCirrusSearchAlternativeIndices = [
     "completion" [
       [
         # the ID of the alternative index

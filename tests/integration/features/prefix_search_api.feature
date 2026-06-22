@@ -155,7 +155,7 @@ Feature: Prefix search via api
   #   Then suggestions should appear
 
   Scenario: Search suggestions with an alternative index
-    # The alt index 128 is built with defaultsort completion (see wgCirrusSearchAlternateIndices in FullyFeaturedConfig)
+    # The alt index 128 is built with defaultsort completion (see wgCirrusSearchAlternativeIndices in FullyFeaturedConfig)
 	When I ask suggestion API for Wilson Sam
 	  Then the API should produce list of length 0
 	When I ask suggestion API using the alternative index 128 for Wilson Sam

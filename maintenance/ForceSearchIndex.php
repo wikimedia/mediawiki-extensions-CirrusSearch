@@ -253,6 +253,7 @@ class ForceSearchIndex extends Maintenance {
 		}
 		$this->output( "$operationName a total of {$completed} pages at $rate/second\n" );
 		$this->waitForQueueToDrain( $wiki );
+		$this->refresh();
 
 		return true;
 	}
@@ -651,6 +652,23 @@ class ForceSearchIndex extends Maintenance {
 	 */
 	private function createUpdater() {
 		return Updater::build( $this->getSearchConfig(), $this->getOption( 'cluster', null ) );
+	}
+
+	/**
+	 * Refresh indices
+	 * @return void
+	 */
+	public function refresh(): void {
+		$connection = $this->getConnection( $this->getOption( 'cluster' ) );
+		$indexBaseName =
+			$this->getOption( 'baseName',
+				$this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
+		$this->output( "Refreshing page indices for $indexBaseName\n" );
+		$this->safeRefresh( $connection->getIndex( $indexBaseName ) );
+		if ( $this->archive ) {
+			$this->output( "Refreshing archive index for $indexBaseName\n" );
+			$this->safeRefresh( $connection->getArchiveIndex( $indexBaseName ) );
+		}
 	}
 }
 

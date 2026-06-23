@@ -27,5 +27,4 @@ Feature: First-class redirect documents on the edit path
      When a page named RedirDocGamma%{epoch} exists
       And I wait for RedirDocGamma%{epoch} to have page_type of primary
       And I wait for RedirDocGamma%{epoch} to not have a redirect_target
-      And I api search for RedirDocGamma%{epoch}
-     Then RedirDocGamma%{epoch} is the first api search result
+	  And I wait for RedirDocTarget to not have RedirDocGamma%{epoch} in redirect

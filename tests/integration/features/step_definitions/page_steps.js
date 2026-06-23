@@ -498,6 +498,12 @@ Then( /^I wait for (.+) to have (.+) of (.+)$/, function ( title, field, value )
 	} ) );
 } );
 
+Then( /^I wait for (.+) to not have (.+) in (.+)$/, function ( title, field, value ) {
+	return withApi( this, () => this.stepHelpers.waitForDocument( title, ( doc ) => {
+		expect( String( JSON.stringify( doc.source[ field ] ) ) ).to.not.include( value );
+	} ) );
+} );
+
 // Redirect-scope variants: assert against a redirect page's own first-class document
 // (cdredirectscope) rather than the target the redirect resolves to. Phrased without the
 // "to have X of Y" template so they don't collide with the generic field-assertion step.

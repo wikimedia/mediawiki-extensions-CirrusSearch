@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Extra\Query\TokenCountRouter;
+use CirrusSearch\LogChannel;
 use CirrusSearch\Query\Builder\NearMatchFieldQueryBuilder;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
@@ -158,7 +159,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				$nearMatchQuery[] = $queryPart[ 'raw' ];
 				continue;
 			}
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 				'Unknown query part: {queryPart}',
 				[ 'queryPart' => serialize( $queryPart ) ]
 			);

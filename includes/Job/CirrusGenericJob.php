@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Job;
 
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\SearchConfig;
 use MediaWiki\JobQueue\GenericParameterJob;
 use MediaWiki\JobQueue\Job;
@@ -33,7 +34,7 @@ abstract class CirrusGenericJob extends Job implements GenericParameterJob {
 		// @phan-suppress-next-line PhanTypeMismatchProperty
 		$this->searchConfig = MediaWikiServices::getInstance()
 			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
+			->makeConfig( CirrusSearch::NAME );
 	}
 
 	public function getSearchConfig(): SearchConfig {

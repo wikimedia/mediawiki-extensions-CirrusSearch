@@ -4,6 +4,7 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Connection;
+use CirrusSearch\LogChannel;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use Elastica\Index;
@@ -189,7 +190,7 @@ class SearchRequestBuilder {
 				// Same as just_match. No user warning since an invalid sort
 				// getting this far is a bug in the calling code which should
 				// be validating it's input.
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 					"Invalid sort type: {sort}",
 					[ 'sort' => $this->sort ]
 				);

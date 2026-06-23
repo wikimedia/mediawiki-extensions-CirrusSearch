@@ -33,7 +33,7 @@ class WeightedTagsHooks implements
 
 	public static function create( ConfigFactory $configFactory ): WeightedTagsHooks {
 		/** @var SearchConfig $searchConfig */
-		$searchConfig = $configFactory->makeConfig( 'CirrusSearch' );
+		$searchConfig = $configFactory->makeConfig( CirrusSearch::NAME );
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $searchConfig is actually a SearchConfig */
 		return new self( $searchConfig );
 	}

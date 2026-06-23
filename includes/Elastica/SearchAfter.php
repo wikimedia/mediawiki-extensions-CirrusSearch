@@ -3,6 +3,7 @@
 declare( strict_types = 1 );
 namespace CirrusSearch\Elastica;
 
+use CirrusSearch\LogChannel;
 use Elastica\Exception\ExceptionInterface as ElasticaExceptionInterface;
 use Elastica\Exception\RuntimeException;
 use Elastica\Query;
@@ -82,7 +83,7 @@ class SearchAfter implements \Iterator {
 			try {
 				return $this->doSearch();
 			} catch ( ElasticaExceptionInterface $e ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 					"Exception thrown during SearchAfter iteration. Retrying in {backoffSec}s.",
 					[
 						'exception' => $e,

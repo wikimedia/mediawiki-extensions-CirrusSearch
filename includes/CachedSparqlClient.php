@@ -6,6 +6,9 @@ use MediaWiki\Sparql\SparqlClient;
 use Wikimedia\ObjectCache\WANObjectCache;
 
 class CachedSparqlClient {
+	// Service container key for the categories SPARQL client.
+	public const SERVICE = 'CirrusCategoriesClient';
+
 	private SparqlClient $client;
 	private WANObjectCache $cache;
 	private int $ttl;

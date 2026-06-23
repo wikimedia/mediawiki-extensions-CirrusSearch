@@ -155,7 +155,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			// at least ensure they are the same.
 			$config = MediaWikiServices::getInstance()
 				->getConfigFactory()
-				->makeConfig( 'CirrusSearch' );
+				->makeConfig( CirrusSearch::NAME );
 		}
 		parent::__construct( $conn, $user, $config->get( CirrusConfigNames::SlowSearch ) );
 		if ( $secondTryRunnerFactory === null ) {
@@ -240,7 +240,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 		$this->connection->setTimeout( $this->getClientTimeout( self::SEARCH_TYPE ) );
 
-		$status = Util::doPoolCounterWork( 'CirrusSearch-Completion', $this->user,
+		$status = Util::doPoolCounterWork( PoolCounterKey::COMPLETION, $this->user,
 				function () use ( $multiSearch, $text, $description ) {
 					$log = $this->newLog( $description, self::SEARCH_TYPE, [
 						'query' => $text,

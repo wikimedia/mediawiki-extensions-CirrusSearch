@@ -18,7 +18,7 @@ class PrefixSearchExtractNamespace implements PrefixSearchExtractNamespaceHook {
 		Config $mainConfig,
 		NamespaceMatcher $namespaceMatcher,
 	) {
-		if ( $mainConfig->get( MainConfigNames::SearchType ) !== 'CirrusSearch' ) {
+		if ( $mainConfig->get( MainConfigNames::SearchType ) !== CirrusSearch::NAME ) {
 			return new class() implements PrefixSearchExtractNamespaceHook {
 				/**
 				 * @inheritDoc

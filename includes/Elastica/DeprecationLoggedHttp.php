@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Elastica;
 
+use CirrusSearch\LogChannel;
 use Elastica\Connection;
 use Elastica\Transport\Http;
 use MediaWiki\Logger\LoggerFactory;
@@ -14,7 +15,7 @@ class DeprecationLoggedHttp extends Http {
 
 	public function __construct( ?Connection $connection = null ) {
 		parent::__construct( $connection );
-		$this->logger = LoggerFactory::getInstance( 'CirrusSearchDeprecation' );
+		$this->logger = LoggerFactory::getInstance( LogChannel::DEPRECATION );
 	}
 
 	/**

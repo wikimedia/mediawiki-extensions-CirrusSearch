@@ -57,7 +57,7 @@ class NearMatchPicker {
 			if ( isset( $this->titles[ 0 ][ 'redirectMatches' ][ 0 ] ) ) {
 				return $this->titles[ 0 ][ 'redirectMatches' ][ 0 ];
 			}
-			LoggerFactory::getInstance( 'CirrusSearch' )->info(
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->info(
 				'NearMatchPicker built with busted matches.  Assuming no near match' );
 			return null;
 		}

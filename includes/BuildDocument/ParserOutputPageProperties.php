@@ -4,6 +4,7 @@ namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
+use CirrusSearch\LogChannel;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
@@ -79,7 +80,7 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 		// the problem is that $page->getTouched() is changing between
 		// invocations. -- eb 2024 july 9
 		if ( $page->getId() % 1000 === 0 ) {
-			LoggerFactory::getInstance( 'CirrusSearch' )->debug(
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->debug(
 				'Sampling of CirrusSearchParserOutputPageProperties cache keys: {cache_key}',
 				[
 					'cache_key' => $cacheKey,
@@ -205,7 +206,7 @@ class ParserOutputPageProperties implements PagePropertyBuilder {
 		if ( isset( $fields['source_text'] ) ) {
 			$fixedVersion = mb_convert_encoding( $fields['source_text'], 'UTF-8', 'UTF-8' );
 			if ( $fixedVersion !== $fields['source_text'] ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )
+				LoggerFactory::getInstance( LogChannel::DEFAULT )
 					->warning( 'Fixing invalid UTF-8 sequences in source text for page id {page_id}',
 						[ 'page_id' => $pageId ] );
 				$fields['source_text'] = $fixedVersion;

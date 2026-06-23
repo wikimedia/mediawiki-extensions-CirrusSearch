@@ -6,6 +6,7 @@ use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Iterator\CallbackIterator;
 use CirrusSearch\Job;
+use CirrusSearch\LogChannel;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Updater;
 use MediaWiki\Logger\LoggerFactory;
@@ -567,7 +568,7 @@ class ForceSearchIndex extends Maintenance {
 				$this->toDate !== null,
 				$this->getSearchConfig()->buildRedirectDocuments(),
 				$this,
-				LoggerFactory::getInstance( 'CirrusSearch' )
+				LoggerFactory::getInstance( LogChannel::DEFAULT )
 			);
 
 			$pages = [];

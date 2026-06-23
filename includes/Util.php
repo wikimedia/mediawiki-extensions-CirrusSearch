@@ -134,7 +134,7 @@ class Util {
 		$errorCallback = static function ( Status $status ) use ( $key, $busyErrorMsg ) {
 			$error = $status->getMessages()[0]->getKey();
 
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 				"Pool error on {key}:  {error}",
 				[ 'key' => $key, 'error' => $error ]
 			);
@@ -226,7 +226,7 @@ class Util {
 	 * @return float[]
 	 */
 	public static function getDefaultBoostTemplates( ?SearchConfig $config = null ) {
-		$config ??= MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
+		$config ??= MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( CirrusSearch::NAME );
 
 		$fromConfig = $config->get( CirrusConfigNames::BoostTemplates );
 		if ( $config->get( CirrusConfigNames::IgnoreOnWikiBoostTemplates ) ) {
@@ -517,7 +517,7 @@ class Util {
 	 * @return StatsFactory prefixed with the "CirrusSearch" component
 	 */
 	public static function getStatsFactory(): StatsFactory {
-		return MediaWikiServices::getInstance()->getStatsFactory()->withComponent( "CirrusSearch" );
+		return MediaWikiServices::getInstance()->getStatsFactory()->withComponent( CirrusSearch::NAME );
 	}
 
 	/**
@@ -539,7 +539,7 @@ class Util {
 			if ( $ret === 1 ) {
 				return true;
 			} elseif ( $ret === false ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 					"Invalid regex provided for header `$name` in `CirrusSearchAutomationHeaderRegexes`." );
 			}
 		}

@@ -3,7 +3,9 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\CirrusConfigNames;
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\Connection;
+use CirrusSearch\PoolCounterKey;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\UserTestingEngine;
 use Elastica\Index;
@@ -47,7 +49,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 			false, true );
 		$this->addOption( 'userTestTrigger', 'Use config var and profiles set in the user testing ' .
 			'framework, e.g. --userTestTrigger=trigger', false, true );
-		$this->requireExtension( 'CirrusSearch' );
+		$this->requireExtension( CirrusSearch::NAME );
 	}
 
 	public function finalSetup( SettingsBuilder $settingsBuilder ) {
@@ -114,7 +116,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 			// @phan-suppress-next-line PhanTypeMismatchProperty
 			$this->searchConfig = MediaWikiServices::getInstance()
 				->getConfigFactory()
-				->makeConfig( 'CirrusSearch' );
+				->makeConfig( CirrusSearch::NAME );
 			if ( !$this->searchConfig instanceof SearchConfig ) {
 				// We shouldn't ever get here ... but the makeConfig type signature returns the parent
 				// class of SearchConfig so just being extra careful...
@@ -202,7 +204,7 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 		global $wgPoolCounterConf, $wgCirrusSearchLogElasticRequests;
 
 		// Make sure we don't flood the pool counter
-		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
+		unset( $wgPoolCounterConf[PoolCounterKey::SEARCH] );
 
 		// Don't skew the dashboards by logging these requests to
 		// the global request log.

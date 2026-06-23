@@ -42,6 +42,17 @@ use Wikimedia\UUID\GlobalIdGenerator;
 class CirrusSearch extends SearchEngine {
 
 	/**
+	 * Canonical name of the extension.
+	 */
+	public const NAME = 'CirrusSearch';
+
+	/**
+	 * Service container key for the search engine. The engine is registered
+	 * under the extension name.
+	 */
+	public const SERVICE = self::NAME;
+
+	/**
 	 * Special profile to instruct this class to use profile
 	 * selection mechanism.
 	 * This allows to defer profile selection to when we actually perform
@@ -162,7 +173,7 @@ class CirrusSearch extends SearchEngine {
 		$this->setFeatureData( SearchEngine::SEARCH_ID, Util::getRequestSetToken( $globalIdGenerator ) );
 		$this->config = $config ?? MediaWikiServices::getInstance()
 			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
+			->makeConfig( self::NAME );
 		$this->connection = new Connection( $this->config );
 		$this->requestContext = RequestContext::getMain();
 		$this->request = $this->requestContext->getRequest();

@@ -17,7 +17,7 @@ class ElasticaErrorHandler {
 
 	public static function logRequestResponse( Connection $conn, string $message, array $context = [] ) {
 		$client = $conn->getClient();
-		LoggerFactory::getInstance( 'CirrusSearch' )->info( $message, $context + [
+		LoggerFactory::getInstance( LogChannel::DEFAULT )->info( $message, $context + [
 			'cluster' => $conn->getClusterName(),
 			'elasticsearch_request' => (string)$client->getLastRequest(),
 			'elasticsearch_response' => $client->getLastResponse() !== null ? json_encode( $client->getLastResponse()->getData() ) : "NULL",

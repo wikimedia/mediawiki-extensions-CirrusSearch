@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Api;
 
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
@@ -37,7 +38,7 @@ trait ApiTrait {
 			// @phan-suppress-next-line PhanTypeMismatchProperty
 			$this->searchConfig = MediaWikiServices::getInstance()
 				->getConfigFactory()
-				->makeConfig( 'CirrusSearch' );
+				->makeConfig( CirrusSearch::NAME );
 		}
 		return $this->searchConfig;
 	}

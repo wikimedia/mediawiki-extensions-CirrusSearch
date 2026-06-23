@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\CirrusConfigNames;
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\SearchConfig;
 use MediaWiki\MediaWikiServices;
 
@@ -20,7 +21,7 @@ class SuggesterMappingConfigBuilder {
 	 */
 	public function __construct( ?SearchConfig $config = null ) {
 		$this->config = $config ?? MediaWikiServices::getInstance()->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
+			->makeConfig( CirrusSearch::NAME );
 	}
 
 	/**

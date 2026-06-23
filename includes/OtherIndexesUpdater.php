@@ -180,7 +180,7 @@ class OtherIndexesUpdater extends Updater {
 		if ( $reason ) {
 			$reason = " ($reason)";
 		}
-		LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(
+		LoggerFactory::getInstance( LogChannel::CHANGE_FAILED )->info(
 			"Other Index$reason for article ids: " . implode( ',', $articleIDs ) );
 	}
 

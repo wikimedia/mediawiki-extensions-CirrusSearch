@@ -70,7 +70,7 @@ class MultiSearchRequestLog extends SearchRequestLog {
 		$responseData = $this->response->getData();
 		if ( !$responseData || !isset( $responseData['responses'] ) ) {
 			$message = $responseData['message'] ?? 'no message';
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 				'Elasticsearch response does not have any data. {response_message}',
 				[ 'response_message' => $message ]
 			);

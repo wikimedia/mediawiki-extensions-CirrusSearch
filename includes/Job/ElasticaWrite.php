@@ -4,6 +4,7 @@ namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
+use CirrusSearch\LogChannel;
 use CirrusSearch\UpdateGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -125,7 +126,7 @@ class ElasticaWrite extends CirrusGenericJob {
 		$conn = reset( $connections );
 		$arguments = self::serde( $this->params['method'], $this->params['arguments'], false );
 
-		LoggerFactory::getInstance( 'CirrusSearch' )->debug(
+		LoggerFactory::getInstance( LogChannel::DEFAULT )->debug(
 			"Running {method} on cluster {cluster} {diff}s after insertion",
 			[
 				'method' => $this->params['method'],
@@ -139,7 +140,7 @@ class ElasticaWrite extends CirrusGenericJob {
 		try {
 			$status = $sender->{$this->params['method']}( ...$arguments );
 		} catch ( \Exception $e ) {
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 				"Exception thrown while running DataSender::{method} in cluster {cluster}: {errorMessage}",
 				[
 					'method' => $this->params['method'],
@@ -170,7 +171,7 @@ class ElasticaWrite extends CirrusGenericJob {
 	 */
 	private function requeueError( Connection $conn ) {
 		if ( $this->params['errorCount'] >= self::MAX_ERROR_RETRY ) {
-			LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
+			LoggerFactory::getInstance( LogChannel::CHANGE_FAILED )->warning(
 				"Dropping failing ElasticaWrite job for DataSender::{method} in cluster {cluster} after repeated failure",
 				[
 					'method' => $this->params['method'],
@@ -187,7 +188,7 @@ class ElasticaWrite extends CirrusGenericJob {
 			$params += self::buildJobDelayOptions( self::class, $delay, $jobQueue );
 			$job = new self( $params );
 			// Individual failures should have already logged specific errors,
-			LoggerFactory::getInstance( 'CirrusSearch' )->info(
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->info(
 				"ElasticaWrite job reported failure on cluster {cluster}. Requeueing job with delay of {delay}.",
 				[
 					'cluster' => $conn->getClusterName(),

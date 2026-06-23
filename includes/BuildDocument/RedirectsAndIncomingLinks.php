@@ -6,6 +6,7 @@ use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\LogChannel;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\SearchConfig;
@@ -167,7 +168,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 			// complain about it and let the remainder of the update continue. The
 			// counts can simply be allowed to drift until resolved.
 			$this->failure( $e );
-			LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(
+			LoggerFactory::getInstance( LogChannel::CHANGE_FAILED )->info(
 				'Links for page ids: ' . implode( ',', $this->pageIds ) );
 		}
 	}

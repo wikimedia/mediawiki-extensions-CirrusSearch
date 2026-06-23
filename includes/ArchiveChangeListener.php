@@ -33,7 +33,7 @@ class ArchiveChangeListener implements PageDeleteCompleteHook, PageUndeleteCompl
 		ConfigFactory $configFactory
 	): ArchiveChangeListener {
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
-		return new self( $jobQueue, $configFactory->makeConfig( "CirrusSearch" ) );
+		return new self( $jobQueue, $configFactory->makeConfig( CirrusSearch::NAME ) );
 	}
 
 	private function isEnabled(): bool {

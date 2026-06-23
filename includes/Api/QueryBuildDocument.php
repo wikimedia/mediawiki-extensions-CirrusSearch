@@ -6,6 +6,7 @@ use CirrusSearch\BuildDocument\BuildDocument;
 use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
+use CirrusSearch\PoolCounterKey;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
@@ -43,7 +44,7 @@ class QueryBuildDocument extends ApiQueryBase {
 			// Protect against too many concurrent requests
 			// Use a global key this API is internal and could only be useful for manual debugging purposes
 			// so no real need to have it on per user basis.
-			$worker = new PoolCounterWorkViaCallback( 'CirrusSearch-QueryBuildDocument', 'QueryBuildDocument',
+			$worker = new PoolCounterWorkViaCallback( PoolCounterKey::QUERY_BUILD_DOCUMENT, 'QueryBuildDocument',
 				[
 					'doWork' => function () use ( $engine ) {
 						return $this->doExecute( $engine );

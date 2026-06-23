@@ -107,7 +107,7 @@ class AnalysisConfigBuilder {
 			$this->icu_tokenizer = 'textify_icu_tokenizer';
 		}
 		$config ??= MediaWikiServices::getInstance()->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
+			->makeConfig( CirrusSearch::NAME );
 		$similarity = $config->getProfileService()->loadProfile( SearchProfileService::SIMILARITY );
 		$similarity['similarity'] ??= [];
 		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner ?? new CirrusSearchHookRunner(

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search\Rescore;
 
 use CirrusSearch\CirrusConfigNames;
+use CirrusSearch\LogChannel;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
 use MediaWiki\Logger\LoggerFactory;
@@ -52,7 +53,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 				  $weight
 		) {
 			if ( !is_int( $ns ) && !ctype_digit( $ns ) ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 					'Namespace names are no longer accepted as namespaces in '
 					. "CirrusSearchNamespaceWeights. Ignoring {invalid_ns}",
 					[ 'invalid_ns' => $ns ]

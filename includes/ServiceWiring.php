@@ -29,12 +29,12 @@ use MediaWiki\Sparql\SparqlClient;
 // @codeCoverageIgnoreStart
 
 return [
-	'CirrusSearch' => static function ( MediaWikiServices $services ): CirrusSearch {
+	CirrusSearch::SERVICE => static function ( MediaWikiServices $services ): CirrusSearch {
 		return new CirrusSearch();
 	},
 
 	// SPARQL client for deep category search
-	'CirrusCategoriesClient' => static function ( MediaWikiServices $services ): CachedSparqlClient {
+	CachedSparqlClient::SERVICE => static function ( MediaWikiServices $services ): CachedSparqlClient {
 		$config = $services->getMainConfig();
 		$endpoint = $config->get( CirrusConfigNames::CategoryEndpoint );
 		$client = new SparqlClient( $endpoint, $services->getHttpRequestFactory() );
@@ -51,7 +51,7 @@ return [
 	},
 	InterwikiResolver::SERVICE => static function ( MediaWikiServices $services ): InterwikiResolver {
 		$config = $services->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
+			->makeConfig( CirrusSearch::NAME );
 		$client = $services->getHttpRequestFactory()->createMultiClient( [
 			'connTimeout' => $config->get( CirrusConfigNames::InterwikiHTTPConnectTimeout ),
 			'reqTimeout' => $config->get( CirrusConfigNames::InterwikiHTTPTimeout )
@@ -67,7 +67,7 @@ return [
 	},
 	SearchProfileServiceFactory::SERVICE_NAME => static function ( MediaWikiServices $services ): SearchProfileServiceFactory {
 		$config = $services->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
+			->makeConfig( CirrusSearch::NAME );
 		return new SearchProfileServiceFactory( $services->getService( InterwikiResolver::SERVICE ),
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
 			$config,
@@ -81,7 +81,7 @@ return [
 		/**
 		 * @var SearchConfig $searchConfig
 		 */
-		$searchConfig = $services->getConfigFactory()->makeConfig( 'CirrusSearch' );
+		$searchConfig = $services->getConfigFactory()->makeConfig( CirrusSearch::NAME );
 
 		if ( $searchConfig->get( CirrusConfigNames::EnableEventBusWeightedTags ) ) {
 			$eventBusFactory = $services->getService( 'EventBus.EventBusFactory' );
@@ -102,7 +102,7 @@ return [
 		return new SecondTrySearchFactory( $services->getLanguageConverterFactory() );
 	},
 	NamespaceMatcher::SERVICE => static function ( MediaWikiServices $services ): NamespaceMatcher {
-		$searchConfig = $services->getConfigFactory()->makeConfig( 'CirrusSearch' );
+		$searchConfig = $services->getConfigFactory()->makeConfig( CirrusSearch::NAME );
 		return NamespaceMatcher::create(
 			$services->getContentLanguage(),
 			$services->get( SecondTrySearchFactory::SERVICE ),

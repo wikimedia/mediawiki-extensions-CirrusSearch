@@ -199,7 +199,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	 * are not returned.
 	 */
 	private function sendConfigDumpRequest( $endpoints ) {
-		$logger = LoggerFactory::getInstance( 'CirrusSearch' );
+		$logger = LoggerFactory::getInstance( LogChannel::DEFAULT );
 		$reqs = [];
 		foreach ( $endpoints as $prefix => $info ) {
 			$reqs[$prefix] = [

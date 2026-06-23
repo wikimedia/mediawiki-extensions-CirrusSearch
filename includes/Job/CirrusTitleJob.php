@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Job;
 
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\SearchConfig;
 use MediaWiki\JobQueue\Job;
 use MediaWiki\MediaWikiServices;
@@ -69,7 +70,7 @@ abstract class CirrusTitleJob extends Job {
 			// @phan-suppress-next-line PhanTypeMismatchProperty
 			$this->searchConfig = MediaWikiServices::getInstance()
 				->getConfigFactory()
-				->makeConfig( 'CirrusSearch' );
+				->makeConfig( CirrusSearch::NAME );
 		}
 		return $this->searchConfig;
 	}

@@ -7,6 +7,7 @@ use CirrusSearch\ClusterSettings;
 use CirrusSearch\Connection;
 use CirrusSearch\ExternalIndex;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\LogChannel;
 use CirrusSearch\SearchConfig;
 use MediaWiki\JobQueue\JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
@@ -78,7 +79,7 @@ trait JobTraits {
 		} else {
 			// Just in case a job is present in the queue but its cluster
 			// has been removed from the config file.
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 				"Received {command} job for unwritable cluster {cluster}",
 				[
 					'command' => $jobType,
@@ -134,7 +135,7 @@ trait JobTraits {
 		if ( $this->getSearchConfig()->get( MainConfigNames::DisableSearchUpdate ) ||
 			$this->getSearchConfig()->get( CirrusConfigNames::DisableUpdate )
 		) {
-			LoggerFactory::getInstance( 'CirrusSearch' )->debug( "Skipping job: search updates disabled by config" );
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->debug( "Skipping job: search updates disabled by config" );
 			return true;
 		}
 

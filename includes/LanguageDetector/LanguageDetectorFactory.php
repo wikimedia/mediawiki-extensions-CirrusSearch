@@ -3,6 +3,7 @@
 namespace CirrusSearch\LanguageDetector;
 
 use CirrusSearch\CirrusConfigNames;
+use CirrusSearch\LogChannel;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
 
@@ -23,7 +24,7 @@ class LanguageDetectorFactory {
 		$detectors = [];
 		foreach ( $this->config->get( CirrusConfigNames::LanguageDetectors ) as $name => $klass ) {
 			if ( !class_exists( $klass ) ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->info(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->info(
 					"Unknown detector class for {name}: {class}",
 					[
 						"name" => $name,
@@ -33,7 +34,7 @@ class LanguageDetectorFactory {
 				continue;
 			}
 			if ( !in_array( \CirrusSearch\LanguageDetector\Detector::class, class_implements( $klass ) ) ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->info(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->info(
 					"Bad detector class for {name}: {class}",
 					[
 						"name" => $name,

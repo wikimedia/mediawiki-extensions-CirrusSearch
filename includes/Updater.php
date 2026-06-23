@@ -136,7 +136,7 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 			}
 
 			// Don't index special pages, interwiki links, bad namespaces, etc
-			$logger = LoggerFactory::getInstance( 'CirrusSearch' );
+			$logger = LoggerFactory::getInstance( LogChannel::DEFAULT );
 			if ( !$title->canExist() ) {
 				$logger->debug( "Ignoring an update for a page that cannot exist: $titleText" );
 				return [ null, $redirects ];

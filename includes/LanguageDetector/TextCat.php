@@ -3,6 +3,7 @@
 namespace CirrusSearch\LanguageDetector;
 
 use CirrusSearch\CirrusConfigNames;
+use CirrusSearch\LogChannel;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
 
@@ -36,7 +37,7 @@ class TextCat implements Detector {
 		}
 		foreach ( $dirs as $dir ) {
 			if ( !is_dir( $dir ) ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 					"Bad directory for TextCat model: {dir}",
 					[ "dir" => $dir ]
 				);

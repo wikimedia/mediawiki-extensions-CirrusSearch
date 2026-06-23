@@ -122,13 +122,13 @@ class RequestLogger {
 			}
 
 			$logMessage = $this->buildLogMessage( $log, $finalContext );
-			LoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage, $finalContext );
+			LoggerFactory::getInstance( LogChannel::REQUESTS )->debug( $logMessage, $finalContext );
 			if ( $slowMillis && $log->getTookMs() >= $slowMillis ) {
 				if ( $user !== null ) {
 					$finalContext['user'] = $user->getName();
 					$logMessage .= ' for {user}';
 				}
-				LoggerFactory::getInstance( 'CirrusSearchSlowRequests' )->info( $logMessage, $finalContext );
+				LoggerFactory::getInstance( LogChannel::SLOW_REQUESTS )->info( $logMessage, $finalContext );
 			}
 		}
 

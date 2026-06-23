@@ -218,7 +218,7 @@ abstract class ElasticsearchIntermediary {
 			->setLabel( "type", $type )
 			->increment();
 
-		LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+		LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 			"Search backend error during {$logType} after {tookMs}: {error_message}",
 			$context
 		);
@@ -242,7 +242,7 @@ abstract class ElasticsearchIntermediary {
 	 */
 	private function finishRequest( Connection $connection ) {
 		if ( !$this->currentRequestLog ) {
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 				'finishRequest called without staring a request'
 			);
 			return null;

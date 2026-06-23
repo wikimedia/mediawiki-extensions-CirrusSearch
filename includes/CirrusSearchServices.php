@@ -22,11 +22,11 @@ class CirrusSearchServices {
 	}
 
 	public function getCirrusSearch(): CirrusSearch {
-		return $this->services->get( 'CirrusSearch' );
+		return $this->services->get( CirrusSearch::SERVICE );
 	}
 
 	public function getCirrusCategoriesClient(): CachedSparqlClient {
-		return $this->services->get( 'CirrusCategoriesClient' );
+		return $this->services->get( CachedSparqlClient::SERVICE );
 	}
 
 	public function getWeightedTagsUpdater(): WeightedTagsUpdater {

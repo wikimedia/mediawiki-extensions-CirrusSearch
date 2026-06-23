@@ -698,7 +698,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 						/** @var \Elastica\Multi\ResultSet $cachedMResultSet */
 						$cachedMResultSet = $multiResultSet->getValue();
 						if ( count( $cachedMResultSet->getResultSets() ) !== count( $searches ) ) {
-							LoggerFactory::getInstance( 'CirrusSearch' )
+							LoggerFactory::getInstance( LogChannel::DEFAULT )
 								->warning( 'Ignoring a cached Multi/ResultSet wanted {nb_queries} response(s) but received {nb_responses}',
 									[
 										'nb_queries' => count( $searches ),
@@ -709,7 +709,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 							return $multiResultSet;
 						}
 					} else {
-						LoggerFactory::getInstance( 'CirrusSearch' )
+						LoggerFactory::getInstance( LogChannel::DEFAULT )
 							->warning( 'Cached a Status value that is not OK' );
 						$this->recordQueryCacheMetrics( $requestStats, "nok" );
 					}
@@ -754,14 +754,14 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		if ( count( $response->getResultSets() ) !== count( $msearches->getRequests() ) ) {
 			// Temp hack to investigate T231023 (use php serialize just in case it has some invalid
 			// UTF8 sequences that would prevent this message from being sent to logstash
-			LoggerFactory::getInstance( 'CirrusSearch' )
+			LoggerFactory::getInstance( LogChannel::DEFAULT )
 				->warning( "Incoherent response received (#searches != #responses) for {query}: {response}",
 					[ 'query' => $this->searchContext->getOriginalSearchTerm(), 'response' => serialize( $response->getResponse() ) ] );
 			return $msearches->failure( Status::newFatal( 'cirrussearch-backend-error' ) );
 		}
 		$mreponses = $msearches->toMSearchResponses( $response->getResultSets() );
 		if ( $mreponses->hasTimeout() ) {
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 				$log->getDescription() . " timed out and only returned partial results!",
 				$log->getLogVariables()
 			);
@@ -805,18 +805,18 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		// Default pool counter for all search requests. Note that not all
 		// possible requests go through Searcher, so this isn't globally
 		// definitive.
-		$pool = 'CirrusSearch-Search';
+		$pool = PoolCounterKey::SEARCH;
 		// Pool counter overrides based on query syntax. Goal is to
 		// separate expensive or high-volume traffic into dedicated
 		// pools with specific limits. Prefix is only high volume
 		// when completion is disabled.
 		// TODO: Should this be configuration?
 		$poolCounterTypes = [
-			'deepcat' => 'CirrusSearch-ExpensiveFullText',
-			'regex' => 'CirrusSearch-ExpensiveFullText',
-			'prefix' => 'CirrusSearch-Prefix',
-			'more_like' => 'CirrusSearch-MoreLike',
-			'semantic' => 'CirrusSearch-Semantic',
+			'deepcat' => PoolCounterKey::EXPENSIVE_FULL_TEXT,
+			'regex' => PoolCounterKey::EXPENSIVE_FULL_TEXT,
+			'prefix' => PoolCounterKey::PREFIX,
+			'more_like' => PoolCounterKey::MORE_LIKE,
+			'semantic' => PoolCounterKey::SEMANTIC,
 		];
 		foreach ( $poolCounterTypes as $type => $counter ) {
 			if ( $this->searchContext->isSyntaxUsed( $type ) ) {
@@ -832,14 +832,14 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		// those can be very expensive and usually use a small pool. If both
 		// the automation and regex pools filled with regexes it would be
 		// significantly more load than expected.
-		if ( $pool !== 'CirrusSearch-ExpensiveFullText' && $this->isAutomatedRequest() ) {
-			$pool = 'CirrusSearch-Automated';
+		if ( $pool !== PoolCounterKey::EXPENSIVE_FULL_TEXT && $this->isAutomatedRequest() ) {
+			$pool = PoolCounterKey::AUTOMATED;
 		} elseif ( $this->offset + $this->limit >= self::AUTOMATED_RESULT_DEPTH_THRESHOLD_LARGE ) {
 			// Deep pagination is always expensive, but if the request was
 			// already flagged as automated leave it in the automated bucket.
 			// We don't want to accidently split a bot's requests into both
 			// buckets, allowing them to use all the capacity of both.
-			$pool = 'CirrusSearch-ExpensiveFullText';
+			$pool = PoolCounterKey::EXPENSIVE_FULL_TEXT;
 		}
 		return $pool;
 	}
@@ -861,7 +861,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				return false;
 			}
 			// When can we get here? Is this ever run?
-			LoggerFactory::getInstance( 'CirrusSearch' )->info(
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->info(
 				'No IP available during automated request check' );
 			return false;
 		}

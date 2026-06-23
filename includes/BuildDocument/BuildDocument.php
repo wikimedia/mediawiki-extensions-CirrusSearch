@@ -3,6 +3,7 @@
 namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\Connection;
+use CirrusSearch\LogChannel;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\SearchConfig;
 use Elastica\Document;
@@ -121,7 +122,7 @@ class BuildDocument {
 				$isRedirect = $page->isRedirect();
 			}
 			if ( !$page->exists() ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 					'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
 					"earlier but wasn't.  Page: {title}",
 					[ 'title' => (string)$page->getTitle() ]
@@ -130,7 +131,7 @@ class BuildDocument {
 			}
 
 			if ( $isRedirect && !$buildRedirectDocs ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 					'Attempted to build a document for a redirect.  This should be caught ' .
 					"earlier but wasn't.  Page: {title}",
 					[ 'title' => (string)$page->getTitle() ]
@@ -142,7 +143,7 @@ class BuildDocument {
 			}
 
 			if ( $revision == null ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 					'Attempted to build a document for a page that doesn\'t have a revision. This should be caught ' .
 					"earlier but wasn't.  Page: {title}",
 					[ 'title' => (string)$page->getTitle() ]
@@ -188,7 +189,7 @@ class BuildDocument {
 				$revision = null;
 			}
 			if ( !$title || !$revision ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )
+				LoggerFactory::getInstance( LogChannel::DEFAULT )
 					->warning( 'Ignoring a page/revision that no longer exists {rev_id}',
 						[ 'rev_id' => $docRevision ] );
 
@@ -197,7 +198,7 @@ class BuildDocument {
 			if ( $enforceLatest && $title->getLatestRevID() !== $docRevision ) {
 				// Something has changed since the job was enqueued, this is no longer
 				// a valid update.
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 					'Skipping a page/revision update for revision {rev} because a new one is available',
 					[ 'rev' => $docRevision ] );
 				return false;

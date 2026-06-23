@@ -341,7 +341,7 @@ class Hooks implements
 			$value = $status->getValue();
 			$desc = $distributions[$value['distribution']] ?? null;
 			if ( $desc === null ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 					'Unexpected software distribution [{name}] returned by Version check',
 					[ 'name' => $value['distribution'] ]
 				);
@@ -398,7 +398,7 @@ class Hooks implements
 	 */
 	public static function handleSearchGetNearMatch( $term, &$titleResult ) {
 		global $wgSearchType;
-		if ( $wgSearchType !== 'CirrusSearch' ) {
+		if ( $wgSearchType !== CirrusSearch::NAME ) {
 			return true;
 		}
 
@@ -459,7 +459,7 @@ class Hooks implements
 		// @phan-suppress-next-line PhanTypeMismatchReturnSuperType
 		return MediaWikiServices::getInstance()
 			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
+			->makeConfig( CirrusSearch::NAME );
 	}
 
 	/**
@@ -604,7 +604,7 @@ class Hooks implements
 	/** @inheritDoc */
 	public function onUserGetDefaultOptions( &$defaultOptions ) {
 		$defaultOptions['cirrussearch-pref-completion-profile'] =
-			$this->configFactory->makeConfig( 'CirrusSearch' )->get( CirrusConfigNames::CompletionSettings );
+			$this->configFactory->makeConfig( CirrusSearch::NAME )->get( CirrusConfigNames::CompletionSettings );
 	}
 
 	/** @inheritDoc */

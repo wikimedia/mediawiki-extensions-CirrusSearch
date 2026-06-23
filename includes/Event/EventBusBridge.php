@@ -3,6 +3,7 @@
 namespace CirrusSearch\Event;
 
 use CirrusSearch\CirrusConfigNames;
+use CirrusSearch\CirrusSearch;
 use CirrusSearch\PageChangeTracker;
 use MediaWiki\Config\Config;
 use MediaWiki\Config\ConfigFactory;
@@ -57,7 +58,7 @@ class EventBusBridge extends PageChangeTracker implements EventBridge {
 		?EventBusFactory $eventBusFactory = null,
 		?StreamNameMapper $streamNameMapper = null
 	): EventBridge {
-		$config = $configFactory->makeConfig( "CirrusSearch" );
+		$config = $configFactory->makeConfig( CirrusSearch::NAME );
 		'@phan-var \CirrusSearch\SearchConfig $config';
 		if ( $eventBusFactory !== null && $config->get( CirrusConfigNames::UseEventBusBridge ) ) {
 			if ( $streamNameMapper === null ) {

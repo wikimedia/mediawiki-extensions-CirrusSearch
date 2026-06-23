@@ -64,7 +64,7 @@ class ChangeListener extends PageChangeTracker implements
 		RedirectLookup $redirectLookup
 	): ChangeListener {
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
-		return new self( $jobQueue, $configFactory->makeConfig( "CirrusSearch" ), $dbProvider, $redirectLookup );
+		return new self( $jobQueue, $configFactory->makeConfig( CirrusSearch::NAME ), $dbProvider, $redirectLookup );
 	}
 
 	public function __construct(
@@ -178,7 +178,7 @@ class ChangeListener extends PageChangeTracker implements
 				$job = LinksUpdate::newPageChangeUpdate( $linksUpdate->getTitle(),
 					$linksUpdate->getRevisionRecord(), $jobParams );
 				if ( ( MWTimestamp::time() - $job->params[CirrusTitleJob::ROOT_EVENT_TIME] ) > ( 3600 * 24 ) ) {
-					LoggerFactory::getInstance( 'CirrusSearch' )->debug(
+					LoggerFactory::getInstance( LogChannel::DEFAULT )->debug(
 						"Scheduled a page-change-update for {title} on a revision created more than 24hours ago, " .
 						"the cause is {causeAction}",
 						[
@@ -397,7 +397,7 @@ class ChangeListener extends PageChangeTracker implements
 			if ( $excludeBadUTF ) {
 				$fixedKey = mb_convert_encoding( $key, 'UTF-8', 'UTF-8' );
 				if ( $fixedKey !== $key ) {
-					LoggerFactory::getInstance( 'CirrusSearch' )
+					LoggerFactory::getInstance( LogChannel::DEFAULT )
 						->warning( "Ignoring title {title} with invalid UTF-8 sequences.",
 							[ 'title' => $fixedKey ] );
 					continue;

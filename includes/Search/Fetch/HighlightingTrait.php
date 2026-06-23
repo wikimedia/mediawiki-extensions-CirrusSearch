@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search\Fetch;
 
+use CirrusSearch\LogChannel;
 use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Searcher;
 use MediaWiki\Logger\LoggerFactory;
@@ -57,7 +58,7 @@ trait HighlightingTrait {
 			}
 		}
 		if ( $best === null ) {
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 				"Search backend highlighted a redirect ({title}) but didn't return it.",
 				[ 'title' => $title ]
 			);

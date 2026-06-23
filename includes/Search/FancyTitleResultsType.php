@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\LogChannel;
 use Elastica\ResultSet as ElasticaResultSet;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
@@ -139,7 +140,7 @@ class FancyTitleResultsType extends TitleResultsType {
 		}
 		if ( $resultForTitle === [] ) {
 			// We're not really sure where the match came from so lets just pretend it was the title.
-			LoggerFactory::getInstance( 'CirrusSearch' )
+			LoggerFactory::getInstance( LogChannel::DEFAULT )
 				->warning( "Title search result type hit a match but we can't " .
 					"figure out what caused the match: {namespace}:{title}",
 					[ 'namespace' => $r->namespace, 'title' => $r->title ] );

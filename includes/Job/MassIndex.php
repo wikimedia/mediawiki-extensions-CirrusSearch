@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Job;
 
+use CirrusSearch\LogChannel;
 use CirrusSearch\Updater;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -47,7 +48,7 @@ class MassIndex extends CirrusGenericJob {
 			$title = Title::newFromDBkey( $pageDBKey );
 			// Skip any titles with broken keys.  We can't do anything with them.
 			if ( !$title ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 					"Skipping invalid DBKey: {pageDBKey}",
 					[ 'pageDBKey' => $pageDBKey ]
 				);

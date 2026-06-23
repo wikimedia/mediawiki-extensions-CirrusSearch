@@ -66,8 +66,8 @@ class DataSender extends ElasticsearchIntermediary {
 	) {
 		parent::__construct( $conn, null, 0 );
 		$this->stats = $stats ?? Util::getStatsFactory();
-		$this->log = LoggerFactory::getInstance( 'CirrusSearch' );
-		$this->failedLog = LoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
+		$this->log = LoggerFactory::getInstance( LogChannel::DEFAULT );
+		$this->failedLog = LoggerFactory::getInstance( LogChannel::CHANGE_FAILED );
 		$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->searchConfig = $config;
 		$this->docSizeLimiter = $docSizeLimiter ?? new DocumentSizeLimiter(

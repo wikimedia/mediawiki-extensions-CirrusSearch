@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Elastica;
 
+use CirrusSearch\LogChannel;
 use Elastica\Client;
 use Elastica\Exception\ResponseException;
 use Elastica\Exception\RuntimeException;
@@ -26,7 +27,7 @@ class ReindexTask {
 	public function __construct( Client $client, $taskId ) {
 		$this->client = $client;
 		$this->taskId = $taskId;
-		$this->log = LoggerFactory::getInstance( 'CirrusSearch' );
+		$this->log = LoggerFactory::getInstance( LogChannel::DEFAULT );
 	}
 
 	/**

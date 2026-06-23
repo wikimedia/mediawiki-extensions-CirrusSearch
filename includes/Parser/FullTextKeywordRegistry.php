@@ -4,6 +4,7 @@ namespace CirrusSearch\Parser;
 
 use CirrusSearch\CachedSparqlClient;
 use CirrusSearch\CirrusSearchHookRunner;
+use CirrusSearch\LogChannel;
 use CirrusSearch\Query\BoostTemplatesFeature;
 use CirrusSearch\Query\ContentModelFeature;
 use CirrusSearch\Query\DateRangeFeature;
@@ -109,7 +110,7 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			if ( $extra instanceof SimpleKeywordFeature ) {
 				$this->features[] = $extra;
 			} else {
-				LoggerFactory::getInstance( 'CirrusSearch' )
+				LoggerFactory::getInstance( LogChannel::DEFAULT )
 					->warning( 'Skipped invalid feature of class ' . get_class( $extra ) .
 							   ' - should be instanceof SimpleKeywordFeature' );
 			}

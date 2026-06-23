@@ -5,6 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CachedSparqlClient;
 use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\LogChannel;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\SearchContext;
@@ -66,7 +67,7 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 		$this->limit = (int)$config->get( CirrusConfigNames::CategoryMax );
 		$endpoint = $config->get( CirrusConfigNames::CategoryEndpoint );
 		if ( $endpoint !== null && $endpoint !== '' ) {
-			$this->sparql = $sparql ?? MediaWikiServices::getInstance()->getService( 'CirrusCategoriesClient' );
+			$this->sparql = $sparql ?? MediaWikiServices::getInstance()->getService( CachedSparqlClient::SERVICE );
 		}
 	}
 
@@ -146,7 +147,7 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 		} catch ( SparqlException $e ) {
 			// Not publishing exception here because it can contain too many details including IPs, etc.
 			$warningCollector->addWarning( $this->decideUiWarning( $e ) );
-			LoggerFactory::getInstance( 'CirrusSearch' )
+			LoggerFactory::getInstance( LogChannel::DEFAULT )
 				->warning( 'Deepcat SPARQL Exception: ' . $e->getMessage() );
 			$categories = [ $value ];
 		}

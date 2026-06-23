@@ -22,7 +22,7 @@ class Dump extends FormlessAction {
 
 		$config = MediaWikiServices::getInstance()
 			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
+			->makeConfig( CirrusSearch::NAME );
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */
 		$conn = new Connection( $config );
 		/** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType $config is actually a SearchConfig */

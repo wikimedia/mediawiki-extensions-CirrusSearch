@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Fallbacks;
 
+use CirrusSearch\LogChannel;
 use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\SearchQuery;
@@ -96,7 +97,7 @@ trait FallbackMethodTrait {
 			$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $originalQuery, $suggestedQuery,
 					$context->getNamespacePrefixParser(), $context->getCirrusSearchHookRunner() )->build();
 		} catch ( SearchQueryParseException $e ) {
-			LoggerFactory::getInstance( 'CirrusSearch' )
+			LoggerFactory::getInstance( LogChannel::DEFAULT )
 				->warning( "Cannot parse rewritten query", [ 'exception' => $e ] );
 			// Suggest the user submits the suggested query directly
 			return FallbackStatus::suggestQuery( $suggestedQuery, $suggestedQuerySnippet );

@@ -618,9 +618,6 @@
 		"CirrusSearchRescoreProfiles": {
 			"value": []
 		},
-		"CirrusSearchRescoreFunctionChains": {
-			"value": []
-		},
 		"CirrusSearchRescoreProfile": {
 			"value": "classic"
 		},

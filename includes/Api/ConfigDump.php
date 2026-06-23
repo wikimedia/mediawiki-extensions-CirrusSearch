@@ -74,7 +74,6 @@ class ConfigDump extends ApiBase {
 		'CirrusSearchPhraseSuggestProfiles',
 		'CirrusSearchCrossProjectBlockScorerProfiles',
 		'CirrusSearchSimilarityProfiles',
-		'CirrusSearchRescoreFunctionChains',
 		'CirrusSearchCompletionProfiles',
 		'CirrusSearchCompletionSettings',
 		'CirrusSearchCompletionSuggesterUseDefaultSort',

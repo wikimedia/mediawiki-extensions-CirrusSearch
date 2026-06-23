@@ -111,7 +111,7 @@ return [
 				'weight' => [
 					'value' => 10,
 					'config_override' => 'CirrusSearchIncLinksW',
-					'uri_param_override' => 'cirrusIncLinkssW',
+					'uri_param_override' => 'cirrusIncLinksW',
 				],
 				'params' => [
 					'field' => 'incoming_links',
@@ -161,7 +161,7 @@ return [
 				'weight' => [
 					'value' => 10,
 					'config_override' => 'CirrusSearchIncLinksW',
-					'uri_param_override' => 'cirrusIncLinkssW',
+					'uri_param_override' => 'cirrusIncLinksW',
 				],
 				'params' => [
 					'field' => 'incoming_links',

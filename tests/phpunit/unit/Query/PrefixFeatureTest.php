@@ -149,6 +149,8 @@ class PrefixFeatureTest extends CirrusTestCase {
 				'foo bar',
 				NS_MAIN,
 				'foo ',
+				[ NS_MAIN ],
+				false,
 			]
 		];
 	}
@@ -156,7 +158,14 @@ class PrefixFeatureTest extends CirrusTestCase {
 	/**
 	 * @dataProvider parseProvider
 	 */
-	public function testParse( $query, $filterValue, $namespace, $expectedRemaining ) {
+	public function testParse(
+		string $query,
+		?string $filterValue,
+		?int $namespace,
+		string $expectedRemaining,
+		array $initialNamespace = [ -1 ],
+		bool $alterGlobalNamespaces = true
+	) {
 		$assertions = null;
 
 		$assertFilter = function ( AbstractQuery $filter ) use ( $filterValue ) {
@@ -215,13 +224,13 @@ class PrefixFeatureTest extends CirrusTestCase {
 		$this->assertRemaining( $feature, $query, $expectedRemaining );
 
 		$context = new SearchContext(
-			new HashSearchConfig( [] ), [ -1 ], null, null, null,
+			new HashSearchConfig( [] ), $initialNamespace, null, null, null,
 			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
 		$feature->apply( $context, $query );
 		if ( $namespace === null ) {
 			$this->assertNull( $context->getNamespaces() );
-		} else {
+		} elseif ( $alterGlobalNamespaces ) {
 			$this->assertContains( $namespace, $context->getNamespaces() );
 		}
 		$this->assertSame( [], $context->getWarnings() );
@@ -278,8 +287,9 @@ class PrefixFeatureTest extends CirrusTestCase {
 			'combined negated prefix wants main but context is Help' => [
 				'foo -prefix:Test',
 				[ NS_HELP ],
-				[ NS_HELP, NS_MAIN ],
-				[ NS_MAIN ]
+				[ NS_HELP ],
+				[],
+				[ [ 'cirrussearch-keyword-prefix-exclusion-on-unselected-namespace' ] ]
 			],
 		];
 	}
@@ -289,7 +299,7 @@ class PrefixFeatureTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Parser\AST\KeywordFeatureNode
 	 * @covers \CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser
 	 */
-	public function testRequiredNamespaces( $query, $namespace, $expectedNamespaces, $additionalNs ) {
+	public function testRequiredNamespaces( $query, $namespace, $expectedNamespaces, $additionalNs, $expectedWarnings = [] ) {
 		$config = new HashSearchConfig( [] );
 		$context = new SearchContext(
 			$config, $namespace, null, null, null,
@@ -298,58 +308,10 @@ class PrefixFeatureTest extends CirrusTestCase {
 		$feature = new PrefixFeature( $this->namespacePrefixParser() );
 		$feature->apply( $context, $query );
 		$this->assertEquals( $expectedNamespaces, $context->getNamespaces() );
+		$this->assertEquals( $expectedWarnings, $context->getWarnings() );
 		$parser = $this->createNewFullTextQueryParser( $config );
 		$parsedQuery = $parser->parse( $query );
 		$this->assertEquals( $additionalNs, $parsedQuery->getRequiredNamespaces() );
-	}
-
-	public static function provideTestPrepareSearchContext() {
-		return [
-			'main' => [
-				[ NS_MAIN ],
-				'test',
-				[ NS_MAIN ]
-			],
-			'main add ns' => [
-				[ NS_MAIN ],
-				'help:test',
-				[ NS_MAIN, NS_HELP ]
-			],
-			'ns untouched' => [
-				null,
-				'help:test',
-				null
-			],
-			'ns to all' => [
-				[ NS_MAIN ],
-				'all:test',
-				null
-			],
-		];
-	}
-
-	/**
-	 * @covers \CirrusSearch\Search\SearchContext
-	 * @dataProvider provideTestPrepareSearchContext
-	 * @param int[]|null $initialNs
-	 * @param string $prefix
-	 * @param int[]|null $expectedNs
-	 */
-	public function testPrepareSearchContext( $initialNs, $prefix, $expectedNs ) {
-		$config = new HashSearchConfig( [] );
-		$context = new SearchContext(
-			$config, $initialNs, null, null, null,
-			$this->createNoOpMock( CirrusSearchHookRunner::class )
-		);
-		PrefixFeature::prepareSearchContext( $context, $prefix, $this->namespacePrefixParser() );
-		$this->assertEquals( $expectedNs, $context->getNamespaces() );
-		$this->assertCount( 1, $context->getFilters() );
-		$this->assertFilter(
-			new PrefixFeature( $this->namespacePrefixParser() ),
-			'prefix:' . $prefix, $context->getFilters()[0],
-			[],
-			$config
-		);
 	}
 
 	public static function provideTestContextualFilter() {

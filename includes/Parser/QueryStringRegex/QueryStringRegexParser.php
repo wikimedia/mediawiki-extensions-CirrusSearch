@@ -755,6 +755,9 @@ class QueryStringRegexParser implements QueryParser {
 				if ( $this->total === 'all' ) {
 					return;
 				}
+				if ( $this->negated() ) {
+					return;
+				}
 
 				Assert::parameter( $node->getKeyword() instanceof PrefixFeature, '$node', 'must be parsed from PrefixFeature' );
 				// @phan-suppress-next-line PhanTypeArraySuspiciousNullable

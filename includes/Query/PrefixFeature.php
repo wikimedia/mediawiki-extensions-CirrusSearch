@@ -103,7 +103,18 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
 		'@phan-var array $parsedValue';
 		$namespace = $parsedValue['namespace'] ?? null;
-		self::alterSearchContextNamespace( $context, $namespace );
+		if ( !$negated ) {
+			self::alterSearchContextNamespace( $context, $namespace );
+		} else {
+			if (
+				$namespace !== 'all' &&
+				$namespace !== null &&
+				$context->getNamespaces() &&
+				!in_array( $namespace, $context->getNamespaces() )
+			) {
+				$context->addWarning( 'cirrussearch-keyword-prefix-exclusion-on-unselected-namespace' );
+			}
+		}
 		$prefixQuery = $this->buildQuery( $parsedValue['value'], $namespace );
 		return [ $prefixQuery, false ];
 	}
@@ -198,22 +209,6 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 		return $this->buildQuery( $node->getParsedValue()['value'],
 			$node->getParsedValue()['namespace'] ?? null );
-	}
-
-	/**
-	 * Adds a prefix filter to the search context
-	 * @param SearchContext $context
-	 * @param string $prefix
-	 * @param NamespacePrefixParser|null $namespacePrefixParser
-	 */
-	public static function prepareSearchContext( SearchContext $context, $prefix, ?NamespacePrefixParser $namespacePrefixParser = null ) {
-		$filter = self::asContextualFilter( $prefix, $namespacePrefixParser );
-		$filter->populate( $context );
-		$namespaces = $filter->requiredNamespaces();
-		Assert::postcondition( $namespaces !== null && count( $namespaces ) <= 1,
-			'PrefixFeature must extract one or all namespaces' );
-		self::alterSearchContextNamespace( $context,
-			count( $namespaces ) === 1 ? reset( $namespaces ) : null );
 	}
 
 	/**

@@ -2224,7 +2224,12 @@
 		"query": "intitle:\/[a-z]\/ insource:\/<\\\/a>[^ ]\/i",
 		"config": {
 			"CirrusSearchEnableRegex": true,
-			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+			"CirrusSearchWikimediaExtraPlugin": {
+				"regex": {
+					"build": true,
+					"use": true
+				}
+			}
 		},
 		"expected": {
 			"query": "intitle:\/[a-z]\/ insource:\/<\\\/a>[^ ]\/i",
@@ -2289,7 +2294,12 @@
 		"query": "\"intitle:bar\"",
 		"config": {
 			"CirrusSearchEnableRegex": true,
-			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+			"CirrusSearchWikimediaExtraPlugin": {
+				"regex": {
+					"build": true,
+					"use": true
+				}
+			}
 		},
 		"expected": {
 			"query": "\"intitle:bar\"",
@@ -2313,7 +2323,12 @@
 		"query": "\"foo bar\"intitle:bar",
 		"config": {
 			"CirrusSearchEnableRegex": true,
-			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+			"CirrusSearchWikimediaExtraPlugin": {
+				"regex": {
+					"build": true,
+					"use": true
+				}
+			}
 		},
 		"expected": {
 			"query": "\"foo bar\"intitle:bar",
@@ -2358,7 +2373,12 @@
 		"query": "-intitle:bar !intitle:bar",
 		"config": {
 			"CirrusSearchEnableRegex": true,
-			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+			"CirrusSearchWikimediaExtraPlugin": {
+				"regex": {
+					"build": true,
+					"use": true
+				}
+			}
 		},
 		"expected": {
 			"query": "-intitle:bar !intitle:bar",
@@ -2408,7 +2428,12 @@
 		"query": "intitle:foo AND intitle:bar OR intitle:baz OR NOT intitle:buz",
 		"config": {
 			"CirrusSearchEnableRegex": true,
-			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+			"CirrusSearchWikimediaExtraPlugin": {
+				"regex": {
+					"build": true,
+					"use": true
+				}
+			}
 		},
 		"expected": {
 			"query": "intitle:foo AND intitle:bar OR intitle:baz OR NOT intitle:buz",
@@ -2493,7 +2518,12 @@
 		"query": "\" intitle:test \"",
 		"config": {
 			"CirrusSearchEnableRegex": true,
-			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+			"CirrusSearchWikimediaExtraPlugin": {
+				"regex": {
+					"build": true,
+					"use": true
+				}
+			}
 		},
 		"expected": {
 			"query": "\" intitle:test \"",
@@ -2631,7 +2661,12 @@
 		"query": "intitle:test intitle:\"foo bar\" intitle:\/201[0-9]\/i",
 		"config": {
 			"CirrusSearchEnableRegex": true,
-			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+			"CirrusSearchWikimediaExtraPlugin": {
+				"regex": {
+					"build": true,
+					"use": true
+				}
+			}
 		},
 		"expected": {
 			"query": "intitle:test intitle:\"foo bar\" intitle:\/201[0-9]\/i",
@@ -2707,7 +2742,12 @@
 		"query": "intitle:test intitle:\"foo bar\"",
 		"config": {
 			"CirrusSearchEnableRegex": true,
-			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+			"CirrusSearchWikimediaExtraPlugin": {
+				"regex": {
+					"build": true,
+					"use": true
+				}
+			}
 		},
 		"expected": {
 			"query": "intitle:test intitle:\"foo bar\"",
@@ -3030,7 +3070,12 @@
 		"query": "insource:test insource:\"foo bar\" insource:\/201[0-0]\/i",
 		"config": {
 			"CirrusSearchEnableRegex": true,
-			"CirrusSearchWikimediaExtraPlugin": {"regex": {"build": true, "use": true}}
+			"CirrusSearchWikimediaExtraPlugin": {
+				"regex": {
+					"build": true,
+					"use": true
+				}
+			}
 		},
 		"expected": {
 			"query": "insource:test insource:\"foo bar\" insource:\/201[0-0]\/i",
@@ -4129,6 +4174,55 @@
 								}
 							},
 							"explicit": true
+						}
+					]
+				}
+			}
+		}
+	},
+	"negating a prefix does not add any required namespaces": {
+		"query": "help:-prefix:foo",
+		"expected": {
+			"query": "help:-prefix:foo",
+			"rawQuery": "help:-prefix:foo",
+			"namespaceHeader": {
+				"startOffset": 0,
+				"endOffset": 5,
+				"namespace": 12
+			},
+			"queryClassCache": [
+				"complex_query"
+			],
+			"featuresUsed": [
+				"prefix",
+				"namespace_header"
+			],
+			"root": {
+				"bool": {
+					"startOffset": 6,
+					"endOffset": 16,
+					"clauses": [
+						{
+							"MUST_NOT": {
+								"keyword": {
+									"startOffset": 6,
+									"endOffset": 16,
+									"keyword": "CirrusSearch\\Query\\PrefixFeature",
+									"key": "prefix",
+									"value": "foo",
+									"quotedValue": "foo",
+									"delimiter": "",
+									"suffix": "",
+									"parsedValue": {
+										"namespace": 0,
+										"value": "foo",
+										"parsed_namespaces": [
+											0
+										]
+									}
+								}
+							},
+							"explicit": false
 						}
 					]
 				}

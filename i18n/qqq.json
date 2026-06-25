@@ -81,6 +81,7 @@
 	"cirrussearch-explore-similar-related-none": "Text shown when there are no related pages in the Explore Similar search results.",
 	"cirrussearch-article-words": "Text shown on Special:Statistics along with a count of the number of words across all content pages. By default, these are all the pages in the main namespace, but wikis may configure additional content namespaces.",
 	"cirrussearch-keyword-prefix-ns-mismatch": "Warning shown when user uses the prefix keyword where the namespace identified is not compatible with the list of namespaces requested.",
+	"cirrussearch-keyword-prefix-exclusion-on-unselected-namespace": "Warning shown when user uses the prefix keyword to exlude pages from a namespace that is not selected.",
 	"cirrussearch-autoselect-profile": "Special profile used as a default in search APIs that lets CirrusSearch decide on the best set of profiles to use.",
 	"cirrussearch-offset-too-large": "Warning shown when search results are requested beyond the supported limit.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Warning shown when user attempts to paginate when also requesting randomly sorted results.",

@@ -48,6 +48,30 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 		}
 		$defaults = [
 			'char_filter' => [
+				'apostrophe_norm' => [
+					'type' => 'mapping',
+					'mappings' => [
+						"`=>'", // grave accent
+						"´=>'", // acute accent
+						"ʹ=>'", // modifier letter prime
+						"ʻ=>'", // modifier letter turned comma
+						"ʼ=>'", // modifier letter apostrophe
+						"ʽ=>'", // modifier letter reversed comma
+						"ʾ=>'", // modifier letter right half ring
+						"ʿ=>'", // modifier letter left half ring
+						"ˋ=>'", // modifier letter grave accent
+						"՚=>'", // Armenian apostrophe
+						"\u05F3=>'", // Hebrew punctuation geresh
+						"‘=>'", // left single quotation mark
+						"’=>'", // right single quotation mark
+						"‛=>'", // single high-reversed-9 quotation mark
+						"′=>'", // prime
+						"‵=>'", // reversed prime
+						"ꞌ=>'", // Latin small letter saltillo
+						"＇=>'", // fullwidth apostrophe
+						"｀=>'", // fullwidth grave accent
+					],
+				],
 				'word_break_helper' => [
 					'type' => 'mapping',
 					'mappings' => [
@@ -55,9 +79,6 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						',=>\u0020', // useful for "Lastname, Firstname"
 						'"=>\u0020', // " certainly phrase search?
 						'-=>\u0020', // useful for hyphenated names
-						"'=>\u0020", // Useful for finding names
-						'\u2019=>\u0020', // Unicode right single quote
-						'\u02BC=>\u0020', // Unicode modifier letter apostrophe
 						// Not sure about ( and )...
 						// very useful to search for :
 						// "john smith explo" instead of "john smith (expl"
@@ -134,6 +155,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 			'analyzer' => [
 				"stop_analyzer" => [
 					"type" => "custom",
+					"char_filter" => [ 'apostrophe_norm' ],
 					"filter" => [
 						"lowercase",
 						"stop_filter",
@@ -148,6 +170,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				// writing "to be or no to be"
 				"stop_analyzer_search" => [
 					"type" => "custom",
+					"char_filter" => [ 'apostrophe_norm' ],
 					"filter" => [
 						"lowercase",
 						"accentfolding",
@@ -158,7 +181,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				],
 				"plain" => [
 					"type" => "custom",
-					"char_filter" => [ 'word_break_helper' ],
+					"char_filter" => [ 'apostrophe_norm', 'word_break_helper' ],
 					"filter" => [
 						"remove_empty",
 						"token_limit",
@@ -168,7 +191,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				],
 				"plain_search" => [
 					"type" => "custom",
-					"char_filter" => [ 'word_break_helper' ],
+					"char_filter" => [ 'apostrophe_norm', 'word_break_helper' ],
 					"filter" => [
 						"remove_empty",
 						"token_limit",

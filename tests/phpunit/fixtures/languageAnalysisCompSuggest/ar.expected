@@ -1,5 +1,29 @@
 {
     "char_filter": {
+        "apostrophe_norm": {
+            "type": "mapping",
+            "mappings": [
+                "`=>'",
+                "\u00b4=>'",
+                "\u02b9=>'",
+                "\u02bb=>'",
+                "\u02bc=>'",
+                "\u02bd=>'",
+                "\u02be=>'",
+                "\u02bf=>'",
+                "\u02cb=>'",
+                "\u055a=>'",
+                "\\u05F3=>'",
+                "\u2018=>'",
+                "\u2019=>'",
+                "\u201b=>'",
+                "\u2032=>'",
+                "\u2035=>'",
+                "\ua78c=>'",
+                "\uff07=>'",
+                "\uff40=>'"
+            ]
+        },
         "word_break_helper": {
             "type": "mapping",
             "mappings": [
@@ -7,9 +31,6 @@
                 ",=>\\u0020",
                 "\"=>\\u0020",
                 "-=>\\u0020",
-                "'=>\\u0020",
-                "\\u2019=>\\u0020",
-                "\\u02BC=>\\u0020",
                 ";=>\\u0020",
                 "\\[=>\\u0020",
                 "\\]=>\\u0020",
@@ -79,6 +100,9 @@
     "analyzer": {
         "stop_analyzer": {
             "type": "custom",
+            "char_filter": [
+                "apostrophe_norm"
+            ],
             "filter": [
                 "lowercase",
                 "stop_filter",
@@ -90,6 +114,9 @@
         },
         "stop_analyzer_search": {
             "type": "custom",
+            "char_filter": [
+                "apostrophe_norm"
+            ],
             "filter": [
                 "lowercase",
                 "accentfolding",
@@ -101,6 +128,7 @@
         "plain": {
             "type": "custom",
             "char_filter": [
+                "apostrophe_norm",
                 "word_break_helper",
                 "arabic_numeral_map"
             ],
@@ -114,6 +142,7 @@
         "plain_search": {
             "type": "custom",
             "char_filter": [
+                "apostrophe_norm",
                 "word_break_helper",
                 "arabic_numeral_map"
             ],

@@ -1,0 +1,767 @@
+# CirrusSearch integration-test corpus, migrated from the per-tag BeforeOnce
+# blocks in tests/integration/features/support/hooks.js.
+#
+# Loaded by the ImportTestCorpus maintenance script (see README.md). Each group
+# records the scenario tag(s) it was set up for. `textFile`/`file` paths are
+# resolved relative to this file's directory (../articles/) unless --file-root
+# is given.
+#
+# NOT migrated from hooks.js (out of scope for a static corpus):
+#  - @clean (delete-only) and the commons pre-upload deletes — runtime cleanup.
+#  - @wbcs — a Wikibase entity created via wbeditentity (kept at runtime).
+#  - null edits, sleeps, and the cirrus-suggest-index build — runtime-only steps.
+# Deviations: @prefer_recent uses static text (Date.now() can't be captured in a
+# static corpus; it is a smoke test); File:DuplicatedLocally.svg is two entries
+# because its description differs between commons and the local wiki.
+
+defaultWiki: cirrustestwiki
+
+groups:
+  - tags: [ "@prefix" ]
+    pages:
+      - title: L'Oréal
+        text: L'Oréal
+      - title: Jean-Yves Le Drian
+        text: Jean-Yves Le Drian
+
+  - tags: [ "@redirect" ]
+    pages:
+      - title: Seo Redirecttest
+        text: Seo Redirecttest
+      - title: Search Engine Optimization Redirecttest
+        text: Search Engine Optimization Redirecttest
+      - title: Redirecttest Yay
+        text: Redirecttest Yay
+      - title: "User_talk:Search Engine Optimization Redirecttest"
+        text: "User_talk:Search Engine Optimization Redirecttest"
+      - title: PrefixRedirectRanking 1
+        text: PrefixRedirectRanking 1
+      - title: LinksToPrefixRedirectRanking 1
+        text: "[[PrefixRedirectRanking 1]]"
+      - title: TargetOfPrefixRedirectRanking 2
+        text: TargetOfPrefixRedirectRanking 2
+      - title: SEO Redirecttest
+        redirect: Search Engine Optimization Redirecttest
+      - title: Redirecttest Yikes
+        redirect: Redirecttest Yay
+      - title: "User_talk:SEO Redirecttest"
+        redirect: "User_talk:Search Engine Optimization Redirecttest"
+      - title: PrefixRedirectRanking 2
+        redirect: TargetOfPrefixRedirectRanking 2
+
+  - tags: [ "@accent_squashing" ]
+    pages:
+      - title: Áccent Sorting
+        text: Áccent Sorting
+      - title: Accent Sorting
+        text: Accent Sorting
+
+  - tags: [ "@accented_namespace" ]
+    pages:
+      - title: Mó:Test
+        text: some text
+
+  - tags: [ "@setup_main", "@filters", "@prefix", "@bad_syntax", "@wildcard", "@exact_quotes", "@phrase_prefix" ]
+    description: Core articles, templates and categories used by many scenarios.
+    pages:
+      - title: "Template:Template Test"
+        text: "pickles [[Category:TemplateTagged]]"
+      - title: Catapult/adsf
+        text: "catapult subpage [[Catapult|Catapults]]"
+      - title: Links To Catapult
+        text: "[[Catapult]]"
+      - title: Catapult
+        text: "♙ asdf [[Category:Weaponry]]"
+      - title: Amazing Catapult
+        text: "test [[Catapult]] [[Category:Weaponry]]"
+      - title: "Category:Weaponry"
+        text: Weaponry refers to any items designed or used to attack and kill or destroy other people and property.
+      - title: Two Words
+        text: >-
+          ffnonesenseword catapult {{Template_Test}} anotherword [[Category:TwoWords]] [[Category:Categorywith Twowords]] [[Category:Categorywith " Quote]]
+      - title: AlphaBeta
+        text: "[[Category:Alpha]] [[Category:Beta]]"
+      - title: IHaveATwoWordCategory
+        text: "[[Category:CategoryWith ASpace]]"
+      - title: Functional programming
+        text: Functional programming is referential transparency.
+      - title: वाङ्मय
+        text: वाङ्मय
+      - title: वाङ्‍मय
+        text: वाङ्‍मय
+      - title: वाङ‍्मय
+        text: वाङ‍्मय
+      - title: वाङ्‌मय
+        text: वाङ्‌मय
+      - title: Wikitext
+        text: "{{#tag:somebug}}"
+      - title: Page with non ascii letters
+        text: ἄνθρωπος, широкий
+      - title: Waffle Squash
+        textFile: ../articles/wafflesquash.txt
+      - title: Waffle Squash 2
+        text: waffle<br>squash
+
+  - tags: [ "@setup_main", "@prefix", "@bad_syntax", "@filesearch" ]
+    pages:
+      - title: IHaveAVideo
+        text: "[[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]"
+      - title: IHaveASound
+        text: "[[File:Serenade for Strings -mvt-1- Elgar.ogg]]"
+      - title: Rdir
+        redirect: Two Words
+      - title: File:Savepage-greyed.png
+        file: ../articles/Savepage-greyed.png
+        text: Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
+
+  - tags: [ "@setup_main", "@prefix", "@go", "@bad_syntax", "@smoke" ]
+    pages:
+      - title: África
+        text: for testing
+
+  - tags: [ "@boost_template" ]
+    description: Templates first, then the pages that transclude them.
+    pages:
+      - title: "Template:BoostTemplateHigh"
+        text: BoostTemplateTest
+      - title: "Template:BoostTemplateLow"
+        text: BoostTemplateTest
+      - title: NoTemplates BoostTemplateTest
+        text: nothing important
+      - title: HighTemplate
+        text: "{{BoostTemplateHigh}}"
+      - title: LowTemplate
+        text: "{{BoostTemplateLow}}"
+
+  - tags: [ "@did_you_mean" ]
+    pages:
+      - title: Popular Culture
+        text: popular culture
+      - title: Nobel Prize
+        text: nobel prize
+      - title: Noble Gasses
+        text: noble gasses
+      - title: Noble Somethingelse
+        text: noble somethingelse
+      - title: Noble Somethingelse2
+        text: noble somethingelse
+      - title: Noble Somethingelse3
+        text: noble somethingelse
+      - title: Noble Somethingelse4
+        text: noble somethingelse
+      - title: Noble Somethingelse5
+        text: noble somethingelse
+      - title: Noble Somethingelse6
+        text: noble somethingelse
+      - title: Noble Somethingelse7
+        text: noble somethingelse
+      - title: "Template:Noble Pipe 1"
+        text: pipes are so noble
+      - title: "Template:Noble Pipe 2"
+        text: pipes are so noble
+      - title: "Template:Noble Pipe 3"
+        text: pipes are so noble
+      - title: "Template:Noble Pipe 4"
+        text: pipes are so noble
+      - title: "Template:Noble Pipe 5"
+        text: pipes are so noble
+      - title: Rrr Word 1
+        redirect: Popular Culture
+      - title: Rrr Word 2
+        redirect: Popular Culture
+      - title: Rrr Word 3
+        redirect: Noble Somethingelse3
+      - title: Rrr Word 4
+        redirect: Noble Somethingelse4
+      - title: Rrr Word 5
+        redirect: Noble Somethingelse5
+      - title: Nobel Gassez
+        redirect: Noble Gasses
+
+  - tags: [ "@did_you_mean", "@stemming" ]
+    pages:
+      - title: Stemming Multiwords
+        text: Stemming Multiwords
+      - title: Stemming Possessive’s
+        text: Stemming Possessive’s
+      - title: Stemmingsinglewords
+        text: Stemmingsinglewords
+      - title: Stemmingsinglewords Other 1
+        text: Stemmingsinglewords Other 1
+      - title: Stemmingsinglewords Other 2
+        text: Stemmingsinglewords Other 2
+      - title: Stemmingsinglewords Other 3
+        text: Stemmingsinglewords Other 3
+      - title: Stemmingsinglewords Other 4
+        text: Stemmingsinglewords Other 4
+      - title: Stemmingsinglewords Other 5
+        text: Stemmingsinglewords Other 5
+      - title: Stemmingsinglewords Other 6
+        text: Stemmingsinglewords Other 6
+      - title: Stemmingsinglewords Other 7
+        text: Stemmingsinglewords Other 7
+      - title: Stemmingsinglewords Other 8
+        text: Stemmingsinglewords Other 8
+      - title: Stemmingsinglewords Other 9
+        text: Stemmingsinglewords Other 9
+      - title: Stemmingsinglewords Other 10
+        text: Stemmingsinglewords Other 10
+      - title: Stemmingsinglewords Other 11
+        text: Stemmingsinglewords Other 11
+      - title: Stemmingsinglewords Other 12
+        text: Stemmingsinglewords Other 12
+
+  - tags: [ "@exact_quotes" ]
+    pages:
+      - title: Contains A Stop Word
+        text: Contains A Stop Word
+      - title: Doesn't Actually Contain Stop Words
+        text: Doesn't Actually Contain Stop Words
+      - title: Pick*
+        text: Pick*
+
+  - tags: [ "@redirect_loop" ]
+    description: Redirect loop (never resolves to an article); pages must exist in the DB.
+    pages:
+      - title: Redirect Loop
+        redirect: Redirect Loop 1
+      - title: Redirect Loop 1
+        redirect: Redirect Loop 2
+      - title: Redirect Loop 2
+        redirect: Redirect Loop 1
+
+  - tags: [ "@headings" ]
+    pages:
+      - title: HasHeadings
+        textFile: ../articles/has_headings.txt
+      - title: HasReferencesInText
+        text: "References [[Category:HeadingsTest]]"
+      - title: HasHeadingsWithHtmlComment
+        textFile: ../articles/has_headings_with_html_comment.txt
+      - title: HasHeadingsWithReference
+        textFile: ../articles/has_headings_with_reference.txt
+
+  - tags: [ "@javascript_injection" ]
+    pages:
+      - title: Javascript Direct Inclusion
+        textFile: ../articles/javascript.txt
+      - title: Javascript Pre Tag Inclusion
+        textFile: ../articles/javascript_in_pre.txt
+
+  - tags: [ "@setup_namespaces" ]
+    pages:
+      - title: "Talk:Two Words"
+        text: why is this page about catapults?
+      - title: "Help:Smoosh"
+        text: test
+      - title: "File:Nothingasdf"
+        text: nothingasdf
+
+  - tags: [ "@highlighting" ]
+    pages:
+      - title: Rashidun Caliphate
+        textFile: ../articles/rashidun_caliphate.txt
+      - title: The Once and Future King
+        text: The Once and Future King
+      - title: "User_talk:Test"
+        text: "User_talk:Test"
+      - title: Rose Trellis Faberge Egg
+        textFile: ../articles/rose_trellis_faberge_egg.txt
+      - title: Crazy Rdir
+        redirect: Two Words
+      - title: Insane Rdir
+        redirect: Two Words
+
+  - tags: [ "@highlighting", "@references" ]
+    pages:
+      - title: References Highlight Test
+        textFile: ../articles/references_highlight_test.txt
+
+  - tags: [ "@more_like_this" ]
+    pages:
+      - title: More Like Me 1
+        text: morelikesetone morelikesetone
+      - title: More Like Me 2
+        text: morelikesetone morelikesetone morelikesetone morelikesetone
+      - title: More Like Me 3
+        text: morelikesetone morelikesetone morelikesetone morelikesetone
+      - title: More Like Me 4
+        text: morelikesetone morelikesetone morelikesetone morelikesetone
+      - title: More Like Me 5
+        text: morelikesetone morelikesetone morelikesetone morelikesetone
+      - title: More Like Me Set 2 Page 1
+        text: morelikesettwo morelikesettwo morelikesettwo
+      - title: More Like Me Set 2 Page 2
+        text: morelikesettwo morelikesettwo morelikesettwo
+      - title: More Like Me Set 2 Page 3
+        text: morelikesettwo morelikesettwo morelikesettwo
+      - title: More Like Me Set 2 Page 4
+        text: morelikesettwo morelikesettwo morelikesettwo
+      - title: More Like Me Set 2 Page 5
+        text: morelikesettwo morelikesettwo morelikesettwo
+      - title: More Like Me Set 3 Page 1
+        text: morelikesetthree morelikesetthree
+      - title: More Like Me Set 3 Page 2
+        text: morelikesetthree morelikesetthree
+      - title: More Like Me Set 3 Page 3
+        text: morelikesetthree morelikesetthree
+      - title: More Like Me Set 3 Page 4
+        text: morelikesetthree morelikesetthree
+      - title: More Like Me Set 3 Page 5
+        text: morelikesetthree morelikesetthree
+      - title: This is Me
+        text: this is me
+      - title: More Like Me Rdir
+        redirect: More Like Me 1
+
+  - tags: [ "@setup_phrase_rescore" ]
+    pages:
+      - title: Rescore Test Words Chaff
+        text: Words Test Rescore Chaff
+      - title: Test Words Rescore Rescore Test Words
+        text: Test Words Rescore Rescore Test Words
+      - title: Rescore Test TextContent
+        text: Chaff
+      - title: Rescore Test HasTextContent
+        text: Rescore Test TextContent
+
+  - tags: [ "@programmer_friendly" ]
+    pages:
+      - title: $wgNamespaceAliases
+        text: $wgNamespaceAliases
+      - title: PFSC
+        text: snake_case
+      - title: PascalCase
+        text: PascalCase
+      - title: this.getInitial
+        text: this.getInitial
+      - title: RefToolbarBase.js
+        text: RefToolbarBase.js
+      - title: PFTest Paren
+        text: this.isCamelCased()
+
+  - tags: [ "@acronym_fixer" ]
+    pages:
+      - title: PageWithAcronyms
+        textFile: ../articles/acronym_fixer.txt
+
+  - tags: [ "@stemmer" ]
+    pages:
+      - title: StemmerTest Aliases
+        text: StemmerTest Aliases
+      - title: StemmerTest Alias
+        text: StemmerTest Alias
+      - title: StemmerTest Used
+        text: StemmerTest Used
+      - title: StemmerTest Guidelines
+        text: StemmerTest Guidelines
+
+  - tags: [ "@prefix_filter" ]
+    pages:
+      - title: Prefix Test
+        text: Prefix Test
+      - title: Foo Prefix Test
+        text: "[[Prefix Test]]"
+      - title: Prefix Test/AAAA
+        text: "[[Prefix Test]]"
+      - title: Prefix Test AAAA
+        text: "[[Prefix Test]]"
+      - title: "Talk:Prefix Test"
+        text: "[[Prefix Test]]"
+      - title: "User_talk:Prefix Test"
+        text: "[[Prefix Text]]"
+      - title: Prefix Test Redirect
+        redirect: Prefix Test
+
+  - tags: [ "@prefer_recent" ]
+    description: Smoke test only; original used Date.now() in the text (not reproducible statically).
+    pages:
+      - title: PreferRecent First
+        text: PreferRecent random text for field norm
+      - title: PreferRecent Second
+        text: PreferRecent
+      - title: PreferRecent Third
+        text: PreferRecent random text for field norm
+
+  - tags: [ "@hastemplate" ]
+    pages:
+      - title: MainNamespaceTemplate
+        text: MainNamespaceTemplate
+      - title: HasMainNSTemplate
+        text: "{{:MainNamespaceTemplate}}"
+      - title: CaseCheckTemplate
+        text: CaseCheckTemplate
+      - title: HasCaseCheckTemplate
+        text: "{{Template:CaseCheckTemplate}}"
+      - title: casechecktemplate
+        text: casechecktemplate
+      - title: Hascasechecktemplate
+        text: "{{Template:casechecktemplate}}"
+      - title: "Talk:TalkTemplate"
+        text: "Talk:TalkTemplate"
+      - title: HasTTemplate
+        text: "{{Talk:TalkTemplate}}"
+
+  - tags: [ "@go" ]
+    pages:
+      - title: MixedCapsAndLowerCase
+        text: MixedCapsAndLowerCase
+
+  - tags: [ "@go", "@options" ]
+    pages:
+      - title: son Nearmatchflattentest
+        text: son Nearmatchflattentest
+      - title: Son Nearmatchflattentest
+        text: Son Nearmatchflattentest
+      - title: SON Nearmatchflattentest
+        text: SON Nearmatchflattentest
+      - title: soñ Nearmatchflattentest
+        text: soñ Nearmatchflattentest
+      - title: Son Nolower Nearmatchflattentest
+        text: Son Nolower Nearmatchflattentest
+      - title: SON Nolower Nearmatchflattentest
+        text: SON Nolower Nearmatchflattentest
+      - title: Soñ Nolower Nearmatchflattentest
+        text: Soñ Nolower Nearmatchflattentest
+      - title: Son Titlecase Nearmatchflattentest
+        text: Son Titlecase Nearmatchflattentest
+      - title: Soñ Titlecase Nearmatchflattentest
+        text: Soñ Titlecase Nearmatchflattentest
+      - title: Soñ Onlyaccent Nearmatchflattentest
+        text: Soñ Onlyaccent Nearmatchflattentest
+      - title: Soñ Twoaccents Nearmatchflattentest
+        text: Soñ Twoaccents Nearmatchflattentest
+      - title: Són Twoaccents Nearmatchflattentest
+        text: Són Twoaccents Nearmatchflattentest
+      - title: son Double Nearmatchflattentest
+        text: son Double Nearmatchflattentest
+      - title: SON Double Nearmatchflattentest
+        text: SON Double Nearmatchflattentest
+      - title: Bạch Nearmatchflattentest
+        text: Notice the dot under the a.
+      - title: Johann Sebastian Bach Nearmatchflattentest
+        text: Johann Sebastian Bach Nearmatchflattentest
+      - title: KOAN Nearmatchflattentest
+        text: KOAN Nearmatchflattentest
+      - title: Kōan Nearmatchflattentest
+        text: Kōan Nearmatchflattentest
+      - title: Soñ Redirect Nearmatchflattentest
+        text: Soñ Redirect Nearmatchflattentest
+      - title: Són Redirect Nearmatchflattentest
+        text: Són Redirect Nearmatchflattentest
+      - title: Són Redirectnotbetter Nearmatchflattentest
+        text: Són Redirectnotbetter Nearmatchflattentest
+      - title: Són Redirecttoomany Nearmatchflattentest
+        text: Són Redirecttoomany Nearmatchflattentest
+      - title: Søn Redirecttoomany Nearmatchflattentest
+        text: Søn Redirecttoomany Nearmatchflattentest
+      - title: Blah Redirectnoncompete Nearmatchflattentest
+        text: Blah Redirectnoncompete Nearmatchflattentest
+      - title: Bach Nearmatchflattentest
+        redirect: Johann Sebastian Bach Nearmatchflattentest
+      - title: Koan Nearmatchflattentest
+        redirect: Kōan Nearmatchflattentest
+      - title: Son Redirect Nearmatchflattentest
+        redirect: Soñ Redirect Nearmatchflattentest
+      - title: Soñ Redirectnotbetter Nearmatchflattentest
+        redirect: Són Redirectnotbetter Nearmatchflattentest
+      - title: Soñ Redirecttoomany Nearmatchflattentest
+        redirect: Són Redirecttoomany Nearmatchflattentest
+      - title: Soñ Redirectnoncompete Nearmatchflattentest
+        redirect: Blah Redirectnoncompete Nearmatchflattentest
+      - title: Søn Redirectnoncompete Nearmatchflattentest
+        redirect: Blah Redirectnoncompete Nearmatchflattentest
+
+  - tags: [ "@file_text", "@filesearch" ]
+    pages:
+      - title: File:Linux_Distribution_Timeline_text_version.pdf
+        file: ../articles/Linux_Distribution_Timeline_text_version.pdf
+        text: Linux distribution timeline.
+
+  - tags: [ "@match_stopwords" ]
+    pages:
+      - title: To
+        text: To
+
+  - tags: [ "@many_redirects" ]
+    pages:
+      - title: Manyredirectstarget
+        text: "[[Category:ManyRedirectsTest]]"
+      - title: Fewredirectstarget
+        text: "[[Category:ManyRedirectsTest]]"
+      - title: Many Redirects Test 1
+        redirect: Manyredirectstarget
+      - title: Many Redirects Test 2
+        redirect: Manyredirectstarget
+      - title: Useless redirect to target 1
+        redirect: Manyredirectstarget
+      - title: Useless redirect to target 2
+        redirect: Manyredirectstarget
+      - title: Useless redirect to target 3
+        redirect: Manyredirectstarget
+      - title: Useless redirect to target 4
+        redirect: Manyredirectstarget
+      - title: Useless redirect to target 5
+        redirect: Manyredirectstarget
+      - title: Many Redirects Test ToFew
+        redirect: Fewredirectstarget
+
+  - tags: [ "@relevancy" ]
+    pages:
+      - title: Relevancyredirecttest Smaller
+        text: Relevancyredirecttest A text text text text text text text text text text text text text
+      - title: Relevancyredirecttest Smaller/A
+        text: "[[Relevancyredirecttest Smaller]]"
+      - title: Relevancyredirecttest Smaller/B
+        text: "[[Relevancyredirecttest Smaller]]"
+      - title: Relevancyredirecttest Larger
+        text: Relevancyredirecttest B text text text text text text text text text text text text text
+      - title: Relevancyredirecttest Larger/Redirect
+        redirect: Relevancyredirecttest Larger
+      - title: Relevancyredirecttest Larger/A
+        text: "[[Relevancyredirecttest Larger]]"
+      - title: Relevancyredirecttest Larger/B
+        text: "[[Relevancyredirecttest Larger/Redirect]]"
+      - title: Relevancyredirecttest Larger/C
+        text: "[[Relevancyredirecttest Larger/Redirect]]"
+      - title: Relevancylinktest Smaller
+        text: Relevancylinktest Smaller
+      - title: Relevancylinktest Larger Extraword
+        text: Relevancylinktest needs 5 extra words
+      - title: Relevancylinktest Larger/Link A
+        text: "[[Relevancylinktest Larger Extraword]]"
+      - title: Relevancylinktest Larger/Link B
+        text: "[[Relevancylinktest Larger Extraword]]"
+      - title: Relevancylinktest Larger/Link C
+        text: "[[Relevancylinktest Larger Extraword]]"
+      - title: Relevancylinktest Larger/Link D
+        text: "[[Relevancylinktest Larger Extraword]]"
+      - title: Relevancytest
+        text: it is not relevant
+      - title: Relevancytestviaredirect
+        text: not relevant
+      - title: Relevancytestviacategory
+        text: "Some opening text. [[Category:Relevancytest]]"
+      - title: Relevancytestviaheading
+        text: ==Relevancytest==
+      - title: Relevancytestviaopening
+        textFile: ../articles/Relevancytestviaopening.txt
+      - title: Relevancytestviatext
+        text: "[[Relevancytest]]"
+      - title: Relevancytestviaauxtext
+        textFile: ../articles/Relevancytestviaauxtext.txt
+      - title: Relevancytestphrase phrase
+        text: not relevant
+      - title: Relevancytestphraseviaredirect
+        text: not relevant
+      - title: Relevancytestphraseviacategory
+        text: "not relevant [[Category:Relevancytestphrase phrase category]]"
+      - title: Relevancytestphraseviaheading
+        text: ==Relevancytestphrase phrase heading==
+      - title: Relevancytestphraseviaopening
+        textFile: ../articles/Relevancytestphraseviaopening.txt
+      - title: Relevancytestphraseviatext
+        text: "[[Relevancytestphrase phrase]] text"
+      - title: Relevancytestphraseviaauxtext
+        textFile: ../articles/Relevancytestphraseviaauxtext.txt
+      - title: Relevancytwo Wordtest
+        text: relevance is bliss
+      - title: Wordtest Relevancytwo
+        text: relevance is cool
+      - title: Relevancynamespacetest
+        text: Relevancynamespacetest
+      - title: "Talk:Relevancynamespacetest"
+        text: "Talk:Relevancynamespacetest"
+      - title: "File:Relevancynamespacetest"
+        text: "File:Relevancynamespacetest"
+      - title: "Help:Relevancynamespacetest"
+        text: "Help:Relevancynamespacetest"
+      - title: "File talk:Relevancynamespacetest"
+        text: "File talk:Relevancynamespacetest"
+      - title: "User talk:Relevancynamespacetest"
+        text: "User talk:Relevancynamespacetest"
+      - title: "Template:Relevancynamespacetest"
+        text: "Template:Relevancynamespacetest"
+      - title: Relevancylanguagetest/ja
+        text: Relevancylanguagetest/ja
+      - title: Relevancylanguagetest/en
+        text: Relevancylanguagetest/en
+      - title: Relevancylanguagetest/ar
+        text: Relevancylanguagetest/ar
+      - title: Relevancyclosetest Foô
+        text: Relevancyclosetest Foô
+      - title: Relevancyclosetest Foo
+        text: Relevancyclosetest Foo
+      - title: Foo Relevancyclosetest
+        text: Foo Relevancyclosetest
+      - title: William Shakespeare
+        text: William Shakespeare
+      - title: William Shakespeare Works
+        text: To be or not to be is a famous quote from Hamlet
+      - title: Relevancytest Redirect
+        redirect: Relevancytestviaredirect
+      - title: Relevancytestphrase Phrase Redirect
+        redirect: Relevancytestphraseviaredirect
+
+  - tags: [ "@fallback_finder" ]
+    pages:
+      - title: $US
+        text: $US
+      - title: US
+        text: US
+      - title: Uslink
+        text: "[[US]]"
+      - title: Cent (currency)
+        text: Cent (currency)
+      - title: ¢
+        redirect: Cent (currency)
+
+  - tags: [ "@js_and_css" ]
+    pages:
+      - title: User:Admin/Some.js
+        model: javascript
+        textFile: ../articles/some.js
+      - title: "User:Admin/Some.css"
+        model: css
+        textFile: ../articles/some.css
+
+  - tags: [ "@special_random" ]
+    pages:
+      - title: "User:Random Test"
+        text: "User:Random Test"
+      - title: "User_talk:Random Test"
+        text: "User_talk:Random Test"
+
+  - tags: [ "@regex" ]
+    pages:
+      - title: RegexEscapedForwardSlash
+        text: a/b
+      - title: RegexEscapedBackslash
+        text: 'a\b'
+      - title: RegexEscapedDot
+        text: a.b
+      - title: RegexSpaces
+        text: a b c
+      - title: RegexComplexResult
+        text: aaabacccccccccccccccdcccccccccccccccccccccccccccccdcccc
+
+  - tags: [ "@linksto" ]
+    description: Template first, then the page that transcludes it.
+    pages:
+      - title: LinksToTest Target
+        text: LinksToTest Target
+      - title: LinksToTest Plain
+        text: "[[LinksToTest Target]]"
+      - title: LinksToTest OtherText
+        text: "[[LinksToTest Target]] and more text"
+      - title: LinksToTest No Link
+        text: LinksToTest Target
+      - title: Template:LinksToTest Template
+        text: "[[LinksToTest Target]]"
+      - title: LinksToTest LinksToTemplate
+        text: "[[Template:LinksToTest Template]]"
+      - title: LinksToTest Using Template
+        text: "{{LinksToTest Template}}"
+
+  - tags: [ "@filenames" ]
+    pages:
+      - title: "File:No_SVG.svg"
+        file: ../articles/No_SVG.svg
+        text: "[[Category:Red circle with left slash]]"
+      - title: "File:Somethingelse_svg_SVG.svg"
+        file: ../articles/Somethingelse_svg_SVG.svg
+        text: "[[Category:Red circle with left slash]]"
+
+  - tags: [ "@removed_text" ]
+    pages:
+      - title: Autocollapse Example
+        text: >-
+          <div class="autocollapse">inside autocollapse</div>
+
+  - tags: [ "@setup_main", "@commons", "@filesearch" ]
+    description: Commons files; DuplicatedLocally.svg also exists locally with a different description.
+    pages:
+      - title: "File:OnCommons.svg"
+        file: ../articles/OnCommons.svg
+        text: File stored on commons for test purposes
+        wiki: commonswiki
+      - title: "File:DuplicatedLocally.svg"
+        file: ../articles/DuplicatedLocally.svg
+        text: File stored on commons and duplicated locally
+        wiki: commonswiki
+      - title: "File:DuplicatedLocally.svg"
+        file: ../articles/DuplicatedLocally.svg
+        text: Locally stored file duplicated on commons
+        wiki: cirrustestwiki
+
+  - tags: [ "@ru" ]
+    wiki: ruwiki
+    pages:
+      - title: Черная дыра
+        text: Черная дыра́ — область пространства-времени
+      - title: Саша Чёрный
+        text: настоящее имя Алекса́ндр Миха́йлович Гли́кберг
+      - title: Бразер
+        text: белорусский советский скульптор
+
+  - tags: [ "@geo" ]
+    pages:
+      - title: San Jose
+        text: "San Jose is a nice city located at {{#coordinates:primary|37.333333|-121.9}}."
+      - title: Santa Clara
+        text: "Santa Clara is a nice city located at {{#coordinates:primary|37.354444|-121.969167}}."
+      - title: Cupertino
+        text: "Cupertino is a nice city located at {{#coordinates:primary|37.3175|-122.041944}}."
+
+  - tags: [ "@suggest" ]
+    description: Completion-suggester corpus (the suggest-index build itself stays a runtime step).
+    pages:
+      - title: Venom
+        text: "Venom: or the Venom Symbiote: is a fictional supervillain appearing in American comic books published by Marvel Comics. The character is a sentient alien Symbiote with an amorphous, liquid-like form, who requires a host, usually human, to bond with for its survival."
+      - title: X-Men
+        text: The X-Men are a fictional team of superheroes
+      - title: "Xavier: Charles"
+        text: Professor Charles Francis Xavier (also known as Professor X) is the founder of [[X-Men]]
+      - title: X-Force
+        text: X-Force is a fictional team of of [[X-Men]]
+      - title: Magneto
+        text: Magneto is a fictional character appearing in American comic books
+      - title: "Help:Magneto"
+        text: "Help:Magneto"
+      - title: Ice
+        text: It's cold.
+      - title: Iceman
+        text: >-
+          Iceman (Robert "Bobby" Drake) is a fictional superhero appearing in American comic books published by Marvel Comics and is...
+      - title: Électricité
+        text: This is electicity in french.
+      - title: Elektra
+        text: Elektra is a fictional character appearing in American comic books published by Marvel Comics.
+      - title: "Help:Navigation"
+        text: When viewing any page on MediaWiki...
+      - title: The Doors
+        text: The Doors were an American rock band formed in 1965 in Los Angeles.
+      - title: Hyperion Cantos/Endymion
+        text: Endymion is the third science fiction novel by Dan Simmons.
+      - title: はーい
+        text: makes sure we do not fail to index empty tokens (T156234)
+      - title: Sam Wilson
+        text: "Warren Kenneth Worthington III: originally known as Angel and later as Archangel: ... Marvel Comics like [[Venom]]. {{DEFAULTSORTKEY:Wilson, Sam}}"
+      - title: Max Eisenhardt
+        redirect: Magneto
+      - title: Eisenhardt, Max
+        redirect: Magneto
+      - title: Magnetu
+        redirect: Magneto
+      - title: Ice Man (Marvel Comics)
+        redirect: Iceman
+      - title: Ice-Man (comics books)
+        redirect: Iceman
+      - title: Ultimate Iceman
+        redirect: Iceman
+      - title: "V:N"
+        redirect: "Help:Navigation"
+      - title: "Z:Navigation"
+        redirect: "Help:Navigation"
+      - title: Zam Wilson
+        redirect: Sam Wilson

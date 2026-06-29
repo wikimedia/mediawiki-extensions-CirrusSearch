@@ -5,7 +5,7 @@
 	"opensearch": {
 		"versions": {
 			"v1.3.20-12": {
-				"concurrency": 1
+				"concurrency": 2
 			},
 			"v2.19.5-3": {
 				"concurrency": 2,

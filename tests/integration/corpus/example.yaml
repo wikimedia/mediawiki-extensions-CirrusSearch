@@ -1,0 +1,92 @@
+# Example / seed CirrusSearch integration-test corpus.
+#
+# Consumed by the ImportTestCorpus maintenance script:
+#   run.php --wiki <db> CirrusSearch:ImportTestCorpus \
+#       --corpus tests/integration/corpus/example.yaml --target-wiki cirrustest
+#
+# Pages are organised into tagged groups, mirroring the per-tag BeforeOnce blocks
+# in the Cucumber suite (features/support/hooks.js). The `tags` on each group
+# document which scenario tag(s) its pages were originally set up for.
+#
+# `file:` / `textFile:` paths are resolved relative to the corpus file's directory
+# by default (override with --file-root); the entries below point at
+# tests/integration/articles/. See README.md for the full schema.
+
+# Logical wiki applied to groups/entries that do not name one explicitly.
+defaultWiki: cirrustest
+
+groups:
+  # --- core articles, used by many scenarios ------------------------------
+  - tags: [ "@setup_main" ]
+    description: Core articles (and a couple of redirects) used across scenarios.
+    pages:
+      - title: Catapult
+        text: |
+          A '''catapult''' is a ballistic device used to launch a projectile.
+          [[Category:Siege weapons]]
+
+      - title: Trebuchet
+        text: |
+          A '''trebuchet''' is a type of [[catapult]].
+          [[Category:Siege weapons]]
+
+      # Convenience form: `redirect:` expands to "#REDIRECT [[Catapult]]".
+      - title: Mangonel
+        redirect: Catapult
+
+      # Equivalent explicit form.
+      - title: Onager
+        text: "#REDIRECT [[Catapult]]"
+
+      # Page source loaded from a file rather than inline (handy for large articles).
+      - title: Wafflesquash
+        textFile: ../articles/wafflesquash.txt
+
+  # --- content-model pages ------------------------------------------------
+  - tags: [ "@js_css" ]
+    description: User-namespace pages with explicit content models.
+    pages:
+      - title: User:CirrusTestUser/common.js
+        model: javascript
+        text: |
+          mw.log( 'loaded from the test corpus' );
+
+      - title: User:CirrusTestUser/common.css
+        model: css
+        text: |
+          .cirrus-test { color: green; }
+
+  # --- local media files --------------------------------------------------
+  - tags: [ "@filesearch" ]
+    description: Media files exercising file_text / filesearch scenarios.
+    pages:
+      - title: File:Linux_Distribution_Timeline_text_version.pdf
+        file: ../articles/Linux_Distribution_Timeline_text_version.pdf
+        text: Linux distribution timeline.
+
+      - title: File:Savepage-greyed.png
+        file: ../articles/Savepage-greyed.png
+        text: Screenshot, for test purposes.
+
+  # --- Commons files (group-level wiki default) ---------------------------
+  - tags: [ "@commons", "@filesearch" ]
+    description: Files hosted on Commons; one is also duplicated on the local wiki.
+    wiki: commons
+    pages:
+      - title: File:OnCommons.svg
+        file: ../articles/OnCommons.svg
+        text: File stored on commons for test purposes.
+
+      # Per-entry wiki overrides the group default: present on both wikis.
+      - title: File:DuplicatedLocally.svg
+        file: ../articles/DuplicatedLocally.svg
+        text: File stored on commons and duplicated locally.
+        wiki: [ cirrustest, commons ]
+
+  # --- content targeting another wiki -------------------------------------
+  - tags: [ "@ru" ]
+    description: Russian-language content.
+    wiki: ru
+    pages:
+      - title: Черная дыра
+        text: Черная дыра́ — область пространства-времени.

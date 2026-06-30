@@ -26,6 +26,7 @@
 	"apihelp-query+cirrusdoc-example": "الحصول على تفريغ لمقالة CirrusSearch واحدة كما هو مفهرس حاليا في البحث.",
 	"apihelp-query+cirrusdoc-example-2": "احصل على تفريغ إعدادات CirrusSearch لهذا الويكي مع الفئات التي تم تحديدها فقط باستخدام المعلمة \"include\"",
 	"apihelp-query+cirrusdoc-param-includes": "حدد الحقول التي يجب إرجاعها بواسطة البحث.",
+	"apihelp-query+cirrusdoc-param-redirectscope": "قم بإرجاع المستند المفهرس الخاص بصفحة إعادة التوجيه بدلاً من تتبع مسارها إلى وجهتها.",
 	"apihelp-query+cirrusbuilddoc-summary": "تفريغ مستند مقالة CirrusSearch من خوادم قاعدة البيانات",
 	"apihelp-query+cirrusbuilddoc-example": "الحصول على تفريغ مقالة CirrusSearch واحدة وُلِّدت من قاعدة البيانات.",
 	"apihelp-query+cirrusbuilddoc-param-builders": "نوع البيانات المراد استخلاصها",

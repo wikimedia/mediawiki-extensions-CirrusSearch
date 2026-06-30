@@ -24,6 +24,7 @@
 	"apihelp-query+cirrusdoc-example": "Дај складиштен извадок од поединечна статија на CirrusSearch тековно индексирани во пребарувањето.",
 	"apihelp-query+cirrusdoc-example-2": "Добијте резервен склад од поставки за CirrusSearch за ова вики само со категориите избрани со параметарот „includes“",
 	"apihelp-query+cirrusdoc-param-includes": "Укажете кои полиња да се дадат во пребарувањето.",
+	"apihelp-query+cirrusdoc-param-redirectscope": "Дај го индексираниот документ на самата пренасочувачка страница наместо да се проследува до нејзината цел.",
 	"apihelp-query+cirrusbuilddoc-summary": "складиштен извадок од статиски документ на CirrusSearch од базните опслужвачи",
 	"apihelp-query+cirrusbuilddoc-example": "Дај складиштен извадок од поединечна статија на CirrusSearch создаден од базата.",
 	"apihelp-query+cirrusbuilddoc-param-builders": "Вид на податоци за извлекување",

@@ -31,6 +31,7 @@
 	"apihelp-query+cirrusdoc-example": "获取当前索引进搜索的单个CirrusSearch条目的转储。",
 	"apihelp-query+cirrusdoc-example-2": "获取此wiki的CirrusSearch设置转储，其中仅包含使用“includes”参数选择的分类",
 	"apihelp-query+cirrusdoc-param-includes": "定义搜索应返回哪些字段。",
+	"apihelp-query+cirrusdoc-param-redirectscope": "返回重定向页面自身的索引文档，而不是追踪到其目标页面。",
 	"apihelp-query+cirrusbuilddoc-summary": "来自数据库服务器的CirrusSearch条目文档的转储",
 	"apihelp-query+cirrusbuilddoc-example": "获取生成自数据库的单个CirrusSearch条目的转储。",
 	"apihelp-query+cirrusbuilddoc-param-builders": "要提取的数据类型",

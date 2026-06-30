@@ -75,6 +75,7 @@
 	"cirrussearch-explore-similar-related-none": "Keine verwandten Seiten verfügbar",
 	"cirrussearch-article-words": "Wörter in allen Inhaltsseiten",
 	"cirrussearch-keyword-prefix-ns-mismatch": "Der im Suchbegriff gefundene Namensraum <code>prefix:</code> ist nicht mit den angeforderten Namensräumen kompatibel. Du kannst diesen Fehler beheben, indem du deiner Anfrage das Präfix <code>all:</code> hinzufügst.",
+	"cirrussearch-keyword-prefix-exclusion-on-unselected-namespace": "<code>-prefix:</code> wird ignoriert, da dadurch Seiten aus einem Namensraum ausgeschlossen werden, in dem du nicht suchst.",
 	"cirrussearch-autoselect-profile": "Lass die Suchmaschine über das beste zu verwendende Profil entscheiden.",
 	"cirrussearch-offset-too-large": "Die Ergebnisse konnten nicht abgerufen werden. Es werden bis zu $1 Ergebnisse unterstützt, es wurden jedoch Ergebnisse beginnend ab $2 angefordert.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Die Anfrage nach Folgeseiten wird bei zufallsgesteuerter Ergebnisausgabe ignoriert.",
@@ -83,5 +84,6 @@
 	"cirrussearch-invalid-keyword-boost": "Ungültiger Boost-Wert „$1“ angegeben. Es wird eine positive Dezimalzahl erwartet.",
 	"cirrussearch-invalid-keyword-threshold": "Ungültiger Schwellenwert „$1“ angegeben. Erwartet wird eine Dezimalzahl zwischen 0 und 1.",
 	"cirrussearch-semantic-empty-query": "Für die semantische Suche ist ein nicht leerer Suchbegriff erforderlich.",
-	"cirrussearch-semantic-too-many-results": "Zu viele Ergebnisse wurden von der semantischen Suche verlangt. Nur die Top $1 werden ordnungsgemäß eingestuft."
+	"cirrussearch-semantic-too-many-results": "Zu viele Ergebnisse wurden von der semantischen Suche verlangt. Nur die Top $1 werden ordnungsgemäß eingestuft.",
+	"cirrussearch-feature-not-negatable": "Das Schlüsselwort „$1“ kann nicht mit „-“ oder „!“ negiert werden."
 }

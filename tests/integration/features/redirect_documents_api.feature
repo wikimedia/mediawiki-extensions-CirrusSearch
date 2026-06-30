@@ -1,4 +1,4 @@
-@clean @api @redirect @redirect_documents @update
+@api @redirect @redirect_documents @update
 Feature: First-class redirect documents on the edit path
   # These scenarios require CirrusSearchRedirectDocuments['build'] = true and a live index.
   # They are NOT exercised by run-unit-tests.sh (which has no OpenSearch).

@@ -7,7 +7,6 @@
 # is given.
 #
 # NOT migrated from hooks.js (out of scope for a static corpus):
-#  - @clean (delete-only) and the commons pre-upload deletes — runtime cleanup.
 #  - @wbcs — a Wikibase entity created via wbeditentity (kept at runtime).
 #  - null edits, sleeps, and the cirrus-suggest-index build — runtime-only steps.
 # Deviations: @prefer_recent uses static text (Date.now() can't be captured in a

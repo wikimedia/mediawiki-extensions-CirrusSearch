@@ -1,9 +1,7 @@
 # Test corpus pre-population
 
-The integration suite (see `../README.md`) normally builds its corpus at run
-time: the `BeforeOnce` hooks in `../features/support/hooks.js` create every page
-and file over the MediaWiki API and then poll OpenSearch until each document is
-indexed. That serial edit→index→poll loop is the slow part of a suite run.
+The integration suite (see `../README.md`) builds its corpus with the ImportTestCorpus
+maintenance script.
 
 This directory holds an alternative: a **YAML-described corpus** that the
 `CirrusSearch:ImportTestCorpus` maintenance script writes straight to the
@@ -11,7 +9,6 @@ database, so the whole wiki can then be indexed in a single pass.
 
 > **Status:** this is the pre-population *mechanism*. Wiring it into the
 > `cirrus-integration-test-runner` environment build, and trimming the runtime
-> `hooks.js` setup so it no longer recreates the static corpus, are follow-ups.
 
 ## Prep recipe
 
@@ -96,7 +93,7 @@ Group fields:
 
 Page fields:
 
-- **`title`** *(required)* — page title; namespace is taken from the prefix.
+- **`title`** *(required for page/file entries)* — page title; namespace is taken from the prefix.
 - **`text`** — inline source. Required for normal pages unless `textFile` is given;
   optional for file entries (the File: description page); ignored with `redirect`.
   Text beginning with `#REDIRECT` is treated as a redirect for ordering.
@@ -111,6 +108,12 @@ Page fields:
   defaults to the model implied by the title (so `User:…/common.js` is JavaScript).
 - **`wiki`** — logical wiki name or list; overrides the group default, else `defaultWiki`.
 - **`tags`** — optional per-page tags, merged with the group's.
+- **`importXml`** — path to a MediaWiki XML dump (export format) imported via core's `WikiImporter`,
+  resolved under `--file-root`. An import entry is a distinct kind: it has **no**
+  `title`/`text`/`file`/`redirect`/`model` (the dump carries its own pages) — only `importXml`, plus
+  optional `wiki`/`tags`. Use it for content that isn't a plain page, e.g. a Wikibase entity
+  (`../articles/wikibase-universe.xml`); the target wiki must have the matching content model /
+  extension installed. `ForceSearchIndex` still indexes the imported pages afterwards.
 
 Redirects are always imported after non-redirect pages so their targets exist.
 

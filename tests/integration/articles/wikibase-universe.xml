@@ -1,0 +1,23 @@
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.11/" version="0.11" xml:lang="en">
+  <siteinfo>
+    <namespaces>
+      <namespace key="120" case="first-letter">Item</namespace>
+      <namespace key="121" case="first-letter">Item talk</namespace>
+      <namespace key="122" case="first-letter">Property</namespace>
+      <namespace key="123" case="first-letter">Property talk</namespace>
+    </namespaces>
+  </siteinfo>
+  <page>
+    <title>Item:Q1</title>
+    <ns>120</ns>
+    <revision>
+      <timestamp>2020-01-01T00:00:00Z</timestamp>
+      <contributor>
+        <username>Maintenance script</username>
+      </contributor>
+      <model>wikibase-item</model>
+      <format>application/json</format>
+      <text xml:space="preserve">{"type":"item","id":"Q1","labels":{"en":{"language":"en","value":"Universe"}},"descriptions":{},"aliases":[],"claims":{},"sitelinks":{}}</text>
+    </revision>
+  </page>
+</mediawiki>

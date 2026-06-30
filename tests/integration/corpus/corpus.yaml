@@ -7,7 +7,6 @@
 # is given.
 #
 # NOT migrated from hooks.js (out of scope for a static corpus):
-#  - @wbcs — a Wikibase entity created via wbeditentity (kept at runtime).
 #  - null edits, sleeps, and the cirrus-suggest-index build — runtime-only steps.
 # Deviations: @prefer_recent uses static text (Date.now() can't be captured in a
 # static corpus; it is a smoke test); File:DuplicatedLocally.svg is two entries
@@ -764,3 +763,9 @@ groups:
         redirect: "Help:Navigation"
       - title: Zam Wilson
         redirect: Sam Wilson
+
+  - tags: [ "@wbcs" ]
+    description: A Wikibase Item (label "Universe") imported via WikiImporter (see ../articles/wikibase-universe.xml).
+    wiki: wikidatawiki
+    pages:
+      - importXml: ../articles/wikibase-universe.xml

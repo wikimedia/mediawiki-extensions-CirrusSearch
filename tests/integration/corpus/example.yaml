@@ -4,8 +4,7 @@
 #   run.php --wiki <db> CirrusSearch:ImportTestCorpus \
 #       --corpus tests/integration/corpus/example.yaml --target-wiki cirrustest
 #
-# Pages are organised into tagged groups, mirroring the per-tag BeforeOnce blocks
-# in the Cucumber suite (features/support/hooks.js). The `tags` on each group
+# Pages are organised into tagged groups. The `tags` on each group
 # document which scenario tag(s) its pages were originally set up for.
 #
 # `file:` / `textFile:` paths are resolved relative to the corpus file's directory

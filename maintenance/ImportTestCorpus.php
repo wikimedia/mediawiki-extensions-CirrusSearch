@@ -6,6 +6,8 @@ use InvalidArgumentException;
 use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Content\ContentHandler;
 use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Import\ImportStreamSource;
+use MediaWiki\Permissions\UltimateAuthority;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
@@ -94,10 +96,12 @@ class ImportTestCorpus extends Maintenance {
 			$this->fatalError( "Unable to create the maintenance system user" );
 		}
 
-		$stats = [ 'created' => 0, 'updated' => 0, 'uploaded' => 0, 'skipped' => 0, 'failed' => 0 ];
+		$stats = [ 'created' => 0, 'updated' => 0, 'uploaded' => 0, 'imported' => 0, 'skipped' => 0, 'failed' => 0 ];
 		$processed = 0;
 		foreach ( $entries as $entry ) {
-			if ( $entry->isFile() ) {
+			if ( $entry->isImport() ) {
+				$this->importXmlEntry( $entry, $fileRoot, $user, $dryRun, $stats );
+			} elseif ( $entry->isFile() ) {
 				$this->importFile( $entry, $fileRoot, $user, $dryRun, $stats );
 			} else {
 				$this->importPage( $entry, $fileRoot, $user, $dryRun, $stats );
@@ -113,8 +117,9 @@ class ImportTestCorpus extends Maintenance {
 		}
 
 		$this->output( sprintf(
-			"Done. created=%d updated=%d uploaded=%d skipped=%d failed=%d\n",
-			$stats['created'], $stats['updated'], $stats['uploaded'], $stats['skipped'], $stats['failed']
+			"Done. created=%d updated=%d uploaded=%d imported=%d skipped=%d failed=%d\n",
+			$stats['created'], $stats['updated'], $stats['uploaded'], $stats['imported'],
+			$stats['skipped'], $stats['failed']
 		) );
 
 		return $stats['failed'] === 0;
@@ -260,6 +265,56 @@ class ImportTestCorpus extends Maintenance {
 
 		$this->output( "  uploaded {$title->getPrefixedText()}\n" );
 		$stats['uploaded']++;
+	}
+
+	/**
+	 * Import a MediaWiki XML dump (e.g. a Wikibase entity) via core's WikiImporter.
+	 *
+	 * @param CorpusEntry $entry
+	 * @param string $fileRoot
+	 * @param User $user
+	 * @param bool $dryRun
+	 * @param array<string,int> &$stats
+	 */
+	private function importXmlEntry( CorpusEntry $entry, string $fileRoot, User $user, bool $dryRun, array &$stats ): void {
+		$path = $this->resolveFilePath( $fileRoot, (string)$entry->getImportXml() );
+		if ( $path === null ) {
+			$this->error( "  cannot read import XML '{$entry->getImportXml()}'\n" );
+			$stats['failed']++;
+			return;
+		}
+
+		if ( $dryRun ) {
+			$this->output( "  [dry-run] would import XML $path\n" );
+			$stats['imported']++;
+			return;
+		}
+
+		try {
+			$handle = fopen( $path, 'rt' );
+			if ( $handle === false ) {
+				$this->error( "  cannot open import XML $path\n" );
+				$stats['failed']++;
+				return;
+			}
+			$importer = $this->getServiceContainer()->getWikiImporterFactory()
+				->getWikiImporter( new ImportStreamSource( $handle ), new UltimateAuthority( $user ) );
+			$importer->disableStatisticsUpdate();
+			$ok = $importer->doImport();
+		} catch ( \Throwable $e ) {
+			$this->error( "  failed to import XML $path: " . $e->getMessage() . "\n" );
+			$stats['failed']++;
+			return;
+		}
+
+		if ( !$ok ) {
+			$this->error( "  import of XML $path reported failure\n" );
+			$stats['failed']++;
+			return;
+		}
+
+		$this->output( "  imported XML $path\n" );
+		$stats['imported']++;
 	}
 
 	/**

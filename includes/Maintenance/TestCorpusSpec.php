@@ -165,6 +165,22 @@ class TestCorpusSpec {
 			throw new InvalidArgumentException( "$label must be a map" );
 		}
 
+		// XML import entry: a MediaWiki dump fed to WikiImporter rather than a page.
+		// The XML carries its own titles and content, so no page fields are allowed here.
+		$importXml = self::optionalNonEmptyString( $raw['importXml'] ?? null, "$label: 'importXml'" );
+		if ( $importXml !== null ) {
+			foreach ( [ 'title', 'text', 'textFile', 'redirect', 'file', 'model' ] as $key ) {
+				if ( array_key_exists( $key, $raw ) ) {
+					throw new InvalidArgumentException( "$label: 'importXml' cannot be combined with '$key'" );
+				}
+			}
+			$wikis = self::normalizeWikiList( $raw['wiki'] ?? null, "$label: 'wiki'" ) ?? $groupWiki ?? [ $defaultWiki ];
+			$tags = array_values( array_unique( array_merge(
+				$groupTags, self::normalizeStringList( $raw['tags'] ?? null, "$label: 'tags'" )
+			) ) );
+			return new CorpusEntry( basename( $importXml ), null, null, null, null, $wikis, false, $tags, $importXml );
+		}
+
 		$title = $raw['title'] ?? null;
 		if ( !is_string( $title ) || trim( $title ) === '' ) {
 			throw new InvalidArgumentException( "$label is missing a non-empty 'title'" );

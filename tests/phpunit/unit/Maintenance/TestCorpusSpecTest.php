@@ -217,6 +217,25 @@ class TestCorpusSpecTest extends CirrusTestCase {
 		$this->assertFalse( $entry->isFile() );
 	}
 
+	public function testImportXmlEntry() {
+		$spec = TestCorpusSpec::fromArray( [
+			'groups' => [ [
+				'tags' => [ '@wbcs' ],
+				'wiki' => 'wikidatawiki',
+				'pages' => [ [ 'importXml' => '../articles/wikibase-universe.xml' ] ],
+			] ],
+		] );
+		$entry = $spec->getEntries()[0];
+		$this->assertTrue( $entry->isImport() );
+		$this->assertSame( '../articles/wikibase-universe.xml', $entry->getImportXml() );
+		// An import entry has no title of its own; getTitle() is a derived label (the basename).
+		$this->assertSame( 'wikibase-universe.xml', $entry->getTitle() );
+		$this->assertSame( [ 'wikidatawiki' ], $entry->getWikis() );
+		$this->assertSame( [ '@wbcs' ], $entry->getTags() );
+		$this->assertFalse( $entry->isFile() );
+		$this->assertFalse( $entry->isRedirect() );
+	}
+
 	public function testFlatPagesHaveNoTags() {
 		$spec = TestCorpusSpec::fromArray( [
 			'pages' => [ [ 'title' => 'Foo', 'text' => 'x' ] ],
@@ -322,6 +341,18 @@ class TestCorpusSpecTest extends CirrusTestCase {
 			'bad tags entry' => [
 				[ 'pages' => [ [ 'title' => 'T', 'text' => 'x', 'tags' => [ '' ] ] ] ],
 				"'tags' entries must be non-empty strings",
+			],
+			'importXml with title' => [
+				[ 'pages' => [ [ 'importXml' => 'x.xml', 'title' => 'T' ] ] ],
+				"'importXml' cannot be combined with 'title'",
+			],
+			'importXml with text' => [
+				[ 'pages' => [ [ 'importXml' => 'x.xml', 'text' => 'y' ] ] ],
+				"'importXml' cannot be combined with 'text'",
+			],
+			'empty importXml' => [
+				[ 'pages' => [ [ 'importXml' => '' ] ] ],
+				"'importXml' must be a non-empty string",
 			],
 		];
 	}

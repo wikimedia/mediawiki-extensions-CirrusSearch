@@ -1,13 +1,7 @@
 'use strict';
 
-const child_process = require( 'child_process' ),
-	path = require( 'path' ),
-	fs = require( 'fs' ),
-	{ setValue: setSharedStoreValue } = require( '@wdio/shared-store-service' );
-
-function relPath( foo ) {
-	return path.resolve( __dirname, '../..', foo );
-}
+const path = require( 'path' );
+const { setValue: setSharedStoreValue } = require( '@wdio/shared-store-service' );
 
 function fallback( ...args ) {
 	for ( const arg of args ) {
@@ -18,8 +12,9 @@ function fallback( ...args ) {
 	return undefined;
 }
 
-let forkedTracker;
-let unixSocket;
+function relPath( foo ) {
+	return path.resolve( __dirname, '../..', foo );
+}
 
 const FEATURES_DIR = path.resolve( __dirname, '../features' );
 
@@ -33,9 +28,6 @@ exports.config = {
 		password: fallback( process.env.MEDIAWIKI_PASSWORD, 'vagrant' ),
 		botPassword: fallback( process.env.MEDIAWIKI_BOT_PASSWORD, 'vagrant' ),
 		baseUrl: 'http://cirrustest.wiki.local.wmftest.net:8080',
-		// unix socket path for tag tracker
-		trackerPath: '/tmp/cirrussearch-integration-tagtracker',
-		preloaded: fallback( process.env.CIRRUS_PRELOADED_TEST_DATA, 'no' ),
 		wikis: {
 			default: 'cirrustest',
 			cirrustest: {
@@ -95,12 +87,10 @@ exports.config = {
 	],
 	cucumberOpts: {
 		tagsInTitle: true,
-		// Has to be long enough for hooks to initialize
-		timeout: 120000,
+		timeout: 60000,
 		tags: process.env.CIRRUS_TAGS,
 		require: [
 			relPath( './integration/features/support/world.js' ),
-			relPath( './integration/features/support/hooks.js' ),
 			relPath( './integration/features/step_definitions/page_step_helpers.js' ),
 			relPath( './integration/features/step_definitions/page_steps.js' ),
 			relPath( './integration/features/step_definitions/search_steps.js' )
@@ -224,24 +214,10 @@ exports.config = {
 	//
 	// Gets executed once before all workers get launched.
 	onPrepare: async function ( config ) {
-		forkedTracker = child_process.fork( relPath( './integration/lib/tracker.js' ) );
-		unixSocket = config.appOptions.trackerPath;
-		// This value is for the feature file executors, not the tracker. But same idea, share
-		// out the config to the places that need it.
+		// Share the resolved config with the feature-file workers; world.js reads it
+		// via getSharedStoreValue( 'appOptions' ). (The former tag-tracker process has
+		// been removed now that fixtures are pre-loaded from the static corpus.)
 		await setSharedStoreValue( 'appOptions', config.appOptions );
-		return new Promise( ( resolve, reject ) => {
-			forkedTracker.on( 'message', ( msg ) => {
-				if ( msg.initialized ) {
-					console.log( 'initialized tracker' );
-					resolve();
-				} else {
-					console.log( 'failed to init tracker' );
-					console.log( msg.error );
-					reject( msg.error );
-				}
-			} );
-			forkedTracker.send( { config: config.appOptions } );
-		} );
 	},
 	//
 	// Gets executed before test execution begins. At this point you can access all global
@@ -289,7 +265,7 @@ exports.config = {
 		} catch ( screenshotError ) {
 			console.error( '\n\tFailed to take screenshot:', screenshotError.message, '\n' );
 		}
-	},
+	}
 	//
 	// Hook that gets executed after the suite has ended
 	// afterSuite: function (suite) {
@@ -302,15 +278,6 @@ exports.config = {
 	//
 	// Gets executed after all workers got shut down and the process is about to exit. It is not
 	// possible to defer the end of the process using a promise.
-	onComplete: function () {
-		console.log( 'Attempting shutdown of forked tracker' );
-		// TODO: Is this method being called a guarantee, or should we handle signals to be sure?
-		try {
-			forkedTracker.send( { exit: true } );
-		} catch ( err ) {
-			console.log( `Failed to send exit signal to tracker: ${ err }` );
-			// Force unlinking the socket
-			fs.unlinkSync( unixSocket );
-		}
-	}
+	// onComplete: function () {
+	// }
 };

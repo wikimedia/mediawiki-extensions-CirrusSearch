@@ -12,52 +12,10 @@
 
 const { Before, setWorldConstructor } = require( '@cucumber/cucumber' ),
 	{ getValue: getSharedStoreValue } = require( '@wdio/shared-store-service' ),
-	request = require( 'request-promise-native' ),
 	log = require( 'semlog' ).log,
 	Bot = require( 'mwbot' ),
 	StepHelpers = require( '../step_definitions/page_step_helpers' ),
 	Page = require( './pages/page' );
-
-// Client for the Server implemented in lib/tracker.js. The server
-// tracks what tags have already been initialized so we don't have
-// to do it for every feature file.
-class TagClient {
-	constructor( options ) {
-		this.tags = {};
-		this.unixSocketPath = options.trackerPath;
-		this.silentLog = options.logLevel !== 'verbose';
-	}
-
-	async check( tag ) {
-		if ( this.tags[ tag ] ) {
-			return this.tags[ tag ];
-		}
-		log( `[D] TAG >> ${ tag }`, this.silentLog );
-		const response = await this.post( { check: tag } );
-		log( `[D] TAG << ${ tag }`, this.silentLog );
-		if ( response.status === 'complete' || response.status === 'reject' ) {
-			this.tags[ tag ] = response.status;
-		}
-		return response.status;
-	}
-
-	reject( tag ) {
-		this.tags[ tag ] = 'reject';
-		return this.post( { reject: tag } );
-	}
-
-	complete( tag ) {
-		this.tags[ tag ] = 'complete';
-		return this.post( { complete: tag } );
-	}
-
-	post( data ) {
-		return request.post( {
-			uri: `http://unix:${ this.unixSocketPath }:/tracker`,
-			json: data
-		} );
-	}
-}
 
 // world gets re-created all the time. Try and save some time logging
 // in by sharing api clients
@@ -145,10 +103,11 @@ function World( { attach, parameters } ) {
 			throw new Error( `In "World.visit(page)" page is falsy: page=${ page }` );
 		}
 		const tmpUrl = this.config.wikis[ wiki ].baseUrl + '?' + params;
-		log( `[D] Visiting page: ${ tmpUrl }`, this.tags.silentLog );
+		const silentLog = this.config.logLevel !== 'verbose';
+		log( `[D] Visiting page: ${ tmpUrl }`, silentLog );
 		await browser.url( tmpUrl );
 		// logs full URL in case of typos, misplaced backslashes.
-		log( `[D] Visited page: ${ browser.getUrl() }`, this.tags.silentLog );
+		log( `[D] Visited page: ${ browser.getUrl() }`, silentLog );
 	};
 }
 
@@ -157,12 +116,9 @@ Before( async function () {
 	// appOptions from wdio.conf.js
 	this.config = await getSharedStoreValue( 'appOptions' );
 
-	// Extra process tracking what tags have been initialized
-	this.tags = new TagClient( this.config );
-
 	// Binding step helpers to this World.
 	// Step helpers are just step functions that are abstracted
-	// for the purpose of using them outside of the steps themselves (like in hooks).
+	// for the purpose of using them outside of the steps themselves.
 	this.stepHelpers = new StepHelpers( this );
 
 	// We depend on the browser being large enough that the search input isn't hidden

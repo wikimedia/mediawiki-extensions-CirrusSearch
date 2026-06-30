@@ -3,7 +3,12 @@
 namespace CirrusSearch\Maintenance;
 
 /**
- * Immutable description of a single page to import into a test wiki.
+ * Immutable description of a single corpus item to import into a test wiki.
+ *
+ * Most entries are a page (title + content) or a media file upload. An entry
+ * may instead be an *XML import* ({@see isImport}): a path to a MediaWiki XML
+ * dump fed to core's WikiImporter — used for content that isn't a plain page,
+ * e.g. Wikibase entities.
  *
  * Produced by {@see TestCorpusSpec} from the corpus YAML; consumed by the
  * ImportTestCorpus maintenance script. Holds only data — no MediaWiki services.
@@ -12,10 +17,10 @@ namespace CirrusSearch\Maintenance;
  */
 class CorpusEntry {
 
-	/** @var string Page title, possibly namespace-prefixed (e.g. "User:Foo/common.js"). */
+	/** @var string Page title, or — for an import entry — a derived label (the XML basename). */
 	private $title;
 
-	/** @var string|null Inline source text. Null when the source is loaded from {@see getTextFile}, or for a file with no description page text. */
+	/** @var string|null Inline source text. Null when the source is loaded from {@see getTextFile}, for a file with no description page text, or for an import entry. */
 	private $text;
 
 	/** @var string|null Path to a file holding the page source/description (resolved under the import --file-root), or null. */
@@ -36,6 +41,9 @@ class CorpusEntry {
 	/** @var string[] Tags this entry's group documents (provenance; e.g. ["@setup_main"]). */
 	private $tags;
 
+	/** @var string|null Path to a MediaWiki XML dump to import via WikiImporter (resolved under --file-root), or null. */
+	private $importXml;
+
 	/**
 	 * @param string $title
 	 * @param string|null $text
@@ -45,6 +53,7 @@ class CorpusEntry {
 	 * @param string[] $wikis
 	 * @param bool $isRedirect
 	 * @param string[] $tags
+	 * @param string|null $importXml
 	 */
 	public function __construct(
 		string $title,
@@ -54,7 +63,8 @@ class CorpusEntry {
 		?string $model,
 		array $wikis,
 		bool $isRedirect,
-		array $tags
+		array $tags,
+		?string $importXml = null
 	) {
 		$this->title = $title;
 		$this->text = $text;
@@ -64,6 +74,7 @@ class CorpusEntry {
 		$this->wikis = $wikis;
 		$this->isRedirect = $isRedirect;
 		$this->tags = $tags;
+		$this->importXml = $importXml;
 	}
 
 	public function getTitle(): string {
@@ -72,7 +83,7 @@ class CorpusEntry {
 
 	/**
 	 * Inline source text, or null when it must be read from {@see getTextFile}
-	 * (or for a file entry with no description page text).
+	 * (or for a file entry with no description page text, or an import entry).
 	 */
 	public function getText(): ?string {
 		return $this->text;
@@ -110,5 +121,14 @@ class CorpusEntry {
 	/** @return string[] */
 	public function getTags(): array {
 		return $this->tags;
+	}
+
+	public function getImportXml(): ?string {
+		return $this->importXml;
+	}
+
+	/** Whether this entry is a MediaWiki XML dump to import via WikiImporter. */
+	public function isImport(): bool {
+		return $this->importXml !== null;
 	}
 }

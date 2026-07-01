@@ -419,7 +419,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			// to have \MediaWiki\WikiMap\WikiMap::getCurrentWikiId() without DBPrefix so
 			// we can reuse the wmf InterwikiCache which is built against
 			// WMF config where no wgDBprefix is set.
-			'wgDBprefix' => null,
+			'wgDBprefix' => '',
 			'wgDBname' => $wikiId,
 			// Used by ClassicInterwikiLookup & SiteMatrixInterwikiResolver
 			'wgInterwikiCache' => include __DIR__ . '/../resources/wmf/interwiki.php',

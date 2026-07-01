@@ -14,7 +14,7 @@ class NoopPrinter implements Printer {
 	}
 
 	/** @inheritDoc */
-	public function error( $err, $die = 0 ) {
+	public function error( $err ) {
 		throw new \RuntimeException();
 	}
 }

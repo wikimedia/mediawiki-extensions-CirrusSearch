@@ -185,10 +185,9 @@ abstract class Maintenance extends MWMaintenance implements Printer {
 
 	/**
 	 * @param string $err
-	 * @param int $die deprecated, do not use
 	 */
-	public function error( $err, $die = 0 ) {
-		parent::error( $err, $die );
+	public function error( $err ) {
+		parent::error( $err );
 	}
 
 	/**

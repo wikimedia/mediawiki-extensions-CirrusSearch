@@ -18,7 +18,6 @@ interface Printer {
 
 	/**
 	 * @param string|StatusValue $err
-	 * @param int $die
 	 */
-	public function error( $err, $die = 0 );
+	public function error( $err );
 }

@@ -74,12 +74,14 @@
 	"cirrussearch-feature-deepcat-invalid-title": "التصنيف المقدم غير صالح.",
 	"cirrussearch-feature-pageid-invalid-id": "صفحة غير صالحة {{PLURAL:$2| المعرف | المعرفات}}: $1",
 	"cirrussearch-feature-invalid-date-range": "التاريخ المُدخل ليس بتنسيق صحيح. يُرجى استخدام التنسيقات المُعتمدة للسنة ( <code>YYYY</code> )، والشهر ( <code>YYYY-MM</code> )، واليوم ( <code>YYYY-MM-DD</code> )، أو تعبيرات الوقت النسبية مثل <code>now-2d</code> أو <code>today-1y</code> .",
+	"cirrussearch-feature-withredirects-not-enabled": "<code>withredirects:</code> البحث غير مفعلة في هذه الويكي.",
 	"cirrussearch-incategory-feature-no-valid-categories": "لا تصنيفات صحيحة تم توفيرها ل'$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "لا عناوين صحيحة تم توفيرها ل'$1'.",
 	"cirrussearch-mlt-not-configured": "الخاصية '$1' مضبوطة بشكل غير صحيح. سل إداريا أن يصلح $wgCirrusSearchMoreLikeThisFields",
 	"cirrussearch-explore-similar-related-none": "لا صفحات مرتبطة متوفرة",
 	"cirrussearch-article-words": "الكلمات في كل صفحات المحتوى",
 	"cirrussearch-keyword-prefix-ns-mismatch": "النطاق الموجود في مصطلح البحث <code>prefix:</code> غير متوافق مع النطاقات المطلوبيمكنك إصلاحه عن طريق بدء استعلامك بـ<code>all:</code>.",
+	"cirrussearch-keyword-prefix-exclusion-on-unselected-namespace": "يتم تجاهل <code>-prefix:</code> لأنها تستبعد الصفحات من نطاق اسم لا تبحث فيه.",
 	"cirrussearch-autoselect-profile": "دع محرك البحث يقرر أفضل ملف شخصي لاستخدامه.",
 	"cirrussearch-offset-too-large": "لا يمكن استرجاع النتائج، يتم دعم ما يصل إلى $1 نتائج بحث، ولكن تم طلب النتائج بدءا من $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "تجاهل طلب نتائج ترقيم الصفحات بالفرز العشوائي.",
@@ -88,5 +90,6 @@
 	"cirrussearch-invalid-keyword-boost": "تم إدخال قيمة تعزيز غير صالحة ' $1 '. من المتوقع الحصول على رقم عشري موجب.",
 	"cirrussearch-invalid-keyword-threshold": "تم إدخال قيمة حدية غير صالحة ' $1 '. من المتوقع أن يكون العدد العشري بين 0 و1.",
 	"cirrussearch-semantic-empty-query": "يتطلب البحث الدلالي مصطلح بحث غير فارغ.",
-	"cirrussearch-semantic-too-many-results": "تم طلب عدد كبير جدًا من النتائج من البحث الدلالي. سيتم ترتيب $1 الأولى فقط بشكل صحيح."
+	"cirrussearch-semantic-too-many-results": "تم طلب عدد كبير جدًا من النتائج من البحث الدلالي. سيتم ترتيب $1 الأولى فقط بشكل صحيح.",
+	"cirrussearch-feature-not-negatable": "لا يمكن نفي الكلمة المفتاحية ' $1 ' باستخدام '-' أو '!'"
 }

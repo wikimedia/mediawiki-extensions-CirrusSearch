@@ -2,9 +2,12 @@
 	"@metadata": {
 		"authors": [
 			"Bada Kaji",
+			"Pratik11",
 			"पर्वत सुबेदी",
 			"बडा काजी"
 		]
 	},
-	"cirrussearch-article-words": "सबै सामग्री पृष्ठहरूमा शब्दहरू"
+	"cirrussearch-article-words": "सबै सामग्री पृष्ठहरूमा शब्दहरू",
+	"cirrussearch-keyword-prefix-exclusion-on-unselected-namespace": "<code>-prefix:</code> लाई बेवास्ता गरिएको छ किनभने यसले तपाईंले खोजी नगर्नुभएको नेमस्पेसबाट पृष्ठहरू समावेश गर्दैन।",
+	"cirrussearch-feature-not-negatable": "' $1 ' किवर्डलाई '-' वा '!' ले अस्वीकार गर्न सकिँदैन।"
 }

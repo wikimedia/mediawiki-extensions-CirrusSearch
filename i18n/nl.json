@@ -81,12 +81,14 @@
 	"cirrussearch-feature-deepcat-invalid-title": "De opgegeven categorie is onjuist.",
 	"cirrussearch-feature-pageid-invalid-id": "Ongelidge pagina-{{PLURAL:$2|ID|IDs}}: $1",
 	"cirrussearch-feature-invalid-date-range": "De opgegeven datum is in een onjuiste notatie. Gebruik de erkende notaties voor jaar (<code>JJJJ</code>), maand (<code>JJJJ-MM</code>), dag (<code>JJJJ-MM-DD</code>) of Engelstalige relatieve tijdsuitdrukkingen zoals <code>now-2d</code> of <code>today-1y</code>.",
+	"cirrussearch-feature-withredirects-not-enabled": "Het zoekwoord <code>withredirects:</code> is niet ingeschakeld op deze wiki.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Geen geldige categorieën opgegeven voor '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Geen geldige titels verstrekt aan '$1'.",
 	"cirrussearch-mlt-not-configured": "De functie '$1' is verkeerd ingesteld. Vraag een beheerder om $wgCirrusSearchMoreLikeThisFields te corrigeren.",
 	"cirrussearch-explore-similar-related-none": "Geen gerelateerde pagina's beschikbaar",
 	"cirrussearch-article-words": "Aantal woorden in alle inhoudspagina's",
 	"cirrussearch-keyword-prefix-ns-mismatch": "De in de zoekterm <code>prefix:</code> gevonden naamruimte is niet verenigbaar met de aangevraagde naamruimten. U kunt dit oplossen door uw zoekopdracht vooraf te laten gaan door <code>all:</code>.",
+	"cirrussearch-keyword-prefix-exclusion-on-unselected-namespace": "<code>-prefix:</code> wordt genegeerd omdat het pagina’s uitsluit uit een naamruimte waarin u niet zoekt.",
 	"cirrussearch-autoselect-profile": "Laat de zoekmachine beslissen over het beste te gebruiken profiel.",
 	"cirrussearch-offset-too-large": "Kan resultaten niet ophalen. Er worden tot $1 zoekresultaten ondersteund, maar er werd gevraagd om resultaten vanaf $2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "Verzoek om willekeurig gesorteerde resultaten te pagineren genegeerd.",
@@ -95,5 +97,6 @@
 	"cirrussearch-invalid-keyword-boost": "Onjuiste ophoogwaarde ‘$1’ opgegeven. Er werd een positief decimaal getal verwacht.",
 	"cirrussearch-invalid-keyword-threshold": "Onjuiste drempelwaarde ‘$1’ opgegeven. Er werd een decimaal getal tussen 0 en 1 verwacht.",
 	"cirrussearch-semantic-empty-query": "Voor een semantische zoekopdracht is een zoekterm vereist die niet leeg is.",
-	"cirrussearch-semantic-too-many-results": "Er zijn te veel resultaten opgevraagd via semantisch zoeken. Alleen de $1 resultaten worden correct gerangschikt."
+	"cirrussearch-semantic-too-many-results": "Er zijn te veel resultaten opgevraagd via semantisch zoeken. Alleen de $1 resultaten worden correct gerangschikt.",
+	"cirrussearch-feature-not-negatable": "Het trefwoord ‘$1’ kan niet worden uitgesloten met ‘-’ of ‘!’."
 }

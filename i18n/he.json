@@ -71,6 +71,7 @@
 	"cirrussearch-explore-similar-related-none": "אין דפים קשורים זמינים",
 	"cirrussearch-article-words": "מילים בכל דפי התוכן",
 	"cirrussearch-keyword-prefix-ns-mismatch": "מרחב השם שנמצא בביטוי החיפוש <code dir=\"ltr\">prefix:</code> אינו תואם למרחבי השם המבוקשים. באפשרותך לתקן זאת באמצעות שימוש בתחילית <code dir=\"ltr\">all:</code> בשאילתה שלך.",
+	"cirrussearch-keyword-prefix-exclusion-on-unselected-namespace": "למילת המפתח <code>-prefix:</code> אין השפעה כי היא מוציאה מהתוצאות דפים ממרחב שם שלא חיפשת בו.",
 	"cirrussearch-autoselect-profile": "לתת למנוע החיפוש לבחור את הפרופיל הטוב ביותר לשימוש.",
 	"cirrussearch-offset-too-large": "לא היה אפשר לאחזר את התוצאות. נתמכות עד $1 תוצאות חיפוש, אבל התבקשו תוצאות שמתחילות ב־$2.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "אין התייחסות לבקשה לחלק לדפים תוצאות ממוינות אקראית.",
@@ -79,5 +80,6 @@
 	"cirrussearch-invalid-keyword-boost": "סופק ערך הגברה בלתי־תקין \"$1\". מצופה מספר עשרוני חיובי.",
 	"cirrussearch-invalid-keyword-threshold": "סופק ערך סף בלתי־תקין \"$1\". מצופה מספר עשרוני בין 0 ל־1.",
 	"cirrussearch-semantic-empty-query": "חיפוש סמנטי דורש מונח חיפוש שאינו ריק.",
-	"cirrussearch-semantic-too-many-results": "התבקשו יותר מדי תוצאות מחיפוש סמנטי. רק {{PLURAL:$1|התוצאה המובילה תדורג כראוי|רק $1 התוצאות המובילות ידורגו כראוי}}."
+	"cirrussearch-semantic-too-many-results": "התבקשו יותר מדי תוצאות מחיפוש סמנטי. רק {{PLURAL:$1|התוצאה המובילה תדורג כראוי|רק $1 התוצאות המובילות ידורגו כראוי}}.",
+	"cirrussearch-feature-not-negatable": "לא ניתן להפוך את מילת המפתח \"$1\" באמצעות \"-\" או \"!\""
 }

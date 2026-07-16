@@ -5,7 +5,9 @@ namespace CirrusSearch\Job;
 use CirrusSearch\Connection;
 use CirrusSearch\Updater;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Permissions\UltimateAuthority;
 use MediaWiki\Title\Title;
+use MediaWiki\User\UserIdentityValue;
 
 /**
  * Job wrapper for deleting pages from archive.
@@ -29,7 +31,10 @@ class DeleteArchive extends CirrusTitleJob {
 
 		// Remove page IDs that still have archived revs
 		$archivedRevisionLookup = MediaWikiServices::getInstance()->getArchivedRevisionLookup();
-		foreach ( $archivedRevisionLookup->listRevisions( $this->title ) as $rev ) {
+		foreach ( $archivedRevisionLookup->listArchivedRevisions(
+			$this->title,
+			new UltimateAuthority( UserIdentityValue::newAnonymous( '127.0.0.1' ) )
+		) as $rev ) {
 			unset( $docs[$rev->ar_page_id] );
 		}
 

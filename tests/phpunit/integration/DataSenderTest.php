@@ -404,9 +404,7 @@ class DataSenderTest extends CirrusIntegrationTestCase {
 
 	private function unBulkify( $data ) {
 		return array_map(
-			static function ( $d ) {
-				return json_decode( $d, true );
-			},
+			static fn ( $d ) => json_decode( $d, true ),
 			array_slice( explode( "\n", $data ), 0, -1 )
 		);
 	}

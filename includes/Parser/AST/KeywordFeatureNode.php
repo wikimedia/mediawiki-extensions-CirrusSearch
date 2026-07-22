@@ -146,7 +146,8 @@ class KeywordFeatureNode extends ParsedNode {
 		return [
 			"keyword" => array_merge(
 				$this->baseParams(),
-				array_filter( [
+				array_filter(
+					[
 						"keyword" => get_class( $this->keyword ),
 						"key" => $this->key,
 						"value" => $this->value,
@@ -154,9 +155,8 @@ class KeywordFeatureNode extends ParsedNode {
 						"delimiter" => $this->delimiter,
 						"suffix" => $this->suffix,
 						"parsedValue" => $this->parsedValue,
-					], static function ( $x ) {
-						return $x !== null;
-					}
+					],
+					static fn ( $x ) => $x !== null
 				)
 			)
 		];

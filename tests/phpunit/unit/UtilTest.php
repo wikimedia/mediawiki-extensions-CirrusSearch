@@ -117,9 +117,9 @@ class UtilTest extends CirrusTestCase {
 		$this->assertSame( [ 'key1' => 123, 'KEY2' => false ], $arr2 );
 
 		// Should set, rename key, and explode csv string into array via anon function
-		Util::setIfDefined( $arr1, 'KEY4', $arr2, 'key4', static function ( $v ) {
-			return explode( ',', $v );
-		} );
+		Util::setIfDefined( $arr1, 'KEY4', $arr2, 'key4',
+			static fn ( $v ) => explode( ',', $v )
+		);
 		$this->assertSame( [ 'key1' => 123, 'KEY2' => false, 'key4' => [ 'a', 'b', 'c' ] ], $arr2 );
 	}
 

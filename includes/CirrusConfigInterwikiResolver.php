@@ -28,9 +28,7 @@ class CirrusConfigInterwikiResolver extends BaseInterwikiResolver {
 		$sisterProjects = $this->config->get( CirrusConfigNames::InterwikiSources ) ?? [];
 		$languageMap = $this->config->get( CirrusConfigNames::LanguageToWikiMap ) ?? [];
 		$crossLanguage = $this->config->get( CirrusConfigNames::WikiToNameMap ) ?? [];
-		$crossLanguage = array_filter( $crossLanguage, function ( $entry ) {
-			return $entry !== $this->config->getWikiId();
-		} );
+		$crossLanguage = array_diff( $crossLanguage, [ $this->config->getWikiId() ] );
 		$prefixesByWiki = array_flip( $sisterProjects ) + array_flip( $crossLanguage );
 		return [
 			'sister_projects' => $sisterProjects,

@@ -46,9 +46,7 @@ class FTQueryClassifiersRepositoryTest extends CirrusTestCase {
 		$cirrusSearchHookRunner = $this->createCirrusSearchHookRunner( [ 'CirrusSearchRegisterFullTextQueryClassifiers' =>
 			function ( FTQueryClassifiersRepository $repository ) {
 				$repository->registerClassifierAsCallable( [ 'hook1' ],
-					static function ( ParsedQuery $query ) {
-						return [ 'hook1' ];
-					}
+					static fn ( ParsedQuery $query ) => [ 'hook1' ]
 				);
 				$repository->registerClassifier(
 					new class implements ParsedQueryClassifier {
@@ -84,9 +82,7 @@ class FTQueryClassifiersRepositoryTest extends CirrusTestCase {
 
 				try {
 					$repository->registerClassifierAsCallable( [ 'hook1' ],
-						static function ( ParsedQuery $query ) {
-							return [ 'hook1' ];
-						}
+						static fn ( ParsedQuery $query ) => [ 'hook1' ]
 					);
 					$this->fail( 'failure should occur when registering duplicates' );
 				} catch ( ParsedQueryClassifierException $e ) {

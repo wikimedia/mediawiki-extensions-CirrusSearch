@@ -48,9 +48,7 @@ class ArrayProfileRepositoryTest extends CirrusTestCase {
 	}
 
 	public function testBadCallback() {
-		$loader = static function () {
-			return 'meh';
-		};
+		$loader = static fn () => 'meh';
 		$repo = ArrayProfileRepository::lazyLoaded( 'my_type', 'my_name', $loader );
 		$this->expectException( SearchProfileException::class );
 		$repo->hasProfile( 'meh' );

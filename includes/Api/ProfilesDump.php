@@ -40,9 +40,10 @@ class ProfilesDump extends ApiBase {
 				usort( $overriders, static function ( SearchProfileOverride $a, SearchProfileOverride $b ) {
 					return $a->priority() <=> $b->priority();
 				} );
-				$overriders = array_map( static function ( SearchProfileOverride $o ) {
-					return $o->explain();
-				}, $overriders );
+				$overriders = array_map(
+					static fn ( SearchProfileOverride $o ) => $o->explain(),
+					$overriders
+				);
 				$this->getResult()->addValue( [ 'profiles', $type, 'contexts', $context ], 'overriders', $overriders );
 				if ( !isset( $contexts[$context] ) ) {
 					$contexts[$context] = [];

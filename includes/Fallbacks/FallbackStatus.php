@@ -92,8 +92,9 @@ class FallbackStatus {
 	}
 
 	public static function noSuggestion(): self {
-		return new self( self::NO_ACTION, static function ( CirrusSearchResultSet $currentSet ) {
-			return $currentSet;
-		} );
+		return new self(
+			self::NO_ACTION,
+			static fn ( CirrusSearchResultSet $currentSet ) => $currentSet
+		);
 	}
 }

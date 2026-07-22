@@ -145,9 +145,7 @@ class Filters {
 	 * @return AbstractQuery
 	 */
 	public static function insource( Escaper $escaper, $value ) {
-		return self::insourceOrIntitle( $escaper, $value, static function () {
-			return [ 'source_text.plain' ];
-		} );
+		return self::insourceOrIntitle( $escaper, $value, static fn () => [ 'source_text.plain' ] );
 	}
 
 	/**

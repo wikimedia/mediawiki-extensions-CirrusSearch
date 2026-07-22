@@ -197,12 +197,10 @@ final class SearchQueryBuilder {
 				array_keys( $config->get( MainConfigNames::NamespacesToBeSearchedDefault ), true ) );
 		} else {
 			// For the rest only allow core namespaces. We can't be sure any others exist
-			$namespaces = $original->getInitialNamespaces();
-			if ( $namespaces !== null ) {
-				$namespaces = array_filter( $namespaces, static function ( $namespace ) {
-					return $namespace <= NS_CATEGORY_TALK;
-				} );
-			}
+			$namespaces = array_filter(
+				$original->getInitialNamespaces(),
+				static fn ( $ns ) => $ns <= NS_CATEGORY_TALK
+			);
 		}
 
 		$builder->initialNamespaces = $namespaces;

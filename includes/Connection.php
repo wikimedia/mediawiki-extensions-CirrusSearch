@@ -210,9 +210,7 @@ class Connection extends ElasticaConnection {
 		if ( !$this->getSettings()->isPrivateCluster()
 			|| !$this->config->get( CirrusConfigNames::EnableArchive )
 		) {
-			$indexSuffixes = array_filter( $indexSuffixes, static function ( $type ) {
-				return $type !== self::ARCHIVE_INDEX_SUFFIX;
-			} );
+			$indexSuffixes = array_diff( $indexSuffixes, [ self::ARCHIVE_INDEX_SUFFIX ] );
 		}
 
 		return $indexSuffixes;

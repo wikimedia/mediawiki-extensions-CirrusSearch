@@ -28,9 +28,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		MediaWikiServices::getInstance()->getConfigFactory()->register( 'CirrusSearch',
-			static function () {
-				return new SearchConfigUsageDecorator();
-			}
+			static fn () => new SearchConfigUsageDecorator()
 		);
 	}
 

@@ -98,9 +98,7 @@ class Checker {
 		$this->searcher = $searcher;
 		$this->logSane = $logSane;
 		$this->pageCache = $pageCache;
-		$this->isOldFn = $isOldFn ?? static function ( WikiPage $page ) {
-			return false;
-		};
+		$this->isOldFn = $isOldFn ?? static fn ( WikiPage $page ) => false;
 	}
 
 	/**

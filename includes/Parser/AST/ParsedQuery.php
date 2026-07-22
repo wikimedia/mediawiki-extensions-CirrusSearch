@@ -356,9 +356,10 @@ class ParsedQuery {
 			$ar['queryClassCache'] = $classes;
 		}
 		if ( $this->parseWarnings !== [] ) {
-			$ar['warnings'] = array_map( static function ( ParseWarning $w ) {
-				return $w->toArray();
-			}, $this->parseWarnings );
+			$ar['warnings'] = array_map(
+				static fn ( ParseWarning $w ) => $w->toArray(),
+				$this->parseWarnings
+			);
 		}
 		if ( $this->getFeaturesUsed() !== [] ) {
 			$ar['featuresUsed'] = $this->getFeaturesUsed();

@@ -41,19 +41,12 @@ class QueryStringRegexParserIntegrationTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideRefImplQueries
-	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
 	 */
 	public function testRefImplFixtures( array $expected, $queryString, array $config = [] ) {
 		$this->assertQuery( $expected, $queryString, $config );
 	}
 
-	/**
-	 * @param array $expected
-	 * @param string $queryString
-	 * @param array $config
-	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
-	 */
-	public function assertQuery( array $expected, $queryString, array $config = [] ) {
+	public function assertQuery( array $expected, string $queryString, array $config = [] ) {
 		$this->overrideConfigValues( [ MainConfigNames::CapitalLinks => true ] );
 		$config = new HashSearchConfig(
 			$config + [ CirrusConfigNames::StripQuestionMarks => 'all' ],

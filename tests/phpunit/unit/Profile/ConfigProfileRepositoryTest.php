@@ -11,9 +11,6 @@ use MediaWiki\Config\HashConfig;
  */
 class ConfigProfileRepositoryTest extends CirrusTestCase {
 
-	/**
-	 * @throws \MediaWiki\Config\ConfigException
-	 */
 	public function test() {
 		$config = new HashConfig( [
 			'profiles' => [

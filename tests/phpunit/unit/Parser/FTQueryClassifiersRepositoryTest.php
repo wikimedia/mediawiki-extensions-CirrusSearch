@@ -12,18 +12,12 @@ use CirrusSearch\Parser\AST\ParsedQuery;
  */
 class FTQueryClassifiersRepositoryTest extends CirrusTestCase {
 
-	/**
-	 * @throws ParsedQueryClassifierException
-	 */
 	public function testGetConfig() {
 		$config = new HashSearchConfig( [] );
 		$repo = new FTQueryClassifiersRepository( $config, $this->createCirrusSearchHookRunner() );
 		$this->assertSame( $config, $repo->getConfig() );
 	}
 
-	/**
-	 * @throws ParsedQueryClassifierException
-	 */
 	public function testDefaultClassifiers() {
 		$config = new HashSearchConfig( [] );
 		$repo = new FTQueryClassifiersRepository( $config, $this->createCirrusSearchHookRunner() );

@@ -37,7 +37,7 @@ class CirrusSearchTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideProfiles
-	 * @covers       \CirrusSearch\CirrusSearch::getProfiles()
+	 * @covers \CirrusSearch\CirrusSearch::getProfiles()
 	 */
 	public function testGetProfiles( $profileType, $default, array $expectedProfiles ) {
 		$profiles = $this->getSearchEngine( [ CirrusConfigNames::UseCompletionSuggester => 'yes' ] )
@@ -87,8 +87,7 @@ class CirrusSearchTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideExtractProfileFromFeatureData
-	 * @covers       \CirrusSearch\CirrusSearch::extractProfileFromFeatureData
-	 * @throws \MediaWiki\Config\ConfigException
+	 * @covers \CirrusSearch\CirrusSearch::extractProfileFromFeatureData
 	 */
 	public function testExtractProfileFromFeatureData( $type, $setValue, $expected ) {
 		$engine = $this->getSearchEngine( [ CirrusConfigNames::UseCompletionSuggester => 'yes' ] );
@@ -130,7 +129,6 @@ class CirrusSearchTest extends CirrusTestCase {
 	/**
 	 * @param array|null $config
 	 * @return CirrusSearch
-	 * @throws \MediaWiki\Config\ConfigException
 	 */
 	private function getSearchEngine( ?array $config = null ) {
 		// use cirrus base profiles

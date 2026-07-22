@@ -79,7 +79,6 @@ class SearchQueryTest extends CirrusTestCase {
 	 * @param int[] $initialNs
 	 * @param int[] $namespacesInContextualFilters
 	 * @param int[] $expected
-	 * @throws \Exception
 	 */
 	public function testGetNamespaces( $initialNs, array $namespacesInContextualFilters, $expected ) {
 		$searchConfig = $this->newHashSearchConfig( [] );

@@ -469,7 +469,6 @@ class SearcherTest extends CirrusIntegrationTestCase {
 
 	/**
 	 * @covers \CirrusSearch\Searcher::buildFullTextBuilder()
-	 * @throws \ReflectionException
 	 */
 	public function testBuildFullTextBuilder() {
 		$config = new HashSearchConfig( [] );

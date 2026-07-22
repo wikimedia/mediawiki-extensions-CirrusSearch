@@ -99,7 +99,7 @@ class ChangeListenerTest extends CirrusIntegrationTestCase {
 	}
 
 	/**
-	 * @covers       \CirrusSearch\ChangeListener::onLinksUpdateComplete
+	 * @covers \CirrusSearch\ChangeListener::onLinksUpdateComplete
 	 * @dataProvider provideTestOnLinksUpdateComplete
 	 * @param int $now
 	 * @param callable $callable

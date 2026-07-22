@@ -193,8 +193,10 @@ final class SearchQueryBuilder {
 		if ( $original->isUsingDefaultSearchedNamespaces() && $config->has( MainConfigNames::NamespacesToBeSearchedDefault ) ) {
 			// If we search for default namespaces we assume the user wants to search for default namespaces
 			// on the cross wiki.
-			$namespaces = array_map( static fn ( $n ) => intval( $n ),
-				array_keys( $config->get( MainConfigNames::NamespacesToBeSearchedDefault ), true ) );
+			$namespaces = array_map(
+				intval( ... ),
+				array_keys( $config->get( MainConfigNames::NamespacesToBeSearchedDefault ), true )
+			);
 		} else {
 			// For the rest only allow core namespaces. We can't be sure any others exist
 			$namespaces = array_filter(

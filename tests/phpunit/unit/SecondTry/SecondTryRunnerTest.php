@@ -87,7 +87,7 @@ class SecondTryRunnerTest extends CirrusTestCase {
 			'hebrew_keyboard' => [ 'כםם' ],
 			'language_converter' => [ 'conv' ]
 		], $candidates );
-		$actual_weights = array_map( static fn ( $s ) => $runner->weight( $s ), array_keys( $candidates ) );
+		$actual_weights = array_map( $runner->weight( ... ), array_keys( $candidates ) );
 		$this->assertEquals( [ 1.0, 0.9, 0.8 ], $actual_weights );
 	}
 
@@ -116,7 +116,7 @@ class SecondTryRunnerTest extends CirrusTestCase {
 			'russian_keyboard' => [ 'ащщ ащщ כםם' ],
 			'hebrew_keyboard' => [ 'foo ащщ foo' ],
 		], $candidates );
-		$actual_weights = array_map( static fn ( $s ) => $runner->weight( $s ), array_keys( $candidates ) );
+		$actual_weights = array_map( $runner->weight( ... ), array_keys( $candidates ) );
 		$this->assertEquals( [ 1.0, 0.9 ], $actual_weights );
 	}
 }

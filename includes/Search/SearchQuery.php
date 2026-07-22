@@ -373,7 +373,7 @@ class SearchQuery {
 	private function matchDefaultNamespaces( array $namespaces ): bool {
 		$defaultSearchedNamespaces = $this->getSearchConfig()->get( MainConfigNames::NamespacesToBeSearchedDefault );
 		if ( is_array( $defaultSearchedNamespaces ) ) {
-			$defaultSearchedNamespaces = array_map( static fn ( $n ) => intval( $n ), array_keys( $defaultSearchedNamespaces, true ) );
+			$defaultSearchedNamespaces = array_map( intval( ... ), array_keys( $defaultSearchedNamespaces, true ) );
 			return $namespaces == $defaultSearchedNamespaces;
 		}
 		return false;

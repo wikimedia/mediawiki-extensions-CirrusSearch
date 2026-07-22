@@ -15,9 +15,7 @@ class LanguageFeatureTest extends CirrusTestCase {
 
 	public static function provideQueries() {
 		$tooMany = array_map(
-			static function ( $l ) {
-				return (string)$l;
-			},
+			strval( ... ),
 			range( 1, LanguageFeature::QUERY_LIMIT + 20 )
 		);
 		$actualLangs = array_slice( $tooMany, 0, LanguageFeature::QUERY_LIMIT );

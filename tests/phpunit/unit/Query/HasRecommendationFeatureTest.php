@@ -15,9 +15,7 @@ class HasRecommendationFeatureTest extends CirrusTestCase {
 
 	public static function provideQueries() {
 		$tooMany = array_map(
-			static function ( $l ) {
-				return (string)$l;
-			},
+			strval( ... ),
 			range( 1, HasRecommendationFeature::QUERY_LIMIT + 5 )
 		);
 		$actualrecFlags = array_map(

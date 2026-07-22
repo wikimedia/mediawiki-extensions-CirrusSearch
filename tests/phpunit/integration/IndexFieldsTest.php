@@ -2,6 +2,13 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Search\BooleanIndexField;
+use CirrusSearch\Search\DatetimeIndexField;
+use CirrusSearch\Search\IntegerIndexField;
+use CirrusSearch\Search\KeywordIndexField;
+use CirrusSearch\Search\NestedIndexField;
+use CirrusSearch\Search\NumberIndexField;
+use CirrusSearch\Search\TextIndexField;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Search\SearchIndexField;
 
@@ -14,13 +21,13 @@ class IndexFieldsTest extends CirrusIntegrationTestCase {
 
 	public static function provideTypes() {
 		return [
-			[ SearchIndexField::INDEX_TYPE_TEXT, 'text', 'CirrusSearch\\Search\\TextIndexField' ],
-			[ SearchIndexField::INDEX_TYPE_KEYWORD, 'keyword', 'CirrusSearch\\Search\\KeywordIndexField' ],
-			[ SearchIndexField::INDEX_TYPE_INTEGER, 'long', 'CirrusSearch\\Search\\IntegerIndexField' ],
-			[ SearchIndexField::INDEX_TYPE_NUMBER, 'double', 'CirrusSearch\\Search\\NumberIndexField' ],
-			[ SearchIndexField::INDEX_TYPE_DATETIME, 'date', 'CirrusSearch\\Search\\DatetimeIndexField' ],
-			[ SearchIndexField::INDEX_TYPE_NESTED, 'nested', 'CirrusSearch\\Search\\NestedIndexField' ],
-			[ SearchIndexField::INDEX_TYPE_BOOL, 'boolean', 'CirrusSearch\\Search\\BooleanIndexField' ],
+			[ SearchIndexField::INDEX_TYPE_TEXT, 'text', TextIndexField::class ],
+			[ SearchIndexField::INDEX_TYPE_KEYWORD, 'keyword', KeywordIndexField::class ],
+			[ SearchIndexField::INDEX_TYPE_INTEGER, 'long', IntegerIndexField::class ],
+			[ SearchIndexField::INDEX_TYPE_NUMBER, 'double', NumberIndexField::class ],
+			[ SearchIndexField::INDEX_TYPE_DATETIME, 'date', DatetimeIndexField::class ],
+			[ SearchIndexField::INDEX_TYPE_NESTED, 'nested', NestedIndexField::class ],
+			[ SearchIndexField::INDEX_TYPE_BOOL, 'boolean', BooleanIndexField::class ],
 		];
 	}
 

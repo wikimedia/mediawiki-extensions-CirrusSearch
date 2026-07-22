@@ -141,9 +141,9 @@ class Escaper {
 		// Lowercase AND and OR when not surrounded on both sides by a term.
 		// Lowercase NOT when it doesn't have a term after it.
 		$string = preg_replace_callback( '/^\s*(?:AND|OR)\b|\b(?:AND|OR|NOT)\s*$/u',
-			[ self::class, 'lowercaseMatched' ], $string );
+			self::lowercaseMatched( ... ), $string );
 		$string = preg_replace_callback( '/\b(?:AND|OR|NOT)\s+(?=AND\b|OR\b|NOT\b)/u',
-			[ self::class, 'lowercaseMatched' ], $string );
+			self::lowercaseMatched( ... ), $string );
 
 		return $string;
 	}

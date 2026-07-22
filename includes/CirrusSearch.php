@@ -507,7 +507,7 @@ class CirrusSearch extends SearchEngine {
 				return SearchSuggestionSet::fromTitles( $status->getValue() );
 			}
 			$results = array_filter( array_map(
-				[ FancyTitleResultsType::class, 'chooseBestTitleOrRedirect' ],
+				FancyTitleResultsType::chooseBestTitleOrRedirect( ... ),
 				$status->getValue() ) );
 			return SearchSuggestionSet::fromTitles( $results );
 		}

@@ -63,11 +63,9 @@ class NearMatchPicker {
 		}
 
 		$transformers = [
-			static function ( $term ) {
-				return $term;
-			},
-			[ $this->language, 'lc' ],
-			[ $this->language, 'ucwords' ],
+			static fn ( $term ) => $term,
+			$this->language->lc( ... ),
+			$this->language->ucwords( ... ),
 		];
 
 		foreach ( $transformers as $transformer ) {

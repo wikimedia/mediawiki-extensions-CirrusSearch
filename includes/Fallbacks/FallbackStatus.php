@@ -39,8 +39,7 @@ class FallbackStatus {
 	}
 
 	public function apply( CirrusSearchResultSet $currentSet ): CirrusSearchResultSet {
-		$fn = $this->fn;
-		return $fn( $currentSet );
+		return ( $this->fn )( $currentSet );
 	}
 
 	/**

@@ -33,6 +33,7 @@ use MediaWiki\Specials\Hook\SpecialStatsAddExtraHook;
 use MediaWiki\Specials\SpecialSearch;
 use MediaWiki\Title\Title;
 use MediaWiki\User\Hook\UserGetDefaultOptionsHook;
+use MediaWiki\User\Hook\UserGetReservedNamesHook;
 use MediaWiki\User\User;
 use Wikimedia\HtmlArmor\HtmlArmor;
 
@@ -54,7 +55,8 @@ class Hooks implements
 	SoftwareInfoHook,
 	SpecialSearchResultsHook,
 	SpecialSearchResultsAppendHook,
-	SpecialStatsAddExtraHook
+	SpecialStatsAddExtraHook,
+	UserGetReservedNamesHook
 {
 	/** @var ConfigFactory */
 	private $configFactory;
@@ -615,5 +617,13 @@ class Hooks implements
 	/** @inheritDoc */
 	public function onAPIQuerySiteInfoStatisticsInfo( &$extraStats ) {
 		self::addWordCount( $extraStats );
+	}
+
+	/** @inheritDoc */
+	public function onUserGetReservedNames( &$reservedUsernames ) {
+		$username = self::getConfig()->get( CirrusConfigNames::StreamingUpdaterUsername );
+		if ( $username !== null ) {
+			$reservedUsernames[] = $username;
+		}
 	}
 }

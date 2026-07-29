@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Mormegil",
-			"Walter Klosse"
+			"Walter Klosse",
+			"Comfyquiettree"
 		]
 	},
 	"apihelp-cirrus-config-dump-example": "Výpis konfigurace CirrusSearch."

@@ -25,7 +25,7 @@ class Reindexer {
 	private const MAX_CONSECUTIVE_ERRORS = 5;
 	private const MONITOR_SLEEP_SECONDS = 30;
 	private const MAX_WAIT_FOR_COUNT_SEC = 600;
-	private const AUTO_SLICE_CEILING = 20;
+	private const MAX_REINDEX_SLICES = 60;
 
 	/**
 	 * @var SearchConfig
@@ -548,19 +548,28 @@ class Reindexer {
 	/**
 	 * Auto detect the number of slices to use when reindexing.
 	 *
-	 * Note that elasticseach 7.x added an 'auto' setting, but we are on
-	 * 6.x. That setting uses one slice per shard, up to a certain limit (20 in
-	 * 7.9). This implementation provides the same limits, and adds an additional
-	 * constraint that the auto-detected value must be <= the number of nodes.
+	 * OpenSearch provides an 'auto' setting we could use rather than
+	 * doing our own estimation. We rejected that as it limits to a
+	 * maximum of 20 slices per reindex request. There are multi-tb
+	 * CirrusSearch indices with a shard per ~50GB of data. In testing
+	 * those oversized indices benefit from an increased slicing
+	 * limit. A review of the history of this option suggests it is
+	 * protecting against small clusters that have too many shards
+	 * and the overhead that would be incurred if every slice was
+	 * tiny.
+	 *
+	 * Instead we maintain our own slicing ceiling at a higher
+	 * value than the number of shards we've seen in the largest
+	 * CirrusSearch indices. In practice this means all indices
+	 * should slice at exactly the shard count.
 	 *
 	 * @param Index $index The index the estimate a slice count for
 	 * @return int The number of slices to reindex with
 	 */
 	private function estimateSlices( Index $index ): int {
 		return min(
-			$this->getNumberOfNodes( $index->getClient() ),
 			$this->getNumberOfShards( $index ),
-			self::AUTO_SLICE_CEILING
+			self::MAX_REINDEX_SLICES
 		);
 	}
 

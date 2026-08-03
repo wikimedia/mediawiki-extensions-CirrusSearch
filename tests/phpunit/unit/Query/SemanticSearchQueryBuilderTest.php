@@ -2,11 +2,14 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
+use CirrusSearch\Searcher;
+use MediaWiki\Request\FauxRequest;
 use Wikimedia\TestingAccessWrapper;
 
 /**
@@ -17,9 +20,10 @@ use Wikimedia\TestingAccessWrapper;
 class SemanticSearchQueryBuilderTest extends CirrusTestCase {
 	public const MAX_RESULT_POS = 21;
 
-	private function newSearchContext(): SearchContext {
+	private function newSearchContext( bool $withHighlights = false ): SearchContext {
+		$debugOptions = CirrusDebugOptions::fromRequest( new FauxRequest( [ 'cirrusSemanticSearch' => $withHighlights ? 'hl' : '' ] ) );
 		$context = new SearchContext(
-			new HashSearchConfig( [] ), null, null, null, null,
+			new HashSearchConfig( [] ), null, $debugOptions, null, null,
 			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
 		TestingAccessWrapper::newFromObject( $context )
@@ -180,5 +184,24 @@ class SemanticSearchQueryBuilderTest extends CirrusTestCase {
 		$context = $this->newSearchContext();
 
 		$this->assertFalse( $builder->buildDegraded( $context ) );
+	}
+
+	public function testWithHighlights() {
+		$builder = $this->newSemanticSearchQueryBuilder( [] );
+		$context = $this->newSearchContext( true );
+		$builder->build( $context, 'search term' );
+		$queryArray = $context->getQuery()->toArray()['bool']['must'][0];
+		$this->assertSame(
+			[
+				"pre_tags" => [ Searcher::HIGHLIGHT_PRE_MARKER ],
+				"post_tags" => [ Searcher::HIGHLIGHT_POST_MARKER ],
+				'fields' => [
+					'passage_chunk_embedding.text' => [
+						'type' => 'semantic'
+					]
+				]
+			],
+			$queryArray['nested']['inner_hits']['highlight']
+		);
 	}
 }

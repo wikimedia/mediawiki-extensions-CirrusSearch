@@ -5,6 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\Elastica\NeuralQuery;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Searcher;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\InnerHits;
 use Elastica\Query\Nested;
@@ -28,6 +29,10 @@ class SemanticSearchQueryBuilder implements FullTextQueryBuilder {
 	private int $maxK;
 	private string $scoreMode;
 	private string $instructions;
+	/**
+	 * @var mixed|string
+	 */
+	private string $passageField;
 
 	/**
 	 * @param SearchConfig $config Not used, but part of standard constructor
@@ -43,6 +48,7 @@ class SemanticSearchQueryBuilder implements FullTextQueryBuilder {
 	public function __construct( SearchConfig $config, array $features, array $settings = [] ) {
 		$this->nestedField = $settings['nested_field'] ?? 'passage_chunk_embedding';
 		$this->vectorField = $settings['vector_field'] ?? 'knn';
+		$this->passageField = $settings['snippet_field'] ?? 'text';
 		$this->sourceFields = $settings['source_fields'] ?? [ 'section', 'text' ];
 		$this->maxK = $settings['k'] ?? 21;
 		$this->scoreMode = $settings['score_mode'] ?? 'max';
@@ -79,14 +85,31 @@ class SemanticSearchQueryBuilder implements FullTextQueryBuilder {
 		// We don't have the suggest field on semantic indices
 		$searchContext->disableFallbackRunner();
 
-		$searchContext->setMainQuery( $this->buildQuery( $term, $k ) );
+		$searchContext->setMainQuery(
+			$this->buildQuery( $term, $k, $searchContext->getDebugOptions()->isCirrusSemanticSearchHighlights() )
+		);
 	}
 
-	private function buildQuery( string $term, int $k ): AbstractQuery {
+	private function buildQuery( string $term, int $k, bool $withHighlights ): AbstractQuery {
 		$source = [];
 		foreach ( $this->sourceFields as $field ) {
 			$source[] = "{$this->nestedField}.{$field}";
 		}
+		$innerHits = ( new InnerHits() )
+			->setSize( 1 )
+			->setSource( $source );
+		if ( $withHighlights ) {
+			$innerHits->setHighlight( [
+				'pre_tags' => [ Searcher::HIGHLIGHT_PRE_MARKER ],
+				'post_tags' => [ Searcher::HIGHLIGHT_POST_MARKER ],
+				'fields' => [
+					"{$this->nestedField}.{$this->passageField}" => [
+						'type' => 'semantic',
+					],
+				]
+			] );
+		}
+
 		return ( new Nested() )
 			->setPath( $this->nestedField )
 			->setQuery( new NeuralQuery(
@@ -95,10 +118,7 @@ class SemanticSearchQueryBuilder implements FullTextQueryBuilder {
 				$k
 			) )
 			->setScoreMode( $this->scoreMode )
-			->setInnerHits( ( new InnerHits() )
-				->setSize( 1 )
-				->setSource( $source )
-			);
+			->setInnerHits( $innerHits );
 	}
 
 	/**

@@ -112,4 +112,32 @@ class CirrusDebugOptionsTest extends CirrusIntegrationTestCase {
 		$this->assertTrue( $options->mustNeverBeCached() );
 	}
 
+	public function testSemanticSearch() {
+		$options = CirrusDebugOptions::fromRequest( new FauxRequest( [ 'cirrusSemanticSearch' => '' ] ) );
+		$this->assertTrue( $options->isCirrusSemanticSearch() );
+		$this->assertFalse( $options->isCirrusSemanticSearchHighlights() );
+		$options = CirrusDebugOptions::fromRequest( new FauxRequest( [ 'cirrusSemanticSearch' => 'hl' ] ) );
+		$this->assertTrue( $options->isCirrusSemanticSearch() );
+		$this->assertTrue( $options->isCirrusSemanticSearchHighlights() );
+		$query = new Query();
+		$query->addParam( 'stats', 'semantic' );
+		$options->applyDebugOptions( $query );
+		$this->assertArrayEquals( [ 'semantic_highlighting_batch' => true ], $query->getParam( 'ext' ) );
+
+		$query = new Query();
+		$query->addParam( 'stats', 'semantic' );
+		$query->setParam( 'ext', [ 'some_other_ext' => [ 'some_option' => 'foo' ] ] );
+		$options->applyDebugOptions( $query );
+		$this->assertArrayEquals(
+			[
+				'some_other_ext' => [ 'some_option' => 'foo' ],
+				'semantic_highlighting_batch' => true
+			],
+			$query->getParam( 'ext' )
+		);
+
+		$query = new Query();
+		$options->applyDebugOptions( $query );
+		$this->assertFalse( $query->hasParam( 'ext' ) );
+	}
 }

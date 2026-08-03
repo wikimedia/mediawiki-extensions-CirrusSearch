@@ -6,6 +6,9 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet;
+use MediaWiki\Page\LinkBatchFactory;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 
 /**
  * @covers \CirrusSearch\Search\SemanticResultsType
@@ -16,6 +19,18 @@ class SemanticResultsTypeTest extends CirrusIntegrationTestCase {
 	private const NESTED_FIELD = 'passage_chunk_embedding';
 	private const SNIPPET_FIELD = 'text';
 	private const ANCHOR_FIELD = 'section';
+
+	protected function setUp(): void {
+		parent::setUp();
+		$this->setService( 'LinkBatchFactory', $this->createMock( LinkBatchFactory::class ) );
+		$titleFactory = $this->createMock( TitleFactory::class );
+		$titleFactory->method( 'makeTitle' )->willReturnCallback( static function ( $ns, $title, $fragment = '', $interwiki = '' ) {
+				$ret = Title::makeTitle( $ns, $title, $fragment, $interwiki );
+				$ret->resetArticleID( 0 );
+				return $ret;
+		} );
+		$this->setService( 'TitleFactory', $titleFactory );
+	}
 
 	private function newSemanticResultsType( array $extraFields = [] ): SemanticResultsType {
 		return new SemanticResultsType(
@@ -67,5 +82,28 @@ class SemanticResultsTypeTest extends CirrusIntegrationTestCase {
 		$type = $this->newSemanticResultsType();
 		$res = new ResultSet( new Response( [] ), new Query( [] ), [] );
 		$this->assertFalse( $type->transformElasticsearchResult( $res )->searchContainedSyntax() );
+	}
+
+	public function testHighlights(): void {
+		$type = $this->newSemanticResultsType();
+		$responseData = self::loadFixture( "semanticResultsType/highlight_response.json" );
+		$res = new Response( $responseData );
+
+		$builder = new ResultSet\DefaultBuilder();
+		$elasticaResultSet = $builder->buildResultSet( new Response( $responseData, 200 ), new Query( [] ) );
+		$resultSet = $type->transformElasticsearchResult( $elasticaResultSet );
+		$this->assertEquals( 3, $resultSet->getTotalHits() );
+		$results = $resultSet->extractResults();
+		$this->assertCount( 3, $results );
+		$this->assertEquals(
+			'Jupiter has <span class="searchmatch">115</span> moons with known orbits announced; 73 of them have ' .
+			'received permanent designations, and 57 have been named. Its eight regular moons are grouped into the planet-sized ' .
+			'Galilean moons and the far smaller Amalthea group. They were named after lovers of Zeus, the Greek equivalent of Jupiter. ' .
+			'Among them is Ganymede, the largest and most massive moon in the Solar System. The rest are irregular moons, which are ' .
+			'organized into two categories: prograde and retrograde. The prograde satellites consist of the Himalia group ' .
+			'and three others in groups of one. The retrograde moons are grouped into the Carme, Ananke and Pasiphae groups.',
+			$results[1]->getTextSnippet()
+		);
+		$this->assertEquals( 'Moons by primary', $results[1]->getSectionTitle()->getFragment() );
 	}
 }

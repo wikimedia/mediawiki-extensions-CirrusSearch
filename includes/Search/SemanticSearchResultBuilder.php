@@ -17,6 +17,7 @@ class SemanticSearchResultBuilder {
 
 	private string $innerHitsField;
 	private string $snippetField;
+	private string $highlightedSnippetField;
 	private string $sectionField;
 
 	/** @var string[] */
@@ -40,6 +41,7 @@ class SemanticSearchResultBuilder {
 		$this->innerHitsField = $innerHitsField;
 		$this->snippetField = $snippetField;
 		$this->sectionField = $sectionField;
+		$this->highlightedSnippetField = "$innerHitsField.$snippetField";
 		$this->extraFields = $extraFields;
 	}
 
@@ -89,7 +91,9 @@ class SemanticSearchResultBuilder {
 
 	private function doInnerHits( Title $title, array $innerHits ): void {
 		foreach ( $innerHits[$this->innerHitsField]['hits']['hits'] as $hit ) {
-			if ( isset( $hit['_source'][$this->snippetField] ) ) {
+			if ( isset( $hit['highlight'][$this->highlightedSnippetField][0] ) ) {
+				$this->builder->textSnippet( $this->escapeHighlightedText( $hit['highlight'][$this->highlightedSnippetField][0] ) );
+			} elseif ( isset( $hit['_source'][$this->snippetField] ) ) {
 				$this->builder->textSnippet( $hit['_source'][$this->snippetField] );
 			}
 			if ( isset( $hit['_source'][$this->sectionField] ) ) {

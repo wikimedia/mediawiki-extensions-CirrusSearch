@@ -1,0 +1,154 @@
+{
+  "took": 7444,
+  "timed_out": false,
+  "_shards": {
+    "total": 2,
+    "successful": 2,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 3,
+      "relation": "eq"
+    },
+    "max_score": 0.708996,
+    "hits": [
+      {
+        "_index": "wiki-passages",
+        "_id": "38930",
+        "_score": 0.708996,
+        "_source": {
+          "page_id": 38930,
+          "title": "Jupiter"
+        },
+        "inner_hits": {
+          "passage_chunk_embedding": {
+            "hits": {
+              "total": {
+                "value": 1,
+                "relation": "eq"
+              },
+              "max_score": 0.708996,
+              "hits": [
+                {
+                  "_index": "wiki-passages",
+                  "_id": "38930",
+                  "_nested": {
+                    "field": "passage_chunk_embedding",
+                    "offset": 45
+                  },
+                  "_score": 0.708996,
+                  "_source": {
+                    "section_depth": 0,
+                    "passage_index": 45,
+                    "passage_type": "paragraph",
+                    "is_lead": false,
+                    "section": "Moons",
+                    "parent_sections": [],
+                    "text": "Jupiter has 115 known natural satellites, and it is likely that this number will go up due to increasing telescopic observations. Of these, only 16 are larger than 10 km in diameter. The four largest moons, known as the Galilean moons, are Ganymede, Callisto, Io, and Europa (in order of decreasing size), and are visible from Earth with binoculars on a clear night."
+                  },
+                  "highlight": {
+                    "passage_chunk_embedding.text": [
+                      "Jupiter has 115 known natural satellites, and it is likely that this number will go up due to increasing telescopic observations. Of these, only 16 are larger than 10 km in diameter. The four largest moons, known as the Galilean moons, are Ganymede, Callisto, Io, and Europa (in order of decreasing size), and are visible from Earth with binoculars on a clear night."
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "_index": "wiki-passages",
+        "_id": "839504",
+        "_score": 0.6955719,
+        "_source": {
+          "page_id": 839504,
+          "title": "List of natural satellites"
+        },
+        "inner_hits": {
+          "passage_chunk_embedding": {
+            "hits": {
+              "total": {
+                "value": 1,
+                "relation": "eq"
+              },
+              "max_score": 0.6955719,
+              "hits": [
+                {
+                  "_index": "wiki-passages",
+                  "_id": "839504",
+                  "_nested": {
+                    "field": "passage_chunk_embedding",
+                    "offset": 7
+                  },
+                  "_score": 0.6955719,
+                  "_source": {
+                    "section_depth": 0,
+                    "passage_index": 7,
+                    "passage_type": "paragraph",
+                    "is_lead": false,
+                    "section": "Moons by primary",
+                    "parent_sections": [],
+                    "text": "Jupiter has 115 moons with known orbits announced; 73 of them have received permanent designations, and 57 have been named. Its eight regular moons are grouped into the planet-sized Galilean moons and the far smaller Amalthea group. They were named after lovers of Zeus, the Greek equivalent of Jupiter. Among them is Ganymede, the largest and most massive moon in the Solar System. The rest are irregular moons, which are organized into two categories: prograde and retrograde. The prograde satellites consist of the Himalia group and three others in groups of one. The retrograde moons are grouped into the Carme, Ananke and Pasiphae groups."
+                  },
+                  "highlight": {
+                    "passage_chunk_embedding.text": [
+                      "Jupiter has 115 moons with known orbits announced; 73 of them have received permanent designations, and 57 have been named. Its eight regular moons are grouped into the planet-sized Galilean moons and the far smaller Amalthea group. They were named after lovers of Zeus, the Greek equivalent of Jupiter. Among them is Ganymede, the largest and most massive moon in the Solar System. The rest are irregular moons, which are organized into two categories: prograde and retrograde. The prograde satellites consist of the Himalia group and three others in groups of one. The retrograde moons are grouped into the Carme, Ananke and Pasiphae groups."
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "_index": "wiki-passages",
+        "_id": "575613",
+        "_score": 0.69278187,
+        "_source": {
+          "page_id": 575613,
+          "title": "Moons of Jupiter"
+        },
+        "inner_hits": {
+          "passage_chunk_embedding": {
+            "hits": {
+              "total": {
+                "value": 1,
+                "relation": "eq"
+              },
+              "max_score": 0.69278187,
+              "hits": [
+                {
+                  "_index": "wiki-passages",
+                  "_id": "575613",
+                  "_nested": {
+                    "field": "passage_chunk_embedding",
+                    "offset": 0
+                  },
+                  "_score": 0.69278187,
+                  "_source": {
+                    "section_depth": 0,
+                    "passage_index": 0,
+                    "passage_type": "paragraph",
+                    "is_lead": true,
+                    "section": null,
+                    "parent_sections": [],
+                    "text": "There are 115 known moons of the planet Jupiter as of 9 April 2026. This number does not include a number of meter-sized moonlets thought to be shed from the inner moons, nor hundreds of possible kilometer-sized outer irregular moons that were only briefly captured by telescopes. All together, Jupiter's moons form a satellite system, colloquially referred to as the Jovian system. The most massive of the moons are the four Galilean moons: Io, Europa, Ganymede, and Callisto, all of which were independently discovered in 1610 by Galileo Galilei and Simon Marius and were the first objects found to orbit a body that was neither Earth nor the Sun. Much more recently, beginning in 1892, dozens of far smaller Jovian moons have been detected and have received the names of lovers (or other sexual partners) or daughters of the Roman god Jupiter or his Greek equivalent Zeus. The Galilean moons are by far the largest and most massive objects to orbit Jupiter, with the remaining 111 known moons and the rings together comprising just 0.003% of the total orbiting mass."
+                  },
+                  "highlight": {
+                    "passage_chunk_embedding.text": [
+                      "There are 115 known moons of the planet Jupiter as of 9 April 2026. This number does not include a number of meter-sized moonlets thought to be shed from the inner moons, nor hundreds of possible kilometer-sized outer irregular moons that were only briefly captured by telescopes. All together, Jupiter's moons form a satellite system, colloquially referred to as the Jovian system. The most massive of the moons are the four Galilean moons: Io, Europa, Ganymede, and Callisto, all of which were independently discovered in 1610 by Galileo Galilei and Simon Marius and were the first objects found to orbit a body that was neither Earth nor the Sun. Much more recently, beginning in 1892, dozens of far smaller Jovian moons have been detected and have received the names of lovers (or other sexual partners) or daughters of the Roman god Jupiter or his Greek equivalent Zeus. The Galilean moons are by far the largest and most massive objects to orbit Jupiter, with the remaining 111 known moons and the rings together comprising just 0.003% of the total orbiting mass."
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+}

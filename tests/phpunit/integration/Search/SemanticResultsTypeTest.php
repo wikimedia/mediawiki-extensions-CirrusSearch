@@ -105,5 +105,6 @@ class SemanticResultsTypeTest extends CirrusIntegrationTestCase {
 			$results[1]->getTextSnippet()
 		);
 		$this->assertEquals( 'Moons by primary', $results[1]->getSectionTitle()->getFragment() );
+		$this->assertEquals( 'Moons by primary', $results[1]->getSectionSnippet() );
 	}
 }

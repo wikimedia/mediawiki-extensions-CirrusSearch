@@ -97,8 +97,10 @@ class SemanticSearchResultBuilder {
 				$this->builder->textSnippet( $hit['_source'][$this->snippetField] );
 			}
 			if ( isset( $hit['_source'][$this->sectionField] ) ) {
+				$sectionName = $hit['_source'][$this->sectionField];
 				$this->builder->sectionTitle( $title->createFragmentTarget( $this->titleHelper->sanitizeSectionFragment(
-					$hit['_source'][$this->sectionField] ) ) );
+					$sectionName ) ) );
+				$this->builder->sectionSnippet( $this->escapeHighlightedText( $sectionName ) );
 			}
 			return;
 		}

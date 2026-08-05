@@ -92,7 +92,7 @@ class QueryCirrusDoc extends ApiQueryBase {
 			],
 		];
 		// Only expose redirect scope when redirect documents are available to query.
-		if ( $this->getSearchConfig()->useRedirectDocuments() ) {
+		if ( $this->getSearchConfig()->buildRedirectDocuments() ) {
 			$params['redirectscope'] = [
 				ParamValidator::PARAM_TYPE => 'boolean',
 				ParamValidator::PARAM_DEFAULT => false,

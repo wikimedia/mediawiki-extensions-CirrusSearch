@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"شاه زمان پټان"
+		]
+	},
+	"apihelp-query+cirrusbuilddoc-param-builders": "د هغه اومتوکو ډول چې بايد راوويستل شي",
+	"apihelp-query+cirrusbuilddoc-param-limiterprofile": "هغه پېژنيال چې د لاسوند د کچې محدودولو پرمهال بايد وکارېږي",
+	"apierror-cirrus-requesttoolong": "د مختاړي د لټون غوښتنه د تر ټولو ډېر اجازه ورکړل شوي اوږدوالي څخه اوږده وه. ($1 &gt؛ $2)",
+	"apihelp-query+compsuggestbuilddoc-param-method": "کارولو لپاره د نومرې ورکولو چلندلار",
+	"apierror-compsuggestbuilddoc-bad-method": "د نومرې ورکولو ناپېژانده چلندلار"
+}

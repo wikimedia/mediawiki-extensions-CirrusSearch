@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Connection;
+use CirrusSearch\ReplicaCount;
 use Elastica\Client;
 use Elastica\Document;
 use Elastica\Exception\ResponseException;
@@ -19,7 +20,8 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 
 	private const BASE_NAME = "mytestwiki";
 	private const MASTER_TIMEOUT = "30s";
-	private const REPLICA_COUNT = 2;
+	private const SHARD_COUNT = 2;
+	private const REPLICAS = '0-2';
 	private const INDEX_RETRY_ATTEMPTS = 1;
 	private const FAKE_ANALYSIS_CONFIG = [ "my_analysis_config" => [] ];
 	/**
@@ -185,7 +187,7 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 							$this->assertEquals(
 								[
 									"number_of_shards" => $config->getShardCount(),
-									"auto_expand_replicas" => "0-0",
+									"number_of_replicas" => 0,
 									"refresh_interval" => -1,
 									"routing.allocation.total_shards_per_node" => $config->getMaxShardPerNode(),
 									"analysis" => self::FAKE_ANALYSIS_CONFIG
@@ -381,7 +383,7 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 							$this->assertEquals(
 								[
 									"index" => [
-										"auto_expand_replicas" => $config->getReplicaCount()
+										"auto_expand_replicas" => self::REPLICAS
 									]
 								],
 								$body
@@ -531,8 +533,8 @@ class CompletionSuggesterIndexerTest extends CirrusTestCase {
 			self::BASE_NAME,
 			$altIndex,
 			$altIndexId,
-			self::REPLICA_COUNT,
-			"0-2",
+			self::SHARD_COUNT,
+			ReplicaCount::autoExpand( self::REPLICAS ),
 			1,
 			$recycle,
 			$chunkSize, self::MASTER_TIMEOUT,

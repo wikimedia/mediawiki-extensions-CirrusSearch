@@ -45,21 +45,28 @@ class ClusterSettingsTest extends CirrusTestCase {
 				'0-2',
 				'dc-foo',
 				'content',
-				'0-2',
+				ReplicaCount::autoExpand( '0-2' ),
 			],
 
 			'Accepts array for replica config' => [
 				[ 'content' => '1-2' ],
 				'dc-foo',
 				'content',
-				'1-2',
+				ReplicaCount::autoExpand( '1-2' ),
 			],
 
 			'Accepts per-cluster replica config' => [
 				[ 'content' => '1-2', 'dc-foo' => [ 'content' => '2-3' ] ],
 				'dc-foo',
 				'content',
-				'2-3'
+				ReplicaCount::autoExpand( '2-3' ),
+			],
+
+			'Accepts a fixed number of replicas' => [
+				[ 'content' => '1-2', 'dc-foo' => [ 'content' => 2 ] ],
+				'dc-foo',
+				'content',
+				ReplicaCount::fixed( 2 ),
 			],
 		];
 	}

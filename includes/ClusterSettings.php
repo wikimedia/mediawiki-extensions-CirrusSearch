@@ -60,18 +60,16 @@ class ClusterSettings {
 
 	/**
 	 * @param string $indexSuffix
-	 * @return string Number of replicas Elasticsearch can expand or contract to
-	 *  in the format of '0-2' for the minimum and maximum number of replicas. May
-	 *  also be the string 'false' when replicas are disabled.
+	 * @return ReplicaCount Number of replicas the index should have
 	 */
-	public function getReplicaCount( $indexSuffix ) {
+	public function getReplicaCount( $indexSuffix ): ReplicaCount {
 		$settings = $this->config->get( CirrusConfigNames::Replicas );
 		if ( !is_array( $settings ) ) {
-			return $settings;
+			return ReplicaCount::fromConfigValue( $settings );
 		} elseif ( isset( $settings[$this->cluster][$indexSuffix] ) ) {
-			return $settings[$this->cluster][$indexSuffix];
+			return ReplicaCount::fromConfigValue( $settings[$this->cluster][$indexSuffix] );
 		} elseif ( isset( $settings[$indexSuffix] ) ) {
-			return $settings[$indexSuffix];
+			return ReplicaCount::fromConfigValue( $settings[$indexSuffix] );
 		}
 		throw new RuntimeException( "If \$wgCirrusSearchReplicas is " .
 			"an array it must contain all index types." );

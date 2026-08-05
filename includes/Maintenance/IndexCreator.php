@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\ReplicaCount;
 use Elastica\Index;
 use MediaWiki\Status\Status;
 
@@ -65,7 +66,7 @@ class IndexCreator {
 	 * @param bool $rebuild
 	 * @param int $maxShardsPerNode
 	 * @param int $shardCount
-	 * @param string $replicaCount
+	 * @param ReplicaCount $replicaCount
 	 * @param int $refreshInterval
 	 * @param array $mergeSettings
 	 * @param array $extraSettings
@@ -76,7 +77,7 @@ class IndexCreator {
 		$rebuild,
 		$maxShardsPerNode,
 		$shardCount,
-		$replicaCount,
+		ReplicaCount $replicaCount,
 		$refreshInterval,
 		array $mergeSettings,
 		array $extraSettings
@@ -116,7 +117,7 @@ class IndexCreator {
 	/**
 	 * @param int $maxShardsPerNode
 	 * @param int $shardCount
-	 * @param string $replicaCount
+	 * @param ReplicaCount $replicaCount
 	 * @param int $refreshInterval
 	 * @param array $mergeSettings
 	 * @param array $extraSettings
@@ -126,20 +127,19 @@ class IndexCreator {
 	private function buildSettings(
 		$maxShardsPerNode,
 		$shardCount,
-		$replicaCount,
+		ReplicaCount $replicaCount,
 		$refreshInterval,
 		array $mergeSettings,
 		array $extraSettings
 	) {
 		$indexSettings = [
 			'number_of_shards' => $shardCount,
-			'auto_expand_replicas' => $replicaCount,
 			'refresh_interval' => $refreshInterval . 's',
 			'analysis' => $this->analysisConfig,
 			'routing' => [
 				'allocation.total_shards_per_node' => $maxShardsPerNode,
 			]
-		];
+		] + $replicaCount->toCreateSettings();
 
 		if ( $mergeSettings ) {
 			$indexSettings['merge.policy'] = $mergeSettings;

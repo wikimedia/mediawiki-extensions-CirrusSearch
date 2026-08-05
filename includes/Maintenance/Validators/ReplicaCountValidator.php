@@ -3,26 +3,27 @@
 namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\Maintenance\Printer;
+use CirrusSearch\ReplicaCount;
 use Elastica\Index;
 use MediaWiki\Status\Status;
 
-class ReplicaRangeValidator extends Validator {
+class ReplicaCountValidator extends Validator {
 	/**
 	 * @var Index
 	 */
 	private $index;
 
 	/**
-	 * @var string
+	 * @var ReplicaCount
 	 */
 	protected $replicaCount;
 
 	/**
 	 * @param Index $index
-	 * @param string $replicaCount
+	 * @param ReplicaCount $replicaCount
 	 * @param Printer|null $out
 	 */
-	public function __construct( Index $index, $replicaCount, ?Printer $out = null ) {
+	public function __construct( Index $index, ReplicaCount $replicaCount, ?Printer $out = null ) {
 		parent::__construct( $out );
 
 		$this->index = $index;
@@ -33,14 +34,14 @@ class ReplicaRangeValidator extends Validator {
 	 * @return Status
 	 */
 	public function validate() {
-		$this->outputIndented( "\tValidating replica range..." );
+		$this->outputIndented( "\tValidating replica count..." );
 		$settings = $this->index->getSettings()->get();
-		$actualReplicaCount = $settings['auto_expand_replicas'] ?? 'false';
-		if ( $actualReplicaCount == $this->replicaCount ) {
+		if ( $this->replicaCount->matchesIndexSettings( $settings ) ) {
 			$this->output( "ok\n" );
 		} else {
+			$actualReplicaCount = ReplicaCount::fromIndexSettings( $settings );
 			$this->output( "is $actualReplicaCount but should be " . $this->replicaCount . '...' );
-			$this->index->getSettings()->set( [ 'auto_expand_replicas' => $this->replicaCount ] );
+			$this->index->getSettings()->set( $this->replicaCount->toUpdateSettings() );
 			$this->output( "corrected\n" );
 		}
 

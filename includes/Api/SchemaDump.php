@@ -11,6 +11,7 @@ use CirrusSearch\Maintenance\MappingConfigBuilder;
 use CirrusSearch\Maintenance\NullPrinter;
 use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
 use CirrusSearch\Maintenance\SuggesterMappingConfigBuilder;
+use CirrusSearch\ReplicaCount;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Api\ApiBase;
 use MediaWiki\MainConfigNames;
@@ -246,9 +247,11 @@ class SchemaDump extends ApiBase {
 
 		// Get replica count for this index type
 		$replicas = $context['replicas'];
-		$replicaCount = is_array( $replicas ) && isset( $replicas[$indexSuffix] )
-			? $replicas[$indexSuffix]
-			: '0-2';
+		$replicaCount = ReplicaCount::fromConfigValue(
+			is_array( $replicas ) && isset( $replicas[$indexSuffix] )
+				? $replicas[$indexSuffix]
+				: '0-2'
+		);
 
 		// Build similarity config
 		$analysisBuilder = new AnalysisConfigBuilder(
@@ -261,13 +264,12 @@ class SchemaDump extends ApiBase {
 		// Base settings structure
 		$indexSettings = [
 			'number_of_shards' => $shardCount,
-			'auto_expand_replicas' => $replicaCount,
 			'refresh_interval' => $context['refreshInterval'] . 's',
 			'analysis' => $analysisConfig,
 			'query' => [
 				'default_field' => 'all'
 			],
-		];
+		] + $replicaCount->toCreateSettings();
 
 		// Add similarity if present
 		if ( $similarityConfig ) {

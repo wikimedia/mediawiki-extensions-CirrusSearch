@@ -2,12 +2,14 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\ReplicaCount;
+
 class CompletionSuggesterIndexerConfig {
 	private string $indexBaseName;
 	private bool $altIndex;
 	private int $altIndexId;
 	private int $shardCount;
-	private string $replicaCount;
+	private ReplicaCount $replicaCount;
 	private int $maxShardPerNode;
 	private bool $recycle;
 	private int $indexChunkSize;
@@ -24,7 +26,7 @@ class CompletionSuggesterIndexerConfig {
 	 * @param bool $altIndex true if it's an "alternative" index
 	 * @param int $altIndexId the id of the alternative index
 	 * @param int $shardCount the number of shards
-	 * @param string $replicaCount the number of replicas (auto_expand_replicas format)
+	 * @param ReplicaCount $replicaCount the number of replicas the index should have
 	 * @param int $maxShardPerNode max number of shards per node
 	 * @param bool $recycle true to recycle the index
 	 * @param int $indexChunkSize max number of docs to buffer before writing to the backend
@@ -37,7 +39,7 @@ class CompletionSuggesterIndexerConfig {
 	 * @param bool $force force the promotion of the index even if some checks suggest that the index is broken
 	 */
 	public function __construct( string $indexBaseName, bool $altIndex, int $altIndexId,
-		int $shardCount, string $replicaCount, int $maxShardPerNode,
+		int $shardCount, ReplicaCount $replicaCount, int $maxShardPerNode,
 		bool $recycle, int $indexChunkSize, string $masterTimeout, int $replicationTimeout, int $indexRetryAttempts,
 		?string $allocationIncludeTag, ?string $allocationExcludeTag, bool $optimizeIndex,
 		bool $force
@@ -107,7 +109,7 @@ class CompletionSuggesterIndexerConfig {
 		return $this->shardCount;
 	}
 
-	public function getReplicaCount(): string {
+	public function getReplicaCount(): ReplicaCount {
 		return $this->replicaCount;
 	}
 

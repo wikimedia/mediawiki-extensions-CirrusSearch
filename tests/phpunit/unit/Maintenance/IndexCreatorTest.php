@@ -5,6 +5,7 @@ namespace CirrusSearch\Tests\Maintenance;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Maintenance\ConfigUtils;
 use CirrusSearch\Maintenance\IndexCreator;
+use CirrusSearch\ReplicaCount;
 use Elastica\Index;
 use Elastica\Response;
 use MediaWiki\Status\Status;
@@ -33,13 +34,51 @@ class IndexCreatorTest extends CirrusTestCase {
 			$rebuild,
 			$maxShardsPerNode,
 			4, // shardCount
-			'0-2', // replicaCount
+			ReplicaCount::autoExpand( '0-2' ),
 			30, // refreshInterval
 			[], // mergeSettings
 			[] // extra index settings
 		);
 
 		$this->assertInstanceOf( Status::class, $status );
+	}
+
+	public static function replicaSettingsProvider() {
+		return [
+			'a range is applied as auto_expand_replicas' => [
+				ReplicaCount::autoExpand( '0-2' ),
+				[ 'auto_expand_replicas' => '0-2' ],
+			],
+			'a fixed count is applied as number_of_replicas' => [
+				ReplicaCount::fixed( 2 ),
+				[ 'number_of_replicas' => 2 ],
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider replicaSettingsProvider
+	 */
+	public function testReplicaSettings( ReplicaCount $replicaCount, array $expected ) {
+		$args = null;
+		$index = $this->createMock( Index::class );
+		$index->method( 'create' )
+			->willReturnCallback( static function ( array $createArgs ) use ( &$args ) {
+				$args = $createArgs;
+				return new Response( [] );
+			} );
+		$utils = $this->createMock( ConfigUtils::class );
+		$utils->method( 'waitForGreen' )
+			->willReturn( $this->arrayAsGenerator( [], true ) );
+
+		$indexCreator = new IndexCreator( $index, $utils, [], [], [] );
+		$indexCreator->createIndex( false, 'unlimited', 4, $replicaCount, 30, [], [] );
+
+		$replicaSettings = array_intersect_key(
+			$args['settings']['index'],
+			[ 'auto_expand_replicas' => true, 'number_of_replicas' => true ]
+		);
+		$this->assertSame( $expected, $replicaSettings );
 	}
 
 	private function arrayAsGenerator( array $array, $retval ) {

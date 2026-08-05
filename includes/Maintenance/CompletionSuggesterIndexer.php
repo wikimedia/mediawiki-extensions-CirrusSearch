@@ -312,12 +312,11 @@ class CompletionSuggesterIndexer {
 
 		// We create the index with 0 replicas, this is faster and will
 		// stress less nodes with 4 shards and 2 replicas we would
-		// stress 12 nodes (moreover with the optimize flag)
+		// stress 12 nodes (moreover with the optimize flag). Replicas are
+		// enabled once the index is fully built.
 		$settings = [
 			'number_of_shards' => $this->indexerConfig->getShardCount(),
-			// hacky but we still use auto_expand_replicas
-			// for convenience on small install.
-			'auto_expand_replicas' => "0-0",
+			'number_of_replicas' => 0,
 			'refresh_interval' => -1,
 			'analysis' => $this->analysisConfigBuilder->buildConfig(),
 			'routing.allocation.total_shards_per_node' => $this->indexerConfig->getMaxShardPerNode(),
@@ -434,9 +433,7 @@ class CompletionSuggesterIndexer {
 	private function enableReplicas(): void {
 		$this->log( "Enabling replicas...\n" );
 		$args = [
-			'index' => [
-				'auto_expand_replicas' => $this->indexerConfig->getReplicaCount(),
-			],
+			'index' => $this->indexerConfig->getReplicaCount()->toUpdateSettings(),
 		];
 
 		$path = $this->index->getName() . "/_settings";

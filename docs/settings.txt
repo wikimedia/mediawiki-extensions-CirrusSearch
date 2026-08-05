@@ -148,6 +148,11 @@ higher levels of replication. If you need more redundancy you could
 adjust this to '0-10' or '0-all' or even 'false' (string, not boolean) to
 disable the behavior entirely. The default should be fine for most people.
 
+A single number, such as 2, asks for exactly that many replicas instead of
+letting Elasticsearch pick a number from a range. It is highly recommended
+that any cluster with a large number of indices uses single numbers and
+does not use a range.
+
 You can also specify this as an array of index type to replica count.  If you
 do then you must specify all index types.  For example:
     $wgCirrusSearchReplicas = array( 'content' => '0-3', 'general' => '0-2' );

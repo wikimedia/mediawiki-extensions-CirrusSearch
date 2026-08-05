@@ -8,7 +8,8 @@ use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\Maintenance\Validators\MappingValidator;
 use CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator;
 use CirrusSearch\Maintenance\Validators\NumberOfShardsValidator;
-use CirrusSearch\Maintenance\Validators\ReplicaRangeValidator;
+use CirrusSearch\Maintenance\Validators\ReplicaCountValidator;
+use CirrusSearch\ReplicaCount;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use MediaWiki\Config\ConfigException;
@@ -354,7 +355,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function getIndexSettingsValidators() {
 		return [
 			new NumberOfShardsValidator( $this->getIndex(), $this->getShardCount(), $this ),
-			new ReplicaRangeValidator( $this->getIndex(), $this->getReplicaCount(), $this ),
+			new ReplicaCountValidator( $this->getIndex(), $this->getReplicaCount(), $this ),
 			$this->getShardAllocationValidator(),
 			new MaxShardsPerNodeValidator( $this->getIndex(), $this->getMaxShardsPerNode(), $this ),
 		];
@@ -580,9 +581,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * @return string Number of replicas this index should have. May be a range such as '0-2'
+	 * @return ReplicaCount Number of replicas this index should have
 	 */
-	private function getReplicaCount() {
+	private function getReplicaCount(): ReplicaCount {
 		return $this->getConnection()->getSettings()->getReplicaCount( $this->indexSuffix );
 	}
 

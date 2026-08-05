@@ -8,6 +8,7 @@ use CirrusSearch\Elastica\ReindexRequest;
 use CirrusSearch\Elastica\ReindexResponse;
 use CirrusSearch\Elastica\ReindexTask;
 use CirrusSearch\Query\ArticlePredictionKeyword;
+use CirrusSearch\ReplicaCount;
 use CirrusSearch\SearchConfig;
 use Elastica\Client;
 use Elastica\Exception\Connection\HttpException;
@@ -125,17 +126,16 @@ class Reindexer {
 		if ( !is_array( $oldSettings ) ) {
 			throw new \RuntimeException( 'Invalid response from index settings' );
 		}
+		$oldReplicaCount = ReplicaCount::fromIndexSettings( $oldSettings );
+		// Reindex without replicas. It's probably inefficient to let the index be
+		// created with replicas, then drop the empty replicas a few moments later.
+		// Doing it like this allows reindexing and index creation to operate
+		// independantly without needing to know about each other.
 		$settings->set( [
 			'refresh_interval' => -1,
 			'routing.allocation.total_shards_per_node' =>
 				$this->decideMaxShardsPerNodeForReindex( $oldSettings ),
-			// It's probably inefficient to let the index be created with replicas,
-			// then drop the empty replicas a few moments later. Doing it like this
-			// allows reindexing and index creation to operate independantly without
-			// needing to know about each other.
-			'auto_expand_replicas' => 'false',
-			'number_of_replicas' => 0,
-		] );
+		] + ReplicaCount::fixed( 0 )->toUpdateSettings() );
 		$this->waitForGreen();
 
 		$request = new ReindexRequest( $this->oldIndex, $this->index, $chunkSize );
@@ -175,15 +175,14 @@ class Reindexer {
 		$this->waitForCounts( $acceptableCountDeviation );
 		$this->output( "done\n" );
 
-		// Revert settings changed just for reindexing. Although we set number_of_replicas above
-		// we do not reset it's value here, rather allowing auto_expand_replicas to pick an
-		// appropriate value.
+		// Revert settings changed just for reindexing. An index that auto expands its
+		// replicas only needs the range put back, elasticsearch picks the number of
+		// replicas from it. An index with a fixed count needs that count restored.
 		$newSettings = [
 			'refresh_interval' => $oldSettings['refresh_interval'],
-			'auto_expand_replicas' => $oldSettings['auto_expand_replicas'],
 			'routing.allocation.total_shards_per_node' =>
 				$oldSettings['routing']['allocation']['total_shards_per_node'] ?? -1,
-		];
+		] + $oldReplicaCount->toUpdateSettings();
 		$settings->set( $newSettings );
 	}
 

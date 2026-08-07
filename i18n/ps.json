@@ -16,7 +16,7 @@
 	"cirrussearch-regex-syntax-error": "په $2 کې  د منظم اظهار د غونډلپوهې تېروتنه: $1",
 	"cirrussearch-now-using": "دا ويکي يو نوی پلټنماشين کاروي. ([https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch نور زده کړئ])",
 	"cirrussearch-pref-label": "نوې پلتڼه",
-	"cirrussearch-give-feedback": "تاسې خپل نظر موږ ته راکړئ",
+	"cirrussearch-give-feedback": "خپل غبرگون مو راکړئ",
 	"prefs-completion": "پلټنې بشپړول",
 	"cirrussearch-pref-completion-section-desc": "د بشپړولو وړاندیزگر",
 	"cirrussearch-pref-completion-profile-help": "د وړانديزونو خپلکاره‌بشپړېدو (پلټل لکه څنگه يې چې ليکئ) لپاره چلند اوڼل.\n\nد [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester بشپړېدو وړانديزگر] د لټون وړاندېزونو لپاره يو الگوريتم دی چې غوره ټايپي سمون او پلټونکې اړوندتياوې لري. مختاړې پلټنه د ټاپلو پرمهال پلټنې وړانديزونو پخوانی الگوريتم دی.",
@@ -37,7 +37,7 @@
 	"cirrussearch-incategory-feature-no-valid-categories": "'$1' ته هېڅ باوري وېشنيزې نه دي ورکړل شوي.",
 	"cirrussearch-mlt-feature-no-valid-titles": "'$1' ته هېڅ باوري سرليکونه نه دي ورکړل شوي.",
 	"cirrussearch-explore-similar-related-none": "هېڅ اړوند مخونه د لاسرسي وړ نه دي",
-	"cirrussearch-article-words": "تورې په ټولو منځپانګو کې",
+	"cirrussearch-article-words": "ټولو منځپانگيزونو مخونو کې ويي",
 	"cirrussearch-autoselect-profile": "پرېږدئ چې لټونگر د کارولو لپاره د غوره پېژنيال پرېکړه وکړي.",
 	"cirrussearch-offset-not-allowed-with-random-sort": "د ناڅاپي ترتیب شویو پایلو د پاڼې کولو غوښتنه له پامه غورځول."
 }

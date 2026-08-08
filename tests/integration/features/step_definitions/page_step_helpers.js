@@ -291,6 +291,7 @@ class StepHelpers {
 	 * over multiple indices (content/general).
 	 *
 	 * @param {string} title page title
+	 * @param redirectScope
 	 * @return {Promise} resolves to an array of indexed docs or null if title not indexed
 	 */
 	async getCirrusIndexedContent( title, redirectScope = false ) {

@@ -11,6 +11,7 @@ class ArticlePage extends TitlePage {
 
 	async articleTitle() {
 		const elt = await this.title_element();
+		await elt.waitForDisplayed();
 		return elt.getText();
 	}
 
@@ -66,7 +67,7 @@ class ArticlePage extends TitlePage {
 			},
 			{ timeout: 10000, timeoutMsg: 'Search suggestions did not appear.' }
 		);
-		return this.collect_element_texts( selector );
+		return this.collect_element_texts( selector + ' .cdx-menu-item__text__label' );
 	}
 
 	async set_search_query_top_right( search ) {

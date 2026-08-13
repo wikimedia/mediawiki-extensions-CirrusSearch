@@ -6,7 +6,8 @@ Tests here are running daily in selenium-daily-beta-CirrusSearch Jenkins job. Fo
 
 ## Setup
 
-    export MW_SERVER=https://en.wikipedia.beta.wmflabs.org
+    export MW_SERVER=https://en.wikipedia.beta.wmcloud.org
+    export MW_SCRIPT_PATH=/w
 
 ## Run all specs
 

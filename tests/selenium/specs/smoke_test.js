@@ -1,7 +1,5 @@
-'use strict';
-const assert = require( 'assert' ),
-	ArticlePage = require( '../../integration/features/support/pages/article_page' ),
-	RandomPage = require( '../pageobjects/random.page' );
+import ArticlePage from '../../integration/features/support/pages/article_page.js';
+import RandomPage from '../pageobjects/random.page.js';
 
 /**
  * Smoke test for CirrusSearch
@@ -20,10 +18,9 @@ describe( 'Smoke test for search', () => {
 	it( 'Search suggestions', async () => {
 		await RandomPage.open();
 		await ArticlePage.set_search_query_top_right( 'main p' );
-		assert.ok( await ArticlePage.has_search_suggestions() );
+		expect( await ArticlePage.has_search_suggestions() ).toBe( true );
 		const expectedSuggestion = 'Main Page';
-		assert.equal( await ArticlePage.get_search_suggestion_at( 1 ), expectedSuggestion,
-			`${ expectedSuggestion } is the first suggestion` );
+		expect( await ArticlePage.get_search_suggestion_at( 1 ) ).toBe( expectedSuggestion );
 	} );
 
 	/**
@@ -34,11 +31,10 @@ describe( 'Smoke test for search', () => {
 	 */
 	it( 'Fill in search term and click search', async () => {
 		await RandomPage.open();
-		await ArticlePage.search_query_top_right( 'ma' );
+		await ArticlePage.set_search_query_top_right( 'ma' );
 		await ArticlePage.submit_search_top_right();
 		const expectedPage = 'Search results';
-		assert.equal( await ArticlePage.articleTitle(), expectedPage,
-			`I am on a page named ${ expectedPage }` );
+		expect( await ArticlePage.articleTitle() ).toBe( expectedPage );
 	} );
 
 	/**
@@ -51,8 +47,7 @@ describe( 'Smoke test for search', () => {
 		await ArticlePage.set_search_query_top_right( 'África' );
 		await ArticlePage.submit_search_top_right();
 		const expectedPage = 'África';
-		assert.equal( await ArticlePage.articleTitle(), expectedPage,
-			`I am on a page named ${ expectedPage }` );
+		expect( await ArticlePage.articleTitle() ).toBe( expectedPage );
 	} );
 
 } );

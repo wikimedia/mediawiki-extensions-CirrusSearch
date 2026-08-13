@@ -3,6 +3,9 @@
 	"extends": [
 		"wikimedia/selenium"
 	],
+	"parserOptions": {
+		"sourceType": "module"
+	},
 	"rules": {
 		"max-len": "off",
 		"camelcase": "off",

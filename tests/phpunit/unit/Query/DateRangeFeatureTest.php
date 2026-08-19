@@ -100,6 +100,18 @@ class DateRangeFeatureTest extends CirrusTestCase {
 				[],
 				'lasteditdate:2024-01',
 			],
+			'year-month format for a short month' => [
+				[
+					'condition' => 'eq',
+					'date' => [
+						'format' => 'year_month',
+						'value' => '2025-02',
+						'precision' => 'M',
+					],
+				],
+				[],
+				'lasteditdate:2025-02',
+			],
 			'now without offset' => [
 				[
 					'condition' => 'eq',
@@ -462,6 +474,36 @@ class DateRangeFeatureTest extends CirrusTestCase {
 				'lte' => '2024-01-15||/d',
 			] )
 		);
+	}
+
+	public static function everyMonthProvider() {
+		$cases = [];
+		// non-leap and leap years, so february has both 28 and 29 days
+		foreach ( [ '2025', '2024' ] as $year ) {
+			foreach ( range( 1, 12 ) as $month ) {
+				$value = sprintf( '%s-%02d', $year, $month );
+				$cases[$value] = [ $value ];
+			}
+		}
+		return $cases;
+	}
+
+	/**
+	 * February used to be rejected on the 30th, when php filled the unspecified
+	 * day in from today and overflowed into march.
+	 *
+	 * @dataProvider everyMonthProvider
+	 */
+	public function testEveryMonthParsesAtMonthPrecision( string $value ) {
+		$feature = new DateRangeFeature( 'lasteditdate', 'last_edit_date', 'UTC' );
+		$this->assertParsedValue( $feature, "lasteditdate:$value", [
+			'condition' => 'eq',
+			'date' => [
+				'format' => 'year_month',
+				'value' => $value,
+				'precision' => 'M',
+			],
+		], [] );
 	}
 
 	public function testTodayVsNowPrecision() {

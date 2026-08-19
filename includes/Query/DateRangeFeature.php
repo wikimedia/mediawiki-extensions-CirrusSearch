@@ -38,6 +38,8 @@ class DateRangeFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 		[
 			// php format
 			'php' => 'Y',
+			// suffix that pads a value of this format out to a full date
+			'pad' => '-01-01',
 			// opensearch format
 			'opensearch' => 'year',
 			// precision to round query to
@@ -45,11 +47,13 @@ class DateRangeFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 		],
 		[
 			'php' => 'Y-m',
+			'pad' => '-01',
 			'opensearch' => 'year_month',
 			'precision' => 'M', // upper case for months
 		],
 		[
 			'php' => 'Y-m-d',
+			'pad' => '',
 			'opensearch' => 'date',
 			'precision' => 'd',
 		],
@@ -126,7 +130,12 @@ class DateRangeFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 	private function parseDate( string $value ): ?array {
 		$tz = new DateTimeZone( $this->tz );
 		foreach ( self::$DATE_FORMAT as $settings ) {
-			$dt = DateTime::createFromFormat( $settings['php'], $value, $tz );
+			// Always parse a full date, padding out the fields the format leaves
+			// off, so that php never fills them in from the current date. Left to
+			// itself it takes the day of month from today, and on the 30th 2025-02
+			// becomes february 30th, which overflows into march and fails the
+			// round trip below. The ! does the same for the time fields.
+			$dt = DateTime::createFromFormat( '!Y-m-d', $value . $settings['pad'], $tz );
 			// must not only parse, but round trip. Avoids things like
 			// 2025-15 parsing as 2026-03.
 			if ( $dt !== false && $dt->format( $settings['php'] ) === $value ) {

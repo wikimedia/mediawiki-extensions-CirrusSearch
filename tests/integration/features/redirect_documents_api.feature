@@ -50,6 +50,13 @@ Feature: First-class redirect documents on the edit path
       And Crazy Rdir is not in the api search results
       And Insane Rdir is not in the api search results
 
+  # Two Words matches Rdir through its redirect array, so it comes back under withredirects:
+  # (asserted below) and its absence here is the page_type filter at work.
+  Scenario: onlyredirects: returns the redirect documents without their target
+     When I api search for onlyredirects: Rdir
+     Then Crazy Rdir is in the api search results
+      And Two Words is not in the api search results
+
   # Rdir shares no title tokens with its target Two Words, so the redirect match produces a
   # redirectsnippet (not pre-empted by a title snippet), making suppression observable.
   Scenario: standard search shows the redirectTitle on a primary result

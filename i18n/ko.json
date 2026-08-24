@@ -74,7 +74,6 @@
 	"cirrussearch-feature-deepcat-invalid-title": "지정된 분류는 유효하지 않습니다.",
 	"cirrussearch-feature-pageid-invalid-id": "유효하지 않은 문서 {{PLURAL:$2|ID}}: $1",
 	"cirrussearch-feature-invalid-date-range": "주어진 날짜 형식이 올바르지 않습니다. 연도(<code>YYYY</code>), 월(<code>YYYY-MM</code>), 일(<code>YYYY-MM-DD</code>)의 표준 형식을 사용하거나, <code>now-2d</code> 또는 <code>today-1y</code>와 같은 상대적 시간 표현을 사용해 주세요.",
-	"cirrussearch-feature-withredirects-not-enabled": "<code>withredirects:</code> 검색 키워드는 이 위키에서 활성화되지 않았습니다.",
 	"cirrussearch-incategory-feature-no-valid-categories": "유효한 분류가 '$1'에 추가되지 않았습니다.",
 	"cirrussearch-mlt-feature-no-valid-titles": "유효한 제목이 '$1'에 추가되지 않았습니다.",
 	"cirrussearch-mlt-not-configured": "'$1' 기능은 잘못 구성되어 있습니다. 관리자에게 $wgCirrusSearchMoreLikeThisFields의 수정을 요청하십시오",

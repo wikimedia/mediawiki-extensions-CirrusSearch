@@ -92,7 +92,6 @@
 	"cirrussearch-feature-deepcat-invalid-title": "提供的类别无效。",
 	"cirrussearch-feature-pageid-invalid-id": "无效页面{{PLURAL:$2|ID|IDs}}：$1",
 	"cirrussearch-feature-invalid-date-range": "提供的日期格式无效。请使用可识别的年（<code>YYYY</code>）、月（<code>YYYY-MM</code>）、日（<code>YYYY-MM-DD</code>）格式，或使用相对时间表达式，例如<code>now-2d</code>或<code>today-1y</code>。",
-	"cirrussearch-feature-withredirects-not-enabled": "此wiki未启用<code>withredirects:</code>搜索关键词。",
 	"cirrussearch-incategory-feature-no-valid-categories": "没有为“$1”提供有效分类。",
 	"cirrussearch-mlt-feature-no-valid-titles": "没有为“$1”提供有效标题。",
 	"cirrussearch-mlt-not-configured": "“$1”功能未被配置。请向管理员请求修复$wgCirrusSearchMoreLikeThisFields",

@@ -68,7 +68,6 @@
 	"cirrussearch-feature-deepcat-invalid-title": "Den angivne kategori er ugyldig.",
 	"cirrussearch-feature-pageid-invalid-id": "Ugyldig side {{PLURAL:$2|ID|ID'er}}: $1",
 	"cirrussearch-feature-invalid-date-range": "Den angivne dato er ikke i et gyldigt format. Brug venligst de anerkendte formater for år (<code>YYYY</code>), måned (<code>YYYY-MM</code>), dag (<code>YYYY-MM-DD</code>) eller relative tidsudtryk som <code>now-2d</code> eller <code>today-1y</code>.",
-	"cirrussearch-feature-withredirects-not-enabled": "Søgeordet <code>withredirects:</code> er ikke aktiveret på denne wiki.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Ingen gyldige kategorier angivet til '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Ingen gyldige titler angivet til '$1'.",
 	"cirrussearch-mlt-not-configured": "Funktionen '$1' er forkert konfigureret. Bed en administrator om at rette $wgCirrusSearchMoreLikeThisFields",

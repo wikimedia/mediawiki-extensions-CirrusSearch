@@ -65,7 +65,6 @@
 	"cirrussearch-feature-deepcat-invalid-title": "Qaybta la bixiyay ma aha mid sax ah.",
 	"cirrussearch-feature-pageid-invalid-id": "Bogga aan saxda ahayn {{PLURAL:$2|Aqoonsi|Aqoonsiyo}}: $1",
 	"cirrussearch-feature-invalid-date-range": "Taariikhda la bixiyay ma aha qaab sax ah. Fadlan isticmaal qaababka la aqoonsan yahay ee sanadka (<code>YYYY</code>), bisha (<code>YYYY-MM</code>), maalinta (<code>YYYY-MM-DD</code>), ama tibaaxo waqti oo la xiriira sida <code>now-2d</code> ama <code>today-1y</code>.",
-	"cirrussearch-feature-withredirects-not-enabled": "Ereyga raadinta <code>withredirects:</code> lama hawlgelin wiki-gan.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Qaybo sax ah lama siin '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Cinwaanno sax ah lama siin '$1'.",
 	"cirrussearch-mlt-not-configured": "Astaanta '$1' si khaldan ayaa loo habeeyay. Weydii maamulaha si uu u saxo $wgCirrusSearchMoreLikeThisFields.",

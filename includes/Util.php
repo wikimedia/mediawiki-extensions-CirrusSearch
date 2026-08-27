@@ -68,15 +68,23 @@ class Util {
 	 * @return void
 	 */
 	private static function recordPoolStats( string $type, bool $isSuccess, float $observation ): void {
-		$pos = strpos( $type, '-' );
-		if ( $pos !== false ) {
-			$type = substr( $type, $pos + 1 );
-		}
 		self::getStatsFactory()
 			->getTiming( "pool_counter_seconds" )
-			->setLabel( "type", $type )
+			->setLabel( "type", self::poolCounterLabel( $type ) )
 			->setLabel( "status", $isSuccess ? "success" : "failure" )
 			->observe( $observation );
+	}
+
+	/**
+	 * Metric label for a pool counter, the CirrusSearch prefix removed. Shared by
+	 * pool_counter_seconds and request_time_seconds so both use the same vocabulary.
+	 *
+	 * @param string $type The pool counter type, such as CirrusSearch-Search
+	 * @return string such as Search
+	 */
+	public static function poolCounterLabel( string $type ): string {
+		$pos = strpos( $type, '-' );
+		return $pos === false ? $type : substr( $type, $pos + 1 );
 	}
 
 	/**

@@ -216,6 +216,7 @@ abstract class ElasticsearchIntermediary {
 		$stats->getCounter( "backend_failures_total" )
 			->setLabel( "search_cluster", $clusterName )
 			->setLabel( "type", $type )
+			->setLabels( $this->getMetricLabels() )
 			->increment();
 
 		LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
@@ -223,6 +224,26 @@ abstract class ElasticsearchIntermediary {
 			$context
 		);
 		return $status;
+	}
+
+	/**
+	 * Additional low cardinality labels attached to the metrics of this request, on top of
+	 * search_cluster and type. Subclasses override the values they know about.
+	 *
+	 * All keys must always be present: the stats library requires a consistent set of label
+	 * keys per metric name and silently drops observations that do not match.
+	 *
+	 * @return string[] label name => label value
+	 */
+	protected function getMetricLabels(): array {
+		return [
+			// Pool counter the request was throttled by, see Util::poolCounterLabel().
+			// 'none' for requests that do not go through a pool counter at all. Avoid
+			// values needing normalization, StatsUtils rewrites anything but [a-zA-Z0-9_].
+			'pool' => 'none',
+			// Whether the query filters on the weighted_tags field, see T434975.
+			'weighted_tags' => 'no',
+		];
 	}
 
 	/**
@@ -260,6 +281,7 @@ abstract class ElasticsearchIntermediary {
 		$stats->getTiming( "request_time_seconds" )
 			->setLabel( "search_cluster", $clusterName )
 			->setLabel( "type", $type )
+			->setLabels( $this->getMetricLabels() )
 			->observe( $tookMs );
 		if ( $log->getElasticTookMs() ) {
 			$this->searchMetrics['wgCirrusElasticTime'] = $log->getElasticTookMs();

@@ -7,6 +7,7 @@ use LogicException;
 use MediaWiki\Config\ConfigException;
 use MediaWiki\User\UserIdentityValue;
 use PHPUnit\Framework\Assert;
+use Wikimedia\Stats\StatsFactory;
 
 /**
  * @covers \CirrusSearch\ElasticsearchIntermediary
@@ -81,5 +82,61 @@ class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 		$intermediary->failure();
 		// Basically assert the mistaken second failure call still "worked"
 		$this->assertTrue( true );
+	}
+
+	public function testDefaultMetricLabels() {
+		$connection = new DummyConnection( new HashSearchConfig( [] ) );
+		$intermediary = new class( $connection ) extends ElasticsearchIntermediary {
+			public function __construct( Connection $connection ) {
+				parent::__construct( $connection );
+			}
+
+			protected function newLog( $description, $queryType, array $extra = [] ) {
+				throw new LogicException( "Not supposed to be called" );
+			}
+
+			public function assertions() {
+				// Requests that know nothing about pools or keywords still have to provide both
+				// labels: stats silently drops samples using an inconsistent set of label keys.
+				Assert::assertSame(
+					[ 'pool' => 'none', 'weighted_tags' => 'no' ],
+					$this->getMetricLabels()
+				);
+			}
+		};
+		$intermediary->assertions();
+	}
+
+	public function testRequestMetricsAreLabelled() {
+		$statsHelper = StatsFactory::newUnitTestingHelper();
+		$this->setService( 'StatsFactory', $statsHelper->getStatsFactory() );
+
+		$connection = new DummyConnection( new HashSearchConfig( [] ) );
+		$intermediary = new class( $connection ) extends ElasticsearchIntermediary {
+			public function __construct( Connection $connection ) {
+				parent::__construct( $connection );
+			}
+
+			protected function newLog( $description, $queryType, array $extra = [] ) {
+				throw new LogicException( "Not supposed to be called" );
+			}
+		};
+
+		$log = $this->createMock( RequestLog::class );
+		$log->method( 'getTookMs' )->willReturn( 1.0 );
+		$log->method( 'getLogVariables' )->willReturn( [] );
+		$log->method( 'getRequests' )->willReturn( [] );
+		$log->method( 'getQueryType' )->willReturn( 'search_type' );
+		$intermediary->start( $log );
+		$intermediary->success();
+
+		// The injected service collects every metric emitted during the test, unrelated
+		// MediaWiki ones included, so select the metric under test instead of asserting
+		// on everything that was emitted.
+		$statsHelper->withComponent( 'CirrusSearch' );
+		$this->assertSame(
+			1,
+			$statsHelper->count( 'request_time_seconds{pool="none",weighted_tags="no"}' )
+		);
 	}
 }

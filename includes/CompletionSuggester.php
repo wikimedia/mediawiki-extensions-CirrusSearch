@@ -126,6 +126,15 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 	private SecondTryRunner $secondTryRunner;
 
+	private const POOL_COUNTER_TYPE = PoolCounterKey::COMPLETION;
+
+	/** @inheritDoc */
+	protected function getMetricLabels(): array {
+		return [
+			'pool' => Util::poolCounterLabel( self::POOL_COUNTER_TYPE ),
+		] + parent::getMetricLabels();
+	}
+
 	/**
 	 * @param Connection $conn
 	 * @param int $limit Limit the results to this many
@@ -240,7 +249,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 		$this->connection->setTimeout( $this->getClientTimeout( self::SEARCH_TYPE ) );
 
-		$status = Util::doPoolCounterWork( PoolCounterKey::COMPLETION, $this->user,
+		$status = Util::doPoolCounterWork( self::POOL_COUNTER_TYPE, $this->user,
 				function () use ( $multiSearch, $text, $description ) {
 					$log = $this->newLog( $description, self::SEARCH_TYPE, [
 						'query' => $text,

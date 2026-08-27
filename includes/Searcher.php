@@ -68,6 +68,20 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	private const MAX_OFFSET_LIMIT = 10000;
 
 	/**
+	 * Keyword features that filter on the weighted_tags field, reported as a metric
+	 * dimension so the latency of "articles with suggestions" style queries can be
+	 * tracked separately (T434975). Keep in sync with the keywords registered by
+	 * WeightedTagsHooks, plus custommatch from WikibaseMediaInfo.
+	 */
+	private const WEIGHTED_TAGS_KEYWORDS = [
+		'hasrecommendation',
+		'articletopic',
+		'drafttopic',
+		'articlecountry',
+		'custommatch',
+	];
+
+	/**
 	 * Queries with offset + limit greater than this value are considered
 	 * potentially automated and may, after considering other related signals,
 	 * be placed into the automated pool counter bucket.
@@ -120,6 +134,11 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @var SearchContext
 	 */
 	protected $searchContext;
+
+	/**
+	 * @var SearchQuery|null the query being served, when it came through self::search()
+	 */
+	private $searchQuery = null;
 
 	/**
 	 * Indexing type we'll be using.
@@ -205,6 +224,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		if ( $query->getDebugOptions()->isCirrusDumpQueryAST() ) {
 			return Status::newGood( [ 'ast' => $query->getParsedQuery()->toArray() ] );
 		}
+		$this->searchQuery = $query;
 		// TODO: properly pass the profile context name and its params once we have a dispatch service.
 		$this->searchContext = SearchContext::fromSearchQuery( $query, FallbackRunner::create( $query, $this->interwikiResolver ),
 			$this->cirrusSearchHookRunner );
@@ -912,6 +932,27 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			}
 		}
 		return $this->connection;
+	}
+
+	/** @inheritDoc */
+	protected function getMetricLabels(): array {
+		$features = $this->searchQuery !== null
+			? $this->searchQuery->getParsedQuery()->getFeaturesUsed()
+			: [];
+		return [
+			'pool' => Util::poolCounterLabel( $this->getPoolCounterType() ),
+			'weighted_tags' => self::weightedTagsLabel( $features ),
+		] + parent::getMetricLabels();
+	}
+
+	/**
+	 * @internal public for testing only
+	 * @param string[] $featuresUsed keyword features used by the query,
+	 *  see ParsedQuery::getFeaturesUsed()
+	 * @return string 'yes' when one of them filters on the weighted_tags field
+	 */
+	public static function weightedTagsLabel( array $featuresUsed ): string {
+		return array_intersect( $featuresUsed, self::WEIGHTED_TAGS_KEYWORDS ) !== [] ? 'yes' : 'no';
 	}
 
 	protected function recordQueryCacheMetrics( StatsFactory $requestStats, string $cacheStatus, ?string $type = null ): void {

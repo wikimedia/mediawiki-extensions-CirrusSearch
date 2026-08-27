@@ -7,6 +7,7 @@ use CirrusSearch\Fallbacks\SearcherFactory;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Parser\FullTextKeywordRegistry;
 use CirrusSearch\Parser\NamespacePrefixParser;
+use CirrusSearch\Parser\QueryStringRegex\KeywordParser;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\CountContentWordsBuilder;
 use CirrusSearch\Query\FullTextQueryBuilder;
@@ -336,12 +337,25 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				// test AND
 				'cirrussearch-parse-error-unexpected-end'
 			];
-			// Quick hack to avoid sending bad queries to the backend
+			// Most parse warnings describe the parse itself and have no message for the user,
+			// these ones tell the user about a problem in the query they wrote.
+			$userFacingParseWarnings = [
+				// test local:
+				KeywordParser::WARN_MESSAGE_NOT_AT_QUERY_START,
+			];
+			$degrade = false;
 			foreach ( $this->searchContext->getSearchQuery()->getParsedQuery()->getParseWarnings() as $warning ) {
-				if ( in_array( $warning->getMessage(), $degradeOnParseWarnings ) ) {
-					$qb->buildDegraded( $this->searchContext );
-					return $qb;
+				if ( in_array( $warning->getMessage(), $userFacingParseWarnings ) ) {
+					$this->searchContext->addWarning( $warning->getMessage(), ...$warning->getMessageParams() );
 				}
+				if ( in_array( $warning->getMessage(), $degradeOnParseWarnings ) ) {
+					$degrade = true;
+				}
+			}
+			if ( $degrade ) {
+				// Quick hack to avoid sending bad queries to the backend
+				$qb->buildDegraded( $this->searchContext );
+				return $qb;
 			}
 		}
 

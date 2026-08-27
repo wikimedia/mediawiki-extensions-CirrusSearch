@@ -92,5 +92,6 @@
 	"cirrussearch-invalid-keyword-threshold": "Warning shown when using a search keyword able to filter by threshold terms: <kbd>somekeyword:term>threshold</kbd> where <kbd>threshold</kbd> must be a float number between 0 and 1.",
 	"cirrussearch-semantic-empty-query": "Warning shown when a semantic search is attempted with an empty search term.",
 	"cirrussearch-semantic-too-many-results": "Warning shown when a semantic search matches too many results to rank effectively. The user is asked to refine their search.\n\nParameters:\n* $1 - maximum number of search results semantic search will provide.",
-	"cirrussearch-feature-not-negatable": "Warning shown when a search query negates a keyword that does not support negation."
+	"cirrussearch-feature-not-negatable": "Warning shown when a search query negates a keyword that does not support negation.",
+	"cirrussearch-keyword-not-at-query-start": "Warning shown when a search query uses a keyword that works only at the start of the query, but puts it at a different position. The search keeps such a keyword as normal text.\n\nParameters:\n* $1 - the keyword, without the colon."
 }

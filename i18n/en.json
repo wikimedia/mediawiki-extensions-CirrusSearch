@@ -78,5 +78,6 @@
 	"cirrussearch-invalid-keyword-threshold": "Invalid threshold value '$1' provided. Expected a decimal number between 0 and 1.",
 	"cirrussearch-semantic-empty-query": "Semantic search requires a non-empty search term.",
 	"cirrussearch-semantic-too-many-results": "Too many results requested from semantic search. Only the top $1 will be properly ranked.",
-	"cirrussearch-feature-not-negatable": "The '$1' keyword cannot be negated with '-' or '!'"
+	"cirrussearch-feature-not-negatable": "The '$1' keyword cannot be negated with '-' or '!'",
+	"cirrussearch-keyword-not-at-query-start": "The '$1' keyword was not applied. This keyword works only at the start of the search."
 }

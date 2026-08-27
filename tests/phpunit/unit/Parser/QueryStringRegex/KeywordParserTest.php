@@ -137,7 +137,8 @@ class KeywordParserTest extends CirrusTestCase {
 		// .      0123456789012345678901234567890123456789
 		$query = ' local:local:"test foo " bar ';
 		$nodes = $parser->parse( $query, new LocalFeature(), new OffsetTracker() );
-		$this->assertCount( 2, $nodes );
+		// Only the first one is at the start of the query, the second one does nothing
+		$this->assertCount( 1, $nodes );
 
 		$kw = $nodes[0];
 		$this->assertSame( 1, $kw->getStartOffset() );
@@ -147,15 +148,12 @@ class KeywordParserTest extends CirrusTestCase {
 		$this->assertSame( 'local', $kw->getKey() );
 		$this->assertSame( '', $kw->getValue() );
 		$this->assertSame( '', $kw->getQuotedValue() );
-		// FIXME: figure out if this is the right behavior
-		$kw = $nodes[1];
-		$this->assertSame( 7, $kw->getStartOffset() );
-		$this->assertSame( 13, $kw->getEndOffset() );
-		$this->assertSame( '', $kw->getDelimiter() );
-		$this->assertSame( '', $kw->getSuffix() );
-		$this->assertSame( 'local', $kw->getKey() );
-		$this->assertSame( '', $kw->getValue() );
-		$this->assertSame( '', $kw->getQuotedValue() );
+
+		$warnings = $parser->getWarnings();
+		$this->assertCount( 1, $warnings );
+		$this->assertSame( KeywordParser::WARN_MESSAGE_NOT_AT_QUERY_START, $warnings[0]->getMessage() );
+		$this->assertSame( 7, $warnings[0]->getStart() );
+		$this->assertSame( [ 'local' ], $warnings[0]->getMessageParams() );
 	}
 
 	public function testRegex() {

@@ -94,6 +94,15 @@ Feature: Searches with syntax errors
     | %{\u0009}% %{\u3000}%      |
     | %ideographic_whitespace%   |
 
+  Scenario Outline: A keyword that works only at the start of the query warns when it is elsewhere
+    When I api search for <query>
+    Then this warning is reported by api: The '<keyword>' keyword was not applied. This keyword works only at the start of the search.
+  Examples:
+    |            query           |    keyword    |
+    | catapult local:            | local         |
+    | catapult withredirects:    | withredirects |
+    | catapult morelike:catapult | morelike      |
+
   @boolean_operators
   Scenario Outline: ORs and ANDs around phrase prefixes finds the search terms
     When I api search for "test catapul*" <operator> "test catapul*" <operator> "test catapul*"

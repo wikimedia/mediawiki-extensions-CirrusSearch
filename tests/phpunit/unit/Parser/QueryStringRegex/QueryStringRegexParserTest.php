@@ -16,8 +16,10 @@ use CirrusSearch\Parser\KeywordRegistry;
 use CirrusSearch\Parser\ParsedQueryClassifiersRepository;
 use CirrusSearch\Parser\QueryParser;
 use CirrusSearch\Query\IndexedNumericFieldFeature;
+use CirrusSearch\Query\KeywordFeature;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Test\MockSimpleKeywordFeature;
 use MediaWiki\Status\Status;
 
 /**
@@ -103,6 +105,73 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 				[ WordsQueryNode::class, KeywordFeatureNode::class ],
 			],
 		];
+	}
+
+	public static function provideIgnoredQueryHeader(): \Generator {
+		// query, expected warnings as [ keyword, offset of the keyword ]
+		yield 'at the start the keyword works, no warning' => [ 'mock:value extra', [] ];
+		yield 'after a word the keyword is ignored' => [ 'extra mock:value', [ [ 'mock', 6 ] ] ];
+		yield 'the warning names the keyword that the user typed' => [
+			'extra mock2:value', [ [ 'mock2', 6 ] ] ];
+		yield 'a negated keyword is ignored the same way' => [
+			'extra -mock:value', [ [ 'mock', 7 ] ] ];
+		yield 'one warning only, even with more than one ignored keyword' => [
+			'extra mock:value mock:other', [ [ 'mock', 6 ] ] ];
+		yield 'the keyword at the start does not hide an ignored one after it' => [
+			'mock:value extra mock:other', [ [ 'mock', 17 ] ] ];
+		yield 'quotes do not hide a keyword, a phrase gets the warning too' => [
+			'extra "some mock:value"', [ [ 'mock', 12 ] ] ];
+		yield 'a longer word that ends with the keyword is not the keyword' => [
+			'extra somemock:value', [] ];
+	}
+
+	/**
+	 * A query header keyword works only at the start of the query. In an other position the
+	 * parser keeps it as text, so warn the user instead of dropping the keyword without a word.
+	 *
+	 * @dataProvider provideIgnoredQueryHeader
+	 */
+	public function testWarnsOnIgnoredQueryHeader( string $query, array $expected ): void {
+		$parser = $this->buildParserWithKeywords( [ new MockSimpleKeywordFeature( true ) ] );
+		$actual = [];
+		foreach ( $parser->parse( $query )->getParseWarnings() as $warning ) {
+			$this->assertSame( KeywordParser::WARN_MESSAGE_NOT_AT_QUERY_START,
+				$warning->getMessage() );
+			$actual[] = [ $warning->getMessageParams()[0], $warning->getStart() ];
+		}
+		$this->assertSame( $expected, $actual );
+	}
+
+	/** A keyword that is not a query header works anywhere, so it never gets this warning. */
+	public function testNoWarningWhenNotAQueryHeader(): void {
+		$parser = $this->buildParserWithKeywords( [ new MockSimpleKeywordFeature() ] );
+		$this->assertSame( [], $parser->parse( 'extra mock:value' )->getParseWarnings() );
+	}
+
+	/**
+	 * @param KeywordFeature[] $keywords
+	 * @return QueryStringRegexParser
+	 */
+	private function buildParserWithKeywords( array $keywords ): QueryStringRegexParser {
+		return new QueryStringRegexParser(
+			new class ( $keywords ) implements KeywordRegistry {
+				/** @var KeywordFeature[] */
+				private array $keywords;
+
+				public function __construct( array $keywords ) {
+					$this->keywords = $keywords;
+				}
+
+				public function getKeywords() {
+					return $this->keywords;
+				}
+			},
+			new Escaper( 'en' ),
+			'none',
+			$this->createNoOpMock( ParsedQueryClassifiersRepository::class ),
+			$this->namespacePrefixParser(),
+			null
+		);
 	}
 
 	/**

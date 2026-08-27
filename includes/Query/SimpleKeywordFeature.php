@@ -61,6 +61,8 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	/**
 	 * Whether this keyword can appear only at the beginning of the query
 	 * (excluding spaces)
+	 * NOTE: in an other position the keyword does nothing, and the parser warns the user
+	 * @see \CirrusSearch\Parser\QueryStringRegex\KeywordParser::WARN_MESSAGE_NOT_AT_QUERY_START
 	 * @return bool
 	 */
 	public function queryHeader() {

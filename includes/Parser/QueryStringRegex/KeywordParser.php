@@ -16,6 +16,12 @@ use Wikimedia\Assert\Assert;
 class KeywordParser implements WarningCollector {
 
 	/**
+	 * Warning added when the query uses a query header keyword in an other position
+	 * @see self::parse()
+	 */
+	public const WARN_MESSAGE_NOT_AT_QUERY_START = 'cirrussearch-keyword-not-at-query-start';
+
+	/**
 	 * @var int
 	 */
 	private $currentOffset;
@@ -50,10 +56,17 @@ class KeywordParser implements WarningCollector {
 				$feature->getKeywordPrefixes()
 			)
 		);
-		// Hook to the beginning allowing optional spaces if we are a queryHeader
-		// otherwise lookbehind allowing begin or space.
+		// Lookbehind allowing begin or space.
 		// \G is similar to ^ but also works when offset is set is if we ran substr on it
-		$begin = $feature->queryHeader() ? '(?:\G[\pZ\pC]*)' : '(?<=\G|[\pZ\pC])';
+		$begin = '(?<=\G|[\pZ\pC])';
+		// A query header keyword works only at the first word of the query. We still look for
+		// it everywhere, so that we can warn about the places where it does nothing.
+		$headerOffset = -1;
+		if ( $feature->queryHeader() ) {
+			$spaces = [];
+			$headerOffset = $offset + ( preg_match( '/\G[\pZ\pC]+/u', $query, $spaces, 0, $offset ) === 1
+				? strlen( $spaces[0] ) : 0 );
+		}
 		$keywordRegex = '(?<key>-?(?:' . $keyListRegex . '))';
 		$valueSideRegex = '';
 		if ( $feature->hasValue() ) {
@@ -67,6 +80,8 @@ class KeywordParser implements WarningCollector {
 		preg_match_all( "/{$begin}{$keywordRegex}(?<colon>:){$valueSideRegex}/u",
 			$query, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, $offset );
 		$output = [];
+		// Keywords that already have a warning, so that one mistake gives one warning
+		$warned = [];
 		foreach ( $matches as $match ) {
 			$key = $match['key'][0];
 			Assert::invariant( $feature->hasValue() === isset( $match['value'] ),
@@ -101,6 +116,16 @@ class KeywordParser implements WarningCollector {
 			$wholeStart = $match['key'][1];
 			// $end is whole match length minus chars between start and key
 			$end = $wholeStart + strlen( $match[0][0] ) - ( $wholeStart - $match[0][1] );
+			if ( $headerOffset >= 0 && $wholeStart !== $headerOffset ) {
+				// The keyword does nothing here, tell the user instead of dropping it quietly.
+				// Do this before parseValue(), the value of an ignored keyword has no use.
+				if ( !isset( $warned[$key] ) ) {
+					$warned[$key] = true;
+					$this->currentOffset = $kwStart;
+					$this->addWarning( self::WARN_MESSAGE_NOT_AT_QUERY_START, $key );
+				}
+				continue;
+			}
 			$parsedValue = null;
 			if ( $feature->hasValue() && $quotedValue !== '' ) {
 				// Set the current offset so that we can collect warnings at the keyword offset

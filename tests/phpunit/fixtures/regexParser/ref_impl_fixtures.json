@@ -2065,7 +2065,17 @@
 			"query": "foo morelike:baz",
 			"rawQuery": "foo morelike:baz",
 			"queryClassCache": [
-				"simple_bag_of_words"
+				"simple_bag_of_words",
+				"bogus_query"
+			],
+			"warnings": [
+				{
+					"msg": "cirrussearch-keyword-not-at-query-start",
+					"start": 4,
+					"message_params": [
+						"morelike"
+					]
+				}
 			],
 			"root": {
 				"words": {
@@ -2076,13 +2086,74 @@
 			}
 		}
 	},
+	"keyword headings: quotes do not hide a heading that is not at the start": {
+		"query": "word \"a local:b\"",
+		"expected": {
+			"query": "word \"a local:b\"",
+			"rawQuery": "word \"a local:b\"",
+			"queryClassCache": [
+				"bag_of_words_with_phrase_query",
+				"bogus_query"
+			],
+			"warnings": [
+				{
+					"msg": "cirrussearch-keyword-not-at-query-start",
+					"start": 8,
+					"message_params": [
+						"local"
+					]
+				}
+			],
+			"root": {
+				"bool": {
+					"startOffset": 0,
+					"endOffset": 16,
+					"clauses": [
+						{
+							"MUST": {
+								"words": {
+									"startOffset": 0,
+									"endOffset": 4,
+									"words": "word"
+								}
+							},
+							"explicit": false
+						},
+						{
+							"MUST": {
+								"phrase": {
+									"startOffset": 5,
+									"endOffset": 16,
+									"phrase": "a local:b",
+									"slop": -1,
+									"stem": false,
+									"unbalanced": false
+								}
+							},
+							"explicit": false
+						}
+					]
+				}
+			}
+		}
+	},
 	"keyword headings: heading is not parsed when in the middle": {
 		"query": "word local:word",
 		"expected": {
 			"query": "word local:word",
 			"rawQuery": "word local:word",
 			"queryClassCache": [
-				"simple_bag_of_words"
+				"simple_bag_of_words",
+				"bogus_query"
+			],
+			"warnings": [
+				{
+					"msg": "cirrussearch-keyword-not-at-query-start",
+					"start": 5,
+					"message_params": [
+						"local"
+					]
+				}
 			],
 			"root": {
 				"words": {

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Search\RedirectMode;
 use CirrusSearch\Search\SearchContext;
 
 /**
@@ -62,15 +63,34 @@ class SearchContextTest extends CirrusTestCase {
 		}
 	}
 
-	public function testDefaultScopeExcludesRedirectDocuments() {
-		// Default scope hides redirect documents.
+	public function testDefaultModeExcludesRedirectDocuments() {
+		// The standard mode hides redirect documents.
+		$this->assertSame( RedirectMode::Standard, $this->context->getRedirectMode() );
 		$this->assertExcludesRedirectDocuments( $this->context->getQuery() );
 	}
 
-	public function testRedirectScopeOmitsRedirectExclusion() {
-		// Redirect scope makes redirect documents searchable.
-		$this->context->setRedirectScope( true );
-		$this->assertDoesNotExcludeRedirectDocuments( $this->context->getQuery() );
+	public static function redirectModeProvider() {
+		return [
+			// mode, whether redirect documents are searchable
+			'standard' => [ RedirectMode::Standard, false ],
+			'noredirects' => [ RedirectMode::NoRedirects, false ],
+			'withredirects' => [ RedirectMode::WithRedirects, true ],
+			'onlyredirects' => [ RedirectMode::OnlyRedirects, true ],
+		];
+	}
+
+	/**
+	 * Only the modes that make redirect documents searchable drop the exclusion filter.
+	 * noredirects: keeps them hidden, exactly as the standard mode does.
+	 * @dataProvider redirectModeProvider
+	 */
+	public function testRedirectExclusionFollowsMode( RedirectMode $mode, bool $searchable ) {
+		$this->context->setRedirectMode( $mode );
+		if ( $searchable ) {
+			$this->assertDoesNotExcludeRedirectDocuments( $this->context->getQuery() );
+		} else {
+			$this->assertExcludesRedirectDocuments( $this->context->getQuery() );
+		}
 	}
 
 }

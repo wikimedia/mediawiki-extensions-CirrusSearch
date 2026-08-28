@@ -80,7 +80,7 @@ class InTitleFeature extends BaseRegexFeature {
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$filter = Filters::intitle( $context->escaper(), $quotedValue, $value !== $quotedValue,
-			$context->isRedirectScope() );
+			$context->getRedirectMode() );
 
 		return [ $filter, !$negated ];
 	}
@@ -92,7 +92,7 @@ class InTitleFeature extends BaseRegexFeature {
 	 */
 	protected function getNonRegexFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
 		return Filters::intitle( $this->escaper, $node->getQuotedValue(),
-			$node->getValue() !== $node->getQuotedValue(), $context->isRedirectScope() );
+			$node->getValue() !== $node->getQuotedValue(), $context->getRedirectMode() );
 	}
 
 	/** @inheritDoc */

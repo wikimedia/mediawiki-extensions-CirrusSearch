@@ -1,0 +1,9 @@
+{
+    "config": {
+        "CirrusSearchRedirectDocuments": {
+            "build": true,
+            "use": true
+        }
+    },
+    "query": "onlyredirects: rdir intitle:test"
+}

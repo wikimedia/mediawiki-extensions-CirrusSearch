@@ -4,6 +4,7 @@ namespace CirrusSearch\Query\Builder;
 
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\Fetch\HighlightFieldGenerator;
+use CirrusSearch\Search\RedirectMode;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -30,9 +31,9 @@ interface QueryBuildingContext {
 	public function getHighlightFieldGenerator(): HighlightFieldGenerator;
 
 	/**
-	 * @return bool Whether the query is in redirect scope (redirect mode). Mirrors
-	 *  SearchContext::isRedirectScope() so the AST builder drops the same
-	 *  redirect-scoped fields the live path does. False by default.
+	 * @return RedirectMode How the query treats redirects. Mirrors
+	 *  SearchContext::getRedirectMode() so the AST builder drops the same redirect
+	 *  fields the live path does. RedirectMode::Standard by default.
 	 */
-	public function isRedirectScope(): bool;
+	public function getRedirectMode(): RedirectMode;
 }

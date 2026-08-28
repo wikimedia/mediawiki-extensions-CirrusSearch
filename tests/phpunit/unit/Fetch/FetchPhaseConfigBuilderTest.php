@@ -10,6 +10,7 @@ use CirrusSearch\CirrusTestCaseTrait;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\FullTextKeywordRegistry;
 use CirrusSearch\Search\FullTextResultsType;
+use CirrusSearch\Search\RedirectMode;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Searcher;
@@ -541,7 +542,7 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		$this->assertNotNull( $fetchPhaseConfig->getHLField( 'redirect.title' ) );
 	}
 
-	public function testRedirectScopeDropsRedirectTitleHighlight() {
+	public function testSuppressDropsRedirectTitleHighlight() {
 		$fetchPhaseConfig = new FetchPhaseConfigBuilder( $this->newHashSearchConfig( [] ) );
 		$fetchPhaseConfig->suppressRedirectTitleHighlight();
 		$fetchPhaseConfig->configureDefaultFullTextFields();
@@ -551,7 +552,23 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		$this->assertNotNull( $fetchPhaseConfig->getHLField( 'category' ) );
 	}
 
-	public function testRedirectScopeGateReadAtHighlightTimeNotConstruction() {
+	public static function redirectModeProvider() {
+		return [
+			// mode, whether the redirect.title highlight survives
+			'standard' => [ RedirectMode::Standard, true ],
+			'noredirects' => [ RedirectMode::NoRedirects, false ],
+			'withredirects' => [ RedirectMode::WithRedirects, false ],
+			'onlyredirects' => [ RedirectMode::OnlyRedirects, false ],
+		];
+	}
+
+	/**
+	 * Every mode that keeps the redirect array out of the query also drops its highlight,
+	 * and the gate is read at highlight time: the results type and the fetch phase builder
+	 * are constructed before the keyword-apply loop selects a mode.
+	 * @dataProvider redirectModeProvider
+	 */
+	public function testRedirectTitleHighlightFollowsMode( RedirectMode $mode, bool $highlighted ) {
 		$config = $this->newHashSearchConfig( [] );
 		$fetchPhaseBuilder = new FetchPhaseConfigBuilder( $config, SearchQuery::SEARCH_TEXT );
 		$type = new FullTextResultsType( $fetchPhaseBuilder, false, self::newTitleHelper() );
@@ -559,9 +576,13 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 			$config, [], null, null, $fetchPhaseBuilder,
 			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
-		// Scope is flipped after the results type/builder already exist.
-		$context->setRedirectScope( true );
+		// The mode is selected after the results type/builder already exist.
+		$context->setRedirectMode( $mode );
 		$context->getHighlight( $type, new MatchAll() );
-		$this->assertNull( $fetchPhaseBuilder->getHLField( 'redirect.title' ) );
+		if ( $highlighted ) {
+			$this->assertNotNull( $fetchPhaseBuilder->getHLField( 'redirect.title' ) );
+		} else {
+			$this->assertNull( $fetchPhaseBuilder->getHLField( 'redirect.title' ) );
+		}
 	}
 }

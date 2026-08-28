@@ -90,7 +90,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		}
 		$context->addSyntaxUsed( 'full_text_simple_match', 5 );
 		$this->usedExpQuery = true;
-		$queryForMostFields = $this->buildExpQuery( $queryString );
+		$queryForMostFields = $this->buildExpQuery( $context, $queryString );
 		if ( $nearMatchQuery instanceof MatchNone ) {
 			return $queryForMostFields;
 		}
@@ -137,7 +137,14 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 			$phrase->setParam( 'slop', $slop );
 			$fields = [];
 			foreach ( $this->phraseFields as $f => $b ) {
-				$fields[] = "$f^$b";
+				// The profile weights the all field as a whole. When it is substituted that
+				// weight is carried onto each field it is built from.
+				$substitute = self::allFieldSubstitute( $context, $f, (float)$b );
+				if ( $substitute === null ) {
+					$fields[] = "$f^$b";
+				} else {
+					$fields = array_merge( $fields, $substitute );
+				}
 			}
 			$phrase->setFields( $fields );
 			$phrase->setQuery( $queryText );
@@ -163,16 +170,17 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 
 	/**
 	 * Generate an elasticsearch query by reading profile settings
+	 * @param SearchContext $context
 	 * @param string $queryString the query text
 	 * @return \Elastica\Query\AbstractQuery
 	 */
-	private function buildExpQuery( $queryString ) {
+	private function buildExpQuery( SearchContext $context, $queryString ) {
 		$query = new \Elastica\Query\BoolQuery();
 		$query->setMinimumShouldMatch( 0 );
-		$this->attachFilter( $this->filter, $queryString, $query );
+		$this->attachFilter( $context, $this->filter, $queryString, $query );
 		$dismaxQueries = [];
 
-		foreach ( $this->fields as $f => $settings ) {
+		foreach ( $this->effectiveFields( $context ) as $f => $settings ) {
 			$mmatch = new \Elastica\Query\MultiMatch();
 			$mmatch->setQuery( $queryString );
 			$queryType = $this->defaultQueryType;
@@ -236,13 +244,29 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	}
 
 	/**
+	 * The profile's scored fields, minus the ones built from the target's redirect array when
+	 * the query's redirect mode must not read it. Returns a copy: this instance is reused
+	 * across queries, so the profile's field set must survive untouched.
+	 *
+	 * @param SearchContext $context
+	 * @return array
+	 */
+	private function effectiveFields( SearchContext $context ): array {
+		return array_filter(
+			$this->fields, [ $context->getRedirectMode(), 'allowsField' ], ARRAY_FILTER_USE_KEY );
+	}
+
+	/**
 	 * Attach the query filter to $boolQuery
 	 *
+	 * @param SearchContext $context
 	 * @param array $filterDef filter definition
 	 * @param string $query query text
 	 * @param \Elastica\Query\BoolQuery $boolQuery the query to attach the filter to
 	 */
-	private function attachFilter( array $filterDef, $query, \Elastica\Query\BoolQuery $boolQuery ) {
+	private function attachFilter(
+		SearchContext $context, array $filterDef, $query, \Elastica\Query\BoolQuery $boolQuery
+	) {
 		if ( !isset( $filterDef['type'] ) ) {
 			throw new \RuntimeException( "Cannot configure the filter clause, 'type' must be defined." );
 		}
@@ -251,10 +275,10 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 
 		switch ( $type ) {
 			case 'default':
-				$filter = $this->buildSimpleAllFilter( $filterDef, $query );
+				$filter = $this->buildSimpleAllFilter( $context, $filterDef, $query );
 				break;
 			case 'constrain_title':
-				$filter = $this->buildTitleFilter( $filterDef, $query );
+				$filter = $this->buildTitleFilter( $context, $filterDef, $query );
 				break;
 			default:
 				throw new \RuntimeException( "Cannot build the filter clause: unknown filter type $type" );
@@ -266,28 +290,67 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	/**
 	 * Builds a simple filter on all and all.plain when all terms must match
 	 *
+	 * This clause decides recall. all is a copy_to of every scored field, redirect.title
+	 * included, so in a mode where the redirect array must take no part each all field is
+	 * replaced by the fields it is built from, minus the redirect ones. Without that a page
+	 * whose only match is one of its redirects still passes the filter.
+	 *
+	 * @param SearchContext $context
 	 * @param array[] $options array containing filter options
 	 * @param string $query
 	 * @return \Elastica\Query\AbstractQuery
 	 */
-	private function buildSimpleAllFilter( $options, $query ) {
+	private function buildSimpleAllFilter( SearchContext $context, $options, $query ) {
 		$filter = new \Elastica\Query\BoolQuery();
 		$filter->setMinimumShouldMatch( 1 );
 		// FIXME: We can't use solely the stem field here
 		// - Depending on languages it may lack stopwords,
 		// A dedicated field used for filtering would be nice
 		foreach ( [ 'all', 'all.plain' ] as $field ) {
-			$m = new \Elastica\Query\MatchQuery();
-			$m->setFieldQuery( $field, $query );
 			$minShouldMatch = $options['settings'][$field]['minimum_should_match'] ?? '100%';
-			if ( $minShouldMatch === '100%' ) {
-				$m->setFieldOperator( $field, 'AND' );
+			$substitute = self::allFieldSubstitute( $context, $field );
+			if ( $substitute === null ) {
+				$m = new \Elastica\Query\MatchQuery();
+				$m->setFieldQuery( $field, $query );
+				if ( $minShouldMatch === '100%' ) {
+					$m->setFieldOperator( $field, 'AND' );
+				} else {
+					$m->setFieldMinimumShouldMatch( $field, $minShouldMatch );
+				}
 			} else {
-				$m->setFieldMinimumShouldMatch( $field, $minShouldMatch );
+				$m = new \Elastica\Query\MultiMatch();
+				// cross_fields treats the group as one big field, which is what the all
+				// field simulates at index time.
+				$m->setType( \Elastica\Query\MultiMatch::TYPE_CROSS_FIELDS );
+				$m->setFields( $substitute );
+				$m->setQuery( $query );
+				if ( $minShouldMatch === '100%' ) {
+					$m->setOperator( 'AND' );
+				} else {
+					$m->setMinimumShouldMatch( $minShouldMatch );
+				}
 			}
 			$filter->addShould( $m );
 		}
 		return $filter;
+	}
+
+	/**
+	 * @param SearchContext $context
+	 * @param string $allField Either 'all' or 'all.plain'.
+	 * @param float $weight Boost applied to the all field as a whole, carried onto each field
+	 *  it is built from.
+	 * @return string[]|null The fields to query in place of $allField, each already carrying
+	 *  its boost, or null when the all field itself may be used.
+	 */
+	private static function allFieldSubstitute(
+		SearchContext $context, string $allField, float $weight = 1
+	): ?array {
+		if ( $context->getRedirectMode()->queriesRedirectArray() ) {
+			return null;
+		}
+		$suffix = $allField === 'all.plain' ? '.plain' : '';
+		return self::buildFullTextSearchFields( $context, $weight, $suffix, false );
 	}
 
 	/**
@@ -298,18 +361,23 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	 * minimum_should_match to relax the constraint on title.
 	 * (defaults to '3<80%')
 	 *
+	 * @param SearchContext $context
 	 * @param array[] $options array containing filter options
 	 * @param string $query the user query
 	 * @return \Elastica\Query\AbstractQuery
 	 */
-	private function buildTitleFilter( $options, $query ) {
+	private function buildTitleFilter( SearchContext $context, $options, $query ) {
 		$filter = new \Elastica\Query\BoolQuery();
-		$filter->addMust( $this->buildSimpleAllFilter( $options, $query ) );
+		$filter->addMust( $this->buildSimpleAllFilter( $context, $options, $query ) );
 		$minShouldMatch = $options['settings']['minimum_should_match'] ?? '3<80%';
 		$titleFilter = new \Elastica\Query\BoolQuery();
 		$titleFilter->setMinimumShouldMatch( 1 );
 
+		$redirectMode = $context->getRedirectMode();
 		foreach ( [ 'title', 'redirect.title' ] as $field ) {
+			if ( !$redirectMode->allowsField( $field ) ) {
+				continue;
+			}
 			$m = new \Elastica\Query\MatchQuery();
 			$m->setFieldQuery( $field, $query );
 			$m->setFieldMinimumShouldMatch( $field, $minShouldMatch );

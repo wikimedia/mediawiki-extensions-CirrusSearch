@@ -16,6 +16,7 @@ use CirrusSearch\Search\Fetch\BaseHighlightedField;
 use CirrusSearch\Search\Fetch\ExperimentalHighlightedFieldBuilder;
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Search\Fetch\HighlightFieldGenerator;
+use CirrusSearch\Search\RedirectMode;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
@@ -55,6 +56,9 @@ class KeywordFeatureAssertions {
 			->willReturn( $fetchPhaseConfigBuilder ?? new FetchPhaseConfigBuilder( $config ) );
 		$context->method( 'escaper' )
 			->willReturn( new Escaper( 'en', true ) );
+		// An enum is final, so PHPUnit cannot invent a return value for it.
+		$context->method( 'getRedirectMode' )
+			->willReturn( RedirectMode::Standard );
 
 		return $context;
 	}
@@ -540,6 +544,8 @@ class KeywordFeatureAssertions {
 			->willReturn( $data );
 		$mock->method( 'getSearchConfig' )
 			->willReturn( $config );
+		$mock->method( 'getRedirectMode' )
+			->willReturn( RedirectMode::Standard );
 		if ( $fetchPhaseConfigBuilder ) {
 			$mock->method( 'getHighlightFieldGenerator' )
 				->willReturn( $fetchPhaseConfigBuilder );

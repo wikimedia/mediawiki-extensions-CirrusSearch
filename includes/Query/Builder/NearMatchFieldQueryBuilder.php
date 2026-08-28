@@ -30,17 +30,39 @@ use Wikimedia\Assert\Assert;
 class NearMatchFieldQueryBuilder {
 	public const ALL_NEAR_MATCH = "all_near_match";
 	public const ALL_NEAR_MATCH_ACCENT_FOLDED = self::ALL_NEAR_MATCH . ".asciifolding";
+	private const TITLE_NEAR_MATCH = "title.near_match";
+	private const TITLE_NEAR_MATCH_ACCENT_FOLDED = "title.near_match_asciifolding";
 	private array $profile;
 
 	public static function defaultFromSearchConfig( SearchConfig $config ): self {
 		return self::defaultFromWeight( $config->get( CirrusConfigNames::NearMatchWeight ) ?: 2 );
 	}
 
+	public static function redirectFreeFromSearchConfig( SearchConfig $config ): self {
+		return self::redirectFreeFromWeight( $config->get( CirrusConfigNames::NearMatchWeight ) ?: 2 );
+	}
+
 	public static function defaultFromWeight( float $weight ): self {
+		return self::fromFieldNames( $weight, self::ALL_NEAR_MATCH, self::ALL_NEAR_MATCH_ACCENT_FOLDED );
+	}
+
+	/**
+	 * The near-match variant for modes where the target's redirect array takes no part.
+	 *
+	 * all_near_match is a copy_to of exactly title and redirect.title, so dropping the
+	 * redirect array from it leaves the title near-match fields on their own. That keeps the
+	 * exact-title boost, which a redirect document deserves for its own title just as much as
+	 * a primary document does.
+	 */
+	public static function redirectFreeFromWeight( float $weight ): self {
+		return self::fromFieldNames( $weight, self::TITLE_NEAR_MATCH, self::TITLE_NEAR_MATCH_ACCENT_FOLDED );
+	}
+
+	private static function fromFieldNames( float $weight, string $field, string $accentFoldedField ): self {
 		return new self(
 			[ "fields" => [
-				[ "name" => self::ALL_NEAR_MATCH, "weight" => round( $weight, 3 ) ],
-				[ "name" => self::ALL_NEAR_MATCH_ACCENT_FOLDED, "weight" => round( $weight * 0.75, 3 ) ]
+				[ "name" => $field, "weight" => round( $weight, 3 ) ],
+				[ "name" => $accentFoldedField, "weight" => round( $weight * 0.75, 3 ) ]
 			] ]
 		);
 	}

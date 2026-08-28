@@ -4,27 +4,26 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Search\RedirectMode;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\Term;
 
 /**
- * Enters redirect mode, in which redirect documents are searchable. Two value-less
- * query-header keywords share the mode: `withredirects:` makes redirect documents searchable
- * alongside primary documents in one interleaved result list, `onlyredirects:` narrows the same
- * mode to the redirect documents alone. No value may be provided along with either keyword, they
- * are simple boolean flags, and they only take effect at the head of the query.
+ * Selects the redirect mode: how the query treats redirects. Three value-less query-header
+ * keywords share this feature. `withredirects:` makes redirect documents searchable alongside
+ * primary documents in one interleaved result list, `onlyredirects:` narrows the same mode to
+ * the redirect documents alone, and `noredirects:` keeps redirect documents hidden while also
+ * dropping the target's redirect array from the query, so a page whose only match is one of its
+ * redirects is not a result. No value may be provided along with any of them, they are simple
+ * boolean flags, and they only take effect at the head of the query.
  *
- * Gated at query time on the two-flag CirrusSearchRedirectDocuments['use'/'build'] switch:
- * a disabled feature degrades to a warning plus zero results.
+ * The two keywords that make redirect documents searchable are gated at query time on the
+ * two-flag CirrusSearchRedirectDocuments['use'/'build'] switch: a disabled feature degrades to a
+ * warning plus zero results. `noredirects:` needs no such gate. It only changes which fields are
+ * queried, and the redirect array it drops predates redirect documents, so it works on any wiki.
  */
-class WithRedirectsFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
-
-	/** Redirect documents interleaved with primary documents. */
-	private const WITH_REDIRECTS = 'withredirects';
-
-	/** Redirect documents only, primary documents filtered out. */
-	private const ONLY_REDIRECTS = 'onlyredirects';
+class RedirectModeFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 
 	private SearchConfig $config;
 
@@ -36,7 +35,11 @@ class WithRedirectsFeature extends SimpleKeywordFeature implements LegacyKeyword
 	 * @return string[] The list of keywords this feature is supposed to match
 	 */
 	protected function getKeywords() {
-		return [ self::WITH_REDIRECTS, self::ONLY_REDIRECTS ];
+		return [
+			RedirectMode::WithRedirects->value,
+			RedirectMode::OnlyRedirects->value,
+			RedirectMode::NoRedirects->value,
+		];
 	}
 
 	/**
@@ -81,19 +84,24 @@ class WithRedirectsFeature extends SimpleKeywordFeature implements LegacyKeyword
 		if ( $this->rejectNegation( $context, $key, $negated ) ) {
 			return [ null, false ];
 		}
-		if ( !$this->config->buildRedirectDocuments() || !$this->config->useRedirectDocuments() ) {
+		$mode = RedirectMode::from( $key );
+		if ( $mode->requiresRedirectDocuments()
+			&& ( !$this->config->buildRedirectDocuments() || !$this->config->useRedirectDocuments() )
+		) {
 			// Feature disabled on this wiki: fail closed rather than silently running a
 			// normal search the editor did not ask for.
 			$context->addWarning( 'cirrussearch-feature-not-available', $key );
 			$context->setResultsPossible( false );
 			return [ null, false ];
 		}
-		// Redirect scope drops the must_not page_type:redirect filter that hides redirect
-		// documents from standard search, letting both document types through.
-		$context->setRedirectScope( true );
+		// The mode drives two things downstream: whether getQuery() keeps the must_not
+		// page_type:redirect filter that hides redirect documents, and whether the query
+		// may read the target's redirect array (directly, or through the composite fields
+		// that carry it).
+		$context->setRedirectMode( $mode );
 		// onlyredirects: then puts back the other half of the restriction, keeping the
 		// primary documents out.
-		$filter = $key === self::ONLY_REDIRECTS
+		$filter = $mode->excludesPrimaryDocuments()
 			? new Term( [ 'page_type' => 'redirect' ] )
 			: null;
 		return [ $filter, false ];

@@ -85,13 +85,12 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $notFilters = [];
 
 	/**
-	 * @var bool True when the query is scoped to include redirect documents.
-	 *  When false (the default value) redirect documents are excluded from
-	 *  search and use the embedded redirects array. When true it flips and the
-	 *  redirects array is excluded from queries, instead querying the redirect
-	 *  docs directly.
+	 * @var RedirectMode How the query treats redirects: which page_type of document is
+	 *  searchable, and whether the target's redirect array takes part in the query.
+	 *  Defaults to the standard mode, which hides redirect documents and queries the
+	 *  redirect array.
 	 */
-	private $redirectScope = false;
+	private RedirectMode $redirectMode = RedirectMode::Standard;
 
 	/**
 	 * @var bool True when the target index represents redirects as first-class,
@@ -382,20 +381,20 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
-	 * @param bool $redirectScope Whether the query is in redirect scope (redirect mode), in
-	 *  which redirect documents become searchable alongside primary documents and the default
-	 *  must_not page_type:redirect filter is omitted. Defaults to false.
+	 * @param RedirectMode $redirectMode How the query treats redirects. Entered by the
+	 *  withredirects:, onlyredirects: and noredirects: keywords; defaults to
+	 *  RedirectMode::Standard.
 	 */
-	public function setRedirectScope( bool $redirectScope ): void {
+	public function setRedirectMode( RedirectMode $redirectMode ): void {
 		$this->isDirty = true;
-		$this->redirectScope = $redirectScope;
+		$this->redirectMode = $redirectMode;
 	}
 
 	/**
-	 * @return bool Whether the query is in redirect scope (redirect mode). False by default.
+	 * @return RedirectMode How the query treats redirects. RedirectMode::Standard by default.
 	 */
-	public function isRedirectScope(): bool {
-		return $this->redirectScope;
+	public function getRedirectMode(): RedirectMode {
+		return $this->redirectMode;
 	}
 
 	/**
@@ -524,11 +523,11 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @return array|null Fetch portion of query to be sent to elasticsearch
 	 */
 	public function getHighlight( ResultsType $resultsType, AbstractQuery $mainQuery ) {
-		if ( $this->isRedirectScope() ) {
-			// In redirect scope the matching redirect is its own result; drop the
-			// redirect.title highlight so we don't emit a misleading snippet. The
-			// builder is shared with the results type, so it picks this up when it
-			// assembles the default full text fields.
+		if ( !$this->redirectMode->queriesRedirectArray() ) {
+			// The redirect array takes no part in this query, so a redirect.title highlight
+			// would be misleading: the matching redirect is either its own result or
+			// something the user asked to ignore. The builder is shared with the results
+			// type, so it picks this up when it assembles the default full text fields.
 			$this->fetchPhaseBuilder->suppressRedirectTitleHighlight();
 		}
 		$highlight = $resultsType->getHighlightingConfiguration( [] );
@@ -613,7 +612,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		// redirects (e.g. the archive index) have no page_type field, so the filter is skipped.
 		// Copy notFilters rather than mutating it, getQuery() might be called more than once.
 		$notFilters = $this->notFilters;
-		if ( $this->supportsFirstClassRedirects() && !$this->isRedirectScope() ) {
+		if ( $this->supportsFirstClassRedirects() && !$this->redirectMode->searchesRedirectDocuments() ) {
 			$notFilters[] = new \Elastica\Query\Term( [ 'page_type' => 'redirect' ] );
 		}
 

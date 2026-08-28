@@ -13,6 +13,7 @@ use CirrusSearch\Parser\QueryStringRegex\KeywordParser;
 use CirrusSearch\Parser\QueryStringRegex\OffsetTracker;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
+use CirrusSearch\Search\RedirectMode;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\SearchQuery;
 use Elastica\Query\BoolQuery;
@@ -216,12 +217,14 @@ class InTitleFeatureTest extends CirrusTestCase {
 		$this->assertNotConsumed( $feature, "foo bar" );
 	}
 
-	private function newRedirectScopeContext( HashSearchConfig $config, ?FetchPhaseConfigBuilder $fetchPhase = null ): SearchContext {
+	private function newModeContext(
+		RedirectMode $mode, HashSearchConfig $config, ?FetchPhaseConfigBuilder $fetchPhase = null
+	): SearchContext {
 		$context = new SearchContext(
 			$config, null, null, null, $fetchPhase,
 			$this->createNoOpMock( CirrusSearchHookRunner::class )
 		);
-		$context->setRedirectScope( true );
+		$context->setRedirectMode( $mode );
 		return $context;
 	}
 
@@ -231,9 +234,9 @@ class InTitleFeatureTest extends CirrusTestCase {
 		return $nodes[0];
 	}
 
-	private function mockBuilderContext( bool $redirectScope, ?FetchPhaseConfigBuilder $fetchPhase = null ): QueryBuildingContext {
+	private function mockBuilderContext( RedirectMode $mode, ?FetchPhaseConfigBuilder $fetchPhase = null ): QueryBuildingContext {
 		$context = $this->createMock( QueryBuildingContext::class );
-		$context->method( 'isRedirectScope' )->willReturn( $redirectScope );
+		$context->method( 'getRedirectMode' )->willReturn( $mode );
 		if ( $fetchPhase !== null ) {
 			$context->method( 'getHighlightFieldGenerator' )->willReturn( $fetchPhase );
 		}
@@ -244,37 +247,56 @@ class InTitleFeatureTest extends CirrusTestCase {
 		return $query->toArray()['query_string']['fields'];
 	}
 
+	public static function redirectArrayFreeModeProvider() {
+		return [
+			'noredirects' => [ RedirectMode::NoRedirects ],
+			'withredirects' => [ RedirectMode::WithRedirects ],
+			'onlyredirects' => [ RedirectMode::OnlyRedirects ],
+		];
+	}
+
 	/**
-	 * In redirect mode intitle: drops the redirect.title fields on both the live
-	 * apply() path and the AST getFilterQuery() path, so each redirect document is
-	 * matched only by its own title.
+	 * In every mode that keeps the redirect array out of the query, intitle: drops the
+	 * redirect.title fields on both the live apply() path and the AST getFilterQuery()
+	 * path, so a document is matched only by its own title.
+	 * @dataProvider redirectArrayFreeModeProvider
 	 */
-	public function testRedirectModeNonRegexDropsRedirectFields() {
+	public function testRedirectArrayFreeModesDropRedirectFields( RedirectMode $mode ) {
 		$config = new HashSearchConfig( [ 'LanguageCode' => 'en', 'CirrusSearchAllowLeadingWildcard' => true ] );
 		$feature = new InTitleFeature( $config );
 
-		$context = $this->newRedirectScopeContext( $config );
+		$context = $this->newModeContext( $mode, $config );
 		$feature->apply( $context, 'intitle:bridge' );
 		$this->assertSame( [ 'title', 'title.plain' ], $this->fieldsOf( $context->getFilters()[0] ) );
 
 		// The plain-only branch (wildcards) drops redirect.title.plain too.
-		$context = $this->newRedirectScopeContext( $config );
+		$context = $this->newModeContext( $mode, $config );
 		$feature->apply( $context, 'intitle:zomg*' );
 		$this->assertSame( [ 'title.plain' ], $this->fieldsOf( $context->getFilters()[0] ) );
 
-		// AST mirror: the same drop, gated on QueryBuildingContext::isRedirectScope().
+		// AST mirror: the same drop, gated on QueryBuildingContext::getRedirectMode().
 		$node = $this->parseNode( $feature, 'intitle:bridge' );
 		$this->assertSame( [ 'title', 'title.plain' ],
-			$this->fieldsOf( $feature->getFilterQuery( $node, $this->mockBuilderContext( true ) ) ) );
+			$this->fieldsOf( $feature->getFilterQuery( $node, $this->mockBuilderContext( $mode ) ) ) );
+	}
+
+	/** The standard mode keeps the redirect array in reach of intitle:. */
+	public function testStandardModeKeepsRedirectFields() {
+		$config = new HashSearchConfig( [ 'LanguageCode' => 'en', 'CirrusSearchAllowLeadingWildcard' => true ] );
+		$feature = new InTitleFeature( $config );
+		$node = $this->parseNode( $feature, 'intitle:bridge' );
 		$this->assertSame( [ 'title', 'title.plain', 'redirect.title', 'redirect.title.plain' ],
-			$this->fieldsOf( $feature->getFilterQuery( $node, $this->mockBuilderContext( false ) ) ) );
+			$this->fieldsOf( $feature->getFilterQuery(
+				$node, $this->mockBuilderContext( RedirectMode::Standard ) ) ) );
 	}
 
 	/**
-	 * In redirect mode the regex intitle: query and its highlight field both drop
-	 * redirect.title, and the shared field set is not mutated across queries.
+	 * In a mode without the redirect array the regex intitle: query and its highlight
+	 * field both drop redirect.title, and the shared field set is not mutated across
+	 * queries.
+	 * @dataProvider redirectArrayFreeModeProvider
 	 */
-	public function testRedirectModeRegexDropsRedirectFieldsForQueryAndHighlight() {
+	public function testRedirectArrayFreeModesRegexDropRedirectFieldsForQueryAndHighlight( RedirectMode $mode ) {
 		$config = new HashSearchConfig(
 			[
 				'CirrusSearchEnableRegex' => true,
@@ -288,7 +310,7 @@ class InTitleFeatureTest extends CirrusTestCase {
 
 		// Live path: a single field collapses booleanOr to one SourceRegex on title.
 		$fetchPhase = new FetchPhaseConfigBuilder( $config, SearchQuery::SEARCH_TEXT );
-		$context = $this->newRedirectScopeContext( $config, $fetchPhase );
+		$context = $this->newModeContext( $mode, $config, $fetchPhase );
 		$feature->apply( $context, 'intitle:/foo/' );
 		$regex = $context->getFilters()[0];
 		$this->assertInstanceOf( SourceRegex::class, $regex );
@@ -299,13 +321,14 @@ class InTitleFeatureTest extends CirrusTestCase {
 		// AST path mirrors the drop for both query and highlight.
 		$node = $this->parseNode( $feature, 'intitle:/foo/' );
 		$astFetchPhase = new FetchPhaseConfigBuilder( $config, SearchQuery::SEARCH_TEXT );
-		$astContext = $this->mockBuilderContext( true, $astFetchPhase );
+		$astContext = $this->mockBuilderContext( $mode, $astFetchPhase );
 		$this->assertInstanceOf( SourceRegex::class, $feature->getFilterQuery( $node, $astContext ) );
 		$hlFields = $feature->buildHighlightFields( $node, $astContext );
 		$this->assertSame( [ 'title.plain' ], array_map( static fn ( $f ) => $f->getFieldName(), $hlFields ) );
 
-		// A subsequent default-mode query still sees both fields: $this->fields was not mutated.
-		$defaultContext = $this->mockBuilderContext( false, new FetchPhaseConfigBuilder( $config, SearchQuery::SEARCH_TEXT ) );
+		// A subsequent standard-mode query still sees both fields: $this->fields was not mutated.
+		$defaultContext = $this->mockBuilderContext(
+			RedirectMode::Standard, new FetchPhaseConfigBuilder( $config, SearchQuery::SEARCH_TEXT ) );
 		$defaultRegex = $feature->getFilterQuery( $node, $defaultContext );
 		$this->assertInstanceOf( BoolQuery::class, $defaultRegex );
 		$this->assertCount( 2, $defaultRegex->getParam( 'should' ) );

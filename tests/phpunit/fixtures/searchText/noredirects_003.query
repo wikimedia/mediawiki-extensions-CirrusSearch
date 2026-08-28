@@ -1,0 +1,6 @@
+{
+    "config": {
+        "CirrusSearchFullTextQueryBuilderProfile": "perfield_builder_title_filter"
+    },
+    "query": "noredirects: rdir test"
+}

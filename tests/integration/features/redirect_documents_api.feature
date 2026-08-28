@@ -50,27 +50,56 @@ Feature: First-class redirect documents on the edit path
       And Crazy Rdir is not in the api search results
       And Insane Rdir is not in the api search results
 
-  # Two Words matches Rdir through its redirect array, so it comes back under withredirects:
-  # (asserted below) and its absence here is the page_type filter at work.
-  Scenario: onlyredirects: returns the redirect documents without their target
-     When I api search for onlyredirects: Rdir
-     Then Crazy Rdir is in the api search results
-      And Two Words is not in the api search results
+  # ffnonesenseword appears in the text of Two Words itself, so the target matches on its own
+  # content rather than through a redirect. That isolates the page_type filter: withredirects:
+  # is additive and keeps the target, onlyredirects: drops it.
+  Scenario: onlyredirects: keeps the redirect documents and drops their target
+     When I api search for withredirects: ffnonesenseword
+     Then Two Words is in the api search results
+     When I api search for onlyredirects: ffnonesenseword
+     Then Two Words is not in the api search results
 
-  # Rdir shares no title tokens with its target Two Words, so the redirect match produces a
-  # redirectsnippet (not pre-empted by a title snippet), making suppression observable.
-  Scenario: standard search shows the redirectTitle on a primary result
+  # Rdir shares no title tokens or text with its target Two Words, so in standard mode the
+  # target is reachable only through its redirect array, and the match produces a
+  # redirectsnippet (not pre-empted by a title snippet).
+  Scenario: standard search reaches a primary result through its redirect array
      When I api search for Rdir
      Then Two Words is in the api search results
       And Two Words has redirectsnippet in the api search results
 
-  Scenario: withredirects: suppresses the redirectTitle on a primary result
+  # Every mode other than the standard one keeps the redirect array out of the query, all
+  # field included, so the target is no longer reachable through it. Only the redirect
+  # documents themselves match.
+  Scenario: withredirects: returns the redirect documents without their target
      When I api search for withredirects: Rdir
-     Then Two Words is in the api search results
-      And Two Words has no redirectsnippet in the api search results
+     Then Crazy Rdir is in the api search results
+      And Two Words is not in the api search results
 
   @regex
-  Scenario: withredirects: suppresses the redirectTitle on a primary result in the regex environment
+  Scenario: withredirects: returns the redirect documents without their target in the regex environment
      When I api search for withredirects: Rdir
+     Then Crazy Rdir is in the api search results
+      And Two Words is not in the api search results
+
+  # noredirects: drops the redirect array like withredirects: does, but leaves the redirect
+  # documents hidden the way a standard search does. So neither the target nor its redirects
+  # come back.
+  Scenario: noredirects: makes a redirect-only match unreachable
+     When I api search for noredirects: Rdir
+     Then Two Words is not in the api search results
+      And Crazy Rdir is not in the api search results
+
+  # A mixed match: ffnonesenseword is in the target's own text and Rdir is only in a redirect
+  # title. In standard mode the all field carries the redirect title, so both terms are found
+  # and the target matches. Under noredirects: the terms must all be found outside the
+  # redirect array, so it does not.
+  Scenario: noredirects: rejects a page that matches partly through a redirect
+     When I api search for ffnonesenseword Rdir
+     Then Two Words is in the api search results
+     When I api search for noredirects: ffnonesenseword Rdir
+     Then Two Words is not in the api search results
+
+  Scenario: noredirects: keeps a page matching on its own content, without a redirectsnippet
+     When I api search for noredirects: ffnonesenseword
      Then Two Words is in the api search results
       And Two Words has no redirectsnippet in the api search results

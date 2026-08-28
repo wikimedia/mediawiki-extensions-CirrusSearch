@@ -40,6 +40,9 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 	private NearMatchFieldQueryBuilder $nearMatchFieldQueryBuilder;
 
+	/** Near match over the title fields alone, for modes that must not read the redirect array. */
+	private NearMatchFieldQueryBuilder $redirectFreeNearMatchFieldQueryBuilder;
+
 	/**
 	 * @param SearchConfig $config
 	 * @param KeywordFeature[] $features
@@ -51,6 +54,20 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$this->useTokenCountRouter = $this->config->getElement(
 			CirrusConfigNames::WikimediaExtraPlugin, 'token_count_router' ) === true;
 		$this->nearMatchFieldQueryBuilder = NearMatchFieldQueryBuilder::defaultFromSearchConfig( $config );
+		$this->redirectFreeNearMatchFieldQueryBuilder =
+			NearMatchFieldQueryBuilder::redirectFreeFromSearchConfig( $config );
+	}
+
+	/**
+	 * @param SearchContext $context
+	 * @return NearMatchFieldQueryBuilder The near match builder for the query's redirect mode.
+	 *  all_near_match carries the redirect array, so a mode that must not read it gets the
+	 *  title-only variant.
+	 */
+	private function nearMatchFieldQueryBuilder( SearchContext $context ): NearMatchFieldQueryBuilder {
+		return $context->getRedirectMode()->queriesRedirectArray()
+			? $this->nearMatchFieldQueryBuilder
+			: $this->redirectFreeNearMatchFieldQueryBuilder;
 	}
 
 	/**
@@ -93,14 +110,24 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				if ( !$negate && !isset( $matches[ 'fuzzy' ] ) && !isset( $matches[ 'slop' ] ) &&
 					preg_match( '/^"([^"*]+)[*]"/', $main, $matches )
 				) {
-					$phraseMatch = new \Elastica\Query\MatchPhrasePrefix();
-					$phraseMatch->setFieldQuery( "all.plain", $matches[1] );
+					$phrasePrefixFields = self::phrasePrefixFields( $searchContext );
+					if ( $searchContext->getRedirectMode()->queriesRedirectArray() ) {
+						$phraseMatch = new \Elastica\Query\MatchPhrasePrefix();
+						$phraseMatch->setFieldQuery( 'all.plain', $matches[1] );
+					} else {
+						// match_phrase_prefix takes a single field, so spread over the
+						// fields all.plain is built from with the multi_match equivalent.
+						$phraseMatch = new \Elastica\Query\MultiMatch();
+						$phraseMatch->setType( \Elastica\Query\MultiMatch::TYPE_PHRASE_PREFIX );
+						$phraseMatch->setFields( $phrasePrefixFields );
+						$phraseMatch->setQuery( $matches[1] );
+					}
 					$searchContext->addNonTextQuery( $phraseMatch );
 					$searchContext->addSyntaxUsed( 'phrase_match_prefix' );
 
 					$phraseHighlightMatch = new \Elastica\Query\QueryString();
 					$phraseHighlightMatch->setQuery( $matches[1] . '*' );
-					$phraseHighlightMatch->setFields( [ 'all.plain' ] );
+					$phraseHighlightMatch->setFields( $phrasePrefixFields );
 					$searchContext->addNonTextHighlightQuery( $phraseHighlightMatch );
 
 					return [];
@@ -217,7 +244,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			$this->buildSearchTextQuery(
 				$searchContext,
 				$fields,
-				$this->nearMatchFieldQueryBuilder->buildFromQueryString( $nearMatchQuery ),
+				$this->nearMatchFieldQueryBuilder( $searchContext )->buildFromQueryString( $nearMatchQuery ),
 				$this->queryStringQueryString
 			)
 		);
@@ -364,11 +391,29 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * @return string
 	 */
 	private static function switchSearchToExactForWildcards( SearchContext $context, $term ) {
+		if ( !$context->getRedirectMode()->queriesRedirectArray() ) {
+			// all.plain carries the redirect array, so expand over the fields it is built
+			// from instead. Wildcards cost more per field, which these low volume modes
+			// can afford. switchSearchToExact already boosts title.plain.
+			return self::switchSearchToExact( $context, $term, false );
+		}
 		// Try to limit the expansion of wildcards to all the subfields
 		// We still need to add title.plain with a high boost otherwise
 		// match in titles be poorly scored (actually it breaks some tests).
 		$titleWeight = $context->getConfig()->getElement( CirrusConfigNames::Weights, 'title' );
 		return "(title.plain:$term^$titleWeight OR all.plain:$term)";
+	}
+
+	/**
+	 * @param SearchContext $context
+	 * @return string[] The fields a phrase-prefix query runs against: all.plain, or the
+	 *  fields it is built from when the redirect array must take no part.
+	 */
+	private static function phrasePrefixFields( SearchContext $context ): array {
+		if ( $context->getRedirectMode()->queriesRedirectArray() ) {
+			return [ 'all.plain' ];
+		}
+		return self::buildFullTextSearchFields( $context, 1, '.plain', false );
 	}
 
 	/**
@@ -391,6 +436,12 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	/**
 	 * Build fields searched by full text search.
 	 *
+	 * The all field is a copy_to of every field listed here, redirect.title included, so it
+	 * cannot be used in a mode where the redirect array takes no part: a redirect-only match
+	 * would still come back through it. Those modes get the fields all is built from instead,
+	 * minus redirect.title. This costs more clauses per query, which is affordable because the
+	 * keywords that select those modes are opt-in and low volume.
+	 *
 	 * @param SearchContext $context
 	 * @param float $weight weight to multiply by all fields
 	 * @param string $fieldSuffix suffix to add to field names
@@ -398,23 +449,26 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 *  collecting phrases for the highlighter.
 	 * @return string[] array of fields to query
 	 */
-	private static function buildFullTextSearchFields(
+	protected static function buildFullTextSearchFields(
 		SearchContext $context,
 		$weight,
 		$fieldSuffix,
 		$allFieldAllowed
 	) {
 		$searchWeights = $context->getConfig()->get( CirrusConfigNames::Weights );
+		$redirectMode = $context->getRedirectMode();
 
-		if ( $allFieldAllowed ) {
+		if ( $allFieldAllowed && $redirectMode->queriesRedirectArray() ) {
 			return [ "all{$fieldSuffix}^{$weight}" ];
 		}
 
 		$fields = [];
 		$titleWeight = $weight * $searchWeights[ 'title' ];
-		$redirectWeight = $weight * $searchWeights[ 'redirect' ];
 		$fields[] = "title{$fieldSuffix}^{$titleWeight}";
-		$fields[] = "redirect.title{$fieldSuffix}^{$redirectWeight}";
+		if ( $redirectMode->queriesRedirectArray() ) {
+			$redirectWeight = $weight * $searchWeights[ 'redirect' ];
+			$fields[] = "redirect.title{$fieldSuffix}^{$redirectWeight}";
+		}
 		$categoryWeight = $weight * $searchWeights[ 'category' ];
 		$headingWeight = $weight * $searchWeights[ 'heading' ];
 		$openingTextWeight = $weight * $searchWeights[ 'opening_text' ];

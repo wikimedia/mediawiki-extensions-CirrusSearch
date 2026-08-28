@@ -11,6 +11,7 @@ use CirrusSearch\Search\Fetch\FetchPhaseConfigBuilder;
 use CirrusSearch\Search\Fetch\HighlightedField;
 use CirrusSearch\Search\Fetch\HighlightFieldGenerator;
 use CirrusSearch\Search\Filters;
+use CirrusSearch\Search\RedirectMode;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
@@ -83,23 +84,16 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	/**
 	 * The field set to query/highlight for this request.
 	 *
-	 * In redirect scope the fields under the `redirect.` prefix are dropped,
-	 * otherwise the full set is used. This has to be part of parsing, rather
-	 * than having appropriate fields provided in the constructor, because at
-	 * construction time we don't know if redirect scope is enabled.
+	 * In any mode where the redirect array takes no part the fields under the
+	 * `redirect.` prefix are dropped, otherwise the full set is used. This has to be
+	 * part of parsing, rather than having appropriate fields provided in the
+	 * constructor, because at construction time we don't know the redirect mode.
 	 *
-	 * @param bool $isRedirectScope
+	 * @param RedirectMode $mode
 	 * @return string[]
 	 */
-	private function effectiveFields( bool $isRedirectScope ): array {
-		if ( !$isRedirectScope ) {
-			return $this->fields;
-		}
-		return array_filter(
-			$this->fields,
-			static fn ( $field ) => Filters::allowFieldInRedirectScope( $field ),
-			ARRAY_FILTER_USE_KEY
-		);
+	private function effectiveFields( RedirectMode $mode ): array {
+		return array_filter( $this->fields, [ $mode, 'allowsField' ], ARRAY_FILTER_USE_KEY );
 	}
 
 	/**
@@ -200,7 +194,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 				return [ null, false ];
 			}
 
-			$fields = $this->effectiveFields( $context->isRedirectScope() );
+			$fields = $this->effectiveFields( $context->getRedirectMode() );
 			$filter = $this->buildRegexQuery( $fields, $pattern, $insensitive );
 			if ( !$negated ) {
 				$this->configureHighlighting( $fields, $pattern, $insensitive, $context->getFetchPhaseBuilder() );
@@ -223,7 +217,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			'@phan-var array $parsedValue';
 			$pattern = $parsedValue['pattern'];
 			$insensitive = $parsedValue['insensitive'];
-			return $this->buildRegexQuery( $this->effectiveFields( $context->isRedirectScope() ), $pattern, $insensitive );
+			return $this->buildRegexQuery( $this->effectiveFields( $context->getRedirectMode() ), $pattern, $insensitive );
 		} else {
 			return $this->getNonRegexFilterQuery( $node, $context );
 		}
@@ -242,7 +236,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			$pattern = $parsedValue['pattern'];
 			$insensitive = $parsedValue['insensitive'];
 			return $this->doGetRegexHLFields( $context->getHighlightFieldGenerator(),
-				$this->effectiveFields( $context->isRedirectScope() ), $pattern, $insensitive );
+				$this->effectiveFields( $context->getRedirectMode() ), $pattern, $insensitive );
 		}
 		return $this->buildNonRegexHLFields( $node, $context );
 	}

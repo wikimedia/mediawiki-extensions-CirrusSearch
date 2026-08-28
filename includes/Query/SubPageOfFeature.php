@@ -7,6 +7,7 @@ use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Fetch\HighlightedField;
 use CirrusSearch\Search\Fetch\HighlightFieldGenerator;
+use CirrusSearch\Search\RedirectMode;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
@@ -50,9 +51,10 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 		if ( $parsedValue === null ) {
 			return [ null, false ];
 		}
-		$q = $this->doGetFilterQuery( $parsedValue );
+		$mode = $context->getRedirectMode();
+		$q = $this->doGetFilterQuery( $parsedValue, $mode );
 		if ( !$negated ) {
-			foreach ( $this->doGetHLFields( $parsedValue, $context->getFetchPhaseBuilder() ) as $f ) {
+			foreach ( $this->doGetHLFields( $parsedValue, $context->getFetchPhaseBuilder(), $mode ) as $f ) {
 				$context->getFetchPhaseBuilder()->addHLField( $f );
 			}
 		}
@@ -68,12 +70,13 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 		if ( $node->getParsedValue() === null ) {
 			return null;
 		}
-		return $this->doGetFilterQuery( $node->getParsedValue() );
+		return $this->doGetFilterQuery( $node->getParsedValue(), $context->getRedirectMode() );
 	}
 
-	private function doGetFilterQuery( array $parsedValue ): AbstractQuery {
+	private function doGetFilterQuery( array $parsedValue, RedirectMode $mode ): AbstractQuery {
 		$query = new MultiMatch();
-		$query->setFields( [ 'title.prefix', 'redirect.title.prefix' ] );
+		$query->setFields( array_values( array_filter(
+			[ 'title.prefix', 'redirect.title.prefix' ], [ $mode, 'allowsField' ] ) ) );
 		$query->setQuery( $parsedValue['prefix'] );
 		return $query;
 	}
@@ -105,14 +108,17 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 	/**
 	 * @param array $parsedValue
 	 * @param HighlightFieldGenerator $highlightFieldGenerator
+	 * @param RedirectMode $mode
 	 * @return HighlightedField[]
 	 */
-	private function doGetHLFields( array $parsedValue, HighlightFieldGenerator $highlightFieldGenerator ) {
+	private function doGetHLFields(
+		array $parsedValue, HighlightFieldGenerator $highlightFieldGenerator, RedirectMode $mode
+	) {
 		$hlfields = [];
-		$definition = [
+		$definition = array_filter( [
 			HighlightedField::TARGET_TITLE_SNIPPET => 'title.prefix',
 			HighlightedField::TARGET_REDIRECT_SNIPPET => 'redirect.title.prefix',
-		];
+		], [ $mode, 'allowsField' ] );
 		$first = true;
 		foreach ( $definition as $target => $esfield ) {
 			$field = $highlightFieldGenerator->newHighlightField( $esfield, $target,
@@ -134,6 +140,7 @@ class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 	 * @inheritDoc
 	 */
 	public function buildHighlightFields( KeywordFeatureNode $node, QueryBuildingContext $context ) {
-		return $this->doGetHLFields( $node->getParsedValue(), $context->getHighlightFieldGenerator() );
+		return $this->doGetHLFields( $node->getParsedValue(),
+			$context->getHighlightFieldGenerator(), $context->getRedirectMode() );
 	}
 }

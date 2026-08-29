@@ -11,6 +11,9 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use CirrusSearch\Util;
 use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Page\PageLookup;
+use MediaWiki\Page\RedirectLookup;
 use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\ParamValidator\ParamValidator;
 use WikiMedia\ParamValidator\TypeDef\IntegerDef;
@@ -36,6 +39,15 @@ use WikiMedia\ParamValidator\TypeDef\IntegerDef;
  */
 class CheckSanity extends ApiBase {
 	use ApiTrait;
+
+	public function __construct(
+		ApiMain $mainModule,
+		string $moduleName,
+		private readonly PageLookup $pageLookup,
+		private readonly RedirectLookup $redirectLookup,
+	) {
+		parent::__construct( $mainModule, $moduleName );
+	}
 
 	public function execute() {
 		$cluster = $this->getParameter( 'cluster' );
@@ -113,7 +125,8 @@ class CheckSanity extends ApiBase {
 			switch ( $problem ) {
 				case 'redirectInIndex':
 					[ $docId, $page, $indexSuffix ] = $args;
-					$target = $page->getRedirectTarget();
+					$target = $this->redirectLookup->getRedirectTarget( $page );
+					$targetPage = $target === null ? null : $this->pageLookup->getPageForLink( $target );
 					$problem = [
 						'indexName' => $connection->getIndexName( $indexBaseName, $indexSuffix ),
 						'errorType' => $problem,
@@ -122,11 +135,11 @@ class CheckSanity extends ApiBase {
 					];
 					// Page could redirect to a Special page or even another wiki,
 					// target information is only useful on pages that exist locally.
-					if ( $target != null && $target->canExist() ) {
-						$targetIndexSuffix = $connection->getIndexSuffixForNamespace( $target->getNamespace() );
+					if ( $targetPage != null && $targetPage->canExist() ) {
+						$targetIndexSuffix = $connection->getIndexSuffixForNamespace( $targetPage->getNamespace() );
 						$problem['target'] = [
-							'pageId' => $target->getId(),
-							'namespaceId' => $target->getNamespace(),
+							'pageId' => $targetPage->getId(),
+							'namespaceId' => $targetPage->getNamespace(),
 							'indexName' => $connection->getIndexName( $indexBaseName, $targetIndexSuffix ),
 						];
 					}

@@ -11,6 +11,7 @@ use CirrusSearch\SearchConfig;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use LinkCacheTestTrait;
+use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
 use Wikimedia\TestingAccessWrapper;
@@ -226,6 +227,9 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 		foreach ( $fakeTitleIDs as $titleText => $id ) {
 			$this->addGoodLinkObject( $id, Title::newFromText( $titleText ) );
 		}
+		$redirectLookup = $this->createMock( RedirectLookup::class );
+		$redirectLookup->method( 'getRedirectTarget' )->willReturn( null );
+		$this->setService( 'RedirectLookup', $redirectLookup );
 
 		// @todo Use a HashConfig with explicit values?
 		$config = new HashSearchConfig(
@@ -286,6 +290,9 @@ class MoreLikeFeatureTest extends CirrusIntegrationTestCase {
 				return $ret;
 			} );
 		$this->setService( 'TitleFactory', $titleFactory );
+		$redirectLookup = $this->createMock( RedirectLookup::class );
+		$redirectLookup->method( 'getRedirectTarget' )->willReturn( null );
+		$this->setService( 'RedirectLookup', $redirectLookup );
 		$feature = new MoreLikeFeature( $config );
 
 		$this->assertExpandedData(

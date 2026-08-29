@@ -412,17 +412,14 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 				continue;
 			}
 			// Resolve one level of redirects because only one level of redirects is scored.
-			if ( $page->isRedirect() ) {
-				$target = $page->getRedirectTarget();
-				if ( $target === null ) {
-					// Redirect to itself or broken redirect? ignore.
-					continue;
-				}
-				if ( !$target->exists() ) {
+			$target = MediaWikiServices::getInstance()->getRedirectLookup()
+				->getRedirectTarget( $page );
+			if ( $target ) {
+				$page = $wikiPageFactory->newFromLinkTarget( $target );
+				if ( !$page->exists() ) {
 					// Skip redirects to nonexistent pages
 					continue;
 				}
-				$page = $wikiPageFactory->newFromTitle( $target );
 			}
 			if ( $page->isRedirect() ) {
 				// This is a redirect to a redirect which doesn't count in the search score any way.

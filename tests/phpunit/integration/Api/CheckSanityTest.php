@@ -6,9 +6,13 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\CheckerException;
 use CirrusSearch\Sanity\Remediator;
+use Closure;
 use MediaWiki\Api\ApiMain;
 use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Context\RequestContext;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\PageStore;
+use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
@@ -47,12 +51,11 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 			] );
 	}
 
-	protected function mockPage( int $namespaceId, int $pageId, ?Title $redirectTitle = null ) {
+	protected function mockPage( int $namespaceId, int $pageId ) {
 		$mock = $this->createMock( WikiPage::class );
 
 		$mock->method( 'getID' )->willReturn( $pageId );
 		$mock->method( 'getNamespace' )->willReturn( $namespaceId );
-		$mock->method( 'getRedirectTarget' )->willReturn( $redirectTitle );
 
 		return $mock;
 	}
@@ -62,15 +65,9 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 			[
 				'errorType' => 'redirectInIndex',
 				'fn' => static function ( $self, Remediator $remediator ) {
-					// We want to avoid these things reaching out into the database, so have to provide
-					// a redirect explicitly.
-					$target = Title::makeTitleSafe( NS_TALK, "Example" );
-					$target->loadFromRow( (object)[
-						'page_id' => 42,
-					] );
 					$remediator->redirectInIndex(
 						'42',
-						$self->mockPage( NS_MAIN, 1, $target ),
+						$self->mockPage( NS_MAIN, 1 ),
 						'content'
 					);
 				},
@@ -84,6 +81,7 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 						'indexName' => WikiMap::getCurrentWikiId() . '_general',
 					],
 				],
+				'isRedirect' => true,
 			],
 			[
 				'errorType' => 'pageNotInIndex',
@@ -125,7 +123,26 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 	/**
 	 * @dataProvider provideProblems
 	 */
-	public function testProblems( $errorType, $fn, $extraCallback = null ) {
+	public function testProblems( $errorType, $fn, $extraCallback = null, bool $isRedirect = false ) {
+		$redirectLookup = $this->createMock( RedirectLookup::class );
+		if ( $isRedirect ) {
+			// We want to avoid these things reaching out into the database, so have to provide
+			// a redirect explicitly.
+			$target = Title::makeTitleSafe( NS_TALK, "Example" );
+			$target->loadFromRow( (object)[
+				'page_id' => 42,
+			] );
+			$redirectLookup->method( 'getRedirectTarget' )->willReturn( $target );
+		}
+		$this->setService( 'RedirectLookup', $redirectLookup );
+
+		$pageStore = $this->createMock( PageStore::class );
+		$pageStore->method( 'getPageForLink' )->willReturnCallback(
+			// $lt is always a Title returned by our RedirectLookup mock above
+			static fn ( Title $lt ) => $lt->toPageIdentity()
+		);
+		$this->setService( 'PageStore', $pageStore );
+
 		$output = $this->doApiRequest(
 			[ 'from' => 0, 'limit' => 10, 'cluster' => 'default' ],
 			[
@@ -176,13 +193,22 @@ class CheckSanityTest extends CirrusIntegrationTestCase {
 			return $mock;
 		};
 
-		$api = new class( $createMock, $apiMain, "cirrus-check-sanity" ) extends CheckSanity {
-			/** @var Closure */
-			private $createMock;
+		$services = $this->getServiceContainer();
 
-			public function __construct( $createMock, ApiMain $apiMain, string $moduleName ) {
-				parent::__construct( $apiMain, $moduleName );
-				$this->createMock = $createMock;
+		$api = new class( $createMock, $services, $apiMain, "cirrus-check-sanity" ) extends CheckSanity {
+
+			public function __construct(
+				private readonly Closure $createMock,
+				MediaWikiServices $services,
+				ApiMain $apiMain,
+				string $moduleName
+			) {
+				parent::__construct(
+					$apiMain,
+					$moduleName,
+					$services->getPageStore(),
+					$services->getRedirectLookup(),
+				);
 			}
 
 			protected function makeChecker( string $cluster, Remediator $remediator ): Checker {

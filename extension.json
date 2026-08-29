@@ -23,7 +23,13 @@
 		"cirrus-config-dump": "CirrusSearch\\Api\\ConfigDump",
 		"cirrus-profiles-dump": "CirrusSearch\\Api\\ProfilesDump",
 		"cirrus-schema-dump": "CirrusSearch\\Api\\SchemaDump",
-		"cirrus-check-sanity": "CirrusSearch\\Api\\CheckSanity"
+		"cirrus-check-sanity": {
+			"class": "CirrusSearch\\Api\\CheckSanity",
+			"services": [
+				"PageStore",
+				"RedirectLookup"
+			]
+		}
 	},
 	"APIPropModules": {
 		"cirrusbuilddoc": "CirrusSearch\\Api\\QueryBuildDocument",

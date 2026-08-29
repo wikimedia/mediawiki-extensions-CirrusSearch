@@ -10,6 +10,7 @@ use CirrusSearch\WarningCollector;
 use Elastica\Query\MoreLikeThis;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\PageIdentity;
+use MediaWiki\Title\Title;
 
 trait MoreLikeTrait {
 	/**
@@ -73,7 +74,7 @@ trait MoreLikeTrait {
 		$titles = [];
 		$found = [];
 		$titleFactory = MediaWikiServices::getInstance()->getTitleFactory();
-		$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();
+		$redirectLookup = MediaWikiServices::getInstance()->getRedirectLookup();
 		foreach ( explode( '|', $term ) as $title ) {
 			$title = $titleFactory->newFromText( trim( $title ) );
 			while ( true ) {
@@ -88,15 +89,11 @@ trait MoreLikeTrait {
 				if ( !$title->exists() ) {
 					continue 2;
 				}
-				if ( !$title->isRedirect() ) {
+				$redirectTarget = $redirectLookup->getRedirectTarget( $title );
+				if ( !$redirectTarget ) {
 					break;
 				}
-				// If the page was a redirect loop the while( true ) again.
-				$page = $wikiPageFactory->newFromTitle( $title );
-				if ( !$page->exists() ) {
-					continue 2;
-				}
-				$title = $page->getRedirectTarget();
+				$title = Title::castFromLinkTarget( $redirectTarget );
 			}
 			$titles[] = $title;
 		}

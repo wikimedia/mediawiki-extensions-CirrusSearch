@@ -613,7 +613,7 @@ class AnalysisConfigBuilder {
 					'type' => 'keyword',
 				],
 				'trigram' => [
-					'type' => 'nGram',
+					'type' => 'ngram',
 					'min_gram' => 3,
 					'max_gram' => 3,
 				],

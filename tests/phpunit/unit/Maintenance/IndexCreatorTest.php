@@ -81,6 +81,18 @@ class IndexCreatorTest extends CirrusTestCase {
 		$this->assertSame( $expected, $replicaSettings );
 	}
 
+	public function testCreateIndexUsesConfiguredGreenTimeout() {
+		$index = $this->getIndex( new Response( [] ) );
+		$utils = $this->createMock( ConfigUtils::class );
+		$utils->expects( $this->once() )
+			->method( 'waitForGreen' )
+			->with( 'test-index', 800 )
+			->willReturn( $this->arrayAsGenerator( [], true ) );
+
+		$indexCreator = new IndexCreator( $index, $utils, [], [], [], 800 );
+		$indexCreator->createIndex( true, 2, 4, ReplicaCount::autoExpand( '0-2' ), 30, [], [] );
+	}
+
 	private function arrayAsGenerator( array $array, $retval ) {
 		foreach ( $array as $value ) {
 			yield $value;
@@ -104,6 +116,8 @@ class IndexCreatorTest extends CirrusTestCase {
 
 	private function getIndex( $response ) {
 		$index = $this->createMock( Index::class );
+		$index->method( 'getName' )
+			->willReturn( 'test-index' );
 
 		$index->method( 'create' )
 			->willReturn( $response );

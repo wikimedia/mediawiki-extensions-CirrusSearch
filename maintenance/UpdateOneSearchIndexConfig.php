@@ -183,6 +183,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			'defaults to wiki id', false, true );
 		$maintenance->addOption( 'debugCheckConfig', 'Print the configuration as it is checked ' .
 			'to help debug unexpected configuration mismatches.' );
+		$maintenance->addOption( 'greenTimeout', 'Seconds to wait for a newly created index to reach ' .
+			'green status. Defaults to ' . IndexCreator::DEFAULT_GREEN_TIMEOUT . '.', false, true );
 		$maintenance->addOption( 'justAllocation', 'Just validate the shard allocation settings.  Use ' .
 			"when you need to apply new cache warmers but want to be sure that you won't apply any other " .
 			'changes at an inopportune time.' );
@@ -324,6 +326,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @param string $msg
 	 */
 	private function createIndex( $rebuild, $msg ) {
+		$greenTimeout = $this->getGreenTimeout();
 		$this->canCleanupCreatedIndex = true;
 		$index = $this->getIndex();
 		$indexCreator = new \CirrusSearch\Maintenance\IndexCreator(
@@ -332,6 +335,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->analysisConfig,
 			$this->mapping,
 			$this->similarityConfig,
+			$greenTimeout
 		);
 
 		$this->outputIndented( $msg );
@@ -347,6 +351,18 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		) );
 
 		$this->outputIndented( "Index created.\n" );
+	}
+
+	private function getGreenTimeout(): int {
+		$greenTimeout = filter_var(
+			$this->getOption( 'greenTimeout', IndexCreator::DEFAULT_GREEN_TIMEOUT ),
+			FILTER_VALIDATE_INT,
+			[ 'options' => [ 'min_range' => 1 ] ]
+		);
+		if ( $greenTimeout === false ) {
+			$this->fatalError( '--greenTimeout must be a positive integer.' );
+		}
+		return $greenTimeout;
 	}
 
 	/**

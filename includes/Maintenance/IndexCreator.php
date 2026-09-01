@@ -8,6 +8,8 @@ use MediaWiki\Status\Status;
 
 class IndexCreator {
 
+	public const DEFAULT_GREEN_TIMEOUT = 120;
+
 	/**
 	 * @var Index
 	 */
@@ -52,7 +54,7 @@ class IndexCreator {
 		array $analysisConfig,
 		array $mappings,
 		?array $similarityConfig = null,
-		$greenTimeout = 120
+		$greenTimeout = self::DEFAULT_GREEN_TIMEOUT
 	) {
 		$this->index = $index;
 		$this->utils = $utils;

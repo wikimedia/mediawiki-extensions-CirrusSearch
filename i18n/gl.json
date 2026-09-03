@@ -86,5 +86,6 @@
 	"cirrussearch-invalid-keyword-threshold": "Proporcionouse un valor límite non válido \"$1\". Esperábase un número decimal entre 0 e 1.",
 	"cirrussearch-semantic-empty-query": "A busca semántica necesita un termo de procura que non estea baleiro.",
 	"cirrussearch-semantic-too-many-results": "A busca semántica solicitou demasiados resultados. Só os primeiros $1 se clasificarán correctamente.",
-	"cirrussearch-feature-not-negatable": "A palabra clave \"$1\" non se pode negar con \"-\" nin con \"!\""
+	"cirrussearch-feature-not-negatable": "A palabra clave \"$1\" non se pode negar con \"-\" nin con \"!\"",
+	"cirrussearch-keyword-not-at-query-start": "Non se aplicou a palabra clave \"$1\". Esta palabra clave só funciona ao comezo da busca."
 }

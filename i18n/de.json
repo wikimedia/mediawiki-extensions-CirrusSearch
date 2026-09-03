@@ -86,5 +86,6 @@
 	"cirrussearch-invalid-keyword-threshold": "Ungültiger Schwellenwert „$1“ angegeben. Erwartet wird eine Dezimalzahl zwischen 0 und 1.",
 	"cirrussearch-semantic-empty-query": "Für die semantische Suche ist ein nicht leerer Suchbegriff erforderlich.",
 	"cirrussearch-semantic-too-many-results": "Zu viele Ergebnisse wurden von der semantischen Suche verlangt. Nur die Top $1 werden ordnungsgemäß eingestuft.",
-	"cirrussearch-feature-not-negatable": "Das Schlüsselwort „$1“ kann nicht mit „-“ oder „!“ negiert werden."
+	"cirrussearch-feature-not-negatable": "Das Schlüsselwort „$1“ kann nicht mit „-“ oder „!“ negiert werden.",
+	"cirrussearch-keyword-not-at-query-start": "Das Schlüsselwort „$1“ wurde nicht angewendet. Dieses Schlüsselwort funktioniert nur am Anfang der Suche."
 }

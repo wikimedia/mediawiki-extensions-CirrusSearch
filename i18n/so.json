@@ -81,5 +81,6 @@
 	"cirrussearch-invalid-keyword-threshold": "Qiime xad aan sax ahayn '$1' ayaa la bixiyay. Waxaa la filayay tiro tobanle oo u dhaxaysa 0 iyo 1.",
 	"cirrussearch-semantic-empty-query": "Raadinta semantic-ka waxay u baahan tahay eray raadis ah oo aan madhnayn.",
 	"cirrussearch-semantic-too-many-results": "Natiijooyin aad u badan ayaa laga codsaday raadinta semantic-ka. Keliya $1 ka ugu sarreeya ayaa si sax ah loo kala hormarin doonaa.",
-	"cirrussearch-feature-not-negatable": "Ereyga '$1' laguma diidi karo '-' ama '!'"
+	"cirrussearch-feature-not-negatable": "Ereyga '$1' laguma diidi karo '-' ama '!'",
+	"cirrussearch-keyword-not-at-query-start": "Ereyga muhiimka ah ee '$1' lama adeegsan. Ereygan muhiimka ah wuxuu shaqeeyaa oo keliya bilowga raadinta."
 }

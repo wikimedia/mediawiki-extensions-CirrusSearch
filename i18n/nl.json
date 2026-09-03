@@ -98,5 +98,6 @@
 	"cirrussearch-invalid-keyword-threshold": "Onjuiste drempelwaarde ‘$1’ opgegeven. Er werd een decimaal getal tussen 0 en 1 verwacht.",
 	"cirrussearch-semantic-empty-query": "Voor een semantische zoekopdracht is een zoekterm vereist die niet leeg is.",
 	"cirrussearch-semantic-too-many-results": "Er zijn te veel resultaten opgevraagd via semantisch zoeken. Alleen de $1 resultaten worden correct gerangschikt.",
-	"cirrussearch-feature-not-negatable": "Het trefwoord ‘$1’ kan niet worden uitgesloten met ‘-’ of ‘!’."
+	"cirrussearch-feature-not-negatable": "Het trefwoord ‘$1’ kan niet worden uitgesloten met ‘-’ of ‘!’.",
+	"cirrussearch-keyword-not-at-query-start": "Het zoekwoord '$1' is niet toegepast. Dit zoekwoord werkt alleen aan het begin van de zoekopdracht."
 }

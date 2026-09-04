@@ -50,14 +50,13 @@ class LangWeightFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	public function append( FunctionScore $functionScore ) {
 		// Boost pages in a user's language
-		$userLang = $this->getUserLang();
 		if ( $this->userWeight ) {
 			$functionScore->addWeightFunction( $this->userWeight * $this->weight,
-				new \Elastica\Query\Term( [ 'language' => $userLang ] ) );
+				new \Elastica\Query\Term( [ 'language' => $this->getUserLang() ] ) );
 		}
 
 		// And a wiki's language, if it's different
-		if ( $this->wikiWeight && $this->userLang != $this->wikiLang ) {
+		if ( $this->wikiWeight && $this->getUserLang() != $this->wikiLang ) {
 			$functionScore->addWeightFunction( $this->wikiWeight * $this->weight,
 				new \Elastica\Query\Term( [ 'language' => $this->wikiLang ] ) );
 		}

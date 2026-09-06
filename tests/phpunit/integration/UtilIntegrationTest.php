@@ -6,7 +6,6 @@ use CirrusSearch\Profile\SearchProfileServiceFactoryFactory;
 use MediaWiki\Config\Config;
 use MediaWiki\Language\Language;
 use MediaWiki\Language\MessageCache;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\WikiMap\WikiMap;
 use Wikimedia\ObjectCache\WANObjectCache;
 use Wikimedia\TestingAccessWrapper;
@@ -105,7 +104,7 @@ class UtilIntegrationTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testgetDefaultBoostTemplatesLocal() {
-		$services = MediaWikiServices::getInstance();
+		$services = $this->getServiceContainer();
 		$services->resetServiceForTesting( 'MessageCache' );
 		$services->redefineService( 'MessageCache', $this->getMockCache( ... ) );
 		TestingAccessWrapper::newFromClass( Util::class )->defaultBoostTemplates = null;

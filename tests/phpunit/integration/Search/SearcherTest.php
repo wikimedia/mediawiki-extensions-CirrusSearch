@@ -10,7 +10,6 @@ use Elastica\Query;
 use Elastica\Response;
 use LinkCacheTestTrait;
 use MediaWiki\MainConfigNames;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
 use Wikimedia\HtmlArmor\HtmlArmor;
@@ -27,7 +26,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		MediaWikiServices::getInstance()->getConfigFactory()->register( 'CirrusSearch',
+		$this->getServiceContainer()->getConfigFactory()->register( 'CirrusSearch',
 			static fn () => new SearchConfigUsageDecorator()
 		);
 	}

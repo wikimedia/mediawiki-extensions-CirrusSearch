@@ -4,7 +4,6 @@ namespace CirrusSearch\Test\Integration\Hooks;
 
 use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Hooks\CirrusSearchApiQuerySiteInfoGeneralInfoHook;
-use MediaWiki\MediaWikiServices;
 
 /**
  * Using Database here because, in part, what we are testing is that this is a
@@ -15,7 +14,7 @@ use MediaWiki\MediaWikiServices;
  */
 class CirrusSearchApiQuerySiteInfoGeneralInfoHookTest extends CirrusIntegrationTestCase {
 	public function testHappyPath() {
-		$dbProvider = MediaWikiServices::getInstance()->getConnectionProvider();
+		$dbProvider = $this->getServiceContainer()->getConnectionProvider();
 		$hook = new CirrusSearchApiQuerySiteInfoGeneralInfoHook( $dbProvider );
 		$result = [];
 		$hook->onAPIQuerySiteInfoGeneralInfo( null, $result );

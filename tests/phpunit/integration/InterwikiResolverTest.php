@@ -13,7 +13,6 @@ use CirrusSearch\SiteMatrixInterwikiResolver;
 use LogicException;
 use MediaWiki\Config\SiteConfiguration;
 use MediaWiki\Interwiki\InterwikiLookup;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Registration\ExtensionRegistry;
 use MockHttpTrait;
 use Wikimedia\Http\MultiHttpClient;
@@ -431,10 +430,10 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			'wgCirrusSearchInterwikiPrefixOverrides' => $overrides,
 		];
 		$this->setMwGlobals( $myGlobals );
+		$services = $this->getServiceContainer();
 		// We need to reset this service so it can load wgInterwikiCache
-		MediaWikiServices::getInstance()
-			->resetServiceForTesting( 'InterwikiLookup' );
-		$iwLookup = MediaWikiServices::getInstance()->getInterwikiLookup();
+		$services->resetServiceForTesting( 'InterwikiLookup' );
+		$iwLookup = $services->getInterwikiLookup();
 		$config = new HashSearchConfig( [ '_wikiID' => $wikiId ], [ HashSearchConfig::FLAG_INHERIT ] );
 		$wanCache = WANObjectCache::newEmpty();
 
@@ -442,7 +441,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			$config,
 			$wanCache,
 			$iwLookup,
-			MediaWikiServices::getInstance()->getExtensionRegistry(),
+			$services->getExtensionRegistry(),
 			$client ?: $this->createNoOpMock( MultiHttpClient::class )
 		);
 		$this->assertInstanceOf( SiteMatrixInterwikiResolver::class, $resolver );
@@ -457,11 +456,12 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 
 	public function testEmptyResolver() {
 		$config = new HashSearchConfig( [ '_wikiID' => 'dummy' ] );
+		$services = $this->getServiceContainer();
 		$resolver = InterwikiResolverFactory::build(
 			$config,
 			WANObjectCache::newEmpty(),
-			MediaWikiServices::getInstance()->getInterwikiLookup(),
-			MediaWikiServices::getInstance()->getExtensionRegistry(),
+			$services->getInterwikiLookup(),
+			$services->getExtensionRegistry(),
 			$this->createNoOpMock( MultiHttpClient::class )
 		);
 		$this->assertInstanceOf( EmptyInterwikiResolver::class, $resolver );

@@ -9,7 +9,6 @@ use CirrusSearch\Search\KeywordIndexField;
 use CirrusSearch\Search\NestedIndexField;
 use CirrusSearch\Search\NumberIndexField;
 use CirrusSearch\Search\TextIndexField;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Search\SearchIndexField;
 
 /**
@@ -39,7 +38,7 @@ class IndexFieldsTest extends CirrusIntegrationTestCase {
 	 */
 	public function testFieldTypes( $type, $typeName, $klass ) {
 		$config =
-			MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
+			$this->getServiceContainer()->getConfigFactory()->makeConfig( 'CirrusSearch' );
 		$engine = new CirrusSearch();
 		/**
 		 * @var \CirrusSearch\Search\CirrusIndexField $idxField

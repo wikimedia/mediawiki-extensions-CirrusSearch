@@ -90,5 +90,6 @@
 	"cirrussearch-invalid-keyword-threshold": "잘못된 임계값 '$1'이 제공되었습니다. 0에서 1 사이의 소숫값이 필요합니다.",
 	"cirrussearch-semantic-empty-query": "시맨틱 검색을 하려면 검색어가 비어있지 않아야 합니다.",
 	"cirrussearch-semantic-too-many-results": "시맨틱 검색에서 너무 많은 결과를 요청했습니다. 상위 $1개 결과만 제대로 표시됩니다.",
-	"cirrussearch-feature-not-negatable": "'$1' 키워드는 '-' 또는 '!'로 부정할 수 없습니다."
+	"cirrussearch-feature-not-negatable": "'$1' 키워드는 '-' 또는 '!'로 부정할 수 없습니다.",
+	"cirrussearch-keyword-not-at-query-start": "'$1' 키워드가 적용되지 않았습니다. 이 키워드는 검색 시작 부분에만 적용됩니다."
 }

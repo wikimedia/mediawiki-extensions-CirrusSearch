@@ -84,5 +84,6 @@
 	"cirrussearch-invalid-keyword-threshold": "Ugyldig tærskelværdi '$1' angivet. Forventede et decimaltal mellem 0 og 1.",
 	"cirrussearch-semantic-empty-query": "Semantisk søgning kræver et søgeord, der ikke er tomt.",
 	"cirrussearch-semantic-too-many-results": "Der er anmodet om for mange resultater fra semantisk søgning. Kun de øverste $1 vil blive rangeret korrekt.",
-	"cirrussearch-feature-not-negatable": "Nøgleordet '$1' kan ikke ignoreres med '-' eller '!'"
+	"cirrussearch-feature-not-negatable": "Nøgleordet '$1' kan ikke ignoreres med '-' eller '!'",
+	"cirrussearch-keyword-not-at-query-start": "Søgeordet '$1' blev ikke anvendt. Dette søgeord fungerer kun i starten af søgningen."
 }

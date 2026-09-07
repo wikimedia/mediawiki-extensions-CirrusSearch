@@ -81,5 +81,6 @@
 	"cirrussearch-invalid-keyword-threshold": "Укажана е неважечката гранична вредност „$1“. Очекував десетичен број помеѓу 0 и 1.",
 	"cirrussearch-semantic-empty-query": "Семантичкото пребарување не може да биде празно.",
 	"cirrussearch-semantic-too-many-results": "Побарани се премногу ставки од семантичкото пребарување. Само првите $1 ќе бидат правилно рангирани.",
-	"cirrussearch-feature-not-negatable": "Клучниот збор „$1“ не може да се одрекува со „-“ или „!“"
+	"cirrussearch-feature-not-negatable": "Клучниот збор „$1“ не може да се одрекува со „-“ или „!“",
+	"cirrussearch-keyword-not-at-query-start": "Клучниот збор „$1“ не беше применет. Овој клучен збор работи само на почетокот на пребарувањето."
 }

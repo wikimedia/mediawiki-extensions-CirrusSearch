@@ -40,11 +40,7 @@ class ExtensionRegistryProfileRepository implements SearchProfileRepository {
 	}
 
 	public function extractAttribute(): array {
-		$profiles = $this->extensionRegistry->getAttribute( $this->attributeName );
-		if ( !is_array( $profiles ) ) {
-			throw new SearchProfileException( "Attribute {configEntry} must be an array or unset" );
-		}
-		return $profiles;
+		return $this->extensionRegistry->getAttribute( $this->attributeName );
 	}
 
 	/**

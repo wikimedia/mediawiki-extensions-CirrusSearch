@@ -42,7 +42,6 @@
 		"cirrusSearchMassIndex": "CirrusSearch\\Job\\MassIndex",
 		"cirrusSearchOtherIndex": "CirrusSearch\\Job\\OtherIndex",
 		"cirrusSearchElasticaWrite": "CirrusSearch\\Job\\ElasticaWrite",
-		"cirrusSearchCheckerJob": "CirrusSearch\\Job\\CheckerJob",
 		"cirrusSearchIndexArchive": "CirrusSearch\\Job\\IndexArchive",
 		"cirrusSearchDeleteArchive": "CirrusSearch\\Job\\DeleteArchive"
 	},

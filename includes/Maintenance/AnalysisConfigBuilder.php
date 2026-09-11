@@ -1390,11 +1390,14 @@ class AnalysisConfigBuilder {
 				];
 
 				// Nori-specific part of speech filter (add 'VCP', 'VCN', 'VX' to default)
+				// Opensearch 3.x does not accept the group tags 'E' and 'J'. Give the
+				// full list of tags in each group instead.
 				$config[ 'filter' ][ 'nori_posfilter' ] = [
 					'type' => 'nori_part_of_speech',
-					'stoptags' => [ 'E', 'IC', 'J', 'MAG', 'MAJ', 'MM', 'SP', 'SSC', 'SSO',
-						'SC', 'SE', 'XPN', 'XSA', 'XSN', 'XSV', 'UNA', 'NA', 'VSV', 'VCP',
-						'VCN', 'VX' ],
+					'stoptags' => [ 'EP', 'EF', 'EC', 'ETN', 'ETM', 'IC', 'JKS', 'JKC',
+						'JKG', 'JKO', 'JKB', 'JKV', 'JKQ', 'JX', 'JC', 'MAG', 'MAJ', 'MM',
+						'SP', 'SSC', 'SSO', 'SC', 'SE', 'XPN', 'XSA', 'XSN', 'XSV', 'UNA',
+						'NA', 'VSV', 'VCP', 'VCN', 'VX' ],
 				];
 
 				$config = $myAnalyzerBuilder->

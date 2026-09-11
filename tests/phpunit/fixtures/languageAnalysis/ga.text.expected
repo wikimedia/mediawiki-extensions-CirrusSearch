@@ -371,6 +371,11 @@
             "pattern": "(\\p{Ll}[\\p{M}\\p{Cf}]*)([\\p{Lu}\\p{Lt}])",
             "replacement": "$1 $2"
         },
+        "truncate_keyword": {
+            "type": "pattern_replace",
+            "pattern": "(?s)(?<=^.{5000}).*",
+            "replacement": ""
+        },
         "word_break_helper": {
             "type": "limited_mapping",
             "mappings": [
@@ -463,21 +468,23 @@
             "output_unigrams": true
         },
         "truncate_keyword": {
-            "type": "truncate_norm",
+            "type": "truncate",
             "length": 5000
         }
     },
     "normalizer": {
         "keyword": {
             "type": "custom",
-            "filter": [
+            "char_filter": [
                 "truncate_keyword"
             ]
         },
         "lowercase_keyword": {
             "type": "custom",
+            "char_filter": [
+                "truncate_keyword"
+            ],
             "filter": [
-                "truncate_keyword",
                 "lowercase"
             ]
         }

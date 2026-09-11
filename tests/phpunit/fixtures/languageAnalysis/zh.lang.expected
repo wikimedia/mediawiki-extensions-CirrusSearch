@@ -621,6 +621,11 @@
                 "\\u5138=>\\u3469"
             ]
         },
+        "truncate_keyword": {
+            "type": "pattern_replace",
+            "pattern": "(?s)(?<=^.{5000}).*",
+            "replacement": ""
+        },
         "tsconvert": {
             "type": "stconvert",
             "delimiter": "#",
@@ -690,21 +695,23 @@
             "output_unigrams": true
         },
         "truncate_keyword": {
-            "type": "truncate_norm",
+            "type": "truncate",
             "length": 5000
         }
     },
     "normalizer": {
         "keyword": {
             "type": "custom",
-            "filter": [
+            "char_filter": [
                 "truncate_keyword"
             ]
         },
         "lowercase_keyword": {
             "type": "custom",
+            "char_filter": [
+                "truncate_keyword"
+            ],
             "filter": [
-                "truncate_keyword",
                 "lowercase"
             ]
         }

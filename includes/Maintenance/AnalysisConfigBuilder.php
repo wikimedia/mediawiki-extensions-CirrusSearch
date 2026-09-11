@@ -596,7 +596,7 @@ class AnalysisConfigBuilder {
 					'preserve_original' => true
 				],
 				'truncate_keyword' => [
-					'type' => 'truncate_norm',
+					'type' => 'truncate',
 					'length' => self::KEYWORD_IGNORE_ABOVE,
 				],
 				'remove_empty' => [
@@ -791,23 +791,50 @@ class AnalysisConfigBuilder {
 						'İ=>I',
 					],
 				],
+				// "slow" truncate char_filter (replaced with a dedicated filter if the extra plugin is available)
+				'truncate_keyword' => AnalyzerBuilder::patternFilter( "(?s)(?<=^.{" . self::KEYWORD_IGNORE_ABOVE . "}).*", '' )
 			],
 			'normalizer' => [
 				'lowercase_keyword' => [
 					'type' => 'custom',
-					'filter' => [
+					'char_filter' => [
 						'truncate_keyword',
+					],
+					'filter' => [
 						'lowercase'
 					],
 				],
 				'keyword' => [
 					'type' => 'custom',
-					'filter' => [
+					'char_filter' => [
 						'truncate_keyword',
 					],
 				]
 			]
 		];
+
+		if ( $this->isTruncateNormAvailable() ) {
+			// TODO: once opensearch 3.x is the min version we support, drop this and rely
+			//  directly on truncate which supports normalization.
+			unset( $defaults['char_filter']['truncate_keyword'] );
+			$defaults['filter']['truncate_keyword'] = [
+				'type' => 'truncate_norm',
+				'length' => self::KEYWORD_IGNORE_ABOVE,
+			];
+			$defaults['normalizer']['lowercase_keyword'] = [
+				'type' => 'custom',
+				'filter' => [
+					'truncate_keyword',
+					'lowercase'
+				],
+			];
+			$defaults['normalizer']['keyword'] = [
+				'type' => 'custom',
+				'filter' => [
+					'truncate_keyword',
+				],
+			];
+		}
 
 		foreach ( $defaults[ 'analyzer' ] as &$analyzer ) {
 			if ( $analyzer[ 'type' ] === 'default' ) {
@@ -1913,6 +1940,13 @@ class AnalysisConfigBuilder {
 	 */
 	public function isIcuAvailable() {
 		return $this->icu;
+	}
+
+	/**
+	 * @return bool true if the truncate_norm filter is available.
+	 */
+	public function isTruncateNormAvailable(): bool {
+		return Plugins::contains( 'extra', $this->plugins );
 	}
 
 	/**

@@ -10,7 +10,6 @@ use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\SearchConfig;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Maintenance\OrderedStreamingForkController;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\PageArchive;
 use MediaWiki\Search\SearchSuggestionSet;
 use MediaWiki\Settings\SettingsBuilder;
@@ -233,7 +232,7 @@ class RunSearch extends Maintenance {
 				'explanation' => $result->getExplanation(),
 				'extra' => $result->getExtensionData(),
 			];
-			$img = $result->getFile() ?: MediaWikiServices::getInstance()->getRepoGroup()
+			$img = $result->getFile() ?: $this->getServiceContainer()->getRepoGroup()
 				->findFile( $result->getTitle() );
 			if ( $img ) {
 				$thumb = $img->transform( [ 'width' => 120, 'height' => 120 ] );

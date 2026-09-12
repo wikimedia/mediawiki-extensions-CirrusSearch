@@ -10,7 +10,6 @@ use CirrusSearch\LogChannel;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Updater;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPage;
 use MediaWiki\Title\Title;
 use MediaWiki\Utils\BatchRowIterator;
@@ -218,7 +217,7 @@ class ForceSearchIndex extends Maintenance {
 		} else {
 			$it = $this->getDeletesIterator();
 		}
-		$jobQueueGroup = MediaWikiServices::getInstance()->getJobQueueGroup();
+		$jobQueueGroup = $this->getServiceContainer()->getJobQueueGroup();
 
 		foreach ( $it as $batch ) {
 			if ( $this->indexUpdates ) {
@@ -572,7 +571,7 @@ class ForceSearchIndex extends Maintenance {
 			);
 
 			$pages = [];
-			$wikiPageFactory = MediaWikiServices::getInstance()->getWikiPageFactory();
+			$wikiPageFactory = $this->getServiceContainer()->getWikiPageFactory();
 			foreach ( $batch as $row ) {
 				$page = $wikiPageFactory->newFromRow( $row, IDBAccessObject::READ_LATEST );
 
@@ -646,7 +645,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return int length
 	 */
 	private function getUpdatesInQueue() {
-		return MediaWikiServices::getInstance()->getJobQueueGroup()->get( 'cirrusSearchMassIndex' )->getSize();
+		return $this->getServiceContainer()->getJobQueueGroup()->get( 'cirrusSearchMassIndex' )->getSize();
 	}
 
 	/**

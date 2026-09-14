@@ -19,7 +19,7 @@
 		"@wdio/spec-reporter": "9.30.1",
 		"chai": "4.1.2",
 		"deepmerge": "2.0.1",
-		"eslint-config-wikimedia": "0.32.5",
+		"eslint-config-wikimedia": "0.32.6",
 		"grunt": "1.6.3",
 		"grunt-banana-checker": "0.13.0",
 		"grunt-eslint": "24.3.0",
@@ -27,7 +27,7 @@
 		"mwbot": "1.0.9",
 		"request": "2.88.2",
 		"semlog": "0.6.10",
-		"stylelint-config-wikimedia": "0.19.3",
+		"stylelint-config-wikimedia": "0.19.4",
 		"wdio-mediawiki": "6.5.2"
 	},
 	"peerDependencies": {

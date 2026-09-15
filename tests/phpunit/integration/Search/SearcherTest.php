@@ -136,6 +136,9 @@ class SearcherTest extends CirrusIntegrationTestCase {
 		// regenerating the fixture wont cause changes. Do it always, instead of only when
 		// writing, so that the diff's from phpunit are also as minimal as possible.
 		$elasticQuery = $this->normalizeOrdering( $elasticQuery );
+		// Which route the query took is not part of the query. RoutingDumpTest covers that,
+		// and keeping it here would repeat one uninteresting block in every fixture.
+		unset( $elasticQuery[Searcher::ROUTING_DUMP_KEY] );
 
 		$this->assertFileContains(
 			CirrusIntegrationTestCase::fixturePath( $expectedFile ),

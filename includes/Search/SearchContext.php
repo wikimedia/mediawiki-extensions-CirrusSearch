@@ -5,6 +5,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusSearchHookRunner;
+use CirrusSearch\Dispatch\DispatchDecision;
 use CirrusSearch\ExternalIndex;
 use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\OtherIndexesUpdater;
@@ -52,6 +53,13 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @var string[]
 	 */
 	private $profileContextParams = [];
+
+	/**
+	 * @var DispatchDecision|null Which route this query took and why, for debug output. Null
+	 *  when the context was not built from a SearchQuery, or when the caller named the
+	 *  profile context outright and no route was elected.
+	 */
+	private ?DispatchDecision $dispatchDecision = null;
 
 	/**
 	 * @var string rescore profile to use
@@ -331,6 +339,15 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 */
 	public function getProfileContextParams(): array {
 		return $this->profileContextParams;
+	}
+
+	/**
+	 * Which route this query took, and what every route decided.
+	 *
+	 * @return DispatchDecision|null null when no route was elected for this context
+	 */
+	public function getDispatchDecision(): ?DispatchDecision {
+		return $this->dispatchDecision;
 	}
 
 	/**
@@ -919,14 +936,20 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		$searchContext->rescoreProfile = $query->getForcedProfile( SearchProfileService::RESCORE );
 
 		$dispatchService = $query->getSearchConfig()->getProfileService()->getDispatchService();
-		// Asking the voters is what costs, and a voter is free to talk to the search backend,
-		// so a caller that would throw the answer away never asks the question.
-		$profileContext = $useDefaultRoute
-			? $dispatchService->defaultProfileContext( $query->getSearchEngineEntryPoint() )
-			: $dispatchService->bestRoute( $query )->getProfileContext();
 		// Note that setProfileContext() resets the context params, they are set
 		// further down.
-		$searchContext->setProfileContext( $profileContext );
+		if ( $useDefaultRoute ) {
+			// Asking the voters is what costs, and a voter is free to talk to the search
+			// backend, so a caller that would throw the answer away never asks the question.
+			$searchContext->setProfileContext(
+				$dispatchService->defaultProfileContext( $query->getSearchEngineEntryPoint() ) );
+		} else {
+			$decision = $dispatchService->dispatch( $query );
+			$searchContext->setProfileContext( $decision->getProfileContext() );
+			// Kept whole, losing routes included, because the question a reader of the dump
+			// has is why the query did not take some other route.
+			$searchContext->dispatchDecision = $decision;
+		}
 		$parsedQuery = $query->getParsedQuery();
 		$basicQueryClasses = [
 			BasicQueryClassifier::SIMPLE_BAG_OF_WORDS,

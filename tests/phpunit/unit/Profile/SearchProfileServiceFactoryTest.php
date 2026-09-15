@@ -254,7 +254,8 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			->setInitialNamespaces( [ NS_MAIN ] )
 			->setDebugOptions( CirrusDebugOptions::forSemanticSearchUnitTests() )
 			->build();
-		$this->assertEquals( SearchProfileService::CONTEXT_SEMANTIC, $dispatch->bestRoute( $query )->getProfileContext() );
+		$this->assertEquals( SearchProfileService::CONTEXT_SEMANTIC,
+			$dispatch->dispatch( $query )->getProfileContext() );
 	}
 
 	/**
@@ -275,18 +276,18 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			->setInitialNamespaces( [ NS_MAIN ] )
 			->build();
 		$this->assertEquals( SearchProfileService::CONTEXT_SEMANTIC,
-			$dispatch->bestRoute( $longQuery )->getProfileContext() );
+			$dispatch->dispatch( $longQuery )->getProfileContext() );
 
 		$shortQuery = $this->getNewFTSearchQueryBuilder( $config, 'catapult' )
 			->setInitialNamespaces( [ NS_MAIN ] )
 			->build();
 		$this->assertNotEquals( SearchProfileService::CONTEXT_SEMANTIC,
-			$dispatch->bestRoute( $shortQuery )->getProfileContext() );
+			$dispatch->dispatch( $shortQuery )->getProfileContext() );
 	}
 
 	/**
-	 * A wiki that cannot do semantic retrieval must not get a semantic route at all. The
-	 * query below is long enough that the route would win if it had been built.
+	 * A wiki that cannot do semantic retrieval must not get a semantic route it would have to
+	 * veto on every query.
 	 */
 	public function testSemanticRouteLeftOutWithoutASemanticProfile() {
 		$factory = $this->getFactory( [], $this->createCirrusSearchHookRunner( [] ), [] );
@@ -299,8 +300,9 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 		$query = $this->getNewFTSearchQueryBuilder( $config, 'how do catapults work' )
 			->setInitialNamespaces( [ NS_MAIN ] )
 			->build();
-		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT,
-			$service->getDispatchService()->bestRoute( $query )->getProfileContext() );
+		$decision = $service->getDispatchService()->dispatch( $query );
+		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT, $decision->getProfileContext() );
+		$this->assertArrayNotHasKey( 'semantic', $decision->getDecisions() );
 	}
 
 	public static function provideBrokenDispatchProfiles() {
@@ -353,7 +355,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			->setInitialNamespaces( [ NS_MAIN ] )
 			->build();
 		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT,
-			$service->getDispatchService()->bestRoute( $query )->getProfileContext() );
+			$service->getDispatchService()->dispatch( $query )->getProfileContext() );
 	}
 
 	public function testDefaultRouteTakesWhatNoOtherRouteWanted() {
@@ -370,14 +372,14 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			->setInitialNamespaces( [ NS_MAIN ] )
 			->build();
 		$this->assertEquals( 'unit_test_context',
-			$dispatch->bestRoute( $inMain )->getProfileContext() );
+			$dispatch->dispatch( $inMain )->getProfileContext() );
 
 		// Outside the namespaces the better route accepts we fall back to the default route
 		$inTalk = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
 			->setInitialNamespaces( [ NS_TALK ] )
 			->build();
 		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT,
-			$dispatch->bestRoute( $inTalk )->getProfileContext() );
+			$dispatch->dispatch( $inTalk )->getProfileContext() );
 	}
 
 	private function getFactory( array $hostWikiConfig = [],

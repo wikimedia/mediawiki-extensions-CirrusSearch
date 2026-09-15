@@ -18,12 +18,12 @@ use CirrusSearch\Search\SearchQuery;
  */
 interface SearchQueryDispatchService {
 	/**
-	 * Determine the best route for the $query.
+	 * Determine the best route for the $query, along with what every route decided.
 	 *
-	 * @param SearchQuery $query
-	 * @return SearchQueryRoute
+	 * The losing routes come back with the winner because the question a reader of a query
+	 * dump has is why the query did not take some other route.
 	 */
-	public function bestRoute( SearchQuery $query ): SearchQueryRoute;
+	public function dispatch( SearchQuery $query ): DispatchDecision;
 
 	/**
 	 * Profile context of the route a query takes when it is not dispatched at all.

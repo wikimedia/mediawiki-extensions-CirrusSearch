@@ -105,14 +105,13 @@ class VotedSearchQueryRouteTest extends CirrusTestCase {
 			'proposed' => $this->voter( RouteVote::Candidate ),
 		] );
 
-		$decision = $route->decide( $this->query() );
-
 		$this->assertSame( [
-			'abstained' => RouteVote::Abstain,
-			'proposed' => RouteVote::Candidate,
-		], $decision->getVotes() );
-		$this->assertSame( 'ctx', $decision->getProfileContext() );
-		$this->assertSame( RouteDecision::REASON_CANDIDATE, $decision->getReason() );
+			'accepted' => true,
+			'reason' => RouteDecision::REASON_CANDIDATE,
+			'context' => 'ctx',
+			'score' => 0.5,
+			'votes' => [ 'abstained' => 'abstain', 'proposed' => 'candidate' ],
+		], $route->decide( $this->query() )->toArray() );
 	}
 
 	public static function provideInvalidEntries() {

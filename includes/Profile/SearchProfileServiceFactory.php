@@ -239,7 +239,7 @@ class SearchProfileServiceFactory {
 			throw new SearchProfileException( "Query dispatch profile $profileName names " .
 				"$defaultName as its default route but declares no such route" );
 		}
-		$service->registerQueryDispatchTable( $routes, $defaultRoute );
+		$service->registerQueryDispatchTable( $profileName, $routes, $defaultRoute );
 	}
 
 	private function loadCrossProjectBlockScorer( SearchProfileService $service, SearchConfig $config ) {

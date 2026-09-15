@@ -100,6 +100,12 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	public const MAINSEARCH_MSEARCH_KEY = '__main__';
 
 	/**
+	 * Key the routing decision takes in the cirrusDumpQuery output, beside the msearch
+	 * request keys.
+	 */
+	public const ROUTING_DUMP_KEY = '__routing__';
+
+	/**
 	 * Identifies the "tested" search request in MSearchRequests/MSearchResponses
 	 */
 	private const INTERLEAVED_MSEARCH_KEY = '__interleaved__';
@@ -429,7 +435,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$fallbackRunner->attachSearchRequests( $searches, $this->connection->getClient() );
 
 		if ( $this->searchContext->getDebugOptions()->isCirrusDumpQuery() ) {
-			return $searches->dumpQuery( $description );
+			return $this->dumpQueryWithRouting( $searches, $description );
 		}
 
 		$responses = $this->searchMulti( $searches );
@@ -614,6 +620,29 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			->setSort( $this->sort )
 			->setTimeout( $this->getTimeout( $this->searchContext->getSearchType() ) )
 			->build();
+	}
+
+	/**
+	 * Dump the queries, plus which route this query took and why.
+	 *
+	 * The decision sits beside the requests under its own key, rather than inside one of
+	 * them, because it explains which requests exist at all. It is there whatever the wiki
+	 * configured, so the absence of the key means the query was never dispatched rather than
+	 * that it was dispatched and nothing interesting happened.
+	 *
+	 * @param MSearchRequests $searches
+	 * @param string $description
+	 * @return Status
+	 */
+	private function dumpQueryWithRouting( MSearchRequests $searches, $description ): Status {
+		$status = $searches->dumpQuery( $description );
+		$decision = $this->searchContext->getDispatchDecision();
+		if ( $decision !== null ) {
+			$dump = $status->getValue();
+			$dump[self::ROUTING_DUMP_KEY] = $decision->toArray();
+			$status->setResult( true, $dump );
+		}
+		return $status;
 	}
 
 	/**

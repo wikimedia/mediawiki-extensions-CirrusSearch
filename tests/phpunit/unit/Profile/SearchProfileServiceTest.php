@@ -146,8 +146,9 @@ class SearchProfileServiceTest extends CirrusTestCase {
 		$service = $this->getSearchProfileService();
 		// The default route normally comes from the query dispatch profile. Nothing registers
 		// it for a service built without the factory, so the test supplies its own.
-		$service->registerQueryDispatchTable( [], new DefaultSearchQueryRoute( 'cirrus_default',
-			SearchQuery::SEARCH_TEXT, SearchProfileService::CONTEXT_DEFAULT ) );
+		$service->registerQueryDispatchTable( 'unit_test', [],
+			new DefaultSearchQueryRoute( 'cirrus_default', SearchQuery::SEARCH_TEXT,
+				SearchProfileService::CONTEXT_DEFAULT ) );
 		$service->registerSearchQueryRoute( new VotedSearchQueryRoute( 'foo', SearchQuery::SEARCH_TEXT,
 			'foo', 0.5, [
 				'namespaces' => new NamespaceVetoVoter( [ 0 ] ),
@@ -159,20 +160,18 @@ class SearchProfileServiceTest extends CirrusTestCase {
 		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
 			->setInitialNamespaces( [ 0 ] )
 			->build();
-		$route = $dispatch->bestRoute( $query );
-		$this->assertEquals( 'foo', $route->getProfileContext() );
+		$this->assertEquals( 'foo', $dispatch->dispatch( $query )->getProfileContext() );
 
 		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
 			->setInitialNamespaces( [ 1 ] )
 			->build();
-		$route = $dispatch->bestRoute( $query );
-		$this->assertEquals( 'bar', $route->getProfileContext() );
+		$this->assertEquals( 'bar', $dispatch->dispatch( $query )->getProfileContext() );
 
 		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
 			->setInitialNamespaces( [ 2 ] )
 			->build();
-		$route = $dispatch->bestRoute( $query );
-		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT, $route->getProfileContext() );
+		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT,
+			$dispatch->dispatch( $query )->getProfileContext() );
 	}
 
 	public function testUndocumentedProfilesExcludedFromListExposedProfiles() {

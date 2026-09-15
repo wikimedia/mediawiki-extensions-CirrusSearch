@@ -104,6 +104,17 @@ class CirrusDebugOptions {
 	}
 
 	/**
+	 * Ask for semantic search and dump the query, without dying on the dump the way a real
+	 * request would.
+	 */
+	public static function forSemanticSearchDumpInUnitTests(): self {
+		$options = self::forSemanticSearchUnitTests();
+		$options->cirrusDumpQuery = true;
+		$options->dumpAndDie = false;
+		return $options;
+	}
+
+	/**
 	 * Inspect the param names $param and return its value only
 	 * if it belongs to the set of allowed values declared in $allowedValues
 	 * @param WebRequest $request

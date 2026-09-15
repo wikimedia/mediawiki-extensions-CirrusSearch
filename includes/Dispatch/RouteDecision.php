@@ -99,4 +99,17 @@ class RouteDecision {
 	public function getVotes(): array {
 		return $this->votes;
 	}
+
+	/**
+	 * @return array the decision as it appears in debug output
+	 */
+	public function toArray(): array {
+		return [
+			'accepted' => $this->accepted,
+			'reason' => $this->reason,
+			'context' => $this->profileContext,
+			'score' => $this->score,
+			'votes' => array_map( static fn ( RouteVote $vote ) => $vote->value, $this->votes ),
+		];
+	}
 }

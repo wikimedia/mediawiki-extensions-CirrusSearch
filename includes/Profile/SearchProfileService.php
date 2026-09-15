@@ -213,6 +213,11 @@ class SearchProfileService {
 	private array $defaultRoutes = [];
 
 	/**
+	 * @var string|null Dispatch profile the route table came from, for debug output.
+	 */
+	private ?string $queryDispatchProfile = null;
+
+	/**
 	 * @var UserOptionsLookup
 	 */
 	private $userOptionsLookup;
@@ -501,13 +506,19 @@ class SearchProfileService {
 	/**
 	 * Register the route a query takes when no other route selects it.
 	 *
+	 * @param string $profileName name of the dispatch profile the routes came from
 	 * @param SearchQueryRoute[] $routes routes that bid for a query
 	 * @param DefaultSearchQueryRoute $defaultRoute route a query takes when none of them did
 	 * @see SearchProfileService::getDispatchService()
 	 */
-	public function registerQueryDispatchTable( array $routes, DefaultSearchQueryRoute $defaultRoute ) {
+	public function registerQueryDispatchTable(
+		string $profileName,
+		array $routes,
+		DefaultSearchQueryRoute $defaultRoute
+	) {
 		$this->checkFrozen();
 		$this->checkEntryPoint( $defaultRoute );
+		$this->queryDispatchProfile = $profileName;
 		$this->defaultRoutes[$defaultRoute->getSearchEngineEntryPoint()] = $defaultRoute;
 		foreach ( $routes as $route ) {
 			$this->registerSearchQueryRoute( $route );
@@ -560,7 +571,7 @@ class SearchProfileService {
 			Assert::precondition( $this->frozen,
 				"Must be frozen when accessing the SearchQuery dispatch service." );
 			$this->dispatchService = new DefaultSearchQueryDispatchService(
-				$this->routes, $this->defaultRoutes );
+				$this->routes, $this->defaultRoutes, $this->queryDispatchProfile );
 		}
 		return $this->dispatchService;
 	}

@@ -32,24 +32,28 @@ class DefaultSearchQueryDispatchService implements SearchQueryDispatchService {
 
 	public function bestRoute( SearchQuery $query ): SearchQueryRoute {
 		$entryPoint = $query->getSearchEngineEntryPoint();
-		$bestScore = SearchQueryRoute::REJECT_ROUTE;
+		// forced profile's always apply against the default route
+		if ( $query->hasForcedProfile() ) {
+			return $this->defaultRoute( $entryPoint );
+		}
+		$bestScore = RouteDecision::REJECT_ROUTE;
 
 		/** @var SearchQueryRoute|null $best */
 		$best = null;
+		$winner = '';
 		foreach ( $this->routes[$entryPoint] ?? [] as $route ) {
-			$score = $route->score( $query );
-			Assert::postcondition( $score >= 0 && $score <= 1.0, "SearchQueryRoute scores must be between 0.0 and 1.0" );
-			if ( $score === SearchQueryRoute::REJECT_ROUTE ) {
+			$decision = $route->decide( $query );
+			if ( !$decision->isAccepted() ) {
 				continue;
 			}
+			$score = $decision->getScore();
 			if ( $score === 1.0 && $bestScore === 1.0 ) {
-				throw new SearchProfileException( "Two competing contexts " .
-					// @phan-suppress-next-line PhanNonClassMethodCall $best always set when reaching this line
-					"{$route->getProfileContext()} and {$best->getProfileContext()} " .
-					" produced the max score" );
+				throw new SearchProfileException( "Two competing routes " .
+					"{$route->getName()} and $winner produced the max score" );
 			}
 			if ( $score > $bestScore ) {
 				$best = $route;
+				$winner = $route->getName();
 				$bestScore = $score;
 			}
 		}

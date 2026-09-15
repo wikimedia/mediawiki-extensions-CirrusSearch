@@ -1757,5 +1757,48 @@ Force the use of this second-try search profile instead of the 'default' one.
 Default
   $wgCirrusSearchDefaultSemanticProfile = null;
 
-EXPERIMENTAL. Selects the profile to use when CirrusDebugOptions requests the use
-of semantic search.
+EXPERIMENTAL. Selects the fulltext query builder profile used for semantic
+retrieval. Null means the wiki cannot do semantic retrieval at all, and the
+semantic route is left out of whatever query dispatch profile is in use. Setting
+it does not by itself send any query to semantic retrieval, see
+$wgCirrusSearchQueryDispatchProfile for that.
+
+; $wgCirrusSearchQueryDispatchProfile
+
+Default:
+  $wgCirrusSearchQueryDispatchProfile = 'default';
+
+Names the profile which defines the route table that decides which retrieval
+strategy runs for full text search. A profile lists the routes a query can
+take, a fixed score deciding priority, and voters to decide if the route
+can be taken.
+
+The default profiles limit semantic retrieval to simple bag of words queries,
+any special syntax or keywords cause the semantic route to be rejected.
+
+The profiles that ship with Cirrus are:
+* default: Simple lexical retrieval
+* semantic_by_query_length: queries of at least
+  $wgCirrusSearchSemanticQueryLengthThreshold tokens get routed to semantic
+  search.
+
+Cross-wiki searches never dispatch. They take the default route of the wiki
+being searched. A request that names a query builder or a rescore profile does
+not dispatch either, since it has already made the choice.
+
+; $wgCirrusSearchSemanticQueryLengthThreshold
+
+Default:
+  $wgCirrusSearchSemanticQueryLengthThreshold = null;
+
+Smallest number of whitespace separated tokens a query must have before the
+query length voter proposes the semantic route. Null leaves that voter out, so
+a route whose only proposing voter is that one then takes nothing.
+
+; $wgCirrusSearchQueryDispatchProfiles
+
+Default:
+  $wgCirrusSearchQueryDispatchProfiles = [];
+
+Query dispatching profiles
+(see profiles/QueryDispatchProfiles.config.php)

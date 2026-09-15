@@ -813,6 +813,18 @@
 		"CirrusSearchDefaultSemanticProfile": {
 			"description": "EXPERIMENTAL. Selects the profile to use when CirrusDebugOptions requests the use of semantic search",
 			"value": null
+		},
+		"CirrusSearchSemanticQueryLengthThreshold": {
+			"description": "Smallest number of whitespace separated tokens a query must have before the query length voter proposes semantic retrieval. Null leaves that voter out of the route.",
+			"value": null
+		},
+		"CirrusSearchQueryDispatchProfile": {
+			"description": "Name of the query dispatch profile: the route table that decides, per fulltext query, which retrieval strategy runs.",
+			"value": "default"
+		},
+		"CirrusSearchQueryDispatchProfiles": {
+			"description": "Set of custom query dispatch profiles.",
+			"value": []
 		}
 	},
 	"SearchMappings": {

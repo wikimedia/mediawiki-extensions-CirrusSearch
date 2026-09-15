@@ -2,13 +2,13 @@
 
 namespace CirrusSearch\Profile;
 
-use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusTestCase;
-use CirrusSearch\Dispatch\BasicSearchQueryRoute;
 use CirrusSearch\Dispatch\DefaultSearchQueryRoute;
+use CirrusSearch\Dispatch\VotedSearchQueryRoute;
+use CirrusSearch\Dispatch\Voter\AllQueriesCandidateVoter;
+use CirrusSearch\Dispatch\Voter\NamespaceVetoVoter;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchQuery;
-use CirrusSearch\Search\SearchQueryBuilder;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\User\Options\StaticUserOptionsLookup;
 use MediaWiki\User\UserIdentityValue;
@@ -144,8 +144,15 @@ class SearchProfileServiceTest extends CirrusTestCase {
 
 	public function testRegisterRoute() {
 		$service = $this->getSearchProfileService();
-		$service->registerSearchQueryRoute( new BasicSearchQueryRoute( SearchQuery::SEARCH_TEXT,
-			[ 0 ], [], 'foo', 0.5 ) );
+		// The default route normally comes from the query dispatch profile. Nothing registers
+		// it for a service built without the factory, so the test supplies its own.
+		$service->registerQueryDispatchTable( [], new DefaultSearchQueryRoute( 'cirrus_default',
+			SearchQuery::SEARCH_TEXT, SearchProfileService::CONTEXT_DEFAULT ) );
+		$service->registerSearchQueryRoute( new VotedSearchQueryRoute( 'foo', SearchQuery::SEARCH_TEXT,
+			'foo', 0.5, [
+				'namespaces' => new NamespaceVetoVoter( [ 0 ] ),
+				'all' => new AllQueriesCandidateVoter(),
+			] ) );
 		$service->registerFTSearchQueryRoute( 'bar', 0.4, [ 1 ] );
 		$service->freeze();
 		$dispatch = $service->getDispatchService();
@@ -183,53 +190,7 @@ class SearchProfileServiceTest extends CirrusTestCase {
 		$this->assertArrayNotHasKey( 'undocumented_profile', $exposed );
 	}
 
-	public function testRegisterSemanticSearchQueryRoute() {
-		// No request is handed to the service, the option travels on the query
-		$service = $this->getSearchProfileService();
-		$service->registerSemanticSearchQueryRoute( [ NS_MAIN ], 1.0 );
-		$service->freeze();
-
-		$dispatch = $service->getDispatchService();
-
-		// A main-namespace query with semantic search enabled should route to semantic context
-		$queryInMain = $this->newSemanticQueryBuilder()
-			->setInitialNamespaces( [ NS_MAIN ] )
-			->build();
-		$this->assertEquals( SearchProfileService::CONTEXT_SEMANTIC, $dispatch->bestRoute( $queryInMain )->getProfileContext() );
-
-		// A non-main-namespace query should not route to the semantic route
-		$queryOutsideMain = $this->newSemanticQueryBuilder()
-			->setInitialNamespaces( [ NS_TALK ] )
-			->build();
-		$this->assertNotEquals( SearchProfileService::CONTEXT_SEMANTIC, $dispatch->bestRoute( $queryOutsideMain )->getProfileContext() );
-	}
-
-	public function testRegisterSemanticSearchQueryRouteWithoutSemanticOption() {
-		// Without the semantic debug option on the query the route must not be selected
-		$service = $this->getSearchProfileService();
-		$service->registerSemanticSearchQueryRoute( [ NS_MAIN ], 1.0 );
-		$service->freeze();
-
-		$dispatch = $service->getDispatchService();
-		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
-			->setDebugOptions( CirrusDebugOptions::defaultOptions() )
-			->setInitialNamespaces( [ NS_MAIN ] )
-			->build();
-		$route = $dispatch->bestRoute( $query );
-		$this->assertNotEquals( SearchProfileService::CONTEXT_SEMANTIC, $route->getProfileContext() );
-	}
-
-	private function newSemanticQueryBuilder(): SearchQueryBuilder {
-		return $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
-			->setDebugOptions( CirrusDebugOptions::forSemanticSearchUnitTests() );
-	}
-
 	private function getSearchProfileService(): SearchProfileService {
-		$service = new SearchProfileService( new StaticUserOptionsLookup( [] ) );
-		// A bare service has no routes, they come from SearchProfileServiceFactory
-		// in production.
-		$service->registerDefaultSearchQueryRoute( new DefaultSearchQueryRoute(
-			SearchQuery::SEARCH_TEXT, SearchProfileService::CONTEXT_DEFAULT ) );
-		return $service;
+		return new SearchProfileService( new StaticUserOptionsLookup( [] ) );
 	}
 }

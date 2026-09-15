@@ -5,28 +5,35 @@ namespace CirrusSearch\Dispatch;
 use CirrusSearch\Search\SearchQuery;
 
 /**
- * For a given search engine entry point a SearchQueryRoute evaluates
- * a particular SearchQuery and assign it a score.
- * The SearchQueryDispatchService evaluates these scores and chose the best one
- * in order to assign the profile context using the one provided by the route
- * itself.
+ * For a given search engine entry point a SearchQueryRoute inspects the
+ * SearchQuery to decide if we have a specialized execution method for that
+ * query. The initial use case is to select semantic search for certain classes
+ * of queries.
+ *
+ * The SearchQueryDispatchService evaluates the available routes and selects
+ * the route with the highest score. It then assigns the profile context
+ * provided by that route.
+ *
  * SearchQueryRoutes are evaluated just after the SearchQuery is constructed
  * and before ES query building components are chosen.
+ *
  * @see \CirrusSearch\Profile\SearchProfileService
  */
 interface SearchQueryRoute {
-	public const REJECT_ROUTE = 0.0;
+	/**
+	 * Decide if $query belongs on this route, and report the tie-breaking score.
+	 *
+	 * @param SearchQuery $query
+	 * @return RouteDecision
+	 */
+	public function decide( SearchQuery $query ): RouteDecision;
 
 	/**
-	 * Compute a score for this particular $query.
-	 * Special values:
-	 * - 0.0: this route must be avoided
-	 * - 1.0: this route must supersede any others, the system
-	 *      fails if multiple routes return a score equals to 1
-	 * @param SearchQuery $query
-	 * @return float a score between 0 and 1
+	 * Name this route takes in the dispatch table and in debug output.
+	 *
+	 * @return string
 	 */
-	public function score( SearchQuery $query );
+	public function getName(): string;
 
 	/**
 	 * The entry point used in the search engine:

@@ -245,24 +245,99 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 	}
 
 	public function testSemanticSearchRouteRegistered() {
-		$cirrusSearchHookRunner = $this->createCirrusSearchHookRunner( [
+		$factory = $this->getFactory( [], $this->semanticHookRunner(), [] );
+		$config = new HashSearchConfig( [ CirrusConfigNames::DefaultSemanticProfile => 'default_semantic' ] );
+		$service = $factory->loadService( $config, new FauxRequest( [] ), null, true );
+
+		$dispatch = $service->getDispatchService();
+		$query = $this->getNewFTSearchQueryBuilder( $config, 'foo' )
+			->setInitialNamespaces( [ NS_MAIN ] )
+			->setDebugOptions( CirrusDebugOptions::forSemanticSearchUnitTests() )
+			->build();
+		$this->assertEquals( SearchProfileService::CONTEXT_SEMANTIC, $dispatch->bestRoute( $query )->getProfileContext() );
+	}
+
+	/**
+	 * The dispatch profiles must be registered before the route table is built from them, so
+	 * config alone is enough to send long queries to semantic search.
+	 */
+	public function testSemanticRouteWiredFromConfig() {
+		$factory = $this->getFactory( [], $this->semanticHookRunner(), [] );
+		$config = new HashSearchConfig( [
+			CirrusConfigNames::DefaultSemanticProfile => 'default_semantic',
+			CirrusConfigNames::QueryDispatchProfile => 'semantic_by_query_length',
+			CirrusConfigNames::SemanticQueryLengthThreshold => 4,
+		] );
+		$service = $factory->loadService( $config, new FauxRequest( [] ), null, true );
+
+		$dispatch = $service->getDispatchService();
+		$longQuery = $this->getNewFTSearchQueryBuilder( $config, 'how do catapults work' )
+			->setInitialNamespaces( [ NS_MAIN ] )
+			->build();
+		$this->assertEquals( SearchProfileService::CONTEXT_SEMANTIC,
+			$dispatch->bestRoute( $longQuery )->getProfileContext() );
+
+		$shortQuery = $this->getNewFTSearchQueryBuilder( $config, 'catapult' )
+			->setInitialNamespaces( [ NS_MAIN ] )
+			->build();
+		$this->assertNotEquals( SearchProfileService::CONTEXT_SEMANTIC,
+			$dispatch->bestRoute( $shortQuery )->getProfileContext() );
+	}
+
+	/**
+	 * A wiki that cannot do semantic retrieval must not get a semantic route at all. The
+	 * query below is long enough that the route would win if it had been built.
+	 */
+	public function testSemanticRouteLeftOutWithoutASemanticProfile() {
+		$factory = $this->getFactory( [], $this->createCirrusSearchHookRunner( [] ), [] );
+		$config = new HashSearchConfig( [
+			CirrusConfigNames::QueryDispatchProfile => 'semantic_by_query_length',
+			CirrusConfigNames::SemanticQueryLengthThreshold => 4,
+		] );
+		$service = $factory->loadService( $config, new FauxRequest( [] ), null, true );
+
+		$query = $this->getNewFTSearchQueryBuilder( $config, 'how do catapults work' )
+			->setInitialNamespaces( [ NS_MAIN ] )
+			->build();
+		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT,
+			$service->getDispatchService()->bestRoute( $query )->getProfileContext() );
+	}
+
+	public static function provideBrokenDispatchProfiles() {
+		$route = [ 'context' => SearchProfileService::CONTEXT_DEFAULT ];
+		return [
+			'names no default route' => [ [ 'routes' => [ 'cirrus_default' => $route ] ] ],
+			'names one it does not declare' => [ [
+				'default_route' => 'typo',
+				'routes' => [ 'cirrus_default' => $route ],
+			] ],
+		];
+	}
+
+	/**
+	 * A profile with nowhere to send a query no route wanted would fail on every such search.
+	 * It fails once, when the profile is loaded, instead.
+	 *
+	 * @dataProvider provideBrokenDispatchProfiles
+	 */
+	public function testDispatchProfileMustNameADefaultRouteItDeclares( array $profile ) {
+		$factory = $this->getFactory( [], $this->createCirrusSearchHookRunner( [] ), [] );
+		$config = new HashSearchConfig( [
+			CirrusConfigNames::QueryDispatchProfiles => [ 'broken' => $profile ],
+			CirrusConfigNames::QueryDispatchProfile => 'broken',
+		] );
+
+		$this->expectException( SearchProfileException::class );
+		$factory->loadService( $config, new FauxRequest( [] ), null, true );
+	}
+
+	private function semanticHookRunner(): CirrusSearchHookRunner {
+		return $this->createCirrusSearchHookRunner( [
 			'CirrusSearchProfileService' => static function ( SearchProfileService $service ) {
 				$service->registerArrayRepository( SearchProfileService::FT_QUERY_BUILDER,
 					'unit_test', [ 'default_semantic' => [] ] );
 			}
 		] );
-		$factory = $this->getFactory( [], $cirrusSearchHookRunner, [] );
-		$config = new HashSearchConfig( [ CirrusConfigNames::DefaultSemanticProfile => 'default_semantic' ] );
-		$service = $factory->loadService( $config, null, null, true );
-
-		// The route reads the option from the query, not from the request the
-		// profile service was built with.
-		$dispatch = $service->getDispatchService();
-		$query = $this->getNewFTSearchQueryBuilder( $config, 'foo' )
-			->setDebugOptions( CirrusDebugOptions::forSemanticSearchUnitTests() )
-			->setInitialNamespaces( [ NS_MAIN ] )
-			->build();
-		$this->assertEquals( SearchProfileService::CONTEXT_SEMANTIC, $dispatch->bestRoute( $query )->getProfileContext() );
 	}
 
 	/**

@@ -919,6 +919,8 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		$searchContext->rescoreProfile = $query->getForcedProfile( SearchProfileService::RESCORE );
 
 		$dispatchService = $query->getSearchConfig()->getProfileService()->getDispatchService();
+		// Asking the voters is what costs, and a voter is free to talk to the search backend,
+		// so a caller that would throw the answer away never asks the question.
 		$profileContext = $useDefaultRoute
 			? $dispatchService->defaultProfileContext( $query->getSearchEngineEntryPoint() )
 			: $dispatchService->bestRoute( $query )->getProfileContext();
@@ -938,7 +940,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 				$searchContext->syntaxUsed[$klass] = 1;
 			}
 		}
-		// TODO: Clarify what happens when user forces a profile, should we disable the dispatch service?
 		$searchContext->fulltextQueryBuilderProfile = $query->getForcedProfile( SearchProfileService::FT_QUERY_BUILDER );
 		// A caller that asks for the default route wants the plain default search of
 		// the wiki that it searches. The context params come from the local request,

@@ -3,12 +3,14 @@
 namespace CirrusSearch\Profile;
 
 use CirrusSearch\BuildDocument\DocumentSizeLimiter;
-use CirrusSearch\Dispatch\BasicSearchQueryRoute;
 use CirrusSearch\Dispatch\DefaultSearchQueryDispatchService;
 use CirrusSearch\Dispatch\DefaultSearchQueryRoute;
 use CirrusSearch\Dispatch\SearchQueryDispatchService;
 use CirrusSearch\Dispatch\SearchQueryRoute;
-use CirrusSearch\Dispatch\SemanticSearchQueryRoute;
+use CirrusSearch\Dispatch\VotedSearchQueryRoute;
+use CirrusSearch\Dispatch\Voter\AllQueriesCandidateVoter;
+use CirrusSearch\Dispatch\Voter\NamespaceVetoVoter;
+use CirrusSearch\Dispatch\Voter\QueryClassVetoVoter;
 use CirrusSearch\Search\SearchQuery;
 use MediaWiki\Config\Config;
 use MediaWiki\Context\RequestContext;
@@ -28,6 +30,7 @@ use Wikimedia\Assert\Assert;
  * - RESCORE: Controls how elasticsearch rescore queries are built
  * - RESCORE_FUNCTION_CHAINS: Controls the list of functions used by a rescore profile
  * - SANEITIZER: Controls the saneitizer
+ * - QUERY_DISPATCH: The route table, and the voters each route decides with
  * - SIMILARITY: Defines similarity profiles used when building the index
  *
  * Multiple repository per type can be declared, in general we have:
@@ -131,6 +134,15 @@ class SearchProfileService {
 	public const NAMESPACE_MATCHER = 'namespace_matcher';
 
 	/**
+	 * Profile type holding the route table: which routes fulltext queries can take, the
+	 * voters that decide which one each query takes, and the default route a query takes when
+	 * no other route accepted it.
+	 * @see \CirrusSearch\Dispatch\VotedSearchQueryRoute::fromProfileEntry()
+	 * @see \CirrusSearch\Dispatch\DefaultSearchQueryRoute::fromProfileEntry()
+	 */
+	public const QUERY_DISPATCH = 'query_dispatch';
+
+	/**
 	 * Profile context used for prefix search queries
 	 */
 	public const CONTEXT_PREFIXSEARCH = 'prefixsearch';
@@ -218,8 +230,8 @@ class SearchProfileService {
 		$this->userOptionsLookup = $userOptionsLookup;
 		$this->request = $request ?? RequestContext::getMain()->getRequest();
 		$this->user = $user ?? RequestContext::getMain()->getUser();
-		// Declare the entry point but leave it empty. SearchProfileServiceFactory
-		// registers the routes, the default one included, so it owns the whole table.
+		// The entry points that can carry routes. The routes themselves, the catch all
+		// included, come from the query dispatch profile.
 		$this->routes = [
 			SearchQuery::SEARCH_TEXT => []
 		];
@@ -489,14 +501,17 @@ class SearchProfileService {
 	/**
 	 * Register the route a query takes when no other route selects it.
 	 *
-	 * @param DefaultSearchQueryRoute $route
-	 * @see SearchQueryDispatchService::defaultProfileContext()
+	 * @param SearchQueryRoute[] $routes routes that bid for a query
+	 * @param DefaultSearchQueryRoute $defaultRoute route a query takes when none of them did
 	 * @see SearchProfileService::getDispatchService()
 	 */
-	public function registerDefaultSearchQueryRoute( DefaultSearchQueryRoute $route ) {
+	public function registerQueryDispatchTable( array $routes, DefaultSearchQueryRoute $defaultRoute ) {
 		$this->checkFrozen();
-		$this->checkEntryPoint( $route );
-		$this->defaultRoutes[$route->getSearchEngineEntryPoint()] = $route;
+		$this->checkEntryPoint( $defaultRoute );
+		$this->defaultRoutes[$defaultRoute->getSearchEngineEntryPoint()] = $defaultRoute;
+		foreach ( $routes as $route ) {
+			$this->registerSearchQueryRoute( $route );
+		}
 	}
 
 	private function checkEntryPoint( SearchQueryRoute $route ) {
@@ -504,18 +519,6 @@ class SearchProfileService {
 			throw new SearchProfileException(
 				"Unsupported search engine entry point {$route->getSearchEngineEntryPoint()}" );
 		}
-	}
-
-	/**
-	 * Register a new static route for semantic search queries
-	 *
-	 * @param int[] $supportedNamespaces
-	 * @param float $score score of the route
-	 * @see SearchProfileService::getDispatchService()
-	 */
-	public function registerSemanticSearchQueryRoute( array $supportedNamespaces, float $score ) {
-		$this->registerSearchQueryRoute( new SemanticSearchQueryRoute(
-			SearchQuery::SEARCH_TEXT, $supportedNamespaces, $score ) );
 	}
 
 	/**
@@ -535,8 +538,17 @@ class SearchProfileService {
 	) {
 		Assert::parameter( $score > 0.0 && $score <= 1.0, '$score',
 			"must be greater than 0 and at most 1, $score given" );
-		$this->registerSearchQueryRoute( new BasicSearchQueryRoute( SearchQuery::SEARCH_TEXT,
-			$supportedNamespaces, $acceptableQueryClasses, $profileContext, $score ) );
+		$voters = [];
+		if ( $supportedNamespaces !== [] ) {
+			$voters['namespaces'] = new NamespaceVetoVoter( $supportedNamespaces );
+		}
+		if ( $acceptableQueryClasses !== [] ) {
+			$voters['query_classes'] = new QueryClassVetoVoter( $acceptableQueryClasses );
+		}
+		// Both voters above only ever object, so without this the route would take nothing.
+		$voters['all'] = new AllQueriesCandidateVoter();
+		$this->registerSearchQueryRoute( new VotedSearchQueryRoute( $profileContext,
+			SearchQuery::SEARCH_TEXT, $profileContext, (float)$score, $voters ) );
 	}
 
 	/**

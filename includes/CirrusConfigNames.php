@@ -862,6 +862,21 @@ class CirrusConfigNames {
 	 */
 	public const DefaultSemanticProfile = 'CirrusSearchDefaultSemanticProfile';
 
+	/**
+	 * Name constant for the CirrusSearchSemanticQueryLengthThreshold setting, for use with Config::get()
+	 */
+	public const SemanticQueryLengthThreshold = 'CirrusSearchSemanticQueryLengthThreshold';
+
+	/**
+	 * Name constant for the CirrusSearchQueryDispatchProfile setting, for use with Config::get()
+	 */
+	public const QueryDispatchProfile = 'CirrusSearchQueryDispatchProfile';
+
+	/**
+	 * Name constant for the CirrusSearchQueryDispatchProfiles setting, for use with Config::get()
+	 */
+	public const QueryDispatchProfiles = 'CirrusSearchQueryDispatchProfiles';
+
 	// The following configuration variables are read by CirrusSearch but are NOT
 	// declared in extension.json (they have no registered default, are computed at
 	// runtime, or are optional profile overrides). They are listed here so this

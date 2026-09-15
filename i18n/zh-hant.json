@@ -14,7 +14,8 @@
 			"Waihorace",
 			"Xiplus",
 			"Zhxy 519",
-			"捍粵者"
+			"捍粵者",
+			"臺灣象象"
 		]
 	},
 	"cirrussearch-desc": "以 OpenSearch 提供支援的 MediaWiki 搜尋工具",
@@ -23,7 +24,7 @@
 	"cirrussearch-too-busy-error": "搜尋引擎目前過於忙碌，請稍候再試。",
 	"cirrussearch-regex-empty-expression": "$1 需要一個非空的正規表達式。",
 	"cirrussearch-regex-syntax-error": "正規表示法語法錯誤於 $2：$1",
-	"cirrussearch-regex-too-busy-error": "搜尋中的規律表示式太多，請稍後再試。",
+	"cirrussearch-regex-too-busy-error": "搜尋中的正規表達式太多，請稍後再試。",
 	"cirrussearch-regex-too-complex-error": "正規表達式過於複雜。請前往[https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch/RegexTooComplex 此處]來瞭解如何簡化正規表達式。",
 	"cirrussearch-now-using": "此 Wiki 使用了新的搜尋引擎。 （[https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch 瞭解更多]）",
 	"cirrussearch-boost-templates": " #<!-- 請保留此行為原樣 --> <pre>\n# 若頁面使用了下列模板，則該頁面的搜尋分數會乘上設定的百分比。\n# 更改此處以立即生效。\n# 語法格式如下：\n#   * 任何以 \"#\" 字元開頭的行到結尾做為註解。\n#   * 任何非空白行用來表示加分的模板名稱，包含命名空間、大小寫與所有東西，後面接著 \"|\" 字元與一組數字，再接著 \"%\" 字元。\n# 良好的範例：\n# Template:Good|150%\n# Template:Very Very Good|300%\n# Template:Bad|50%\n# 不良的範例：\n# Template:Foo|150.234234% # 不允許使用小數！\n# Foo|150% # 技術上可以運作，但會連結至主要命名空間的 Foo 頁面\n# 您可以在字首加上 boost-templates:\"XX\" 執行查詢，測試您的設定，XX 是所有您要加分的模板，以空白來代表換行符號。\n# 使用 boost-templates:\"XX\" 的查詢時會忽略此區域的設定內容。\n #</pre> <!-- 請保留此行為原樣 -->",
@@ -32,6 +33,7 @@
 	"cirrussearch-give-feedback": "給我們您的意見回饋",
 	"cirrussearch-morelikethis-settings": " #<!-- 請保留此行內容 --> <pre>\n# 此訊息讓您設置「更多相似」功能的設定。\n# 將此更改後會立刻生效。\n# 語法如下：\n#   * 任何在開頭與末端帶有「#」字元的行為註解內容。\n#   * 任何非空白字元為開頭，且「:」字元後方帶有設定值的為設定名稱\n# 設定包含有：\n#   * min_doc_freq（整數）：文件（各片段）所需具備要採用詞項的最小值。\n#   * max_doc_freq（整數）：文件（各片段）擁有要採用詞項的最大值。\n#                   高頻率的詞項通常是「停用詞」。\n#   * max_query_terms（整數）：要採用詞項的最大數目。此值被限定成\n $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit（100）。\n#   * min_term_freq（整數）：要採用詞項輸入至文檔時的最小呈現次數。對於較小的欄位（標題）預設值應為 1。\n#   * minimum_should_match（從 -100% 至 100% 的百分比，或詞項的數目）：需符合詞項的百分比，預設值為 30%。\n#   * min_word_len （整數）：要採用詞項的最小長度，.預設值為 0。\n#   * max_word_len（整數）：當字詞超過時會被忽略的最大字詞長度。預設值為無限長（0）。\n#   * fields（逗號分隔的值清單）：這些是要使用的欄位，允許的欄位有 title、text、auxiliary_text、opening_text、headings。\n# Examples of good lines:\n# min_doc_freq:2\n# max_doc_freq:20000\n# max_query_terms:25\n# min_term_freq:2\n# minimum_should_match:30%\n# min_word_len:2\n# max_word_len:40\n# fields:text,opening_text\n# </pre> <!-- 請保留此行內容 -->",
 	"cirrussearch-didyoumean-settings": " #<!-- 請保留此行內容 --> <pre>\n# 此訊息讓您設置「您是不是指」建議的設定。\n# 請查看 https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-phrase.html\n# 將此更改後會立刻生效。\n# 語法如下：\n#   * 任何在開頭與末端帶有「#」字元的行為註解內容。\n#   * 任何非空白字元為開頭，且「:」字元後方帶有設定值的為設定名稱\n# 設定包含有：\n#   * max_errors（整數）：會被視為拼寫錯誤而被糾正的最大詞項數目，設定為 1 或 2。\n#   * confidence（浮點數）：該信賴層級定義的因素，為套用在用於其它候補建議的臨界值之輸入字詞的積分。信賴僅在積分高於臨界值時會被包含在結果裡。若為 1.0 的信賴層級僅會回傳積分高於所輸入字組的建議。若設定為 0.0，則將會回傳最佳候補建議。\n#   * min_doc_freq（浮點數 0 至 1）：被建議應呈現出文件的數目之最小臨界值。\n#                   高頻率的詞項通常是「停用詞」。\n#   * max_term_freq（浮點數 0 至 1）：可包含詞項的文件之最大臨界值。\n#   * prefix_length（整數）：字首字元必須符合作為建議的詞項之最小數目。\n#   * suggest_mode（missing、popular，或 always 三者其一）：控制所要包含建議方式的建議模式。\n# Examples of good lines:\n# max_errors:2\n# confidence:2.0\n# max_term_freq:0.5\n# min_doc_freq:0.01\n# prefix_length:2\n# suggest_mode:always\n#\n# </pre> <!-- 請保留此行內容 -->",
+	"cirrussearch-query-too-complex-error": "您的搜尋查詢過於複雜。其中可能包含過多的萬用字元，這可能會產生超出伺服器處理能力的條件數量。請嘗試簡化您的查詢，然後再次搜尋。",
 	"cirrussearch-query-too-long": "搜尋請求大於最大允許長度。（實際長度：$1，允許長度：$2）",
 	"cirrussearch-query-too-long-with-exemptions": "搜尋請求大於最大允許長度。（實際長度：$1，允許長度：$2，不列入：$3）",
 	"cirrussearch-completion-profile-strict": "少數標點符號已移除，但保存變音符號與重音符號的嚴格個人設置。",
@@ -82,6 +84,7 @@
 	"cirrussearch-explore-similar-related-none": "沒有可用的相關頁面",
 	"cirrussearch-article-words": "所有內容頁面的字數",
 	"cirrussearch-keyword-prefix-ns-mismatch": "在搜尋項目 <code>prefix:</code> 找出的名稱空間與所請求的名稱空間不相容。您必須透過在您的查詢添加字首 <code>all:</code> 來修正。",
+	"cirrussearch-keyword-prefix-exclusion-on-unselected-namespace": "<code>-prefix:</code> 會被忽略，因為它排除了您當前未搜尋的名稱空間中的頁面。",
 	"cirrussearch-autoselect-profile": "讓搜尋引擎決定來使用最好的個人設置。",
 	"cirrussearch-offset-too-large": "結果無法取得。可支援截止至 $1 的結果，但請求為起始自 $2 的結果。",
 	"cirrussearch-offset-not-allowed-with-random-sort": "忽略對隨機排序結果分頁的請求",
@@ -90,5 +93,7 @@
 	"cirrussearch-invalid-keyword-boost": "提供的增值「$1」無效。應為正十進制數。",
 	"cirrussearch-invalid-keyword-threshold": "提供的閾值「$1」無效。應為介於 0 和 1 之間的十進制數。",
 	"cirrussearch-semantic-empty-query": "語義搜尋需要一個非空的搜尋詞。",
-	"cirrussearch-semantic-too-many-results": "語義搜尋的結果過多。僅前 $1 項會被正確排序。"
+	"cirrussearch-semantic-too-many-results": "語義搜尋的結果過多。僅前 $1 項會被正確排序。",
+	"cirrussearch-feature-not-negatable": "關鍵字「$1」無法以「-」或「!」來否定",
+	"cirrussearch-keyword-not-at-query-start": "關鍵字「$1」並未被套用。此關鍵字僅在搜尋開始時生效。"
 }

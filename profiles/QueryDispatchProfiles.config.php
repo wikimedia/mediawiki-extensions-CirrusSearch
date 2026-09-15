@@ -30,8 +30,18 @@ use CirrusSearch\Dispatch\Voter\NamespaceVetoVoter;
 use CirrusSearch\Dispatch\Voter\QueryClassVetoVoter;
 use CirrusSearch\Dispatch\Voter\QueryLengthCandidateVoter;
 use CirrusSearch\Dispatch\Voter\SemanticDebugOptionForceVoter;
+use CirrusSearch\Dispatch\Voter\TitleMatchVetoVoter;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Profile\SearchProfileService;
+
+// Sends a query of at least $wgCirrusSearchSemanticQueryLengthThreshold tokens to the
+// semantic route. Shared by the profiles that gate on query length.
+$queryLength = [
+	'class' => QueryLengthCandidateVoter::class,
+	'params' => [
+		QueryLengthCandidateVoter::PARAM_THRESHOLD_CONFIG => CirrusConfigNames::SemanticQueryLengthThreshold,
+	],
+];
 
 // Where a query goes when no route accepted it. Named by every profile below, so there is
 // always somewhere to send a query no other route wanted.
@@ -91,13 +101,21 @@ return [
 		'routes' => [
 			'cirrus_default' => $cirrusDefault,
 			'semantic' => $semantic( [
-				'query_length' => [
-					'class' => QueryLengthCandidateVoter::class,
-					'params' => [
-						QueryLengthCandidateVoter::PARAM_THRESHOLD_CONFIG =>
-							CirrusConfigNames::SemanticQueryLengthThreshold,
-					],
-				],
+				'query_length' => $queryLength,
+			] ),
+		],
+	],
+
+	// As semantic_by_query_length, except that a query naming a page that exists stays
+	// lexical. This costs one extra near-match request to the search backend per query, before
+	// the main query can be built. See $wgCirrusSearchQueryDispatchProfile in settings.txt.
+	'semantic_by_query_length_unless_title_match' => [
+		'default_route' => 'cirrus_default',
+		'routes' => [
+			'cirrus_default' => $cirrusDefault,
+			'semantic' => $semantic( [
+				'query_length' => $queryLength,
+				'title_match' => [ 'class' => TitleMatchVetoVoter::class ],
 			] ),
 		],
 	],

@@ -1789,6 +1789,8 @@ The profiles that ship with Cirrus are:
 * semantic_by_query_length: queries of at least
   $wgCirrusSearchSemanticQueryLengthThreshold tokens get routed to semantic
   search.
+* semantic_by_query_length_unless_title_match: as above, except that a query
+  naming a page that exists stays lexical.
 
 Cross-wiki searches never dispatch. They take the default route of the wiki
 being searched. A request that names a query builder or a rescore profile does

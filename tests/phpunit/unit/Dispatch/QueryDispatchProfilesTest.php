@@ -59,6 +59,10 @@ class QueryDispatchProfilesTest extends CirrusTestCase {
 				'semantic_by_query_length',
 				[ 'namespaces', 'query_classes', 'debug_option', 'query_length' ],
 			],
+			'the title match runs last, after the cheap voters' => [
+				'semantic_by_query_length_unless_title_match',
+				[ 'namespaces', 'query_classes', 'debug_option', 'query_length', 'title_match' ],
+			],
 		];
 	}
 

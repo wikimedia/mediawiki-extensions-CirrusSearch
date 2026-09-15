@@ -8,6 +8,7 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchQuery;
+use CirrusSearch\Search\SearchQueryBuilder;
 
 class SemanticSearchQueryRouteTest extends CirrusTestCase {
 
@@ -15,8 +16,7 @@ class SemanticSearchQueryRouteTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Dispatch\SemanticSearchQueryRoute::getProfileContext
 	 */
 	public function testGetProfileContext() {
-		$debug = CirrusDebugOptions::defaultOptions();
-		$route = new SemanticSearchQueryRoute( 'foo', $debug, [], 1.0 );
+		$route = new SemanticSearchQueryRoute( 'foo', [], 1.0 );
 		$this->assertSame( SearchProfileService::CONTEXT_SEMANTIC, $route->getProfileContext() );
 	}
 
@@ -25,8 +25,7 @@ class SemanticSearchQueryRouteTest extends CirrusTestCase {
 	 */
 	public function testGetSearchEngineEntryPoint() {
 		$searchEngineEntryPoint = 'a not so random but weird search engine entry point';
-		$debug = CirrusDebugOptions::defaultOptions();
-		$route = new SemanticSearchQueryRoute( $searchEngineEntryPoint, $debug, [], 1.0 );
+		$route = new SemanticSearchQueryRoute( $searchEngineEntryPoint, [], 1.0 );
 		$this->assertSame( $searchEngineEntryPoint, $route->getSearchEngineEntryPoint() );
 	}
 
@@ -34,11 +33,8 @@ class SemanticSearchQueryRouteTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Dispatch\SemanticSearchQueryRoute::score
 	 */
 	public function testGetScore() {
-		$debug = CirrusDebugOptions::forSemanticSearchUnitTests();
-		$route = new SemanticSearchQueryRoute( SearchQuery::SEARCH_TEXT, $debug, [], 0.4 );
-		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
-			->build();
-		$this->assertSame( 0.4, $route->score( $query ) );
+		$route = new SemanticSearchQueryRoute( SearchQuery::SEARCH_TEXT, [], 0.4 );
+		$this->assertSame( 0.4, $route->score( $this->newQueryBuilder( true )->build() ) );
 	}
 
 	/**
@@ -89,9 +85,8 @@ class SemanticSearchQueryRouteTest extends CirrusTestCase {
 	 * @dataProvider provideTestNamespacesRouting
 	 */
 	public function testNamespacesRouting( $acceptedNs, $queryNs, $acceptRoute ) {
-		$debug = CirrusDebugOptions::forSemanticSearchUnitTests();
-		$route = new SemanticSearchQueryRoute( SearchQuery::SEARCH_TEXT, $debug, $acceptedNs, 1.0 );
-		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
+		$route = new SemanticSearchQueryRoute( SearchQuery::SEARCH_TEXT, $acceptedNs, 1.0 );
+		$query = $this->newQueryBuilder( true )
 			->setInitialNamespaces( $queryNs )
 			->build();
 		$expectedScore = $acceptRoute ? 1.0 : SearchQueryRoute::REJECT_ROUTE;
@@ -99,29 +94,18 @@ class SemanticSearchQueryRouteTest extends CirrusTestCase {
 	}
 
 	/**
+	 * The option is read from the query rather than from the ambient web
+	 * request, so a caller that passed its own CirrusDebugOptions still gets
+	 * routed.
+	 *
 	 * @covers \CirrusSearch\Dispatch\SemanticSearchQueryRoute::score
 	 */
-	public function testSemanticSearchOption() {
-		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'test' )
-			->build();
+	public function testSemanticSearchOptionComesFromTheQuery() {
+		$route = new SemanticSearchQueryRoute( SearchQuery::SEARCH_TEXT, [], 1.0 );
 
-		// Route with semantic search enabled should return score
-		$enabledRoute = new SemanticSearchQueryRoute(
-			SearchQuery::SEARCH_TEXT,
-			CirrusDebugOptions::forSemanticSearchUnitTests(),
-			[],
-			1.0
-		);
-		$this->assertSame( 1.0, $enabledRoute->score( $query ) );
-
-		// Route with default options (semantic search disabled) should return 0
-		$disabledRoute = new SemanticSearchQueryRoute(
-			SearchQuery::SEARCH_TEXT,
-			CirrusDebugOptions::defaultOptions(),
-			[],
-			1.0
-		);
-		$this->assertSame( SearchQueryRoute::REJECT_ROUTE, $disabledRoute->score( $query ) );
+		$this->assertSame( 1.0, $route->score( $this->newQueryBuilder( true )->build() ) );
+		$this->assertSame( SearchQueryRoute::REJECT_ROUTE,
+			$route->score( $this->newQueryBuilder( false )->build() ) );
 	}
 
 	/**
@@ -170,14 +154,20 @@ class SemanticSearchQueryRouteTest extends CirrusTestCase {
 	 * @dataProvider provideTestForcedProfilesRouting
 	 */
 	public function testForcedProfilesRouting( $forcedProfiles, $acceptRoute ) {
-		$debug = CirrusDebugOptions::forSemanticSearchUnitTests();
-		$route = new SemanticSearchQueryRoute( SearchQuery::SEARCH_TEXT, $debug, [], 1.0 );
-		$queryBuilder = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' );
+		$route = new SemanticSearchQueryRoute( SearchQuery::SEARCH_TEXT, [], 1.0 );
+		$queryBuilder = $this->newQueryBuilder( true );
 		foreach ( $forcedProfiles as $type => $profile ) {
 			$queryBuilder->addForcedProfile( $type, $profile );
 		}
-		$query = $queryBuilder->build();
 		$expectedScore = $acceptRoute ? 1.0 : SearchQueryRoute::REJECT_ROUTE;
-		$this->assertSame( $expectedScore, $route->score( $query ) );
+		$this->assertSame( $expectedScore, $route->score( $queryBuilder->build() ) );
+	}
+
+	private function newQueryBuilder( bool $semantic ): SearchQueryBuilder {
+		$debugOptions = $semantic
+			? CirrusDebugOptions::forSemanticSearchUnitTests()
+			: CirrusDebugOptions::defaultOptions();
+		return $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
+			->setDebugOptions( $debugOptions );
 	}
 }

@@ -3,7 +3,6 @@
 namespace CirrusSearch\Profile;
 
 use CirrusSearch\BuildDocument\DocumentSizeLimiter;
-use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\Dispatch\BasicSearchQueryRoute;
 use CirrusSearch\Dispatch\CirrusDefaultSearchQueryRoute;
 use CirrusSearch\Dispatch\DefaultSearchQueryDispatchService;
@@ -491,9 +490,8 @@ class SearchProfileService {
 	 * @see SearchQueryDispatchService::CIRRUS_DEFAULTS_SCORE
 	 */
 	public function registerSemanticSearchQueryRoute( array $supportedNamespaces, float $score ) {
-		$debugOptions = CirrusDebugOptions::fromRequest( $this->request );
 		$this->registerSearchQueryRoute( new SemanticSearchQueryRoute(
-			SearchQuery::SEARCH_TEXT, $debugOptions, $supportedNamespaces, $score ) );
+			SearchQuery::SEARCH_TEXT, $supportedNamespaces, $score ) );
 	}
 
 	/**

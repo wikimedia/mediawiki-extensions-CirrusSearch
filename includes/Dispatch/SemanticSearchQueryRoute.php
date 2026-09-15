@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Dispatch;
 
-use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusSearch;
 use CirrusSearch\Profile\SearchProfileService;
 use Wikimedia\Assert\Assert;
@@ -10,28 +9,24 @@ use Wikimedia\Assert\Assert;
 /**
  * Semantic SearchQuery routing functionality which produces a constant
  * score when successful, 0.0 otherwise.
- * Inspects CirrusDebugOptions
+ * Inspects the debug options carried by the query being routed.
  */
 class SemanticSearchQueryRoute implements SearchQueryRoute {
 	private string $searchEngineEntryPoint;
-	private CirrusDebugOptions $cirrusDebugOptions;
 	private array $namespaces;
 	private float $score;
 
 	/**
 	 * @param string $searchEngineEntryPoint
-	 * @param CirrusDebugOptions $cirrusDebugOptions
 	 * @param int[] $namespaces
 	 * @param float $score
 	 */
 	public function __construct(
 		string $searchEngineEntryPoint,
-		CirrusDebugOptions $cirrusDebugOptions,
 		array $namespaces,
 		float $score
 	) {
 		$this->searchEngineEntryPoint = $searchEngineEntryPoint;
-		$this->cirrusDebugOptions = $cirrusDebugOptions;
 		$this->namespaces = $namespaces;
 		$this->score = $score;
 	}
@@ -45,7 +40,7 @@ class SemanticSearchQueryRoute implements SearchQueryRoute {
 			'query',
 			"must be {$this->searchEngineEntryPoint} but {$query->getSearchEngineEntryPoint()} given." );
 
-		if ( !$this->cirrusDebugOptions->isCirrusSemanticSearch() ) {
+		if ( !$query->getDebugOptions()->isCirrusSemanticSearch() ) {
 			return self::REJECT_ROUTE;
 		}
 

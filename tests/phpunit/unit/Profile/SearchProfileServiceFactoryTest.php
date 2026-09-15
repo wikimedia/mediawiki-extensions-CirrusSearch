@@ -3,6 +3,7 @@
 namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusConfigNames;
+use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
@@ -252,11 +253,13 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 		] );
 		$factory = $this->getFactory( [], $cirrusSearchHookRunner, [] );
 		$config = new HashSearchConfig( [ CirrusConfigNames::DefaultSemanticProfile => 'default_semantic' ] );
-		$request = new FauxRequest( [ 'cirrusSemanticSearch' => '1' ] );
-		$service = $factory->loadService( $config, $request, null, true );
+		$service = $factory->loadService( $config, null, null, true );
 
+		// The route reads the option from the query, not from the request the
+		// profile service was built with.
 		$dispatch = $service->getDispatchService();
 		$query = $this->getNewFTSearchQueryBuilder( $config, 'foo' )
+			->setDebugOptions( CirrusDebugOptions::forSemanticSearchUnitTests() )
 			->setInitialNamespaces( [ NS_MAIN ] )
 			->build();
 		$this->assertEquals( SearchProfileService::CONTEXT_SEMANTIC, $dispatch->bestRoute( $query )->getProfileContext() );

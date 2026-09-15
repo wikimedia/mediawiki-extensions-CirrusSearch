@@ -2,10 +2,12 @@
 
 namespace CirrusSearch\Profile;
 
+use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Dispatch\BasicSearchQueryRoute;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchQuery;
+use CirrusSearch\Search\SearchQueryBuilder;
 use MediaWiki\Request\FauxRequest;
 use MediaWiki\User\Options\StaticUserOptionsLookup;
 use MediaWiki\User\UserIdentityValue;
@@ -181,39 +183,44 @@ class SearchProfileServiceTest extends CirrusTestCase {
 	}
 
 	public function testRegisterSemanticSearchQueryRoute() {
-		$requestWithSemantic = new FauxRequest( [ 'cirrusSemanticSearch' => '1' ] );
-		$service = new SearchProfileService( new StaticUserOptionsLookup( [] ), $requestWithSemantic );
+		// No request is handed to the service, the option travels on the query
+		$service = $this->getSearchProfileService();
 		$service->registerSemanticSearchQueryRoute( [ NS_MAIN ], 1.0 );
 		$service->freeze();
 
 		$dispatch = $service->getDispatchService();
 
 		// A main-namespace query with semantic search enabled should route to semantic context
-		$queryInMain = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
+		$queryInMain = $this->newSemanticQueryBuilder()
 			->setInitialNamespaces( [ NS_MAIN ] )
 			->build();
 		$this->assertEquals( SearchProfileService::CONTEXT_SEMANTIC, $dispatch->bestRoute( $queryInMain )->getProfileContext() );
 
 		// A non-main-namespace query should not route to the semantic route
-		$queryOutsideMain = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
+		$queryOutsideMain = $this->newSemanticQueryBuilder()
 			->setInitialNamespaces( [ NS_TALK ] )
 			->build();
 		$this->assertNotEquals( SearchProfileService::CONTEXT_SEMANTIC, $dispatch->bestRoute( $queryOutsideMain )->getProfileContext() );
 	}
 
 	public function testRegisterSemanticSearchQueryRouteWithoutSemanticOption() {
-		// Without the semantic debug option, the route should not be selected
-		$requestWithoutSemantic = new FauxRequest( [] );
-		$service = new SearchProfileService( new StaticUserOptionsLookup( [] ), $requestWithoutSemantic );
+		// Without the semantic debug option on the query the route must not be selected
+		$service = $this->getSearchProfileService();
 		$service->registerSemanticSearchQueryRoute( [ NS_MAIN ], 1.0 );
 		$service->freeze();
 
 		$dispatch = $service->getDispatchService();
 		$query = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
+			->setDebugOptions( CirrusDebugOptions::defaultOptions() )
 			->setInitialNamespaces( [ NS_MAIN ] )
 			->build();
 		$route = $dispatch->bestRoute( $query );
 		$this->assertNotEquals( SearchProfileService::CONTEXT_SEMANTIC, $route->getProfileContext() );
+	}
+
+	private function newSemanticQueryBuilder(): SearchQueryBuilder {
+		return $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
+			->setDebugOptions( CirrusDebugOptions::forSemanticSearchUnitTests() );
 	}
 
 	private function getSearchProfileService(): SearchProfileService {

@@ -4,8 +4,8 @@ namespace CirrusSearch\Profile;
 
 use CirrusSearch\BuildDocument\DocumentSizeLimiter;
 use CirrusSearch\Dispatch\BasicSearchQueryRoute;
-use CirrusSearch\Dispatch\CirrusDefaultSearchQueryRoute;
 use CirrusSearch\Dispatch\DefaultSearchQueryDispatchService;
+use CirrusSearch\Dispatch\DefaultSearchQueryRoute;
 use CirrusSearch\Dispatch\SearchQueryDispatchService;
 use CirrusSearch\Dispatch\SearchQueryRoute;
 use CirrusSearch\Dispatch\SemanticSearchQueryRoute;
@@ -196,6 +196,11 @@ class SearchProfileService {
 	private $routes;
 
 	/**
+	 * @var SearchQueryRoute[] default route per search engine entry point
+	 */
+	private array $defaultRoutes = [];
+
+	/**
 	 * @var UserOptionsLookup
 	 */
 	private $userOptionsLookup;
@@ -213,8 +218,10 @@ class SearchProfileService {
 		$this->userOptionsLookup = $userOptionsLookup;
 		$this->request = $request ?? RequestContext::getMain()->getRequest();
 		$this->user = $user ?? RequestContext::getMain()->getUser();
+		// Declare the entry point but leave it empty. SearchProfileServiceFactory
+		// registers the routes, the default one included, so it owns the whole table.
 		$this->routes = [
-			'searchText' => [ CirrusDefaultSearchQueryRoute::searchTextDefaultRoute() ]
+			SearchQuery::SEARCH_TEXT => []
 		];
 	}
 
@@ -475,10 +482,28 @@ class SearchProfileService {
 	 */
 	public function registerSearchQueryRoute( SearchQueryRoute $route ) {
 		$this->checkFrozen();
-		if ( !isset( $this->routes[$route->getSearchEngineEntryPoint()] ) ) {
-			throw new SearchProfileException( "Unsupported search engine entry point {$route->getSearchEngineEntryPoint()}" );
-		}
+		$this->checkEntryPoint( $route );
 		$this->routes[$route->getSearchEngineEntryPoint()][] = $route;
+	}
+
+	/**
+	 * Register the route a query takes when no other route selects it.
+	 *
+	 * @param DefaultSearchQueryRoute $route
+	 * @see SearchQueryDispatchService::defaultProfileContext()
+	 * @see SearchProfileService::getDispatchService()
+	 */
+	public function registerDefaultSearchQueryRoute( DefaultSearchQueryRoute $route ) {
+		$this->checkFrozen();
+		$this->checkEntryPoint( $route );
+		$this->defaultRoutes[$route->getSearchEngineEntryPoint()] = $route;
+	}
+
+	private function checkEntryPoint( SearchQueryRoute $route ) {
+		if ( !isset( $this->routes[$route->getSearchEngineEntryPoint()] ) ) {
+			throw new SearchProfileException(
+				"Unsupported search engine entry point {$route->getSearchEngineEntryPoint()}" );
+		}
 	}
 
 	/**
@@ -487,7 +512,6 @@ class SearchProfileService {
 	 * @param int[] $supportedNamespaces
 	 * @param float $score score of the route
 	 * @see SearchProfileService::getDispatchService()
-	 * @see SearchQueryDispatchService::CIRRUS_DEFAULTS_SCORE
 	 */
 	public function registerSemanticSearchQueryRoute( array $supportedNamespaces, float $score ) {
 		$this->registerSearchQueryRoute( new SemanticSearchQueryRoute(
@@ -502,7 +526,6 @@ class SearchProfileService {
 	 * @param int[] $supportedNamespaces
 	 * @param string[] $acceptableQueryClasses
 	 * @see SearchProfileService::getDispatchService()
-	 * @see SearchQueryDispatchService::CIRRUS_DEFAULTS_SCORE
 	 */
 	public function registerFTSearchQueryRoute(
 		$profileContext,
@@ -510,10 +533,8 @@ class SearchProfileService {
 		array $supportedNamespaces,
 		array $acceptableQueryClasses = []
 	) {
-		Assert::parameter( $score > SearchQueryDispatchService::CIRRUS_DEFAULTS_SCORE, '$score',
-			"This route will never be selected it must " .
-			"be greater than " . SearchQueryDispatchService::CIRRUS_DEFAULTS_SCORE
-		);
+		Assert::parameter( $score > 0.0 && $score <= 1.0, '$score',
+			"must be greater than 0 and at most 1, $score given" );
 		$this->registerSearchQueryRoute( new BasicSearchQueryRoute( SearchQuery::SEARCH_TEXT,
 			$supportedNamespaces, $acceptableQueryClasses, $profileContext, $score ) );
 	}
@@ -526,7 +547,8 @@ class SearchProfileService {
 		if ( $this->dispatchService === null ) {
 			Assert::precondition( $this->frozen,
 				"Must be frozen when accessing the SearchQuery dispatch service." );
-			$this->dispatchService = new DefaultSearchQueryDispatchService( $this->routes );
+			$this->dispatchService = new DefaultSearchQueryDispatchService(
+				$this->routes, $this->defaultRoutes );
 		}
 		return $this->dispatchService;
 	}

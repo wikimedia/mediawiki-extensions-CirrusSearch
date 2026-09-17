@@ -265,6 +265,46 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 		$this->assertEquals( SearchProfileService::CONTEXT_SEMANTIC, $dispatch->bestRoute( $query )->getProfileContext() );
 	}
 
+	/**
+	 * A service loaded from config alone must be able to route a query, without any hook
+	 * registering a default route by hand.
+	 */
+	public function testEmptyConfigStillRoutes() {
+		$factory = $this->getFactory( [], $this->createCirrusSearchHookRunner( [] ), [] );
+		$config = new HashSearchConfig( [] );
+		$service = $factory->loadService( $config, new FauxRequest( [] ), null, true );
+
+		$query = $this->getNewFTSearchQueryBuilder( $config, 'foo' )
+			->setInitialNamespaces( [ NS_MAIN ] )
+			->build();
+		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT,
+			$service->getDispatchService()->bestRoute( $query )->getProfileContext() );
+	}
+
+	public function testDefaultRouteTakesWhatNoOtherRouteWanted() {
+		$cirrusSearchHookRunner = $this->createCirrusSearchHookRunner( [
+			'CirrusSearchProfileService' => static function ( SearchProfileService $service ) {
+				$service->registerFTSearchQueryRoute( 'unit_test_context', 0.5, [ NS_MAIN ] );
+			}
+		] );
+		$factory = $this->getFactory( [], $cirrusSearchHookRunner, [] );
+		$service = $factory->loadService( new HashSearchConfig( [] ), null, null, true );
+
+		$dispatch = $service->getDispatchService();
+		$inMain = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
+			->setInitialNamespaces( [ NS_MAIN ] )
+			->build();
+		$this->assertEquals( 'unit_test_context',
+			$dispatch->bestRoute( $inMain )->getProfileContext() );
+
+		// Outside the namespaces the better route accepts we fall back to the default route
+		$inTalk = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' )
+			->setInitialNamespaces( [ NS_TALK ] )
+			->build();
+		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT,
+			$dispatch->bestRoute( $inTalk )->getProfileContext() );
+	}
+
 	private function getFactory( array $hostWikiConfig = [],
 								 ?CirrusSearchHookRunner $cirrusSearchHookRunner = null,
 								 $userOption = []

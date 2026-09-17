@@ -4,7 +4,9 @@ namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearchHookRunner;
+use CirrusSearch\Dispatch\DefaultSearchQueryRoute;
 use CirrusSearch\InterwikiResolver;
+use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Request\WebRequest;
@@ -145,6 +147,7 @@ class SearchProfileServiceFactory {
 	 */
 	public function loadService( SearchConfig $config, ?WebRequest $request = null, ?UserIdentity $user = null, $forceHook = false ) {
 		$service = new SearchProfileService( $this->userOptionsLookup, $request, $user );
+		$this->loadDefaultRoutes( $service );
 		$this->loadSemanticSearch( $service, $config );
 		$this->loadCrossProjectBlockScorer( $service, $config );
 		$this->loadSimilarityProfiles( $service, $config );
@@ -171,6 +174,15 @@ class SearchProfileServiceFactory {
 		}
 		$service->freeze();
 		return $service;
+	}
+
+	/**
+	 * Give the fulltext entry point the route a query takes when no other
+	 * route selects it.
+	 */
+	private function loadDefaultRoutes( SearchProfileService $service ) {
+		$service->registerDefaultSearchQueryRoute( new DefaultSearchQueryRoute(
+			SearchQuery::SEARCH_TEXT, SearchProfileService::CONTEXT_DEFAULT ) );
 	}
 
 	private function loadSemanticSearch( SearchProfileService $service, SearchConfig $config ) {

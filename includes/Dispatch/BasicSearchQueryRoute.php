@@ -88,7 +88,7 @@ class BasicSearchQueryRoute implements SearchQueryRoute {
 	 *
 	 * @return string
 	 */
-	public function getSearchEngineEntryPoint() {
+	public function getSearchEngineEntryPoint(): string {
 		return $this->searchEngineEntryPoint;
 	}
 
@@ -97,7 +97,7 @@ class BasicSearchQueryRoute implements SearchQueryRoute {
 	 *
 	 * @return string
 	 */
-	public function getProfileContext() {
+	public function getProfileContext(): string {
 		return $this->profileContext;
 	}
 }

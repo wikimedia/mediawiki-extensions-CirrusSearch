@@ -2,8 +2,11 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Profile\ContextualProfileOverride;
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\RedirectMode;
 use CirrusSearch\Search\SearchContext;
+use MediaWiki\Config\HashConfig;
 
 /**
  * @covers \CirrusSearch\Search\SearchContext
@@ -91,6 +94,51 @@ class SearchContextTest extends CirrusTestCase {
 		} else {
 			$this->assertExcludesRedirectDocuments( $this->context->getQuery() );
 		}
+	}
+
+	/**
+	 * A config whose dispatch service always routes searchText to $profileContext,
+	 * so a test can tell a dispatched context apart from the default route.
+	 */
+	private function newConfigRoutingTo( string $profileContext ): SearchConfig {
+		$hookRunner = $this->createCirrusSearchHookRunner( [
+			'CirrusSearchProfileService' => static function ( SearchProfileService $service ) use ( $profileContext ) {
+				$service->registerFTSearchQueryRoute( $profileContext, 0.5, [] );
+			}
+		] );
+		// The CirrusSearchProfileService hook only runs for the local wiki, and a
+		// HashSearchConfig only counts as local when it inherits.
+		return $this->newHashSearchConfig( [], [ HashSearchConfig::FLAG_INHERIT ],
+			new HashConfig( [] ), $this->hostWikiSearchProfileServiceFactory( $hookRunner ) );
+	}
+
+	public function testTheDefaultRouteSkipsDispatchAndDropsContextParams() {
+		$config = $this->newConfigRoutingTo( SearchProfileService::CONTEXT_PREFIXSEARCH );
+		$query = $this->getNewFTSearchQueryBuilder( $config, 'foo' )
+			->addProfileContextParameter( ContextualProfileOverride::LANGUAGE, 'fr' )
+			->build();
+
+		$context = SearchContext::fromSearchQuery( $query, null,
+			$this->createCirrusSearchHookRunner(), true );
+
+		// The route would have said prefixsearch, the default route wins.
+		$this->assertSame( SearchProfileService::CONTEXT_DEFAULT, $context->getProfileContext() );
+		// The local language must not select a profile on the wiki being searched.
+		$this->assertSame( [], $context->getProfileContextParams() );
+	}
+
+	public function testDispatchServiceDecidesWhenTheDefaultRouteIsNotAsked() {
+		$config = $this->newConfigRoutingTo( SearchProfileService::CONTEXT_PREFIXSEARCH );
+		$query = $this->getNewFTSearchQueryBuilder( $config, 'foo' )
+			->addProfileContextParameter( ContextualProfileOverride::LANGUAGE, 'fr' )
+			->build();
+
+		$context = SearchContext::fromSearchQuery( $query, null,
+			$this->createCirrusSearchHookRunner() );
+
+		$this->assertSame( SearchProfileService::CONTEXT_PREFIXSEARCH, $context->getProfileContext() );
+		$this->assertSame( [ ContextualProfileOverride::LANGUAGE => 'fr' ],
+			$context->getProfileContextParams() );
 	}
 
 }

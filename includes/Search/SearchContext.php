@@ -888,13 +888,16 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @param SearchQuery $query
 	 * @param FallbackRunner|null $fallbackRunner
 	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
+	 * @param bool $useDefaultRoute skip routing and take the entry points
+	 *  default route, and drop the profile context params
 	 * @return self
 	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
 	 */
 	public static function fromSearchQuery(
 		SearchQuery $query,
 		?FallbackRunner $fallbackRunner = null,
-		?CirrusSearchHookRunner $cirrusSearchHookRunner = null
+		?CirrusSearchHookRunner $cirrusSearchHookRunner = null,
+		bool $useDefaultRoute = false
 	): self {
 		$searchContext = new self(
 			$query->getSearchConfig(),
@@ -915,11 +918,12 @@ class SearchContext implements WarningCollector, FilterBuilder {
 
 		$searchContext->rescoreProfile = $query->getForcedProfile( SearchProfileService::RESCORE );
 
-		$profileContext = $query->getSearchConfig()
-			->getProfileService()
-			->getDispatchService()
-			->bestRoute( $query )
-			->getProfileContext();
+		$dispatchService = $query->getSearchConfig()->getProfileService()->getDispatchService();
+		$profileContext = $useDefaultRoute
+			? $dispatchService->defaultProfileContext( $query->getSearchEngineEntryPoint() )
+			: $dispatchService->bestRoute( $query )->getProfileContext();
+		// Note that setProfileContext() resets the context params, they are set
+		// further down.
 		$searchContext->setProfileContext( $profileContext );
 		$parsedQuery = $query->getParsedQuery();
 		$basicQueryClasses = [
@@ -936,7 +940,11 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		}
 		// TODO: Clarify what happens when user forces a profile, should we disable the dispatch service?
 		$searchContext->fulltextQueryBuilderProfile = $query->getForcedProfile( SearchProfileService::FT_QUERY_BUILDER );
-		$searchContext->profileContextParams = $query->getProfileContextParameters();
+		// A caller that asks for the default route wants the plain default search of
+		// the wiki that it searches. The context params come from the local request,
+		// so they must not select profiles on a different wiki.
+		$searchContext->profileContextParams = $useDefaultRoute
+			? [] : $query->getProfileContextParameters();
 
 		foreach ( $query->getContextualFilters() as $filter ) {
 			$filter->populate( $searchContext );

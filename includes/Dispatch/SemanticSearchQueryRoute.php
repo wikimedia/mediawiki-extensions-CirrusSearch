@@ -72,7 +72,7 @@ class SemanticSearchQueryRoute implements SearchQueryRoute {
 	 *
 	 * @return string
 	 */
-	public function getSearchEngineEntryPoint() {
+	public function getSearchEngineEntryPoint(): string {
 		return $this->searchEngineEntryPoint;
 	}
 
@@ -81,7 +81,7 @@ class SemanticSearchQueryRoute implements SearchQueryRoute {
 	 *
 	 * @return string
 	 */
-	public function getProfileContext() {
+	public function getProfileContext(): string {
 		return SearchProfileService::CONTEXT_SEMANTIC;
 	}
 }

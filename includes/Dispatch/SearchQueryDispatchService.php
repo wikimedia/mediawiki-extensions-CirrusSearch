@@ -12,18 +12,11 @@ use CirrusSearch\Search\SearchQuery;
  * All routes are evaluated the best one is returned.
  *  - If multiple routes gives equal score the first one wins
  *  - If multiple routes give the max score of 1 then the system fails
- *  - If no routes is found the system fails
+ *  - If no route selects the query it goes to the default route
  *
  * @see SearchQueryRoute
  */
 interface SearchQueryDispatchService {
-	/**
-	 * Score used by cirrus defaults.
-	 * Anything below is unlikely to be selected as cirrus defaults
-	 * are made to catchup all query types.
-	 */
-	public const CIRRUS_DEFAULTS_SCORE = 0.0001;
-
 	/**
 	 * Determine the best route for the $query.
 	 *
@@ -31,4 +24,15 @@ interface SearchQueryDispatchService {
 	 * @return SearchQueryRoute
 	 */
 	public function bestRoute( SearchQuery $query ): SearchQueryRoute;
+
+	/**
+	 * Profile context of the route a query takes when it is not dispatched at all.
+	 *
+	 * Cross-wiki search wants the baseline of the wiki it searches, without applying the
+	 * local wiki's routing rules to a wiki that may not have them.
+	 *
+	 * @param string $searchEngineEntryPoint
+	 * @return string
+	 */
+	public function defaultProfileContext( string $searchEngineEntryPoint ): string;
 }

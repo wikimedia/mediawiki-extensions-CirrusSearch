@@ -5,6 +5,7 @@ namespace CirrusSearch\Profile;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Dispatch\BasicSearchQueryRoute;
+use CirrusSearch\Dispatch\DefaultSearchQueryRoute;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
@@ -224,6 +225,11 @@ class SearchProfileServiceTest extends CirrusTestCase {
 	}
 
 	private function getSearchProfileService(): SearchProfileService {
-		return new SearchProfileService( new StaticUserOptionsLookup( [] ) );
+		$service = new SearchProfileService( new StaticUserOptionsLookup( [] ) );
+		// A bare service has no routes, they come from SearchProfileServiceFactory
+		// in production.
+		$service->registerDefaultSearchQueryRoute( new DefaultSearchQueryRoute(
+			SearchQuery::SEARCH_TEXT, SearchProfileService::CONTEXT_DEFAULT ) );
+		return $service;
 	}
 }

@@ -36,12 +36,12 @@ interface SearchQueryRoute {
 	 *
 	 * @return string
 	 */
-	public function getSearchEngineEntryPoint();
+	public function getSearchEngineEntryPoint(): string;
 
 	/**
 	 * The SearchProfile context to use when this route is chosen.
 	 *
 	 * @return string
 	 */
-	public function getProfileContext();
+	public function getProfileContext(): string;
 }

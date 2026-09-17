@@ -5,7 +5,6 @@ namespace CirrusSearch;
 use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Parser\NamespacePrefixParser;
-use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CrossProjectBlockScorerFactory;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\MSearchRequests;
@@ -75,12 +74,12 @@ class InterwikiSearcher extends Searcher {
 		$blockScorer = CrossProjectBlockScorerFactory::load( $this->config );
 		$msearches = new MSearchRequests();
 		foreach ( $iwQueries as $interwiki => $iwQuery ) {
-			$context = SearchContext::fromSearchQuery( $iwQuery,
-				FallbackRunner::create( $iwQuery, $this->interwikiResolver ), $this->cirrusSearchHookRunner );
 			// The local wiki might have some special routing rules that do
 			// different things, but we can't assume those exist on other
-			// wikis. Always use defaults for interwiki search.
-			$context->setProfileContext( SearchProfileService::CONTEXT_DEFAULT );
+			// wikis. Take the default route of the wiki being searched.
+			$context = SearchContext::fromSearchQuery( $iwQuery,
+				FallbackRunner::create( $iwQuery, $this->interwikiResolver ),
+				$this->cirrusSearchHookRunner, true );
 			$this->searchContext = $context;
 			$this->setResultsType( new FullTextResultsType(
 				$this->searchContext->getFetchPhaseBuilder(),

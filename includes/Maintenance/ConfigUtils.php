@@ -47,7 +47,7 @@ class ConfigUtils {
 		$version = $banner['version']['number'];
 		$this->output( "$distribution $version..." );
 
-		$required = $distribution === 'opensearch' ? [ '1.3', '2.' ] : [ '7.10' ];
+		$required = $distribution === 'opensearch' ? [ '1.3', '2.', '3.' ] : [ '7.10' ];
 		$versionMatch = array_find(
 			$required,
 			static fn ( string $acceptVersion ): bool => str_starts_with( $version, $acceptVersion )
@@ -55,14 +55,22 @@ class ConfigUtils {
 		if ( $versionMatch === null ) {
 			$this->output( "Not supported!\n" );
 			return Status::newFatal(
-				"Only OpenSearch 1.3.x and 2.x is supported; Elasticsearch 7.10.x is now deprecated "
-				. " and support will be removed soon.\n  Your version: $distribution $version." );
+				"Only OpenSearch 2.x and 3.x are supported. Elasticsearch 7.10.x and "
+				. "OpenSearch 1.3.x still work, but they are deprecated and support "
+				. "will be removed soon.\n"
+				. "  Your version: $distribution $version." );
 		}
 		if ( $distribution === 'elasticsearch' ) {
 			$this->output( "deprecated.\n" );
 			$this->outputIndented(
 				"*** ElasticSearch support is deprecated and will be End-of-Life in the next "
-				. "release. Upgrading to OpenSearch will be required. ***\n"
+				. "release. Upgrading to OpenSearch >= 2.x will be required. ***\n"
+			);
+		} elseif ( $versionMatch === '1.3' ) {
+			$this->output( "deprecated.\n" );
+			$this->outputIndented(
+				"*** OpenSearch 1.3.x support is deprecated and will be End-of-Life in the "
+				. "next release. Upgrading to OpenSearch >= 2.x will be required. ***\n"
 			);
 		} else {
 			$this->output( "ok\n" );

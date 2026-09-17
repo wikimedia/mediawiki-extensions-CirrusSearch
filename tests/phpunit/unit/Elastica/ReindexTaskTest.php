@@ -4,6 +4,8 @@ namespace CirrusSearch\Elastica;
 
 use CirrusSearch\CirrusTestCase;
 use Elastica\Client;
+use Elastica\Exception\ResponseException;
+use Elastica\Index;
 use Elastica\Request;
 use Elastica\Response;
 
@@ -162,6 +164,32 @@ class ReindexTaskTest extends CirrusTestCase {
 		$this->assertSame( 0, $status->getSearchRetries() );
 		// requests per second should keep -1, which is a stand in for infinity
 		$this->assertSame( -1, $status->getRequestsPerSecond() );
+	}
+
+	public function testDeleteToleratesRefusedSystemIndexWrite() {
+		// A task is only complete once the reindex response is attached to it
+		$completed = [ 'response' => [ 'failures' => [] ] ] + $this->inProgressTaskResponse;
+		$client = $this->createMock( Client::class );
+		$client->method( 'request' )
+			->willReturn( new Response( json_encode( $completed ), 200 ) );
+
+		// opensearch 3 can refuse rest writes to the .tasks system index
+		$index = $this->createMock( Index::class );
+		$index->method( 'deleteById' )
+			->willThrowException( new ResponseException(
+				new Request( '.tasks/_doc/abc:123', Request::DELETE ),
+				new Response( [ 'error' => [
+					'type' => 'security_exception',
+					'reason' => 'no permissions for [indices:data/write/delete]',
+				] ], 403 )
+			) );
+		$client->method( 'getIndex' )
+			->with( '.tasks' )
+			->willReturn( $index );
+
+		$task = new ReindexTask( $client, 'abc:123' );
+		$this->assertInstanceOf( ReindexResponse::class, $task->getStatus() );
+		$this->assertFalse( $task->delete() );
 	}
 
 	private function sliceResponse( $num ) {

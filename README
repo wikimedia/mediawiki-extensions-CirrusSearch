@@ -3,11 +3,11 @@ MediaWiki extension: CirrusSearch
 
 Installation
 ------------
-Get OpenSearch v1.3 up and running somewhere. Elasticsearch v7.10 support is
-deprecated. It will work in this release, but will be removed in the next
-release.  If you will be running OpenSearch on a host separate from the
-mediawiki installation be careful with the network configuration, never expose
-an unprotected node to the internet.
+Get OpenSearch v2.x or v3.x up and running somewhere. OpenSearch v1.3 and
+Elasticsearch v7.10 support is deprecated. They will work in this release, but
+will be removed in the next release.  If you will be running OpenSearch on a
+host separate from the mediawiki installation be careful with the network
+configuration, never expose an unprotected node to the internet.
 
 Place the CirrusSearch extension in your extensions directory.
 You also need to install the Elastica MediaWiki extension.

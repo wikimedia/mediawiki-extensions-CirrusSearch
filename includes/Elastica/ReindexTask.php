@@ -62,17 +62,28 @@ class ReindexTask {
 	}
 
 	/**
-	 * Delete the task
-	 * @return bool True if delete was successful, false otherwise.
-	 *  Throws Elastica NotFoundException for unknown task (already
-	 *  deleted?) or HttpException for communication failures.
+	 * Delete the task document from the `.tasks` index.
+	 *
+	 * This is best effort. OpenSearch security config can cause the delete to
+	 * be refused. That must not fail a reindex that already completed, report
+	 * the failure and carry on.
+	 *
+	 * @return bool True if delete was successful, false otherwise. Throws
+	 *  HttpException for communication failures.
 	 */
 	public function delete() {
 		if ( !$this->response ) {
 			throw new LogicException( 'Cannot delete in-progress task' );
 		}
-		$response =
-			$this->client->getIndex( '.tasks' )->deleteById( $this->taskId );
+		try {
+			$response = $this->client->getIndex( '.tasks' )->deleteById( $this->taskId );
+		} catch ( ResponseException $e ) {
+			$this->log->warning( 'Failed to delete reindex task {taskId}: {error}', [
+				'taskId' => $this->taskId,
+				'error' => $e->getMessage(),
+			] );
+			return false;
+		}
 
 		return $response->isOK();
 	}

@@ -29,6 +29,7 @@
 	"cirrussearch-completion-profile-normal": "Bir neçə durğu işarəsi, bəzi diakritik işarələr və dayandırıcı sözlər silinib.",
 	"cirrussearch-completion-profile-normal-subphrases": "Bir neçə durğu işarəsi, bəzi diakritik işarələr və dayandırıcı sözlər silinib. Həmçinin alt ifadələrlə də uyğunlaşacaq (daxili viki konfiqurasiyasından asılı olaraq alt ifadələr və ya alt səhifələr ola bilər).",
 	"cirrussearch-completion-profile-fuzzy": "Adi profilə bənzər, lakin yazı səhvlərinin düzəldilməsi ilə (iki yazı səhvi dəstəklənir).",
+	"cirrussearch-completion-profile-fast-fuzzy": "Eksperimental qeyri-dəqiq profil (istənilən vaxt silinə bilər)",
 	"prefs-completion": "Axtarışın tamamlanması",
 	"cirrussearch-pref-completion-profile-help": "Axtarış zamanı avtomatik tamamlama (yazdıqca axtarmaq) təklifləri üçün seçimləri təyin edin.\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Tamamlama təklifçisi] yazı səhvlərinin daha yaxşı düzəldilməsi və uyğun axtarış təklifləri üçün alqoritmdir. Prefiks axtarışı alqoritmin köhnə funksiyasıdır.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standart (tövsiyə olunan)",

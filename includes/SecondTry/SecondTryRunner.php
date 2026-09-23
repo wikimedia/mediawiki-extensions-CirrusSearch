@@ -45,6 +45,21 @@ class SecondTryRunner {
 	}
 
 	/**
+	 * Generate candidates, useful when knowing what strategy is run is not required
+	 * and to allow clients to stop early if they know they don't need more.
+	 * @param string $query
+	 * @return \Generator<string>
+	 */
+	public function candidatesGenerator( string $query ): \Generator {
+		foreach ( $this->strategies as $strategy ) {
+			$candidates = $strategy->candidates( $query );
+			foreach ( $candidates as $candidate ) {
+				yield $candidate;
+			}
+		}
+	}
+
+	/**
 	 * Get the weight associated to the strategy.
 	 * Useful to determine the relative importance of the various strategies used by this runner.
 	 * @param string $name name of the strategy

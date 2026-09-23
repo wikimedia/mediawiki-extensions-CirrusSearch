@@ -439,8 +439,7 @@ class CirrusSearch extends SearchEngine {
 	 */
 	protected function completionSearchBackend( $search ) {
 		if ( in_array( NS_SPECIAL, $this->namespaces ) ) {
-			// delegate special search to parent
-			return parent::completionSearchBackend( $search );
+			return $this->suggestSpecialPages( $search );
 		}
 
 		// fallback to classic prefix search if the completion suggester is not enabled or if NS_MAIN
@@ -465,6 +464,28 @@ class CirrusSearch extends SearchEngine {
 		return $this->getSuggestions( $search, $this->config );
 	}
 
+	private function suggestSpecialPages( string $search ): SearchSuggestionSet {
+		$secondTryRunner = $this->secondTryRunnerFactory->create( SearchProfileService::CONTEXT_COMPLETION );
+		$specialPageSuggester = $this->getSpecialPageSuggester();
+		// Not particularly efficient but "simple", ideally the fallback logic should be moved into SpecialPageSuggester
+		$resultPool = $this->limit + $this->offset;
+		$results = $specialPageSuggester->suggest( $search, $resultPool, 0 );
+		$missingFromPool = $resultPool - count( $results );
+
+		if ( $missingFromPool > 0 ) {
+			foreach ( $secondTryRunner->candidatesGenerator( $search ) as $candidate ) {
+				$fallbackResults =
+					$specialPageSuggester->suggest( $candidate, $missingFromPool, 0 );
+				$results = array_merge( $results, $fallbackResults );
+				$missingFromPool = $resultPool - count( $results );
+				if ( $missingFromPool <= 0 ) {
+					break;
+				}
+			}
+		}
+		return SearchSuggestionSet::fromTitles( array_slice( $results, $this->offset, $this->limit ) );
+	}
+
 	/**
 	 * Override variants function because we always do variants
 	 * in the backend.
@@ -483,8 +504,8 @@ class CirrusSearch extends SearchEngine {
 	 */
 	protected function prefixSearch( $search ) {
 		$searcher = $this->makeSearcher();
-		$secondTryRunner = $this->secondTryRunnerFactory->create( SearchProfileService::CONTEXT_COMPLETION );
 
+		$secondTryRunner = $this->secondTryRunnerFactory->create( SearchProfileService::CONTEXT_COMPLETION );
 		if ( $search ) {
 			$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
 		} else {

@@ -118,5 +118,7 @@ class SecondTryRunnerTest extends CirrusTestCase {
 		], $candidates );
 		$actual_weights = array_map( $runner->weight( ... ), array_keys( $candidates ) );
 		$this->assertEquals( [ 1.0, 0.9 ], $actual_weights );
+		$candidates = iterator_to_array( $runner->candidatesGenerator( 'foo ащщ כםם' ) );
+		$this->assertEquals( [ 'ащщ ащщ כםם', 'foo ащщ foo' ], $candidates );
 	}
 }

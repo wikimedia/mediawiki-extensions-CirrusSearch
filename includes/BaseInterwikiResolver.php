@@ -186,7 +186,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 					$config,
 					array_merge( $hashConfigFlags, [ HashSearchConfig::FLAG_INHERIT ] )
 				);
-			} else {
+			} elseif ( $this->config->get( CirrusConfigNames::InterwikiFallbackWithFakeConfig ) ) {
 				$retValue[$prefix] = $fallbackConfig( $wiki, $hashConfigFlags );
 			}
 		}

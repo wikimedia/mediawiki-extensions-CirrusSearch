@@ -546,6 +546,14 @@ Connection timeout (in seconds) for HTTP requests done to another wiki API.
 Default:
     $wgCirrusSearchInterwikiHTTPConnectTimeout = 5
 
+; wgCirrusSearchInterwikiFallbackWithFakeConfig
+
+Fallback to a "constructed" config for the target wiki when performing cross
+project searches. May be enabled on simple setups running a single cluster.
+
+Default:
+    $wgCirrusSearchInterwikiFallbackWithFakeConfig = false;
+
 ; $wgCirrusSearchPhraseSuggestReverseField
 
 Default:

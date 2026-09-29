@@ -81,6 +81,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			CirrusConfigNames::AllowLeadingWildcard => true,
 			MainConfigNames::CapitalLinks => true,
 			MainConfigNames::ContentNamespaces => [ NS_MAIN ],
+			CirrusConfigNames::InterwikiFallbackWithFakeConfig => true,
 		] );
 
 		// Override the list of namespaces to give more deterministic results

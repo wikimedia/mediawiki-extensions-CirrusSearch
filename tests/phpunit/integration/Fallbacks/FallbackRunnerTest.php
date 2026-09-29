@@ -305,6 +305,7 @@ class FallbackRunnerTest extends CirrusIntegrationTestCase {
 			CirrusConfigNames::FetchConfigFromApi => false,
 			CirrusConfigNames::EnablePhraseSuggest => true,
 			CirrusConfigNames::FallbackProfile => 'phrase_suggest_and_language_detection',
+			CirrusConfigNames::InterwikiFallbackWithFakeConfig => true,
 		] );
 
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, 'foobars',

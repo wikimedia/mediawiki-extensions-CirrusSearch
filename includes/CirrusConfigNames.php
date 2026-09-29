@@ -960,4 +960,9 @@ class CirrusConfigNames {
 	 * Name constant for the CirrusSearchPageViewsW setting, for use with Config::get()
 	 */
 	public const PageViewsW = 'CirrusSearchPageViewsW';
+
+	/**
+	 * Name constant for the CirrusSearchInterwikiFallbackWithFakeConfig setting, for use with Config::get()
+	 */
+	public const InterwikiFallbackWithFakeConfig = 'CirrusSearchInterwikiFallbackWithFakeConfig';
 }

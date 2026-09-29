@@ -83,7 +83,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			$blockList = [], $overrides = [] ) {
 		$this->markTestSkippedIfExtensionNotLoaded( 'SiteMatrix' );
 
-		$resolver = $this->getSiteMatrixInterwikiResolver( $wiki, $blockList, $overrides );
+		$resolver = $this->getSiteMatrixInterwikiResolver( $wiki, $blockList, $overrides, true );
 		switch ( $what ) {
 			case 'sisters':
 				asort( $expected );
@@ -247,7 +247,15 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		];
 	}
 
-	public function testLoadConfigForCrossProject() {
+	public static function provideTestLoadConfigForCrossProject(): \Generator {
+		yield 'with fallback' => [ true ];
+		yield 'without fallback' => [ false ];
+	}
+
+	/**
+	 * @dataProvider provideTestLoadConfigForCrossProject
+	 */
+	public function testLoadConfigForCrossProject( bool $withFallback ): void {
 		$this->overrideConfigValue( CirrusConfigNames::RescoreProfile, 'test_inheritance' );
 		$this->markTestSkippedIfExtensionNotLoaded( 'SiteMatrix' );
 		$fixtureFile = 'configDump/enwiki_sisterproject_configs.json';
@@ -263,10 +271,12 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		$apiResponse = CirrusIntegrationTestCase::loadFixture( $fixtureFile );
 		$client = $this->makeFakeHttpMultiClient( $apiResponse );
 
-		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [], [], $client );
+		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [], [], $withFallback, $client );
 		$configs = $resolver->getSisterProjectConfigs();
 
-		$this->assertEquals( array_keys( $configs ), array_keys( $resolver->getSisterProjectPrefixes() ) );
+		if ( $withFallback ) {
+			$this->assertEquals( array_keys( $configs ), array_keys( $resolver->getSisterProjectPrefixes() ) );
+		}
 
 		$wikis = [
 			'enwiktionary' => true,
@@ -279,6 +289,10 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		];
 		foreach ( $wikis as $wikiId => $validConfig ) {
 			$prefix = $resolver->getInterwikiPrefix( $wikiId );
+			if ( !$withFallback && !$validConfig ) {
+				$this->assertArrayNotHasKey( $prefix, $configs );
+				continue;
+			}
 			$this->assertNotNull( $prefix, "$wikiId does not seem to exist" );
 			$this->assertArrayHasKey( $prefix, $configs,
 				"config for $wikiId is available" );
@@ -295,16 +309,18 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 
 	public static function provideTestLoadConfigForCrossLang() {
 		return [
-			'enwiki loads frwiki config properly' => [ true ],
-			'enwiki loads frwiki config and fails' => [ false ],
+			'enwiki loads frwiki config properly' => [ true, true ],
+			'enwiki loads frwiki config and fails' => [ false, true ],
+			'enwiki loads frwiki config and fails without fallbacks' => [ false, false ],
 		];
 	}
 
 	/**
 	 * @dataProvider provideTestLoadConfigForCrossLang
 	 * @param bool $valid
+	 * @param bool $withFallback
 	 */
-	public function testLoadConfigForCrossLang( $valid ) {
+	public function testLoadConfigForCrossLang( bool $valid, bool $withFallback ): void {
 		$this->markTestSkippedIfExtensionNotLoaded( 'SiteMatrix' );
 		$this->overrideConfigValue( CirrusConfigNames::RescoreProfile, 'test_inheritance' );
 		$fixtureFile = 'configDump/enwiki_crosslang_frwiki' . ( !$valid ? '_invalid' : '' ) . '_config.json';
@@ -322,11 +338,15 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 		$client = $this->createMock( MultiHttpClient::class );
 		$client->method( 'runMulti' )
 			->willReturn( $apiResponse );
-		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [], [], $client );
+		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [], [], $withFallback, $client );
 		$configs = $resolver->getSameProjectConfigByLang( 'fr' );
 
 		$wikiId = "frwiki";
 		$prefix = $resolver->getInterwikiPrefix( $wikiId );
+		if ( !$withFallback && !$valid ) {
+			$this->assertArrayEquals( [], $configs );
+			return;
+		}
 		$this->assertNotNull( $prefix, "$wikiId does not seem to exist" );
 		$this->assertArrayHasKey( $prefix, $configs,
 			"config for $wikiId is available" );
@@ -388,11 +408,12 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 	 * @param string $wikiId
 	 * @param array $blockList
 	 * @param array $overrides
+	 * @param bool $withFallback
 	 * @param MultiHttpClient|null $client
 	 * @return InterwikiResolver
 	 */
 	private function getSiteMatrixInterwikiResolver( $wikiId, array $blockList,
-		array $overrides, ?MultiHttpClient $client = null ) {
+		array $overrides, bool $withFallback, ?MultiHttpClient $client = null ) {
 		$conf = new SiteConfiguration;
 		$conf->settings = include __DIR__ . '/../resources/wmf/SiteMatrix_SiteConf_IS.php';
 		$conf->suffixes = include __DIR__ . '/../resources/wmf/suffixes.php';
@@ -428,6 +449,7 @@ class InterwikiResolverTest extends CirrusIntegrationTestCase {
 			'wgCirrusSearchWikiToNameMap' => [],
 			'wgCirrusSearchCrossProjectSearchBlockList' => $blockList,
 			'wgCirrusSearchInterwikiPrefixOverrides' => $overrides,
+			'wgCirrusSearchInterwikiFallbackWithFakeConfig' => $withFallback,
 		];
 		$this->setMwGlobals( $myGlobals );
 		$services = $this->getServiceContainer();

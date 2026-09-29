@@ -486,6 +486,9 @@
 		"CirrusSearchInterwikiHTTPConnectTimeout": {
 			"value": 5
 		},
+		"CirrusSearchInterwikiFallbackWithFakeConfig": {
+			"value": false
+		},
 		"CirrusSearchRefreshInterval": {
 			"value": 1
 		},

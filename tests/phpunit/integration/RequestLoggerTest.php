@@ -105,6 +105,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			'SiteMatrixSites' => [],
 			// Make sure OtherIndex is configured for use as well
 			CirrusConfigNames::ExtraIndexes => [ NS_FILE => [ 'commonswiki_file' ] ],
+			CirrusConfigNames::InterwikiFallbackWithFakeConfig => true,
 		] );
 
 		// Disable opportunistic execution of deferred updates

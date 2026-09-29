@@ -846,7 +846,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		// when completion is disabled.
 		// TODO: Should this be configuration?
 		$poolCounterTypes = [
-			'deepcat' => PoolCounterKey::EXPENSIVE_FULL_TEXT,
+			'deepcategory' => PoolCounterKey::EXPENSIVE_FULL_TEXT,
 			'regex' => PoolCounterKey::EXPENSIVE_FULL_TEXT,
 			'prefix' => PoolCounterKey::PREFIX,
 			'more_like' => PoolCounterKey::MORE_LIKE,

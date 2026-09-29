@@ -8,6 +8,7 @@ use CirrusSearch\CirrusIntegrationTestCase;
 use CirrusSearch\Connection;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\SearchConfig;
+use Elastica\Search;
 
 /**
  * @covers \CirrusSearch\Search\SearchRequestBuilder
@@ -20,6 +21,7 @@ class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
 		$indexBaseName = 'trebuchet'
 	): SearchRequestBuilder {
 		$defaults = [
+			CirrusConfigNames::NamespaceWeights => [],
 			CirrusConfigNames::DefaultCluster => 'dc1',
 			CirrusConfigNames::ReplicaGroup => 'a',
 			CirrusConfigNames::Clusters => [
@@ -33,6 +35,7 @@ class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
 		$otherWikiConfig = new HashSearchConfig( $otherOverride + $hostOverrides );
 
 		$context = new SearchContext( $otherWikiConfig, $namespaces, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$context->setResultsType( new TitleResultsType() );
 		$conn = new Connection( new SearchConfig() );
 		return new SearchRequestBuilder( $context, $conn, $indexBaseName );
 	}
@@ -109,5 +112,28 @@ class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
 			$indexBaseName
 		);
 		$this->assertEquals( $expectedIndexName, $builder->getIndex()->getName() );
+	}
+
+	public function testIgnoreUnavailable(): void {
+		$builder = $this->searchRequestBuilder( [
+			CirrusConfigNames::CrossClusterSearch => true,
+		], [
+			CirrusConfigNames::ReplicaGroup => 'b',
+		] );
+		$search = $builder->build();
+		$this->assertArrayHasKey( Search::OPTION_SEARCH_IGNORE_UNAVAILABLE, $search->getOptions() );
+		$this->assertTrue( $search->getOptions()[Search::OPTION_SEARCH_IGNORE_UNAVAILABLE] );
+
+		$builder = $this->searchRequestBuilder( [
+			CirrusConfigNames::CrossClusterSearch => true,
+		] );
+		$search = $builder->build();
+		$this->assertArrayNotHasKey( Search::OPTION_SEARCH_IGNORE_UNAVAILABLE, $search->getOptions() );
+
+		$builder = $this->searchRequestBuilder( [
+			CirrusConfigNames::CrossClusterSearch => false,
+		] );
+		$search = $builder->build();
+		$this->assertArrayNotHasKey( Search::OPTION_SEARCH_IGNORE_UNAVAILABLE, $search->getOptions() );
 	}
 }

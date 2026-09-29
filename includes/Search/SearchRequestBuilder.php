@@ -10,6 +10,7 @@ use CirrusSearch\Util;
 use Elastica\Index;
 use Elastica\Query;
 use MediaWiki\Logger\LoggerFactory;
+use Wikimedia\Assert\Assert;
 
 /**
  * Build the search request body
@@ -205,6 +206,15 @@ class SearchRequestBuilder {
 
 		// Setup the search
 		$queryOptions = [];
+		if ( $this->isCrossClusterSearch() ) {
+			// Ignore unavailable indices during cross-cluster searches. This feature is currently used only by interwiki searches
+			// for which we purposedly ignore errors. Instead of logging a search failure we let opensearch ignore this problem for us.
+			// Missing indices might be intermittent because ccs_minimize_roundtrips is on by default, this means that the coordinator will
+			// do minimal efforts to check that the target index exists in its view of the remote cluster cluster state.
+			// Disabling ccs_minimize_roundtrips could be an option but at the cost of increased latencies which is probably
+			// not something worth the cost for interwiki searches.
+			$queryOptions[\Elastica\Search::OPTION_SEARCH_IGNORE_UNAVAILABLE] = true;
+		}
 		if ( $this->timeout ) {
 			$queryOptions[\Elastica\Search::OPTION_TIMEOUT] = $this->timeout;
 		}
@@ -293,15 +303,25 @@ class SearchRequestBuilder {
 				$indexName = $this->connection->getIndexName( $indexBaseName, $indexSuffix );
 			}
 
-			if ( $hostConfig->get( CirrusConfigNames::CrossClusterSearch ) ) {
+			if ( $this->isCrossClusterSearch() ) {
 				$local = $hostConfig->getClusterAssignment()->getCrossClusterName();
 				$current = $config->getClusterAssignment()->getCrossClusterName();
-				if ( $local !== $current ) {
-					$indexName = $current . ':' . $indexName;
-				}
+				Assert::invariant( $local !== $current, 'clusters are different' );
+				$indexName = $current . ':' . $indexName;
 			}
 			return $this->connection->getIndex( $indexName );
 		}
+	}
+
+	private function isCrossClusterSearch(): bool {
+		$config = $this->searchContext->getConfig();
+		$hostConfig = $config->getHostWikiConfig();
+		if ( $hostConfig->get( CirrusConfigNames::CrossClusterSearch ) ) {
+			$local = $hostConfig->getClusterAssignment()->getCrossClusterName();
+			$current = $config->getClusterAssignment()->getCrossClusterName();
+			return $local !== $current;
+		}
+		return false;
 	}
 
 	/**

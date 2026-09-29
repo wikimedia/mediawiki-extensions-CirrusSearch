@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Elastica\MSearch;
 use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\Fallbacks\SearcherFactory;
 use CirrusSearch\Parser\BasicQueryClassifier;
@@ -28,7 +29,6 @@ use CirrusSearch\Search\TitleHelper;
 use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\SecondTry\SecondTryRunner;
 use Elastica\Exception\RuntimeException;
-use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;
@@ -678,7 +678,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		// Similar to indexing support only the bulk code path, rather than
 		// single and bulk. The extra overhead should be minimal, and the
 		// reduced complexity is welcomed.
-		$search = new MultiSearch( $connection->getClient() );
+		$search = new MSearch( $connection->getClient() );
 		$search->addSearches( $searches );
 
 		$connection->setTimeout( $this->getClientTimeout( $this->searchContext->getSearchType() ) );

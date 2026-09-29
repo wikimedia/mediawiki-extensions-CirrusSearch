@@ -16,6 +16,7 @@ use Wikimedia\HtmlArmor\HtmlArmor;
 
 /**
  * @covers \CirrusSearch\Searcher
+ * @covers \CirrusSearch\Elastica\MSearch
  * @group CirrusSearch
  * @group Database
  * @group Standalone

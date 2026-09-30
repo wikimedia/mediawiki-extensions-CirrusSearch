@@ -1796,6 +1796,11 @@ Cross-wiki searches never dispatch. They take the default route of the wiki
 being searched. A request that names a query builder or a rescore profile does
 not dispatch either, since it has already made the choice.
 
+A route with the 'none' context refuses serve the query. The search returns
+an empty result set along with a warning. This allows special-case dispatch
+profiles to serve a subset of requests via voters with no fallback when the
+query is unsupported.
+
 ; $wgCirrusSearchSemanticQueryLengthThreshold
 
 Default:

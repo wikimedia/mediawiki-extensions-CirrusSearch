@@ -120,4 +120,42 @@ class RoutingDumpTest extends CirrusIntegrationTestCase {
 		$this->assertSame( [ 'namespaces', 'query_classes', 'debug_option' ],
 			array_keys( $decision['routes']['semantic']['votes'] ) );
 	}
+
+	private function declineAllConfig(): array {
+		return [
+			CirrusConfigNames::QueryDispatchProfiles => [
+				'decline_all' => [
+					'default_route' => 'unserved',
+					'routes' => [
+						'unserved' => [ 'context' => SearchProfileService::CONTEXT_NONE ],
+					],
+				],
+			],
+			CirrusConfigNames::QueryDispatchProfile => 'decline_all',
+		];
+	}
+
+	public function testADeclinedQueryDumpsTheRoutingAndNoRequests() {
+		$dump = $this->dumpQuery( $this->declineAllConfig(), 'catapult' );
+
+		$this->assertSame( [ Searcher::ROUTING_DUMP_KEY ], array_keys( $dump ) );
+		$this->assertSame( 'unserved', $dump[Searcher::ROUTING_DUMP_KEY]['winner'] );
+		$this->assertSame( SearchProfileService::CONTEXT_NONE,
+			$dump[Searcher::ROUTING_DUMP_KEY]['context'] );
+	}
+
+	/**
+	 * The test wiki has no search backend, so a result here also shows that nothing was sent.
+	 */
+	public function testADeclinedQueryReturnsNoResults() {
+		$engine = new CirrusSearch(
+			new HashSearchConfig( $this->declineAllConfig(), [ HashSearchConfig::FLAG_INHERIT ] ),
+			CirrusDebugOptions::defaultOptions()
+		);
+		$status = $engine->searchText( 'catapult' );
+
+		$this->assertStatusWarning( 'cirrussearch-query-declined', $status );
+		$this->assertSame( 'decline_all', $status->getMessages()[0]->getParams()[0]->getValue() );
+		$this->assertSame( 0, $status->getValue()->numRows() );
+	}
 }

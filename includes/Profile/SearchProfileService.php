@@ -163,6 +163,12 @@ class SearchProfileService {
 	public const CONTEXT_SEMANTIC = 'semantic';
 
 	/**
+	 * Profile context of a route that declines the query. It always returns
+	 * an empty result set and a warning.
+	 */
+	public const CONTEXT_NONE = 'none';
+
+	/**
 	 * List of profile repositories, grouped by type and then by repository name.
 	 * @var SearchProfileRepository[][]
 	 */

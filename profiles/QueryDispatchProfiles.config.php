@@ -17,10 +17,13 @@
  * score is strictly for ranking the winners. Two routes that both accept and
  * both score 1.0 are an error.
  *
- * Every profile names a default route, which is where a query goes when no
- * route accepted it.  That route is not in the election, so it has neither
- * voters nor a score. It is also what a caller that must not dispatch at all
- * latches onto, as cross-wiki search does.
+ * Every profile names a default route. That route is excluded from the
+ * election, it is used when no voter indicates the query as a candidate. It is
+ * also used for all cross-wiki search, dispatch profiles are ignored in that
+ * context.
+ *
+ * A route with the CONTEXT_NONE context declines to execute the query,
+ * it returns an empty result set along with a warning.
  *
  * @license GPL-2.0-or-later
  */
@@ -43,8 +46,7 @@ $queryLength = [
 	],
 ];
 
-// Where a query goes when no route accepted it. Named by every profile below, so there is
-// always somewhere to send a query no other route wanted.
+// Where a query goes when no route accepted it.
 $cirrusDefault = [
 	'context' => SearchProfileService::CONTEXT_DEFAULT,
 ];
@@ -85,7 +87,7 @@ $semantic = static function ( array $proposedBy = [] ) {
 };
 
 return [
-	// No query reaches semantic retrieval on its own. Where a wiki starts.
+	// By default semantic is only accessible through debug options
 	'default' => [
 		'default_route' => 'cirrus_default',
 		'routes' => [
@@ -100,6 +102,16 @@ return [
 		'default_route' => 'cirrus_default',
 		'routes' => [
 			'cirrus_default' => $cirrusDefault,
+			'semantic' => $semantic( [
+				'query_length' => $queryLength,
+			] ),
+		],
+	],
+
+	'semantic_only_by_query_length' => [
+		'default_route' => 'no_execute',
+		'routes' => [
+			'no_execute' => [ 'context' => SearchProfileService::CONTEXT_NONE ],
 			'semantic' => $semantic( [
 				'query_length' => $queryLength,
 			] ),

@@ -263,6 +263,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 						)
 					);
 			}
+			if ( $this->searchContext->getProfileContext() === SearchProfileService::CONTEXT_NONE ) {
+				return $this->declinedSearch();
+			}
 			return $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );
 		} else {
 			throw new \RuntimeException( 'Only ' . SearchQuery::SEARCH_TEXT . ' is supported for now' );
@@ -386,6 +389,32 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		}
 
 		return $qb;
+	}
+
+	/**
+	 * The dispatch profile declined to execute this query.
+	 *
+	 * Additionally adds a warning to SearchContext to distinguish this empty result
+	 * set from a true empty result set.
+	 *
+	 * @return Status A succesful result with an empty result set
+	 */
+	private function declinedSearch(): Status {
+		$this->searchContext->setResultsPossible( false );
+		$this->searchContext->addWarning( 'cirrussearch-query-declined',
+			$this->searchContext->getDispatchDecision()?->getProfileName() ?? '' );
+		$description = "{$this->searchContext->getSearchType()} search for '{$this->searchContext->getOriginalSearchTerm()}'";
+		if ( $this->searchContext->getDebugOptions()->isCirrusDumpQuery() ) {
+			// No requests, but the routing tells the reader why.
+			return $this->dumpQueryWithRouting( new MSearchRequests(), $description );
+		}
+		$status = $this->emptyResultSet();
+		if ( $this->searchContext->getDebugOptions()->isCirrusDumpResult() ) {
+			return Status::newGood(
+				( new MSearchResponses( [ $status->getValue() ], [] ) )->dumpResults( $description )
+			);
+		}
+		return $status;
 	}
 
 	/**

@@ -93,5 +93,6 @@
 	"cirrussearch-semantic-empty-query": "Warning shown when a semantic search is attempted with an empty search term.",
 	"cirrussearch-semantic-too-many-results": "Warning shown when a semantic search matches too many results to rank effectively. The user is asked to refine their search.\n\nParameters:\n* $1 - maximum number of search results semantic search will provide.",
 	"cirrussearch-feature-not-negatable": "Warning shown when a search query negates a keyword that does not support negation.",
-	"cirrussearch-keyword-not-at-query-start": "Warning shown when a search query uses a keyword that works only at the start of the query, but puts it at a different position. The search keeps such a keyword as normal text.\n\nParameters:\n* $1 - the keyword, without the colon."
+	"cirrussearch-keyword-not-at-query-start": "Warning shown when a search query uses a keyword that works only at the start of the query, but puts it at a different position. The search keeps such a keyword as normal text.\n\nParameters:\n* $1 - the keyword, without the colon.",
+	"cirrussearch-query-declined": "Warning shown when the wiki configuration declines to execute a query.\n\nParameters:\n* $1 - name of the configuration profile that declined the query."
 }

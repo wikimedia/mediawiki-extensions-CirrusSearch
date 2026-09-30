@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Parser\NamespacePrefixParser;
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\CrossProjectBlockScorerFactory;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\MSearchRequests;
@@ -89,6 +90,9 @@ class InterwikiSearcher extends Searcher {
 			$this->config = $context->getConfig();
 			$this->limit = $iwQuery->getLimit();
 			$this->offset = $iwQuery->getOffset();
+			if ( $context->getProfileContext() === SearchProfileService::CONTEXT_NONE ) {
+				continue;
+			}
 			$this->buildFullTextSearch( $query->getParsedQuery()->getQueryWithoutNsHeader() );
 			$this->indexBaseName = $context->getConfig()->get( CirrusConfigNames::IndexBaseName );
 			$search = $this->buildSearch();

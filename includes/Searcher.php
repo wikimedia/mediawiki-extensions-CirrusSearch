@@ -795,6 +795,12 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		}
 		$mreponses = $msearches->toMSearchResponses( $response->getResultSets() );
 		if ( $mreponses->hasTimeout() ) {
+			Util::getStatsFactory()
+				->getCounter( "partial_results_total" )
+				->setLabel( "search_cluster", $connection->getClusterName() )
+				->setLabel( "type", $log->getQueryType() )
+				->setLabels( $this->getMetricLabels() )
+				->increment();
 			LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 				$log->getDescription() . " timed out and only returned partial results!",
 				$log->getLogVariables()

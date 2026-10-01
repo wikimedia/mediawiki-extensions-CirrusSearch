@@ -529,6 +529,20 @@ class Util {
 	}
 
 	/**
+	 * Increase the ttl up to $ttl * $jitterRatio. Mainly useful to limit cache stampedes.
+	 * @param int $ttl the initial TTL
+	 * @param float $jitterRatio the ratio of the TTL that is allowed to be added
+	 * @return int the new TTL
+	 */
+	public static function cacheTtl( int $ttl, float $jitterRatio = 0.1 ): int {
+		$maxJitter = (int)( $ttl * $jitterRatio );
+		if ( $maxJitter > 1 ) {
+			return $ttl + mt_rand( 0, $maxJitter );
+		}
+		return $ttl;
+	}
+
+	/**
 	 * @param SearchConfig $config Configuration of the check
 	 * @param string $ip The address to check against, ipv4 or ipv6.
 	 * @param string[] $headers Map from http header name to value. All names must be uppercased.

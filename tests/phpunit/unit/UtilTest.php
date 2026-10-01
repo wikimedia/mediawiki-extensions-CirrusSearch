@@ -236,4 +236,17 @@ class UtilTest extends CirrusTestCase {
 			],
 		];
 	}
+
+	public function testCacheTtl(): void {
+		$ttls = [];
+		for ( $i = 0; $i < 1000; ++$i ) {
+			$initialTtl = 24 * 3600;
+			$ratio = 0.2;
+			$ttl = Util::cacheTtl( $initialTtl, $ratio );
+			$this->assertLessThanOrEqual( (int)( $initialTtl * ( 1 + $ratio ) ), $ttl );
+			$this->assertGreaterThanOrEqual( $initialTtl, $ttl );
+			$ttls[$ttl] = true;
+		}
+		$this->assertGreaterThan( 500, count( $ttls ) );
+	}
 }

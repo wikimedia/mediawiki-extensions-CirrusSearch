@@ -739,7 +739,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			$work = function () use ( $work, $searches, $log, $contextResultsType ) {
 				$services = MediaWikiServices::getInstance();
 				$requestStats = Util::getStatsFactory();
-				$cache = $services->getMainWANObjectCache();
+				$cache = $services->getWANObjectCache();
 				$keyParts = [];
 				foreach ( $searches as $key => $search ) {
 					$keyParts[] = $search->getPath() .
@@ -796,7 +796,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 						$cache->set(
 							$key,
 							[ $log->getLogVariables(), $multiResultSet ],
-							$this->searchContext->getCacheTtl()
+							Util::cacheTtl( $this->searchContext->getCacheTtl() )
 						);
 					}
 				}

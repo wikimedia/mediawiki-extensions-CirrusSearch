@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\SecondTry\SecondTrySearchFactory;
+use MediaWiki\Config\HashConfig;
 use MediaWiki\Language\Language;
 use MediaWiki\MainConfigNames;
 
@@ -11,7 +12,7 @@ use MediaWiki\MainConfigNames;
  */
 class PrefixSearchExtractNamespaceTest extends CirrusTestCase {
 	public function testFactoryWithCirrusDisabled(): void {
-		$config = new \HashConfig( [ MainConfigNames::SearchType => 'unrelated' ] );
+		$config = new HashConfig( [ MainConfigNames::SearchType => 'unrelated' ] );
 		$language = $this->createMock( Language::class );
 		$namespaceMatcher = NamespaceMatcher::create( $language, new SecondTrySearchFactory( null ), $this->newHashSearchConfig( [] ) );
 		$hookHandler = PrefixSearchExtractNamespace::create( $config, $namespaceMatcher );
@@ -43,7 +44,7 @@ class PrefixSearchExtractNamespaceTest extends CirrusTestCase {
 		string $expectedSearch,
 		array $expectedNamespace
 	): void {
-		$config = new \HashConfig( [ MainConfigNames::SearchType => 'CirrusSearch' ] );
+		$config = new HashConfig( [ MainConfigNames::SearchType => 'CirrusSearch' ] );
 		$searchConfig = $this->newHashSearchConfig( [ CirrusConfigNames::NamespaceResolutionMethod => $method ] );
 		$language = $this->createMock( Language::class );
 		$language->expects( $this->atMost( 1 ) )

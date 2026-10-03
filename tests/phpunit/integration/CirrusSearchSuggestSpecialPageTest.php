@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use MediaWiki\MainConfigNames;
+use MediaWiki\Search\SearchSuggestionSet;
 use MediaWiki\Title\Title;
 
 /**
@@ -30,7 +31,7 @@ class CirrusSearchSuggestSpecialPageTest extends \MediaWikiLangTestCase {
 		$engine = new CirrusSearch();
 		$results = $engine->completionSearchWithVariants( 'nhujs:terth' );
 		self::assertEquals(
-			\SearchSuggestionSet::fromTitles( [ Title::makeTitleSafe( NS_SPECIAL, 'אקראי' ) ] ),
+			SearchSuggestionSet::fromTitles( [ Title::makeTitleSafe( NS_SPECIAL, 'אקראי' ) ] ),
 			$results
 		);
 	}

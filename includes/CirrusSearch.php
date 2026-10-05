@@ -471,12 +471,17 @@ class CirrusSearch extends SearchEngine {
 		$resultPool = $this->limit + $this->offset;
 		$results = $specialPageSuggester->suggest( $search, $resultPool, 0 );
 		$missingFromPool = $resultPool - count( $results );
+		$searches = [ $search ];
 
 		if ( $missingFromPool > 0 ) {
 			foreach ( $secondTryRunner->candidatesGenerator( $search ) as $candidate ) {
+				if ( in_array( $candidate, $searches ) ) {
+					continue;
+				}
+				$searches[] = $candidate;
 				$fallbackResults =
 					$specialPageSuggester->suggest( $candidate, $missingFromPool, 0 );
-				$results = array_merge( $results, $fallbackResults );
+				$results = array_unique( array_merge( $results, $fallbackResults ) );
 				$missingFromPool = $resultPool - count( $results );
 				if ( $missingFromPool <= 0 ) {
 					break;

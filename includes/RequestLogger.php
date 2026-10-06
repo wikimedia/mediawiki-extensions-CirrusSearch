@@ -173,7 +173,7 @@ class RequestLogger {
 	 * @return array mediawiki/search/requestset event object
 	 */
 	private function buildCirrusSearchRequestEvent() {
-		global $wgServerName;
+		global $wgServerName, $wgCirrusSearchLogHighlightsTopN;
 		$webRequest = RequestContext::getMain()->getRequest();
 
 		// for the moment RequestLog::getRequests() is still created in the
@@ -189,6 +189,10 @@ class RequestLogger {
 		// While building the elasticSearchRequests object, collect
 		// a list of all hits from all Elasticsearch requests.
 		$allHits = [];
+
+		// Kept outside of elasticsearch_requests[].hits[]: hive can't add
+		// fields to a struct nested in an array.
+		$highlights = [];
 
 		// Iterate over each individual Elasticsearch request
 		foreach ( $this->logs as $idx => $elasticSearchRequestLog ) {
@@ -257,6 +261,21 @@ class RequestLogger {
 					$allHits = array_merge( $allHits, $requestEntry['hits'] );
 				}
 
+				$requestIndex = count( $elasticSearchRequests );
+				// hit_index must point into the logged hits, which encodeHits() truncates.
+				$topN = min( $wgCirrusSearchLogHighlightsTopN, self::LOG_MAX_RESULTS );
+				$topHits = array_slice( $requestContext['hits'] ?? [], 0, $topN );
+				foreach ( $topHits as $hitIndex => $hit ) {
+					if ( isset( $hit['highlight'] ) ) {
+						$highlights[] = [
+							'request_index' => $requestIndex,
+							'hit_index' => $hitIndex,
+							'page_id' => (int)$hit['pageId'],
+							'highlight' => $hit['highlight'],
+						];
+					}
+				}
+
 				$elasticSearchRequests[] = $requestEntry;
 			}
 		}
@@ -288,7 +307,7 @@ class RequestLogger {
 		$requestEvent = [
 			// This schema can be found in the mediawiki/event-schemas repository.
 			// The $schema URI here should be updated if we increment schema versions.
-			'$schema' => '/mediawiki/cirrussearch/request/0.0.1',
+			'$schema' => '/mediawiki/cirrussearch/request/0.1.0',
 			'meta' => [
 				'request_id' => $webRequest->getRequestId(),
 				'id' => $gen->newUUIDv4(),
@@ -333,6 +352,9 @@ class RequestLogger {
 		}
 		if ( $elasticSearchRequests ) {
 			$requestEvent['elasticsearch_requests'] = $elasticSearchRequests;
+		}
+		if ( $highlights ) {
+			$requestEvent['highlights'] = $highlights;
 		}
 		// Should always be true, but don't accidently instantiate user testing if somehow
 		// it wasn't done previously.

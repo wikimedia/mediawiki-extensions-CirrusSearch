@@ -218,15 +218,42 @@ class SearchRequestLog extends BaseRequestLog {
 				// stage but we can't see that here...Perhaps we instead attach
 				// this data at a later stage like CompletionSuggester?
 				$title = Title::makeTitle( $hit['_source']['namespace'], $hit['_source']['title'] );
-				$hits[] = [
+				$formattedHit = [
 					'title' => (string)$title,
 					'index' => $hit['_index'] ?? "",
 					'pageId' => $hit['_id'] ?? -1,
 					'score' => $hit['_score'] ?? -1.0,
 				];
+				$highlight = $this->extractHighlight( $hit );
+				if ( $highlight ) {
+					$formattedHit['highlight'] = $highlight;
+				}
+				$hits[] = $formattedHit;
 			}
 		}
 
 		return $hits;
+	}
+
+	/**
+	 * @param array $hit
+	 * @return string[] Map from highlighted field name to the first fragment
+	 */
+	private function extractHighlight( array $hit ): array {
+		$highlight = [];
+		foreach ( $hit['highlight'] ?? [] as $field => $fragments ) {
+			if ( isset( $fragments[0] ) ) {
+				$highlight[$field] = $fragments[0];
+			}
+		}
+		// Semantic search highlights the best matching passage, found in the inner hits.
+		foreach ( $hit['inner_hits'] ?? [] as $innerHits ) {
+			foreach ( $innerHits['hits']['hits'][0]['highlight'] ?? [] as $field => $fragments ) {
+				if ( isset( $fragments[0] ) ) {
+					$highlight[$field] = $fragments[0];
+				}
+			}
+		}
+		return $highlight;
 	}
 }

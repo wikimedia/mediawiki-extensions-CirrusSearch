@@ -62,6 +62,75 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		$this->assertTrue( $logger->hasQueryLogs() );
 	}
 
+	public function testHighlightsLoggedForTopHits() {
+		$this->overrideConfigValue( CirrusConfigNames::LogHighlightsTopN, 2 );
+		$cleanup = DeferredUpdates::preventOpportunisticUpdates();
+
+		$hits = [];
+		foreach ( [ 'A', 'B', 'C' ] as $i => $title ) {
+			$hits[] = [
+				'title' => $title,
+				'index' => 'wiki_content',
+				'pageId' => $i + 1,
+				'score' => 1.0,
+				'highlight' => [ 'text' => "\u{E000}$title\u{E001}" ],
+			];
+		}
+		// Hit without highlight still counts towards the top-n.
+		unset( $hits[0]['highlight'] );
+		$log = $this->createMock( RequestLog::class );
+		$log->method( 'getLogVariables' )->willReturn( [] );
+		$log->method( 'getRequests' )->willReturn( [
+			[ 'queryType' => 'full_text', 'hits' => [] ],
+			[ 'queryType' => 'full_text', 'hits' => $hits ],
+		] );
+		$logger = new RequestLogger();
+		$logger->addRequest( $log );
+
+		$event = TestingAccessWrapper::newFromObject( $logger )->buildCirrusSearchRequestEvent();
+		$this->assertValidEvent( $event );
+		$this->assertSame( [
+			[
+				'request_index' => 1,
+				'hit_index' => 1,
+				'page_id' => 2,
+				'highlight' => [ 'text' => "\u{E000}B\u{E001}" ],
+			],
+		], $event['highlights'] );
+	}
+
+	public function testHighlightsLoggingDisabled() {
+		$this->overrideConfigValue( CirrusConfigNames::LogHighlightsTopN, 0 );
+		$cleanup = DeferredUpdates::preventOpportunisticUpdates();
+
+		$log = $this->createMock( RequestLog::class );
+		$log->method( 'getLogVariables' )->willReturn( [] );
+		$log->method( 'getRequests' )->willReturn( [ [
+			'queryType' => 'full_text',
+			'hits' => [ [ 'title' => 'A', 'pageId' => 1, 'highlight' => [ 'text' => 'A' ] ] ],
+		] ] );
+		$logger = new RequestLogger();
+		$logger->addRequest( $log );
+
+		$event = TestingAccessWrapper::newFromObject( $logger )->buildCirrusSearchRequestEvent();
+		$this->assertValidEvent( $event );
+		$this->assertArrayNotHasKey( 'highlights', $event );
+	}
+
+	private function assertValidEvent( array $event ): void {
+		// EventBus sets meta.dt when sending.
+		$event['meta']['dt'] ??= '2020-01-01T00:00:00Z';
+		$validator = new \JsonSchema\Validator;
+		$fixed = json_decode( json_encode( $event ) );
+		$validator->validate( $fixed, $this->schema );
+
+		$errors = [];
+		foreach ( $validator->getErrors() as $error ) {
+			$errors[] = sprintf( "[%s] %s\n", $error['property'], $error['message'] );
+		}
+		$this->assertTrue( $validator->isValid(), implode( '\n', $errors ) );
+	}
+
 	public static function requestLoggingProvider() {
 		foreach ( CirrusIntegrationTestCase::findFixtures( 'requestLogging/*.request' ) as $requestFile ) {
 			$testBase = substr( $requestFile, 0, -8 );
@@ -303,15 +372,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 					// mediwiki/cirrussearch/request event JSONSchema. If the
 					// JSONSchema has changed, you'll need to make sure the
 					// schema file in the fixtures/ directory is also updated.
-					$validator = new \JsonSchema\Validator;
-					$fixed = json_decode( json_encode( $log['context'] ) );
-					$validator->validate( $fixed, $this->schema );
-
-					$errors = [];
-					foreach ( $validator->getErrors() as $error ) {
-						$errors[] = sprintf( "[%s] %s\n", $error['property'], $error['message'] );
-					}
-					$this->assertTrue( $validator->isValid(), implode( '\n', $errors ) );
+					$this->assertValidEvent( $log['context'] );
 
 					// Now return the filtered requestset event for fixture testing.
 					$log = $this->filterCirrusSearchRequestEvent( $log );

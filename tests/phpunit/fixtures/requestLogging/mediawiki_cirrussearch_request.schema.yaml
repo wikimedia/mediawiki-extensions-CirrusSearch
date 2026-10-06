@@ -2,7 +2,7 @@ title: mediawiki/cirrussearch/request
 description: >
   A set of requests made by CirrusSearch to ElasticSearch
   for a single PHP execution context.
-$id: /mediawiki/cirrussearch/request/0.0.1
+$id: /mediawiki/cirrussearch/request/0.1.0
 $schema: http://json-schema.org/draft-07/schema#
 type: object
 additionalProperties: false
@@ -259,3 +259,33 @@ properties:
               profile_name:
                 type: string
                 description: The profile name for comp_suggest queries
+
+  highlights:
+    type: array
+    description: >
+      Highlights for the top ranked hits of each Elasticsearch request.
+      Kept outside of elasticsearch_requests[].hits[] because new fields
+      can not be added to a struct nested in an array.
+    items:
+      type: object
+      additionalProperties: false
+      properties:
+        request_index:
+          type: integer
+          description: Position of the request in elasticsearch_requests
+          minimum: 0
+        hit_index:
+          type: integer
+          description: Position of the hit in elasticsearch_requests[request_index].hits
+          minimum: 0
+        page_id:
+          type: integer
+          description: MediaWiki page id of the hit. May be -1 for interwiki results
+        highlight:
+          type: object
+          description: >
+            Map from highlighted field name to the first highlighted
+            fragment of that field. Matched text starts with U+E000
+            and ends with U+E001.
+          additionalProperties:
+            type: string

@@ -443,6 +443,11 @@ class CirrusConfigNames {
 	public const LogElasticRequestsSecret = 'CirrusSearchLogElasticRequestsSecret';
 
 	/**
+	 * Name constant for the CirrusSearchLogHighlightsTopN setting, for use with Config::get()
+	 */
+	public const LogHighlightsTopN = 'CirrusSearchLogHighlightsTopN';
+
+	/**
 	 * Name constant for the CirrusSearchMaxFullTextQueryLength setting, for use with Config::get()
 	 */
 	public const MaxFullTextQueryLength = 'CirrusSearchMaxFullTextQueryLength';

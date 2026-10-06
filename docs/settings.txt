@@ -1009,6 +1009,16 @@ When truthy and this value is passed as the cirrusLogElasticRequests query
 variable $wgCirrusSearchLogElasticRequests will be set to false for that
 request.
 
+; $wgCirrusSearchLogHighlightsTopN
+
+Default:
+    $wgCirrusSearchLogHighlightsTopN = 5;
+
+Number of top ranked hits, for each elasticsearch request, that have their
+highlights included in the cirrussearch-request event. Only the first
+fragment of each highlighted field is logged. Set to 0 to log no
+highlights.
+
 ; $wgCirrusSearchMaxIncategoryOptions
 
 Default:

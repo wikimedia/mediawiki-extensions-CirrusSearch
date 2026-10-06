@@ -535,6 +535,9 @@
 		"CirrusSearchLogElasticRequestsSecret": {
 			"value": false
 		},
+		"CirrusSearchLogHighlightsTopN": {
+			"value": 5
+		},
 		"CirrusSearchMaxFullTextQueryLength": {
 			"value": 300
 		},

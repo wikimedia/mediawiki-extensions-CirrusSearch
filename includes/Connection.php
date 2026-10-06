@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Elastica\DeprecationLoggedHttp;
 use Exception;
 use LogicException;
 use MediaWiki\Extension\Elastica\ElasticaConnection;
@@ -137,6 +138,26 @@ class Connection extends ElasticaConnection {
 	 */
 	public function getClusterName() {
 		return $this->cluster;
+	}
+
+	/**
+	 * Name of the cluster that responded to the last request, for use as a metric label.
+	 * Requests can go through a router, so the configured cluster name may not tell
+	 * which cluster responded.
+	 *
+	 * @return string
+	 */
+	public function getMetricClusterName(): string {
+		$elasticaConn = $this->getClient()->getLastRequest()?->getConnection();
+		if ( $elasticaConn !== null && $elasticaConn->hasParam( DeprecationLoggedHttp::CLUSTER_NAME_PARAM ) ) {
+			$responding = $elasticaConn->getParam( DeprecationLoggedHttp::CLUSTER_NAME_PARAM );
+			// Unknown names fall back to the configured name to keep the label values bounded.
+			$names = $this->config->get( CirrusConfigNames::MetricClusterNames );
+			if ( isset( $names[$responding] ) ) {
+				return $names[$responding];
+			}
+		}
+		return $this->getClusterName();
 	}
 
 	/**

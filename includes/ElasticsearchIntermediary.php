@@ -210,8 +210,9 @@ abstract class ElasticsearchIntermediary {
 
 		$stats = Util::getStatsFactory();
 		$type = ElasticaErrorHandler::classifyError( $exception );
-		$clusterName = $connection->getClusterName();
+		$clusterName = $connection->getMetricClusterName();
 		$context['cirrussearch_error_type'] = $type;
+		$context['responding_cluster'] = $clusterName;
 
 		$stats->getCounter( "backend_failures_total" )
 			->setLabel( "search_cluster", $clusterName )
@@ -273,7 +274,7 @@ abstract class ElasticsearchIntermediary {
 
 		$log->finish();
 		$tookMs = $log->getTookMs();
-		$clusterName = $connection->getClusterName();
+		$clusterName = $connection->getMetricClusterName();
 		$this->searchMetrics['wgCirrusTookMs'] = $tookMs;
 		self::$requestLogger->addRequest( $log, $this->user, $this->slowMillis );
 		$type = $log->getQueryType();

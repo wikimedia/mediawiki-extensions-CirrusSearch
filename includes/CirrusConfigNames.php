@@ -58,6 +58,11 @@ class CirrusConfigNames {
 	public const ConnectionAttempts = 'CirrusSearchConnectionAttempts';
 
 	/**
+	 * Name constant for the CirrusSearchMetricClusterNames setting, for use with Config::get()
+	 */
+	public const MetricClusterNames = 'CirrusSearchMetricClusterNames';
+
+	/**
 	 * Name constant for the CirrusSearchShardCount setting, for use with Config::get()
 	 */
 	public const ShardCount = 'CirrusSearchShardCount';

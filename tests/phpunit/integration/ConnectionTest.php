@@ -2,6 +2,11 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Elastica\DeprecationLoggedHttp;
+use Elastica\Request;
+use Elastica\Response;
+use Elastica\Transport\AbstractTransport;
+
 /**
  * Make sure cirrus doens't break any hooks.
  *
@@ -9,6 +14,7 @@ namespace CirrusSearch;
  *
  * @group CirrusSearch
  * @covers \CirrusSearch\Connection
+ * @covers \CirrusSearch\Elastica\DeprecationLoggedHttp
  */
 class ConnectionTest extends CirrusIntegrationTestCase {
 	public static function extractIndexSuffixProvider() {
@@ -158,5 +164,51 @@ class ConnectionTest extends CirrusIntegrationTestCase {
 			$conn3 = Connection::getPool( new HashSearchConfig( $update + $config ) );
 			$this->assertNotEquals( $conn, $conn3 );
 		}
+	}
+
+	public static function provideMetricClusterName() {
+		return [
+			'no request yet' => [ 'dnsdisc', false, null ],
+			'no header' => [ 'dnsdisc', true, null ],
+			'mapped header' => [ 'eqiad', true, "X-Cluster-Name: production-search-eqiad\r\n" ],
+			'header name is case insensitive' => [ 'eqiad', true, "x-cluster-name: production-search-eqiad\r\n" ],
+			'unmapped header' => [ 'dnsdisc', true, "X-Cluster-Name: production-search-codfw\r\n" ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideMetricClusterName
+	 */
+	public function testGetMetricClusterName( string $expected, bool $sendRequest, ?string $header ) {
+		$transport = new class( $header ) extends AbstractTransport {
+			private ?string $header;
+
+			public function __construct( ?string $header ) {
+				parent::__construct();
+				$this->header = $header;
+			}
+
+			public function exec( Request $request, array $params ): Response {
+				if ( $this->header !== null ) {
+					( new DeprecationLoggedHttp( $this->getConnection() ) )->handleHeader( $this->header );
+				}
+				return new Response( '{}', 200 );
+			}
+		};
+		$config = new HashSearchConfig( [
+			CirrusConfigNames::DefaultCluster => 'dnsdisc',
+			CirrusConfigNames::Clusters => [
+				'dnsdisc' => [ [ 'host' => 'localhost', 'transport' => $transport ] ],
+			],
+			CirrusConfigNames::ReplicaGroup => 'default',
+			CirrusConfigNames::MetricClusterNames => [
+				'production-search-eqiad' => 'eqiad',
+			],
+		] );
+		$conn = new Connection( $config );
+		if ( $sendRequest ) {
+			$conn->getClient()->request( '/' );
+		}
+		$this->assertSame( $expected, $conn->getMetricClusterName() );
 	}
 }

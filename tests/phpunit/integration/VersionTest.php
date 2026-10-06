@@ -90,6 +90,8 @@ class VersionTest extends CirrusIntegrationTestCase {
 			->willReturn( $client );
 		$conn->method( 'getClusterName' )
 			->willReturn( 'default' );
+		$conn->method( 'getMetricClusterName' )
+			->willReturn( 'default' );
 		$conn->expects( ( $this->any() ) )
 			->method( 'getConfig' )
 			->willReturn( $config );

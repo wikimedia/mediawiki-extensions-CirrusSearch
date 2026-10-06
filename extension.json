@@ -227,6 +227,10 @@
 		"CirrusSearchConnectionAttempts": {
 			"value": 1
 		},
+		"CirrusSearchMetricClusterNames": {
+			"value": [],
+			"merge_strategy": "array_plus"
+		},
 		"CirrusSearchShardCount": {
 			"value": {
 				"content": 1,

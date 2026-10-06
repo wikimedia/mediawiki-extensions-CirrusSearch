@@ -855,7 +855,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		if ( $mreponses->hasTimeout() ) {
 			Util::getStatsFactory()
 				->getCounter( "partial_results_total" )
-				->setLabel( "search_cluster", $connection->getClusterName() )
+				->setLabel( "search_cluster", $connection->getMetricClusterName() )
 				->setLabel( "type", $log->getQueryType() )
 				->setLabels( $this->getMetricLabels() )
 				->increment();

@@ -124,6 +124,22 @@ How many times to attempt connecting to a given server.
 If you're behind LVS and everything looks like one server,
 you may want to reattempt 2 or 3 times.
 
+; $wgCirrusSearchMetricClusterNames
+
+Default:
+    $wgCirrusSearchMetricClusterNames = [];
+
+Map of the X-Cluster-Name response header value to the search_cluster
+label of request metrics. Use this when requests are externally routed
+and the configured cluster name does not tell which cluster responded.
+When the header is missing or has no entry here, the configured cluster
+name is the label.
+
+    $wgCirrusSearchMetricClusterNames = [
+        'production-search-eqiad' => 'eqiad',
+        'production-search-omega-eqiad' => 'eqiad',
+    ];
+
 ; $wgCirrusSearchShardCount
 
 Default:

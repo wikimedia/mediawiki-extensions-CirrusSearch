@@ -91,5 +91,6 @@
 	"cirrussearch-invalid-keyword-threshold": "تم إدخال قيمة حدية غير صالحة ' $1 '. من المتوقع أن يكون العدد العشري بين 0 و1.",
 	"cirrussearch-semantic-empty-query": "يتطلب البحث الدلالي مصطلح بحث غير فارغ.",
 	"cirrussearch-semantic-too-many-results": "تم طلب عدد كبير جدًا من النتائج من البحث الدلالي. سيتم ترتيب $1 الأولى فقط بشكل صحيح.",
-	"cirrussearch-feature-not-negatable": "لا يمكن نفي الكلمة المفتاحية ' $1 ' باستخدام '-' أو '!'"
+	"cirrussearch-feature-not-negatable": "لا يمكن نفي الكلمة المفتاحية ' $1 ' باستخدام '-' أو '!'",
+	"cirrussearch-keyword-not-at-query-start": "لم يتم تطبيق الكلمة المفتاحية \" $1 \". تعمل هذه الكلمة المفتاحية فقط في بداية البحث."
 }

@@ -22,7 +22,7 @@ class QueryBuildDocumentTest extends ApiTestCase {
 	private const PAGE_TITLE = 'QueryBuildDocumentTest test page';
 	private const CONTENT_FIRST_REV = "== Head ==\n " .
 			"First revision " .
-			"[[http://test.local/1 ref1]] " .
+			"[http://test.local/1 ref1] " .
 			"[[Page1]] " .
 			"[[Category:Category1]] " .
 			"{{template1}} " .
@@ -31,7 +31,7 @@ class QueryBuildDocumentTest extends ApiTestCase {
 
 	private const CONTENT_SECOND_REV = "== Head ==\n" .
 			"Second revision " .
-			"[[http://test.local/2]] " .
+			"[http://test.local/2 ref2] " .
 			"[[Page1]] [[Page2]]" .
 			"[[Category:Category2]] " .
 			"{{template2}} " .
@@ -241,9 +241,9 @@ class QueryBuildDocumentTest extends ApiTestCase {
 			'external_link' => [ "http://test.local/2" ],
 			'outgoing_link' => [ "Page1", "Page2", "Template:Template2" ],
 			'template' => [ "Template:Template2" ],
-			'text' => "Second revision [[1]] Page1 Page2 Template:Template2",
+			'text' => "Second revision ref2 Page1 Page2 Template:Template2",
 			'source_text' => self::CONTENT_SECOND_REV,
-			'text_bytes' => 172,
+			'text_bytes' => 175,
 			'content_model' => 'wikitext',
 			'language' => 'en',
 			'heading' => [ 'Head' ],
@@ -268,9 +268,9 @@ class QueryBuildDocumentTest extends ApiTestCase {
 			'external_link' => [ "http://test.local/1" ],
 			'outgoing_link' => [ "Page1", "Template:Template1" ],
 			'template' => [ "Template:Template1" ],
-			'text' => "First revision [ref1] Page1 Template:Template1",
+			'text' => "First revision ref1 Page1 Template:Template1",
 			'source_text' => self::CONTENT_FIRST_REV,
-			'text_bytes' => 164,
+			'text_bytes' => 162,
 			'content_model' => 'wikitext',
 			'language' => 'en',
 			'heading' => [ 'Head' ],

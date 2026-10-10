@@ -28,7 +28,7 @@
 		"request": "2.88.2",
 		"semlog": "0.6.10",
 		"stylelint-config-wikimedia": "0.19.4",
-		"wdio-mediawiki": "6.5.2"
+		"wdio-mediawiki": "6.5.3"
 	},
 	"peerDependencies": {
 		"eslint-plugin-mediawiki": "0.7.0"

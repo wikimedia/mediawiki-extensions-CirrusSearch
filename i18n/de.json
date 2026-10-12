@@ -87,5 +87,6 @@
 	"cirrussearch-semantic-empty-query": "Für die semantische Suche ist ein nicht leerer Suchbegriff erforderlich.",
 	"cirrussearch-semantic-too-many-results": "Zu viele Ergebnisse wurden von der semantischen Suche verlangt. Nur die Top $1 werden ordnungsgemäß eingestuft.",
 	"cirrussearch-feature-not-negatable": "Das Schlüsselwort „$1“ kann nicht mit „-“ oder „!“ negiert werden.",
-	"cirrussearch-keyword-not-at-query-start": "Das Schlüsselwort „$1“ wurde nicht angewendet. Dieses Schlüsselwort funktioniert nur am Anfang der Suche."
+	"cirrussearch-keyword-not-at-query-start": "Das Schlüsselwort „$1“ wurde nicht angewendet. Dieses Schlüsselwort funktioniert nur am Anfang der Suche.",
+	"cirrussearch-query-declined": "Es wurde keine Suche durchgeführt: Das Profil $1 hat die Ausführung dieser Abfrage abgelehnt."
 }

@@ -87,5 +87,6 @@
 	"cirrussearch-semantic-empty-query": "A busca semántica necesita un termo de procura que non estea baleiro.",
 	"cirrussearch-semantic-too-many-results": "A busca semántica solicitou demasiados resultados. Só os primeiros $1 se clasificarán correctamente.",
 	"cirrussearch-feature-not-negatable": "A palabra clave \"$1\" non se pode negar con \"-\" nin con \"!\"",
-	"cirrussearch-keyword-not-at-query-start": "Non se aplicou a palabra clave \"$1\". Esta palabra clave só funciona ao comezo da busca."
+	"cirrussearch-keyword-not-at-query-start": "Non se aplicou a palabra clave \"$1\". Esta palabra clave só funciona ao comezo da busca.",
+	"cirrussearch-query-declined": "Non se realizou ningunha procura: o perfil \"$1\" rexeitou executar esta consulta"
 }

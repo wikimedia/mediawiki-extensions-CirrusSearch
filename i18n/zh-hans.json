@@ -109,5 +109,6 @@
 	"cirrussearch-semantic-empty-query": "语义搜索需要搜索关键词不为空。",
 	"cirrussearch-semantic-too-many-results": "语义搜索的结果过多。仅前$1项结果会正确排序。",
 	"cirrussearch-feature-not-negatable": "关键词“$1”不能使用“-”或“!”否定",
-	"cirrussearch-keyword-not-at-query-start": "未应用关键词“$1”。该关键词仅在搜索词开头有效。"
+	"cirrussearch-keyword-not-at-query-start": "未应用关键词“$1”。该关键词仅在搜索词开头有效。",
+	"cirrussearch-query-declined": "未执行搜索：$1个人资料拒绝运行此查询"
 }

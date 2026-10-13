@@ -42,6 +42,11 @@ class SecondTrySearchFactory {
 					SecondTryHebrewKeyboard::cacheKey( $config ),
 					static fn (): SecondTrySearch => SecondTryHebrewKeyboard::build( $config )
 				);
+			case 'english_frames':
+				return $this->getSecondTrySearch(
+					SecondTryEnglishFrames::class,
+					static fn (): SecondTrySearch => new SecondTryEnglishFrames()
+				);
 			case 'language_converter':
 				if ( $this->languageConverterFactory !== null ) {
 					return $this->getSecondTrySearch(

@@ -15,6 +15,7 @@ use MediaWiki\Language\LanguageConverterFactory;
  * @covers \CirrusSearch\SecondTry\SecondTryRussianKeyboard
  * @covers \CirrusSearch\SecondTry\SecondTryGeorgianTransliteration
  * @covers \CirrusSearch\SecondTry\SecondTryHindiTransliteration
+ * @covers \CirrusSearch\SecondTry\SecondTryEnglishFrames
  * @group CirrusSearch
  */
 class SecondTrySearchTest extends CirrusTestCase {
@@ -108,6 +109,117 @@ class SecondTrySearchTest extends CirrusTestCase {
 		yield 'hin_tr unmappable latin 2' => [ 'hindi_transliteration', 'ʃəzæm', [] ];
 		yield 'hin_tr nothing relevant' => [ 'hindi_transliteration', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', [] ]; // Japanese, Inuktitut
 
+		// english_frames
+			// one for each frame; use slightly non-ASCII keywords philosóphy and Frëd
+		yield 'eng_fr tell me about it' => [ 'english_frames', 'tell me about philosóphy', [ 'philosóphy' ] ];
+		yield 'eng_fr how do you say it' => [ 'english_frames', 'how do you say philosóphy', [ 'philosóphy' ] ];
+		yield 'eng_fr what is the meaning of it' => [ 'english_frames',
+													'what is the meaning of philosóphy', [ 'philosóphy' ] ];
+		yield 'eng_fr what does it mean' => [ 'english_frames', 'what does philosóphy mean', [ 'philosóphy' ] ];
+		yield 'eng_fr define it' => [ 'english_frames', 'define philosóphy', [ 'philosóphy' ] ];
+		yield 'eng_fr what is it' => [ 'english_frames', 'what is philosóphy', [ 'philosóphy' ] ];
+		yield 'eng_fr what happened to him' => [ 'english_frames', 'what happened to Frëd Smith', [ 'frëd smith' ] ];
+		yield 'eng_fr who is he' => [ 'english_frames', 'who is Frëd Smith', [ 'frëd smith' ] ];
+		yield 'eng_fr who did it' => [ 'english_frames', 'who invented philosóphy', [ 'philosóphy' ] ];
+		yield 'eng_fr where is it' => [ 'english_frames', 'where is the Taj Mahal', [ 'taj mahal' ] ];
+		yield 'eng_fr where did he live' => [ 'english_frames', 'where did Frëd Smith live', [ 'frëd smith' ] ];
+		yield 'eng_fr when was he born' => [ 'english_frames', 'when was Frëd Smith born', [ 'frëd smith' ] ];
+		yield 'eng_fr how old is he' => [ 'english_frames', 'how old is Frëd Smith', [ 'frëd smith' ] ];
+		yield 'eng_fr how did he die' => [ 'english_frames', 'how did Frëd Smith die', [ 'frëd smith' ] ];
+		yield 'eng_fr is he dead' => [ 'english_frames', 'is Frëd Smith dead', [ 'frëd smith' ] ];
+		yield 'eng_fr the cast of it' => [ 'english_frames',
+											'the cast of Frëd Smith and Friends ', [ 'frëd smith and friends' ] ];
+		yield 'eng_fr pics of him' => [ 'english_frames', 'pictures of Frëd Smith', [ 'frëd smith' ] ];
+		yield 'eng_fr bio of him' => [ 'english_frames', 'biography of Frëd Smith', [ 'frëd smith' ] ];
+		yield 'eng_fr info about him' => [ 'english_frames', 'info about Frëd Smith', [ 'frëd smith' ] ];
+		yield 'eng_fr lyrics to song' => [ 'english_frames', 'lyrics to Walking on Sunshine', [ 'walking on sunshine' ] ];
+		yield 'eng_fr wiki it' => [ 'english_frames', 'wiki Frëd Smith', [ 'frëd smith' ] ];
+		yield 'eng_fr it wiki' => [ 'english_frames', 'Frëd Smith wiki', [ 'frëd smith' ] ];
+		yield 'eng_fr it definition' => [ 'english_frames', 'philosóphy definition', [ 'philosóphy' ] ];
+		yield 'eng_fr it meaning in lang' => [ 'english_frames', 'philosóphy meaning in español', [ 'philosóphy' ] ];
+		yield 'eng_fr it meaning in lang2' => [ 'english_frames', 'ウィキペディア meaning in Japanese', [ 'ウィキペディア' ] ];
+		yield 'eng_fr it movie' => [ 'english_frames', '3 fast 3 furious movie', [ '3 fast 3 furious' ] ];
+		yield 'eng_fr him actor' => [ 'english_frames', 'Frëd Smith australian actor', [ 'frëd smith' ] ];
+		yield 'eng_fr his age' => [ 'english_frames', 'Frëd Smith age', [ 'frëd smith' ] ];
+		yield 'eng_fr his spouse' => [ 'english_frames', 'Frëd Smith\'s spouse', [ 'frëd smith' ] ];
+
+			// titles not to extract
+		yield 'eng_fr year movie' => [ 'english_frames', '1999 movies', [] ];
+		yield 'eng_fr oldest movie' => [ 'english_frames', 'oldest Frëd Smith movie', [] ];
+		yield 'eng_fr adj adj actor' => [ 'english_frames', 'famous australian actor', [] ];
+		yield 'eng_fr highest paid actor' => [ 'english_frames', 'highest paid actor', [] ];
+		yield 'eng_fr stone age' => [ 'english_frames', 'living in the stone age', [] ];
+		yield 'eng_fr forbidden one word title' => [ 'english_frames', 'the age', [] ];
+		yield 'eng_fr non title ender' => [ 'english_frames', 'living in the age', [] ];
+
+			// extract too short (s) without following frame text
+		yield 'eng_fr tell me about s' => [ 'english_frames', 'tell me about s', [] ];
+		yield 'eng_fr how do you say s' => [ 'english_frames', 'how do you say s', [] ];
+		yield 'eng_fr what is the meaning of s' => [ 'english_frames', 'what is the meaning of s', [] ];
+		yield 'eng_fr define s' => [ 'english_frames', 'define s', [] ];
+		yield 'eng_fr what is s' => [ 'english_frames', 'what is s', [] ];
+		yield 'eng_fr what happened to s' => [ 'english_frames', 'what happened to s', [] ];
+		yield 'eng_fr who is s' => [ 'english_frames', 'who is s', [] ];
+		yield 'eng_fr who did s' => [ 'english_frames', 'who invented s', [] ];
+		yield 'eng_fr where is s' => [ 'english_frames', 'where is the s', [] ];
+		yield 'eng_fr how old is s' => [ 'english_frames', 'how old is s', [] ];
+		yield 'eng_fr the cast of s' => [ 'english_frames', 'the cast of s', [] ];
+		yield 'eng_fr pics of s' => [ 'english_frames', 'pictures of s', [] ];
+		yield 'eng_fr bio of s' => [ 'english_frames', 'biography of s', [] ];
+		yield 'eng_fr info about s' => [ 'english_frames', 'info about s', [] ];
+		yield 'eng_fr lyrics to s' => [ 'english_frames', 'lyrics to s', [] ];
+		yield 'eng_fr wiki s' => [ 'english_frames', 'wiki s', [] ];
+		yield 'eng_fr when were s' => [ 'english_frames', 'when were the s', [] ];
+
+			// short extract (s) ok with following frame text
+		yield 'eng_fr what does s mean' => [ 'english_frames', 'what does s mean', [ 's' ] ];
+		yield 'eng_fr where did s live' => [ 'english_frames', 'where did s live', [ 's' ] ];
+		yield 'eng_fr when was s born' => [ 'english_frames', 'when was s born', [ 's' ] ];
+		yield 'eng_fr how did s die' => [ 'english_frames', 'how did s die', [ 's' ] ];
+		yield 'eng_fr is s dead' => [ 'english_frames', 'is s dead', [ 's' ] ];
+		yield 'eng_fr lyrics to s song' => [ 'english_frames', 'lyrics to s song', [ 's' ] ];
+		yield 'eng_fr s wiki' => [ 'english_frames', 's wiki', [ 's' ] ];
+		yield 'eng_fr s definition' => [ 'english_frames', 's definition', [ 's' ] ];
+		yield 'eng_fr s meaning in lang' => [ 'english_frames', 's meaning in español', [ 's' ] ];
+		yield 'eng_fr s meaning in lang2' => [ 'english_frames', 'ウ meaning in Japanese', [ 'ウ' ] ];
+		yield 'eng_fr s movie' => [ 'english_frames', 's movie', [ 's' ] ];
+		yield 'eng_fr s actor' => [ 'english_frames', 's australian actor', [ 's' ] ];
+		yield 'eng_fr s age' => [ 'english_frames', 's age', [ 's' ] ];
+		yield 'eng_fr s spouse' => [ 'english_frames', 's\'s spouse', [ 's' ] ];
+		yield 'eng_fr what is s good for' => [ 'english_frames', 'what is s good for', [ 's' ] ];
+		yield 'eng_fr who is s married to' => [ 'english_frames', 'who is s married to', [ 's' ] ];
+		yield 'eng_fr where is s from' => [ 'english_frames', 'where is s from', [ 's' ] ];
+		yield 'eng_fr how old was s when he died' => [ 'english_frames',
+													   'how old was s when he died', [ 's' ] ];
+		yield 'eng_fr the cast of s show' => [ 'english_frames', 'the cast of s show', [ 's' ] ];
+
+			// normalization & cleanup
+		yield 'eng_fr punct' => [ 'english_frames', '+*=~• Who is Frëd Smith? •~=*+', [ 'frëd smith' ] ];
+		yield 'eng_fr spaces' => [ 'english_frames', '   Who   is  Frëd    Smith? ? ', [ 'frëd smith' ] ];
+		yield 'eng_fr unicodean spaces' => [ 'english_frames', ' Who is Frëd Smith? ?　', [ 'frëd smith' ] ];
+		yield 'eng_fr invisibles' => [ 'english_frames', "Wh\u{200B}o is Frëd Smi\u{00AD}th?", [ 'frëd smith' ] ];
+		yield 'eng_fr site' => [ 'english_frames', 'Frëd Smith site:wikipedia.org', [ 'frëd smith' ] ];
+		yield 'eng_fr site one word' => [ 'english_frames', 'site:wikipedia.org Frëd', [ 'frëd' ] ];
+		yield 'eng_fr non-ascii' => [ 'english_frames', 'What is the €uro?', [ '€uro' ] ];
+		yield 'eng_fr non-latin' => [ 'english_frames', 'What is Հայաստան?', [ 'հայաստան' ] ];
+
+			// queries to skip
+		yield 'eng_fr too many words' => [ 'english_frames', 'abc def ghi jkl mno pqr stu vwx yyz movies', [] ];
+		yield 'eng_fr too long' => [ 'english_frames',
+				'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz ' .
+				'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz movies', [] ];
+		yield 'eng_fr list of' => [ 'english_frames', 'list of Frëd Smiths', [] ];
+		yield 'eng_fr keywords' => [ 'english_frames', 'intitle:Frëd Smith age', [] ];
+		yield 'eng_fr quotes' => [ 'english_frames', 'Frëd "Smith" age', [] ];
+		yield 'eng_fr url' => [ 'english_frames', 'http://example.com age', [] ];
+		yield 'eng_fr nothing relevant' => [ 'english_frames', 'ウィキペディア ᐅᐃᑭᐱᑎᐊ', [] ]; // Japanese, Inuktitut
+
+			// empty queries
+		yield 'eng_fr empty wiki' => [ 'english_frames', ' wiki ', [] ];
+		yield 'eng_fr empty punct' => [ 'english_frames', '??????', [] ];
+		yield 'eng_fr empty site space' => [ 'english_frames', 'site:wikipedia.org ', [] ];
+		yield 'eng_fr empty site punct' => [ 'english_frames', '? site:wikipedia.org', [] ];
+
 		yield 'icu naive' => [ 'icu_folding', 'Foô', [ 'foo' ] ];
 		yield 'icu naive unchanged' => [ 'icu_folding', 'foo', [], [ 'method' => 'naive' ] ];
 		yield 'icu naive utr30' => [ 'icu_folding', 'Æpyornis', [ 'aepyornis' ], [ 'method' => 'utr30' ] ];
@@ -167,6 +279,7 @@ class SecondTrySearchTest extends CirrusTestCase {
 		yield 'ru_kbd-both' => [ 'russian_keyboard', SecondTryRussianKeyboard::class, [ 'dir' => 'both' ] ];
 		yield 'geo_tr' => [ 'georgian_transliteration', SecondTryGeorgianTransliteration::class, [] ];
 		yield 'hin_tr' => [ 'hindi_transliteration', SecondTryHindiTransliteration::class, [] ];
+		yield 'eng_fr' => [ 'english_frames', SecondTryEnglishFrames::class, [] ];
 		yield 'lang_converter' => [ 'language_converter', SecondTryLanguageConverter::class, [] ];
 		yield 'icu_folding' => [ 'icu_folding', SecondTryICUFolding::class, [], [ 'method' => 'utr30' ] ];
 		yield 'icu_folding-naive' => [ 'icu_folding', SecondTryICUFolding::class, [ 'method' => 'naive' ] ];

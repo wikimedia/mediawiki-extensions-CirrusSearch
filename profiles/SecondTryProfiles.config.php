@@ -50,6 +50,12 @@ return [
 			'hindi_transliteration' => 0.5
 		],
 	],
+	'language_converter_and_english_frames' => [
+		'strategies' => [
+			'language_converter' => 1.0,
+			'english_frames' => 0.5
+		],
+	],
 	'icu_folding_utr30' => [
 		'strategies' => [
 			'icu_folding' => [

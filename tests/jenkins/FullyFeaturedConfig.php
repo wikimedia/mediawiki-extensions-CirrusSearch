@@ -198,3 +198,6 @@ $wgCirrusSearchFullTextQueryBuilderProfiles = [
 	],
 
 ];
+
+// Developper settings for parsoid sets this to a very low value.
+$wgParsoidSettings['wt2htmlLimits']['wikitextSize'] = 1000 * 1024;

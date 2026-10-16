@@ -191,8 +191,7 @@ class DateRangeFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 		}
 	}
 
-	/** @inheritDoc */
-	protected function doGetFilterQuery( array $parsedValue, SearchConfig $searchConfig ) {
+	protected function doGetFilterQuery( array $parsedValue, SearchConfig $searchConfig ): ?Range {
 		if ( !$parsedValue ) {
 			return null;
 		}

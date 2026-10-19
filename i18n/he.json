@@ -83,5 +83,6 @@
 	"cirrussearch-semantic-empty-query": "חיפוש סמנטי דורש מונח חיפוש שאינו ריק.",
 	"cirrussearch-semantic-too-many-results": "התבקשו יותר מדי תוצאות מחיפוש סמנטי. רק {{PLURAL:$1|התוצאה המובילה תדורג כראוי|רק $1 התוצאות המובילות ידורגו כראוי}}.",
 	"cirrussearch-feature-not-negatable": "לא ניתן להפוך את מילת המפתח \"$1\" באמצעות \"-\" או \"!\"",
-	"cirrussearch-keyword-not-at-query-start": "מילת המפתח \"$1\" לא הוחלה. מילת המפתח הזאת פועלת רק בתחילת החיפוש."
+	"cirrussearch-keyword-not-at-query-start": "מילת המפתח \"$1\" לא הוחלה. מילת המפתח הזאת פועלת רק בתחילת החיפוש.",
+	"cirrussearch-query-declined": "לא נעשה שום חיפוש: הפרופיל $1 סירב להריץ השאילתה הזאת"
 }

@@ -4,10 +4,7 @@ namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearchHookRunner;
-use CirrusSearch\Dispatch\DefaultSearchQueryRoute;
-use CirrusSearch\Dispatch\VotedSearchQueryRoute;
 use CirrusSearch\InterwikiResolver;
-use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Request\WebRequest;
@@ -150,7 +147,7 @@ class SearchProfileServiceFactory {
 	 * @return SearchProfileService
 	 */
 	public function loadService( SearchConfig $config, ?WebRequest $request = null, ?UserIdentity $user = null, $forceHook = false ) {
-		$service = new SearchProfileService( $this->userOptionsLookup, $request, $user );
+		$service = new SearchProfileService( $config, $this->userOptionsLookup, $request, $user );
 		$this->loadQueryDispatchProfiles( $service, $config );
 		$this->loadSemanticSearch( $service, $config );
 		$this->loadCrossProjectBlockScorer( $service, $config );
@@ -176,9 +173,6 @@ class SearchProfileServiceFactory {
 		if ( $forceHook || $config->isLocalWiki() ) {
 			$this->cirrusSearchHookRunner->onCirrusSearchProfileService( $service );
 		}
-		// After the hook, so a route table declared by an extension is visible, and so
-		// extension routes are already in place when the table is validated.
-		$this->loadQueryDispatchTable( $service, $config );
 		$service->freeze();
 		return $service;
 	}
@@ -211,39 +205,8 @@ class SearchProfileServiceFactory {
 			SearchProfileService::CONTEXT_DEFAULT, self::DEFAULT_QUERY_DISPATCH_PROFILE );
 		$service->registerConfigOverride( SearchProfileService::QUERY_DISPATCH,
 			SearchProfileService::CONTEXT_DEFAULT, $config, CirrusConfigNames::QueryDispatchProfile );
-	}
-
-	/**
-	 * Build the fulltext route table from the dispatch profile this wiki named.
-	 */
-	private function loadQueryDispatchTable( SearchProfileService $service, SearchConfig $config ) {
-		$profileName = $service->getProfileName( SearchProfileService::QUERY_DISPATCH,
-			SearchProfileService::CONTEXT_DEFAULT );
-		$profile = $service->loadProfileByName( SearchProfileService::QUERY_DISPATCH, $profileName );
-		$defaultName = $profile['default_route'] ?? null;
-		if ( $defaultName === null ) {
-			throw new SearchProfileException(
-				"Query dispatch profile $profileName names no default route" );
-		}
-		$routes = [];
-		$defaultRoute = null;
-		foreach ( $profile['routes'] ?? [] as $name => $entry ) {
-			if ( $name === $defaultName ) {
-				$defaultRoute = DefaultSearchQueryRoute::fromProfileEntry( SearchQuery::SEARCH_TEXT,
-					$name, $entry );
-				continue;
-			}
-			$route = VotedSearchQueryRoute::fromProfileEntry( $config, SearchQuery::SEARCH_TEXT,
-				$name, $entry );
-			if ( $route !== null ) {
-				$routes[] = $route;
-			}
-		}
-		if ( $defaultRoute === null ) {
-			throw new SearchProfileException( "Query dispatch profile $profileName names " .
-				"$defaultName as its default route but declares no such route" );
-		}
-		$service->registerQueryDispatchTable( $profileName, $routes, $defaultRoute );
+		$service->registerUriParamOverride( SearchProfileService::QUERY_DISPATCH,
+			SearchProfileService::CONTEXT_DEFAULT, 'cirrusQueryDispatchProfile' );
 	}
 
 	private function loadCrossProjectBlockScorer( SearchProfileService $service, SearchConfig $config ) {

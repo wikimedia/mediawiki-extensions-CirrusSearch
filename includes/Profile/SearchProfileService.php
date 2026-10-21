@@ -12,6 +12,7 @@ use CirrusSearch\Dispatch\Voter\AllQueriesCandidateVoter;
 use CirrusSearch\Dispatch\Voter\NamespaceVetoVoter;
 use CirrusSearch\Dispatch\Voter\QueryClassVetoVoter;
 use CirrusSearch\Search\SearchQuery;
+use CirrusSearch\SearchConfig;
 use MediaWiki\Config\Config;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Request\WebRequest;
@@ -211,24 +212,15 @@ class SearchProfileService {
 	private $frozen;
 
 	/**
-	 * @var SearchQueryDispatchService|null (lazy loaded)
+	 * @var SearchQueryDispatchService[] (lazy loaded) indexed by query dispatch profile name
 	 */
-	private $dispatchService;
+	private array $dispatchServices = [];
 
 	/**
-	 * @var SearchQueryRoute[][]
+	 * @var SearchQueryRoute[][] routes added to every route table, indexed by search engine
+	 *  entry point
 	 */
 	private $routes;
-
-	/**
-	 * @var SearchQueryRoute[] default route per search engine entry point
-	 */
-	private array $defaultRoutes = [];
-
-	/**
-	 * @var string|null Dispatch profile the route table came from, for debug output.
-	 */
-	private ?string $queryDispatchProfile = null;
 
 	/**
 	 * @var UserOptionsLookup
@@ -236,15 +228,23 @@ class SearchProfileService {
 	private $userOptionsLookup;
 
 	/**
+	 * @var SearchConfig Read by the routes and voters of query dispatch profiles
+	 */
+	private SearchConfig $config;
+
+	/**
+	 * @param SearchConfig $config
 	 * @param UserOptionsLookup $userOptionsLookup
 	 * @param WebRequest|null $request obtained from \RequestContext::getMain()->getRequest() if null
 	 * @param UserIdentity|null $user obtained from \RequestContext::getMain()->getUser() if null
 	 */
 	public function __construct(
+		SearchConfig $config,
 		UserOptionsLookup $userOptionsLookup,
 		?WebRequest $request = null,
 		?UserIdentity $user = null
 	) {
+		$this->config = $config;
 		$this->userOptionsLookup = $userOptionsLookup;
 		$this->request = $request ?? RequestContext::getMain()->getRequest();
 		$this->user = $user ?? RequestContext::getMain()->getUser();
@@ -546,28 +546,6 @@ class SearchProfileService {
 		$this->routes[$route->getSearchEngineEntryPoint()][] = $route;
 	}
 
-	/**
-	 * Register the route a query takes when no other route selects it.
-	 *
-	 * @param string $profileName name of the dispatch profile the routes came from
-	 * @param SearchQueryRoute[] $routes routes that bid for a query
-	 * @param DefaultSearchQueryRoute $defaultRoute route a query takes when none of them did
-	 * @see SearchProfileService::getDispatchService()
-	 */
-	public function registerQueryDispatchTable(
-		string $profileName,
-		array $routes,
-		DefaultSearchQueryRoute $defaultRoute
-	) {
-		$this->checkFrozen();
-		$this->checkEntryPoint( $defaultRoute );
-		$this->queryDispatchProfile = $profileName;
-		$this->defaultRoutes[$defaultRoute->getSearchEngineEntryPoint()] = $defaultRoute;
-		foreach ( $routes as $route ) {
-			$this->registerSearchQueryRoute( $route );
-		}
-	}
-
 	private function checkEntryPoint( SearchQueryRoute $route ) {
 		if ( !isset( $this->routes[$route->getSearchEngineEntryPoint()] ) ) {
 			throw new SearchProfileException(
@@ -608,15 +586,51 @@ class SearchProfileService {
 	/**
 	 * Return the service responsible for dispatching a SearchQuery
 	 * to its preferred profile context.
+	 *
+	 * @param string|null $profileName Query dispatch profile forced by the caller, null to
+	 *  select it as for any other profile.
+	 * @return SearchQueryDispatchService
 	 */
-	public function getDispatchService(): SearchQueryDispatchService {
-		if ( $this->dispatchService === null ) {
-			Assert::precondition( $this->frozen,
-				"Must be frozen when accessing the SearchQuery dispatch service." );
-			$this->dispatchService = new DefaultSearchQueryDispatchService(
-				$this->routes, $this->defaultRoutes, $this->queryDispatchProfile );
+	public function getDispatchService( ?string $profileName = null ): SearchQueryDispatchService {
+		Assert::precondition( $this->frozen,
+			"Must be frozen when accessing the SearchQuery dispatch service." );
+		$profileName ??= $this->getProfileName( self::QUERY_DISPATCH, self::CONTEXT_DEFAULT );
+		$this->dispatchServices[$profileName] ??= $this->buildDispatchService( $profileName );
+		return $this->dispatchServices[$profileName];
+	}
+
+	/**
+	 * A query can name any dispatch profile, so a table is built the first time a query
+	 * takes it.
+	 */
+	private function buildDispatchService( string $profileName ): SearchQueryDispatchService {
+		$profile = $this->loadProfileByName( self::QUERY_DISPATCH, $profileName );
+		$defaultName = $profile['default_route'] ?? null;
+		if ( $defaultName === null ) {
+			throw new SearchProfileException(
+				"Query dispatch profile $profileName names no default route" );
 		}
-		return $this->dispatchService;
+		// Routes registered in code come before the profile routes, ties go to the first route.
+		$routes = $this->routes;
+		$defaultRoute = null;
+		foreach ( $profile['routes'] ?? [] as $name => $entry ) {
+			if ( $name === $defaultName ) {
+				$defaultRoute = DefaultSearchQueryRoute::fromProfileEntry( SearchQuery::SEARCH_TEXT,
+					$name, $entry );
+				continue;
+			}
+			$route = VotedSearchQueryRoute::fromProfileEntry( $this->config, SearchQuery::SEARCH_TEXT,
+				$name, $entry );
+			if ( $route !== null ) {
+				$routes[SearchQuery::SEARCH_TEXT][] = $route;
+			}
+		}
+		if ( $defaultRoute === null ) {
+			throw new SearchProfileException( "Query dispatch profile $profileName names " .
+				"$defaultName as its default route but declares no such route" );
+		}
+		return new DefaultSearchQueryDispatchService( $routes,
+			[ SearchQuery::SEARCH_TEXT => $defaultRoute ], $profileName );
 	}
 
 	/**

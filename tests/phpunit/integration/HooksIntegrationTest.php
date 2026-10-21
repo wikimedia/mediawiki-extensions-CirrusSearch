@@ -323,7 +323,8 @@ class HooksIntegrationTest extends CirrusIntegrationTestCase {
 		$this->overrideConfigValues( [
 			CirrusConfigNames::UseCompletionSuggester => true,
 		] );
-		$service = new SearchProfileService( $this->getServiceContainer()->getUserOptionsLookup() );
+		$service = new SearchProfileService( new HashSearchConfig( [] ),
+			$this->getServiceContainer()->getUserOptionsLookup() );
 		$service->registerDefaultProfile( SearchProfileService::COMPLETION,
 			SearchProfileService::CONTEXT_DEFAULT, 'fuzzy' );
 		$service->registerArrayRepository( SearchProfileService::COMPLETION, 'phpunit', $profiles );

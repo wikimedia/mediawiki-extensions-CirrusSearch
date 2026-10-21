@@ -126,7 +126,7 @@ class RoutingDumpTest extends CirrusIntegrationTestCase {
 			array_keys( $decision['routes']['semantic']['votes'] ) );
 	}
 
-	private function declineAllConfig(): array {
+	private function declineAllProfiles(): array {
 		return [
 			CirrusConfigNames::QueryDispatchProfiles => [
 				'decline_all' => [
@@ -136,8 +136,21 @@ class RoutingDumpTest extends CirrusIntegrationTestCase {
 					],
 				],
 			],
+		];
+	}
+
+	private function declineAllConfig(): array {
+		return $this->declineAllProfiles() + [
 			CirrusConfigNames::QueryDispatchProfile => 'decline_all',
 		];
+	}
+
+	public function testTheCallerSelectsTheDispatchProfile() {
+		$dump = $this->dumpQuery( $this->declineAllProfiles(), 'catapult', null,
+			[ CirrusSearch::QUERY_DISPATCH_PROFILE => 'decline_all' ] );
+
+		$this->assertSame( 'decline_all', $dump[Searcher::ROUTING_DUMP_KEY]['profile'] );
+		$this->assertSame( 'unserved', $dump[Searcher::ROUTING_DUMP_KEY]['winner'] );
 	}
 
 	private function semanticByQueryLengthConfig(): array {

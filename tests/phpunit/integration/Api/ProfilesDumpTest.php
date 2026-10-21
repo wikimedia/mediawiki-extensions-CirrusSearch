@@ -55,7 +55,7 @@ class ProfilesDumpTest extends \CirrusSearch\CirrusIntegrationTestCase {
 
 	private function getService() {
 		$userOptionsLookup = $this->getServiceContainer()->getUserOptionsLookup();
-		$service = new \CirrusSearch\Profile\SearchProfileService( $userOptionsLookup, new FauxRequest() );
+		$service = new \CirrusSearch\Profile\SearchProfileService( $this->newHashSearchConfig(), $userOptionsLookup, new FauxRequest() );
 		$service->registerArrayRepository( 'my_type1', 'my_repo1', [
 			'profile1' => [ '1' => '2' ],
 			'profile2' => [ '2' => '3' ],

@@ -576,7 +576,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertFalse( $rewritten->isAllowRewrite() );
 
 		$this->assertEquals( $query->getDebugOptions(), $rewritten->getDebugOptions() );
-		$this->assertEquals( [ 'foo' => 'bar' ], $query->getProfileContextParameters() );
+		$this->assertEquals( [ 'foo' => 'bar' ], $rewritten->getProfileContextParameters() );
 		// FIXME: config is a bit differrent to disable quotation mark stripping
 		// $this->assertEquals( $query->getSearchConfig(), $rewritten->getSearchConfig() );
 		$this->assertEquals( $query->getInitialNamespaces(), $rewritten->getInitialNamespaces() );

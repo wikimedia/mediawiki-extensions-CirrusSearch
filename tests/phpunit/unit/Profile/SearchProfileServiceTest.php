@@ -3,7 +3,6 @@
 namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusTestCase;
-use CirrusSearch\Dispatch\DefaultSearchQueryRoute;
 use CirrusSearch\Dispatch\VotedSearchQueryRoute;
 use CirrusSearch\Dispatch\Voter\AllQueriesCandidateVoter;
 use CirrusSearch\Dispatch\Voter\NamespaceVetoVoter;
@@ -103,6 +102,7 @@ class SearchProfileServiceTest extends CirrusTestCase {
 		];
 
 		$service = new SearchProfileService(
+			new HashSearchConfig( [] ),
 			new StaticUserOptionsLookup( $userOptions ),
 			$request,
 			$user
@@ -144,11 +144,16 @@ class SearchProfileServiceTest extends CirrusTestCase {
 
 	public function testRegisterRoute() {
 		$service = $this->getSearchProfileService();
-		// The default route normally comes from the query dispatch profile. Nothing registers
-		// it for a service built without the factory, so the test supplies its own.
-		$service->registerQueryDispatchTable( 'unit_test', [],
-			new DefaultSearchQueryRoute( 'cirrus_default', SearchQuery::SEARCH_TEXT,
-				SearchProfileService::CONTEXT_DEFAULT ) );
+		// Nothing registers a query dispatch profile for a service built without the factory,
+		// so the test supplies its own.
+		$service->registerArrayRepository( SearchProfileService::QUERY_DISPATCH, 'unit_test', [
+			'unit_test' => [
+				'default_route' => 'cirrus_default',
+				'routes' => [ 'cirrus_default' => [ 'context' => SearchProfileService::CONTEXT_DEFAULT ] ],
+			],
+		] );
+		$service->registerDefaultProfile( SearchProfileService::QUERY_DISPATCH,
+			SearchProfileService::CONTEXT_DEFAULT, 'unit_test' );
 		$service->registerSearchQueryRoute( new VotedSearchQueryRoute( 'foo', SearchQuery::SEARCH_TEXT,
 			'foo', 0.5, [
 				'namespaces' => new NamespaceVetoVoter( [ 0 ] ),
@@ -190,6 +195,6 @@ class SearchProfileServiceTest extends CirrusTestCase {
 	}
 
 	private function getSearchProfileService(): SearchProfileService {
-		return new SearchProfileService( new StaticUserOptionsLookup( [] ) );
+		return new SearchProfileService( new HashSearchConfig( [] ), new StaticUserOptionsLookup( [] ) );
 	}
 }

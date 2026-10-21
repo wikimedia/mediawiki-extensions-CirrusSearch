@@ -274,6 +274,7 @@ final class SearchQueryBuilder {
 		$builder = self::newFTSearchQueryBuilder( $config, $term, $namespacePrefixParser, $cirrusSearchHookRunner );
 		$builder->contextualFilters = $original->getContextualFilters();
 		$builder->forcedProfiles = $original->getForcedProfiles();
+		$builder->profileContextParameters = $original->getProfileContextParameters();
 		$builder->initialNamespaces = $original->getInitialNamespaces();
 		$builder->sort = $original->getSort();
 		$builder->randomSeed = $original->getRandomSeed();

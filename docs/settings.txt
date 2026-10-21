@@ -1811,6 +1811,12 @@ The profiles that ship with Cirrus are:
 * semantic_by_query_length_unless_title_match: as above, except that a query
   naming a page that exists stays lexical.
 
+The cirrusQueryDispatchProfile URI parameter selects a different profile for
+one request, and ignores an unknown profile name. A PHP caller can force a
+profile through SearchEngine::setFeatureData() with the
+CirrusSearch::QUERY_DISPATCH_PROFILE feature. The feature wins when both are
+present, and an unknown profile name is an error.
+
 Cross-wiki searches never dispatch. They take the default route of the wiki
 being searched.
 

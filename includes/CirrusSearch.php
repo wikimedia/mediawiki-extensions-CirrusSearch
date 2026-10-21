@@ -80,6 +80,13 @@ class CirrusSearch extends SearchEngine {
 	public const EXTRA_FIELDS_TO_EXTRACT = 'extra-fields-to-extract';
 
 	/**
+	 * Name of the feature to select the query dispatch profile of a fulltext
+	 * search. Expected value is the name of a query dispatch profile.
+	 * @see SearchEngine::supports() and SearchEngine::setFeatureData()
+	 */
+	public const QUERY_DISPATCH_PROFILE = 'queryDispatchProfile';
+
+	/**
 	 * @var array metrics about the last thing we searched sourced from the
 	 *  Searcher instance
 	 */
@@ -233,6 +240,7 @@ class CirrusSearch extends SearchEngine {
 				return false;
 			case self::FT_QUERY_INDEP_PROFILE_TYPE:
 			case self::EXTRA_FIELDS_TO_EXTRACT:
+			case self::QUERY_DISPATCH_PROFILE:
 				return true;
 			default:
 				return parent::supports( $feature );
@@ -279,6 +287,10 @@ class CirrusSearch extends SearchEngine {
 		$rescoreProfile = $this->extractProfileFromFeatureData( SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE );
 		if ( $rescoreProfile !== null ) {
 			$builder->addForcedProfile( SearchProfileService::RESCORE, $rescoreProfile );
+		}
+		$dispatchProfile = $this->extractProfileFromFeatureData( self::QUERY_DISPATCH_PROFILE );
+		if ( $dispatchProfile !== null ) {
+			$builder->addForcedProfile( SearchProfileService::QUERY_DISPATCH, $dispatchProfile );
 		}
 
 		$query = $builder->build();

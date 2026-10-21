@@ -935,7 +935,8 @@ class SearchContext implements WarningCollector, FilterBuilder {
 
 		$searchContext->rescoreProfile = $query->getForcedProfile( SearchProfileService::RESCORE );
 
-		$dispatchService = $query->getSearchConfig()->getProfileService()->getDispatchService();
+		$dispatchService = $query->getSearchConfig()->getProfileService()->getDispatchService(
+			$useDefaultRoute ? null : $query->getForcedProfile( SearchProfileService::QUERY_DISPATCH ) );
 		// Note that setProfileContext() resets the context params, they are set
 		// further down.
 		if ( $useDefaultRoute ) {

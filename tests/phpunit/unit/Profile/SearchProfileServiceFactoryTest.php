@@ -6,8 +6,10 @@ use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\CirrusTestCase;
+use CirrusSearch\Dispatch\DispatchDecision;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolverFactory;
+use CirrusSearch\SearchConfig;
 use MediaWiki\Interwiki\NullInterwikiLookup;
 use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Request\FauxRequest;
@@ -142,6 +144,13 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			'fulltext query builder by config' => [
 				SearchProfileService::FT_QUERY_BUILDER, SearchProfileService::CONTEXT_DEFAULT,
 				'config', CirrusConfigNames::FullTextQueryBuilderProfile, [ 'unittest' => [] ],
+			],
+			'query dispatch by uri' => [
+				SearchProfileService::QUERY_DISPATCH, SearchProfileService::CONTEXT_DEFAULT,
+				'uri', 'cirrusQueryDispatchProfile', [ 'unittest' => [
+					'default_route' => 'cirrus_default',
+					'routes' => [ 'cirrus_default' => [ 'context' => SearchProfileService::CONTEXT_DEFAULT ] ],
+				] ],
 			],
 			'second try prefix search by config' => [
 				SearchProfileService::SECOND_TRY, SearchProfileService::CONTEXT_COMPLETION,
@@ -329,8 +338,9 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			CirrusConfigNames::QueryDispatchProfile => 'broken',
 		] );
 
+		$service = $factory->loadService( $config, new FauxRequest( [] ), null, true );
 		$this->expectException( SearchProfileException::class );
-		$factory->loadService( $config, new FauxRequest( [] ), null, true );
+		$service->getDispatchService();
 	}
 
 	private function semanticHookRunner(): CirrusSearchHookRunner {
@@ -380,6 +390,53 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			->build();
 		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT,
 			$dispatch->dispatch( $inTalk )->getProfileContext() );
+	}
+
+	private function declineAllConfig(): HashSearchConfig {
+		return new HashSearchConfig( [
+			CirrusConfigNames::QueryDispatchProfiles => [
+				'decline_all' => [
+					'default_route' => 'unserved',
+					'routes' => [ 'unserved' => [ 'context' => SearchProfileService::CONTEXT_NONE ] ],
+				],
+			],
+		] );
+	}
+
+	private function dispatchWith( SearchProfileService $service, SearchConfig $config,
+		?string $profileName
+	): DispatchDecision {
+		$query = $this->getNewFTSearchQueryBuilder( $config, 'foo' )
+			->setInitialNamespaces( [ NS_MAIN ] )
+			->build();
+		return $service->getDispatchService( $profileName )->dispatch( $query );
+	}
+
+	public function testCallerSelectsTheDispatchProfilePerQuery() {
+		$factory = $this->getFactory( [], $this->createCirrusSearchHookRunner( [] ), [] );
+		$config = $this->declineAllConfig();
+		$service = $factory->loadService( $config, new FauxRequest( [] ), null, true );
+
+		$decision = $this->dispatchWith( $service, $config, 'decline_all' );
+		$this->assertSame( 'decline_all', $decision->getProfileName() );
+		$this->assertSame( SearchProfileService::CONTEXT_NONE, $decision->getProfileContext() );
+		// Other queries keep the configured table.
+		$this->assertSame( 'default', $this->dispatchWith( $service, $config, null )->getProfileName() );
+	}
+
+	public function testRoutesRegisteredInCodeJoinEveryTable() {
+		$cirrusSearchHookRunner = $this->createCirrusSearchHookRunner( [
+			'CirrusSearchProfileService' => static function ( SearchProfileService $service ) {
+				$service->registerFTSearchQueryRoute( 'unit_test_context', 0.5, [ NS_MAIN ] );
+			}
+		] );
+		$factory = $this->getFactory( [], $cirrusSearchHookRunner, [] );
+		$config = $this->declineAllConfig();
+		$service = $factory->loadService( $config, new FauxRequest( [] ), null, true );
+
+		$decision = $this->dispatchWith( $service, $config, 'decline_all' );
+		$this->assertSame( 'decline_all', $decision->getProfileName() );
+		$this->assertSame( 'unit_test_context', $decision->getProfileContext() );
 	}
 
 	public static function provideQueryBuilderUriParamAppliesWhereTheProfileFits() {

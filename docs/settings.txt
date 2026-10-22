@@ -1787,6 +1787,9 @@ semantic route is left out of whatever query dispatch profile is in use. Setting
 it does not by itself send any query to semantic retrieval, see
 $wgCirrusSearchQueryDispatchProfile for that.
 
+A PHP caller can force a semantic profile with the fulltextQueryDepProfile
+search engine feature.
+
 ; $wgCirrusSearchQueryDispatchProfile
 
 Default:
@@ -1809,8 +1812,15 @@ The profiles that ship with Cirrus are:
   naming a page that exists stays lexical.
 
 Cross-wiki searches never dispatch. They take the default route of the wiki
-being searched. A request that names a query builder or a rescore profile does
-not dispatch either, since it has already made the choice.
+being searched.
+
+A request can force a query builder or rescore profile with the
+fulltextQueryDepProfile and fulltextQueryIndepProfile search engine features
+(srqdprofile and srqiprofile in the search API). A profile can list the
+contexts it supports under 'contexts'. Dispatch then only considers routes with
+one of those contexts. If not even the default route fits, the query is
+dispatched to the 'none' context. A profile without 'contexts' does not limit
+dispatch.
 
 A route with the 'none' context refuses serve the query. The search returns
 an empty result set along with a warning. This allows special-case dispatch

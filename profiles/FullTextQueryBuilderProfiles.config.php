@@ -6,6 +6,9 @@ namespace CirrusSearch;
  * CirrusSearch - List of FullTextQueryBuilderProfiles used to generate an elasticsearch
  * query by parsing user input.
  *
+ * A profile can list the profile contexts it supports under 'contexts'. Without it
+ * the profile supports all contexts, see SearchProfileService::profileFitsContext().
+ *
  * @license GPL-2.0-or-later
  */
 

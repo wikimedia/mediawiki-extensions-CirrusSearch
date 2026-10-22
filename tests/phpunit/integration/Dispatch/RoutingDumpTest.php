@@ -10,6 +10,7 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\SemanticSearchQueryBuilder;
 use CirrusSearch\Searcher;
+use MediaWiki\Search\SearchEngine;
 
 /**
  * The routing decision has to survive the whole way from the profile service, through the
@@ -23,12 +24,15 @@ use CirrusSearch\Searcher;
 class RoutingDumpTest extends CirrusIntegrationTestCase {
 
 	private function dumpQuery( array $config, string $queryString,
-		?CirrusDebugOptions $debugOptions = null
+		?CirrusDebugOptions $debugOptions = null, array $features = []
 	): array {
 		$engine = new CirrusSearch(
 			new HashSearchConfig( $config, [ HashSearchConfig::FLAG_INHERIT ] ),
 			$debugOptions ?? CirrusDebugOptions::forDumpingQueriesInUnitTests()
 		);
+		foreach ( $features as $feature => $value ) {
+			$engine->setFeatureData( $feature, $value );
+		}
 		return $engine->searchText( $queryString )->getValue();
 	}
 
@@ -105,6 +109,7 @@ class RoutingDumpTest extends CirrusIntegrationTestCase {
 				CirrusConfigNames::FullTextQueryBuilderProfiles => [
 					'semantic' => [
 						'builder_class' => SemanticSearchQueryBuilder::class,
+						SearchProfileService::PROFILE_CONTEXTS_KEY => [ SearchProfileService::CONTEXT_SEMANTIC ],
 						'settings' => [],
 					],
 				],
@@ -133,6 +138,53 @@ class RoutingDumpTest extends CirrusIntegrationTestCase {
 			],
 			CirrusConfigNames::QueryDispatchProfile => 'decline_all',
 		];
+	}
+
+	private function semanticByQueryLengthConfig(): array {
+		return [
+			CirrusConfigNames::DefaultSemanticProfile => 'semantic',
+			CirrusConfigNames::FullTextQueryBuilderProfiles => [
+				'semantic' => [
+					'builder_class' => SemanticSearchQueryBuilder::class,
+					SearchProfileService::PROFILE_CONTEXTS_KEY => [ SearchProfileService::CONTEXT_SEMANTIC ],
+					'settings' => [],
+				],
+				'other_semantic' => [
+					'builder_class' => SemanticSearchQueryBuilder::class,
+					SearchProfileService::PROFILE_CONTEXTS_KEY => [ SearchProfileService::CONTEXT_SEMANTIC ],
+					'settings' => [ 'instructions' => 'other: ' ],
+				],
+			],
+			CirrusConfigNames::QueryDispatchProfile => 'semantic_by_query_length',
+			CirrusConfigNames::SemanticQueryLengthThreshold => 4,
+		];
+	}
+
+	/**
+	 * The forced profile limits the election rather than skipping it, the query still has
+	 * to be long enough.
+	 */
+	public function testAForcedSemanticProfileIsRouted() {
+		$dump = $this->dumpQuery( $this->semanticByQueryLengthConfig(), 'how do catapults work', null,
+			[ SearchEngine::FT_QUERY_DEP_PROFILE_TYPE => 'other_semantic' ] );
+
+		$this->assertSame( 'semantic', $dump[Searcher::ROUTING_DUMP_KEY]['winner'] );
+		$this->assertSame( RouteDecision::REASON_CANDIDATE,
+			$dump[Searcher::ROUTING_DUMP_KEY]['routes']['semantic']['reason'] );
+		$this->assertStringContainsString( '"query_text":"other: how do catapults work"',
+			json_encode( $dump[Searcher::MAINSEARCH_MSEARCH_KEY] ) );
+	}
+
+	public function testAForcedSemanticProfileDeclinesALexicalQuery() {
+		$engine = new CirrusSearch(
+			new HashSearchConfig( $this->semanticByQueryLengthConfig(), [ HashSearchConfig::FLAG_INHERIT ] ),
+			CirrusDebugOptions::defaultOptions()
+		);
+		$engine->setFeatureData( SearchEngine::FT_QUERY_DEP_PROFILE_TYPE, 'other_semantic' );
+		$status = $engine->searchText( 'catapult' );
+
+		$this->assertStatusWarning( 'cirrussearch-query-declined', $status );
+		$this->assertSame( 0, $status->getValue()->numRows() );
 	}
 
 	public function testADeclinedQueryDumpsTheRoutingAndNoRequests() {

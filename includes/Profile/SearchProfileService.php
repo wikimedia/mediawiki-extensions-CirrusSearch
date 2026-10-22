@@ -169,6 +169,13 @@ class SearchProfileService {
 	public const CONTEXT_NONE = 'none';
 
 	/**
+	 * Profile key listing the profile contexts the profile supports.
+	 * A profile without it supports all contexts.
+	 * @see self::profileFitsContext()
+	 */
+	public const PROFILE_CONTEXTS_KEY = 'contexts';
+
+	/**
 	 * List of profile repositories, grouped by type and then by repository name.
 	 * @var SearchProfileRepository[][]
 	 */
@@ -300,6 +307,23 @@ class SearchProfileService {
 	}
 
 	/**
+	 * Can the profile be used in the profile context?
+	 *
+	 * @param string $type
+	 * @param string $name
+	 * @param string $context
+	 * @return bool
+	 */
+	public function profileFitsContext( string $type, string $name, string $context ): bool {
+		if ( $context === self::CONTEXT_NONE ) {
+			return true;
+		}
+		$profile = $this->loadProfileByName( $type, $name, false );
+		$contexts = $profile[self::PROFILE_CONTEXTS_KEY] ?? null;
+		return $contexts === null || in_array( $context, $contexts, true );
+	}
+
+	/**
 	 * Load a profile for the context or by its name if name is provided
 	 *
 	 * @param string $type
@@ -342,13 +366,26 @@ class SearchProfileService {
 		foreach ( $this->overriders[$type][$context] as $overrider ) {
 			if ( $overrider->priority() < $minPrio ) {
 				$name = $overrider->getOverriddenName( $contextParams );
-				if ( $name !== null && $this->hasProfile( $type, $name ) ) {
+				if ( $name !== null && $this->hasProfile( $type, $name )
+					&& $this->overrideFitsContext( $type, $name, $context )
+				) {
 					$minPrio = $overrider->priority();
 					$profile = $name;
 				}
 			}
 		}
 		return $profile;
+	}
+
+	/**
+	 * Dispatch selects between the default and semantic contexts, and their profiles are not
+	 * interchangeable. Profiles of other contexts do not list contexts, so they are not checked.
+	 */
+	private function overrideFitsContext( string $type, string $name, string $context ): bool {
+		if ( $context !== self::CONTEXT_DEFAULT && $context !== self::CONTEXT_SEMANTIC ) {
+			return true;
+		}
+		return $this->profileFitsContext( $type, $name, $context );
 	}
 
 	/**

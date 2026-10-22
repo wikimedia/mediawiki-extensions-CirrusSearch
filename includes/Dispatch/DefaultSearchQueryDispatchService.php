@@ -3,6 +3,7 @@
 namespace CirrusSearch\Dispatch;
 
 use CirrusSearch\Profile\SearchProfileException;
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchQuery;
 use Wikimedia\Assert\Assert;
 
@@ -41,10 +42,6 @@ class DefaultSearchQueryDispatchService implements SearchQueryDispatchService {
 
 	public function dispatch( SearchQuery $query ): DispatchDecision {
 		$entryPoint = $query->getSearchEngineEntryPoint();
-		// forced profile's always apply against the default route
-		if ( $query->hasForcedProfile() ) {
-			return $this->defaultDecision( $entryPoint, $query, [] );
-		}
 		$bestScore = RouteDecision::REJECT_ROUTE;
 		$decisions = [];
 
@@ -53,7 +50,9 @@ class DefaultSearchQueryDispatchService implements SearchQueryDispatchService {
 		$winner = '';
 		foreach ( $this->routes[$entryPoint] ?? [] as $route ) {
 			$name = $this->nameOf( $route, $decisions );
-			$decision = $route->decide( $query );
+			$decision = $this->fitsForcedProfiles( $query, $route )
+				? $route->decide( $query )
+				: $this->forcedProfileDecision( $route );
 			$decisions[$name] = $decision;
 
 			if ( !$decision->isAccepted() ) {
@@ -82,8 +81,7 @@ class DefaultSearchQueryDispatchService implements SearchQueryDispatchService {
 
 	/**
 	 * The decision when no election gave the query a route, because the routes turned it
-	 * down, there were none to ask, or the request named a profile and there was nothing
-	 * to elect.
+	 * down or there were none to ask.
 	 *
 	 * @param string $entryPoint
 	 * @param SearchQuery $query
@@ -97,8 +95,35 @@ class DefaultSearchQueryDispatchService implements SearchQueryDispatchService {
 	): DispatchDecision {
 		$route = $this->defaultRoute( $entryPoint );
 		$winner = $this->nameOf( $route, $decisions );
+		if ( !$this->fitsForcedProfiles( $query, $route ) ) {
+			$decisions[$winner] = $this->forcedProfileDecision( $route );
+			$none = new DefaultSearchQueryRoute( SearchProfileService::CONTEXT_NONE, $entryPoint,
+				SearchProfileService::CONTEXT_NONE );
+			return new DispatchDecision( $none, $none->getName(), $decisions, $this->profileName );
+		}
 		$decisions[$winner] = $route->decide( $query );
 		return new DispatchDecision( $route, $winner, $decisions, $this->profileName );
+	}
+
+	/**
+	 * Reject routes that do not support the requested forced profiles
+	 */
+	private function fitsForcedProfiles( SearchQuery $query, SearchQueryRoute $route ): bool {
+		if ( !$query->hasForcedProfile() ) {
+			return true;
+		}
+		$profileService = $query->getSearchConfig()->getProfileService();
+		foreach ( $query->getForcedProfiles() as $type => $name ) {
+			if ( !$profileService->profileFitsContext( $type, $name, $route->getProfileContext() ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private function forcedProfileDecision( SearchQueryRoute $route ): RouteDecision {
+		return new RouteDecision( $route->getProfileContext(), false,
+			RouteDecision::REASON_FORCED_PROFILE, RouteDecision::REJECT_ROUTE );
 	}
 
 	public function defaultProfileContext( string $searchEngineEntryPoint ): string {

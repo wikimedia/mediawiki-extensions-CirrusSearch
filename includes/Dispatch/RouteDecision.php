@@ -33,6 +33,12 @@ class RouteDecision {
 	/** No route accepted the query, so it went to the default route the profile names. */
 	public const REASON_DEFAULT = 'default';
 
+	/**
+	 * The request forced a profile that cannot be used in the context of the route. The
+	 * voters were not asked.
+	 */
+	public const REASON_FORCED_PROFILE = 'forced_profile';
+
 	private string $profileContext;
 	private bool $accepted;
 	private string $reason;

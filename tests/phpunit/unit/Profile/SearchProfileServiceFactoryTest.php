@@ -382,6 +382,45 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			$dispatch->dispatch( $inTalk )->getProfileContext() );
 	}
 
+	public static function provideQueryBuilderUriParamAppliesWhereTheProfileFits() {
+		return [
+			'semantic profile' => [ 'other_semantic', 'default', 'other_semantic' ],
+			'lexical profile' => [ 'other_lexical', 'other_lexical', 'default_semantic' ],
+			'profile without contexts' => [ 'any_context', 'any_context', 'any_context' ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideQueryBuilderUriParamAppliesWhereTheProfileFits
+	 */
+	public function testQueryBuilderUriParamAppliesWhereTheProfileFits(
+		string $uriProfile, string $expectedLexical, string $expectedSemantic
+	) {
+		$semantic = [ SearchProfileService::PROFILE_CONTEXTS_KEY => [ SearchProfileService::CONTEXT_SEMANTIC ] ];
+		$lexical = [ SearchProfileService::PROFILE_CONTEXTS_KEY => [ SearchProfileService::CONTEXT_DEFAULT ] ];
+		$cirrusSearchHookRunner = $this->createCirrusSearchHookRunner( [
+			'CirrusSearchProfileService' => static function (
+				SearchProfileService $service
+			) use ( $semantic, $lexical ) {
+				$service->registerArrayRepository( SearchProfileService::FT_QUERY_BUILDER, 'unit_test', [
+					'default_semantic' => $semantic,
+					'other_semantic' => $semantic,
+					'other_lexical' => $lexical,
+					'any_context' => [],
+				] );
+			}
+		] );
+		$factory = $this->getFactory( [], $cirrusSearchHookRunner, [] );
+		$config = new HashSearchConfig( [ CirrusConfigNames::DefaultSemanticProfile => 'default_semantic' ] );
+		$request = new FauxRequest( [ 'cirrusFTQBProfile' => $uriProfile ] );
+		$service = $factory->loadService( $config, $request, null, true );
+
+		$this->assertSame( $expectedLexical, $service->getProfileName( SearchProfileService::FT_QUERY_BUILDER,
+			SearchProfileService::CONTEXT_DEFAULT ) );
+		$this->assertSame( $expectedSemantic, $service->getProfileName( SearchProfileService::FT_QUERY_BUILDER,
+			SearchProfileService::CONTEXT_SEMANTIC ) );
+	}
+
 	private function getFactory( array $hostWikiConfig = [],
 								 ?CirrusSearchHookRunner $cirrusSearchHookRunner = null,
 								 $userOption = []

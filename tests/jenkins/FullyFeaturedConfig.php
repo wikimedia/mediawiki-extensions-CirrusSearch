@@ -184,6 +184,8 @@ $wgCirrusSearchFullTextQueryBuilderProfiles = [
 	'default_semantic' => [
 		'builder_class' => \CirrusSearch\Query\SemanticSearchQueryBuilder::class,
 		'undocumented' => true,
+		// Plain string, this file loads before the autoloader.
+		'contexts' => [ 'semantic' ],
 		'settings' => [
 			'nested_field' => 'passage_chunk_embedding',
 			'vector_field' => 'knn',

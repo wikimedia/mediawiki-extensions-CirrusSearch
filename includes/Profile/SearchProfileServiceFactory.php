@@ -192,6 +192,10 @@ class SearchProfileServiceFactory {
 		// Maybe we should allow the profile to define the profile to get query building from?
 		$service->registerDefaultProfile( SearchProfileService::FT_QUERY_BUILDER,
 			SearchProfileService::CONTEXT_SEMANTIC, $defaultProfile );
+		// Shared with the default context. The override applies only in the contexts its
+		// profile supports.
+		$service->registerUriParamOverride( SearchProfileService::FT_QUERY_BUILDER,
+			SearchProfileService::CONTEXT_SEMANTIC, 'cirrusFTQBProfile' );
 		$service->registerDefaultProfile( SearchProfileService::RESCORE,
 			SearchProfileService::CONTEXT_SEMANTIC, 'empty' );
 	}

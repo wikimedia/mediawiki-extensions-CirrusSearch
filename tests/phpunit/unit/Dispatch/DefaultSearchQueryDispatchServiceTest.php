@@ -2,10 +2,10 @@
 
 namespace CirrusSearch\Dispatch;
 
+use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Dispatch\Voter\AllQueriesCandidateVoter;
 use CirrusSearch\Dispatch\Voter\NamespaceVetoVoter;
-use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Profile\SearchProfileException;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchQuery;
@@ -52,35 +52,103 @@ class DefaultSearchQueryDispatchServiceTest extends CirrusTestCase {
 			$profileName );
 	}
 
-	private function query( array $namespaces = [], ?string $forcedRescoreProfile = null ): SearchQuery {
-		$builder = $this->getNewFTSearchQueryBuilder( new HashSearchConfig( [] ), 'foo' );
+	/**
+	 * @param int[] $namespaces
+	 * @param string[] $forcedProfiles profile names, keyed by profile type
+	 * @return SearchQuery
+	 */
+	private function query( array $namespaces = [], array $forcedProfiles = [] ): SearchQuery {
+		$config = $this->newHashSearchConfig( [
+			CirrusConfigNames::FullTextQueryBuilderProfiles => [
+				'unconstrained' => [],
+				'lexical' => [
+					SearchProfileService::PROFILE_CONTEXTS_KEY => [ SearchProfileService::CONTEXT_DEFAULT ],
+				],
+				'semantic' => [
+					SearchProfileService::PROFILE_CONTEXTS_KEY => [ SearchProfileService::CONTEXT_SEMANTIC ],
+				],
+			],
+		] );
+		$builder = $this->getNewFTSearchQueryBuilder( $config, 'foo' );
 		if ( $namespaces !== [] ) {
 			$builder->setInitialNamespaces( $namespaces );
 		}
-		if ( $forcedRescoreProfile !== null ) {
-			$builder->addForcedProfile( SearchProfileService::RESCORE, $forcedRescoreProfile );
+		foreach ( $forcedProfiles as $type => $name ) {
+			$builder->addForcedProfile( $type, $name );
 		}
 		return $builder->build();
 	}
 
 	/**
-	 * A request that named a profile made the choice dispatch is there to make, so no election
-	 * is held. The route below would have won one. Its voters are the ones
-	 * registerFTSearchQueryRoute() builds, so an extension route is covered by the same rule.
+	 * The route below would have won. Its voters are the ones registerFTSearchQueryRoute()
+	 * builds, so an extension route is covered by the same rule.
 	 */
-	public function testForcedProfileTakesTheDefaultRoute() {
+	public function testForcedProfileKeepsTheQueryOffRoutesThatCannotUseIt() {
 		$default = $this->cirrusDefault();
 		$service = $this->service( [ $this->route( 'semantic', 1.0, [ 0 ] ) ], $default );
 
-		$this->assertSame( 'semantic',
-			$service->dispatch( $this->query( [ 0 ] ) )->getProfileContext() );
-
-		$forced = $service->dispatch( $this->query( [ 0 ], 'classic' ) );
+		$forced = $service->dispatch( $this->query( [ 0 ],
+			[ SearchProfileService::FT_QUERY_BUILDER => 'lexical' ] ) );
 		$this->assertSame( $default, $forced->getRoute() );
-		// No election, so the route that would have won was never asked.
-		$this->assertSame( [ 'cirrus_default' ], array_keys( $forced->getDecisions() ) );
-		$this->assertSame( RouteDecision::REASON_DEFAULT,
+		$excluded = $forced->getDecisions()['semantic'];
+		$this->assertSame( RouteDecision::REASON_FORCED_PROFILE, $excluded->getReason() );
+		// Voters are not asked about a route the query cannot take.
+		$this->assertSame( [], $excluded->getVotes() );
+	}
+
+	public function testForcedProfileThatFitsTheRouteIsElected() {
+		$service = $this->service( [ $this->route( 'semantic', 1.0, [ 0 ] ) ] );
+
+		$forced = $service->dispatch( $this->query( [ 0 ],
+			[ SearchProfileService::FT_QUERY_BUILDER => 'semantic' ] ) );
+		$this->assertSame( 'semantic', $forced->getWinner() );
+		$this->assertSame( RouteDecision::REASON_CANDIDATE,
+			$forced->getDecisions()['semantic']->getReason() );
+	}
+
+	public static function provideProfilesWithoutContexts() {
+		return [
+			'builder' => [ SearchProfileService::FT_QUERY_BUILDER, 'unconstrained' ],
+			'rescore' => [ SearchProfileService::RESCORE, 'classic' ],
+			'dispatch' => [ SearchProfileService::QUERY_DISPATCH, 'default' ],
+			'unknown' => [ SearchProfileService::FT_QUERY_BUILDER, 'missing' ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideProfilesWithoutContexts
+	 */
+	public function testForcedProfileWithoutContextsDoesNotLimitTheRoutes( string $type, string $name ) {
+		$service = $this->service( [ $this->route( 'semantic', 1.0, [ 0 ] ) ] );
+
+		$forced = $service->dispatch( $this->query( [ 0 ], [ $type => $name ] ) );
+		$this->assertSame( 'semantic', $forced->getWinner() );
+	}
+
+	/**
+	 * Running the query in a context the forced profile was not made for would build the
+	 * wrong query, so no search is better.
+	 */
+	public function testForcedProfileThatFitsNoRouteIsDeclined() {
+		$service = $this->service( [ $this->route( 'semantic', 1.0, [ 0 ] ) ] );
+
+		$forced = $service->dispatch( $this->query( [ 1 ],
+			[ SearchProfileService::FT_QUERY_BUILDER => 'semantic' ] ) );
+		$this->assertSame( SearchProfileService::CONTEXT_NONE, $forced->getProfileContext() );
+		$this->assertSame( RouteDecision::REASON_VETOED,
+			$forced->getDecisions()['semantic']->getReason() );
+		$this->assertSame( RouteDecision::REASON_FORCED_PROFILE,
 			$forced->getDecisions()['cirrus_default']->getReason() );
+	}
+
+	public function testDecliningDefaultRouteTakesAnyForcedProfile() {
+		$noExecute = new DefaultSearchQueryRoute( 'no_execute', SearchQuery::SEARCH_TEXT,
+			SearchProfileService::CONTEXT_NONE );
+		$service = $this->service( [ $this->route( 'semantic', 1.0, [ 0 ] ) ], $noExecute );
+
+		$forced = $service->dispatch( $this->query( [ 1 ],
+			[ SearchProfileService::FT_QUERY_BUILDER => 'semantic' ] ) );
+		$this->assertSame( $noExecute, $forced->getRoute() );
 	}
 
 	/**

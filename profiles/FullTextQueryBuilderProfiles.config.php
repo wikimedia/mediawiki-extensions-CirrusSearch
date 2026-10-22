@@ -162,4 +162,36 @@ return [
 			],
 		],
 	],
+	'semantic_no_hl' => [
+		'builder_class' => \CirrusSearch\Query\SemanticSearchQueryBuilder::class,
+		// prevent from being selected from api parameters like srqdprofile
+		'undocumented' => true,
+		'contexts' => [ 'semantic' ],
+		'settings' => [
+			'highlighting' => true,
+			'nested_field' => 'passage_chunk_embedding',
+			'vector_field' => 'knn',
+			'source_fields' => [ 'section', 'text' ],
+			'anchor_field' => 'section',
+			'snippet_field' => 'text',
+			'k' => 30,
+			'score_mode' => 'max',
+		],
+	],
+	'semantic_hl' => [
+		'builder_class' => \CirrusSearch\Query\SemanticSearchQueryBuilder::class,
+		// prevent from being selected from api parameters like srqdprofile
+		'undocumented' => true,
+		'contexts' => [ 'semantic' ],
+		'settings' => [
+			'highlighting' => true,
+			'nested_field' => 'passage_chunk_embedding',
+			'vector_field' => 'knn',
+			'source_fields' => [ 'section', 'text' ],
+			'anchor_field' => 'section',
+			'snippet_field' => 'text',
+			'k' => 30,
+			'score_mode' => 'max',
+		],
+	],
 ];

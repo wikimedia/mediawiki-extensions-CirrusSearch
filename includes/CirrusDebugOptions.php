@@ -2,7 +2,6 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\Query\SemanticSearchQueryBuilder;
 use Elastica\Query;
 use MediaWiki\Request\WebRequest;
 
@@ -211,20 +210,6 @@ class CirrusDebugOptions {
 	public function applyDebugOptions( Query $query ) {
 		if ( $this->cirrusExplain !== null ) {
 			$query->setExplain( true );
-		}
-		$stats = $query->hasParam( 'stats' ) ? $query->getParam( 'stats' ) : [];
-		if ( $this->isCirrusSemanticSearchHighlights() && in_array( SemanticSearchQueryBuilder::SYNTAX_NAME, $stats ) ) {
-			// only add the batch inference param if the semantic query is used (stats) & requested via cirrusSemanticSearch debug param.
-			if ( $query->hasParam( 'ext' ) ) {
-				$ext = $query->getParam( 'ext' );
-				if ( !is_array( $ext ) ) {
-					throw new \RuntimeException( 'Search ext parameter must be an array but got "' . gettype( $ext ) . '".' );
-				}
-				$ext['semantic_highlighting_batch'] = true;
-			} else {
-				$ext = [ 'semantic_highlighting_batch' => true ];
-			}
-			$query->setParam( 'ext', $ext );
 		}
 		return $query;
 	}

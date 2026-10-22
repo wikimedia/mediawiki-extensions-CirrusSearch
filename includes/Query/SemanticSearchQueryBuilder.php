@@ -33,6 +33,7 @@ class SemanticSearchQueryBuilder implements FullTextQueryBuilder {
 	 * @var mixed|string
 	 */
 	private string $passageField;
+	private bool $withHighlighting;
 
 	/**
 	 * @param SearchConfig $config Not used, but part of standard constructor
@@ -53,6 +54,7 @@ class SemanticSearchQueryBuilder implements FullTextQueryBuilder {
 		$this->maxK = $settings['k'] ?? 21;
 		$this->scoreMode = $settings['score_mode'] ?? 'max';
 		$this->instructions = $settings['instructions'] ?? '';
+		$this->withHighlighting = $settings['highlighting'] ?? false;
 	}
 
 	/**
@@ -86,7 +88,7 @@ class SemanticSearchQueryBuilder implements FullTextQueryBuilder {
 		$searchContext->disableFallbackRunner();
 
 		$searchContext->setMainQuery(
-			$this->buildQuery( $term, $k, $searchContext->getDebugOptions()->isCirrusSemanticSearchHighlights() )
+			$this->buildQuery( $term, $k, $this->withHighlighting || $searchContext->getDebugOptions()->isCirrusSemanticSearchHighlights() )
 		);
 	}
 

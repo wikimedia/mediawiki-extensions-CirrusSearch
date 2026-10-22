@@ -172,6 +172,9 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 */
 	private $fetchPhaseBuilder;
 
+	/** @var array<string, mixed> map of search extension to enable */
+	private array $searchExt = [];
+
 	/**
 	 * @var int[] weights of different syntaxes
 	 */
@@ -997,5 +1000,23 @@ class SearchContext implements WarningCollector, FilterBuilder {
 
 	public function getTrackTotalHits(): bool {
 		return $this->trackTotalHits;
+	}
+
+	/**
+	 * Enable a search extension.
+	 * @param string $extName search extension to enable
+	 * @param mixed $value search extension options
+	 * @return void
+	 */
+	public function addSearchExt( string $extName, mixed $value ): void {
+		$this->searchExt[$extName] = $value;
+		$this->isDirty = true;
+	}
+
+	/**
+	 * @return array<string, mixed> search extensions to enable
+	 */
+	public function getSearchExt(): array {
+		return $this->searchExt;
 	}
 }

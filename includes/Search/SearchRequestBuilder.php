@@ -66,6 +66,10 @@ class SearchRequestBuilder {
 		$query->setTrackTotalHits( $this->searchContext->getTrackTotalHits() ? true : $this->offset + $this->limit + 1 );
 		$query->setSource( $resultsType->getSourceFiltering() );
 		$query->setParam( "fields", $resultsType->getFields() );
+		$searchExt = $this->searchContext->getSearchExt();
+		if ( $searchExt !== [] ) {
+			$query->setParam( "ext", $searchExt );
+		}
 
 		$extraIndexes = $this->searchContext->getExtraIndices();
 

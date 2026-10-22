@@ -186,9 +186,28 @@ class SemanticSearchQueryBuilderTest extends CirrusTestCase {
 		$this->assertFalse( $builder->buildDegraded( $context ) );
 	}
 
-	public function testWithHighlights() {
+	public function testWithHighlightsFromDebugOption() {
 		$builder = $this->newSemanticSearchQueryBuilder( [] );
 		$context = $this->newSearchContext( true );
+		$builder->build( $context, 'search term' );
+		$queryArray = $context->getQuery()->toArray()['bool']['must'][0];
+		$this->assertSame(
+			[
+				"pre_tags" => [ Searcher::HIGHLIGHT_PRE_MARKER ],
+				"post_tags" => [ Searcher::HIGHLIGHT_POST_MARKER ],
+				'fields' => [
+					'passage_chunk_embedding.text' => [
+						'type' => 'semantic'
+					]
+				]
+			],
+			$queryArray['nested']['inner_hits']['highlight']
+		);
+	}
+
+	public function testWithHighlightsFromProfile() {
+		$builder = $this->newSemanticSearchQueryBuilder( [ 'highlighting' => true ] );
+		$context = $this->newSearchContext();
 		$builder->build( $context, 'search term' );
 		$queryArray = $context->getQuery()->toArray()['bool']['must'][0];
 		$this->assertSame(

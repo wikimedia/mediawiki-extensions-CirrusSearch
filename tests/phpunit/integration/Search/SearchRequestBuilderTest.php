@@ -136,4 +136,17 @@ class SearchRequestBuilderTest extends CirrusIntegrationTestCase {
 		$search = $builder->build();
 		$this->assertArrayNotHasKey( Search::OPTION_SEARCH_IGNORE_UNAVAILABLE, $search->getOptions() );
 	}
+
+	public function testSearchExt(): void {
+		$builder = $this->searchRequestBuilder();
+		$searchContext = $builder->getSearchContext();
+		$searchContext->addSearchExt( 'semantic_highlighting_batch', true );
+		$searchContext->addSearchExt( 'foo', [ 'bar' => 'baz' ] );
+		$search = $builder->build();
+
+		$this->assertArrayEquals(
+			[ 'semantic_highlighting_batch' => true, 'foo' => [ 'bar' => 'baz' ] ],
+			$search->getQuery()->getParam( 'ext' )
+		);
+	}
 }

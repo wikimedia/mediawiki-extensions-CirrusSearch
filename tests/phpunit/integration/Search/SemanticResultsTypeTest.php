@@ -107,4 +107,21 @@ class SemanticResultsTypeTest extends CirrusIntegrationTestCase {
 		$this->assertEquals( 'Moons by primary', $results[1]->getSectionTitle()->getFragment() );
 		$this->assertEquals( 'Moons by primary', $results[1]->getSectionSnippet() );
 	}
+
+	public function testSnippetWithoutHighlightIsEscaped(): void {
+		$type = $this->newSemanticResultsType();
+		$responseData = self::loadFixture( "semanticResultsType/highlight_response.json" );
+		$innerHit = &$responseData['hits']['hits'][0]['inner_hits'][self::NESTED_FIELD]['hits']['hits'][0];
+		unset( $innerHit['highlight'] );
+		$innerHit['_source'][self::SNIPPET_FIELD] = '<script>alert(1)</script> & more';
+		unset( $innerHit );
+
+		$builder = new ResultSet\DefaultBuilder();
+		$elasticaResultSet = $builder->buildResultSet( new Response( $responseData, 200 ), new Query( [] ) );
+		$results = $type->transformElasticsearchResult( $elasticaResultSet )->extractResults();
+		$this->assertSame(
+			'&lt;script&gt;alert(1)&lt;/script&gt; &amp; more',
+			$results[0]->getTextSnippet()
+		);
+	}
 }

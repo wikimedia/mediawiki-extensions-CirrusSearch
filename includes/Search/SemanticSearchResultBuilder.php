@@ -94,7 +94,7 @@ class SemanticSearchResultBuilder {
 			if ( isset( $hit['highlight'][$this->highlightedSnippetField][0] ) ) {
 				$this->builder->textSnippet( $this->escapeHighlightedText( $hit['highlight'][$this->highlightedSnippetField][0] ) );
 			} elseif ( isset( $hit['_source'][$this->snippetField] ) ) {
-				$this->builder->textSnippet( $hit['_source'][$this->snippetField] );
+				$this->builder->textSnippet( $this->escapeHighlightedText( $hit['_source'][$this->snippetField] ) );
 			}
 			if ( isset( $hit['_source'][$this->sectionField] ) ) {
 				$sectionName = $hit['_source'][$this->sectionField];

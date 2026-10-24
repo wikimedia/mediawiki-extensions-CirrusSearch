@@ -25,11 +25,6 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 	private $query;
 
 	/**
-	 * @var SearcherFactory
-	 */
-	private $searcherFactory;
-
-	/**
 	 * @var array|null
 	 */
 	private $searchMetrics = [];

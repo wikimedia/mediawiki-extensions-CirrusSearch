@@ -16,8 +16,8 @@ use MediaWiki\Utils\BatchRowIterator;
 use MediaWiki\Utils\MWTimestamp;
 use MediaWiki\WikiMap\WikiMap;
 use UnexpectedValueException;
-use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\IDBAccessObject;
+use Wikimedia\Rdbms\IReadableDatabase;
 
 /**
  * Force reindexing change to the wiki.
@@ -399,7 +399,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return CallbackIterator
 	 */
 	protected function getDeletesIterator() {
-		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
+		$dbr = $this->getAnalyticsReplica();
 		$it = new BatchRowIterator(
 			$dbr,
 			'logging',
@@ -452,7 +452,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return CallbackIterator
 	 */
 	protected function getIdsIterator() {
-		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
+		$dbr = $this->getAnalyticsReplica();
 		$pageQuery = WikiPage::getQueryInfo();
 		$it = new BatchRowIterator( $dbr, $pageQuery['tables'], 'page_id', $this->getBatchSize() );
 		$it->setFetchColumns( $pageQuery['fields'] );
@@ -468,7 +468,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return CallbackIterator
 	 */
 	protected function getUpdatesByDateIterator() {
-		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
+		$dbr = $this->getAnalyticsReplica();
 		$pageQuery = WikiPage::getQueryInfo();
 		$it = new BatchRowIterator(
 			$dbr,
@@ -493,7 +493,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return CallbackIterator
 	 */
 	protected function getUpdatesByIdIterator() {
-		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
+		$dbr = $this->getAnalyticsReplica();
 		$pageQuery = WikiPage::getQueryInfo();
 		$it = new BatchRowIterator( $dbr, $pageQuery['tables'], 'page_id', $this->getBatchSize() );
 		$it->setFetchColumns( $pageQuery['fields'] );
@@ -517,7 +517,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	private function attachTimestampConditions(
-		IDatabase $dbr, BatchRowIterator $it, string $columnPrefix
+		IReadableDatabase $dbr, BatchRowIterator $it, string $columnPrefix
 	) {
 		// When initializing we guarantee that if either fromDate or toDate are provided
 		// the other has a sane default value.
@@ -529,7 +529,7 @@ class ForceSearchIndex extends Maintenance {
 		}
 	}
 
-	private function attachPageConditions( IDatabase $dbr, BatchRowIterator $it, string $columnPrefix ) {
+	private function attachPageConditions( IReadableDatabase $dbr, BatchRowIterator $it, string $columnPrefix ) {
 		if ( $this->namespace !== null ) {
 			$it->addConditions( [
 				"{$columnPrefix}_namespace" => $this->namespace,
@@ -609,7 +609,7 @@ class ForceSearchIndex extends Maintenance {
 	 *  will be spat out sized to cover the entire wiki.
 	 */
 	private function buildChunks( $buildChunks ) {
-		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
+		$dbr = $this->getAnalyticsReplica();
 		if ( $this->toId === null ) {
 			$this->toId = $dbr->newSelectQueryBuilder()
 				->select( 'MAX(page_id)' )

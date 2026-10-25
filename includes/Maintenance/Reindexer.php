@@ -10,7 +10,6 @@ use CirrusSearch\Elastica\ReindexTask;
 use CirrusSearch\Query\ArticlePredictionKeyword;
 use CirrusSearch\ReplicaCount;
 use CirrusSearch\SearchConfig;
-use Elastica\Client;
 use Elastica\Exception\Connection\HttpException;
 use Elastica\Index;
 use Elastica\Request;
@@ -273,16 +272,6 @@ class Reindexer {
 	private function setConnectionTimeout() {
 		$timeout = $this->searchConfig->get( CirrusConfigNames::MaintenanceTimeout );
 		$this->connection->setTimeout( $timeout );
-	}
-
-	/**
-	 * Destroy client connections
-	 */
-	private function destroyClients() {
-		$this->connection->destroyClient();
-		$this->oldConnection->destroyClient();
-		// Destroying connections resets timeouts, so we have to reinstate them
-		$this->setConnectionTimeout();
 	}
 
 	/**
@@ -570,12 +559,6 @@ class Reindexer {
 			$this->getNumberOfShards( $index ),
 			self::MAX_REINDEX_SLICES
 		);
-	}
-
-	private function getNumberOfNodes( Client $client ): int {
-		$endpoint = ( new \Elasticsearch\Endpoints\Cat\Nodes() )
-			->setParams( [ 'format' => 'json' ] );
-		return count( $client->requestEndpoint( $endpoint )->getData() );
 	}
 
 	private function getNumberOfShards( Index $index ): int {

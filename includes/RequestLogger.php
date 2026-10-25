@@ -61,22 +61,6 @@ class RequestLogger {
 	}
 
 	/**
-	 * @param float $percentage A value between 0 and 1 indiciating the
-	 *  percentage of calls that should return true.
-	 * @return bool True on $percentage calls to this method
-	 */
-	private function sample( $percentage ) {
-		if ( $percentage <= 0 ) {
-			return false;
-		}
-		if ( $percentage >= 1 ) {
-			return true;
-		}
-		$rand = random_int( 0, PHP_INT_MAX ) / PHP_INT_MAX;
-		return $rand <= $percentage;
-	}
-
-	/**
 	 * Summarizes all the requests made in this process and reports
 	 * them along with the test they belong to.
 	 */

@@ -39,11 +39,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	private const SUFFIX = Connection::TITLE_SUGGEST_INDEX_SUFFIX;
 
 	/**
-	 * @var string language code we're building for
-	 */
-	private $langCode;
-
-	/**
 	 * @var int
 	 */
 	private $indexChunkSize;
@@ -64,11 +59,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	private $optimizeIndex;
 
 	/**
-	 * @var array list of available plugins
-	 */
-	private $availablePlugins;
-
-	/**
 	 * @var string
 	 */
 	private string $masterTimeout;
@@ -77,11 +67,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * @var ConfigUtils
 	 */
 	private $utils;
-
-	/**
-	 * @var string[]
-	 */
-	private $bannedPlugins;
 
 	/**
 	 * @var CompletionSuggesterIndexer[]

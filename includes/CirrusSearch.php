@@ -6,7 +6,6 @@ use CirrusSearch\Parser\NamespacePrefixParser;
 use CirrusSearch\Parser\QueryStringRegex\SearchQueryParseException;
 use CirrusSearch\Profile\ContextualProfileOverride;
 use CirrusSearch\Profile\SearchProfileService;
-use CirrusSearch\Search\ArrayCirrusSearchResult;
 use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
 use CirrusSearch\Search\CirrusSearchResultSet;
 use CirrusSearch\Search\FancyTitleResultsType;
@@ -79,13 +78,6 @@ class CirrusSearch extends SearchEngine {
 	 * @see SearchEngine::supports() and SearchEngine::setFeatureData()
 	 */
 	public const EXTRA_FIELDS_TO_EXTRACT = 'extra-fields-to-extract';
-
-	/**
-	 * Name of the entry in the extension data array holding the extracted field
-	 * requested using the EXTRA_FIELDS_TO_EXTRACT feature.
-	 * @see \SearchResult::getExtensionData()
-	 */
-	private const EXTRA_FIELDS = ArrayCirrusSearchResult::EXTRA_FIELDS;
 
 	/**
 	 * @var array metrics about the last thing we searched sourced from the

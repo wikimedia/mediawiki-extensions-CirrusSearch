@@ -24,7 +24,6 @@ class SearchConfig implements Config {
 	public const INDEX_BASE_NAME = CirrusConfigNames::IndexBaseName;
 	private const PREFIX_IDS = CirrusConfigNames::PrefixIds;
 	private const REDIRECT_DOCUMENTS = CirrusConfigNames::RedirectDocuments;
-	private const CIRRUS_VAR_PREFIX = 'wgCirrus';
 
 	// Magic word to tell the SearchConfig to translate INDEX_BASE_NAME into WikiMap::getCurrentWikiId()
 	public const WIKI_ID_MAGIC_WORD = '__wikiid__';

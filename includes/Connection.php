@@ -128,7 +128,7 @@ class Connection extends ElasticaConnection {
 	/**
 	 * @return never
 	 */
-	public function __sleep() {
+	public function __serialize() {
 		throw new \RuntimeException( 'Attempting to serialize ES connection' );
 	}
 

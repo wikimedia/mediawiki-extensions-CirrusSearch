@@ -1,5 +1,7 @@
 <?php
 
+use CirrusSearch\Profile\SearchProfileService;
+
 return [
 	'default' => [
 		'strategies' => [
@@ -53,7 +55,22 @@ return [
 	'language_converter_and_english_frames' => [
 		'strategies' => [
 			'language_converter' => 1.0,
-			'english_frames' => 0.5
+			'english_frames' => [
+				'allowed_profiles' => [
+					// Never allow English frames for namespace matching
+					SearchProfileService::NAMESPACE_MATCHER => [],
+					// Skip English frames for strict and classic
+					SearchProfileService::COMPLETION => [
+						// see SuggestProfiles.config.php
+						'normal',
+						'normal-subphrases',
+						'fuzzy',
+						'fast-fuzzy',
+						'fuzzy-subphrases'
+					],
+				],
+				'weight' => 0.5
+			]
 		],
 	],
 	'icu_folding_utr30' => [

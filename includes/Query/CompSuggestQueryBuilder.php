@@ -102,7 +102,7 @@ class CompSuggestQueryBuilder {
 
 		// Handle variants, update the set of profiles and suggest queries
 		if ( $secondTryCandidates ) {
-			$this->handleVariants( $suggest, $secondTryCandidates, $queryLen, $origTerm );
+			$this->handleVariants( $suggest, $secondTryCandidates, $origTerm );
 		}
 		return $suggest;
 	}
@@ -180,11 +180,10 @@ class CompSuggestQueryBuilder {
 	 * with a discount factor = originalDiscount * 0.0001/(variantIndex+1).
 	 * @param Suggest $suggests
 	 * @param array<string, string[]> $secondTryCandidates candidates as returned by {@link SecondTryRunner::candidate}
-	 * @param int $queryLen the original query length
 	 * @param string $term original term (used to dedup)
 	 * @internal param array $profiles the default profiles
 	 */
-	private function handleVariants( Suggest $suggests, array $secondTryCandidates, int $queryLen, string $term ): void {
+	private function handleVariants( Suggest $suggests, array $secondTryCandidates, string $term ): void {
 		$done = [ $term ];
 		$variantIndex = 0;
 		foreach ( $secondTryCandidates as $strategy => $candidates ) {
@@ -199,6 +198,7 @@ class CompSuggestQueryBuilder {
 					$profile = $this->buildVariantProfile(
 						$profile, ( self::VARIANT_EXTRA_DISCOUNT * $this->secondTryRunner->weight( $strategy ) ) / $variantIndex
 					);
+					$queryLen = mb_strlen( trim( $candidate ) );
 					$suggest = $this->buildSuggestQuery(
 						$variantProfName, $profile, $candidate, $queryLen
 					);

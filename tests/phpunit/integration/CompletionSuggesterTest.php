@@ -76,9 +76,21 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 		$simpleFuzzy = $simpleProfile + [
 			'plain-fuzzy' => [
 				'field' => 'suggest',
-				'min_query_len' => 0,
+				'min_query_len' => 5,
 				'fuzzy' => [
-					'fuzziness' => 'AUTO',
+					'fuzziness' => 2,
+					'prefix_length' => 1,
+					'unicode_aware' => true,
+				],
+				'discount' => 0.5,
+				'fetch_limit_factor' => 1.5
+			],
+			'plain-fuzzy-short-strings' => [
+				'field' => 'suggest',
+				'min_query_len' => 0,
+				'max_query_len' => 4,
+				'fuzzy' => [
+					'fuzziness' => 1,
 					'prefix_length' => 1,
 					'unicode_aware' => true,
 				],
@@ -148,18 +160,18 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 					],
 				],
 			],
-			"simple with variants" => [
+			"fuzzy with variants" => [
 				[
-					CirrusConfigNames::CompletionSettings => 'test-simple',
+					CirrusConfigNames::CompletionSettings => 'test-fuzzy',
 					CirrusConfigNames::CompletionProfiles => $profile,
 				],
 				10,
 				' complete me ',
-				[ ' variant1 ', ' complete me ', ' variant2 ' ],
+				[ ' variant1 ', ' complete me ', ' v2 ' ],
 				// Profile is updated with extra variant setup
 				// to include an extra discount
 				// ' complete me ' variant duplicate will be ignored
-				$simpleProfile + [
+				$simpleFuzzy + [
 					'plain-second-try-my_second_try-1' => [
 						'field' => 'suggest',
 						'min_query_len' => 0,
@@ -173,6 +185,31 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 						'discount' => 1.0 * ( 0.8 * CompSuggestQueryBuilder::VARIANT_EXTRA_DISCOUNT / 2 ),
 						'fetch_limit_factor' => 2,
 						'fallback' => true, // extra key added, not used for now
+					],
+					'plain-fuzzy-second-try-my_second_try-1' => [
+						'field' => 'suggest',
+						'min_query_len' => 5,
+						'discount' => 0.5 * 0.8 * CompSuggestQueryBuilder::VARIANT_EXTRA_DISCOUNT,
+						'fetch_limit_factor' => 1.5,
+						'fallback' => true, // extra key added, not used for now
+						'fuzzy' => [
+							'fuzziness' => 2,
+							'prefix_length' => 1,
+							'unicode_aware' => true,
+						],
+					],
+					'plain-fuzzy-short-strings-second-try-my_second_try-2' => [
+						'field' => 'suggest',
+						'min_query_len' => 0,
+						'max_query_len' => 4,
+						'discount' => 0.5 * ( 0.8 * CompSuggestQueryBuilder::VARIANT_EXTRA_DISCOUNT / 2 ),
+						'fetch_limit_factor' => 1.5,
+						'fallback' => true, // extra key added, not used for now
+						'fuzzy' => [
+							'fuzziness' => 1,
+							'prefix_length' => 1,
+							'unicode_aware' => true,
+						],
 					]
 				],
 				[
@@ -183,6 +220,19 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 							'size' => 20, // effect of fetch_limit_factor
 						],
 					],
+					'plain-fuzzy' => [
+						'prefix' => 'complete me ', // keep trailing white spaces
+						'completion' => [
+							'field' => 'suggest',
+							'size' => 15.0, // effect of fetch_limit_factor
+							// fuzzy config is simply copied from the profile
+							'fuzzy' => [
+								'fuzziness' => 2,
+								'prefix_length' => 1,
+								'unicode_aware' => true,
+							],
+						],
+					],
 					'plain-second-try-my_second_try-1' => [
 						'prefix' => 'variant1 ',
 						'completion' => [
@@ -190,11 +240,35 @@ class CompletionSuggesterTest extends CirrusIntegrationTestCase {
 							'size' => 20, // effect of fetch_limit_factor
 						],
 					],
+					'plain-fuzzy-second-try-my_second_try-1' => [
+						'prefix' => 'variant1 ',
+						'completion' => [
+							'field' => 'suggest',
+							'size' => 15.0,
+							'fuzzy' => [
+								'fuzziness' => 2,
+								'prefix_length' => 1,
+								'unicode_aware' => true,
+							],
+						],
+					],
 					'plain-second-try-my_second_try-2' => [
-						'prefix' => 'variant2 ',
+						'prefix' => 'v2 ',
 						'completion' => [
 							'field' => 'suggest',
 							'size' => 20, // effect of fetch_limit_factor
+						],
+					],
+					'plain-fuzzy-short-strings-second-try-my_second_try-2' => [
+						'prefix' => 'v2 ',
+						'completion' => [
+							'field' => 'suggest',
+							'size' => 15.0,
+							'fuzzy' => [
+								'fuzziness' => 1,
+								'prefix_length' => 1,
+								'unicode_aware' => true,
+							],
 						],
 					],
 				],

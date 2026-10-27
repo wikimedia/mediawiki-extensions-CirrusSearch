@@ -67,6 +67,10 @@ class SecondTryRunnerTest extends CirrusTestCase {
 					'strategies' => [
 						'russian_keyboard' => 1.0,
 						'hebrew_keyboard' => [
+							'allowed_profiles' => [
+								'unrelated_context' => [ 'foo' ],
+								SearchProfileService::CONTEXT_COMPLETION => [ 'my_profile' ],
+							],
 							'weight' => 0.9,
 						],
 						'language_converter' => [
@@ -75,12 +79,20 @@ class SecondTryRunnerTest extends CirrusTestCase {
 								'top_k' => 1,
 							],
 						],
+						// This strategy must be skipped because it does not match the allowed profiles
+						'georgian_transliteration' => [
+							'weight' => 0.8,
+							'allowed_profiles' => [
+								'unrelated_context' => [ 'my_profile' ],
+								SearchProfileService::CONTEXT_COMPLETION => [ 'not_this_one' ],
+							],
+						],
 					]
 				],
 			],
 		] );
 		$factory = new SecondTryRunnerFactory( new SecondTrySearchFactory( $languageConverterFactory ), $config );
-		$runner = $factory->create( SearchProfileService::CONTEXT_COMPLETION );
+		$runner = $factory->create( SearchProfileService::CONTEXT_COMPLETION, 'my_profile' );
 		$candidates = $runner->candidates( 'foo' );
 		$this->assertEquals( [
 			'russian_keyboard' => [ 'ащщ' ],

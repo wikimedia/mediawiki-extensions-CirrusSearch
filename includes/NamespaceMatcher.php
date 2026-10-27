@@ -23,11 +23,13 @@ class NamespaceMatcher {
 		SecondTrySearchFactory $secondTrySearchFactory,
 		SearchConfig $config
 	): NamespaceMatcher {
-		$profile = $config->getProfileService()->loadProfile( SearchProfileService::NAMESPACE_MATCHER );
-		return self::buildFromProfile( $profile, $language, $secondTrySearchFactory, $config );
+		$profileName = $config->getProfileService()->getProfileName( SearchProfileService::NAMESPACE_MATCHER );
+		$profile = $config->getProfileService()->loadProfileByName( SearchProfileService::NAMESPACE_MATCHER, $profileName );
+		return self::buildFromProfile( $profileName, $profile, $language, $secondTrySearchFactory, $config );
 	}
 
 	public static function buildFromProfile(
+		string $profileName,
 		array $profile,
 		Language $language,
 		SecondTrySearchFactory $secondTrySearchFactory,
@@ -43,11 +45,13 @@ class NamespaceMatcher {
 			throw new \RuntimeException( "Expected search_second_try_profile entry to exist and be a string" );
 		}
 		$indexProfileData = $config->getProfileService()->loadProfileByName( SearchProfileService::SECOND_TRY, $indexProfile );
-		$indexRunner = $factory->buildFromProfile( $indexProfileData );
+		$indexRunner = $factory->buildFromProfile( $indexProfileData, SearchProfileService::NAMESPACE_MATCHER, $profileName );
 		$searchRunner = $indexRunner;
 		if ( $indexProfile !== $searchProfile ) {
 			$searchRunner = $factory->buildFromProfile(
-				$config->getProfileService()->loadProfileByName( SearchProfileService::SECOND_TRY, $searchProfile )
+				$config->getProfileService()->loadProfileByName( SearchProfileService::SECOND_TRY, $searchProfile ),
+				SearchProfileService::NAMESPACE_MATCHER,
+				$profileName
 			);
 		}
 		return new self( $indexRunner, $searchRunner, $language );

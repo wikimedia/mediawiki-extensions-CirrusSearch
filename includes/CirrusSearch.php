@@ -514,7 +514,7 @@ class CirrusSearch extends SearchEngine {
 	protected function prefixSearch( $search ) {
 		$searcher = $this->makeSearcher();
 
-		$secondTryRunner = $this->secondTryRunnerFactory->create( SearchProfileService::CONTEXT_COMPLETION );
+		$secondTryRunner = $this->secondTryRunnerFactory->create( SearchProfileService::CONTEXT_COMPLETION, 'classic' );
 		if ( $search ) {
 			$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
 		} else {

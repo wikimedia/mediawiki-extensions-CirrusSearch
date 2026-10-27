@@ -176,8 +176,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				$config
 			);
 		}
-		$this->secondTryRunner = $secondTryRunnerFactory->create( SearchProfileService::CONTEXT_COMPLETION );
-
 		$this->limit = $limit;
 		$this->offset = $offset;
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
@@ -197,6 +195,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			$this->completionIndex = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_INDEX_SUFFIX );
 			$this->config = $config;
 		}
+
+		$profileName = $profileName ?: $this->config->getProfileService()
+			->getProfileName( SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_COMPLETION );
+		$this->secondTryRunner = $secondTryRunnerFactory->create( SearchProfileService::CONTEXT_COMPLETION, $profileName );
+
 		$this->searchContext = new SearchContext( $this->config, $namespaces, $debugOptions );
 
 		$profileDefinition = $this->config->getProfileService()

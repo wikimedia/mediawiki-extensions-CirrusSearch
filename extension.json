@@ -744,6 +744,11 @@
 			"description": "Map from http header name to a regex used to identify automated requests. A request matching any pattern is flagged as automation.",
 			"value": []
 		},
+		"CirrusSearchPoolCounterRules": {
+			"description": "Ordered list of rules that select the pool counter of a search request. The first matching rule wins. When null, default rules are built from CirrusSearchAutomationHeaderRegexes and CirrusSearchAutomationCIDRs.",
+			"value": null,
+			"merge_strategy": "provide_default"
+		},
 		"CirrusSearchCustomPageFields": {
 			"description": "Defines additional custom fields for page indexes",
 			"value": []

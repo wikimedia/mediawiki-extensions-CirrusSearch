@@ -1563,11 +1563,13 @@ Method to use for namespace name resolution, can be:
 ; $wgCirrusSearchAutomationHeaderRegexes
 
 Default:
-  $wgCirrusSearchAutomationHeaderRegexes = null;
+  $wgCirrusSearchAutomationHeaderRegexes = [];
 
 A map from http header to regular expression to be applied against that header
 value. When matching the related request will be considered an automated
 request and use the appropriate pool counter to limit concurrency.
+
+Only used when $wgCirrusSearchPoolCounterRules is null.
 
 Example:
   $wgCirrusSearchAutomationHeaderRegexes = [ 'user-agent' => '/HeadlessChrome/' ];
@@ -1581,8 +1583,57 @@ List of CIDRs as strings. If an incoming request has an IP matching one of these
 it will be consider an automated request and use the appropriate pool counter to limit
 concurrency.
 
+Only used when $wgCirrusSearchPoolCounterRules is null.
+
 Example:
   $wgCirrusSearchAutomationCIDRs = ['1.2.3.0/24', '1:2::/32'];
+
+; $wgCirrusSearchPoolCounterRules
+
+Default:
+  $wgCirrusSearchPoolCounterRules = null;
+
+Ordered list of rules that select the pool counter used by a search request
+(full text, prefix, more like and other searches run by the Searcher class;
+completion has its own pool). The first rule whose conditions are all true
+gives the pool. When no rule matches the request uses CirrusSearch-Search.
+
+Each rule is an array with a 'pool' key and zero or more conditions. A rule
+without conditions always matches. Conditions that take a list are true when
+any element of the list matches:
+  'syntax' => string[]           The query uses one of these syntaxes (regex,
+                                 prefix, more_like, deepcategory, semantic, ...).
+  'min_depth' => int             offset + limit is greater than or equal to the value.
+  'entry_point' => string[]      The MediaWiki entry point (index, api, cli, ...).
+  'headers' => [ name => regex ] One of the http headers matches its regex.
+  'missing_headers' => string[]  The request has none of these http headers.
+  'ip_ranges' => string[]        The client IP is in one of these CIDRs.
+Invalid rules are logged and skipped.
+
+Each pool must be defined in $wgPoolCounterConf. A pool that is not defined
+there does not limit concurrency.
+
+When null, the following rules are used. The 'headers' and 'ip_ranges' rules
+come from $wgCirrusSearchAutomationHeaderRegexes and
+$wgCirrusSearchAutomationCIDRs, and are omitted when those are empty:
+  $wgCirrusSearchPoolCounterRules = [
+      [ 'pool' => 'CirrusSearch-ExpensiveFullText', 'syntax' => [ 'deepcategory', 'regex' ] ],
+      [ 'pool' => 'CirrusSearch-Automated', 'entry_point' => [ 'index' ],
+          'missing_headers' => [ 'cookie' ], 'min_depth' => 100 ],
+      [ 'pool' => 'CirrusSearch-Automated', 'headers' => $wgCirrusSearchAutomationHeaderRegexes ],
+      [ 'pool' => 'CirrusSearch-Automated', 'ip_ranges' => $wgCirrusSearchAutomationCIDRs ],
+      [ 'pool' => 'CirrusSearch-ExpensiveFullText', 'min_depth' => 1000 ],
+      [ 'pool' => 'CirrusSearch-Prefix', 'syntax' => [ 'prefix' ] ],
+      [ 'pool' => 'CirrusSearch-MoreLike', 'syntax' => [ 'more_like' ] ],
+      [ 'pool' => 'CirrusSearch-Semantic', 'syntax' => [ 'semantic' ] ],
+  ];
+
+Example sending requests from a known client to a dedicated pool, before
+all the other rules:
+  $wgCirrusSearchPoolCounterRules = [
+      [ 'pool' => 'CirrusSearch-WDQS', 'headers' => [ 'user-agent' => '/^Wikidata Query Service/' ] ],
+      // ... the default rules ...
+  ];
 
 ; $wgCirrusSearchCustomPageFields
 

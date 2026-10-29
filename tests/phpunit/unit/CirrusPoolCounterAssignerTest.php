@@ -160,10 +160,125 @@ class CirrusPoolCounterAssignerTest extends CirrusTestCase {
 		$request = $this->createMock( WebRequest::class );
 		$request->method( 'getIP' )->willThrowException( new MWException( 'Unable to determine IP.' ) );
 		$request->method( 'getHeader' )->willReturn( false );
-		// The headers match the automation regex, but without an IP the header check is skipped
-		$request->method( 'getAllHeaders' )->willReturn( [ 'USER-AGENT' => self::AUTOMATED_USER_AGENT ] );
-		$assigner = $this->newAssigner( $request, [], [], $offset, 20, $entryPoint );
+		$request->method( 'getAllHeaders' )->willReturn( [] );
+		// The ranges contain all the IPs, but without an IP the range check is false
+		$config = [ CirrusConfigNames::AutomationCIDRs => [ '0.0.0.0/0', '::/0' ] ];
+		$assigner = $this->newAssigner( $request, $config, [], $offset, 20, $entryPoint );
 		$this->assertSame( $expected, $assigner->getPoolCounterType() );
+	}
+
+	public static function provideRules(): iterable {
+		// expected pool, rules, syntax used, offset, entry point, request headers
+		yield 'no rules' => [ PoolCounterKey::SEARCH, [], [], 0, 'api', [] ];
+		yield 'rule without conditions' => [ 'pool-a', [ [ 'pool' => 'pool-a' ] ], [], 0, 'api', [] ];
+		yield 'syntax match' => [
+			'pool-a', [ [ 'pool' => 'pool-a', 'syntax' => [ 'regex', 'prefix' ] ] ], [ 'prefix' ], 0, 'api', [],
+		];
+		yield 'syntax no match' => [
+			PoolCounterKey::SEARCH, [ [ 'pool' => 'pool-a', 'syntax' => [ 'regex' ] ] ], [ 'prefix' ], 0, 'api', [],
+		];
+		yield 'syntax as a string' => [
+			'pool-a', [ [ 'pool' => 'pool-a', 'syntax' => 'prefix' ] ], [ 'prefix' ], 0, 'api', [],
+		];
+		yield 'min_depth match' => [ 'pool-a', [ [ 'pool' => 'pool-a', 'min_depth' => 100 ] ], [], 80, 'api', [] ];
+		yield 'min_depth no match' => [ PoolCounterKey::SEARCH, [ [ 'pool' => 'pool-a', 'min_depth' => 100 ] ], [], 79, 'api', [] ];
+		yield 'entry_point match' => [
+			'pool-a', [ [ 'pool' => 'pool-a', 'entry_point' => [ 'index', 'api' ] ] ], [], 0, 'api', [],
+		];
+		yield 'entry_point no match' => [
+			PoolCounterKey::SEARCH, [ [ 'pool' => 'pool-a', 'entry_point' => [ 'index', 'api' ] ] ], [], 0, 'cli', [],
+		];
+		yield 'headers match' => [
+			'pool-a',
+			[ [ 'pool' => 'pool-a', 'headers' => [ 'x-foo' => '/^bar$/', 'x-bar' => '/foo/' ] ] ],
+			[],
+			0,
+			'api',
+			[ 'X-Foo' => 'bar', 'X-Bar' => 'a foo is not a bar' ],
+		];
+		yield 'headers no match' => [
+			PoolCounterKey::SEARCH, [ [ 'pool' => 'pool-a', 'headers' => [ 'x-foo' => '/^bar$/', 'x-bar' => '/foo/' ] ] ], [], 0, 'api',
+			[ 'X-Foo' => 'baz', 'X-Bar' => 'not_this_time' ],
+		];
+		yield 'headers absent' => [
+			PoolCounterKey::SEARCH, [ [ 'pool' => 'pool-a', 'headers' => [ 'x-foo' => '/.*/' ] ] ], [], 0, 'api', [],
+		];
+		yield 'missing_headers match' => [
+			'pool-a', [ [ 'pool' => 'pool-a', 'missing_headers' => [ 'cookie', 'x-foo' ] ] ], [], 0, 'api', [],
+		];
+		yield 'missing_headers no match' => [
+			PoolCounterKey::SEARCH, [ [ 'pool' => 'pool-a', 'missing_headers' => [ 'cookie', 'x-foo' ] ] ], [], 0, 'api',
+			[ 'X-Foo' => 'bar' ],
+		];
+		yield 'ip_ranges match' => [
+			'pool-a', [ [ 'pool' => 'pool-a', 'ip_ranges' => [ '1.0.0.0/8', '4.0.0.0/8' ] ] ], [], 0, 'api', [],
+		];
+		yield 'ip_ranges no match' => [
+			PoolCounterKey::SEARCH, [ [ 'pool' => 'pool-a', 'ip_ranges' => [ '1.0.0.0/8' ] ] ], [], 0, 'api', [],
+		];
+		$both = [ 'pool' => 'pool-a', 'syntax' => [ 'prefix' ], 'entry_point' => [ 'index' ] ];
+		yield 'all conditions match' => [ 'pool-a', [ $both ], [ 'prefix' ], 0, 'index', [] ];
+		yield 'one condition does not match' => [ PoolCounterKey::SEARCH, [ $both ], [ 'prefix' ], 0, 'api', [] ];
+		$ordered = [ [ 'pool' => 'pool-a', 'syntax' => [ 'prefix' ] ], [ 'pool' => 'pool-b' ] ];
+		yield 'first match wins' => [ 'pool-a', $ordered, [ 'prefix' ], 0, 'api', [] ];
+		yield 'next rule when no match' => [ 'pool-b', $ordered, [], 0, 'api', [] ];
+		yield 'rule without pool is skipped' => [
+			'pool-b', [ [ 'syntax' => [ 'prefix' ] ], [ 'pool' => 'pool-b' ] ], [ 'prefix' ], 0, 'api', [],
+		];
+		yield 'rule with unknown condition is skipped' => [
+			'pool-b', [ [ 'pool' => 'pool-a', 'user_agent' => '/.*/' ], [ 'pool' => 'pool-b' ] ], [], 0, 'api', [],
+		];
+		yield 'rule that is not an array is skipped' => [ 'pool-b', [ 'pool-a', [ 'pool' => 'pool-b' ] ], [], 0, 'api', [] ];
+		yield 'explicit rules ignore the legacy automation settings' => [
+			PoolCounterKey::SEARCH, [ [ 'pool' => 'pool-a', 'syntax' => [ 'regex' ] ] ], [], 0, 'api',
+			[ 'User-Agent' => self::AUTOMATED_USER_AGENT ],
+		];
+		$wdqs = [
+			[ 'pool' => 'CirrusSearch-WDQS', 'headers' => [ 'user-agent' => '/^Wikidata Query Service/' ] ],
+			[ 'pool' => PoolCounterKey::AUTOMATED, 'headers' => [ 'x-public-cloud' => '/.*/' ] ],
+		];
+		yield 'dedicated pool before the automation rules' => [
+			'CirrusSearch-WDQS', $wdqs, [], 0, 'api',
+			[ 'User-Agent' => 'Wikidata Query Service; https://query.wikidata.org/', 'X-Public-Cloud' => 'aws' ],
+		];
+		yield 'automation rule after the dedicated pool' => [
+			PoolCounterKey::AUTOMATED, $wdqs, [], 0, 'api', [ 'User-Agent' => 'curl/8.0', 'X-Public-Cloud' => 'aws' ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideRules
+	 */
+	public function testRules(
+		string $expected,
+		array $rules,
+		array $syntaxUsed,
+		int $offset,
+		string $entryPoint,
+		array $headers
+	) {
+		$request = new FauxRequest();
+		$request->setIP( '4.3.2.1' );
+		$request->setHeaders( $headers );
+		$config = [ CirrusConfigNames::PoolCounterRules => $rules ];
+		$assigner = $this->newAssigner( $request, $config, $syntaxUsed, $offset, 20, $entryPoint );
+		$this->assertSame( $expected, $assigner->getPoolCounterType() );
+	}
+
+	public function testDefaultRules() {
+		$hasLegacyRule = static fn ( array $rule ): bool => isset( $rule['headers'] ) || isset( $rule['ip_ranges'] );
+
+		$rules = CirrusPoolCounterAssigner::defaultRules( new HashSearchConfig( [] ) );
+		$this->assertSame( [], array_filter( $rules, $hasLegacyRule ) );
+
+		$rules = CirrusPoolCounterAssigner::defaultRules( new HashSearchConfig( [
+			CirrusConfigNames::AutomationHeaderRegexes => [ 'x-public-cloud' => '/.*/' ],
+			CirrusConfigNames::AutomationCIDRs => [ '1.0.0.0/8' ],
+		] ) );
+		$this->assertSame( [
+			[ 'pool' => PoolCounterKey::AUTOMATED, 'headers' => [ 'x-public-cloud' => '/.*/' ] ],
+			[ 'pool' => PoolCounterKey::AUTOMATED, 'ip_ranges' => [ '1.0.0.0/8' ] ],
+		], array_values( array_filter( $rules, $hasLegacyRule ) ) );
 	}
 
 	private function newAssigner(
@@ -175,6 +290,7 @@ class CirrusPoolCounterAssignerTest extends CirrusTestCase {
 		string $entryPoint = 'api'
 	): CirrusPoolCounterAssigner {
 		$config += [
+			CirrusConfigNames::PoolCounterRules => null,
 			CirrusConfigNames::AutomationHeaderRegexes => [ 'User-Agent' => '/HeadlessChrome/' ],
 			CirrusConfigNames::AutomationCIDRs => [],
 		];

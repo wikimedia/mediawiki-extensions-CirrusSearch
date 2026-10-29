@@ -773,6 +773,11 @@ class CirrusConfigNames {
 	public const AutomationHeaderRegexes = 'CirrusSearchAutomationHeaderRegexes';
 
 	/**
+	 * Name constant for the CirrusSearchPoolCounterRules setting, for use with Config::get()
+	 */
+	public const PoolCounterRules = 'CirrusSearchPoolCounterRules';
+
+	/**
 	 * Name constant for the CirrusSearchCustomPageFields setting, for use with Config::get()
 	 */
 	public const CustomPageFields = 'CirrusSearchCustomPageFields';

@@ -14,7 +14,6 @@ use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFormatter;
 use MediaWiki\User\UserIdentity;
 use MediaWiki\WikiMap\WikiMap;
-use Wikimedia\IPUtils;
 use Wikimedia\Stats\StatsFactory;
 use Wikimedia\UUID\GlobalIdGenerator;
 
@@ -540,40 +539,6 @@ class Util {
 			return $ttl + mt_rand( 0, $maxJitter );
 		}
 		return $ttl;
-	}
-
-	/**
-	 * @param SearchConfig $config Configuration of the check
-	 * @param string $ip The address to check against, ipv4 or ipv6.
-	 * @param string[] $headers Map from http header name to value. All names must be uppercased.
-	 * @return bool True when the parameters appear to be a non-interactive use case.
-	 */
-	public static function looksLikeAutomation( SearchConfig $config, string $ip, array $headers ): bool {
-		// Is there an http header that can be matched with regex to flag automation,
-		// such as the user-agent or a flag applied by some infrastructure?
-		$automationHeaders = $config->get( CirrusConfigNames::AutomationHeaderRegexes ) ?? [];
-		foreach ( $automationHeaders as $name => $pattern ) {
-			$name = strtoupper( $name );
-			if ( !isset( $headers[$name] ) ) {
-				continue;
-			}
-			$ret = preg_match( $pattern, $headers[$name] );
-			if ( $ret === 1 ) {
-				return true;
-			} elseif ( $ret === false ) {
-				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
-					"Invalid regex provided for header `$name` in `CirrusSearchAutomationHeaderRegexes`." );
-			}
-		}
-
-		// Does the ip address fall into a subnet known for automation?
-		$ranges = $config->get( CirrusConfigNames::AutomationCIDRs );
-		if ( IPUtils::isInRanges( $ip, $ranges ) ) {
-			return true;
-		}
-
-		// Default assumption that requests are interactive
-		return false;
 	}
 
 	/**

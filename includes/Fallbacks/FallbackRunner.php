@@ -17,7 +17,7 @@ use Wikimedia\Assert\Assert;
 
 class FallbackRunner implements SearchMetricsProvider {
 	/** @var self */
-	private static $NOOP_RUNNER = null;
+	private static $noopRunner = null;
 
 	/**
 	 * @var FallbackMethod[] List of fallbacks to apply in order, keyed by
@@ -48,8 +48,8 @@ class FallbackRunner implements SearchMetricsProvider {
 	 * @return self
 	 */
 	public static function noopRunner(): self {
-		self::$NOOP_RUNNER ??= new self( [] );
-		return self::$NOOP_RUNNER;
+		self::$noopRunner ??= new self( [] );
+		return self::$noopRunner;
 	}
 
 	/**

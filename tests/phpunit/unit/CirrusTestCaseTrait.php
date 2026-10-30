@@ -28,53 +28,53 @@ use Wikimedia\UUID\GlobalIdGenerator;
 
 trait CirrusTestCaseTrait {
 	/** @var string */
-	public static $FIXTURE_DIR = __DIR__ . '/../fixtures/';
+	public const FIXTURE_DIR = __DIR__ . '/../fixtures/';
 	/** @var string */
-	public static $CIRRUS_REBUILD_FIXTURES = 'CIRRUS_REBUILD_FIXTURES';
+	public const CIRRUS_REBUILD_FIXTURES = 'CIRRUS_REBUILD_FIXTURES';
 
 	/**
 	 * @var int|null (lazy loaded)
 	 */
-	private static $SEED;
+	private static $seed;
 
 	/**
 	 * @var int
 	 */
-	private static $MAX_TESTED_FIXTURES_PER_TEST;
+	private static $maxTestedFixturesPerTest;
 
 	/**
 	 * @return bool
 	 */
 	public static function canRebuildFixture() {
-		return getenv( self::$CIRRUS_REBUILD_FIXTURES ) === 'yes';
+		return getenv( self::CIRRUS_REBUILD_FIXTURES ) === 'yes';
 	}
 
 	/**
 	 * @return int
 	 */
 	public static function getSeed() {
-		if ( self::$SEED === null ) {
+		if ( self::$seed === null ) {
 			if ( is_numeric( getenv( 'CIRRUS_SEARCH_UNIT_TESTS_SEED' ) ) ) {
-				self::$SEED = intval( getenv( 'CIRRUS_SEARCH_UNIT_TESTS_SEED' ) );
+				self::$seed = intval( getenv( 'CIRRUS_SEARCH_UNIT_TESTS_SEED' ) );
 			} else {
-				self::$SEED = time();
+				self::$seed = time();
 			}
 		}
-		return self::$SEED;
+		return self::$seed;
 	}
 
 	/**
 	 * @return int
 	 */
 	public static function getMaxTestedFixturesPerTest() {
-		if ( self::$MAX_TESTED_FIXTURES_PER_TEST === null ) {
+		if ( self::$maxTestedFixturesPerTest === null ) {
 			if ( is_numeric( getenv( 'CIRRUS_SEARCH_UNIT_TESTS_MAX_FIXTURES_PER_TEST' ) ) ) {
-				self::$MAX_TESTED_FIXTURES_PER_TEST = intval( getenv( 'CIRRUS_SEARCH_UNIT_TESTS_MAX_FIXTURES_PER_TEST' ) );
+				self::$maxTestedFixturesPerTest = intval( getenv( 'CIRRUS_SEARCH_UNIT_TESTS_MAX_FIXTURES_PER_TEST' ) );
 			} else {
-				self::$MAX_TESTED_FIXTURES_PER_TEST = 200;
+				self::$maxTestedFixturesPerTest = 200;
 			}
 		}
-		return self::$MAX_TESTED_FIXTURES_PER_TEST;
+		return self::$maxTestedFixturesPerTest;
 	}
 
 	/**
@@ -82,9 +82,9 @@ trait CirrusTestCaseTrait {
 	 * @return string[]
 	 */
 	public static function findFixtures( $path ) {
-		$prefixLen = strlen( self::$FIXTURE_DIR );
+		$prefixLen = strlen( self::FIXTURE_DIR );
 		$results = [];
-		foreach ( glob( self::$FIXTURE_DIR . $path ) as $file ) {
+		foreach ( glob( self::FIXTURE_DIR . $path ) as $file ) {
 			$results[] = substr( $file, $prefixLen );
 		}
 		return $results;
@@ -96,7 +96,7 @@ trait CirrusTestCaseTrait {
 	 */
 	public static function saveFixture( $testFile, $fixture ) {
 		file_put_contents(
-			self::$FIXTURE_DIR . $testFile,
+			self::FIXTURE_DIR . $testFile,
 			self::encodeFixture( $fixture )
 		);
 	}
@@ -157,7 +157,7 @@ trait CirrusTestCaseTrait {
 		$maxRandomizedCases = self::getMaxTestedFixturesPerTest() - count( $mandatoryCases );
 		if ( $maxRandomizedCases <= 0 ) {
 			throw new \AssertionError( 'Too many mandatory cases to keep random ones, ' .
-									   'consider increasing \CirrusSearch\CirrusTestCaseTrait::$MAX_TESTED_FIXTURES_PER_TEST' );
+									   'consider increasing \CirrusSearch\CirrusTestCaseTrait::$maxTestedFixturesPerTest' );
 		}
 		$randomizedKeys = array_rand( $casesToRandomize, min( count( $casesToRandomize ), $maxRandomizedCases ) );
 		$randomizedCases = array_intersect_key( $casesToRandomize, array_flip( $randomizedKeys ) );
@@ -165,11 +165,11 @@ trait CirrusTestCaseTrait {
 	}
 
 	public static function hasFixture( string $testFile ): bool {
-		return is_file( self::$FIXTURE_DIR . $testFile );
+		return is_file( self::FIXTURE_DIR . $testFile );
 	}
 
 	public static function loadTextFixture( string $testFile, string $errorMessage = "fixture config" ): string {
-		return file_get_contents( self::$FIXTURE_DIR . $testFile );
+		return file_get_contents( self::FIXTURE_DIR . $testFile );
 	}
 
 	public static function loadFixture( string $testFile, string $errorMessage = "fixture config" ): array {
@@ -181,7 +181,7 @@ trait CirrusTestCaseTrait {
 	}
 
 	public static function fixturePath( string $testFile ): string {
-		return self::$FIXTURE_DIR . $testFile;
+		return self::FIXTURE_DIR . $testFile;
 	}
 
 	/**

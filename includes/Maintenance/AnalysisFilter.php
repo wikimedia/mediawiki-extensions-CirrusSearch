@@ -9,13 +9,13 @@ use MediaWiki\Json\FormatJson;
  */
 class AnalysisFilter {
 	/** @var string[] List of key's in mappings that reference analyzers */
-	private static $ANALYZER_FIELDS = [ 'analyzer', 'search_analyzer', 'search_quote_analyzer' ];
+	private const ANALYZER_FIELDS = [ 'analyzer', 'search_analyzer', 'search_quote_analyzer' ];
 
 	/** @var string[] List of key's in mappings that reference analyzers */
-	private static $NORMALIZER_FIELDS = [ 'normalizer' ];
+	private const NORMALIZER_FIELDS = [ 'normalizer' ];
 
 	/** @var string[] List of key's in mappings that must be recursively searched */
-	private static $SUBFIELD_FIELDS = [ 'fields', 'properties' ];
+	private const SUBFIELD_FIELDS = [ 'fields', 'properties' ];
 
 	/**
 	 * Recursively finds used analysis components from search mappings
@@ -32,7 +32,7 @@ class AnalysisFilter {
 					$analyzers->add( $config[$key] );
 				}
 			}
-			foreach ( self::$SUBFIELD_FIELDS as $key ) {
+			foreach ( self::SUBFIELD_FIELDS as $key ) {
 				if ( isset( $config[$key] ) ) {
 					$analyzers->union( $this->findUsedFromField( $config[$key], $fieldsToLookAt ) );
 				}
@@ -63,11 +63,11 @@ class AnalysisFilter {
 	}
 
 	public function findUsedAnalyzersInMappings( array $mappings ): Set {
-		return $this->findUsedAnalysisComponentsInMappings( $mappings, self::$ANALYZER_FIELDS );
+		return $this->findUsedAnalysisComponentsInMappings( $mappings, self::ANALYZER_FIELDS );
 	}
 
 	public function findUsedNormalizersInMappings( array $mappings ): Set {
-		return $this->findUsedAnalysisComponentsInMappings( $mappings, self::$NORMALIZER_FIELDS );
+		return $this->findUsedAnalysisComponentsInMappings( $mappings, self::NORMALIZER_FIELDS );
 	}
 
 	/**
@@ -85,7 +85,7 @@ class AnalysisFilter {
 					$config[$key] = $aliases[$config[$key]];
 				}
 			}
-			foreach ( self::$SUBFIELD_FIELDS as $key ) {
+			foreach ( self::SUBFIELD_FIELDS as $key ) {
 				if ( isset( $config[$key] ) && is_array( $config[$key] ) ) {
 					$config[$key] = $this->pushAnalysisComponentAliasesIntoField(
 						$config[$key], $aliases, $fieldsToLookAt
@@ -102,7 +102,7 @@ class AnalysisFilter {
 	 * @return array Updated index mapping configuration
 	 */
 	public function pushAnalyzerAliasesIntoMappings( array $mappings, array $aliases ): array {
-		return $this->pushAnalysisComponentAliasesIntoMappings( $mappings, $aliases, self::$ANALYZER_FIELDS );
+		return $this->pushAnalysisComponentAliasesIntoMappings( $mappings, $aliases, self::ANALYZER_FIELDS );
 	}
 
 	/**
@@ -111,7 +111,7 @@ class AnalysisFilter {
 	 * @return array Updated index mapping configuration
 	 */
 	public function pushNormalizerAliasesIntoMappings( array $mappings, array $aliases ): array {
-		return $this->pushAnalysisComponentAliasesIntoMappings( $mappings, $aliases, self::$NORMALIZER_FIELDS );
+		return $this->pushAnalysisComponentAliasesIntoMappings( $mappings, $aliases, self::NORMALIZER_FIELDS );
 	}
 
 	/**

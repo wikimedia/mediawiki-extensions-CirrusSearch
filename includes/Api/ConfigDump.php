@@ -22,7 +22,7 @@ class ConfigDump extends ApiBase {
 	use ApiTrait;
 
 	/** @var string[] */
-	public static $PUBLICLY_SHAREABLE_CONFIG_VARS = [
+	public const PUBLICLY_SHAREABLE_CONFIG_VARS = [
 		CirrusConfigNames::DisableUpdate,
 		CirrusConfigNames::ConnectionAttempts,
 		CirrusConfigNames::SlowSearch,
@@ -151,7 +151,7 @@ class ConfigDump extends ApiBase {
 
 	protected function addGlobals( ApiResult $result ): void {
 		$config = $this->getConfig();
-		foreach ( self::$PUBLICLY_SHAREABLE_CONFIG_VARS as $key ) {
+		foreach ( self::PUBLICLY_SHAREABLE_CONFIG_VARS as $key ) {
 			if ( $config->has( $key ) ) {
 				$result->addValue( null, $key, $config->get( $key ) );
 			}
@@ -211,7 +211,7 @@ class ConfigDump extends ApiBase {
 	 * Profile names and types
 	 * @var string[]
 	 */
-	private static $PROFILES = [
+	private const PROFILES = [
 		CirrusConfigNames::PhraseSuggestProfiles => SearchProfileService::PHRASE_SUGGESTER,
 		CirrusConfigNames::CrossProjectBlockScorerProfiles => SearchProfileService::CROSS_PROJECT_BLOCK_SCORER,
 		CirrusConfigNames::SimilarityProfiles => SearchProfileService::SIMILARITY,
@@ -227,7 +227,7 @@ class ConfigDump extends ApiBase {
 	private function addProfiles( ApiResult $result ) {
 		$config = new SearchConfig();
 		$profileService = $config->getProfileService();
-		foreach ( self::$PROFILES as $var => $profileType ) {
+		foreach ( self::PROFILES as $var => $profileType ) {
 			$data = $profileService->listExposedProfiles( $profileType );
 			$result->addValue( null, $var, $data, ApiResult::OVERRIDE );
 		}

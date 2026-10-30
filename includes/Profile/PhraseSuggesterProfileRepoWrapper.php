@@ -20,7 +20,7 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 	/**
 	 * @var string[]
 	 */
-	private static $ALLOWED_MODE = [ 'missing', 'popular', 'always' ];
+	private const ALLOWED_MODE = [ 'missing', 'popular', 'always' ];
 
 	/**
 	 * @var SearchProfileRepository
@@ -135,7 +135,7 @@ class PhraseSuggesterProfileRepoWrapper implements SearchProfileRepository {
 					}
 					break;
 				case 'suggest_mode':
-					if ( in_array( $v, self::$ALLOWED_MODE ) ) {
+					if ( in_array( $v, self::ALLOWED_MODE ) ) {
 						$settings['mode'] = $v;
 					}
 					break;

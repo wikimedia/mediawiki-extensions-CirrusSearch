@@ -23,7 +23,7 @@ class DateRangeFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 	/**
 	 * @var array Mapping from syntax prefix to range query param key
 	 */
-	private static $PREFIXES = [
+	private const PREFIXES = [
 		// two char must come before one char variants
 		'<=' => 'lte',
 		'<' => 'lt',
@@ -34,7 +34,7 @@ class DateRangeFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 	/**
 	 * @var array[] Configuration of supported date formats
 	 */
-	private static $DATE_FORMAT = [
+	private const DATE_FORMAT = [
 		[
 			// php format
 			'php' => 'Y',
@@ -129,7 +129,7 @@ class DateRangeFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 
 	private function parseDate( string $value ): ?array {
 		$tz = new DateTimeZone( $this->tz );
-		foreach ( self::$DATE_FORMAT as $settings ) {
+		foreach ( self::DATE_FORMAT as $settings ) {
 			// Always parse a full date, padding out the fields the format leaves
 			// off, so that php never fills them in from the current date. Left to
 			// itself it takes the day of month from today, and on the 30th 2025-02
@@ -153,7 +153,7 @@ class DateRangeFeature extends SimpleKeywordFeature implements FilterQueryFeatur
 	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
 		// Parse out the prefix, specifying direction of the condition
 		$cond = 'eq';
-		foreach ( self::$PREFIXES as $prefix => $condition ) {
+		foreach ( self::PREFIXES as $prefix => $condition ) {
 			if ( str_starts_with( $value, $prefix ) ) {
 				$cond = $condition;
 				$value = substr( $value, strlen( $prefix ) );

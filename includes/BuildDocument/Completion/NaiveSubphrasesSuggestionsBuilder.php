@@ -25,9 +25,9 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 	public const STARTS_WITH_ANY_WORDS_TYPE = 'anywords';
 
 	/**
-	 * @var string[] list of regex char ranges indexed by type
+	 * list of regex char ranges indexed by type
 	 */
-	private static $RANGES_BY_TYPE = [
+	private const RANGES_BY_TYPE = [
 		self::SUBPAGE_TYPE => '\/',
 		self::STARTS_WITH_ANY_WORDS_TYPE => '\/\s',
 	];
@@ -53,11 +53,11 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 
 	public static function create( array $config ): self {
 		$limit = $config['limit'] ?? self::MAX_SUBPHRASES;
-		if ( !isset( self::$RANGES_BY_TYPE[$config['type']] ) ) {
+		if ( !isset( self::RANGES_BY_TYPE[$config['type']] ) ) {
 			throw new UnexpectedValueException( "Unsupported NaiveSubphrasesSuggestionsBuilder type " .
 				$config['type'] );
 		}
-		$cr = self::$RANGES_BY_TYPE[$config['type']];
+		$cr = self::RANGES_BY_TYPE[$config['type']];
 		return new self( $cr, $limit );
 	}
 

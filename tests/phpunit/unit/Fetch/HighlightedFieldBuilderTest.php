@@ -43,14 +43,14 @@ class HighlightedFieldBuilderTest extends CirrusTestCase {
 		foreach ( $factoryGroups as $factoryGroup => $fields ) {
 			foreach ( $fields as $field ) {
 				yield "$factoryGroup-$field-base" => [
-					self::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-base.expected",
+					self::FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-base.expected",
 					$baseFactories,
 					$factoryGroup,
 					$field,
 					$config
 				];
 				yield "$factoryGroup-$field-exp" => [
-					self::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-exp.expected",
+					self::FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-exp.expected",
 					$expFactories,
 					$factoryGroup,
 					$field,

@@ -35,7 +35,7 @@ class Token {
 	/**
 	 * @var string[] token type labels
 	 */
-	private static $TYPE_LABEL = [
+	private const TYPE_LABEL = [
 		self::EOF => 'EOF',
 		self::BOOL_AND => 'AND',
 		self::BOOL_OR => 'OR',
@@ -201,7 +201,7 @@ class Token {
 			return [ self::getTypeLabel( $types ) ];
 		}
 		return array_map( static function ( $type ) {
-			return self::$TYPE_LABEL[$type];
+			return self::TYPE_LABEL[$type];
 		}, $types );
 	}
 
@@ -210,6 +210,6 @@ class Token {
 	 * @return string type labels
 	 */
 	public static function getTypeLabel( $type ) {
-		return self::$TYPE_LABEL[$type];
+		return self::TYPE_LABEL[$type];
 	}
 }

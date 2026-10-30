@@ -61,13 +61,13 @@ class FetchPhaseConfigBuilderTest extends CirrusTestCase {
 		foreach ( $factoryGroups as $factoryGroup => $fields ) {
 			foreach ( $fields as $field ) {
 				yield "$factoryGroup-$field-base" => [
-					self::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-base.expected",
+					self::FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-base.expected",
 					$factoryGroup,
 					$field,
 					$configBase
 				];
 				yield "$factoryGroup-$field-exp" => [
-					self::$FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-exp.expected",
+					self::FIXTURE_DIR . "/highlightFieldBuilder/$factoryGroup-$field-exp.expected",
 					$factoryGroup,
 					$field,
 					$configExp

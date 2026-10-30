@@ -40,7 +40,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 	protected function setUp(): void {
 		parent::setUp();
 
-		$schemaPath = self::$FIXTURE_DIR . 'requestLogging/mediawiki_cirrussearch_request.schema.yaml';
+		$schemaPath = self::FIXTURE_DIR . 'requestLogging/mediawiki_cirrussearch_request.schema.yaml';
 		$this->schema = Yaml::parseFile( $schemaPath );
 		// Clear all hooks; some from the GrowthExperiments extension can cause DB queries.
 		$this->clearHooks();

@@ -18,7 +18,7 @@ class SemanticSearchResultBuilderTest extends CirrusIntegrationTestCase {
 	private const ANCHOR_FIELD = 'section';
 
 	/** @var array */
-	private static $MINIMAL_HIT = [
+	private const MINIMAL_HIT = [
 		'_id' => 'doc_id_1',
 		'_source' => [
 			'namespace' => NS_MAIN,
@@ -48,23 +48,23 @@ class SemanticSearchResultBuilderTest extends CirrusIntegrationTestCase {
 	public static function provideTest(): array {
 		$cases = [
 			'word_count' => [
-				array_merge_recursive( self::$MINIMAL_HIT, [ 'fields' => [ 'text.word_count' => [ 432 ] ] ] ),
+				array_merge_recursive( self::MINIMAL_HIT, [ 'fields' => [ 'text.word_count' => [ 432 ] ] ] ),
 				[ 'wordCount' => 432 ],
 			],
 			'byte_size' => [
-				array_merge_recursive( self::$MINIMAL_HIT, [ '_source' => [ 'text_bytes' => 298000 ] ] ),
+				array_merge_recursive( self::MINIMAL_HIT, [ '_source' => [ 'text_bytes' => 298000 ] ] ),
 				[ 'byteSize' => 298000 ],
 			],
 			'timestamp' => [
-				self::$MINIMAL_HIT,
+				self::MINIMAL_HIT,
 				[ 'timestamp' => '20240101000000' ],
 			],
 			'score' => [
-				array_merge_recursive( self::$MINIMAL_HIT, [ '_score' => 3.424 ] ),
+				array_merge_recursive( self::MINIMAL_HIT, [ '_score' => 3.424 ] ),
 				[ 'score' => 3.424 ],
 			],
 			'text_snippet_from_inner_hits' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'inner_hits' => [
 						'passage_chunk_embedding' => [
 							'hits' => [
@@ -78,7 +78,7 @@ class SemanticSearchResultBuilderTest extends CirrusIntegrationTestCase {
 				[ 'textSnippet' => 'A relevant passage about trebuchets.' ],
 			],
 			'section_title_from_inner_hits' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'inner_hits' => [
 						'passage_chunk_embedding' => [
 							'hits' => [
@@ -95,7 +95,7 @@ class SemanticSearchResultBuilderTest extends CirrusIntegrationTestCase {
 				],
 			],
 			'first_inner_hit_takes_precedence' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'inner_hits' => [
 						'passage_chunk_embedding' => [
 							'hits' => [
@@ -110,7 +110,7 @@ class SemanticSearchResultBuilderTest extends CirrusIntegrationTestCase {
 				[ 'textSnippet' => 'First passage.' ],
 			],
 			'extra_fields' => [
-				array_merge_recursive( self::$MINIMAL_HIT, [
+				array_merge_recursive( self::MINIMAL_HIT, [
 					'_source' => [ 'extra_field1' => [ 'foo' ], 'extra_field2' => 2 ]
 				] ),
 				[ 'extensionData' => [ 'extra_fields' => [ 'extra_field1' => [ 'foo' ], 'extra_field2' => 2 ] ] ],

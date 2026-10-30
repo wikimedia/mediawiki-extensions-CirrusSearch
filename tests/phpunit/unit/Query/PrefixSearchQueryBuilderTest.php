@@ -13,7 +13,7 @@ use CirrusSearch\SecondTry\SecondTryRunner;
  */
 class PrefixSearchQueryBuilderTest extends CirrusTestCase {
 	/** @var array */
-	private static $WEIGHTS = [
+	private const WEIGHTS = [
 		'title' => 2,
 		'redirect' => 0.2,
 		'title_asciifolding' => 1,
@@ -31,7 +31,7 @@ class PrefixSearchQueryBuilderTest extends CirrusTestCase {
 		$qb = new PrefixSearchQueryBuilder( $this->secondTryRunner );
 		$config = new HashSearchConfig( [
 			CirrusConfigNames::PrefixSearchStartsWithAnyWord => false,
-			CirrusConfigNames::PrefixWeights => self::$WEIGHTS,
+			CirrusConfigNames::PrefixWeights => self::WEIGHTS,
 		] );
 		$context = $this->getSearchContext( $config );
 		$this->assertFalse( $context->isDirty() );

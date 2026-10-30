@@ -12,7 +12,7 @@ class MSearch extends \Elastica\Multi\Search {
 	/**
 	 * @var string[] This is this only array that actually needed a change
 	 */
-	private static $HEADER_OPTIONS = [
+	private const HEADER_OPTIONS = [
 		'index',
 		'types',
 		'search_type',
@@ -32,7 +32,7 @@ class MSearch extends \Elastica\Multi\Search {
 
 		// Keep other query options as part of the search body
 		$queryOptions =
-			\array_diff_key( $search->getOptions(), \array_flip( self::$HEADER_OPTIONS ) );
+			\array_diff_key( $search->getOptions(), \array_flip( self::HEADER_OPTIONS ) );
 
 		$data = JSON::stringify( $header === [] ? new \stdClass() : $header ) . "\n";
 		$data .= JSON::stringify( $query->toArray() + $queryOptions ) . "\n";
@@ -52,6 +52,6 @@ class MSearch extends \Elastica\Multi\Search {
 		}
 
 		// Filter options accepted in the "header"
-		return \array_intersect_key( $header, \array_flip( self::$HEADER_OPTIONS ) );
+		return \array_intersect_key( $header, \array_flip( self::HEADER_OPTIONS ) );
 	}
 }

@@ -17,7 +17,7 @@ use CirrusSearch\Searcher;
  */
 class ResultTest extends CirrusIntegrationTestCase {
 	/** @var array */
-	private static $EXAMPLE_HIT = [
+	private const EXAMPLE_HIT = [
 		'_index' => 'eswiki_content_123456',
 		'_source' => [
 			'namespace' => NS_MAIN,
@@ -101,7 +101,7 @@ class ResultTest extends CirrusIntegrationTestCase {
 		$elasticInput = $input[0] . Searcher::HIGHLIGHT_PRE_MARKER . $input[1] . Searcher::HIGHLIGHT_POST_MARKER . $input[2];
 		$htmlOutput = $output[0] . Searcher::HIGHLIGHT_PRE . $output[1] . Searcher::HIGHLIGHT_POST . $output[2];
 
-		$data = self::$EXAMPLE_HIT;
+		$data = self::EXAMPLE_HIT;
 		$data['highlight']['heading'] = [ $elasticInput ];
 
 		if ( $useFTResultBuilder ) {
@@ -115,7 +115,7 @@ class ResultTest extends CirrusIntegrationTestCase {
 	}
 
 	public function testInterwikiResults() {
-		$data = self::$EXAMPLE_HIT;
+		$data = self::EXAMPLE_HIT;
 		$result = $this->buildResult( $data );
 
 		$this->assertTrue( $result->getTitle()->isExternal(), 'isExternal' );

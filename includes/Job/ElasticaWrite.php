@@ -26,7 +26,7 @@ class ElasticaWrite extends CirrusGenericJob {
 	 * @var array Map from method name to list of classes to
 	 *  handle serialization for each argument.
 	 */
-	private static $SERDE = [
+	private const SERDE = [
 		'sendData' => [ null, ElasticaDocumentsJsonSerde::class ],
 	];
 
@@ -60,8 +60,8 @@ class ElasticaWrite extends CirrusGenericJob {
 	}
 
 	private static function serde( string $method, array $arguments, bool $serialize = true ): array {
-		if ( isset( self::$SERDE[$method] ) ) {
-			foreach ( self::$SERDE[$method] as $i => $serde ) {
+		if ( isset( self::SERDE[$method] ) ) {
+			foreach ( self::SERDE[$method] as $i => $serde ) {
 				if ( $serde !== null && array_key_exists( $i, $arguments ) ) {
 					$impl = new $serde();
 					if ( $serialize ) {

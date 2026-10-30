@@ -153,7 +153,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 	 * Add config vars when you don't want to explicit export it and are sure
 	 * that it won't be needed to build query on a target wiki.
 	 */
-	private static $CONFIG_VARS_FALSE_POSITIVES = [
+	private const CONFIG_VARS_FALSE_POSITIVES = [
 		CirrusConfigNames::FetchConfigFromApi, // Should not be needed to build a crosswiki search
 		MainConfigNames::DBname,
 		'SiteMatrixSites',
@@ -171,7 +171,7 @@ class SearcherTest extends CirrusIntegrationTestCase {
 			$notInApi = [];
 			$notInSearchConfig = [];
 			foreach ( SearchConfigUsageDecorator::getUsedConfigKeys() as $k ) {
-				if ( in_array( $k, self::$CONFIG_VARS_FALSE_POSITIVES ) ) {
+				if ( in_array( $k, self::CONFIG_VARS_FALSE_POSITIVES ) ) {
 					continue;
 				}
 				if ( !in_array( $k, \CirrusSearch\Api\ConfigDump::$PUBLICLY_SHAREABLE_CONFIG_VARS ) ) {

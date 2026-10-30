@@ -19,7 +19,7 @@ use MediaWiki\Title\Title;
  */
 class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 	/** @var array */
-	private static $MINIMAL_HIT = [
+	private const MINIMAL_HIT = [
 		'_index' => 'some_index',
 		'_source' => [
 			'namespace' => NS_TEMPLATE,
@@ -64,31 +64,31 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 	public static function provideTest() {
 		$cases = [
 			'word_count' => [
-				array_merge_recursive( [ 'fields' => [ 'text.word_count' => [ 432 ] ] ], self::$MINIMAL_HIT ),
+				array_merge_recursive( [ 'fields' => [ 'text.word_count' => [ 432 ] ] ], self::MINIMAL_HIT ),
 				[ 'wordCount' => 432 ]
 			],
 			'byte_size' => [
-				array_merge_recursive( [ '_source' => [ 'text_bytes' => 298000 ] ], self::$MINIMAL_HIT ),
+				array_merge_recursive( [ '_source' => [ 'text_bytes' => 298000 ] ], self::MINIMAL_HIT ),
 				[ 'byteSize' => 298000 ]
 			],
 			'timestamp' => [
-				array_merge_recursive( [ '_source' => [ 'timestamp' => '2019-08-25T14:28:11Z' ] ], self::$MINIMAL_HIT ),
+				array_merge_recursive( [ '_source' => [ 'timestamp' => '2019-08-25T14:28:11Z' ] ], self::MINIMAL_HIT ),
 				[ 'timestamp' => '20190825142811' ]
 			],
 			'extra_fields' => [
-				array_merge_recursive( [ '_source' => [ 'extra_field1' => [ 'foo' ], 'extra_field2' => 2 ] ], self::$MINIMAL_HIT ),
+				array_merge_recursive( [ '_source' => [ 'extra_field1' => [ 'foo' ], 'extra_field2' => 2 ] ], self::MINIMAL_HIT ),
 				[ 'extensionData' => [ 'extra_fields' => [ 'extra_field1' => [ 'foo' ], 'extra_field2' => 2 ] ] ]
 			],
 			'score' => [
-				array_merge_recursive( [ '_score' => 3.424 ], self::$MINIMAL_HIT ),
+				array_merge_recursive( [ '_score' => 3.424 ], self::MINIMAL_HIT ),
 				[ 'score' => 3.424 ]
 			],
 			'explanation' => [
-				array_merge_recursive( [ '_explanation' => [ 'some concise explanation' ] ], self::$MINIMAL_HIT ),
+				array_merge_recursive( [ '_explanation' => [ 'some concise explanation' ] ], self::MINIMAL_HIT ),
 				[ 'explanation'  => [ 'some concise explanation' ] ]
 			],
 			'interwikiNamespaceText' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [ '_source' => [ 'namespace_text' => 'Šablona', 'wiki' => 'cswiki' ] ] ),
+				array_replace_recursive( self::MINIMAL_HIT, [ '_source' => [ 'namespace_text' => 'Šablona', 'wiki' => 'cswiki' ] ] ),
 				[ 'interwikiNamespaceText' => 'Šablona' ]
 			],
 			'titleSnippet' => [
@@ -96,7 +96,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 						'title' => [
 							Searcher::HIGHLIGHT_PRE_MARKER . 'title' . Searcher::HIGHLIGHT_POST_MARKER . ' <match'
 						]
-					] ], self::$MINIMAL_HIT ),
+					] ], self::MINIMAL_HIT ),
 				[
 					'titleSnippet' => 'Template:' . Searcher::HIGHLIGHT_PRE . 'title' . Searcher::HIGHLIGHT_POST . ' &lt;match',
 					'titleSnippetField' => 'title'
@@ -110,14 +110,14 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 					'title.plain' => [
 						Searcher::HIGHLIGHT_PRE_MARKER . 'regex match' . Searcher::HIGHLIGHT_POST_MARKER . ' <match'
 					],
-				] ], self::$MINIMAL_HIT ),
+				] ], self::MINIMAL_HIT ),
 				[
 					'titleSnippet' => 'Template:' . Searcher::HIGHLIGHT_PRE . 'regex match' . Searcher::HIGHLIGHT_POST . ' &lt;match',
 					'titleSnippetField' => 'title.plain'
 				],
 			],
 			'redirectSnippet' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'highlight' => [
 						'redirect.title' => [
 							Searcher::HIGHLIGHT_PRE_MARKER . 'redirect' . Searcher::HIGHLIGHT_POST_MARKER . ' <match'
@@ -157,7 +157,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 							[ 'title' => 'regex redir <match', 'namespace' => 0 ],
 						],
 					],
-				], self::$MINIMAL_HIT ),
+				], self::MINIMAL_HIT ),
 				[
 					'redirectSnippet' => Searcher::HIGHLIGHT_PRE . 'regex redir' . Searcher::HIGHLIGHT_POST . ' &lt;match',
 					'redirectSnippetField' => 'redirect.title.plain'
@@ -175,7 +175,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 							[ 'title' => 'redirect', 'namespace' => 0 ],
 						]
 					]
-				], self::$MINIMAL_HIT ),
+				], self::MINIMAL_HIT ),
 				[
 					'redirectSnippet' => null,
 					'redirectSnippetField' => ''
@@ -195,14 +195,14 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 							[ 'title' => 'redirect', 'namespace' => 0 ],
 						]
 					]
-				], self::$MINIMAL_HIT ),
+				], self::MINIMAL_HIT ),
 				[
 					'redirectTitle' => Title::makeTitle( NS_MAIN, 'redirect <match' ),
 					'redirectSnippetField' => 'redirect.title'
 				]
 			],
 			'redirectTitle (interwiki support when namespace matches)' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'highlight' => [
 						'redirect.title' => [
 							Searcher::HIGHLIGHT_PRE_MARKER . 'redirect' . Searcher::HIGHLIGHT_POST_MARKER . ' <match'
@@ -224,7 +224,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 				]
 			],
 			'redirectTitle (interwiki support when namespace does not match)' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'highlight' => [
 						'redirect.title' => [
 							Searcher::HIGHLIGHT_PRE_MARKER . 'redirect' . Searcher::HIGHLIGHT_POST_MARKER . ' <match'
@@ -246,7 +246,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 				]
 			],
 			'source_text matches preferred' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'highlight' => [
 						'source_text.plain' => [
 							Searcher::HIGHLIGHT_PRE_MARKER . 'source_text.plain matches' . Searcher::HIGHLIGHT_POST_MARKER . ' <match'
@@ -269,7 +269,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 				]
 			],
 			'text matches preferred after source_text' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'highlight' => [
 						'source_text.plain' => [
 							'source_text.plain no matches <match'
@@ -292,7 +292,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 				]
 			],
 			'auxiliary_text matches preferred after text' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'highlight' => [
 						'source_text.plain' => [
 							'source_text.plain no matches <match'
@@ -315,7 +315,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 				]
 			],
 			'file_text matches preferred after auxiliary_text' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'highlight' => [
 						'source_text.plain' => [
 							'source_text.plain no matches <match'
@@ -338,7 +338,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 				]
 			],
 			'text preferred when nothing matches' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'highlight' => [
 						'source_text.plain' => [
 							'source_text.plain no matches <match'
@@ -361,7 +361,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 				]
 			],
 			'heading snippet and title' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'highlight' => [
 						'heading' => [
 							'The ' .
@@ -378,7 +378,7 @@ class FullTextCirrusSearchResultBuilderTest extends CirrusIntegrationTestCase {
 				]
 			],
 			'categorySnippet' => [
-				array_replace_recursive( self::$MINIMAL_HIT, [
+				array_replace_recursive( self::MINIMAL_HIT, [
 					'highlight' => [
 						'category' => [
 							'The ' .

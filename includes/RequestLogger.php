@@ -347,7 +347,20 @@ class RequestLogger {
 		}
 
 		// If in webrequests, log these request headers in http.headers.
-		$httpRequestHeadersToLog = [ 'accept-language', 'referer', 'user-agent', 'x-forwarded-for' ];
+		$httpRequestHeadersToLog =
+			[
+				'accept-language',
+				'referer',
+				'user-agent',
+				'x-forwarded-for',
+				'x-client-ip',
+				'x-is-browser',
+				'x-ja3n',
+				'x-ja4h',
+				'x-provenance',
+				'x-requestctl',
+				'x-trusted-request'
+			];
 		foreach ( $httpRequestHeadersToLog as $header ) {
 			if ( $webRequest->getHeader( $header ) ) {
 				$requestEvent['http']['request_headers'][$header] =

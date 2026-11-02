@@ -694,7 +694,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				CirrusIntegrationTestCase::findFixtures( "languageAnalysis/$lang.config" ),
 				"ICU Folding language $lang missing from fixtures" );
 		}
-		foreach ( $reflACB->getDefaultProperties()[ 'languagesWithIcuTokenization' ] as $lang => $val ) {
+		foreach ( $reflACB->getConstant( 'LANGUAGES_WITH_ICU_TOKENIZATION' ) as $lang => $val ) {
 			$this->assertCount( 1,
 				CirrusIntegrationTestCase::findFixtures( "languageAnalysis/$lang.config" ),
 				"ICU Tokenizing language $lang missing from fixtures" );

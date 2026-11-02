@@ -25,11 +25,8 @@ class RescoreBuilder {
 
 	/**
 	 * List of allowed rescore params
-	 * @todo refactor to const with php 5.6
-	 *
-	 * @var string[]
 	 */
-	private static $rescoreMainParams = [
+	private const RESCORE_MAIN_PARAMS = [
 		'query_weight',
 		'rescore_query_weight',
 		'score_mode'
@@ -160,13 +157,13 @@ class RescoreBuilder {
 
 	/**
 	 * Assemble query params in the rescore block
-	 * Only self::$rescoreMainParams are allowed.
+	 * Only self::RESCORE_MAIN_PARAMS are allowed.
 	 * @param array $settings
 	 * @return array
 	 */
 	private function prepareQueryParams( array $settings ) {
 		$def = [];
-		foreach ( self::$rescoreMainParams as $param ) {
+		foreach ( self::RESCORE_MAIN_PARAMS as $param ) {
 			if ( !isset( $settings[$param] ) ) {
 				continue;
 			}

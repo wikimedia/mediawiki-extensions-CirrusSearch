@@ -176,9 +176,9 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private array $searchExt = [];
 
 	/**
-	 * @var int[] weights of different syntaxes
+	 * weights of different syntaxes
 	 */
-	private static $syntaxWeights = [
+	private const SYNTAX_WEIGHTS = [
 		// Deep category searches can have thousands of terms
 		'deepcategory' => 20,
 		'full_text' => 10,
@@ -481,7 +481,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 */
 	public function addSyntaxUsed( $feature, $weight = null ) {
 		$this->isDirty = true;
-		$this->syntaxUsed[$feature] = $weight ?? self::$syntaxWeights[$feature] ?? 1;
+		$this->syntaxUsed[$feature] = $weight ?? self::SYNTAX_WEIGHTS[$feature] ?? 1;
 	}
 
 	/**

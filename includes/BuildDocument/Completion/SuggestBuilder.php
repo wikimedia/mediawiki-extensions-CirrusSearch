@@ -77,10 +77,8 @@ class SuggestBuilder {
 	/**
 	 * NOTE: Currently a fixed value because the completion suggester does not support
 	 * multi namespace suggestion.
-	 *
-	 * @var int
 	 */
-	private $targetNamespace = NS_MAIN;
+	private const TARGET_NAMESPACE = NS_MAIN;
 
 	/**
 	 * @param SuggestScoringMethod $scoringMethod the scoring function to use
@@ -135,7 +133,7 @@ class SuggestBuilder {
 				// Bad doc, nothing to do here.
 				continue;
 			}
-			if ( $inputDoc['namespace'] == $this->targetNamespace ) {
+			if ( $inputDoc['namespace'] == self::TARGET_NAMESPACE ) {
 				if ( !isset( $inputDoc['title'] ) ) {
 					// Bad doc, nothing to do here.
 					continue;
@@ -151,7 +149,7 @@ class SuggestBuilder {
 					if ( !isset( $redir['namespace'] ) || !isset( $redir['title'] ) ) {
 						continue;
 					}
-					if ( $redir['namespace'] != $this->targetNamespace ) {
+					if ( $redir['namespace'] != self::TARGET_NAMESPACE ) {
 						continue;
 					}
 					$score = $this->scoringMethod->score( $inputDoc );
@@ -332,7 +330,7 @@ class SuggestBuilder {
 
 		$suggestDoc = new \Elastica\Document( self::encodeDocId( $suggestionType, $docId ), $doc );
 		foreach ( $this->extraBuilders as $builder ) {
-			$builder->build( $inputDoc, $suggestionType, $score, $suggestDoc, $this->targetNamespace );
+			$builder->build( $inputDoc, $suggestionType, $score, $suggestDoc, self::TARGET_NAMESPACE );
 		}
 		if ( $scoreExplanation !== null ) {
 			$suggestDoc->set( 'score_explanation', $scoreExplanation );
@@ -381,7 +379,7 @@ class SuggestBuilder {
 			foreach ( $doc['redirect'] as $redir ) {
 				// Avoid suggesting/displaying non existent titles
 				// in the target namespace
-				if ( $redir['namespace'] == $this->targetNamespace ) {
+				if ( $redir['namespace'] == self::TARGET_NAMESPACE ) {
 					$redirects[] = $redir['title'];
 				}
 			}
@@ -498,7 +496,7 @@ class SuggestBuilder {
 	 * @return int the target namespace
 	 */
 	public function getTargetNamespace() {
-		return $this->targetNamespace;
+		return self::TARGET_NAMESPACE;
 	}
 
 	/**

@@ -305,8 +305,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 		return $this->customize( $this->defaults( $language ), $language );
 	}
 
-	/** @var string[] */
-	private static $stopwords = [
+	private const STOPWORDS = [
 		'ar' => '_arabic_',
 		'hy' => '_armenian_',
 		'eu' => '_basque_',
@@ -350,7 +349,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	 * @return string
 	 */
 	private function getDefaultStopSet( $lang ) {
-		return self::$stopwords[$lang] ?? '_none_';
+		return self::STOPWORDS[$lang] ?? '_none_';
 	}
 
 	/**
@@ -358,6 +357,6 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	 * @return bool
 	 */
 	public static function hasStopWords( $lang ) {
-		return isset( self::$stopwords[$lang] );
+		return isset( self::STOPWORDS[$lang] );
 	}
 }

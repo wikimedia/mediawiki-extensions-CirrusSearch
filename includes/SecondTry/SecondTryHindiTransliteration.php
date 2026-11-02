@@ -23,8 +23,7 @@ class SecondTryHindiTransliteration implements SecondTrySearch {
 	/** @var array<string,string> */
 	private array $latinToHindiWordMap;
 
-	/** @var array<string,string> */
-	private array $latinToHindiPhase1Map = [
+	private const LATIN_TO_HINDI_PHASE1_MAP = [
 		// Phase 1: simple subs
 		'eigh' => 'ei', 'sion' => 'shan', 'tion' => 'shan', 'ture' => 'char',
 		'dge' => 'j', 'jiv' => 'jiiv', 'jiw' => 'jiiv', 'sce' => 'se', 'sci' => 'si',
@@ -32,8 +31,7 @@ class SecondTryHindiTransliteration implements SecondTrySearch {
 		'aaon' => 'ओं',
 	];
 
-	/** @var array<string,string> */
-	private array $latinToHindiPhase2RegexMap = [
+	private const LATIN_TO_HINDI_PHASE2_REGEX_MAP = [
 		// Phase 2: regexes; some simple subs mixed in b/c order matters wrt previous
 		// simple subs or current regexes
 		'/ss/' => 's', '/nya$/' => 'न्य', '/^x([bcdfghjklmnpqrstvwxz]|$)/' => 'एक्स$1',
@@ -57,8 +55,7 @@ class SecondTryHindiTransliteration implements SecondTrySearch {
 		'/2nd$/' => '२ण्ड', '/3rd$/' => '३र्ड', '/(\d)th$/' => '$1थ',
 	];
 
-	/** @var array<string,string> */
-	private array $latinToHindiPhase3Map = [
+	private const LATIN_TO_HINDI_PHASE3_MAP = [
 		// Phase 3: simple subs
 		'cchh' => 'च्छ', 'chch' => 'च्छ', 'kshr' => 'क्षर', 'cch' => 'च्छ', 'chh' => 'छ',
 		'ksh' => 'क्ष', 'sch' => 'श्च', 'shr' => 'श्र', 'trh' => 'त्रह', 'ngh' => 'ङह',
@@ -73,16 +70,14 @@ class SecondTryHindiTransliteration implements SecondTrySearch {
 		'9' => '९',
 	];
 
-	/** @var array<string,string> */
-	private array $latinToHindiPhase4Map = [
+	private const LATIN_TO_HINDI_PHASE4_MAP = [
 		// Phase 4: more simple subs, but they all need to come after Phase 3
 		'रुप' => 'रूप', 'तक' => 'टक', 'दक' => 'डक', 'रन' => 'रण', 'षन' => 'षण',
 		'ोत' => 'ोट', 'ोद' => 'ोड', 'उथ' => 'उठ', 'गथ' => 'गठ', 'छथ' => 'छठ',
 		'ाथ' => 'ाठ', 'ीथ' => 'ीठ', 'ूथ' => 'ूठ', 'ैथ' => 'ैठ', 'ोथ' => 'ोठ', 'अो' => 'औ',
 	];
 
-	/** @var array<string,string> */
-	private array $latinToHindiPhase5RegexMap = [
+	private const LATIN_TO_HINDI_PHASE5_REGEX_MAP = [
 		// Phase 5: regexes, plus simple subs imported from Phase 4 to avoid overlaps
 		'/पर/' => 'प्र', '/कद/' => 'कड', '/णा$/' => 'ण', '/रया$/' => 'रय',
 		'/ीया$/' => 'ीय', '/तवा$/' => 'तव',
@@ -138,13 +133,13 @@ class SecondTryHindiTransliteration implements SecondTrySearch {
 					continue;
 				}
 				// do it the old-fashioned way
-				$c = strtr( $c, $this->latinToHindiPhase1Map );
-				$c = preg_replace( array_keys( $this->latinToHindiPhase2RegexMap ),
-					array_values( $this->latinToHindiPhase2RegexMap ), $c );
-				$c = strtr( $c, $this->latinToHindiPhase3Map );
-				$c = strtr( $c, $this->latinToHindiPhase4Map );
-				$c = preg_replace( array_keys( $this->latinToHindiPhase5RegexMap ),
-					array_values( $this->latinToHindiPhase5RegexMap ), $c );
+				$c = strtr( $c, self::LATIN_TO_HINDI_PHASE1_MAP );
+				$c = preg_replace( array_keys( self::LATIN_TO_HINDI_PHASE2_REGEX_MAP ),
+					array_values( self::LATIN_TO_HINDI_PHASE2_REGEX_MAP ), $c );
+				$c = strtr( $c, self::LATIN_TO_HINDI_PHASE3_MAP );
+				$c = strtr( $c, self::LATIN_TO_HINDI_PHASE4_MAP );
+				$c = preg_replace( array_keys( self::LATIN_TO_HINDI_PHASE5_REGEX_MAP ),
+					array_values( self::LATIN_TO_HINDI_PHASE5_REGEX_MAP ), $c );
 			}
 		}
 		$out = implode( '', $chunks );

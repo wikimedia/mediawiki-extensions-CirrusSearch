@@ -18,15 +18,13 @@ class FunctionScoreChain {
 	 * we keep boost and boost_mode even if they do not make sense
 	 * here since we do not allow to specify the query param.
 	 * The query will be MatchAll with a score to 1.
-	 *
-	 * @var string[]
 	 */
-	private static $functionScoreParams = [
-		'boost',
-		'boost_mode',
-		'max_boost',
-		'score_mode',
-		'min_score'
+	private const FUNCTION_SCORE_PARAMS = [
+		'boost' => true,
+		'boost_mode' => true,
+		'max_boost' => true,
+		'score_mode' => true,
+		'min_score' => true,
 	];
 
 	/**
@@ -71,7 +69,7 @@ class FunctionScoreChain {
 			->loadProfileByName( SearchProfileService::RESCORE_FUNCTION_CHAINS, $chainName );
 		$this->chain = $overrides ? $this->applyOverrides( $chain, $overrides ) : $chain;
 
-		$params = array_intersect_key( $this->chain, array_flip( self::$functionScoreParams ) );
+		$params = array_intersect_key( $this->chain, self::FUNCTION_SCORE_PARAMS );
 		foreach ( $params as $param => $value ) {
 			$this->functionScore->setParam( $param, $value );
 		}

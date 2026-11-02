@@ -20,8 +20,7 @@ class AnalyzerBuilder {
 	/** @var string */
 	private $langName;
 
-	/** @var string */
-	private $analyzerName = 'text';
+	private const ANALYZER_NAME = 'text';
 
 	/** @var bool */
 	private $icuEnabled;
@@ -459,7 +458,7 @@ class AnalyzerBuilder {
 			}
 		}
 
-		$config[ 'analyzer' ][ $this->analyzerName ] = [
+		$config[ 'analyzer' ][ self::ANALYZER_NAME ] = [
 			'type' => 'custom',
 			'tokenizer' => $this->tokenizer,
 		];
@@ -541,11 +540,11 @@ class AnalyzerBuilder {
 		}
 
 		if ( $this->charFilters ) {
-			$config[ 'analyzer' ][ $this->analyzerName ][ 'char_filter' ] = $this->charFilters;
+			$config[ 'analyzer' ][ self::ANALYZER_NAME ][ 'char_filter' ] = $this->charFilters;
 		}
 
 		if ( $this->filters ) {
-			$config[ 'analyzer' ][ $this->analyzerName ][ 'filter' ] = $this->filters;
+			$config[ 'analyzer' ][ self::ANALYZER_NAME ][ 'filter' ] = $this->filters;
 		}
 
 		if ( $this->stemmerLang && $this->useStemmer ) {

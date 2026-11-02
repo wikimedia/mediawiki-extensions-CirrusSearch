@@ -17,8 +17,7 @@ use Wikimedia\Assert\Assert;
  */
 class TermFreq extends AbstractQuery {
 
-	/** @var string[] */
-	private static $map = [
+	private const MAP = [
 		'>' => 'gt',
 		'>=' => 'gte',
 		'<' => 'lt',
@@ -34,14 +33,14 @@ class TermFreq extends AbstractQuery {
 	 */
 	public function __construct( $field, $term, $operator, $number ) {
 		Assert::parameter(
-			isset( self::$map[$operator] ),
+			isset( self::MAP[$operator] ),
 			$operator,
-			"operator must be one of " . implode( ', ', array_keys( self::$map ) )
+			"operator must be one of " . implode( ', ', array_keys( self::MAP ) )
 		);
 		if ( $field !== '' && $term !== '' ) {
 			$this->setParam( 'field', $field );
 			$this->setParam( 'term', $term );
-			$this->setParam( self::$map[ $operator ], $number );
+			$this->setParam( self::MAP[ $operator ], $number );
 		}
 	}
 

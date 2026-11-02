@@ -86,7 +86,7 @@ class AnalysisConfigBuilder {
 
 		$this->defaultLanguage = $langCode;
 		$this->plugins = $plugins;
-		foreach ( $this->searchLanguageAnalyzersFromPlugins as $pluginSpec => $extra ) {
+		foreach ( self::SEARCH_LANGUAGE_ANALYZERS_FROM_PLUGINS as $pluginSpec => $extra ) {
 			$pluginsPresent = 1;
 			$pluginList = explode( ',', $pluginSpec );
 			foreach ( $pluginList as $plugin ) {
@@ -166,10 +166,10 @@ class AnalysisConfigBuilder {
 			case 'no':
 				return false;
 			case 'default':
-				// languagesWithIcuTokenization[] gives absolute answers for specific languages.
+				// self::LANGUAGES_WITH_ICU_TOKENIZATION gives absolute answers for specific languages.
 				// If the textify plugin is available, the default is 'yes'/true because we
 				// have icu_token_repair available; if not, the default is 'no'/false
-				return $this->languagesWithIcuTokenization[$language] ?? $this->isTextifyAvailable();
+				return self::LANGUAGES_WITH_ICU_TOKENIZATION[$language] ?? $this->isTextifyAvailable();
 			default:
 				return false;
 		}
@@ -426,7 +426,7 @@ class AnalysisConfigBuilder {
 		if ( $this->config->get( CirrusConfigNames::ICUFoldingUnicodeSetFilter ) !== null ) {
 			return $this->config->get( CirrusConfigNames::ICUFoldingUnicodeSetFilter );
 		}
-		return $this->icuSetFilters[ $language ] ?? null;
+		return self::ICU_SET_FILTERS[ $language ] ?? null;
 	}
 
 	/**
@@ -885,7 +885,7 @@ class AnalysisConfigBuilder {
 		switch ( $langName ) {
 			//////////////////////////
 			// Groups of languages with similar builds (modulo config & variables set
-			// elsewhere--e.g., $languagesWithIcuFolding, $icuSetFilters and
+			// elsewhere--e.g., $languagesWithIcuFolding, self::ICU_SET_FILTERS and
 			// GlobalCustomFilter constraints)--arranged thematically.
 
 			// standard unpacked languages
@@ -1752,9 +1752,9 @@ class AnalysisConfigBuilder {
 	 * @param AnalyzerBuilder $analyzerBuilder
 	 */
 	private function enableLangNormCharMap( $language, $langName, $analyzerBuilder ) {
-		if ( isset( $this->langNormCharMap[$language] ) ) {
+		if ( isset( self::LANG_NORM_CHAR_MAP[$language] ) ) {
 			$analyzerBuilder->
-				withCharMap( $this->langNormCharMap[$language], "{$langName}_norm" )->
+				withCharMap( self::LANG_NORM_CHAR_MAP[$language], "{$langName}_norm" )->
 				withCharFilters( [ "{$langName}_norm" ] );
 		}
 	}
@@ -2149,9 +2149,9 @@ class AnalysisConfigBuilder {
 	];
 
 	/**
-	 * @var array[] indexed by language code, char filter normalization mappings
+	 * indexed by language code, char filter normalization mappings
 	 */
-	private $langNormCharMap = [
+	private const LANG_NORM_CHAR_MAP = [
 		'mr' => [ 'र्\u200D=>ऱ्' ], // T332342 + T375567
 		'ml' => [ 'ൌ=>ൗ', 'ൎ=>ർ', '഻=>്', '്഼=>്', '്്=>്', '഼=>്' ], // T332342
 		'or' => [ 'ୖେ=>ୈ', 'ାେ=>ୋ', 'ୗେ=>ୌ' ], // T332342
@@ -2160,9 +2160,9 @@ class AnalysisConfigBuilder {
 	];
 
 	/**
-	 * @var string[] indexed by language code, regex of exceptions to ICU folding
+	 * indexed by language code, regex of exceptions to ICU folding
 	 */
-	private $icuSetFilters = [
+	private const ICU_SET_FILTERS = [
 		/*
 		 * For Slovak (sk)—which has no folding configured here!—see:
 		 *   https://www.mediawiki.org/wiki/User:TJones_(WMF)/T223787
@@ -2242,14 +2242,14 @@ class AnalysisConfigBuilder {
 	];
 
 	/**
-	 * @var bool[] indexed by language code, indicates whether languages should always
+	 * indexed by language code, indicates whether languages should always
 	 * replace the standard tokenizer with the icu_tokenizer by default (true), or should
 	 * never use any version of the icu_tokenizer, even when icu_token_repair is
 	 * available (false). (Reminder to future readers of this code: languages with
 	 * non-standard tokenizers in the text field, like zh/Chinese, still use icu_tokenizer
 	 * in the plain fields & suggest fields.)
 	 */
-	private $languagesWithIcuTokenization = [
+	private const LANGUAGES_WITH_ICU_TOKENIZATION = [
 		// true => use any version of icu_tokenizer available over the standard tokenizer
 		'bo' => true,
 		'dz' => true,
@@ -2279,10 +2279,7 @@ class AnalysisConfigBuilder {
 		// 'xyz' => false, // <-- example entry for now, since there are no actual instances
 	];
 
-	/**
-	 * @var array[]
-	 */
-	private $searchLanguageAnalyzersFromPlugins = [
+	private const SEARCH_LANGUAGE_ANALYZERS_FROM_PLUGINS = [
 		/**
 		 * multiple plugin requirements can be comma separated
 		 *

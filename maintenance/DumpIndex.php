@@ -45,9 +45,9 @@ class DumpIndex extends Maintenance {
 	private $indexIdentifier;
 
 	/**
-	 * @var int number of docs per shard we export
+	 * number of docs per shard we export
 	 */
-	private $inputChunkSize = 500;
+	private const INPUT_CHUNK_SIZE = 500;
 
 	/**
 	 * @var bool
@@ -128,7 +128,7 @@ class DumpIndex extends Maintenance {
 
 		$query = new Query();
 		$query->setStoredFields( [ '_id', '_source' ] );
-		$query->setSize( $this->inputChunkSize );
+		$query->setSize( self::INPUT_CHUNK_SIZE );
 		// Elasticsearch docs (mapping-id-field.html) say that sorting by _id is restricted
 		// from use, but at least on 7.10.2 this works as one would expect. The _id comes
 		// from fielddata, this would be more efficient with a doc-values enabled field.

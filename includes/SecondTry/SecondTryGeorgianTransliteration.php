@@ -15,8 +15,7 @@ namespace CirrusSearch\SecondTry;
 class SecondTryGeorgianTransliteration implements SecondTrySearch {
 
 	/* Georgian Transliteration Tables */
-	/** @var array<string,string> */
-	private array $latToGeoMap = [
+	private const LAT_TO_GEO_MAP = [
 		// case variants of digraphs/trigraph
 		'TCH' => 'ჭ', 'Tch' => 'ჭ', 'tch' => 'ჭ',
 		'ZH' => 'ჟ', 'Zh' => 'ჟ', 'zh' => 'ჟ',
@@ -35,8 +34,7 @@ class SecondTryGeorgianTransliteration implements SecondTrySearch {
 		'x' => 'ხ', 'j' => 'ჯ', 'h' => 'ჰ'
 	];
 
-	/** @var array<string,string> */
-	private array $latToGeoLcOnlyMap = [
+	private const LAT_TO_GEO_LC_ONLY_MAP = [
 		// single letters that have no uppercase mapping
 		'a' => 'ა', 'b' => 'ბ', 'g' => 'გ', 'd' => 'დ', 'e' => 'ე', 'v' => 'ვ',
 		'i' => 'ი', 'k' => 'კ', 'l' => 'ლ', 'm' => 'მ', 'n' => 'ნ', 'o' => 'ო',
@@ -44,8 +42,7 @@ class SecondTryGeorgianTransliteration implements SecondTrySearch {
 		'h' => 'ჰ',
 	];
 
-	/** @var array<string,string> */
-	private array $cyrToGeoMap = [
+	private const CYR_TO_GEO_MAP = [
 		// delete combining  ̀  ́  ̂  ̄
 		"\u{0300}" => '', "\u{0301}" => '', "\u{0302}" => '', "\u{0304}" => '',
 		// Cyr-to-Geo and Geo-to-Cyr digraphs
@@ -58,8 +55,7 @@ class SecondTryGeorgianTransliteration implements SecondTrySearch {
 		'ґ' => 'გ',
 	];
 
-	/** @var array<string,string> */
-	private array $cyrToGeoAmbigMap = [
+	private const CYR_TO_GEO_AMBIG_MAP = [
 		// т and п are extra ambiguous, play the odds
 		// most specific
 		'იтა' => 'იტა', 'ეтრ' => 'ეტრ', 'აтი' => 'ატი', 'სтა' => 'სტა',
@@ -76,8 +72,7 @@ class SecondTryGeorgianTransliteration implements SecondTrySearch {
 		'пუ' => 'პუ', 'აп' => 'აფ', 'ოп' => 'ოფ',
 	];
 
-	/** @var array<string,string> */
-	private array $cyrToGeoAmbigRegexMap = [
+	private const CYR_TO_GEO_AMBIG_REGEX_MAP = [
 		// word boundary regexes
 		'/\\bтრ/u' => 'ტრ', '/\\bтი/u' => 'ტი', '/\\bпა/u' => 'პა', '/\\bпო/u' => 'პო',
 		'/\\bпრ/u' => 'პრ', '/\\bт/u' => 'თ', '/т\\b/u' => 'თ', '/\\bп/u' => 'ფ',
@@ -100,11 +95,11 @@ class SecondTryGeorgianTransliteration implements SecondTrySearch {
 		$changed = false;
 		if ( preg_match( '/[A-Za-z]/', $searchQuery ) ) {
 			// if Latin... convert digraphs & mixed-case single letters
-			$out = strtr( $out, $this->latToGeoMap );
+			$out = strtr( $out, self::LAT_TO_GEO_MAP );
 			// lowercase the remainder
 			$out = mb_strtolower( $out );
 			// map lowercase-only single letters
-			$out = strtr( $out, $this->latToGeoLcOnlyMap );
+			$out = strtr( $out, self::LAT_TO_GEO_LC_ONLY_MAP );
 			// if there is any leftover Latin, it's a failure!
 			if ( preg_match( '/\p{Latin}/u', $out ) ) {
 				return [];
@@ -116,12 +111,12 @@ class SecondTryGeorgianTransliteration implements SecondTrySearch {
 			$out = mb_strtolower( $out );
 			// remove diacritics, map digraphs, single letters that create context for
 			// later, longer patterns
-			$out = strtr( $out, $this->cyrToGeoMap );
+			$out = strtr( $out, self::CYR_TO_GEO_MAP );
 			// non-regex ambiguous contexts
-			$out = strtr( $out, $this->cyrToGeoAmbigMap );
+			$out = strtr( $out, self::CYR_TO_GEO_AMBIG_MAP );
 			// map regex ambiguous contexts, and ambiguous defaults
-			$out = preg_replace( array_keys( $this->cyrToGeoAmbigRegexMap ),
-				array_values( $this->cyrToGeoAmbigRegexMap ), $out );
+			$out = preg_replace( array_keys( self::CYR_TO_GEO_AMBIG_REGEX_MAP ),
+				array_values( self::CYR_TO_GEO_AMBIG_REGEX_MAP ), $out );
 			// if there is any leftover Cyrillic, it's a failure!
 			if ( preg_match( '/\p{Cyrillic}/u', $out ) ) {
 				return [];

@@ -8,13 +8,6 @@
 // Load it now so it won't override our settings
 require_once __DIR__ . "/../jenkins/FullyFeaturedConfig.php";
 
-// pop score is global
-$wgHooks['CirrusSearchMappingConfig'][] = static function ( array &$config, $mappingConfigBuilder ) {
-	$config['page']['properties']['popularity_score'] = [
-		'type' => 'double',
-	];
-};
-
 // No need for replicas in relforge
 $wgCirrusSearchReplicas = '0-0';
 // Allow more than one shard per node

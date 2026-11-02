@@ -4,7 +4,6 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\CirrusConfigNames;
 use CirrusSearch\CirrusSearch;
-use CirrusSearch\CirrusSearchHookRunner;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
 use CirrusSearch\Search\SourceTextIndexField;
@@ -49,10 +48,6 @@ class MappingConfigBuilder {
 	 * @var int
 	 */
 	protected $flags = 0;
-	/**
-	 * @var CirrusSearchHookRunner
-	 */
-	private $cirrusSearchHookRunner;
 
 	/** @var bool if the icu plugin is available */
 	private bool $icu;
@@ -66,7 +61,6 @@ class MappingConfigBuilder {
 	 * @param array $plugins list of installed plugins
 	 * @param int $flags
 	 * @param SearchConfig|null $config
-	 * @param CirrusSearchHookRunner|null $cirrusSearchHookRunner
 	 * @param Language|null $language
 	 */
 	public function __construct(
@@ -74,7 +68,6 @@ class MappingConfigBuilder {
 		array $plugins,
 		int $flags = 0,
 		?SearchConfig $config = null,
-		?CirrusSearchHookRunner $cirrusSearchHookRunner = null,
 		?Language $language = null
 	) {
 		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;
@@ -86,8 +79,6 @@ class MappingConfigBuilder {
 		$this->engine = new CirrusSearch( $config );
 		$this->config = $this->engine->getConfig();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
-		$this->cirrusSearchHookRunner = $cirrusSearchHookRunner ?? new CirrusSearchHookRunner(
-			MediaWikiServices::getInstance()->getHookContainer() );
 		$this->language = $language ?? MediaWikiServices::getInstance()->getContentLanguage();
 
 		$this->validatePlugins( $plugins );

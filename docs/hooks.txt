@@ -16,13 +16,6 @@ really been settled.
 'CirrusSearchSimilarityConfig': Allows to customize and add new similarities to the index settings.
  &$similarity - multi-dimensional configuration array for the similarities.
 
-'CirrusSearchMappingConfig': Allows configuration of the mapping of fields
- &$config - multi-dimensional configuration array that contains Elasticsearch document configuration.
-   The 'page' index contains configuration for Elasticsearch documents representing pages.
-   The 'namespace' index contains namespace configuration for Elasticsearch documents representing
-   namespaces.
- $builder - instance of MappingConfigBuilder, for easier use of utility methods to build fields.
-
 'CirrusSearchAddQueryFeatures': Allows extensions to add query parser features
  &$config - SearchConfig object which holds current search configuration
  &$extraFeatures - array holding feature objects. This is where the extension should add its features.

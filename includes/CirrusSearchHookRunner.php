@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
-use CirrusSearch\Maintenance\MappingConfigBuilder;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
 use MediaWiki\HookContainer\HookContainer;
 
@@ -15,7 +14,6 @@ class CirrusSearchHookRunner implements
 	\CirrusSearch\Hooks\CirrusSearchAddQueryFeaturesHook,
 	\CirrusSearch\Hooks\CirrusSearchSimilarityConfigHook,
 	\CirrusSearch\Hooks\CirrusSearchAnalysisConfigHook,
-	\CirrusSearch\Hooks\CirrusSearchMappingConfigHook,
 	\CirrusSearch\Hooks\CirrusSearchProfileServiceHook,
 	\CirrusSearch\Hooks\CirrusSearchScoreBuilderHook
 {
@@ -49,13 +47,6 @@ class CirrusSearchHookRunner implements
 	public function onCirrusSearchAnalysisConfig( array &$config, AnalysisConfigBuilder $analyisConfigBuilder ): void {
 		$this->hookContainer->run( 'CirrusSearchAnalysisConfig',
 			[ &$config, $analyisConfigBuilder ],
-			[ 'abortable' => false ]
-		);
-	}
-
-	public function onCirrusSearchMappingConfig( array &$mappingConfig, MappingConfigBuilder $mappingConfigBuilder ): void {
-		$this->hookContainer->run( 'CirrusSearchMappingConfig',
-			[ &$mappingConfig, $mappingConfigBuilder ],
 			[ 'abortable' => false ]
 		);
 	}

@@ -39,7 +39,6 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 			MainConfigSchema::ContentHandlers['default']
 		);
 		$this->clearHooks( [
-			'CirrusSearchMappingConfig',
 			'GetContentModels',
 			'SearchIndexFields',
 		] );
@@ -59,7 +58,7 @@ class MappingConfigBuilderTest extends CirrusIntegrationTestCase {
 		$config = new HashSearchConfig( $extraConfig + $defaultConfig, [ HashSearchConfig::FLAG_INHERIT ] );
 		$language = $this->createMock( Language::class );
 		$language->method( 'toBcp47Code' )->willReturn( 'my-language-bcp47-code' );
-		$builder = new $buildClass( true, $plugins, 0, $config, $this->createCirrusSearchHookRunner(), $language );
+		$builder = new $buildClass( true, $plugins, 0, $config, $language );
 		$flags = 0;
 		$mapping = $builder->buildConfig( $flags );
 		$mappingJson = FormatJson::encode( $mapping, true );

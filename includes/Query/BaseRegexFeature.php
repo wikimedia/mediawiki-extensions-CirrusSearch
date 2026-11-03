@@ -60,12 +60,6 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	private $maxDeterminizedStates;
 
 	/**
-	 * @var string timeout for regex queries
-	 * with the extra plugin
-	 */
-	private $shardTimeout;
-
-	/**
 	 * @param SearchConfig $config
 	 * @param string[] $fields
 	 */
@@ -78,7 +72,6 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 		$this->maxDeterminizedStates = $config->get( CirrusConfigNames::RegexMaxDeterminizedStates );
 		Assert::precondition( $fields !== [], 'must have at least one field' );
 		$this->fields = $fields;
-		$this->shardTimeout = $config->getElement( CirrusConfigNames::SearchShardTimeout, 'regex' );
 	}
 
 	/**

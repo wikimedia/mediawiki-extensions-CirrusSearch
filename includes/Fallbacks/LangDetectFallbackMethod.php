@@ -8,7 +8,6 @@ use CirrusSearch\LanguageDetector\Detector;
 use CirrusSearch\LanguageDetector\LanguageDetectorFactory;
 use CirrusSearch\Parser\BasicQueryClassifier;
 use CirrusSearch\Search\CirrusSearchResultSet;
-use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\SearchConfig;
@@ -16,18 +15,13 @@ use CirrusSearch\Searcher;
 use MediaWiki\MainConfigNames;
 use Wikimedia\Assert\Assert;
 
-class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider {
+class LangDetectFallbackMethod implements FallbackMethod {
 	use FallbackMethodTrait;
 
 	/**
 	 * @var SearchQuery
 	 */
 	private $query;
-
-	/**
-	 * @var array|null
-	 */
-	private $searchMetrics = [];
 
 	/**
 	 * @var Detector[]
@@ -159,10 +153,5 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 				$this->detectedLangWikiConfig->getWikiId() );
 		}
 		return FallbackStatus::noSuggestion();
-	}
-
-	/** @inheritDoc */
-	public function getMetrics() {
-		return $this->searchMetrics;
 	}
 }

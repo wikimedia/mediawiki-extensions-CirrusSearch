@@ -80,8 +80,7 @@
 			],
 			"dependencies": [
 				"mediawiki.router",
-				"mediawiki.util",
-				"web2017-polyfills"
+				"mediawiki.util"
 			],
 			"styles": [],
 			"messages": []

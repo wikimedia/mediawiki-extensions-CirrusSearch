@@ -395,8 +395,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$validator = new MappingValidator(
 			$this->getIndex(),
 			$this->masterTimeout,
-			$this->optimizeIndexForExperimentalHighlighter,
-			$this->availablePlugins,
 			$this->mapping,
 			$this
 		);

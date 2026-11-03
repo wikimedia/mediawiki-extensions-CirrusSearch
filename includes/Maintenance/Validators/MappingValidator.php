@@ -23,16 +23,6 @@ class MappingValidator extends Validator {
 	private $masterTimeout;
 
 	/**
-	 * @var bool
-	 */
-	private $optimizeIndexForExperimentalHighlighter;
-
-	/**
-	 * @var array
-	 */
-	private $availablePlugins;
-
-	/**
 	 * @var array
 	 */
 	private $mappingConfig;
@@ -42,16 +32,12 @@ class MappingValidator extends Validator {
 	 *
 	 * @param Index $index
 	 * @param string $masterTimeout
-	 * @param bool $optimizeIndexForExperimentalHighlighter
-	 * @param array $availablePlugins
 	 * @param array $mappingConfig
 	 * @param Printer|null $out
 	 */
 	public function __construct(
 		Index $index,
 		$masterTimeout,
-		$optimizeIndexForExperimentalHighlighter,
-		array $availablePlugins,
 		array $mappingConfig,
 		?Printer $out = null
 	) {
@@ -59,8 +45,6 @@ class MappingValidator extends Validator {
 
 		$this->index = $index;
 		$this->masterTimeout = $masterTimeout;
-		$this->optimizeIndexForExperimentalHighlighter = $optimizeIndexForExperimentalHighlighter;
-		$this->availablePlugins = $availablePlugins;
 		// Could be supported, but prefer consistency
 		Assert::parameter( isset( $mappingConfig['properties'] ), '$mappingConfig',
 			'Mapping types are no longer supported, properties must be top level' );

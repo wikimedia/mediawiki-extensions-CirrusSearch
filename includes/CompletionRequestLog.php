@@ -29,11 +29,6 @@ class CompletionRequestLog extends BaseRequestLog {
 	/**
 	 * @var int
 	 */
-	private $prefixTookMs = 0;
-
-	/**
-	 * @var int
-	 */
 	private $hitsTotal;
 
 	/**
@@ -134,13 +129,6 @@ class CompletionRequestLog extends BaseRequestLog {
 	 */
 	public function setSuggestTookMs( $suggestTookMs ) {
 		$this->suggestTookMs = $suggestTookMs;
-	}
-
-	/**
-	 * @param int $prefixTookMs
-	 */
-	public function setPrefixTookMs( $prefixTookMs ) {
-		$this->prefixTookMs = $prefixTookMs;
 	}
 
 	/**

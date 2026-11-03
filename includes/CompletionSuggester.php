@@ -324,7 +324,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$prefixResults = $results[self::MSEARCH_KEY_PREFIX];
 		$totalHits = $prefixResults->getTotalHits();
 		$log->addIndex( $indexName );
-		$log->setPrefixTookMs( intval( $prefixResults->getResponse()->getQueryTime() * 1000 ) );
 		// We only append as we can't really compare scores without more complex code/evaluation
 		if ( $collector->isFull() ) {
 			return $totalHits;

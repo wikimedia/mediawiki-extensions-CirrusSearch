@@ -37,9 +37,6 @@ class CompSuggestQueryBuilder {
 	/** @var int (final) */
 	private $hardLimit;
 
-	/** @var int (final) */
-	private $offset;
-
 	/** @var array (mutable) state built after calling self::build */
 	private $mergedProfiles;
 	private SecondTryRunner $secondTryRunner;
@@ -61,7 +58,6 @@ class CompSuggestQueryBuilder {
 			$limit = $this->hardLimit - $offset;
 		}
 		$this->limit = $limit > 0 ? $limit : 0;
-		$this->offset = $offset;
 	}
 
 	/**

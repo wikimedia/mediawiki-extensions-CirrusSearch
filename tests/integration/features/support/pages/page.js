@@ -88,10 +88,24 @@ class Page {
 		const login = await browser.$( '#wpLoginAttempt' );
 		await login.click();
 
+		// The click can return before the login POST completes. If the next
+		// navigation starts before then, it cancels the POST and the browser
+		// stays logged out.
+		const isLoggedIn = () => browser.execute(
+			// eslint-disable-next-line no-undef
+			( expected ) => typeof mw !== 'undefined' && mw.config.get( 'wgUserName' ) === expected,
+			config.username
+		);
+		const hasSkipReset = () => browser.$( '#mw-input-skipReset' ).isExisting();
+		await browser.waitUntil(
+			async () => await isLoggedIn() || await hasSkipReset(),
+			{ timeout: 15000, timeoutMsg: 'Login did not complete' }
+		);
 		// skip password reset, not always present?
-		const skip = await $( '#mw-input-skipReset' );
-		if ( await skip.isExisting() ) {
-			await skip.click();
+		if ( await hasSkipReset() ) {
+			await browser.$( '#mw-input-skipReset' ).click();
+			await browser.waitUntil( isLoggedIn,
+				{ timeout: 15000, timeoutMsg: 'Login did not complete after skipping password reset' } );
 		}
 	}
 }

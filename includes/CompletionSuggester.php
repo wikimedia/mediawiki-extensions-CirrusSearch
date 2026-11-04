@@ -257,7 +257,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 					$log = $this->newLog( $description, self::SEARCH_TYPE, [
 						'query' => $text,
 						'offset' => $this->offset,
-					] );
+					],
+					$this->searchContext->getNamespaces() );
 
 					$resultsTransformer = $this->getResultsTransformer( $log );
 
@@ -417,17 +418,14 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param string $description
-	 * @param string $queryType
-	 * @param array $extra
-	 * @return CompletionRequestLog
+	 * @inheritDoc
 	 */
-	protected function newLog( $description, $queryType, array $extra = [] ) {
+	protected function newLog( $description, $queryType, array $extra = [], ?array $namespaces = null ): CompletionRequestLog {
 		return new CompletionRequestLog(
 			$description,
 			$queryType,
 			$extra,
-			$this->searchContext->getNamespaces()
+			$namespaces
 		);
 	}
 

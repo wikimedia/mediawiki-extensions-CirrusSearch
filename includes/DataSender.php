@@ -29,6 +29,7 @@ use Wikimedia\Stats\StatsFactory;
  * @license GPL-2.0-or-later
  */
 class DataSender extends ElasticsearchIntermediary {
+	use SearcherTrait;
 
 	/** @var \Psr\Log\LoggerInterface */
 	private $log;
@@ -367,13 +368,13 @@ class DataSender extends ElasticsearchIntermediary {
 		if ( $idCount !== 0 ) {
 			try {
 				foreach ( $indexes as $indexSuffix ) {
-					$this->startNewLog(
+					$this->start( $this->newLog(
 						'deleting {numIds} from {indexSuffix}',
 						'send_deletes', [
 							'numIds' => $idCount,
 							'indexSuffix' => $indexSuffix,
 						]
-					);
+					) );
 					$this->connection
 						->getIndex( $this->indexBaseName, $indexSuffix )
 						->deleteDocuments(
@@ -531,21 +532,6 @@ class DataSender extends ElasticsearchIntermediary {
 			}
 		}
 		return $justDocumentMissing;
-	}
-
-	/**
-	 * @param string $description
-	 * @param string $queryType
-	 * @param string[] $extra
-	 * @return SearchRequestLog
-	 */
-	protected function newLog( $description, $queryType, array $extra = [] ) {
-		return new SearchRequestLog(
-			$this->connection->getClient(),
-			$description,
-			$queryType,
-			$extra
-		);
 	}
 
 	/**

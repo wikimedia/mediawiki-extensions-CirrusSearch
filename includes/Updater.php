@@ -23,6 +23,8 @@ use Wikimedia\Assert\Assert;
  * @license GPL-2.0-or-later
  */
 class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
+	use SearcherTrait;
+
 	/**
 	 * Full title text of pages updated in this process.  Used for deduplication
 	 * of updates.
@@ -481,20 +483,5 @@ class Updater extends ElasticsearchIntermediary implements WeightedTagsUpdater {
 				->getClusterAssignment()
 				->getWritableClusters( $updateGroup );
 		}
-	}
-
-	/**
-	 * @param string $description
-	 * @param string $queryType
-	 * @param string[] $extra
-	 * @return SearchRequestLog
-	 */
-	protected function newLog( $description, $queryType, array $extra = [] ) {
-		return new SearchRequestLog(
-			$this->connection->getClient(),
-			$description,
-			$queryType,
-			$extra
-		);
 	}
 }

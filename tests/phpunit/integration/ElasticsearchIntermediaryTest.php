@@ -43,7 +43,7 @@ class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 				parent::__construct( $connection, new UserIdentityValue( 0, '' ) );
 			}
 
-			protected function newLog( $description, $queryType, array $extra = [] ) {
+			protected function newLog( $description, $queryType, array $extra = [], ?array $namespaces = [] ) {
 				throw new LogicException( "Not supposed to be called" );
 			}
 
@@ -67,7 +67,7 @@ class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 				parent::__construct( $connection );
 			}
 
-			protected function newLog( $description, $queryType, array $extra = [] ) {
+			protected function newLog( $description, $queryType, array $extra = [], ?array $namespaces = null ) {
 				throw new LogicException( "Not supposed to be called" );
 			}
 		};
@@ -91,7 +91,7 @@ class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 				parent::__construct( $connection );
 			}
 
-			protected function newLog( $description, $queryType, array $extra = [] ) {
+			protected function newLog( $description, $queryType, array $extra = [], ?array $namespaces = null ) {
 				throw new LogicException( "Not supposed to be called" );
 			}
 
@@ -117,7 +117,7 @@ class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 				parent::__construct( $connection );
 			}
 
-			protected function newLog( $description, $queryType, array $extra = [] ) {
+			protected function newLog( $description, $queryType, array $extra = [], ?array $namespaces = [] ) {
 				throw new LogicException( "Not supposed to be called" );
 			}
 		};

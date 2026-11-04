@@ -52,6 +52,8 @@ use Wikimedia\Stats\StatsFactory;
  * @license GPL-2.0-or-later
  */
 class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
+	use SearcherTrait;
+
 	public const SUGGESTION_HIGHLIGHT_PRE = '<em>';
 	public const SUGGESTION_HIGHLIGHT_POST = '</em>';
 	public const HIGHLIGHT_PRE_MARKER = ''; // \uE000. Can't be a unicode literal until php7
@@ -595,9 +597,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	): \Closure {
 		return function () use ( $query, $logMeta, $indexSuffix, $size, $connection ) {
 			try {
-				$this->startNewLog( 'get of {indexSuffix}.{docIds}', 'get', [
+				$this->start( $this->newLog( 'get of {indexSuffix}.{docIds}', 'get', [
 					'indexSuffix' => $indexSuffix,
-				] + $logMeta );
+				] + $logMeta ) );
 				// Shard timeout not supported on get requests so we just use the client side timeout
 				$connection->setTimeout( $this->getClientTimeout( 'get' ) );
 				// We use a search query instead of _get/_mget, these methods are
@@ -940,21 +942,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			->setLabel( "type", $type )
 			->setLabel( "status", $cacheStatus )
 			->increment();
-	}
-
-	/**
-	 * @param string $description
-	 * @param string $queryType
-	 * @param string[] $extra
-	 * @return SearchRequestLog
-	 */
-	protected function newLog( $description, $queryType, array $extra = [] ) {
-		return new SearchRequestLog(
-			$this->getOverriddenConnection()->getClient(),
-			$description,
-			$queryType,
-			$extra
-		);
 	}
 
 	/**

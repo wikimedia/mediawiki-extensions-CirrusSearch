@@ -311,23 +311,10 @@ abstract class ElasticsearchIntermediary {
 	 * @param string $queryType The type of search being performed such as
 	 * fulltext, get, etc.
 	 * @param array $extra A map of additional request-specific data
+	 * @param array|null $namespaces set of namespaces if known
 	 * @return RequestLog
 	 */
-	protected function startNewLog( $description, $queryType, array $extra = [] ) {
-		$log = $this->newLog( $description, $queryType, $extra );
-		$this->start( $log );
-
-		return $log;
-	}
-
-	/**
-	 * @param string $description A psr-3 compliant string describing the request
-	 * @param string $queryType The type of search being performed such as
-	 * fulltext, get, etc.
-	 * @param array $extra A map of additional request-specific data
-	 * @return RequestLog
-	 */
-	abstract protected function newLog( $description, $queryType, array $extra = [] );
+	abstract protected function newLog( $description, $queryType, array $extra = [], ?array $namespaces = null );
 
 	/**
 	 * @param string $searchType
@@ -434,4 +421,10 @@ abstract class ElasticsearchIntermediary {
 		throw new ResponseException( $request, $response );
 	}
 
+	/**
+	 * @return Connection
+	 */
+	protected function getConnection(): Connection {
+		return $this->connection;
+	}
 }

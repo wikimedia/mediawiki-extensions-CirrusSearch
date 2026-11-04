@@ -10,6 +10,7 @@ use MediaWiki\Status\Status;
  * @license GPL-2.0-or-later
  */
 class Version extends ElasticsearchIntermediary {
+	use SearcherTrait;
 
 	public function __construct( Connection $conn ) {
 		parent::__construct( $conn, null, 0 );
@@ -22,7 +23,7 @@ class Version extends ElasticsearchIntermediary {
 	 */
 	public function get() {
 		try {
-			$this->startNewLog( 'fetching elasticsearch version', 'version' );
+			$this->start( $this->newLog( 'fetching elasticsearch version', 'version' ) );
 			// If this times out the cluster is in really bad shape but we should still
 			// check it.
 			$this->connection->setTimeout( $this->getClientTimeout( 'version' ) );
@@ -37,20 +38,5 @@ class Version extends ElasticsearchIntermediary {
 			'distribution' => $version['distribution'] ?? 'elasticsearch',
 			'version' => $version['number'],
 		] );
-	}
-
-	/**
-	 * @param string $description
-	 * @param string $queryType
-	 * @param string[] $extra
-	 * @return SearchRequestLog
-	 */
-	protected function newLog( $description, $queryType, array $extra = [] ) {
-		return new SearchRequestLog(
-			$this->connection->getClient(),
-			$description,
-			$queryType,
-			$extra
-		);
 	}
 }

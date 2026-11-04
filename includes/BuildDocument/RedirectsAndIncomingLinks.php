@@ -10,7 +10,7 @@ use CirrusSearch\LogChannel;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\SearchConfig;
-use CirrusSearch\SearchRequestLog;
+use CirrusSearch\SearcherTrait;
 use Elastica\Document;
 use Elastica\Exception\ResponseException;
 use Elastica\Multi\ResultSet;
@@ -34,6 +34,8 @@ use MediaWiki\Title\TitleFormatter;
  * @license GPL-2.0-or-later
  */
 class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements PagePropertyBuilder {
+	use SearcherTrait;
+
 	/**
 	 * @var SearchConfig
 	 */
@@ -139,10 +141,10 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 		}
 		$linkCountClosureCount = count( $this->linkCountClosures );
 		try {
-			$this->startNewLog( "counting links to {pageCount} pages", 'count_links', [
+			$this->start( $this->newLog( "counting links to {pageCount} pages", 'count_links', [
 				'pageCount' => $linkCountClosureCount,
 				'query' => $linkCountClosureCount,
-			] );
+			] ) );
 			$result = $this->linkCountMultiSearch->search();
 
 			if ( $result->count() <= 0 ) {
@@ -231,21 +233,6 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary implements Pag
 		$search->getQuery()->setSize( 0 );
 
 		return $search;
-	}
-
-	/**
-	 * @param string $description
-	 * @param string $queryType
-	 * @param array $extra
-	 * @return SearchRequestLog
-	 */
-	protected function newLog( $description, $queryType, array $extra = [] ) {
-		return new SearchRequestLog(
-			$this->connection->getClient(),
-			$description,
-			$queryType,
-			$extra
-		);
 	}
 
 	/**

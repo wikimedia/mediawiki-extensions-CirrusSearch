@@ -71,12 +71,12 @@ class CirrusPoolCounterAssignerTest extends CirrusTestCase {
 				[ 'User-Agent' => 'Mozilla/3.4 Chrome/5.4.3' ]
 			],
 			'arbitrary header match' => [
-				true, [ 'X-Public-Cloud' => '/^abc$/' ], [], '1.2.3.4',
-				[ 'X-Public-Cloud' => 'abc' ],
+				true, [ 'X-Provenance' => '/^abc$/' ], [], '1.2.3.4',
+				[ 'X-Provenance' => 'abc' ],
 			],
 			'arbitrary header no-match' => [
-				false, [ 'X-Public-Cloud' => '/^abc$/' ], [], '1.2.3.4',
-				[ 'X-Public-Cloud' => 'xyz' ],
+				false, [ 'X-Provenance' => '/^abc$/' ], [], '1.2.3.4',
+				[ 'X-Provenance' => 'xyz' ],
 			],
 			'cidr ipv4 match' => [
 				true, null, [ '1.0.0.0/8' ], '1.2.3.4', [],
@@ -235,14 +235,14 @@ class CirrusPoolCounterAssignerTest extends CirrusTestCase {
 		];
 		$wdqs = [
 			[ 'pool' => 'CirrusSearch-WDQS', 'headers' => [ 'user-agent' => '/^Wikidata Query Service/' ] ],
-			[ 'pool' => PoolCounterKey::AUTOMATED, 'headers' => [ 'x-public-cloud' => '/.*/' ] ],
+			[ 'pool' => PoolCounterKey::AUTOMATED, 'headers' => [ 'x-provenance' => '/datacenter=true/' ] ],
 		];
 		yield 'dedicated pool before the automation rules' => [
 			'CirrusSearch-WDQS', $wdqs, [], 0, 'api',
-			[ 'User-Agent' => 'Wikidata Query Service; https://query.wikidata.org/', 'X-Public-Cloud' => 'aws' ],
+			[ 'User-Agent' => 'Wikidata Query Service; https://query.wikidata.org/', 'X-Provenance' => 'datacenter=true' ],
 		];
 		yield 'automation rule after the dedicated pool' => [
-			PoolCounterKey::AUTOMATED, $wdqs, [], 0, 'api', [ 'User-Agent' => 'curl/8.0', 'X-Public-Cloud' => 'aws' ],
+			PoolCounterKey::AUTOMATED, $wdqs, [], 0, 'api', [ 'User-Agent' => 'curl/8.0', 'X-Provenance' => 'datacenter=true' ],
 		];
 	}
 
@@ -272,11 +272,11 @@ class CirrusPoolCounterAssignerTest extends CirrusTestCase {
 		$this->assertSame( [], array_filter( $rules, $hasLegacyRule ) );
 
 		$rules = CirrusPoolCounterAssigner::defaultRules( new HashSearchConfig( [
-			CirrusConfigNames::AutomationHeaderRegexes => [ 'x-public-cloud' => '/.*/' ],
+			CirrusConfigNames::AutomationHeaderRegexes => [ 'x-provenance' => '/datacenter=true/' ],
 			CirrusConfigNames::AutomationCIDRs => [ '1.0.0.0/8' ],
 		] ) );
 		$this->assertSame( [
-			[ 'pool' => PoolCounterKey::AUTOMATED, 'headers' => [ 'x-public-cloud' => '/.*/' ] ],
+			[ 'pool' => PoolCounterKey::AUTOMATED, 'headers' => [ 'x-provenance' => '/datacenter=true/' ] ],
 			[ 'pool' => PoolCounterKey::AUTOMATED, 'ip_ranges' => [ '1.0.0.0/8' ] ],
 		], array_values( array_filter( $rules, $hasLegacyRule ) ) );
 	}

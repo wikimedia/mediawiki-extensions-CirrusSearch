@@ -168,7 +168,7 @@ return [
 		'undocumented' => true,
 		'contexts' => [ 'semantic' ],
 		'settings' => [
-			'highlighting' => true,
+			'highlighting' => false,
 			'nested_field' => 'passage_chunk_embedding',
 			'vector_field' => 'knn',
 			'source_fields' => [ 'section', 'text' ],

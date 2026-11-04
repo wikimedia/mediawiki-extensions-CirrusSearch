@@ -118,6 +118,9 @@ class SemanticSearchQueryBuilderTest extends CirrusTestCase {
 		$this->assertArrayHasKey( $key, $neuralArray['neural'] );
 		$this->assertSame( 'search term', $neuralArray['neural'][$key]['query_text'] );
 		$this->assertSame( 21, $neuralArray['neural'][$key]['k'] );
+
+		$this->assertArrayNotHasKey( 'highlight', $queryArray['nested']['inner_hits'] );
+		$this->assertSame( [], $context->getSearchExt() );
 	}
 
 	public function testBuildWithDefaultSettings() {
@@ -203,6 +206,7 @@ class SemanticSearchQueryBuilderTest extends CirrusTestCase {
 			],
 			$queryArray['nested']['inner_hits']['highlight']
 		);
+		$this->assertSame( [ 'semantic_highlighting_batch' => true ], $context->getSearchExt() );
 	}
 
 	public function testWithHighlightsFromProfile() {
@@ -222,5 +226,6 @@ class SemanticSearchQueryBuilderTest extends CirrusTestCase {
 			],
 			$queryArray['nested']['inner_hits']['highlight']
 		);
+		$this->assertSame( [ 'semantic_highlighting_batch' => true ], $context->getSearchExt() );
 	}
 }

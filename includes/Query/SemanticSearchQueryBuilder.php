@@ -87,9 +87,14 @@ class SemanticSearchQueryBuilder implements FullTextQueryBuilder {
 		// We don't have the suggest field on semantic indices
 		$searchContext->disableFallbackRunner();
 
-		$searchContext->setMainQuery(
-			$this->buildQuery( $term, $k, $this->withHighlighting || $searchContext->getDebugOptions()->isCirrusSemanticSearchHighlights() )
-		);
+		$withHighlights = $this->withHighlighting
+			|| $searchContext->getDebugOptions()->isCirrusSemanticSearchHighlights();
+		if ( $withHighlights ) {
+			// The highlighter connector has no pre_process_function, so the
+			// neural-search single mode fails the search. Use batch mode.
+			$searchContext->addSearchExt( 'semantic_highlighting_batch', true );
+		}
+		$searchContext->setMainQuery( $this->buildQuery( $term, $k, $withHighlights ) );
 	}
 
 	private function buildQuery( string $term, int $k, bool $withHighlights ): AbstractQuery {

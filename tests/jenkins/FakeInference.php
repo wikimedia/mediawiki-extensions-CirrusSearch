@@ -33,4 +33,20 @@ class FakeInference {
 		$norm = sqrt( array_sum( array_map( static fn ( $v ) => $v * $v, $vector ) ) ) ?: 1.0;
 		return array_map( static fn ( $v ) => $v / $norm, $vector );
 	}
+
+	/**
+	 * Highlights the first sentence, so a scenario can tell exactly what was marked. The
+	 * offsets are UTF-16 code units, the unit opensearch uses, so non-ASCII text before the
+	 * period moves the end.
+	 *
+	 * @param string $context
+	 * @return array[] The spans as `[ 'start' => int, 'end' => int ]`. None for an empty
+	 *  context, because an empty span fails the whole search.
+	 */
+	public static function highlight( string $context ): array {
+		$period = strpos( $context, '.' );
+		$sentence = $period === false ? $context : substr( $context, 0, $period + 1 );
+		$end = intdiv( strlen( mb_convert_encoding( $sentence, 'UTF-16LE', 'UTF-8' ) ), 2 );
+		return $end > 0 ? [ [ 'start' => 0, 'end' => $end ] ] : [];
+	}
 }

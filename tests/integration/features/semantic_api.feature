@@ -9,3 +9,15 @@ Feature: Semantic search
     When I api search semantically for quorvex blintharm zephulon drabbit mivvle sporkanth tellurine glomp frobnitz
     Then there are no errors reported by the api
       And Semantic Fixture Quorvex is the first api search result
+
+  # The stub highlights the first sentence of each passage. Without the
+  # semantic_highlighting_batch ext the search fails.
+  Scenario Outline: The hl debug option highlights the passage of the first result
+    When I api search semantically with highlights for <query>
+    Then there are no errors reported by the api
+      And <title> is the first api search result
+      And <snippet> is the highlighted snippet of the first api search result
+  Examples:
+    | query                                                                                     | title                     | snippet                                                                                     |
+    | quorvex blintharm zephulon drabbit mivvle sporkanth tellurine glomp frobnitz              | Semantic Fixture Quorvex  | *Quorvex blintharm zephulon drabbit.* Mivvle sporkanth tellurine glomp.                     |
+    | žarnovik 𐌷𐌰𐌿𐍃 qlembrisk 漢字 velthorn dravquill snorbex wimplethane frusk ölgrim | Semantic Fixture Velthorn | *Žarnovik 𐌷𐌰𐌿𐍃 qlembrisk 漢字 velthorn 😀 dravquill.* Snorbex wimplethane frusk ölgrim. |

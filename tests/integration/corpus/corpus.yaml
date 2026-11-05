@@ -776,3 +776,7 @@ groups:
     pages:
       - title: Semantic Fixture Quorvex
         text: Quorvex blintharm zephulon drabbit. Mivvle sporkanth tellurine glomp.
+      # Highlight offsets are UTF-16 code units. The first sentence has characters that
+      # take one unit (Ž, 漢) and two units (𐌷, 😀), so a wrong unit moves the span.
+      - title: Semantic Fixture Velthorn
+        text: Žarnovik 𐌷𐌰𐌿𐍃 qlembrisk 漢字 velthorn 😀 dravquill. Snorbex wimplethane frusk ölgrim.

@@ -21,6 +21,7 @@ require_once __DIR__ . '/FakeInference.php';
  */
 class LiftWingStub {
 	private const EMBEDDING_PATH = '/v1/models/jina-embeddings:predict';
+	private const HIGHLIGHT_PATH = '/v1/models/semantic-highlighting:predict';
 
 	public static function main(): void {
 		$method = $_SERVER['REQUEST_METHOD'];
@@ -43,6 +44,9 @@ class LiftWingStub {
 		$request = json_decode( $body, true );
 		if ( $method === 'POST' && $uri === self::EMBEDDING_PATH && self::isEmbeddingRequest( $request ) ) {
 			return [ 200, self::embeddings( $request['input'] ) ];
+		}
+		if ( $method === 'POST' && $uri === self::HIGHLIGHT_PATH && self::isHighlightRequest( $request ) ) {
+			return [ 200, self::highlights( $request['inputs'] ) ];
 		}
 		return [ 500, [
 			// mb_strcut keeps a whole character, json_encode fails on a split one.
@@ -81,6 +85,46 @@ class LiftWingStub {
 			];
 		}
 		return [ 'object' => 'list', 'data' => $data, 'model' => 'fake' ];
+	}
+
+	/**
+	 * The body the highlighter connector sends in batch mode:
+	 * `{"inputs": [{"question": query, "context": passage}, ...]}`.
+	 *
+	 * @param mixed $request
+	 * @return bool
+	 */
+	private static function isHighlightRequest( $request ): bool {
+		if ( !is_array( $request ) || array_keys( $request ) !== [ 'inputs' ] ) {
+			return false;
+		}
+		$inputs = $request['inputs'];
+		if ( !is_array( $inputs ) || $inputs === [] || !array_is_list( $inputs ) ) {
+			return false;
+		}
+		foreach ( $inputs as $input ) {
+			if ( !is_array( $input ) || count( $input ) !== 2
+				|| !is_string( $input['question'] ?? null ) || !is_string( $input['context'] ?? null )
+			) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * One span list for each input, in the same order. neural-search reads the top level
+	 * `highlights` key, and leaves the hits without a highlight when it isn't there.
+	 *
+	 * @param array[] $inputs
+	 * @return array
+	 */
+	private static function highlights( array $inputs ): array {
+		$highlights = [];
+		foreach ( $inputs as $input ) {
+			$highlights[] = FakeInference::highlight( $input['context'] );
+		}
+		return [ 'highlights' => $highlights ];
 	}
 }
 

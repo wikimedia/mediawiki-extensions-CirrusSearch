@@ -769,3 +769,10 @@ groups:
     wiki: wikidatawiki
     pages:
       - importXml: ../articles/wikibase-universe.xml
+
+  - tags: [ "@semantic" ]
+    description: >-
+      The fake inference ranks by shared words, so these pages use words no other page has.
+    pages:
+      - title: Semantic Fixture Quorvex
+        text: Quorvex blintharm zephulon drabbit. Mivvle sporkanth tellurine glomp.

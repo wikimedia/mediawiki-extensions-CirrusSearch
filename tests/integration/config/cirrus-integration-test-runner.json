@@ -5,16 +5,22 @@
 	"opensearch": {
 		"versions": {
 			"v1.3.20-12": {
-				"concurrency": 5
-			},
-			"v2.19.5-3": {
 				"concurrency": 5,
-				"reuse_mediawiki_state": true
+				"tags": "not @semantic"
 			},
-			"v3.8.0-0": {
+			"v2.19.5-4": {
+				"concurrency": 5,
+				"reuse_mediawiki_state": true,
+				"tags": "not @semantic"
+			},
+			"v3.8.0-5": {
 				"concurrency": 5,
 				"reuse_mediawiki_state": true
 			}
 		}
+	},
+	"cirrus_toolbox": {
+		"tag": "v0.10.0",
+		"search_pipeline": "jina-embeddings"
 	}
 }

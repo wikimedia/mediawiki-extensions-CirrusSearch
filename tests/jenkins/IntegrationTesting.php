@@ -60,6 +60,20 @@ $wgCirrusSearchUseCompletionSuggester = "yes";
 // (exercised by redirect_documents_api.feature).
 $wgCirrusSearchRedirectDocuments = [ 'build' => true, 'use' => true ];
 
+// Semantic search (semantic_api.feature). Only the cirrusSemanticSearch debug option puts a
+// query on the semantic route. Every image gets the mapping and the passages, but the
+// scenarios need ml-commons and only run on 3.x.
+$wgCirrusSearchDefaultSemanticProfile = 'default_semantic';
+// Same cluster, but this runs the override code that prod probably uses to reach its
+// semantic cluster.
+$wgCirrusSearchClusterOverrides['semantic'] = 'default';
+// A knn query fails on an index that was created without it.
+$wgCirrusSearchExtraIndexSettings['index.knn'] = true;
+$wgAutoloadClasses['CirrusSearch\Jenkins\FakeInference'] = __DIR__ . '/FakeInference.php';
+$wgAutoloadClasses['CirrusSearch\Jenkins\PassageEmbeddings'] = __DIR__ . '/PassageEmbeddings.php';
+$wgHooks['SearchIndexFields'][] = 'CirrusSearch\Jenkins\PassageEmbeddings::onSearchIndexFields';
+$wgHooks['SearchDataForIndex2'][] = 'CirrusSearch\Jenkins\PassageEmbeddings::onSearchDataForIndex2';
+
 class IntegrationTesting {
 	/**
 	 * Installs maintenance scripts that provide a clean Elasticsearch index for testing.

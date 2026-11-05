@@ -254,6 +254,18 @@ When( /^I api search( for entities)?( with rewrites enabled)?(?: with query inde
 	return action.call( stepHelpers, search, options );
 } );
 
+// The debug option forces the semantic route, the profile override picks the builder there.
+When( /^I api search semantically( with highlights)?(?: using the ([^ ]+) builder profile)? for (.+)$/, function ( highlights, profile, search ) {
+	const options = {
+		srnamespace: '0',
+		cirrusSemanticSearch: highlights ? 'hl' : '1'
+	};
+	if ( profile ) {
+		options.cirrusFTQBProfile = profile;
+	}
+	return this.stepHelpers.searchFor( search, options );
+} );
+
 Then( /^there are no errors reported by the api$/, function () {
 	return withApi( this, () => {
 		expect( this.apiError ).to.equal( undefined );

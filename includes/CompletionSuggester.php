@@ -251,20 +251,19 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$multiSearch->addSearches( $mSearchRequests->getRequests() );
 
 		$this->connection->setTimeout( $this->getClientTimeout( self::SEARCH_TYPE ) );
-
+		$log = $this->newLog( $description, self::SEARCH_TYPE, [
+			'query' => $text,
+			'offset' => $this->offset,
+		],
+			$this->searchContext->getNamespaces()
+		);
 		$status = Util::doPoolCounterWork( self::POOL_COUNTER_TYPE, $this->user,
-				function () use ( $multiSearch, $text, $description ) {
-					$log = $this->newLog( $description, self::SEARCH_TYPE, [
-						'query' => $text,
-						'offset' => $this->offset,
-					],
-					$this->searchContext->getNamespaces() );
-
+				function () use ( $multiSearch, $log ) {
 					$resultsTransformer = $this->getResultsTransformer( $log );
 
 					return $this->runMSearch( $multiSearch, $log, $this->connection,
 						$resultsTransformer );
-				} );
+				}, null, $log );
 
 		if ( $status->isOk() && $this->searchContext->getDebugOptions()->isCirrusDumpResult() ) {
 			$resultSets = $status->getValue()->getResultSets();
@@ -420,12 +419,17 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	/**
 	 * @inheritDoc
 	 */
-	protected function newLog( $description, $queryType, array $extra = [], ?array $namespaces = null ): CompletionRequestLog {
+	protected function newLog(
+		$description,
+		$queryType,
+		array $extra = [],
+		?array $namespaces = null
+	): CompletionRequestLog {
 		return new CompletionRequestLog(
 			$description,
 			$queryType,
 			$extra,
-			$namespaces
+			$namespaces,
 		);
 	}
 

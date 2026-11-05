@@ -37,6 +37,9 @@
             "hits_offset": 0,
             "suggestion_requested": false,
             "max_score": 4713,
+            "syntax": [
+                "pool:CirrusSearch-Completion:_elasticsearch"
+            ],
             "cached": false,
             "hits": [
                 {

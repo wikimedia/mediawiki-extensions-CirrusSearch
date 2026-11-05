@@ -2,6 +2,9 @@
 
 namespace CirrusSearch;
 
+use Wikimedia\Assert\Assert;
+use Wikimedia\Stats\Metrics\RunningTimer;
+
 abstract class BaseRequestLog implements RequestLog {
 	/**
 	 * @var string
@@ -28,6 +31,11 @@ abstract class BaseRequestLog implements RequestLog {
 	 */
 	protected $endTime;
 
+	private ?string $poolCounterType = null;
+	private ?string $poolCounterKey = null;
+	private ?RunningTimer $poolCounterAcquireTimeMetric = null;
+	private ?string $poolCounterError = null;
+
 	/**
 	 * @param string $description
 	 * @param string $queryType
@@ -41,6 +49,25 @@ abstract class BaseRequestLog implements RequestLog {
 
 	public function start() {
 		$this->startTime = microtime( true );
+	}
+
+	public function poolCounterStartAcquire( string $type, string $key ): void {
+		$this->poolCounterType = $type;
+		$this->poolCounterKey = $key;
+		$this->poolCounterAcquireTimeMetric = Util::getStatsFactory()->getTiming( "pool_counter_seconds" )
+			->setLabel( "type", Util::poolCounterLabel( $type ) )
+			->setLabel( "pool_counter_key", $key )
+			->start();
+	}
+
+	public function poolCounterEndAcquire( ?string $error = null ): void {
+		Assert::precondition( $this->poolCounterAcquireTimeMetric !== null, 'poolCounterAcquireTimeMetric must be started' );
+
+		$this->poolCounterAcquireTimeMetric
+			->setLabel( "status", $error === null ? "success" : "failure" )
+			->stop();
+		$this->poolCounterAcquireTimeMetric = null;
+		$this->poolCounterError = $error;
 	}
 
 	public function finish() {
@@ -89,5 +116,26 @@ abstract class BaseRequestLog implements RequestLog {
 			}
 		}
 		return strtr( $this->description, $pairs );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getPoolCounterKey(): ?string {
+		return $this->poolCounterKey;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getPoolCounterType(): ?string {
+		return $this->poolCounterType;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getPoolCounterError(): ?string {
+		return $this->poolCounterError;
 	}
 }

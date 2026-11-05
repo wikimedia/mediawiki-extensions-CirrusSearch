@@ -31,6 +31,9 @@
             "hits_offset": 0,
             "suggestion_requested": false,
             "max_score": 1,
+            "syntax": [
+                "pool:CirrusSearch-Search:_elasticsearch"
+            ],
             "cached": false,
             "hits": [
                 {

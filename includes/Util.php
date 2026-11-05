@@ -60,21 +60,6 @@ class Util {
 	}
 
 	/**
-	 * Set label and statsd BC setup for pool counter metrics
-	 * @param string $type The pool counter type, such as CirrusSearch-Search
-	 * @param bool $isSuccess If the pool counter gave a success, or failed the request
-	 * @param float $observation the time it took to update the counter
-	 * @return void
-	 */
-	private static function recordPoolStats( string $type, bool $isSuccess, float $observation ): void {
-		self::getStatsFactory()
-			->getTiming( "pool_counter_seconds" )
-			->setLabel( "type", self::poolCounterLabel( $type ) )
-			->setLabel( "status", $isSuccess ? "success" : "failure" )
-			->observe( $observation );
-	}
-
-	/**
 	 * Metric label for a pool counter, the CirrusSearch prefix removed. Shared by
 	 * pool_counter_seconds and request_time_seconds so both use the same vocabulary.
 	 *
@@ -87,28 +72,6 @@ class Util {
 	}
 
 	/**
-	 * @param float $startPoolWork The time this pool request started, from microtime( true )
-	 * @param string $type The pool counter type, such as CirrusSearch-Search
-	 * @param bool $isSuccess If the pool counter gave a success, or failed the request
-	 * @param callable $callback The function to wrap
-	 * @return callable The original callback wrapped to collect pool counter stats
-	 */
-	private static function wrapWithPoolStats( $startPoolWork,
-		$type,
-		$isSuccess,
-		callable $callback
-	) {
-		return function ( ...$args ) use ( $type, $isSuccess, $callback, $startPoolWork ) {
-			self::recordPoolStats(
-				$type,
-				$isSuccess,
-				1000 * ( microtime( true ) - $startPoolWork ) );
-
-			return $callback( ...$args );
-		};
-	}
-
-	/**
 	 * Wraps the complex pool counter interface to force the single call pattern
 	 * that Cirrus always uses.
 	 *
@@ -116,11 +79,12 @@ class Util {
 	 * @param UserIdentity|null $user
 	 * @param callable $workCallback callback when pool counter is acquired.  Called with
 	 *  no parameters.
-	 * @param string|null $busyErrorMsg The i18n key to return when the queue
+	 * @param ?string $busyErrorMsg The i18n key to return when the queue
 	 *  is full, or null to use the default.
+	 * @param RequestLog|null $log request log to update when available
 	 * @return mixed
 	 */
-	public static function doPoolCounterWork( $type, $user, $workCallback, $busyErrorMsg = null ) {
+	public static function doPoolCounterWork( $type, $user, $workCallback, $busyErrorMsg = null, ?RequestLog $log = null ) {
 		global $wgCirrusSearchPoolCounterKey;
 
 		// By default the pool counter allows you to lock the same key with
@@ -138,8 +102,11 @@ class Util {
 
 		$key = "$type:$wgCirrusSearchPoolCounterKey";
 
-		$errorCallback = static function ( Status $status ) use ( $key, $busyErrorMsg ) {
+		$errorCallback = static function ( Status $status ) use ( $key, $busyErrorMsg, $log ) {
 			$error = $status->getMessages()[0]->getKey();
+			if ( $log !== null ) {
+				$log->poolCounterEndAcquire( $error );
+			}
 
 			LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 				"Pool error on {key}:  {error}",
@@ -153,11 +120,18 @@ class Util {
 
 		// wrap some stats collection on the success/failure handlers
 		$startPoolWork = microtime( true );
-		$workCallback = self::wrapWithPoolStats( $startPoolWork, $type, true, $workCallback );
-		$errorCallback = self::wrapWithPoolStats( $startPoolWork, $type, false, $errorCallback );
+		if ( $log !== null ) {
+			$log->poolCounterStartAcquire( $type, $wgCirrusSearchPoolCounterKey );
+		}
 
 		$work = new PoolCounterWorkViaCallback( $type, $key, [
-			'doWork' => $workCallback,
+			'doWork' => static function () use ( $workCallback, $log ) {
+				if ( $log !== null ) {
+					$log->poolCounterEndAcquire();
+				}
+
+				return $workCallback();
+			},
 			'error' => $errorCallback,
 		] );
 		return $work->execute();

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use Elastica\Client;
 use MediaWiki\Title\Title;
 
 class SearchRequestLog extends BaseRequestLog {
@@ -43,7 +44,7 @@ class SearchRequestLog extends BaseRequestLog {
 	private $namespaces;
 
 	/**
-	 * @param \Elastica\Client $client
+	 * @param Client $client
 	 * @param string $description
 	 * @param string $queryType
 	 * @param array $extra

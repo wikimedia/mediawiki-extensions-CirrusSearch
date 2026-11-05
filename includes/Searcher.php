@@ -558,12 +558,10 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			$query->setParam( '_source', $sourceFiltering );
 		}
 
-		$logMeta = [ 'docIds' => $docIds ];
-
-		$work = $this->buildPoolWorkForGet( $query, $logMeta, $indexSuffix, $size, $connection );
-
+		$log = $this->newLog( 'get of {indexSuffix}.{docIds}', 'get', [ 'indexSuffix' => $indexSuffix, 'docIds' => $docIds ] );
+		$work = $this->buildPoolWorkForGet( $query, $indexSuffix, $size, $connection, $log );
 		if ( $usePoolCounter ) {
-			return Util::doPoolCounterWork( $this->getPoolCounterType(), $this->user, $work );
+			return Util::doPoolCounterWork( $this->getPoolCounterType(), $this->user, $work, null, $log );
 		} else {
 			return $work();
 		}
@@ -579,27 +577,24 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$connection = $this->getOverriddenConnection();
 		$query = new \Elastica\Query( new \Elastica\Query\Terms( 'source_doc_id', $docIds ) );
 		$indexSuffix = Connection::TITLE_SUGGEST_INDEX_SUFFIX;
-		$logMeta = [ 'docIds' => $docIds ];
 
 		// Should be two docs per source doc id
 		$size = count( $docIds ) * 3;
-
-		$work = $this->buildPoolWorkForGet( $query, $logMeta, $indexSuffix, $size, $connection );
-		return Util::doPoolCounterWork( $this->getPoolCounterType(), $this->user, $work );
+		$log = $this->newLog( 'get of {indexSuffix}.{docIds}', 'get', [ 'indexSuffix' => $indexSuffix, 'docIds' => $docIds ] );
+		$work = $this->buildPoolWorkForGet( $query, $indexSuffix, $size, $connection, $log );
+		return Util::doPoolCounterWork( $this->getPoolCounterType(), $this->user, $work, null, $log );
 	}
 
 	private function buildPoolWorkForGet(
 		\Elastica\Query $query,
-		array $logMeta,
 		string $indexSuffix,
 		int $size,
-		Connection $connection
+		Connection $connection,
+		RequestLog $log
 	): \Closure {
-		return function () use ( $query, $logMeta, $indexSuffix, $size, $connection ) {
+		return function () use ( $query, $indexSuffix, $size, $connection, $log ) {
 			try {
-				$this->start( $this->newLog( 'get of {indexSuffix}.{docIds}', 'get', [
-					'indexSuffix' => $indexSuffix,
-				] + $logMeta ) );
+				$this->start( $log );
 				// Shard timeout not supported on get requests so we just use the client side timeout
 				$connection->setTimeout( $this->getClientTimeout( 'get' ) );
 				// We use a search query instead of _get/_mget, these methods are
@@ -718,7 +713,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				// Used syntax
 				'syntax' => $this->searchContext->getSyntaxUsed(),
 			],
-			$this->searchContext->getNamespaces() ?? []
+			$this->searchContext->getNamespaces() ?? [],
 		);
 
 		// Similar to indexing support only the bulk code path, rather than
@@ -746,7 +741,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 					return $this->runMSearch( $search, $log, $connection );
 				},
 				$this->searchContext->isSyntaxUsed( 'regex' ) ?
-					'cirrussearch-regex-too-busy-error' : null
+					'cirrussearch-regex-too-busy-error' : null,
+				$log
 			);
 		};
 

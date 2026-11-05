@@ -33,6 +33,7 @@
             "hits_offset": 0,
             "suggestion_requested": false,
             "syntax": [
+                "pool:CirrusSearch-Search:_elasticsearch",
                 "full_text",
                 "full_text_querystring",
                 "complex_query",

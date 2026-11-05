@@ -49,6 +49,7 @@
             "suggestion_requested": true,
             "max_score": 2.7669134,
             "syntax": [
+                "pool:CirrusSearch-Search:_elasticsearch",
                 "full_text",
                 "full_text_querystring",
                 "simple_bag_of_words"

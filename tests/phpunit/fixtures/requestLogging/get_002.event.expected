@@ -30,6 +30,9 @@
             "hits_returned": 0,
             "hits_offset": 0,
             "suggestion_requested": false,
+            "syntax": [
+                "pool:CirrusSearch-Search:_elasticsearch"
+            ],
             "cached": false
         }
     ]

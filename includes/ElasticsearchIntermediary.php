@@ -314,7 +314,12 @@ abstract class ElasticsearchIntermediary {
 	 * @param array|null $namespaces set of namespaces if known
 	 * @return RequestLog
 	 */
-	abstract protected function newLog( $description, $queryType, array $extra = [], ?array $namespaces = null );
+	abstract protected function newLog(
+		$description,
+		$queryType,
+		array $extra = [],
+		?array $namespaces = null
+	);
 
 	/**
 	 * @param string $searchType

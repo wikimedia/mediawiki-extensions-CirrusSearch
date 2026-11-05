@@ -15,6 +15,17 @@ interface RequestLog {
 	public function start();
 
 	/**
+	 * Called when trying to acquire a token from the pool counter
+	 */
+	public function poolCounterStartAcquire( string $type, string $key ): void;
+
+	/**
+	 * Called when the pool counter token was acquired or refused
+	 * @param string|null $error set when the token was acquired, null otherwise
+	 */
+	public function poolCounterEndAcquire( ?string $error = null ): void;
+
+	/**
 	 * Called when the network request has finished
 	 */
 	public function finish();
@@ -70,4 +81,19 @@ interface RequestLog {
 	 * analytics platforms.
 	 */
 	public function getRequests();
+
+	/**
+	 * @return string|null the pool counter used when protected by a pool counter (null if not)
+	 */
+	public function getPoolCounterKey(): ?string;
+
+	/**
+	 * @return string|null the pool counter used when protected by a pool counter (null if not)
+	 */
+	public function getPoolCounterType(): ?string;
+
+	/**
+	 * @return string|null the pool counter error when it failed, null if succeeded of not used
+	 */
+	public function getPoolCounterError(): ?string;
 }

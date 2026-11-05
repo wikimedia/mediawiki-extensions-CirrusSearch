@@ -42,6 +42,7 @@
             "suggestion_requested": false,
             "max_score": 6.937646,
             "syntax": [
+                "pool:CirrusSearch-Search:_elasticsearch",
                 "full_text",
                 "full_text_querystring",
                 "simple_bag_of_words"
@@ -71,6 +72,7 @@
             "suggestion_requested": false,
             "max_score": 3.138195,
             "syntax": [
+                "pool:CirrusSearch-Search:_elasticsearch",
                 "full_text",
                 "full_text_querystring",
                 "simple_bag_of_words"
@@ -100,6 +102,7 @@
             "suggestion_requested": false,
             "max_score": 9.647443,
             "syntax": [
+                "pool:CirrusSearch-Search:_elasticsearch",
                 "full_text",
                 "full_text_querystring",
                 "simple_bag_of_words"

@@ -43,7 +43,9 @@ class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 				parent::__construct( $connection, new UserIdentityValue( 0, '' ) );
 			}
 
-			protected function newLog( $description, $queryType, array $extra = [], ?array $namespaces = [] ) {
+			protected function newLog(
+				$description, $queryType, array $extra = [], ?array $namespaces = [], ?string $poolCounterKey = null
+			) {
 				throw new LogicException( "Not supposed to be called" );
 			}
 
@@ -67,7 +69,9 @@ class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 				parent::__construct( $connection );
 			}
 
-			protected function newLog( $description, $queryType, array $extra = [], ?array $namespaces = null ) {
+			protected function newLog(
+				$description, $queryType, array $extra = [], ?array $namespaces = null, ?string $poolCounterKey = null
+			) {
 				throw new LogicException( "Not supposed to be called" );
 			}
 		};
@@ -91,7 +95,9 @@ class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 				parent::__construct( $connection );
 			}
 
-			protected function newLog( $description, $queryType, array $extra = [], ?array $namespaces = null ) {
+			protected function newLog(
+				$description, $queryType, array $extra = [], ?array $namespaces = null, ?string $poolCounterKey = null
+			) {
 				throw new LogicException( "Not supposed to be called" );
 			}
 
@@ -117,7 +123,9 @@ class ElasticsearchIntermediaryTest extends CirrusIntegrationTestCase {
 				parent::__construct( $connection );
 			}
 
-			protected function newLog( $description, $queryType, array $extra = [], ?array $namespaces = [] ) {
+			protected function newLog(
+				$description, $queryType, array $extra = [], ?array $namespaces = [], ?string $poolCounterKey = null
+			) {
 				throw new LogicException( "Not supposed to be called" );
 			}
 		};

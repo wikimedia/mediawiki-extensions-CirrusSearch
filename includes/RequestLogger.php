@@ -245,7 +245,16 @@ class RequestLogger {
 					);
 				}
 
-				Util::setIfDefined( $requestContext, 'syntax', $requestEntry, 'syntax' );
+				$syntax = [];
+				if ( $elasticSearchRequestLog->getPoolCounterKey() && $elasticSearchRequestLog->getPoolCounterType() ) {
+					// fit the pool in the syntax array, we could not change the schema due to T259924
+					$syntax[] = "pool:{$elasticSearchRequestLog->getPoolCounterType()}:{$elasticSearchRequestLog->getPoolCounterKey()}";
+				}
+				$syntax = array_merge( $syntax, $requestContext['syntax'] ?? [] );
+
+				if ( $syntax ) {
+					$requestEntry['syntax'] = $syntax;
+				}
 
 				// If response was servied from cache.
 				$requestEntry['cached'] = (bool)$elasticSearchRequestLog->isCachedResponse();

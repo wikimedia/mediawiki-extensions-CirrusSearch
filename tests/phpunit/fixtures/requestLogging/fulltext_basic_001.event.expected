@@ -1,0 +1,92 @@
+{
+    "$schema": "\/mediawiki\/cirrussearch\/request\/0.1.0",
+    "meta": {
+        "request_id": "request_id",
+        "id": "id",
+        "domain": "my_domain",
+        "stream": "mediawiki.cirrussearch-request"
+    },
+    "http": {
+        "method": "GET",
+        "client_ip": "127.0.0.1",
+        "has_cookies": false
+    },
+    "database": "my_wiki",
+    "mediawiki_host": "mw_host",
+    "search_id": "some_search_id",
+    "source": "cli",
+    "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
+    "request_time_ms": "999",
+    "all_elasticsearch_requests_cached": false,
+    "hits": [
+        {
+            "page_title": "Main Page",
+            "page_id": 1,
+            "index": "wiki_content_first",
+            "score": 3.6430995
+        },
+        {
+            "page_title": "Template:Main Page",
+            "page_id": 2,
+            "index": "wiki_general_first",
+            "score": 0.011918611
+        }
+    ],
+    "elasticsearch_requests": [
+        {
+            "query": "main",
+            "query_type": "full_text",
+            "indices": [
+                "wiki"
+            ],
+            "request_time_ms": 99,
+            "search_time_ms": 7,
+            "limit": 21,
+            "hits_total": 2,
+            "hits_returned": 2,
+            "hits_offset": 0,
+            "suggestion_requested": false,
+            "max_score": 7.9185534,
+            "syntax": [
+                "full_text",
+                "full_text_querystring",
+                "simple_bag_of_words"
+            ],
+            "cached": false,
+            "hits": [
+                {
+                    "page_title": "Main Page",
+                    "page_id": 1,
+                    "index": "wiki_content_first",
+                    "score": 3.6430995
+                },
+                {
+                    "page_title": "Template:Main Page",
+                    "page_id": 2,
+                    "index": "wiki_general_first",
+                    "score": 0.011918611
+                }
+            ]
+        }
+    ],
+    "highlights": [
+        {
+            "request_index": 0,
+            "hit_index": 0,
+            "page_id": 1,
+            "highlight": {
+                "text": "Welcome to MediaWiki-Vagrant!   MediaWiki-Vagrant help  MediaWiki help (run vagrant roles help in the directory where you installed MediaWiki-Vagrant to",
+                "title": "<span class=\"searchmatch\">Main<\/span> Page"
+            }
+        },
+        {
+            "request_index": 0,
+            "hit_index": 1,
+            "page_id": 2,
+            "highlight": {
+                "text": "Welcome to MediaWiki-Vagrant!   MediaWiki-Vagrant help  MediaWiki help (run vagrant roles help in the directory where you installed MediaWiki-Vagrant to",
+                "title": "<span class=\"searchmatch\">Main<\/span> Page"
+            }
+        }
+    ]
+}

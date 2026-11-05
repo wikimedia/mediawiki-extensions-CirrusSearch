@@ -170,9 +170,11 @@ class RequestLogger {
 	 * Builds and ships a log context of an object that conforms to the
 	 * JSONSchema  mediawiki/search/requestset event schema.
 	 *
+	 * Visible for testing only
+	 *
 	 * @return array mediawiki/search/requestset event object
 	 */
-	private function buildCirrusSearchRequestEvent() {
+	public function buildCirrusSearchRequestEvent() {
 		global $wgServerName, $wgCirrusSearchLogHighlightsTopN;
 		$webRequest = RequestContext::getMain()->getRequest();
 

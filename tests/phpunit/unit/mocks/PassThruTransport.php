@@ -34,7 +34,7 @@ class PassThruTransport extends AbstractTransport {
 	}
 
 	/** @inheritDoc */
-	public function exec( Request $request, array $params ) {
+	public function exec( Request $request, array $params ): Response {
 		$response = $this->inner->exec( $request, $params );
 		$this->responses[] = $response;
 
@@ -42,12 +42,12 @@ class PassThruTransport extends AbstractTransport {
 	}
 
 	/** @inheritDoc */
-	public function getConnection() {
+	public function getConnection(): \Elastica\Connection {
 		return $this->inner->getConnection();
 	}
 
 	/** @inheritDoc */
-	public function setConnection( \Elastica\Connection $connection ) {
+	public function setConnection( \Elastica\Connection $connection ): AbstractTransport {
 		if ( $this->inner ) {
 			$this->inner->setConnection( $connection );
 		} else {
@@ -80,8 +80,12 @@ class PassThruTransport extends AbstractTransport {
 		return $this;
 	}
 
-	/** @inheritDoc */
-	public function addParam( $key, $value ) {
+	/** @inheritDoc
+	 * @param string $key
+	 * @param mixed $value
+	 * @param string|null $subKey
+	 */
+	public function addParam( $key, $value, ?string $subKey = null ) {
 		$this->inner->addParam( $key, $value );
 
 		return $this;

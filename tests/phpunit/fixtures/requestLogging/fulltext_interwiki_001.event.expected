@@ -1,0 +1,153 @@
+{
+    "$schema": "\/mediawiki\/cirrussearch\/request\/0.1.0",
+    "meta": {
+        "request_id": "request_id",
+        "id": "id",
+        "domain": "my_domain",
+        "stream": "mediawiki.cirrussearch-request"
+    },
+    "http": {
+        "method": "GET",
+        "client_ip": "127.0.0.1",
+        "has_cookies": false
+    },
+    "database": "my_wiki",
+    "mediawiki_host": "mw_host",
+    "search_id": "some_search_id",
+    "source": "cli",
+    "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
+    "request_time_ms": "999",
+    "all_elasticsearch_requests_cached": false,
+    "hits": [
+        {
+            "page_title": "Template:Main Page",
+            "page_id": 2,
+            "index": "wiki_general_first",
+            "score": 0.010442197
+        }
+    ],
+    "elasticsearch_requests": [
+        {
+            "query": "main",
+            "query_type": "full_text",
+            "indices": [
+                "wiki"
+            ],
+            "request_time_ms": 99,
+            "search_time_ms": 18,
+            "limit": 21,
+            "hits_total": 1,
+            "hits_returned": 1,
+            "hits_offset": 0,
+            "suggestion_requested": false,
+            "max_score": 6.937646,
+            "syntax": [
+                "full_text",
+                "full_text_querystring",
+                "simple_bag_of_words"
+            ],
+            "cached": false,
+            "hits": [
+                {
+                    "page_title": "Template:Main Page",
+                    "page_id": 2,
+                    "index": "wiki_general_first",
+                    "score": 0.010442197
+                }
+            ]
+        },
+        {
+            "query": "main",
+            "query_type": "full_text",
+            "indices": [
+                "commonswiki"
+            ],
+            "request_time_ms": 99,
+            "search_time_ms": 13,
+            "limit": 5,
+            "hits_total": 1,
+            "hits_returned": 1,
+            "hits_offset": 0,
+            "suggestion_requested": false,
+            "max_score": 3.138195,
+            "syntax": [
+                "full_text",
+                "full_text_querystring",
+                "simple_bag_of_words"
+            ],
+            "cached": false,
+            "hits": [
+                {
+                    "page_title": "Main Page",
+                    "page_id": 1,
+                    "index": "commonswiki_content_first",
+                    "score": 0.9446909
+                }
+            ]
+        },
+        {
+            "query": "main",
+            "query_type": "full_text",
+            "indices": [
+                "cirrustestwiki"
+            ],
+            "request_time_ms": 99,
+            "search_time_ms": 36,
+            "limit": 5,
+            "hits_total": 7,
+            "hits_returned": 5,
+            "hits_offset": 0,
+            "suggestion_requested": false,
+            "max_score": 9.647443,
+            "syntax": [
+                "full_text",
+                "full_text_querystring",
+                "simple_bag_of_words"
+            ],
+            "cached": false,
+            "hits": [
+                {
+                    "page_title": "Main Page",
+                    "page_id": 1,
+                    "index": "cirrustestwiki_content_first",
+                    "score": 8.712509
+                },
+                {
+                    "page_title": "Misspelled",
+                    "page_id": 5,
+                    "index": "cirrustestwiki_content_first",
+                    "score": 0.37107575
+                },
+                {
+                    "page_title": "Something else",
+                    "page_id": 2,
+                    "index": "cirrustestwiki_content_first",
+                    "score": 0.36529952
+                },
+                {
+                    "page_title": "HasHeadingsWithReference",
+                    "page_id": 172,
+                    "index": "cirrustestwiki_content_first",
+                    "score": 0.34895784
+                },
+                {
+                    "page_title": "MainNamespaceTemplate",
+                    "page_id": 252,
+                    "index": "cirrustestwiki_content_first",
+                    "score": 0.25168607
+                }
+            ]
+        }
+    ],
+    "highlights": [
+        {
+            "request_index": 0,
+            "hit_index": 0,
+            "page_id": 2,
+            "highlight": {
+                "text": "Welcome to MediaWiki-Vagrant!   MediaWiki-Vagrant help  MediaWiki help (run vagrant roles help in the directory where you installed MediaWiki-Vagrant to",
+                "title": "<span class=\"searchmatch\">Main<\/span> Page"
+            }
+        }
+    ]
+}

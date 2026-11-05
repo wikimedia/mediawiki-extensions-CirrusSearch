@@ -1,0 +1,47 @@
+{
+    "$schema": "\/mediawiki\/cirrussearch\/request\/0.1.0",
+    "meta": {
+        "request_id": "request_id",
+        "id": "id",
+        "domain": "my_domain",
+        "stream": "mediawiki.cirrussearch-request"
+    },
+    "http": {
+        "method": "GET",
+        "client_ip": "127.0.0.1",
+        "has_cookies": false
+    },
+    "database": "my_wiki",
+    "mediawiki_host": "mw_host",
+    "search_id": "some_search_id",
+    "source": "cli",
+    "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
+    "request_time_ms": "999",
+    "all_elasticsearch_requests_cached": false,
+    "elasticsearch_requests": [
+        {
+            "query": "main p",
+            "query_type": "comp_suggest",
+            "indices": [
+                "wiki_titlesuggest"
+            ],
+            "request_time_ms": 99,
+            "search_time_ms": 0,
+            "hits_total": 4,
+            "hits_returned": 1,
+            "hits_offset": 0,
+            "suggestion_requested": false,
+            "max_score": 5679327,
+            "cached": false,
+            "hits": [
+                {
+                    "page_title": "Main Page",
+                    "page_id": 1,
+                    "index": "wiki_titlesuggest",
+                    "score": 5679327,
+                    "profile_name": "plain"
+                }
+            ]
+        }
+    ]
+}

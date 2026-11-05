@@ -1,0 +1,93 @@
+{
+    "$schema": "\/mediawiki\/cirrussearch\/request\/0.1.0",
+    "meta": {
+        "request_id": "request_id",
+        "id": "id",
+        "domain": "my_domain",
+        "stream": "mediawiki.cirrussearch-request"
+    },
+    "http": {
+        "method": "GET",
+        "client_ip": "127.0.0.1",
+        "has_cookies": false
+    },
+    "database": "my_wiki",
+    "mediawiki_host": "mw_host",
+    "search_id": "some_search_id",
+    "source": "cli",
+    "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
+    "request_time_ms": "999",
+    "all_elasticsearch_requests_cached": false,
+    "hits": [
+        {
+            "page_title": "File:OnCommons.svg",
+            "page_id": 26,
+            "index": "commonswiki_file_first",
+            "score": 0.83292395
+        },
+        {
+            "page_title": "File:DuplicatedLocally.svg",
+            "page_id": 27,
+            "index": "commonswiki_file_first",
+            "score": 0.8020882
+        }
+    ],
+    "elasticsearch_requests": [
+        {
+            "query": "svg",
+            "query_type": "full_text",
+            "indices": [
+                "wiki_general",
+                "commonswiki_file"
+            ],
+            "request_time_ms": 99,
+            "search_time_ms": 6,
+            "limit": 21,
+            "hits_total": 2,
+            "hits_returned": 2,
+            "hits_offset": 0,
+            "suggestion_requested": true,
+            "max_score": 2.7669134,
+            "syntax": [
+                "full_text",
+                "full_text_querystring",
+                "simple_bag_of_words"
+            ],
+            "cached": false,
+            "hits": [
+                {
+                    "page_title": "File:OnCommons.svg",
+                    "page_id": 26,
+                    "index": "commonswiki_file_first",
+                    "score": 0.83292395
+                },
+                {
+                    "page_title": "File:DuplicatedLocally.svg",
+                    "page_id": 27,
+                    "index": "commonswiki_file_first",
+                    "score": 0.8020882
+                }
+            ]
+        }
+    ],
+    "highlights": [
+        {
+            "request_index": 0,
+            "hit_index": 0,
+            "page_id": 26,
+            "highlight": {
+                "text": "File stored on commons for test purposes",
+                "title": "OnCommons.<span class=\"searchmatch\">svg<\/span>"
+            }
+        },
+        {
+            "request_index": 0,
+            "hit_index": 1,
+            "page_id": 27,
+            "highlight": {
+                "text": "File stored on commons and duplicated locally",
+                "title": "DuplicatedLocally.<span class=\"searchmatch\">svg<\/span>"
+            }
+        }
+    ]
+}

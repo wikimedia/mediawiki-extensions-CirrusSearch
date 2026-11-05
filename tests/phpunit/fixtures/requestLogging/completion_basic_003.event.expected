@@ -1,0 +1,80 @@
+{
+    "$schema": "\/mediawiki\/cirrussearch\/request\/0.1.0",
+    "meta": {
+        "request_id": "request_id",
+        "id": "id",
+        "domain": "my_domain",
+        "stream": "mediawiki.cirrussearch-request"
+    },
+    "http": {
+        "method": "GET",
+        "client_ip": "127.0.0.1",
+        "has_cookies": false
+    },
+    "database": "my_wiki",
+    "mediawiki_host": "mw_host",
+    "search_id": "some_search_id",
+    "source": "cli",
+    "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
+    "request_time_ms": "999",
+    "all_elasticsearch_requests_cached": false,
+    "elasticsearch_requests": [
+        {
+            "query": "Te",
+            "query_type": "comp_suggest",
+            "indices": [
+                "wiki_titlesuggest",
+                "wiki_general"
+            ],
+            "namespaces": [
+                0,
+                12
+            ],
+            "request_time_ms": 99,
+            "search_time_ms": 0,
+            "hits_total": 9,
+            "hits_returned": 5,
+            "hits_offset": 0,
+            "suggestion_requested": false,
+            "max_score": 4713,
+            "cached": false,
+            "hits": [
+                {
+                    "page_title": "Test2",
+                    "page_id": 14,
+                    "index": "wiki_titlesuggest",
+                    "score": 4713,
+                    "profile_name": "plain"
+                },
+                {
+                    "page_title": "Test2\/en",
+                    "page_id": 17,
+                    "index": "wiki_titlesuggest",
+                    "score": 132,
+                    "profile_name": "plain"
+                },
+                {
+                    "page_title": "Test2\/fr",
+                    "page_id": 19,
+                    "index": "wiki_titlesuggest",
+                    "score": 131,
+                    "profile_name": "plain"
+                },
+                {
+                    "page_title": "Test\/Subpage 1",
+                    "page_id": 20,
+                    "index": "wiki_titlesuggest",
+                    "score": 78,
+                    "profile_name": "plain"
+                },
+                {
+                    "page_title": "Help:Test",
+                    "page_id": 34,
+                    "index": "wiki_general",
+                    "score": 77,
+                    "profile_name": "prefix"
+                }
+            ]
+        }
+    ]
+}

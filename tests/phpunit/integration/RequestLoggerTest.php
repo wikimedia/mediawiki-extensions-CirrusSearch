@@ -37,6 +37,21 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 	/** @var array mediawiki/cirrussearch/request schema */
 	private $schema;
 
+	/**
+	 * @param string $fixtureFile
+	 * @param string $desc
+	 * @return array|string
+	 */
+	private static function maybeLoadFixture( string $fixtureFile, string $desc ): string|array {
+		if ( self::hasFixture( $fixtureFile ) ) {
+			return self::loadFixture( $fixtureFile, $desc );
+		} elseif ( self::canRebuildFixture() ) {
+			return $fixtureFile;
+		} else {
+			self::fail( "Missing fixture file " . $fixtureFile . ". Please run with " . self::CIRRUS_REBUILD_FIXTURES . " enabled." );
+		}
+	}
+
 	protected function setUp(): void {
 		parent::setUp();
 
@@ -138,35 +153,27 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			$request = CirrusIntegrationTestCase::loadFixture( $requestFile );
 			$responseFile = $testBase . '.response';
 			$expectedLogsFile = $testBase . '.expected';
+			$expectedEventsFile = $testBase . '.event.expected';
 
 			if ( isset( $request['_comment'] ) ) {
 				$testName = "$testName - " . $request['_comment'];
 			}
 
-			if ( CirrusIntegrationTestCase::hasFixture( $expectedLogsFile ) ) {
-				// Test fixtures exist. Ensure all of them exist and add the test case
-				if ( !CirrusIntegrationTestCase::hasFixture( $responseFile ) ) {
-					throw new \RuntimeException( "Missing response fixture: $responseFile" );
-				}
-				$responses = CirrusIntegrationTestCase::loadFixture( $responseFile, "response fixture" );
-				$expectedLogs = CirrusIntegrationTestCase::loadFixture( $expectedLogsFile, "expected logs fixture" );
-				yield $testName => [ $request, $responses, $expectedLogs ];
-			} elseif ( CirrusIntegrationTestCase::hasFixture( $responseFile ) ) {
-				// have response but no expected logs, regenerate expected logs fixture
-				$responses = CirrusIntegrationTestCase::loadFixture( $responseFile, "response fixture" );
-				yield $testName => [ $request, $responses, $expectedLogsFile ];
-			} else {
-				// have neither response or expected logs, generate both fixtures
-				yield $testName => [ $request, $responseFile, $expectedLogsFile ];
-			}
+			yield $testName => [
+				$request,
+				self::maybeLoadFixture( $responseFile, "response fixture" ),
+				self::maybeLoadFixture( $expectedLogsFile, "expected logs fixture" ),
+				self::maybeLoadFixture( $expectedEventsFile, "expected events fixture" ),
+			];
 		}
 	}
 
-	private function runFixture( array $query, $responses, $expectedLogs, \Closure $test ) {
+	private function runFixture( array $query, $responses, $expectedLogs, $expectedEvent, \Closure $test ) {
+		/** @var $requestLogger RequestLogger */
 		if ( is_string( $responses ) ) {
-			[ $loggers, $config, $connection, $transport ] = $this->buildDependencies( null );
+			[ $loggers, $config, $connection, $transport, $requestLogger ] = $this->buildDependencies( null );
 		} else {
-			[ $loggers, $config, $connection, $transport ] = $this->buildDependencies( $responses );
+			[ $loggers, $config, $connection, $transport, $requestLogger ] = $this->buildDependencies( $responses );
 		}
 
 		$this->overrideConfigValues( [
@@ -180,34 +187,61 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 		// Disable opportunistic execution of deferred updates
 		$cleanup = DeferredUpdates::preventOpportunisticUpdates();
 		$test( $config, $connection );
+		// collect event before they're logged
+		$event = $requestLogger->buildCirrusSearchRequestEvent();
 		// Force the logger to flush
 		DeferredUpdates::doUpdates();
 
 		$logs = $this->collectLogs( $loggers );
 
-		if ( is_string( $expectedLogs ) ) {
+		if ( is_string( $responses ) ) {
+			// store a fixture about the elasticsearch response
+			$responseFile = $responses;
+			$responses = [];
+			foreach ( $transport->getResponses() as $response ) {
+				$responses[] = $response->getData();
+			}
+			CirrusIntegrationTestCase::saveFixture( $responseFile, $responses );
+		}
+		if ( is_string( $expectedLogs ) || is_string( $expectedEvent ) ) {
 			// store a fixture about the generated logs
-			CirrusIntegrationTestCase::saveFixture( $expectedLogs, $logs );
-			if ( is_string( $responses ) ) {
-				// store a fixture about the elasticsearch response
-				$responseFile = $responses;
-				$responses = [];
-				foreach ( $transport->getResponses() as $response ) {
-					$responses[] = $response->getData();
-				}
-				CirrusIntegrationTestCase::saveFixture( $responseFile, $responses );
+			if ( is_string( $expectedLogs ) ) {
+				CirrusIntegrationTestCase::saveFixture( $expectedLogs, $logs );
+			}
+			if ( is_string( $expectedEvent ) ) {
+				$event = $this->cleanupEvent( $event );
+				CirrusIntegrationTestCase::saveFixture( $expectedEvent, $this->cleanupEvent( $event ) );
 			}
 			$this->markTestSkipped( 'Stored fixtures for query' );
-		} else {
-			// Finally check for the expected log
-			$this->assertEquals( $expectedLogs, $logs, json_encode( $logs, JSON_PRETTY_PRINT ) );
 		}
+		// Finally check for the expected log
+		$this->assertEquals( $expectedLogs, $logs, json_encode( $logs, JSON_PRETTY_PRINT ) );
+		$this->assertEquals( $expectedEvent, $this->cleanupEvent( $event ), json_encode( $logs, JSON_PRETTY_PRINT ) );
+	}
+
+	/**
+	 * Stabilize "random" data from the event.
+	 * @param array $events
+	 * @return array
+	 */
+	private function cleanupEvent( array $events ): array {
+		$events['meta']['request_id'] = 'request_id';
+		$events['meta']['id'] = 'id';
+		$events['meta']['domain'] = 'my_domain';
+		$events['mediawiki_host'] = 'mw_host';
+		$events['database'] = 'my_wiki';
+		$events['search_id'] = 'some_search_id';
+		$events['request_time_ms'] = '999';
+		foreach ( $events["elasticsearch_requests"] as &$req ) {
+			$req['request_time_ms'] = 99;
+		}
+		return $events;
 	}
 
 	/**
 	 * @dataProvider requestLoggingProvider
 	 */
-	public function testRequestLogging( array $query, $responses, $expectedLogs ) {
+	public function testRequestLogging( array $query, $responses, $expectedLogs, $expectedEvents ) {
 		$configs = [
 			CirrusConfigNames::FullTextQueryBuilderProfile => 'default',
 			CirrusConfigNames::InterwikiSources => [],
@@ -280,7 +314,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 				throw new \RuntimeException( "Unknown request type: " . $query['type'] );
 		}
 
-		$this->runFixture( $query, $responses, $expectedLogs, $work );
+		$this->runFixture( $query, $responses, $expectedLogs, $expectedEvents, $work );
 	}
 
 	/**
@@ -339,7 +373,7 @@ class RequestLoggerTest extends CirrusIntegrationTestCase {
 			],
 		] );
 		$connection = new Connection( $config, 'default' );
-		return [ $loggers, $config, $connection, $transport ];
+		return [ $loggers, $config, $connection, $transport, $requestLogger ];
 	}
 
 	/**

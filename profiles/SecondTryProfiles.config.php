@@ -69,7 +69,7 @@ return [
 						'fuzzy-subphrases'
 					],
 				],
-				'weight' => 0.5
+				'weight' => 0.01
 			]
 		],
 	],

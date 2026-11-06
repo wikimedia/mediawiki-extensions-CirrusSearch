@@ -9,6 +9,11 @@ trait SearcherTrait {
 	abstract protected function getConnection(): Connection;
 
 	/**
+	 * @return array list of search metric labels to record
+	 */
+	abstract protected function getMetricLabels(): array;
+
+	/**
 	 * @param string $description A psr-3 compliant string describing the request
 	 * @param string $queryType The type of search being performed such as
 	 * fulltext, get, etc.
@@ -21,14 +26,15 @@ trait SearcherTrait {
 		$description,
 		$queryType,
 		array $extra = [],
-		?array $namespaces = null
+		?array $namespaces = null,
 	): SearchRequestLog {
 		return new SearchRequestLog(
 			$this->getConnection()->getClient(),
 			$description,
 			$queryType,
 			$extra,
-			$namespaces
+			$namespaces,
+			$this->getMetricLabels()
 		);
 	}
 }

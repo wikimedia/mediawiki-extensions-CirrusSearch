@@ -118,7 +118,8 @@ class DataSender extends ElasticsearchIntermediary {
 						[
 							'numBulk' => count( $docIdsChunk ),
 							'index' => $pageIndex->getName()
-						]
+						],
+						$this->getMetricLabels()
 					)
 				);
 				$bulk->send();
@@ -231,7 +232,8 @@ class DataSender extends ElasticsearchIntermediary {
 				$this->connection->getClient(),
 				'sending {numBulk} documents to the {index} index(s)',
 				'send_data_write',
-				[ 'numBulk' => count( $documents ), 'index' => $pageIndex->getName() ]
+				[ 'numBulk' => count( $documents ), 'index' => $pageIndex->getName() ],
+				$this->getMetricLabels()
 			) );
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
 			$bulk->setShardTimeout( $this->searchConfig->get( CirrusConfigNames::UpdateShardTimeout ) );
@@ -443,7 +445,8 @@ class DataSender extends ElasticsearchIntermediary {
 					$this->connection->getClient(),
 					'updating {numBulk} documents in other indexes',
 					'send_data_other_idx_write',
-					[ 'numBulk' => count( $updates ), 'index' => $indexName ]
+					[ 'numBulk' => count( $updates ), 'index' => $indexName ],
+					$this->getMetricLabels()
 				) );
 				$bulk->send();
 			} catch ( ResponseException $e ) {

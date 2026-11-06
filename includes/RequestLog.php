@@ -9,6 +9,13 @@ namespace CirrusSearch;
  * for later processing in analytics platforms.
  */
 interface RequestLog {
+
+	/** default labels. All metrics must have the same labels */
+	public const array METRIC_LABELS_DEFAULT = [
+		// Whether the query filters on the weighted_tags field, see T434975.
+		'weighted_tags' => 'no',
+	];
+
 	/**
 	 * Called when the network request is started
 	 */
@@ -28,7 +35,7 @@ interface RequestLog {
 	/**
 	 * Called when the network request has finished
 	 */
-	public function finish();
+	public function finish( string $clusterName, ?string $errorType, bool $partial );
 
 	/**
 	 * @return string The type of query that was performed

@@ -609,11 +609,11 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				$query->setSize( $size );
 				$resultSet = $index->search( $query, [ 'search_type' => 'query_then_fetch' ] );
 				self::throwIfNotOk( $connection, $resultSet->getResponse() );
-				return $this->success( $resultSet->getResults(), $connection );
+				return $this->success( $resultSet->getResults(), $connection, $resultSet->hasTimedOut() );
 			} catch ( \Elastica\Exception\NotFoundException ) {
 				// NotFoundException just means the field didn't exist.
 				// It is up to the caller to decide if that is an error.
-				return $this->success( [], $connection );
+				return $this->success( [], $connection, false );
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				return $this->failure( $e, $connection );
 			}
@@ -714,6 +714,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				'syntax' => $this->searchContext->getSyntaxUsed(),
 			],
 			$this->searchContext->getNamespaces() ?? [],
+			$this->getMetricLabels()
 		);
 
 		// Similar to indexing support only the bulk code path, rather than
@@ -837,12 +838,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		}
 		$mreponses = $msearches->toMSearchResponses( $response->getResultSets() );
 		if ( $mreponses->hasTimeout() ) {
-			Util::getStatsFactory()
-				->getCounter( "partial_results_total" )
-				->setLabel( "search_cluster", $connection->getMetricClusterName() )
-				->setLabel( "type", $log->getQueryType() )
-				->setLabels( $this->getMetricLabels() )
-				->increment();
 			LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 				$log->getDescription() . " timed out and only returned partial results!",
 				$log->getLogVariables()
@@ -917,7 +912,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			? $this->searchQuery->getParsedQuery()->getFeaturesUsed()
 			: [];
 		return [
-			'pool' => Util::poolCounterLabel( $this->getPoolCounterType() ),
 			'weighted_tags' => self::weightedTagsLabel( $features ),
 		] + parent::getMetricLabels();
 	}

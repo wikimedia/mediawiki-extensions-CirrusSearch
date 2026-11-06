@@ -49,9 +49,17 @@ class SearchRequestLog extends BaseRequestLog {
 	 * @param string $queryType
 	 * @param array $extra
 	 * @param int[]|null $namespaces list of known namespaces to query, null if unknown or inappropriate
+	 * @param array $metricLabels metric labels to record
 	 */
-	public function __construct( \Elastica\Client $client, $description, $queryType, array $extra = [], ?array $namespaces = null ) {
-		parent::__construct( $description, $queryType, $extra );
+	public function __construct(
+		\Elastica\Client $client,
+		$description,
+		$queryType,
+		array $extra = [],
+		?array $namespaces = null,
+		array $metricLabels = []
+	) {
+		parent::__construct( $description, $queryType, $extra, $metricLabels );
 		$this->client = $client;
 		$this->lastRequest = $client->getLastRequest();
 		$this->lastResponse = $client->getLastResponse();
@@ -66,11 +74,11 @@ class SearchRequestLog extends BaseRequestLog {
 		$this->cached = true;
 	}
 
-	public function finish() {
+	public function finish( string $clusterName, ?string $errorType, bool $partial ) {
 		if ( $this->request || $this->response ) {
 			throw new \RuntimeException( 'Finishing a log more than once' );
 		}
-		parent::finish();
+		parent::finish( $clusterName, $errorType, $partial );
 		$request = $this->client->getLastRequest();
 		$this->request = $request === $this->lastRequest ? null : $request;
 		$this->lastRequest = null;

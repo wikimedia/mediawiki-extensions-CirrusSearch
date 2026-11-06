@@ -38,10 +38,8 @@ class SearcherMetricLabelsIntegrationTest extends CirrusIntegrationTestCase {
 
 	public function testLabelsBeforeAnySearch() {
 		$searcher = $this->newSearcher( $this->newHookRunner() );
-		// A searcher that has not been handed a query still reports both labels, and the
-		// default pool, because stats drops samples with an inconsistent set of label keys.
 		$this->assertSame(
-			[ 'pool' => 'Search', 'weighted_tags' => 'no' ],
+			[ 'weighted_tags' => 'no' ],
 			$searcher->metricLabels()
 		);
 	}
@@ -71,6 +69,5 @@ class SearcherMetricLabelsIntegrationTest extends CirrusIntegrationTestCase {
 
 		$labels = $searcher->metricLabels();
 		$this->assertSame( $expected, $labels['weighted_tags'] );
-		$this->assertSame( 'Search', $labels['pool'] );
 	}
 }

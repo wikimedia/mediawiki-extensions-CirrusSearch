@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Search\MSearchResponses;
 use CirrusSearch\Search\SearchMetricsProvider;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Exception\ResponseException;
@@ -159,10 +160,11 @@ abstract class ElasticsearchIntermediary {
 	 * @param Connection|null $connection The connection the succesful
 	 *  request was performed against. Will use $this->connection when not
 	 *  provided.
+	 * @param bool $partial true when partial results are shown
 	 * @return Status wrapping $result
 	 */
-	public function success( $result = null, ?Connection $connection = null ) {
-		$this->finishRequest( $connection ?? $this->connection );
+	public function success( $result = null, ?Connection $connection = null, bool $partial = false ) {
+		$this->finishRequest( $connection ?? $this->connection, null, $partial );
 		return Status::newGood( $result );
 	}
 
@@ -189,7 +191,8 @@ abstract class ElasticsearchIntermediary {
 	 */
 	public function failure( ?ExceptionInterface $exception = null, ?Connection $connection = null ) {
 		$connection ??= $this->connection;
-		$log = $this->finishRequest( $connection );
+		$type = ElasticaErrorHandler::classifyError( $exception );
+		$log = $this->finishRequest( $connection, $type, false );
 		if ( $log === null ) {
 			// Request was never started, likely trying to close a request
 			// a second time. If so that was already logged by finishRequest.
@@ -208,17 +211,9 @@ abstract class ElasticsearchIntermediary {
 		// whatever else.
 		$context['error_message'] = mb_substr( $message, 0, 4096 );
 
-		$stats = Util::getStatsFactory();
-		$type = ElasticaErrorHandler::classifyError( $exception );
 		$clusterName = $connection->getMetricClusterName();
 		$context['cirrussearch_error_type'] = $type;
 		$context['responding_cluster'] = $clusterName;
-
-		$stats->getCounter( "backend_failures_total" )
-			->setLabel( "search_cluster", $clusterName )
-			->setLabel( "type", $type )
-			->setLabels( $this->getMetricLabels() )
-			->increment();
 
 		LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 			"Search backend error during {$logType} after {tookMs}: {error_message}",
@@ -231,20 +226,13 @@ abstract class ElasticsearchIntermediary {
 	 * Additional low cardinality labels attached to the metrics of this request, on top of
 	 * search_cluster and type. Subclasses override the values they know about.
 	 *
-	 * All keys must always be present: the stats library requires a consistent set of label
-	 * keys per metric name and silently drops observations that do not match.
+	 * All keys must be added with a default value in {@link RequestLog::METRIC_LABELS_DEFAULT}
+	 * or it will fail.
 	 *
 	 * @return string[] label name => label value
 	 */
 	protected function getMetricLabels(): array {
-		return [
-			// Pool counter the request was throttled by, see Util::poolCounterLabel().
-			// 'none' for requests that do not go through a pool counter at all. Avoid
-			// values needing normalization, StatsUtils rewrites anything but [a-zA-Z0-9_].
-			'pool' => 'none',
-			// Whether the query filters on the weighted_tags field, see T434975.
-			'weighted_tags' => 'no',
-		];
+		return [];
 	}
 
 	/**
@@ -259,10 +247,12 @@ abstract class ElasticsearchIntermediary {
 	 * Log the completion of a request to Elasticsearch.
 	 *
 	 * @param Connection $connection
+	 * @param string|null $errorType in case of errors
+	 * @param bool $partial when partial results are shown
 	 * @return RequestLog|null The log for the finished request, or null if no
 	 * request was started.
 	 */
-	private function finishRequest( Connection $connection ) {
+	private function finishRequest( Connection $connection, ?string $errorType, bool $partial ) {
 		if ( !$this->currentRequestLog ) {
 			LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
 				'finishRequest called without staring a request'
@@ -272,18 +262,10 @@ abstract class ElasticsearchIntermediary {
 		$log = $this->currentRequestLog;
 		$this->currentRequestLog = null;
 
-		$log->finish();
+		$log->finish( $connection->getMetricClusterName(), $errorType, $partial );
 		$tookMs = $log->getTookMs();
-		$clusterName = $connection->getMetricClusterName();
 		$this->searchMetrics['wgCirrusTookMs'] = $tookMs;
 		self::$requestLogger->addRequest( $log, $this->user, $this->slowMillis );
-		$type = $log->getQueryType();
-		$stats = Util::getStatsFactory();
-		$stats->getTiming( "request_time_seconds" )
-			->setLabel( "search_cluster", $clusterName )
-			->setLabel( "type", $type )
-			->setLabels( $this->getMetricLabels() )
-			->observe( $tookMs );
 		if ( $log->getElasticTookMs() ) {
 			$this->searchMetrics['wgCirrusElasticTime'] = $log->getElasticTookMs();
 		}
@@ -406,7 +388,11 @@ abstract class ElasticsearchIntermediary {
 				}
 			}
 
-			return $this->success( $resultsTransformer !== null ? $resultsTransformer( $multiResultSet ) : $multiResultSet, $connection );
+			return $this->success(
+				$resultsTransformer !== null ? $resultsTransformer( $multiResultSet ) : $multiResultSet,
+				$connection,
+				MSearchResponses::multiResultSetHasTimeout( $multiResultSet->getResultSets() )
+			);
 		} catch ( ExceptionInterface $e ) {
 			return $this->failure( $e, $connection );
 		}

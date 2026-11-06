@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use Elastica\Client;
+
 /**
  * Request log for requests that update the elasticsearch cluster. All
  * update requests are done through bulk actions.
@@ -23,22 +25,23 @@ class BulkUpdateRequestLog extends BaseRequestLog {
 	private $response;
 
 	/**
-	 * @param \Elastica\Client $client
+	 * @param Client $client
 	 * @param string $description
 	 * @param string $queryType
 	 * @param array $extra
+	 * @param array<string, string> $metricLabels
 	 */
-	public function __construct( \Elastica\Client $client, $description, $queryType, array $extra = [] ) {
-		parent::__construct( $description, $queryType, $extra );
+	public function __construct( Client $client, $description, $queryType, array $extra = [], array $metricLabels = [] ) {
+		parent::__construct( $description, $queryType, $extra, $metricLabels );
 		$this->client = $client;
 		$this->lastResponse = $client->getLastResponse();
 	}
 
-	public function finish() {
+	public function finish( string $clusterName, ?string $errorType, bool $partial ) {
 		if ( $this->response ) {
 			throw new \RuntimeException( 'Finishing a log more than once' );
 		}
-		parent::finish();
+		parent::finish( $clusterName, $errorType, $partial );
 		$response = $this->client->getLastResponse();
 		$this->response = $response === $this->lastResponse ? null : $response;
 		$this->lastResponse = null;

@@ -122,7 +122,9 @@ class OtherIndexesUpdater extends Updater {
 				$this->connection->getClient(),
 				'searching for {numIds} ids in other indexes',
 				'other_idx_lookup',
-				[ 'numIds' => $findIdsClosuresCount ]
+				[ 'numIds' => $findIdsClosuresCount ],
+				null,
+				$this->getMetricLabels()
 			)
 		);
 		if ( $result->isGood() ) {

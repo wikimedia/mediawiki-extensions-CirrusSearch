@@ -128,13 +128,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 	private const POOL_COUNTER_TYPE = PoolCounterKey::COMPLETION;
 
-	/** @inheritDoc */
-	protected function getMetricLabels(): array {
-		return [
-			'pool' => Util::poolCounterLabel( self::POOL_COUNTER_TYPE ),
-		] + parent::getMetricLabels();
-	}
-
 	/**
 	 * @param Connection $conn
 	 * @param int $limit Limit the results to this many
@@ -430,6 +423,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			$queryType,
 			$extra,
 			$namespaces,
+			$this->getMetricLabels()
 		);
 	}
 

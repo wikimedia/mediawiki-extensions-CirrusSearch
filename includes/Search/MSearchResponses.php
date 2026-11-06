@@ -111,7 +111,15 @@ class MSearchResponses {
 	 * @return bool
 	 */
 	public function hasTimeout() {
-		foreach ( $this->resultSets as $resultSet ) {
+		return self::multiResultSetHasTimeout( $this->resultSets );
+	}
+
+	/**
+	 * @param ElasticaResultSet[] $resultSets
+	 * @return bool true if one of the result sets has timed out
+	 */
+	public static function multiResultSetHasTimeout( array $resultSets ): bool {
+		foreach ( $resultSets as $resultSet ) {
 			if ( $resultSet->hasTimedOut() ) {
 				return true;
 			}

@@ -27,7 +27,7 @@
 		"mwbot": "1.0.9",
 		"request": "2.88.2",
 		"semlog": "0.6.10",
-		"stylelint-config-wikimedia": "0.19.4",
+		"stylelint-config-wikimedia": "0.20.0",
 		"wdio-mediawiki": "6.5.3"
 	},
 	"peerDependencies": {

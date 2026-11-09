@@ -253,7 +253,10 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 			 */
 			private $namespaces;
 
-			/** @inheritDoc */
+			/**
+			 * @param AbstractQuery $query
+			 * @param int[] $namespaces
+			 */
 			public function __construct( $query, array $namespaces ) {
 				$this->query = $query;
 				$this->namespaces = $namespaces;

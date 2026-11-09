@@ -102,7 +102,11 @@ function World( { attach, parameters } ) {
 		if ( !params ) {
 			throw new Error( `In "World.visit(page)" page is falsy: page=${ page }` );
 		}
-		const tmpUrl = this.config.wikis[ wiki ].baseUrl + '?' + params;
+		// Do not visit the site root. On a root page, Chrome requests the
+		// OpenSearch description in the background. When that request is slower
+		// than a login, its response replaces the session cookie of the login.
+		const indexUrl = this.config.wikis[ wiki ].apiUrl.replace( /api\.php$/, 'index.php' );
+		const tmpUrl = indexUrl + '?' + params;
 		const silentLog = this.config.logLevel !== 'verbose';
 		log( `[D] Visiting page: ${ tmpUrl }`, silentLog );
 		await browser.url( tmpUrl );

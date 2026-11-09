@@ -10,6 +10,7 @@
 			"Freshman404",
 			"Huji",
 			"Jeeputer",
+			"LProfo",
 			"Ladsgroup",
 			"Mardetanha",
 			"Physicsch",
@@ -78,5 +79,5 @@
 	"cirrussearch-keyword-prefix-ns-mismatch": "فضای نام یافت شده در عبارت جستجو <code>prefix:</code> با فضای نام درخواست‌شده سازگار نیست. شما می‌توانید آن را با پیشوند دادن پرسمان خودتان همراه با <code>all:</code> درست کنید.",
 	"cirrussearch-autoselect-profile": "اجازه بده موتور جستجو بهترین نمایه را برای به‌کارگیری تعیین کند.",
 	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|مقدار|مقدارهای}} ناشناخته برای <kbd>$3</kbd>: کلیدواژه: $1",
-	"cirrussearch-inlanguage-deprecate-comma": "استفاده از ویرگول به عنوان جدا کننده برای کلمه کلیدی غیرزبانی منسوخ است. لطفاً استفاده کنید |  (لوله) برای جدا کردن زبانها."
+	"cirrussearch-inlanguage-deprecate-comma": "استفاده از ویرگول به‌عنوان جداکننده برای کلیدواژهٔ غیرزبانی منسوخ است. لطفاً از |  (پایپ) برای جدا کردن زبان‌ها استفاده کنید."
 }

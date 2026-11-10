@@ -15,7 +15,8 @@
 			"Physicsch",
 			"Reza koulivand",
 			"Reza1615",
-			"فلورانس"
+			"فلورانس",
+			"LProfo"
 		]
 	},
 	"cirrussearch-desc": "جستجوی قدرت‌گرفته از Elasticsearch برای مدیاویکی",
@@ -77,5 +78,5 @@
 	"cirrussearch-article-words": "واژه‌ها در همۀ صفحه‌های محتوایی",
 	"cirrussearch-keyword-prefix-ns-mismatch": "فضای نام یافت شده در عبارت جستجو <code>prefix:</code> با فضای نام درخواست‌شده سازگار نیست. شما می‌توانید آن را با پیشوند دادن پرسمان خودتان همراه با <code>all:</code> درست کنید.",
 	"cirrussearch-autoselect-profile": "اجازه بده موتور جستجو بهترین نمایه را برای به‌کارگیری تعیین کند.",
-	"cirrussearch-inlanguage-deprecate-comma": "استفاده از ویرگول به عنوان جدا کننده برای کلمه کلیدی غیرزبانی منسوخ است. لطفاً استفاده کنید |  (لوله) برای جدا کردن زبانها."
+	"cirrussearch-inlanguage-deprecate-comma": "استفاده از ویرگول به‌عنوان جداکننده برای کلیدواژهٔ غیرزبانی منسوخ است. لطفاً از |  (پایپ) برای جدا کردن زبان‌ها استفاده کنید."
 }

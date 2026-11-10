@@ -10,16 +10,29 @@ use CirrusSearch\Test\DummyConnection;
  * Wiring of the metric dimensions emitted with request_time_seconds, see T434975.
  *
  * @covers \CirrusSearch\Searcher::getMetricLabels
+ * @covers \CirrusSearch\InterwikiSearcher::getMetricLabels
  * @group CirrusSearch
  */
 class SearcherMetricLabelsIntegrationTest extends CirrusIntegrationTestCase {
 
-	private function newSearcher( CirrusSearchHookRunner $hookRunner ): Searcher {
+	private function newLocalConfig( array $settings = [] ): SearchConfig {
 		// Inherit the real configuration, the query builders need a lot of it.
-		$searchConfig = $this->newHashSearchConfig(
-			[ 'CirrusSearchIndexBaseName' => 'wiki' ],
+		return $this->newHashSearchConfig(
+			$settings + [ 'CirrusSearchIndexBaseName' => 'wiki' ],
 			[ HashSearchConfig::FLAG_INHERIT ]
 		);
+	}
+
+	private function newOtherWikiConfig(): SearchConfig {
+		// _wikiID marks the config as the config of another wiki, see HashSearchConfig::isLocalWiki().
+		return $this->newHashSearchConfig(
+			[ '_wikiID' => 'otherwiki' ],
+			[ HashSearchConfig::FLAG_INHERIT ]
+		);
+	}
+
+	private function newSearcher( CirrusSearchHookRunner $hookRunner, ?SearchConfig $searchConfig = null ): Searcher {
+		$searchConfig ??= $this->newLocalConfig();
 		return new class( new DummyConnection( $searchConfig ), 0, 20, $searchConfig, [ NS_MAIN ],
 			null, false, null, null, null, null, $hookRunner ) extends Searcher {
 			public function metricLabels(): array {
@@ -39,7 +52,7 @@ class SearcherMetricLabelsIntegrationTest extends CirrusIntegrationTestCase {
 	public function testLabelsBeforeAnySearch() {
 		$searcher = $this->newSearcher( $this->newHookRunner() );
 		$this->assertSame(
-			[ 'weighted_tags' => 'no' ],
+			[ 'weighted_tags' => 'no', 'interwiki' => 'no' ],
 			$searcher->metricLabels()
 		);
 	}
@@ -69,5 +82,47 @@ class SearcherMetricLabelsIntegrationTest extends CirrusIntegrationTestCase {
 
 		$labels = $searcher->metricLabels();
 		$this->assertSame( $expected, $labels['weighted_tags'] );
+		$this->assertSame( 'no', $labels['interwiki'] );
+	}
+
+	public function testCrossLanguageSearchLabel() {
+		$hookRunner = $this->newHookRunner();
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder(
+				$this->newLocalConfig( [ CirrusConfigNames::EnableAltLanguage => true ] ), 'foo bar',
+				$this->namespacePrefixParser(), $hookRunner
+			)
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
+			->build();
+		// Do the same steps as LangDetectFallbackMethod::rewrite() and Searcher::makeSearcher().
+		$crossLangQuery = SearchQueryBuilder::forCrossLanguageSearch( $this->newOtherWikiConfig(), $query )->build();
+		$searcher = $this->newSearcher( $hookRunner, $crossLangQuery->getSearchConfig() );
+		$searcher->search( $crossLangQuery );
+
+		$this->assertSame( 'crosslanguage', $searcher->metricLabels()['interwiki'] );
+	}
+
+	public static function provideInterwikiSearcherConfig() {
+		return [
+			'local wiki config' => [ false ],
+			// InterwikiSearcher::getInterwikiResults() replaces the config with the config of each sister wiki.
+			'sister wiki config' => [ true ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideInterwikiSearcherConfig
+	 */
+	public function testInterwikiSearcherLabels( bool $sisterWikiConfig ) {
+		$config = $sisterWikiConfig ? $this->newOtherWikiConfig() : $this->newLocalConfig();
+		$searcher = new class( new DummyConnection( $this->newLocalConfig() ), $config, [ NS_MAIN ],
+			null, null, null, null, null, $this->newHookRunner() ) extends InterwikiSearcher {
+			public function metricLabels(): array {
+				return $this->getMetricLabels();
+			}
+		};
+		$this->assertSame(
+			[ 'interwiki' => 'crossproject', 'weighted_tags' => 'no' ],
+			$searcher->metricLabels()
+		);
 	}
 }

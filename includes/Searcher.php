@@ -913,6 +913,9 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			: [];
 		return [
 			'weighted_tags' => self::weightedTagsLabel( $features ),
+			// it's kind of indirect but we assume that running on non-local wiki is crosslanguage
+			// crossproject is going to override this via InterwikiSearcher
+			'interwiki' => $this->config->isLocalWiki() ? 'no' : 'crosslanguage'
 		] + parent::getMetricLabels();
 	}
 

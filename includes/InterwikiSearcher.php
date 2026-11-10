@@ -123,4 +123,11 @@ class InterwikiSearcher extends Searcher {
 	protected function recordQueryCacheMetrics( StatsFactory $requestStats, string $cacheStatus, ?string $type = null ): void {
 		parent::recordQueryCacheMetrics( $requestStats, $cacheStatus, "interwiki" );
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function getMetricLabels(): array {
+		return [ "interwiki" => "crossproject" ] + parent::getMetricLabels();
+	}
 }

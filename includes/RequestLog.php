@@ -14,6 +14,8 @@ interface RequestLog {
 	public const array METRIC_LABELS_DEFAULT = [
 		// Whether the query filters on the weighted_tags field, see T434975.
 		'weighted_tags' => 'no',
+		// Whether the request is fetching data from other wikis
+		'interwiki' => 'no',
 	];
 
 	/**

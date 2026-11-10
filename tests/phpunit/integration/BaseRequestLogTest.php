@@ -45,9 +45,9 @@ class BaseRequestLogTest extends CirrusIntegrationTestCase {
 		$statsHelper->withComponent( 'CirrusSearch' );
 		foreach ( [ 'pool_counter_seconds', 'request_time_seconds' ] as $name ) {
 			$this->assertSame( 3, $statsHelper->count( $name ), "All samples of $name are recorded" );
-			$this->assertSame( 1, $statsHelper->count( "{$name}{query_type=send_data_write,weighted_tags=no}" ) );
-			$this->assertSame( 1, $statsHelper->count( "{$name}{query_type=comp_suggest,weighted_tags=no}" ) );
-			$this->assertSame( 1, $statsHelper->count( "{$name}{query_type=full_text,weighted_tags=yes}" ) );
+			$this->assertSame( 1, $statsHelper->count( "{$name}{query_type=send_data_write,weighted_tags=no,interwiki=no}" ) );
+			$this->assertSame( 1, $statsHelper->count( "{$name}{query_type=comp_suggest,weighted_tags=no,interwiki=no}" ) );
+			$this->assertSame( 1, $statsHelper->count( "{$name}{query_type=full_text,weighted_tags=yes,interwiki=no}" ) );
 		}
 	}
 

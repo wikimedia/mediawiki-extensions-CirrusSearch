@@ -7,6 +7,7 @@ use MediaWiki\Exception\MWException;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Request\WebRequest;
 use Wikimedia\IPUtils;
+use Wikimedia\StringUtils\StringUtils;
 
 /**
  * Selects the pool counter type of a search request.
@@ -93,9 +94,10 @@ class CirrusPoolCounterAssigner {
 		// Put external automated requests into their own bucket. The main idea
 		// here is to allow automated access, but prevent that automation from
 		// capping out the pools used by interactive queries.
-		$headerRegexes = $config->get( CirrusConfigNames::AutomationHeaderRegexes );
-		if ( $headerRegexes ) {
-			$rules[] = [ 'pool' => PoolCounterKey::AUTOMATED, 'headers' => $headerRegexes ];
+		// Any header matching is enough, so one rule per header.
+		$headerRegexes = $config->get( CirrusConfigNames::AutomationHeaderRegexes ) ?? [];
+		foreach ( $headerRegexes as $name => $pattern ) {
+			$rules[] = [ 'pool' => PoolCounterKey::AUTOMATED, 'headers' => [ $name => $pattern ] ];
 		}
 		$ranges = $config->get( CirrusConfigNames::AutomationCIDRs );
 		if ( $ranges ) {
@@ -149,6 +151,11 @@ class CirrusPoolCounterAssigner {
 		if ( $unknown ) {
 			return 'unknown conditions: ' . implode( ', ', $unknown );
 		}
+		foreach ( (array)( $rule['headers'] ?? [] ) as $name => $pattern ) {
+			if ( !is_string( $pattern ) || !StringUtils::isValidPCRERegex( $pattern ) ) {
+				return "invalid regex for header $name";
+			}
+		}
 		return null;
 	}
 
@@ -198,14 +205,7 @@ class CirrusPoolCounterAssigner {
 			if ( !isset( $headers[$name] ) ) {
 				return false;
 			}
-			$ret = preg_match( $pattern, $headers[$name] );
-			if ( $ret === 0 ) {
-				return false;
-			} elseif ( $ret === false ) {
-				LoggerFactory::getInstance( LogChannel::DEFAULT )->warning(
-					'Invalid regex provided for header {header} in the pool counter rules.',
-					[ 'header' => $name ]
-				);
+			if ( preg_match( $pattern, $headers[$name] ) !== 1 ) {
 				return false;
 			}
 		}

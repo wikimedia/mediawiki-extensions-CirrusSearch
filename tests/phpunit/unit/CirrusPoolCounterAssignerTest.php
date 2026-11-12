@@ -78,6 +78,10 @@ class CirrusPoolCounterAssignerTest extends CirrusTestCase {
 				false, [ 'X-Provenance' => '/^abc$/' ], [], '1.2.3.4',
 				[ 'X-Provenance' => 'xyz' ],
 			],
+			'one of several headers match' => [
+				true, [ 'user-agent' => '/HeadlessChrome/', 'X-Provenance' => '/^abc$/' ], [], '1.2.3.4',
+				[ 'User-Agent' => 'Mozilla/1.2 HeadlessChrome/8.7.6' ],
+			],
 			'cidr ipv4 match' => [
 				true, null, [ '1.0.0.0/8' ], '1.2.3.4', [],
 			],
@@ -228,6 +232,14 @@ class CirrusPoolCounterAssignerTest extends CirrusTestCase {
 		yield 'rule with unknown condition is skipped' => [
 			'pool-b', [ [ 'pool' => 'pool-a', 'user_agent' => '/.*/' ], [ 'pool' => 'pool-b' ] ], [], 0, 'api', [],
 		];
+		yield 'rule with invalid header regex is skipped' => [
+			'pool-b',
+			[ [ 'pool' => 'pool-a', 'headers' => [ 'x-foo' => '(?i)foo/' ] ], [ 'pool' => 'pool-b' ] ],
+			[],
+			0,
+			'api',
+			[ 'X-Foo' => 'foo' ],
+		];
 		yield 'rule that is not an array is skipped' => [ 'pool-b', [ 'pool-a', [ 'pool' => 'pool-b' ] ], [], 0, 'api', [] ];
 		yield 'explicit rules ignore the legacy automation settings' => [
 			PoolCounterKey::SEARCH, [ [ 'pool' => 'pool-a', 'syntax' => [ 'regex' ] ] ], [], 0, 'api',
@@ -272,11 +284,15 @@ class CirrusPoolCounterAssignerTest extends CirrusTestCase {
 		$this->assertSame( [], array_filter( $rules, $hasLegacyRule ) );
 
 		$rules = CirrusPoolCounterAssigner::defaultRules( new HashSearchConfig( [
-			CirrusConfigNames::AutomationHeaderRegexes => [ 'x-provenance' => '/datacenter=true/' ],
+			CirrusConfigNames::AutomationHeaderRegexes => [
+				'x-provenance' => '/datacenter=true/',
+				'user-agent' => '/HeadlessChrome/',
+			],
 			CirrusConfigNames::AutomationCIDRs => [ '1.0.0.0/8' ],
 		] ) );
 		$this->assertSame( [
 			[ 'pool' => PoolCounterKey::AUTOMATED, 'headers' => [ 'x-provenance' => '/datacenter=true/' ] ],
+			[ 'pool' => PoolCounterKey::AUTOMATED, 'headers' => [ 'user-agent' => '/HeadlessChrome/' ] ],
 			[ 'pool' => PoolCounterKey::AUTOMATED, 'ip_ranges' => [ '1.0.0.0/8' ] ],
 		], array_values( array_filter( $rules, $hasLegacyRule ) ) );
 	}

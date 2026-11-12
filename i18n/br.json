@@ -2,16 +2,25 @@
 	"@metadata": {
 		"authors": [
 			"Adriendelucca",
+			"Ar choler",
 			"Fohanno",
 			"Fulup",
 			"Huñvreüs",
 			"Y-M D"
 		]
 	},
+	"cirrussearch-desc": "Klask evit Mediawiki lusket gant OpenSearch",
 	"cirrussearch-backend-error": "N'hon eus ket gallet kas hoc'h enklask da benn abalamour d'ur gudenn dibad. Esaeit en-dro diwezhatoc'h, mar plij.",
 	"cirrussearch-parse-error": "N'eo ket bet komprenet ar reked. Grit unan eeunoc'h, mar plij. Marilhet eo bet ar reked evit gwellaat ar reizhiad enklask.",
+	"cirrussearch-too-busy-error": "Peurvec'hiet emañ servij ar c'hlask. Klaskit en-dro diwezhatoc'h mar plij.",
+	"cirrussearch-regex-empty-expression": "Ur bomm reol n'eo ket goullo zo gortozet gant $1.",
+	"cirrussearch-regex-syntax-error": "Fazi ereadurezh er bomm reol e $2 : $1",
+	"cirrussearch-regex-too-busy-error": "Re a glaskoù war bommoù reol zo o vont en-dro. Klaskit en-dro diwezhatoc'h mar plij.",
+	"cirrussearch-regex-too-complex-error": "Re luziet eo ar bomm reol. Deskit hiroc'h a-zivout e eeunaat [https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch/RegexTooComplex amañ].",
 	"cirrussearch-now-using": "Emañ ar wiki-mañ oc'h implijout ur c'heflusker enklask nevez. ([https://www.mediawiki.org/wiki/Special:MyLanguage/Help:CirrusSearch Gouzout hiroc’h])",
+	"cirrussearch-boost-templates": " #<!-- lezit al linenn-mañ rik evel m'emañ --> <pre>\n# Mard eus unan eus ar patromoù-se en ur bajenn e vo lieskementet berzh he c'hlask dre an dregantad a zo bet kefluniet.\n# War an tach e vo efedus kement kemm.\n# Setu amañ an ereadurezh :\n#   * un displegadenn eo kement tra a zo adalek an arouezenn \"#\" betek dibenn al linenn ;\n#   * pep linenn ha n'eo ket goullo eo anv rik ar patrom da gas war-raok, esaouenn envel, tirenneg hag all, heuliet gant un arouezenn \"|\" heuliet gant un niver heuliet gant un arouezenn \"%\".\n# Skouerioù eus linennoù mat :\n# Patrom:Mat|150%\n# Patrom:Mat-kenañ|300%\n# Patrom:Fall|50%\n# Skouerioù eus linennoù nad eont ket en-dro :\n# Patrom:Foo|150.234234% # dekrannenn ebet!\n# Foo|150% # a c'hall mont en-dro, hogen hepken evit treuzenklozadur ar bajenn Foo adalek an esaouenn envel bennañ\n# Gallout a rit amprouiñ ar c'hemmoù er c'hefluniadur dre gas ur goulenn rakverket gant « boost-templates:\"XX\" » m'eo XX an holl batromoù a vennit kas war-raok, disrannet gant esaouennoù e-lec'h torroù linennoù.\n# Ar goulennoù a spisa « boost-templates:\"XX\" » a zianav endalc'hadoù ar vaezienn-mañ.\n #</pre> <!-- lezit al linenn-mañ rik evel m'emañ -->",
 	"cirrussearch-pref-label": "Enklask nevez",
+	"cirrussearch-pref-desc": "Amprouit hor reizhiad klask nevez hag a embreg muioc'h a yezhoù, a bourchas muioc'h a zisoc'hoù hizivaet, hag a c'hall zoken kavout testennoù e-barzh patromoù.",
 	"cirrussearch-give-feedback": "Roit ho soñj",
 	"prefs-completion": "Klokaat klask",
 	"cirrussearch-pref-completion-profile-help": "Dibabit emzalc'h ar c'hinnigoù klokaat emgefre (klask-pa-skrivit).\n\nAn [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester erbeder klokaat] zo un algoritm a ginnig erbedadennoù klask, a reizh  vioù-koukoug gwelloc’h hag a zegas erbedadennoù talvoudusoc’h. Klask rakger eo an algoritm kinnig klask-pa-skrivi mod kozh.",

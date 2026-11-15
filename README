@@ -172,7 +172,7 @@ A.  Build of a copy of the index and reindex to it:
  php maintenance/run.php CirrusSearch:ForceSearchIndex --from <time when you started updateSearchIndexConfig.php in YYYY-mm-ddTHH:mm:ssZ> --deletes
  php maintenance/run.php CirrusSearch:ForceSearchIndex --from <time when you started updateSearchIndexConfig.php in YYYY-mm-ddTHH:mm:ssZ>
 or for the Bash inclined:
- TZ=UTC export REINDEX_START=$(date +%Y-%m-%dT%H:%m:%SZ)
+ TZ=UTC export REINDEX_START=$(date +%Y-%m-%dT%H:%M:%SZ)
  php maintenance/run.php CirrusSearch:UpdateSearchIndexConfig --reindexAndRemoveOk --indexIdentifier now
  php maintenance/run.php CirrusSearch:ForceSearchIndex --from $REINDEX_START --deletes
  php maintenance/run.php CirrusSearch:ForceSearchIndex --from $REINDEX_START

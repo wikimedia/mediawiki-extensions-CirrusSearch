@@ -95,7 +95,7 @@ class ConfigUtilsTest extends CirrusTestCase {
 			]
 		];
 		yield 'elasticsearch 7.10.2' => [
-			true,
+			false,
 			[
 				"version" => [
 					"number" => "7.10.2"

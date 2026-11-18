@@ -82,5 +82,10 @@
 	"cirrussearch-articleprediction-invalid-keyword": "{{PLURAL:$2|Talvoud|Talvoudoù}} dianav evit ar ger-alc'hwez <kbd>$3:</kbd> : $1",
 	"cirrussearch-inlanguage-deprecate-comma": "Dispredet eo implijout ur skej evel digejer evit ar ger-alc'hwez \"inlanguage\". Implijit \"|\" (barrenn serzh) evit digejañ ar yezhoù.",
 	"cirrussearch-invalid-keyword-boost": "Diwiriek eo an talvoud azvuiañ '$1' a zo bet roet. Un niver degel muiel zo gortozet",
-	"cirrussearch-invalid-keyword-threshold": "Diwiriek eo talvoud an treuzoù '$1' a zo bet roet. Un niver degel etre 0 hag 1 zo gortozet."
+	"cirrussearch-invalid-keyword-threshold": "Diwiriek eo talvoud an treuzoù '$1' a zo bet roet. Un niver degel etre 0 hag 1 zo gortozet.",
+	"cirrussearch-semantic-empty-query": "Ret eo e vefe un termen bennak evit ar c'hlask steroniel.",
+	"cirrussearch-semantic-too-many-results": "Re a zisoc'hoù zo bet goulennet digant ar c'hlask steroniel. Ar $1 kentañ hepken a vo renket mat.",
+	"cirrussearch-feature-not-negatable": "Ne c'hall ket ar ger-alc'hwez '$1' bezañ ezlakaet dre  '-' pe '!'",
+	"cirrussearch-keyword-not-at-query-start": "Ar ger-alc'hwez '$1' n'eo ket bet kemeret e kont. E deroù ar c'hlask hepken ez a ar ger-alc'hwez-mañ en-dro.",
+	"cirrussearch-query-declined": "N'eus bet graet klask ebet : ar profil $1 en deus nac'het embreger ar goulenn-mañ."
 }

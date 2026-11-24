@@ -392,7 +392,8 @@ class RequestLogger {
 				'x-ja4h',
 				'x-provenance',
 				'x-requestctl',
-				'x-trusted-request'
+				'x-trusted-request',
+				'x-kapow-estimate'
 			];
 		foreach ( $httpRequestHeadersToLog as $header ) {
 			if ( $webRequest->getHeader( $header ) ) {

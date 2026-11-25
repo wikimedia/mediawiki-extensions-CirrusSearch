@@ -98,10 +98,9 @@ class OtherIndexesUpdater extends Updater {
 					// The searchIndex, including the cluster specified, is needed
 					// as this gets passed to the ExternalIndex constructor in
 					// the created jobs.
-					if ( !isset( $updates[spl_object_hash( $otherIndex )] ) ) {
-						$updates[spl_object_hash( $otherIndex )] = [ $otherIndex, [] ];
-					}
-					$updates[spl_object_hash( $otherIndex )][1][] = [
+					$indexId = spl_object_id( $otherIndex );
+					$updates[$indexId] ??= [ $otherIndex, [] ];
+					$updates[$indexId][1][] = [
 						'docId' => $docId,
 						'ns' => $title->getNamespace(),
 						'dbKey' => $title->getDBkey(),
